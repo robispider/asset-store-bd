@@ -1,0 +1,448 @@
+================================================================================
+                     SNIPE-IT ARCHITECTURE & FOLDER ORGANIZATION REPORT
+                              Asset Store BD (fork)
+================================================================================
+
+PROJECT OVERVIEW
+--------------------------------------------------------------------------------
+Name:          Snipe-IT (Asset Store BD fork)
+Type:          Open Source IT Asset Management System
+Framework:     Laravel 12 / PHP 8.2+
+UI Framework:  AdminLTE 2 / Bootstrap 3 / Blade Templates
+Frontend Build: Laravel Mix (Webpack)
+License:       AGPL-3.0
+API:           RESTful (Laravel Passport OAuth2) + SCIM v2
+
+
+================================================================================
+HIGH-LEVEL ARCHITECTURE
+================================================================================
+
+                        +--------------------------+
+                        |     Browser / UI        |
+                        |  (Blade + AdminLTE +    |
+                        |   Bootstrap 3 + Alpine) |
+                        +------------+-------------+
+                                     |
+                    +----------------+----------------+
+                    |                                 |
+            +-------v--------+              +---------v--------+
+            |   Web Routes   |              |   API Routes     |
+            |  (Blade Views) |              |  (JSON/Transform)|
+            |  routes/web.php|              |  routes/api.php  |
+            +-------+--------+              +---------+--------+
+                    |                                 |
+        +-----------v------------+        +-----------v------------+
+        |   Web Controllers      |        |   API Controllers      |
+        |   app/Http/Controllers |        |   app/Http/Controllers |
+        |   /Accessories, Assets |        |   /Api/ (REST endpoints)|
+        |   /Licenses, Users...  |        +------------------------+
+        +-----------+------------+
+                    |
+        +-----------v------------+
+        |   Form Requests /      |
+        |   Validation / Rules   |
+        +-----------+------------+
+                    |
+        +-----------v------------+
+        |   Action Classes /     |
+        |   Single-Responsibility|
+        |   app/Actions/*/       |
+        +-----------+------------+
+                    |
+        +-----------v------------+
+        |   Service Classes /    |
+        |   app/Services/        |
+        +-----------+------------+
+                    |
+        +-----------v------------+
+        |   Eloquent Models /    |
+        |   app/Models/          |
+        +-----------+------------+
+                    |
+        +-----------v------------+
+        |   Policies /           |
+        |   Authorization Logic  |
+        +-----------+------------+
+                    |
+        +-----------v------------+
+        |   Database (MySQL/Maria)|
+        |   Migrations + Seeds   |
+        +------------------------+
+
+
+================================================================================
+FOLDER ORGANIZATION - ROOT LEVEL
+================================================================================
+
+asset-store-bd/
+|
++-- app/                      # Application core (Laravel app namespace)
++-- bootstrap/                # Laravel bootstrapping & autoloading
++-- config/                   # 30+ configuration files (app, auth, DB, mail, etc.)
++-- database/                 # Migrations, factories, seeders
+|   +-- factories/            # Model factories for testing
+|   +-- migrations/           # Database schema migrations
+|   +-- seeders/              # Database seeders
++-- docker/                   # Docker compose & container configs
++-- public/                   # Web root (entry: index.php)
+|   +-- css/                  # Compiled CSS assets
+|   +-- js/                   # Compiled JS assets (dist, select2)
+|   +-- sounds/               # UI sound effects
+|   +-- vendor/               # Third-party public assets
+|   +-- uploads/              # User-uploaded files (avatars, barcodes, etc.)
++-- resources/                # Source assets (views, lang, raw assets)
+|   +-- assets/               # Raw CSS/JS/LESS source files
+|   +-- lang/                 # Localization files (i18n)
+|   +-- views/                # Blade templates
++-- routes/                   # Route definitions (web, api, console, scim)
++-- storage/                  # Logs, cache, uploaded files, compiled views
++-- tests/                    # PHPUnit feature & unit tests
++-- vendor/                   # Composer dependencies
++-- composer.json             # PHP dependencies
++-- package.json              # Node.js dependencies
++-- webpack.mix.js            # Laravel Mix build config
++-- phpunit.xml               # Test configuration
++-- phpstan.neon*             # Static analysis config
++-- install.sh                # Installation script
++-- upgrade.php               # Upgrade helper
+
+
+================================================================================
+FOLDER ORGANIZATION - app/ (Application Core)
+================================================================================
+
+app/
+|
++-- Actions/                  # Single-responsibility action classes
+|   +-- Acceptances/          # Acceptance workflow actions
+|   +-- Breadcrumbs/          # Breadcrumb generation actions
+|   +-- Categories/           # Category CRUD actions
+|   +-- CheckoutRequests/     # Checkout request actions
+|   +-- Companies/            # Company management actions
+|   +-- Departments/          # Department actions
+|   +-- Depreciations/        # Depreciation actions
+|   +-- Manufacturers/        # Manufacturer actions
+|   +-- Permissions/          # Permission management actions
+|   +-- StatusLabels/         # Status label actions
+|   +-- Suppliers/            # Supplier actions
+|
++-- Console/                  # Artisan custom commands
++-- Enums/                    # PHP 8.2+ Enum types
++-- Events/                   # Event classes (for event-driven logic)
++-- Exceptions/               # Custom exception handlers
++-- Helpers/                  # Global helper functions
+|   +-- Helper.php            # Centralized helper methods
++-- Http/                     # HTTP layer
+|   +-- Controllers/          # Web controllers (Blade-based)
+|   |   +-- Accessories/      # Accessory management
+|   |   +-- Account/          # Account settings
+|   |   +-- Api/              # API controllers (REST JSON)
+|   |   +-- AssetModelsCtrl   # Asset model CRUD
+|   |   +-- Assets/           # Asset management
+|   |   +-- Auth/             # Authentication controllers
+|   |   +-- Bulk*/            # Bulk operation controllers
+|   |   +-- Companies/        # Company management
+|   |   +-- Components/       # Component management
+|   |   +-- Consumables/      # Consumable items
+|   |   +-- Departments/      # Department CRUD
+|   |   +-- Depreciations/    # Depreciation schedules
+|   |   +-- Kits/             # Predefined kits
+|   |   +-- Licenses/         # License management
+|   |   +-- Locations/        # Location management
+|   |   +-- Manufacturers/    # Manufacturer CRUD
+|   |   +-- Reports/          # Report generation
+|   |   +-- Users/            # User management
+|   |   +-- Controller.php    # Base controller class
+|   |
+|   +-- Kernel.php            # HTTP kernel (middleware groups)
+|   +-- Middleware/           # HTTP middleware
+|   +-- Requests/             # Form request validation classes
+|   +-- Traits/               # HTTP-related traits
+|   +-- Transformers/         # API response transformers
+|
++-- Importer/                 # Import logic (CSV, etc.)
++-- Jobs/                     # Queue job classes
++-- Listeners/                # Event listeners
++-- Livewire/                 # Livewire components (if used)
++-- Mail/                     # Mailable classes
++-- Models/                   # Eloquent ORM models
+|   +-- Builders/             # Custom query builders
+|   +-- Labels/               # Label generation models
+|   +-- Recipients/           # Notification recipient logic
+|   +-- Traits/               # Model traits (Companyable, etc.)
+|   +-- Accessory.php         # Accessory model
+|   +-- Asset.php             # Core asset model
+|   +-- AssetModel.php        # Asset model variant
+|   +-- Category.php          # Category model
+|   +-- Company.php           # Multi-company support
+|   +-- Component.php         # Component model
+|   +-- Consumable.php        # Consumable item model
+|   +-- CustomField.php       # Custom field definitions
+|   +-- Department.php        # Department model
+|   +-- Depreciation.php      # Depreciation schedule
+|   +-- License.php           # License model
+|   +-- LicenseSeat.php       # License seat tracking
+|   +-- Location.php          # Location model
+|   +-- Manufacturer.php      # Manufacturer model
+|   +-- Setting.php           # Global settings model
+|   +-- User.php              # User model
+|   +-- Statuslabel.php       # Status label model
+|   +-- Supplier.php          # Supplier model
+|   +-- SnipeModel.php        # Base model class
+|   +-- Checkoutable.php      # Checkoutable interface/trait
+|   +-- Depreciable.php       # Depreciable interface/trait
+|   +-- ICompanyableChild.php # Company-scoping interface
+|
++-- Notifications/            # Custom notification classes
++-- Observers/                # Eloquent model observers
++-- Policies/                 # Authorization policies
++-- Presenters/               # Data presentation helpers
++-- Providers/                # Service providers
++-- Rules/                    # Custom validation rules
++-- Services/                 # Business logic services
+|   +-- SnipeTranslator.php   # Translation service
+|   +-- Saml.php              # SAML authentication service
+|   +-- PredefinedKitCheckoutService.php
+|
++-- Traits/                   # Shared PHP traits
++-- View/                     # View composers / components
+
+
+================================================================================
+FOLDER ORGANIZATION - resources/ (Views & Assets)
+================================================================================
+
+resources/
+|
++-- assets/                   # Raw source files (compiled by Mix)
+|   +-- css/                  # Source CSS
+|   +-- js/                   # Source JS
+|   +-- less/                 # LESS stylesheets
+|
++-- lang/                     # Localization (i18n)
+|   +-- en-US/                # English (primary)
+|   +-- [locale]/             # Other locales
+|
++-- views/                    # Blade templates
+    +-- accessories/           # Accessory views
+    +-- account/               # Account settings views
+    +-- auth/                  # Authentication views (login, setup)
+    +-- blade/                 # Reusable Blade components
+    +-- categories/            # Category views
+    +-- companies/             # Company views
+    +-- components/            # Component views
+    +-- consumables/           # Consumable views
+    +-- departments/           # Department views
+    +-- depreciations/         # Depreciation views
+    +-- errors/                # Error page templates
+    +-- groups/                # Group views
+    +-- hardware/              # Hardware/asset views (core)
+    +-- kits/                  # Predefined kit views
+    +-- layouts/               # Master layout templates
+    +-- licenses/              # License views
+    +-- livewire/              # Livewire component views
+    +-- locations/             # Location views
+    +-- maintenance-types/     # Maintenance type views
+    +-- maintenances/          # Maintenance log views
+    +-- manufacturers/         # Manufacturer views
+    +-- models/                # Asset model views
+    +-- modals/                # Reusable modal dialogs
+    +-- notifications/         # Notification views
+    +-- partials/              # Partial Blade components
+    +-- reports/               # Report templates
+    +-- settings/              # Admin settings views
+    +-- setup/                 # Installation wizard views
+    +-- statuslabels/          # Status label views
+    +-- suppliers/             # Supplier views
+    +-- users/                 # User management views
+    +-- vendor/                # Third-party view overrides
+    +-- dashboard.blade.php    # Main dashboard
+    +-- notifications.blade.php# Notification center
+
+
+================================================================================
+FOLDER ORGANIZATION - config/ (Configuration)
+================================================================================
+
+config/
+|
++-- app.php                   # Core application settings
++-- auth.php                  # Authentication config
++-- backup.php                # Backup/restore settings
++-- broadcasting.php           # Event broadcasting
++-- cache.php                 # Cache configuration
++-- compile.php               # Blade compilation settings
++-- cors.php                  # CORS policy
++-- database.php              # Database connections
++-- debugbar.php              # Debug bar settings
++-- dompdf.php                # PDF generation config
++-- filesystems.php            # Storage/disks config
++-- google2fa.php             # Google 2FA settings
++-- hashing.php               # Password hashing
++-- image.php                 # Image processing (Intervention)
++-- insights.php              # Code analysis settings
++-- livewire.php              # Livewire configuration
++-- logging.php               # Logging channels
++-- mail.php                  # Email/SMTP config
++-- passport.php              # OAuth2 Passport config
++-- pdf.php                   # PDF output settings
++-- permissions.php           # Permission matrix
++-- queue.php                 # Queue/connection config
++-- scim.php                  # SCIM provisioning config
++-- services.php              # Third-party service credentials
++-- session.php               # Session configuration
++-- telescope.php             # Laravel Telescope config
++-- trustedproxy.php          # Proxy settings
++-- version.php               # Application version info
++-- view.php                  # View compilation settings
+
+
+================================================================================
+FOLDER ORGANIZATION - routes/ (Routing)
+================================================================================
+
+routes/
+|
++-- api.php                   # REST API routes (JSON responses)
+|   +-- All API endpoints for datatables, select2, CRUD operations
+|
++-- web.php                   # Web/UI routes (Blade views)
+|   +-- All UI navigation routes with breadcrumbs
+|
++-- console.php               # Artisan command routes
++-- scim.php                  # SCIM v2 provisioning endpoints
++-- web/                      # Additional route groupings
+
+
+================================================================================
+FOLDER ORGANIZATION - tests/ (Testing)
+================================================================================
+
+tests/
+|
++-- Concerns/                 # Shared test traits/concerns
++-- Feature/                  # Feature/integration tests
+|   +-- Accessories/          # Accessory feature tests
+|   +-- Assets/               # Asset feature tests
+|   +-- Components/           # Component feature tests
+|   +-- Consumables/          # Consumable feature tests
+|   +-- Licenses/             # License feature tests
+|   +-- Users/                # User feature tests
+|   +-- [entity]/             # Tests organized by domain entity
+|
++-- Unit/                     # Unit tests (models, services, helpers)
++-- Support/                  # Test support classes
++-- pa11y/                    # Accessibility test configs
++-- TestCase.php              # Base test case class
+
+
+================================================================================
+KEY PATTERNS & CONVENTIONS
+================================================================================
+
+1. CONTROLLER LAYER (Dual Tree)
+   - Web Controllers:  app/Http/Controllers/[Entity]/[Entity]Controller.php
+   - API Controllers:    app/Http/Controllers/Api/[Entity]Controller.php
+   - Both share the same domain logic but different response formats
+
+2. TRANSFORMER PATTERN
+   - All API responses go through Transformer classes
+   - Location: app/Http/Transformers/
+   - Never return raw model attributes from API controllers
+
+3. POLICY-BASED AUTHORIZATION
+   - All authorization via Policies: app/Policies/
+   - CheckoutablePermissionsPolicy for checkout/checkin operations
+
+4. FMCS (Full Multiple Company Support)
+   - Multi-tenant filtering via Setting::getSettings()->full_multiple_companies_support
+
+5. SELECT2 AJAX DROPDOWNS
+   - Auto-initialized via snipeit.js
+   - Uses selectlist() API endpoints with companyId param
+
+6. ACTION CLASS PATTERN
+   - Single-responsibility business logic in app/Actions/[Entity]/
+   - Replaces fat controller methods
+
+7. ELOQUENT MODEL TRAITS
+   - CompanyableScope: multi-company scoping
+   - Checkoutable: checkout/checkin capability
+   - Depreciable: depreciation calculation
+
+
+================================================================================
+EXTERNAL DEPENDENCIES (Key Packages)
+================================================================================
+
+PHP (composer.json):
+  - laravel/framework ^12.0       # Core framework
+  - laravel/passport ^12.0        # OAuth2 API authentication
+  - arietimmerman/laravel-scim    # SCIM v2 provisioning
+  - intervention/image ^2.5       # Image processing
+  - barcodes: bacon/bacon-qr-code # QR code generation
+  - pdf: dompdf / mpdf            # PDF report generation
+  - google-chat / microsoft-teams # Notification channels
+  - socialite                     # Social authentication
+
+JavaScript (package.json):
+  - Bootstrap 3.x                 # UI framework
+  - AdminLTE 2                    # Admin dashboard theme
+  - jQuery 3.x                    # DOM manipulation
+  - select2                       # AJAX dropdowns
+  - Chart.js v2.9.4               # Data visualization
+  - Laravel Mix (webpack)          # Asset compilation
+
+
+================================================================================
+UPLOADED FILES STRUCTURE (public/uploads/)
+================================================================================
+
+public/uploads/
+|
++-- accessories/        # Accessory images
++-- assets/             # Asset photos
++-- avatars/            # User profile pictures
++-- barcodes/           # Generated QR/barcode images
++-- categories/         # Category icons
++-- companies/          # Company logos
++-- components/         # Component images
++-- consumables/        # Consumable images
++-- departments/        # Department logos
++-- locations/          # Location images
++-- manufacturers/      # Manufacturer logos
++-- models/             # Asset model images
++-- suppliers/          # Supplier logos
+
+
+================================================================================
+TECHNICAL SUMMARY
+================================================================================
+
+Aspect                  Value
+------------------------+---------------------------------------------------
+Framework               Laravel 12 (PHP 8.2+)
+Architecture            MVC + Action Classes + Service Layer
+UI Pattern              Server-side rendered Blade templates
+API Pattern             RESTful JSON with Transformers
+Auth                    Laravel Passport (OAuth2) + Google2FA + SAML
+DB                      MySQL / MariaDB (via Eloquent ORM)
+Frontend                AdminLTE 2 + Bootstrap 3 + jQuery + Alpine.js
+Asset Compilation       Laravel Mix (Webpack)
+Testing                 PHPUnit (Feature + Unit tests)
+Static Analysis         PHPStan + Psalm
+i18n                    Laravel localization system
+Multi-tenant            Company-scoped models (FMCS)
+Provisioning            SCIM v2 (via arietimmerman/laravel-scim-server)
+PDF Reports             DomPDF / mPDF
+Image Processing        Intervention Image
+Barcodes                Bacon QR Code + TCPDF barcodes
+Notifications           Laravel Notifications (email, Slack, Google Chat, Teams)
+Caching                 Redis / File / Database (configurable)
+Queue                   Redis / Database / SQS (configurable)
+
+
+================================================================================
+                              END OF REPORT
+================================================================================

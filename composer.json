@@ -101,6 +101,7 @@
       "database"
     ],
     "psr-4": {
+      "GovStore\\CustomRequests\\": "packages/gov-store/custom-requests/src/",
       "App\\": "app/",
       "Database\\Factories\\": "database/factories/",
       "Database\\Seeders\\": "database/seeders/"

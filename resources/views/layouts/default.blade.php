@@ -1421,6 +1421,13 @@
                                                     {{ trans('general.requested_assets_menu') }}
                                                 </a></li>
                                         @endcan
+                                        {{-- GOV-STORE: User Requests Link --}}
+                                        <li {!! (request()->is('gov-requests/my-requests') ? ' class="active"' : '') !!}>
+                                            <a href="{{ route('gov.requests.user.index') }}">
+                                                <i class="fas fa-hand-paper fa-fw"></i>
+                                                My Gov-Requests
+                                            </a>
+                                        </li>
 
                                         @can('self.profile')
                                         <li {!! (request()->is('account/accept') ? ' class="active"' : '') !!}>
@@ -1512,6 +1519,16 @@
                                 </a>
                             </li>
                         @endcan
+                            {{-- GOV-STORE: Custom Approval Dashboard Link --}}
+                        @if(auth()->user()->isSuperUser() || auth()->user()->hasAccess('admin'))
+                            <li class="{{ (Request::is('gov-requests/admin*')) ? 'active' : '' }}">
+                                <a href="{{ route('gov.requests.admin.index') }}">
+                                    <i class="fas fa-clipboard-check fa-fw"></i>
+                                    <span>Gov Approvals</span>
+                                </a>
+                            </li>
+                        @endif
+
                         @can('index', \App\Models\Asset::class)
                             <li class="treeview{{ ((request()->is('statuslabels/*') || request()->is(['hardware*', 'maintenances*'])) ? ' active' : '') }}">
                                 <a href="#">

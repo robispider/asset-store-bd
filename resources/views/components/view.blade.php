@@ -68,6 +68,16 @@
                         <x-button.clone :item="$snipe_component" :route="route('components.clone.create', $snipe_component->id)"/>
                         <x-button.checkout :item="$snipe_component" :route="route('components.checkout.show', $snipe_component->id)" />
                         <x-button.delete :item="$snipe_component" />
+                        {{-- GOV-STORE: Universal Request Button --}}
+                        @if(is_null($asset->assigned_to))
+                            <div style="margin-top: 5px; width: 100%;">
+                                @include('govstore::components.request-button', [
+                                    'itemType' => 'Asset',
+                                    'itemId' => $asset->id,
+                                    'itemName' => $asset->present()->name ?: $asset->asset_tag
+                                ])
+                            </div>
+                        @endif
                     </x-slot:buttons>
 
                 </x-info-panel>

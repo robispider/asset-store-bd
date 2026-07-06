@@ -437,6 +437,8 @@ return [
         SamlServiceProvider::class,
         BreadcrumbsServiceProvider::class,
 
+        GovStore\CustomRequests\Providers\CustomRequestServiceProvider::class,
+
     ],
 
     /*
