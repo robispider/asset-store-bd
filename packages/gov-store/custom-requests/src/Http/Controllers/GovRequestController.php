@@ -19,7 +19,25 @@ class GovRequestController extends Controller
 
         return view('govstore::user.index', compact('requests'));
     }
-    
+    public function catalog()
+    {
+        // 1. Get all consumables with remaining stock
+        $consumables = \App\Models\Consumable::all()->filter(function ($item) {
+            return $item->numRemaining() > 0;
+        });
+
+        // 2. Get all accessories with remaining stock
+        $accessories = \App\Models\Accessory::all()->filter(function ($item) {
+            return $item->numRemaining() > 0;
+        });
+
+        // 3. Get all assets that are marked "requestable" and are not currently checked out
+        $assets = \App\Models\Asset::where('requestable', 1)
+                                   ->whereNull('assigned_to')
+                                   ->get();
+
+        return view('govstore::catalog.index', compact('consumables', 'accessories', 'assets'));
+    }
     public function store(Request $request, RequestService $service)
     {
         // Validate incoming form data

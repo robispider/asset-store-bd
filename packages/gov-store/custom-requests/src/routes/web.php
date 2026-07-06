@@ -15,7 +15,8 @@ Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'gov-requests'], func
     Route::post('/admin/{request_id}/approve', [GovApprovalController::class, 'approve'])->name('gov.requests.admin.approve');
     Route::post('/admin/{request_id}/reject', [GovApprovalController::class, 'reject'])->name('gov.requests.admin.reject');
 
-    
+    // NEW: User Route: Browse all requestable items (The Catalog)
+    Route::get('/catalog', [GovRequestController::class, 'catalog'])->name('gov.requests.catalog');
     // NEW: User Route: View my own requests
     Route::get('/my-requests', [GovRequestController::class, 'index'])->name('gov.requests.user.index');
 });

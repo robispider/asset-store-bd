@@ -1428,6 +1428,14 @@
                                                 My Gov-Requests
                                             </a>
                                         </li>
+                                        {{-- GOV-STORE: Unified Catalog & Requests --}}
+                                        <li {!! (request()->is('gov-requests/catalog') ? ' class="active"' : '') !!}>
+                                            <a href="{{ route('gov.requests.catalog') }}">
+                                                <i class="fas fa-store fa-fw"></i>
+                                                Browse Item Catalog
+                                            </a>
+                                        </li>
+                                        
 
                                         @can('self.profile')
                                         <li {!! (request()->is('account/accept') ? ' class="active"' : '') !!}>
