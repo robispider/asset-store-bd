@@ -70,16 +70,7 @@
                         <x-button.delete :item="$consumable"/>
                         <x-button.checkout :item="$consumable" :route="route('consumables.checkout.show', $consumable->id)" />
 
-                          {{-- GOV-STORE: Universal Request Button --}}
-                        @if($consumable->numRemaining() > 0)
-                            <div style="margin-top: 5px; width: 100%;">
-                                @include('govstore::components.request-button', [
-                                    'itemType' => 'Consumable',
-                                    'itemId' => $consumable->id,
-                                    'itemName' => $consumable->name
-                                ])
-                            </div>
-                        @endif
+                    
                     </x-slot:buttons>
 
                 </x-info-panel>

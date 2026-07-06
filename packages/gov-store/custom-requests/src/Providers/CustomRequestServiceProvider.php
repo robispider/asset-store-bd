@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Event;
 use GovStore\CustomRequests\Events\ItemApproved;
 use GovStore\CustomRequests\Listeners\ProcessItemCheckout;
+use GovStore\CustomRequests\Http\Middleware\InjectGovStoreUi;
 
 class CustomRequestServiceProvider extends ServiceProvider
 {
@@ -17,7 +18,7 @@ class CustomRequestServiceProvider extends ServiceProvider
         // 2. Load Web Routes
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
 
-        // 3. Load Views (NEW) - Registers the 'govstore::' namespace
+        // 3. Load Views
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'govstore');
 
         // 4. Register Event Listeners
@@ -25,6 +26,10 @@ class CustomRequestServiceProvider extends ServiceProvider
             ItemApproved::class,
             ProcessItemCheckout::class
         );
+
+        // 5. ZERO-TOUCH UI INJECTION: Push our Middleware into Snipe-IT's global 'web' group
+        $router = $this->app['router'];
+        $router->pushMiddlewareToGroup('web', InjectGovStoreUi::class);
     }
 
     public function register()

@@ -1527,15 +1527,7 @@
                                 </a>
                             </li>
                         @endcan
-                            {{-- GOV-STORE: Custom Approval Dashboard Link --}}
-                        @if(auth()->user()->isSuperUser() || auth()->user()->hasAccess('admin'))
-                            <li class="{{ (Request::is('gov-requests/admin*')) ? 'active' : '' }}">
-                                <a href="{{ route('gov.requests.admin.index') }}">
-                                    <i class="fas fa-clipboard-check fa-fw"></i>
-                                    <span>Gov Approvals</span>
-                                </a>
-                            </li>
-                        @endif
+                           
 
                         @can('index', \App\Models\Asset::class)
                             <li class="treeview{{ ((request()->is('statuslabels/*') || request()->is(['hardware*', 'maintenances*'])) ? ' active' : '') }}">

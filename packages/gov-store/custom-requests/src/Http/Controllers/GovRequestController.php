@@ -6,6 +6,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use GovStore\CustomRequests\Services\RequestService;
 use Illuminate\Support\Facades\Log;
+ use GovStore\CustomRequests\Services\CatalogService;
 
 class GovRequestController extends Controller
 {
@@ -19,24 +20,25 @@ class GovRequestController extends Controller
 
         return view('govstore::user.index', compact('requests'));
     }
-    public function catalog()
+   public function catalog(CatalogService $catalogService)
     {
-        // 1. Get all consumables with remaining stock
-        $consumables = \App\Models\Consumable::all()->filter(function ($item) {
-            return $item->numRemaining() > 0;
-        });
+        $userId = auth()->id();
 
-        // 2. Get all accessories with remaining stock
-        $accessories = \App\Models\Accessory::all()->filter(function ($item) {
-            return $item->numRemaining() > 0;
-        });
+        // 1. Get the unified list of products
+        $catalogItems = $catalogService->getUnifiedCatalog();
 
-        // 3. Get all assets that are marked "requestable" and are not currently checked out
-        $assets = \App\Models\Asset::where('requestable', 1)
-                                   ->whereNull('assigned_to')
-                                   ->get();
+        // 2. Fetch the user's request counts for their personalized pipeline
+        $pendingCount  = \GovStore\CustomRequests\Models\ItemRequest::where('requested_by', $userId)->where('status', 'pending')->count();
+        $approvedCount = \GovStore\CustomRequests\Models\ItemRequest::where('requested_by', $userId)->where('status', 'approved')->count();
+        $rejectedCount = \GovStore\CustomRequests\Models\ItemRequest::where('requested_by', $userId)->where('status', 'rejected')->count();
 
-        return view('govstore::catalog.index', compact('consumables', 'accessories', 'assets'));
+        // 3. Return the single unified dashboard view
+        return view('govstore::catalog.index', compact(
+            'catalogItems', 
+            'pendingCount', 
+            'approvedCount', 
+            'rejectedCount'
+        ));
     }
     public function store(Request $request, RequestService $service)
     {

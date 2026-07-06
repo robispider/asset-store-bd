@@ -7,8 +7,9 @@
 
 
 <!-- The Button -->
+<!-- The Button -->
 <button type="button" class="btn btn-primary btn-sm btn-block" data-toggle="modal" data-target="#govRequestModal_{{ $itemType }}_{{ $itemId }}">
-    <i class="fas fa-hand-paper"></i> Request Item
+    <i class="fas fa-shopping-cart"></i> Request Item
 </button>
 
 <!-- The Modal -->
