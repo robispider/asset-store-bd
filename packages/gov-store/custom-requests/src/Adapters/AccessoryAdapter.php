@@ -23,15 +23,15 @@ class AccessoryAdapter implements RequestableInterface
     
     public function getAvailableQuantity(): int { return $this->accessory->numRemaining(); }
 
-    public function checkout(User $targetUser, User $adminUser, int $quantity = 1, string $notes = ''): bool
+   public function checkout(User $targetUser, User $adminUser, int $quantity = 1, string $notes = ''): bool
     {
-        // Snipe-IT uses a pivot table (accessories_users) for accessories
-        $this->accessory->users()->attach($this->accessory->id, [
-            'accessory_id' => $this->accessory->id,
+        // Use Snipe-IT's native relationship safely
+        $this->accessory->users()->attach($targetUser->id, [
             'assigned_to' => $targetUser->id,
-            'created_at' => now(),
+            'note' => $notes,
         ]);
         
+        // Trigger Snipe-IT's native logger
         $this->accessory->logCheckout($notes, $targetUser);
         return true;
     }

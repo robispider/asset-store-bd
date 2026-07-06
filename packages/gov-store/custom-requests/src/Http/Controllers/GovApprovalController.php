@@ -4,61 +4,77 @@ namespace GovStore\CustomRequests\Http\Controllers;
 
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
-use GovStore\CustomRequests\Models\ItemRequest;
+use GovStore\CustomRequests\Models\Request as ServiceRequest;
+use GovStore\CustomRequests\Models\RequestEvent;
 use GovStore\CustomRequests\Services\ApprovalService;
-use Illuminate\Support\Facades\Gate;
 
 class GovApprovalController extends Controller
 {
-    /**
-     * Helper to ensure only admins can access these routes.
-     * Snipe-IT uses 'isSuperUser()' or permission flags.
-     */
     private function checkAdminAccess()
     {
         if (!auth()->user()->isSuperUser() && !auth()->user()->hasAccess('admin')) {
-            abort(403, 'Unauthorized access.');
+            abort(403, 'Unauthorized access to approval workflows.');
         }
     }
 
-public function index()
+    public function index()
     {
         $this->checkAdminAccess();
-        
-        // Fetch all pending requests with the user and item data attached
-        $requests = \GovStore\CustomRequests\Models\ItemRequest::with(['requester', 'requestable'])
-                        ->pending()
-                        ->orderBy('created_at', 'desc')
-                        ->get();
 
-        return view('govstore::admin.index', compact('requests'));
+        // 1. Fetch requests waiting for decision
+        $pendingRequests = ServiceRequest::with(['requester', 'items'])
+                            ->whereIn('approval_status', ['submitted', 'under_review'])
+                            ->orderBy('created_at', 'desc')
+                            ->get();
+
+        // 2. Fetch recently processed requests for audit history reference
+        $processedRequests = ServiceRequest::with(['requester'])
+                            ->whereNotIn('approval_status', ['draft', 'submitted', 'under_review'])
+                            ->orderBy('updated_at', 'desc')
+                            ->limit(10)
+                            ->get();
+
+        return view('govstore::admin.index', compact('pendingRequests', 'processedRequests'));
     }
 
-    public function approve($id, ApprovalService $service)
+    public function show($id)
     {
         $this->checkAdminAccess();
 
-        $itemRequest = ItemRequest::findOrFail($id);
+        $serviceRequest = ServiceRequest::with([
+            'requester', 
+            'items.requested', 
+            'events.user'
+        ])->findOrFail($id);
 
-        try {
-            $service->approve($itemRequest, auth()->user());
-            return redirect()->back()->with('success', 'Request approved. Item has been checked out automatically.');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Approval failed: ' . $e->getMessage());
+        // If the request was just opened, transition status to 'under_review' and write to timeline
+        if ($serviceRequest->approval_status === 'submitted') {
+            $serviceRequest->update(['approval_status' => 'under_review']);
+            
+            RequestEvent::create([
+                'request_id' => $serviceRequest->id,
+                'user_id' => auth()->id(),
+                'event_type' => 'under_review',
+                'details' => ['message' => 'Review initiated by administrator']
+            ]);
         }
+
+        return view('govstore::admin.show', compact('serviceRequest'));
     }
 
-    public function reject(Request $request, $id, ApprovalService $service)
+    public function process(Request $request, $id, ApprovalService $service)
     {
         $this->checkAdminAccess();
+        $serviceRequest = ServiceRequest::findOrFail($id);
 
-        $itemRequest = ItemRequest::findOrFail($id);
-        
         try {
-            $service->reject($itemRequest, auth()->user(), $request->input('reason'));
-            return redirect()->back()->with('success', 'Request rejected successfully.');
+            // Pass the itemised decision inputs to our transactional service
+            $service->processDecision($serviceRequest, auth()->user(), $request->input('items', []));
+            
+            return redirect()->route('gov.requests.admin.index')
+                             ->with('success', "Service Request {$serviceRequest->request_number} has been processed.");
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Rejection failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Workflow error: ' . $e->getMessage());
         }
     }
 }

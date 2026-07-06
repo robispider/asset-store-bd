@@ -1,49 +1,59 @@
-{{-- 
-    EXPECTED VARIABLES:
-    $itemType (e.g. 'Consumable', 'Asset', 'Accessory')
-    $itemId (e.g. 5)
-    $itemName (e.g. 'Keyboard')
---}}
+<form action="{{ route('gov.requests.basket.add') }}" method="POST" class="ajax-basket-form" style="margin: 0; width: 100%;">
+    @csrf
+    <input type="hidden" name="item_type" value="{{ strtolower($itemType) }}">
+    <input type="hidden" name="item_id" value="{{ $itemId }}">
+    
+    <button type="submit" class="btn btn-primary btn-sm btn-block add-to-basket-btn">
+        <i class="fas fa-cart-plus"></i> Add to Request Basket
+    </button>
+</form>
 
+<script>
+// Attach AJAX handler once if not already attached
+if (typeof window.basketAjaxInitialized === 'undefined') {
+    window.basketAjaxInitialized = true;
+    document.addEventListener('submit', function(e) {
+        if (e.target && e.target.classList.contains('ajax-basket-form')) {
+            e.preventDefault();
+            let form = e.target;
+            let btn = form.querySelector('button');
+            let originalText = btn.innerHTML;
+            
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+            btn.disabled = true;
 
-<!-- The Button -->
-<!-- The Button -->
-<button type="button" class="btn btn-primary btn-sm btn-block" data-toggle="modal" data-target="#govRequestModal_{{ $itemType }}_{{ $itemId }}">
-    <i class="fas fa-shopping-cart"></i> Request Item
-</button>
-
-<!-- The Modal -->
-<div class="modal fade" id="govRequestModal_{{ $itemType }}_{{ $itemId }}" tabindex="-1" role="dialog" aria-labelledby="govRequestModalLabel">
-    <div class="modal-dialog" role="document">
-        <form action="{{ route('gov.requests.store') }}" method="POST">
-            @csrf
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title">Request Item: {{ $itemName }}</h4>
-                </div>
-                
-                <div class="modal-body">
-                    <p>You are requesting 1x <strong>{{ $itemName }}</strong> ({{ $itemType }}).</p>
-                    <p>Once submitted, an administrator will need to approve this request.</p>
+            fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    btn.innerHTML = '<i class="fas fa-check"></i> Added!';
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-success');
                     
-                    <!-- Hidden fields to tell the controller what we are requesting -->
-                    <input type="hidden" name="item_type" value="{{ $itemType }}">
-                    <input type="hidden" name="item_id" value="{{ $itemId }}">
+                    // Update floating basket badge count
+                    let badge = document.getElementById('floating-basket-count');
+                    if (badge) badge.innerText = data.count;
 
-                    <div class="form-group">
-                        <label for="notes">Justification / Notes (Optional)</label>
-                        <textarea class="form-control" name="notes" rows="3" placeholder="Why do you need this item?"></textarea>
-                    </div>
-                </div>
-                
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Submit Request</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.classList.remove('btn-success');
+                        btn.classList.add('btn-primary');
+                        btn.disabled = false;
+                    }, 1500);
+                } else {
+                    alert(data.message || 'Error adding item');
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            })
+            .catch(err => {
+                form.submit(); // Fallback to normal submission if AJAX fails
+            });
+        }
+    });
+}
+</script>

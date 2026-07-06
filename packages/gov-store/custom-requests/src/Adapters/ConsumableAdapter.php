@@ -23,16 +23,16 @@ class ConsumableAdapter implements RequestableInterface
     
     public function getAvailableQuantity(): int { return $this->consumable->numRemaining(); }
 
-    public function checkout(User $targetUser, User $adminUser, int $quantity = 1, string $notes = ''): bool
+  public function checkout(User $targetUser, User $adminUser, int $quantity = 1, string $notes = ''): bool
     {
-        // Snipe-IT uses a pivot table (consumables_users) for consumables
-        $this->consumable->users()->attach($this->consumable->id, [
-            'consumable_id' => $this->consumable->id,
-            'user_id' => $targetUser->id,
+        // Use Snipe-IT's native relationship. 
+        // We pass the Target User ID as the primary key, and let Snipe-IT map the pivot columns.
+        $this->consumable->users()->attach($targetUser->id, [
             'assigned_to' => $targetUser->id,
-            'created_at' => now(),
+            'note' => $notes,
         ]);
         
+        // Trigger Snipe-IT's native logger so it appears in the consumable's history tab
         $this->consumable->logCheckout($notes, $targetUser);
         return true;
     }

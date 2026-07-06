@@ -10,11 +10,12 @@ use Illuminate\Support\Facades\Log;
 
 class GovRequestController extends Controller
 {
-    public function index()
+ public function index()
     {
-        // Fetch only requests made by the currently logged-in user
-        $requests = \GovStore\CustomRequests\Models\ItemRequest::with('requestable')
+        // Fetch only submitted requests made by the currently logged-in user (excluding active drafts)
+        $requests = \GovStore\CustomRequests\Models\Request::with(['items.requested'])
                         ->where('requested_by', auth()->id())
+                        ->where('approval_status', '!=', 'draft') // Hide drafts from their history list
                         ->orderBy('created_at', 'desc')
                         ->get();
 
@@ -27,10 +28,19 @@ class GovRequestController extends Controller
         // 1. Get the unified list of products
         $catalogItems = $catalogService->getUnifiedCatalog();
 
-        // 2. Fetch the user's request counts for their personalized pipeline
-        $pendingCount  = \GovStore\CustomRequests\Models\ItemRequest::where('requested_by', $userId)->where('status', 'pending')->count();
-        $approvedCount = \GovStore\CustomRequests\Models\ItemRequest::where('requested_by', $userId)->where('status', 'approved')->count();
-        $rejectedCount = \GovStore\CustomRequests\Models\ItemRequest::where('requested_by', $userId)->where('status', 'rejected')->count();
+        // 2. Fetch the user's request counts using the correct 'approval_status' column
+        // (Drafts are excluded; we count submitted, approved/in-progress, and rejected)
+        $pendingCount  = \GovStore\CustomRequests\Models\Request::where('requested_by', $userId)
+                            ->whereIn('approval_status', ['submitted', 'under_review'])
+                            ->count();
+
+        $approvedCount = \GovStore\CustomRequests\Models\Request::where('requested_by', $userId)
+                            ->whereIn('approval_status', ['approved', 'partially_approved'])
+                            ->count();
+
+        $rejectedCount = \GovStore\CustomRequests\Models\Request::where('requested_by', $userId)
+                            ->where('approval_status', 'rejected')
+                            ->count();
 
         // 3. Return the single unified dashboard view
         return view('govstore::catalog.index', compact(
