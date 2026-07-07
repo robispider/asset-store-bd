@@ -364,22 +364,23 @@
 @section('moar_scripts')
 <script>
 $(document).ready(function() {
-    // Initialize standard geographical selectors
     $('#geoAreaSelector').select2({
         minimumInputLength: 2,
         ajax: {
-            url: '{{ route("gov.org.provisioning.geo-search") }}',
+            url: '{{ route("gov.geo.search") }}',
             dataType: 'json',
             delay: 250,
             data: function (params) {
-                return { q: params.term };
+                return {
+                    q: params.term
+                };
             },
             processResults: function (data) {
                 return { results: data };
             },
             cache: true
         },
-        placeholder: "Search Upazila or Union..."
+        placeholder: "Search Division, District, Upazila, or Union..."
     });
 });
 </script>

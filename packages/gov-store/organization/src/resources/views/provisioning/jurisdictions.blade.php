@@ -98,11 +98,10 @@
 @section('moar_scripts')
 <script>
 $(document).ready(function() {
-    // Initialise Ajax Select2 to search across Divisions, Districts, or Upazilas
     $('#jurisdictionSelector').select2({
         minimumInputLength: 2,
         ajax: {
-            url: '{{ route("gov.org.provisioning.geo-search") }}',
+            url: '{{ route("gov.geo.search") }}',
             dataType: 'json',
             delay: 250,
             data: function (params) {
@@ -111,13 +110,11 @@ $(document).ready(function() {
                 };
             },
             processResults: function (data) {
-                return {
-                    results: data
-                };
+                return { results: data };
             },
             cache: true
         },
-        placeholder: "Search Division, District, or Upazila..."
+        placeholder: "Search Division, District, Upazila, or Union..."
     });
 });
 </script>

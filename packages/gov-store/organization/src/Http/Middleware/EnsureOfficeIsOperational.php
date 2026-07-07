@@ -4,6 +4,7 @@ namespace GovStore\Organization\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Gate;
 use GovStore\Organization\Models\LocationProfile;
 use GovStore\Organization\Services\OfficeReadinessService;
 
@@ -13,15 +14,16 @@ class EnsureOfficeIsOperational
     {
         $user = auth()->user();
 
-        // 1. Superadmins/ICT Officers bypass operational status gates
-        if ($user->isSuperUser() || $user->hasAccess('admin')) {
+        // 1. Exception-Safe: Standard Laravel gates bypass operational checks
+        if ($user->isSuperUser() || Gate::allows('admin') || Gate::allows('superadmin')) {
             return $next($request);
         }
 
-        // 2. We only intercept catalog browsing and shopping basket actions
         $path = $request->path();
-        $isTargetRoute = str_contains($path, 'gov-requests/catalog') || 
-                         str_contains($path, 'gov-requests/basket');
+        
+        // 2. We only intercept catalog browsing and shopping basket actions
+        $isTargetRoute = (str_contains($path, 'gov-requests/catalog') || str_contains($path, 'gov-requests/basket')) 
+                         && !str_contains($path, 'my-requests');
 
         if ($isTargetRoute) {
             
@@ -37,6 +39,11 @@ class EnsureOfficeIsOperational
                 $readinessService = app(OfficeReadinessService::class);
                 $readiness = $readinessService->evaluateAndTransition($user->location_id);
                 $location = $user->location;
+
+                // Fallback check if the Snipe-IT Location model was deleted or is orphaned
+                if (!$location) {
+                    return response()->view('govorg::readiness.unassigned');
+                }
 
                 return response()->view('govorg::readiness.waiting', compact('profile', 'location', 'readiness'));
             }

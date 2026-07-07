@@ -20,10 +20,9 @@ class OfficeHubController extends Controller
     {
         $user = auth()->user();
         if ($user->isSuperUser() || $user->hasAccess('admin')) {
-            return; // Superadmins bypass scoping
+            return;
         }
 
-        // Local Office Administrators are locked strictly to their designated location id
         $profile = LocationProfile::where('location_id', $locationId)
                                   ->where('office_admin_id', $user->id)
                                   ->first();
@@ -38,16 +37,21 @@ class OfficeHubController extends Controller
         $this->checkAccess($id);
 
         $location = Location::with(['company', 'parent'])->findOrFail($id);
-        $profile = LocationProfile::with(['geoArea', 'officeAdmin'])->where('location_id', $id)->firstOrFail();
-        $roles = LocationRole::where('location_id', $id)->first();
         
-        // Dynamic directory sync: fetch users mapped to this office in Snipe-IT
+        // EXCEPTION-SAFE: Use first() and redirect gracefully if the profile was deleted or is missing
+        $profile = LocationProfile::with(['geoArea', 'officeAdmin'])->where('location_id', $id)->first();
+        
+        if (!$profile) {
+            return redirect()->route('gov.org.provisioning.index')
+                             ->with('error', 'This office building has not been configured with geographic territory parameters yet. Please provision it first.');
+        }
+
+        $roles = LocationRole::where('location_id', $id)->first();
         $localStaff = User::where('location_id', $id)->orderBy('first_name')->get();
         $allUsers = User::orderBy('first_name')->get();
         $companies = Company::orderBy('name')->get();
         $allOffices = Location::where('id', '!=', $id)->orderBy('name')->get();
 
-        // Load timeline history activity logs
         $activityLogs = OrganizationActivityLog::with('performer')
                             ->where('location_id', $id)
                             ->orderBy('created_at', 'desc')
@@ -71,9 +75,12 @@ class OfficeHubController extends Controller
         ]);
 
         $location = Location::findOrFail($id);
-        $profile = LocationProfile::where('location_id', $id)->firstOrFail();
+        $profile = LocationProfile::where('location_id', $id)->first();
 
-        // Auto-extract and populate standardized parent city and state on change
+        if (!$profile) {
+            return redirect()->route('gov.org.provisioning.index')->with('error', 'Office profile details not found.');
+        }
+
         $city = $location->city;
         $state = $location->state;
 
@@ -92,7 +99,6 @@ class OfficeHubController extends Controller
             }
         }
 
-        // Commit profile and base settings changes
         $location->update([
             'name' => $request->name,
             'company_id' => $request->company_id ?: null,
@@ -106,7 +112,6 @@ class OfficeHubController extends Controller
             'office_admin_id' => $request->office_admin_id ?: null
         ]);
 
-        // Log edit event
         OrganizationActivityLog::create([
             'location_id' => $id,
             'performed_by' => auth()->id(),
@@ -135,13 +140,14 @@ class OfficeHubController extends Controller
         }
     }
 
-    /**
-     * Signs off and locks spatial verification accuracy
-     */
     public function verifyGeo($id)
     {
         $this->checkAccess($id);
-        $profile = LocationProfile::where('location_id', $id)->firstOrFail();
+        $profile = LocationProfile::where('location_id', $id)->first();
+
+        if (!$profile) {
+            return redirect()->route('gov.org.provisioning.index')->with('error', 'Office profile details not found.');
+        }
 
         $profile->update([
             'geo_area_verified_at' => now(),

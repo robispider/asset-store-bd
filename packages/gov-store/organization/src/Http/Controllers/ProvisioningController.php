@@ -9,7 +9,6 @@ use App\Models\Company;
 use App\Models\User;
 use GovStore\Organization\Models\LocationProfile;
 use GovStore\Organization\Models\IctJurisdiction;
-use GovStore\GeoAreas\Models\GeoArea;
 use GovStore\GeoAreas\Services\GeoAreaService;
 use GovStore\Organization\Services\OfficeProvisioningService;
 
@@ -17,32 +16,27 @@ class ProvisioningController extends Controller
 {
     private function checkIctOfficerAccess()
     {
-        if (!auth()->user()->isSuperUser() && !auth()->user()->hasAccess('admin')) {
-            abort(403, 'Unauthorized. Administrative credentials required.');
+        $user = auth()->user();
+        if ($user->isSuperUser() || $user->hasAccess('admin')) {
+            return;
+        }
+
+        $isIctOfficer = IctJurisdiction::where('user_id', $user->id)->exists();
+        if (!$isIctOfficer) {
+            abort(403, 'Unauthorized administrative request.');
         }
     }
 
-    /**
-     * Renders the Office Registry (Master Command Dashboard)
-     */
-    public function index(Request $request, GeoAreaService $geoService)
+    public function index()
     {
         $this->checkIctOfficerAccess();
         $user = auth()->user();
 
-        // 1. Calculate Real-Time Rollout Stats Metrics (Top Dashboard Badges)
-        $totalOfficesCount = Location::count();
-        $operationalCount = LocationProfile::where('lifecycle_status', 'operational')->count();
-        $pendingCount = LocationProfile::where('lifecycle_status', '!=', 'operational')->count();
-        $ministriesCount = Location::whereNotNull('company_id')->distinct('company_id')->count();
-
-        // 2. Build Core Scoped Query mapping profile extensions
-        $query = Location::with(['company', 'parent', 'profile.geoArea', 'profile.officeAdmin']);
-
-        // Scope queue strictly to the officer's jurisdiction bounds if they are not a Superadmin
+        $officesQuery = Location::with(['company', 'parent', 'profile.geoArea', 'profile.officeAdmin']);
+        
         if (!$user->isSuperUser() && !$user->hasAccess('admin')) {
             $jurisdiction = IctJurisdiction::where('user_id', $user->id)->firstOrFail();
-            $query->whereHas('profile', function ($q) use ($jurisdiction) {
+            $officesQuery->whereHas('profile', function ($q) use ($jurisdiction) {
                 $q->whereIn('geo_area_id', function ($sub) use ($jurisdiction) {
                     $sub->select('GeoAreaId')
                         ->from('gov_geo_areas')
@@ -51,69 +45,34 @@ class ProvisioningController extends Controller
             });
         }
 
-        // 3. Apply Top Bar Active Filtering
-        if ($request->filled('search')) {
-            $term = $request->input('search');
-            $query->where(function($q) use ($term) {
-                $q->where('name', 'like', "%{$term}%")
-                  ->orWhereHas('profile.officeAdmin', function($sq) use ($term) {
-                      $sq->where('first_name', 'like', "%{$term}%")
-                         ->orWhere('last_name', 'like', "%{$term}%")
-                         ->orWhere('username', 'like', "%{$term}%");
-                  });
-            });
-        }
-
-        if ($request->filled('ministry_id')) {
-            $query->where('company_id', $request->input('ministry_id'));
-        }
-
-        if ($request->filled('district_id')) {
-            $districtId = $request->input('district_id');
-            $query->whereHas('profile.geoArea', function($q) use ($districtId, $geoService) {
-                $district = $geoService->getById($districtId);
-                if ($district) {
-                    $q->where('hid', 'like', $district->hid . '%');
-                }
-            });
-        }
-
-        if ($request->filled('status')) {
-            $query->whereHas('profile', function($q) use ($request) {
-                $q->where('lifecycle_status', $request->input('status'));
-            });
-        }
-
-        $offices = $query->orderBy('name')->get();
-
-        // Fetch select list values
+        $offices = $officesQuery->orderBy('name')->get();
+        $profiles = LocationProfile::with('officeAdmin')->get()->keyBy('location_id');
+        $users = User::orderBy('first_name')->get();
         $companies = Company::orderBy('name')->get();
-        $districts = GeoArea::where('geo_type', 'district')->orderBy('en_name')->get();
 
-        return view('govorg::provisioning.index', compact(
-            'offices', 'companies', 'districts',
-            'totalOfficesCount', 'operationalCount', 'pendingCount', 'ministriesCount'
-        ));
+        return view('govorg::provisioning.index', compact('offices', 'profiles', 'users', 'companies'));
     }
 
-    /**
-     * Focused View: Renders the dedicated step-by-step Provisioning Workspace
-     */
     public function create()
     {
         $this->checkIctOfficerAccess();
+        $user = auth()->user();
+
+        // DECOUPLED SECURITY PASSTHROUGH: 
+        // We pre-calculate the restricted HID tree serverside, and pass it to the view
+        $restrictToHid = null;
+        if (!$user->isSuperUser() && !$user->hasAccess('admin')) {
+            $jurisdiction = IctJurisdiction::with('geoArea')->where('user_id', $user->id)->first();
+            $restrictToHid = $jurisdiction && $jurisdiction->geoArea ? $jurisdiction->geoArea->hid : null;
+        }
         
         $companies = Company::orderBy('name')->get();
         $offices = Location::orderBy('name')->get();
         $users = User::orderBy('first_name')->get();
 
-        return view('govorg::provisioning.create', compact('companies', 'offices', 'users'));
+        return view('govorg::provisioning.create', compact('companies', 'offices', 'users', 'restrictToHid'));
     }
 
-    /**
-     * AJAX Endpoint: Soft duplicate detection checker. 
-     * Scans for similar existing registries in the same Union/Upazila territory.
-     */
     public function checkDuplicate(Request $request)
     {
         $this->checkIctOfficerAccess();
@@ -156,22 +115,21 @@ class ProvisioningController extends Controller
         ]);
 
         try {
-            // Resolve parent geographic names and inject into the creation parameters
-            // This auto-populates locations.city (Upazila) and locations.state (Zila) correctly
             $data = $request->all();
             $geoArea = $geoService->getById((int)$data['geo_area_id']);
             
             if ($geoArea) {
-                // Parse standard parts
                 $parts = array_filter(explode('/', $geoArea->hid));
-                $city = '';
-                $state = '';
+                $city = ''; $state = '';
 
                 foreach ($parts as $code) {
-                    $parent = GeoArea::where('geo_code', $code)->first();
+                    $parent = \GovStore\GeoAreas\Models\GeoArea::where('geo_code', $code)->first();
                     if ($parent) {
-                        if (in_array($parent->geo_type, ['upazilla', 'city'])) $city = $parent->en_name;
-                        if ($parent->geo_type === 'district') $state = $parent->en_name;
+                        if ($parent->geo_type === 'upazilla' || $parent->geo_type === 'city') {
+                            $city = $parent->en_name;
+                        } elseif ($parent->geo_type === 'district') {
+                            $state = $parent->en_name;
+                        }
                     }
                 }
 
@@ -180,9 +138,79 @@ class ProvisioningController extends Controller
             }
 
             $service->provisionOffice($data, auth()->id());
-            return redirect()->route('gov.org.provisioning.index')->with('success', 'Office successfully provisioned and tagged.');
+            return redirect()->route('gov.org.provisioning.index')->with('success', 'Office successfully provisioned.');
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('error', $e->getMessage());
+        }
+    }
+
+    public function assignAdmin(Request $request, OfficeProvisioningService $service)
+    {
+        $this->checkIctOfficerAccess();
+
+        $request->validate([
+            'location_id' => 'required|integer',
+            'office_admin_id' => 'nullable|integer',
+        ]);
+
+        try {
+            $service->assignOfficeAdmin(
+                $request->location_id, 
+                $request->office_admin_id ?: null, 
+                auth()->id()
+            );
+            return redirect()->back()->with('success', 'Office Administrator updated.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Update error: ' . $e->getMessage());
+        }
+    }
+
+    /* ==========================================
+       ICT OFFICER JURISDICTIONS (The Setup Tag)
+       ========================================== */
+
+    public function jurisdictionsIndex()
+    {
+        $this->checkIctOfficerAccess();
+
+        $jurisdictions = IctJurisdiction::with(['user.location', 'geoArea'])->get();
+        $users = User::orderBy('first_name')->get();
+
+        return view('govorg::provisioning.jurisdictions', compact('jurisdictions', 'users'));
+    }
+
+    public function jurisdictionsStore(Request $request)
+    {
+        $this->checkIctOfficerAccess();
+
+        $request->validate([
+            'user_id' => 'required|integer',
+            'geo_area_id' => 'required|integer',
+        ]);
+
+        try {
+            IctJurisdiction::updateOrCreate(
+                ['user_id' => $request->user_id],
+                ['geo_area_id' => $request->geo_area_id]
+            );
+
+            return redirect()->back()->with('success', 'ICT Officer boundary successfully mapped.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Mapping error: ' . $e->getMessage());
+        }
+    }
+
+    public function jurisdictionsDestroy($id)
+    {
+        $this->checkIctOfficerAccess();
+
+        try {
+            $jurisdiction = IctJurisdiction::findOrFail($id);
+            $jurisdiction->delete();
+
+            return redirect()->back()->with('success', 'ICT Officer jurisdiction revoked.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Revocation error: ' . $e->getMessage());
         }
     }
 }

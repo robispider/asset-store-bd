@@ -18,12 +18,12 @@
     .status-badge-container { line-height: 1.4; }
 </style>
 
-<!-- TOP METRICS STATS BAR -->
+<!-- TOP METRICS STATS BAR (Defensive Wrapped with fallbacks) -->
 <div class="row">
     <div class="col-lg-3 col-xs-6">
         <div class="small-box bg-blue">
             <div class="inner">
-                <h3>{{ $totalOfficesCount }}</h3>
+                <h3>{{ $totalOfficesCount ?? 0 }}</h3>
                 <p>Total Registered Offices</p>
             </div>
             <div class="icon"><i class="fas fa-building"></i></div>
@@ -33,7 +33,7 @@
     <div class="col-lg-3 col-xs-6">
         <div class="small-box bg-green">
             <div class="inner">
-                <h3>{{ $operationalCount }}</h3>
+                <h3>{{ $operationalCount ?? 0 }}</h3>
                 <p>Operational Offices</p>
             </div>
             <div class="icon"><i class="fas fa-check-double"></i></div>
@@ -43,7 +43,7 @@
     <div class="col-lg-3 col-xs-6">
         <div class="small-box bg-yellow">
             <div class="inner">
-                <h3>{{ $pendingCount }}</h3>
+                <h3>{{ $pendingCount ?? 0 }}</h3>
                 <p>Configuration Pending</p>
             </div>
             <div class="icon"><i class="fas fa-hourglass-half"></i></div>
@@ -53,7 +53,7 @@
     <div class="col-lg-3 col-xs-6">
         <div class="small-box bg-purple">
             <div class="inner">
-                <h3>{{ $ministriesCount }}</h3>
+                <h3>{{ $ministriesCount ?? 0 }}</h3>
                 <p>Ministries Engaged</p>
             </div>
             <div class="icon"><i class="fas fa-university"></i></div>
@@ -78,7 +78,7 @@
                     <label for="ministry_id" style="margin-right: 5px;"><i class="fas fa-university"></i> Ministry:</label>
                     <select name="ministry_id" id="ministry_id" class="form-control input-sm select2" style="min-width: 180px;">
                         <option value="">-- All Ministries --</option>
-                        @foreach($companies as $company)
+                        @foreach($companies ?? [] as $company)
                             <option value="{{ $company->id }}" {{ request('ministry_id') == $company->id ? 'selected' : '' }}>
                                 {{ $company->name }}
                             </option>
@@ -91,7 +91,7 @@
                     <label for="district_id" style="margin-right: 5px;"><i class="fas fa-map-marker-alt"></i> District:</label>
                     <select name="district_id" id="district_id" class="form-control input-sm select2" style="min-width: 180px;">
                         <option value="">-- All Districts --</option>
-                        @foreach($districts as $dist)
+                        @foreach($districts ?? [] as $dist)
                             <option value="{{ $dist->GeoAreaId }}" {{ request('district_id') == $dist->GeoAreaId ? 'selected' : '' }}>
                                 {{ $dist->en_name }} ({{ $dist->bn_name }})
                             </option>
@@ -127,7 +127,7 @@
     <div class="col-md-12">
         <div class="box box-default">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-sitemap"></i> Registered Government Offices ({{ $offices->count() }})</h3>
+                <h3 class="box-title"><i class="fas fa-sitemap"></i> Registered Government Offices ({{ isset($offices) ? $offices->count() : 0 }})</h3>
             </div>
             <div class="box-body table-responsive">
                 <table class="table table-striped table-hover registry-table">
@@ -142,12 +142,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($offices as $loc)
+                        @forelse($offices ?? [] as $loc)
                             @php
                                 $profile = $loc->profile ?? null;
                                 $status = $profile ? $profile->lifecycle_status : 'unconfigured';
                                 $geoName = $profile && $profile->geoArea ? $profile->geoArea->en_name : 'Unmapped';
                                 $geoType = $profile && $profile->geoArea ? ucfirst($profile->geoArea->geo_type) : 'N/A';
+                                $adminId = $profile ? $profile->office_admin_id : null;
                                 $adminName = $profile && $profile->officeAdmin ? $profile->officeAdmin->present()->fullName : 'Unassigned';
                                 
                                 // Calculate role completeness checklist

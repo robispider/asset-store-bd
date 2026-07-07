@@ -1,10 +1,10 @@
-@extends('layouts/default')
 
-@section('title', 'Provision Government Office')
 
-@section('content')
+<?php $__env->startSection('title', 'Provision Government Office'); ?>
 
-{{-- Professional Government Workspace Styling --}}
+<?php $__env->startSection('content'); ?>
+
+
 <style>
     .onboarding-box {
         border-radius: 6px;
@@ -72,8 +72,8 @@
                 </h3>
             </div>
             
-            <form action="{{ route('gov.org.provisioning.store') }}" method="POST">
-                @csrf
+            <form action="<?php echo e(route('gov.org.provisioning.store')); ?>" method="POST">
+                <?php echo csrf_field(); ?>
                 <div class="box-body" style="padding: 20px 25px;">
                     
                     <!-- SECTION 1: IDENTITY -->
@@ -82,7 +82,7 @@
                     </div>
                     <div class="form-group" style="margin-bottom: 20px;">
                         <label for="name">Office Name <span class="text-danger">*</span></label>
-                        <input type="text" name="name" id="name" class="form-control input-lg" placeholder="e.g. Debidwar Upazila Health Complex" required value="{{ old('name') }}">
+                        <input type="text" name="name" id="name" class="form-control input-lg" placeholder="e.g. Debidwar Upazila Health Complex" required value="<?php echo e(old('name')); ?>">
                     </div>
 
 
@@ -110,9 +110,9 @@
                                 <label for="company_id">Ministry / Department Ownership (Optional)</label>
                                 <select name="company_id" id="company_id" class="form-control select2" style="width: 100%;">
                                     <option value="">-- Standalone Office (No Ministry) --</option>
-                                    @foreach($companies as $company)
-                                        <option value="{{ $company->id }}">{{ $company->name }}</option>
-                                    @endforeach
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $companies; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $company): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                        <option value="<?php echo e($company->id); ?>"><?php echo e($company->name); ?></option>
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                                 </select>
                             </div>
                         </div>
@@ -121,9 +121,9 @@
                                 <label for="parent_id">Parent Regional/District Office (Optional)</label>
                                 <select name="parent_id" id="parent_id" class="form-control select2" style="width: 100%;">
                                     <option value="">-- No Parent (Root Location) --</option>
-                                    @foreach($offices as $parentLoc)
-                                        <option value="{{ $parentLoc->id }}">{{ $parentLoc->name }}</option>
-                                    @endforeach
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $offices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $parentLoc): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                        <option value="<?php echo e($parentLoc->id); ?>"><?php echo e($parentLoc->name); ?></option>
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                                 </select>
                             </div>
                         </div>
@@ -133,9 +133,9 @@
                         <label for="office_admin_id">Delegate Office Administrator (Optional)</label>
                         <select name="office_admin_id" id="office_admin_id" class="form-control select2" style="width: 100%;">
                             <option value="">-- Leave Unassigned for Now --</option>
-                            @foreach($users as $user)
-                                <option value="{{ $user->id }}">{{ $user->present()->fullName }} ({{ $user->username }})</option>
-                            @endforeach
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                <option value="<?php echo e($user->id); ?>"><?php echo e($user->present()->fullName); ?> (<?php echo e($user->username); ?>)</option>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                         </select>
                         <p class="help-block" style="margin-top: 6px;">The delegated administrator receives email setup credentials to configure their own workflow roles.</p>
                     </div>
@@ -143,7 +143,7 @@
                 </div>
                 
                 <div class="box-footer" style="padding: 15px 25px; background-color: #fafafa; border-top: 1px solid #f4f4f4;">
-                    <a href="{{ route('gov.org.provisioning.index') }}" class="btn btn-default pull-left" style="padding: 8px 15px;">
+                    <a href="<?php echo e(route('gov.org.provisioning.index')); ?>" class="btn btn-default pull-left" style="padding: 8px 15px;">
                         <i class="fas fa-arrow-left"></i> Return to Registry
                     </a>
                     <button type="submit" class="btn btn-primary pull-right" style="padding: 8px 25px; font-weight: bold;">
@@ -193,9 +193,9 @@
         </div>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('moar_scripts')
+<?php $__env->startSection('moar_scripts'); ?>
 <script>
 $(document).ready(fontSelectionScript);
 
@@ -204,13 +204,13 @@ function fontSelectionScript() {
     $('#geoAreaSelector').select2({
         minimumInputLength: 2,
         ajax: {
-            url: '{{ route("gov.geo.search") }}', // Query the shared library API
+            url: '<?php echo e(route("gov.geo.search")); ?>', // Query the shared library API
             dataType: 'json',
             delay: 250,
             data: function (params) {
                 return {
                     q: params.term,
-                    restrict_hid: '{{ $restrictToHid }}' // Scopes search strictly within the ICT Officer's jurisdiction bounds
+                    restrict_hid: '<?php echo e($restrictToHid); ?>' // Scopes search strictly within the ICT Officer's jurisdiction bounds
                 };
             },
             processResults: function (data) {
@@ -228,7 +228,7 @@ function fontSelectionScript() {
 
         if (companyId && geoAreaId) {
             $.ajax({
-                url: '{{ route("gov.org.provisioning.check-duplicate") }}',
+                url: '<?php echo e(route("gov.org.provisioning.check-duplicate")); ?>',
                 data: { company_id: companyId, geo_area_id: geoAreaId },
                 dataType: 'json',
                 success: function(data) {
@@ -253,4 +253,5 @@ function fontSelectionScript() {
     $('#geoAreaSelector').on('change', checkDuplicates);
 }
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts/default', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\git repo\asset-store-bd\packages\gov-store\organization\src\Providers/../resources/views/provisioning/create.blade.php ENDPATH**/ ?>
