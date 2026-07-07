@@ -46,10 +46,10 @@
                 <i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
             </div>
             <div class="col-md-5">
-              <label class="form-control">
-                <input type="checkbox" name="null_name" value="1">
-                {{ trans_choice('general.set_to_null', count($assets), ['selection_count' => count($assets)]) }}
-              </label>
+              <x-form.checkbox-inline
+                  name="null_name"
+                  :label="trans_choice('general.set_to_null', count($assets), ['selection_count' => count($assets)])"
+              />
             </div>
           </div>
 
@@ -67,10 +67,10 @@
                     {!! $errors->first('purchase_date', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
                 </div>
                 <div class="col-md-5">
-                    <label class="form-control">
-                        <input type="checkbox" name="null_purchase_date" value="1">
-                        {{ trans_choice('general.set_to_null', count($assets),['selection_count' => count($assets)]) }}
-                    </label>
+                    <x-form.checkbox-inline
+                        name="null_purchase_date"
+                        :label="trans_choice('general.set_to_null', count($assets), ['selection_count' => count($assets)])"
+                    />
                 </div>
             </div>
 
@@ -87,10 +87,10 @@
                     {!! $errors->first('expected_checkin', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
                 </div>
                 <div class="col-md-5">
-                    <label class="form-control">
-                        <input type="checkbox" name="null_expected_checkin_date" value="1">
-                        {{ trans_choice('general.set_to_null', count($assets),['selection_count' => count($assets)]) }}
-                    </label>
+                    <x-form.checkbox-inline
+                        name="null_expected_checkin_date"
+                        :label="trans_choice('general.set_to_null', count($assets), ['selection_count' => count($assets)])"
+                    />
                 </div>
             </div>
 
@@ -107,10 +107,10 @@
                     {!! $errors->first('asset_eol_date', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
                 </div>
                 <div class="col-md-5">
-                    <label class="form-control">
-                        <input type="checkbox" name="null_asset_eol_date" value="1">
-                        {{ trans_choice('general.set_to_null', count($assets),['selection_count' => count($assets)]) }}
-                    </label>
+                    <x-form.checkbox-inline
+                        name="null_asset_eol_date"
+                        :label="trans_choice('general.set_to_null', count($assets), ['selection_count' => count($assets)])"
+                    />
                 </div>
             </div>
 
@@ -225,10 +225,10 @@
                     {!! $errors->first('next_audit_date', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
                 </div>
                 <div class="col-md-5">
-                    <label class="form-control">
-                        <input type="checkbox" name="null_next_audit_date" value="1">
-                        {{ trans_choice('general.set_to_null', count($assets),['selection_count' => count($assets)]) }}
-                    </label>
+                    <x-form.checkbox-inline
+                        name="null_next_audit_date"
+                        :label="trans_choice('general.set_to_null', count($assets), ['selection_count' => count($assets)])"
+                    />
                 </div>
                 <div class="col-md-8 col-md-offset-3">
                     <p class="help-block">{!! trans('general.next_audit_date_help') !!}</p>

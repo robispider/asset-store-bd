@@ -60,6 +60,7 @@ return [
     'bulk_checkout' => 'Bulk Checkout',
     'bulk_edit' => 'Bulk Edit',
     'bulk_delete' => 'Bulk Delete',
+    'bulk_restore' => 'Bulk Restore',
     'bulk_actions' => 'Bulk Actions',
     'bulk_checkin_delete' => 'Bulk Checkin / Delete Users',
     'byod' => 'BYOD',
@@ -742,6 +743,7 @@ return [
         'assoc_licenses_no_count' => ':item_name is currently associated with other licenses and cannot be deleted. Please update your licenses to no longer reference this :item and try again.',
         'assoc_users_no_count' => ':item_name is currently associated with other users and cannot be deleted. Please update your users to no longer reference this :item and try again.',
         'assoc_child_companies_no_count' => ':item_name is currently a parent to other companies and cannot be deleted. Please reassign or delete the child companies before trying again.',
+        'assoc_checkouts_no_count' => ':item_name is currently checked out. Please check in all items before deleting this :item.',
     ],
 
     'breadcrumb_button_actions' => [

@@ -528,21 +528,64 @@
             data_export_options = $(this).attr('data-export-options');
             export_options = data_export_options ? JSON.parse(data_export_options) : {};
             export_options['htmlContent'] = false; // this is already the default; but let's be explicit about it
+            // DejaVuSans is registered into jsPDF's VFS via
+            // jspdf-dejavu-fonts.js (bundled into public/js/dist/bootstrap-table.js
+            // right after jspdf.umd.min.js — see webpack.mix.js). Referencing
+            // it here is what actually swaps out the default Helvetica fallback
+            // and produces readable output for Cyrillic / Greek / Hebrew / etc.
+            // exports. Fixes #19270.
             export_options['jspdf'] = {
                 "orientation": "l",
                 "autotable": {
                         "styles": {
+                            font: 'DejaVuSans',
+                            fontStyle: 'normal',
                             overflow: 'linebreak'
                         },
                         tableWidth: 'wrap'
                 }
             };
             // tableWidth: 'wrap',
-            // the following callback method is necessary to prevent XSS vulnerabilities
-            // (this is taken from Bootstrap Tables's default wrapper around jQuery Table Export)
+            // ⚠️ SECURITY: DO NOT change the wrapping of `.text()` inside
+            //    `htmlEncodeForExport(...)` below without reading this entire
+            //    block. The bare `.text()` was the previous shape and it is
+            //    an XSS.
+            //
+            // XSS defense on export cell data. The tableExport plugin's
+            // E function (see bundled bootstrap-table.js around line 32110)
+            // pipes our return value through jQuery's .html() setter on a
+            // scratch <div> before serializing. If we return raw text that
+            // happens to look like HTML (e.g. a column titled
+            // `<img src=x onerror=alert(1)>`), that .html() call parses it
+            // and instantiates a real <img onerror=...> element, firing the
+            // payload as soon as the user clicks Export.
+            //
+            // Encoding the returned string turns any tag-shaped characters
+            // into entity refs; the downstream .html() call then treats
+            // them as text-content (browser text-decodes back to chars in a
+            // text-node, no elements created), and the final PDF/CSV output
+            // still shows the visible text the header displayed on-screen.
+            //
+            // Repro before the fix (kept as a regression pin):
+            //   1. Create a custom field named `<img src=x onerror=alert(1)>`
+            //   2. Visit the assets index (header shows the string as text)
+            //   3. Export → CSV (or PDF): alert(1) fires because tableExport
+            //      re-injects our returned text via .html() on a scratch div.
+            // If a future edit here reintroduces the bug, that exact repro
+            // will fire alert(1) again.
+            var htmlEncodeForExport = function (value) {
+                if (value == null) return '';
+                return String(value)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            };
             export_options['onCellHtmlData'] = function (cell, rowIndex, colIndex, htmlData) {
                 if (cell.is('th')) {
-                    return cell.find('.th-inner').text()
+                    // ⚠️ MUST stay wrapped in htmlEncodeForExport(). See block above.
+                    return htmlEncodeForExport(cell.find('.th-inner').text());
                 }
                 // Convert <br> tags to newlines so that line breaks in notes and
                 // textarea fields survive HTML-stripping during export

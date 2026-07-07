@@ -135,8 +135,23 @@ Route::group(
             'bulkedit',
             [BulkAssetsController::class, 'edit']
         )->name('hardware.bulkedit.show')
-            ->breadcrumbs(fn (Trail $trail) => $trail->parent('hardware.index')
-                ->push(trans('general.bulk_edit'), route('hardware.index')));
+            ->breadcrumbs(function (Trail $trail) {
+                // Single POST endpoint fans out to several bulk-action
+                // confirmation views (edit, delete, restore). Pick the
+                // breadcrumb label to match the action the caller
+                // submitted so the crumb matches the confirmation heading.
+                // Other bulk_actions values on this route (labels renders a
+                // PDF; checkout / checkin / maintenance redirect away) never
+                // reach a template that renders breadcrumbs.
+                $label = match (request()->input('bulk_actions')) {
+                    'edit' => trans('general.bulk_edit'),
+                    'delete' => trans('general.bulk_delete'),
+                    'restore' => trans('general.bulk_restore'),
+                    default => trans('general.bulk_actions'),
+                };
+
+                return $trail->parent('hardware.index')->push($label, route('hardware.index'));
+            });
 
         Route::post(
             'bulkdelete',

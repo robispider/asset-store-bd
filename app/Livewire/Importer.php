@@ -7,9 +7,26 @@ use App\Models\Import;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class Importer extends Component
 {
+    use WithPagination;
+
+    // How many import files to show per page. Not currently user-configurable;
+    // twenty-five is enough to avoid pagination for most installs but small
+    // enough to keep the page manageable when someone's uploaded hundreds.
+    public $perPage = 25;
+
+    // IDs the caller has checkbox-ticked on the current page. Cleared on page
+    // change (see updatedPage) so "Select All" is naturally per-page.
+    public $selectedIds = [];
+
+    // Header select-all checkbox state. Purely visual — the source of truth
+    // for which files get bulk-deleted is $selectedIds. Kept in sync via the
+    // updatedSelectAll hook.
+    public $selectAll = false;
+
     public $progress = -1; // upload progress - '-1' means don't show
 
     public $progress_message;
@@ -735,13 +752,106 @@ class Importer extends Component
     #[Computed]
     public function files()
     {
-        return Import::orderBy('id', 'desc')->get();
+        return Import::orderBy('id', 'desc')->paginate($this->perPage);
     }
 
     #[Computed]
     public function activeFile()
     {
         return Import::find($this->activeFileId);
+    }
+
+    /**
+     * True when the current caller may delete the given Import (owner or
+     * superuser). Kept as a method so the view can guard both the row
+     * checkbox and the singular delete button consistently.
+     */
+    public function canDeleteFile(Import $import): bool
+    {
+        return auth()->user()->id === $import->created_by || auth()->user()->isSuperUser();
+    }
+
+    /**
+     * Livewire lifecycle hook: fires when Livewire's built-in $page property
+     * changes (any paginator link click). Selection is a per-page affordance,
+     * so drop it whenever the page changes.
+     */
+    public function updatedPage()
+    {
+        $this->selectedIds = [];
+        $this->selectAll = false;
+    }
+
+    /**
+     * Livewire lifecycle hook for the header "select all" checkbox. When
+     * toggled on, pick every current-page id the caller is allowed to delete;
+     * when toggled off, clear the selection. Rows the caller cannot delete
+     * (not owner, not superuser) are never selectable, so leaving them out
+     * of $selectedIds matches what the disabled row checkboxes convey.
+     */
+    public function updatedSelectAll($value)
+    {
+        if (! $value) {
+            $this->selectedIds = [];
+
+            return;
+        }
+
+        $this->selectedIds = collect($this->files->items())
+            ->filter(fn (Import $import) => $this->canDeleteFile($import))
+            ->pluck('id')
+            ->map(fn ($id) => (string) $id)
+            ->all();
+    }
+
+    /**
+     * Delete every Import in $selectedIds the caller may delete. Rows they
+     * cannot delete are counted separately and reported so the caller knows
+     * why the total may not match what they ticked. File-system delete
+     * failures are swallowed intentionally: the record delete still runs so
+     * a missing/orphaned physical file doesn't lock the import list forever.
+     */
+    public function bulkDestroy()
+    {
+        $this->authorize('import');
+
+        if (empty($this->selectedIds)) {
+            return;
+        }
+
+        $imports = Import::whereIn('id', $this->selectedIds)->get();
+
+        $deleted = 0;
+        $skipped = 0;
+
+        foreach ($imports as $import) {
+            if (! $this->canDeleteFile($import)) {
+                $skipped++;
+
+                continue;
+            }
+
+            Storage::delete('private_uploads/imports/'.$import->file_path);
+            $import->delete();
+            $deleted++;
+        }
+
+        $this->selectedIds = [];
+        $this->selectAll = false;
+        unset($this->files);
+
+        if ($deleted === 0 && $skipped > 0) {
+            $this->message = trans('admin/hardware/message.import.bulk_delete.skipped', ['count' => $skipped]);
+            $this->message_type = 'danger';
+
+            return;
+        }
+
+        $this->message = trans_choice('admin/hardware/message.import.bulk_delete.success', $deleted, ['count' => $deleted]);
+        if ($skipped > 0) {
+            $this->message .= ' '.trans('admin/hardware/message.import.bulk_delete.skipped', ['count' => $skipped]);
+        }
+        $this->message_type = 'success';
     }
 
     public function render()

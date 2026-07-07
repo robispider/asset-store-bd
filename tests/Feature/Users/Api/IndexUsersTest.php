@@ -3,6 +3,7 @@
 namespace Tests\Feature\Users\Api;
 
 use App\Models\Asset;
+use App\Models\Company;
 use App\Models\Location;
 use App\Models\Maintenance;
 use App\Models\User;
@@ -136,6 +137,43 @@ class IndexUsersTest extends TestCase
             ->assertJson(function (AssertableJson $json) {
                 $json->has('messages.filter')->etc();
             });
+    }
+
+    /**
+     * FMCS + floaters on: a company-scoped, non-superuser caller sees
+     * their own pivot companies AND null-company (floater) users, but
+     * NOT users pivoted to a different company.
+     *
+     * Regression pin for support ticket 56305. Root cause was that
+     * `orWhereDoesntHave('companies')` in the floater branch had the
+     * companies-table CompanyableScope applied recursively to its
+     * subquery, filtering the JOIN to the caller's own companies. A user
+     * pivoted only to OUT-OF-SCOPE companies then looked pivot-less and
+     * slipped through as an apparent floater. Fix reads the company_user
+     * pivot directly. See the same pin at tests/Unit/CompanyScopingTest.php.
+     */
+    public function test_users_index_hides_other_companies_users_but_includes_floaters_for_company_scoped_caller()
+    {
+        [$companyA, $companyB] = Company::factory()->count(2)->create();
+
+        $companyACaller = $companyA->users()->save(User::factory()->viewUsers()->make());
+        $companyAPeer = $companyA->users()->save(User::factory()->make(['first_name' => 'PeerInA']));
+        $companyBUser = $companyB->users()->save(User::factory()->make(['first_name' => 'UserInB']));
+        $floater = User::factory()->create(['company_id' => null, 'first_name' => 'FloaterUser']);
+
+        $this->settings->enableFloaterMode();
+
+        $rows = $this->actingAsForApi($companyACaller)
+            ->getJson(route('api.users.index'))
+            ->assertOk()
+            ->json('rows');
+
+        $visibleIds = collect($rows)->pluck('id')->all();
+
+        $this->assertContains($companyACaller->id, $visibleIds);
+        $this->assertContains($companyAPeer->id, $visibleIds);
+        $this->assertContains($floater->id, $visibleIds, 'Floater user should be visible per docs.');
+        $this->assertNotContains($companyBUser->id, $visibleIds, 'Company B user leaked to a company A caller.');
     }
 
     public function test_returns_result_via_filter()

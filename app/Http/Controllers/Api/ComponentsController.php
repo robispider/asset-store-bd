@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Events\CheckoutableCheckedIn;
+use App\Exceptions\MissingLogTarget;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ImageUploadRequest;
@@ -334,20 +335,36 @@ class ComponentsController extends Controller
             }
 
             // Keep pivot + action log in one transaction so checkout is all-or-nothing.
-            DB::transaction(function () use ($component, $request, $asset): void {
-                $component->assigned_to = $request->input('assigned_to');
+            try {
+                DB::transaction(function () use ($component, $request, $asset): void {
+                    $component->assigned_to = $request->input('assigned_to');
 
-                $component->assets()->attach($component->id, [
+                    $component->assets()->attach($component->id, [
+                        'component_id' => $component->id,
+                        'created_at' => Carbon::now(),
+                        'assigned_qty' => $request->input('assigned_qty', 1),
+                        'created_by' => auth()->id(),
+                        'asset_id' => $request->input('assigned_to'),
+                        'note' => $request->input('note'),
+                    ]);
+
+                    $component->logCheckout($request->input('note'), $asset, null, [], $request->get('assigned_qty', 1));
+                });
+            } catch (MissingLogTarget $e) {
+                // Loggable trait fell through its target check inside the
+                // transaction. DB::transaction rethrew on exception, so the
+                // pivot attach was rolled back and no checkout persisted.
+                // Downgrade what would otherwise surface as an unhandled 500
+                // to a 4xx the client can act on, and warning-log for
+                // triage (see the same pattern in LicenseSeatsController).
+                Log::warning('logCheckout target validation failed during component checkout.', [
                     'component_id' => $component->id,
-                    'created_at' => Carbon::now(),
-                    'assigned_qty' => $request->input('assigned_qty', 1),
-                    'created_by' => auth()->id(),
                     'asset_id' => $request->input('assigned_to'),
-                    'note' => $request->input('note'),
+                    'error' => $e->getMessage(),
                 ]);
 
-                $component->logCheckout($request->input('note'), $asset, null, [], $request->get('assigned_qty', 1));
-            });
+                return response()->json(Helper::formatStandardApiResponse('error', null, 'Target not found'), 422);
+            }
 
             return response()->json(Helper::formatStandardApiResponse('success', null, trans('admin/components/message.checkout.success')));
         }

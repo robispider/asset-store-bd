@@ -47,24 +47,18 @@
                             </x-form.legend>
 
                             <!-- Menu Alerts Enabled -->
-                            <div class="form-group{{ $errors->has('show_alerts_in_menu') ? ' error' : '' }}">
-                                <div class="col-md-9 col-md-offset-3">
-                                    <label class="form-control">
-                                        <input type="checkbox" name="show_alerts_in_menu" value="1" @checked(old('show_alerts_in_menu', $setting->show_alerts_in_menu))>
-                                        {{ trans('admin/settings/general.show_alerts_in_menu') }}
-                                    </label>
-                                </div>
-                            </div>
+                            <x-form.checkbox-row
+                                name="show_alerts_in_menu"
+                                :label="trans('admin/settings/general.show_alerts_in_menu')"
+                                :item="$setting"
+                            />
 
                             <!-- Alerts Enabled -->
-                            <div class="form-group {{ $errors->has('alerts_enabled') ? 'error' : '' }}">
-                                <div class="col-md-9 col-md-offset-3">
-                                    <label class="form-control">
-                                        <input type="checkbox" name="alerts_enabled" value="1" @checked(old('alerts_enabled', $setting->alerts_enabled))>
-                                        {{  trans('admin/settings/general.alerts_enabled') }}
-                                    </label>
-                                </div>
-                            </div>
+                            <x-form.checkbox-row
+                                name="alerts_enabled"
+                                :label="trans('admin/settings/general.alerts_enabled')"
+                                :item="$setting"
+                            />
 
                         </fieldset>
 
@@ -106,28 +100,14 @@
                                     {!! $errors->first('admin_cc_email', '<span class="alert-msg" aria-hidden="true">:message</span><br>') !!}
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <div class="col-md-9 col-md-offset-3">
-                                    <label class="form-control">
-                                        <input
-                                            type="radio"
-                                            name="admin_cc_always"
-                                            value="1"
-                                            @checked($setting->admin_cc_always == 1)
-                                        >
-                                        {{ trans('admin/settings/general.admin_cc_always') }}
-                                    </label>
-                                    <label class="form-control">
-                                        <input
-                                            type="radio"
-                                            name="admin_cc_always"
-                                            value="0"
-                                            @checked($setting->admin_cc_always == 0)
-                                        >
-                                        {{ trans('admin/settings/general.admin_cc_when_acceptance_required') }}
-                                    </label>
-                                </div>
-                            </div>
+                            <x-form.radio-row
+                                name="admin_cc_always"
+                                :item="$setting"
+                                :options="[
+                                    '1' => trans('admin/settings/general.admin_cc_always'),
+                                    '0' => trans('admin/settings/general.admin_cc_when_acceptance_required'),
+                                ]"
+                            />
                         </fieldset>
 
                         <fieldset name="remote-login">

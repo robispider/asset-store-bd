@@ -535,7 +535,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['api', 'api-throttle:api']], fu
         )->name('api.assets.list-upcoming')
             ->where(['action' => 'audit|audits|checkins', 'upcoming_status' => 'due|overdue|due-or-overdue']);
 
-        // Legacy URL for audit
+        // Legacy URL for audit (body-based lookup via audit_key/asset_tag).
         Route::post('audit',
             [
                 Api\AssetsController::class,
@@ -543,7 +543,17 @@ Route::group(['prefix' => 'v1', 'middleware' => ['api', 'api-throttle:api']], fu
             ]
         )->name('api.asset.audit.legacy');
 
-        // Newer url for audit
+        // Bulk audit: `ids` array in the request body, per-row envelope response.
+        // Declared BEFORE `{asset}/audit` so /hardware/audit/bulk matches this
+        // route instead of being interpreted as {asset}=audit.
+        Route::post('audit/bulk',
+            [
+                Api\AssetsController::class,
+                'bulkAudit',
+            ]
+        )->name('api.asset.bulk-audit');
+
+        // Single-asset audit. Route-model-binding on {asset}; legacy response shape.
         Route::post('{asset}/audit',
             [
                 Api\AssetsController::class,
@@ -596,11 +606,17 @@ Route::group(['prefix' => 'v1', 'middleware' => ['api', 'api-throttle:api']], fu
         /** End assigned routes */
     });
 
-    // pulling this out of resource route group to begin normalizing for route-model binding.
-    // this would probably keep working with the resource route group, but the general practice is for
-    // the model name to be the parameter - and i think it's a good differentiation in the code while we convert the others.
-    Route::patch('/hardware/{asset}', [Api\AssetsController::class, 'update'])->name('api.assets.update');
-    Route::put('/hardware/{asset}', [Api\AssetsController::class, 'update'])->name('api.assets.put-update');
+    // Bulk update: `ids` array in the request body, per-row envelope response.
+    // Declared BEFORE the singular {asset} routes so PATCH /hardware/bulk hits
+    // this handler instead of trying to bind "bulk" as an Asset.
+    Route::patch('/hardware/bulk', [Api\AssetsController::class, 'bulkUpdate'])
+        ->name('api.assets.bulk-update');
+
+    // Single-asset update. Route-model-binding on {asset}, legacy response shape.
+    Route::patch('/hardware/{asset}', [Api\AssetsController::class, 'update'])
+        ->name('api.assets.update');
+    Route::put('/hardware/{asset}', [Api\AssetsController::class, 'update'])
+        ->name('api.assets.put-update');
 
     Route::resource('hardware',
         Api\AssetsController::class,

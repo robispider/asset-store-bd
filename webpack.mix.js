@@ -117,6 +117,11 @@ mix
             './resources/assets/js/extensions/jquery.base64.js',
             './node_modules/tableexport.jquery.plugin/tableExport.min.js',
             './node_modules/tableexport.jquery.plugin/libs/jsPDF/jspdf.umd.min.js',
+            // DejaVuSans (regular + bold) registered into jsPDF's VFS so PDF
+            // exports render Cyrillic / Greek / Hebrew / Arabic / etc. Must be
+            // included AFTER jspdf.umd.min.js — the loader reaches into
+            // window.jspdf.jsPDF.API.events to hook the font registration.
+            './resources/assets/js/jspdf-dejavu-fonts.js',
             './resources/assets/js/FileSaver.min.js',
             './node_modules/xlsx/dist/xlsx.core.min.js',
             './node_modules/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.js',

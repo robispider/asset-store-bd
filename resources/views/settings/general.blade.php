@@ -39,18 +39,12 @@
                                {{ trans('admin/settings/general.legends.scoping') }}
                            </x-form.legend>
                             <!-- Full Multiple Companies Support -->
-                            <div class="form-group {{ $errors->has('full_multiple_companies_support') ? 'error' : '' }}">
-                                <div class="col-md-8 col-md-offset-3">
-                                    <label class="form-control">
-                                        <input type="checkbox" name="full_multiple_companies_support" value="1" @checked(old('full_multiple_companies_support', $setting->full_multiple_companies_support)) aria-label="full_multiple_companies_support" />
-                                        {{ trans('admin/settings/general.full_multiple_companies_support_text') }}
-                                    </label>
-                                    {!! $errors->first('full_multiple_companies_support', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
-                                    <p class="help-block">
-                                        {{ trans('admin/settings/general.full_multiple_companies_support_help_text') }}
-                                    </p>
-                                </div>
-                            </div>
+                            <x-form.checkbox-row
+                                name="full_multiple_companies_support"
+                                :label="trans('admin/settings/general.full_multiple_companies_support_text')"
+                                :item="$setting"
+                                :help_text="trans('admin/settings/general.full_multiple_companies_support_help_text')"
+                            />
                             <!-- /.form-group -->
 
                             <!-- Scope Locations with Full Multiple Companies Support -->
@@ -62,18 +56,13 @@
                             <!-- /.form-group -->
 
                             <!-- Null Company Is Floater -->
-                            <div class="form-group {{ $errors->has('null_company_is_floater') ? 'error' : '' }}">
-                                <div class="col-md-8 col-md-offset-3">
-                                    <label class="form-control">
-                                        <input type="checkbox" name="null_company_is_floater" value="1" @checked(old('null_company_is_floater', $setting->null_company_is_floater)) aria-label="null_company_is_floater" @disabled(! $setting->full_multiple_companies_support) />
-                                        {{ trans('admin/settings/general.null_company_is_floater_text') }}
-                                    </label>
-                                    {!! $errors->first('null_company_is_floater', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
-                                    <p class="help-block">
-                                        {{ trans('admin/settings/general.null_company_is_floater_help_text') }}
-                                    </p>
-                                </div>
-                            </div>
+                            <x-form.checkbox-row
+                                name="null_company_is_floater"
+                                :label="trans('admin/settings/general.null_company_is_floater_text')"
+                                :item="$setting"
+                                :disabled="! $setting->full_multiple_companies_support"
+                                :help_text="trans('admin/settings/general.null_company_is_floater_help_text')"
+                            />
                             <!-- /.form-group -->
 
                        </fieldset>
@@ -156,16 +145,12 @@
                            </x-form.legend>
 
                            <!-- Require signature for acceptance -->
-                           <div class="form-group {{ $errors->has('require_accept_signature') ? 'error' : '' }}">
-                               <div class="col-md-8 col-md-offset-3">
-                                   <label class="form-control">
-                                       <input type="checkbox" name="require_accept_signature" value="1" @checked(old('require_accept_signature', $setting->require_accept_signature)) />
-                                       {{ trans('admin/settings/general.require_accept_signature') }}
-                                   </label>
-                                   {!! $errors->first('require_accept_signature', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
-                                   <p class="help-block">{{ trans('admin/settings/general.require_accept_signature_help_text') }}</p>
-                               </div>
-                           </div>
+                           <x-form.checkbox-row
+                               name="require_accept_signature"
+                               :label="trans('admin/settings/general.require_accept_signature')"
+                               :item="$setting"
+                               :help_text="trans('admin/settings/general.require_accept_signature_help_text')"
+                           />
                            <!-- /.form-group -->
 
                            <!-- Default EULA -->
@@ -204,53 +189,34 @@
                            </div>
 
                            <!-- Model List prefs -->
-                           <div class="form-group {{ $errors->has('show_in_model_list') ? 'error' : '' }}">
-                               <x-form.label class="col-md-3">
-                                   <strong>{{ trans('admin/settings/general.show_in_model_list') }}</strong>
-                               </x-form.label>
-                               <div class="col-md-8">
-                                   <label class="form-control">
-                                       <input type="checkbox" name="show_in_model_list[]" value="image" @checked(old('show_in_model_list', $snipeSettings->modellistCheckedValue('image'))) aria-label="show_in_model_list"/>
-                                       {{ trans('general.image') }}
-                                   </label>
-                                   <label class="form-control">
-                                       <input type="checkbox" name="show_in_model_list[]" value="category" @checked(old('show_in_model_list', $snipeSettings->modellistCheckedValue('category'))) aria-label="show_in_model_list"/>
-                                       {{ trans('general.category') }}
-                                   </label>
-                                   <label class="form-control">
-                                       <input type="checkbox" name="show_in_model_list[]" value="manufacturer" @checked(old('show_in_model_list', $snipeSettings->modellistCheckedValue('manufacturer'))) aria-label="show_in_model_list"/>
-                                       {{ trans('general.manufacturer') }} </label>
-                                   <label class="form-control">
-                                       <input type="checkbox" name="show_in_model_list[]" value="model_number" @checked(old('show_in_model_list', $snipeSettings->modellistCheckedValue('model_number'))) aria-label="show_in_model_list"/>
-                                       {{ trans('general.model_no') }}
-                                   </label>
-                               </div>
-                           </div>
+                           <x-form.checkbox-row
+                               name="show_in_model_list"
+                               :label="trans('admin/settings/general.show_in_model_list')"
+                               :options="[
+                                   'image' => trans('general.image'),
+                                   'category' => trans('general.category'),
+                                   'manufacturer' => trans('general.manufacturer'),
+                                   'model_number' => trans('general.model_no'),
+                               ]"
+                               :selected="$snipeSettings->modellist_displays"
+                           />
 
 
                            <!-- Shortcuts enable -->
-                           <div class="form-group {{ $errors->has('shortcuts_enabled') ? 'error' : '' }}">
-                               <div class="col-md-8 col-md-offset-3">
-                                   <label class="form-control">
-                                       <input type="checkbox" name="shortcuts_enabled" value="1" {{ old('shortcuts_enabled', $setting->shortcuts_enabled) ? 'checked' : '' }}>
-                                       {{ trans('admin/settings/general.shortcuts_enabled') }}
-                                   </label>
-                                   {!! $errors->first('shortcuts_enabled', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
-                                   <p class="help-block">{!!trans('admin/settings/general.shortcuts_help_text') !!}</p>
-                               </div>
-                           </div>
+                           <x-form.checkbox-row
+                               name="shortcuts_enabled"
+                               :label="trans('admin/settings/general.shortcuts_enabled')"
+                               :item="$setting"
+                               :help_text="trans('admin/settings/general.shortcuts_help_text')"
+                           />
 
 
                            <!-- Archived in List -->
-                           <div class="form-group {{ $errors->has('show_archived_in_list') ? 'error' : '' }}">
-                               <div class="col-md-8 col-md-offset-3">
-                                   <label class="form-control">
-                                       <input type="checkbox" name="show_archived_in_list" value="1" @checked(old('show_archived_in_list', $setting->show_archived_in_list)) aria-label="show_archived_in_list" />
-                                       {{ trans('admin/settings/general.show_archived_in_list_text') }}
-                                   </label>
-                                   {!! $errors->first('show_archived_in_list', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
-                               </div>
-                           </div>
+                           <x-form.checkbox-row
+                               name="show_archived_in_list"
+                               :label="trans('admin/settings/general.show_archived_in_list_text')"
+                               :item="$setting"
+                           />
 
                            <!-- Show assets assigned to user's assets -->
                            <div class="form-group {{ $errors->has('show_assigned_assets') ? 'error' : '' }}">
