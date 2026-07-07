@@ -2,6 +2,7 @@
 
 namespace App\Models\Traits;
 
+use App\Exceptions\MissingLogTarget;
 use App\Models\Actionlog;
 use App\Models\Asset;
 use App\Models\CompanyableScope;
@@ -126,6 +127,13 @@ trait Loggable
      * @since  [v3.4]
      *
      * @return Actionlog
+     *
+     * @throws MissingLogTarget When the caller couldn't hand us a valid
+     *                          target. Deliberately typed so callers wrapping
+     *                          their work in a DB::transaction can catch it
+     *                          specifically, roll the transaction back, and
+     *                          return a proper 4xx response body instead of
+     *                          letting an unhandled 500 leak into the caller.
      */
     public function logCheckout($note, $target, $action_date = null, $originalValues = [], $quantity = 1)
     {
@@ -140,15 +148,11 @@ trait Loggable
         }
 
         if (! isset($target)) {
-            throw new \Exception('All checkout logs require a target.');
-
-            return;
+            throw new MissingLogTarget('All checkout logs require a target.');
         }
 
         if (! isset($target->id)) {
-            throw new \Exception('That target seems invalid (no target ID available).');
-
-            return;
+            throw new MissingLogTarget('That target seems invalid (no target ID available).');
         }
 
         $log->target_type = get_class($target);

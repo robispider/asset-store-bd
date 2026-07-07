@@ -420,38 +420,15 @@
                                 </label>
                             </div>
 
-                            <div class="col-md-9 col-md-offset-3">
-                                <label class="form-control">
-                                    <input
-                                        name="deleted_components"
-                                        id="deleted_components_exclude_deleted"
-                                        type="radio"
-                                        value="exclude_deleted"
-                                        @checked($template->radioValue('deleted_components', 'exclude_deleted', true))
-                                        aria-label="deleted_components"
-                                    >{{ trans('admin/components/general.exclude_deleted') }}
-                                </label>
-                                <label class="form-control">
-                                    <input
-                                        name="deleted_components"
-                                        id="deleted_components_include_deleted"
-                                        type="radio"
-                                        value="include_deleted"
-                                        @checked($template->radioValue('deleted_components', 'include_deleted'))
-                                        aria-label="deleted_components"
-                                    >{{ trans('admin/components/general.include_deleted') }}
-                                </label>
-                                <label class="form-control">
-                                    <input
-                                        name="deleted_components"
-                                        type="radio"
-                                        id="deleted_components_only_deleted"
-                                        value="only_deleted"
-                                        @checked($template->radioValue('deleted_components', 'only_deleted'))
-                                        aria-label="deleted_components"
-                                    >{{ trans('admin/components/general.only_deleted') }}
-                                </label>
-                            </div>
+                            <x-form.radio-row
+                                name="deleted_components"
+                                :selected="$template->options['deleted_components'] ?? 'exclude_deleted'"
+                                :options="[
+                                    'exclude_deleted' => trans('admin/components/general.exclude_deleted'),
+                                    'include_deleted' => trans('admin/components/general.include_deleted'),
+                                    'only_deleted' => trans('admin/components/general.only_deleted'),
+                                ]"
+                            />
                         </div>
 
                     </div> <!-- /.box-body-->

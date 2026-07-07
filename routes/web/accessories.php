@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Accessories;
+use App\Http\Controllers\BulkAccessoriesController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,8 +29,8 @@ Route::group(['prefix' => 'accessories', 'middleware' => ['auth']], function () 
     )->name('accessories.checkin.store');
 
     Route::get('{accessory}/clone',
-            [Accessories\AccessoriesController::class, 'getClone']
-        )->name('clone/accessories');
+        [Accessories\AccessoriesController::class, 'getClone']
+    )->name('clone/accessories');
 
     Route::post('{accessory}/clone',
         [Accessories\AccessoriesController::class, 'postCreate']
@@ -38,5 +39,9 @@ Route::group(['prefix' => 'accessories', 'middleware' => ['auth']], function () 
 });
 
 Route::resource('accessories', Accessories\AccessoriesController::class, [
-    'middleware' => ['auth']
+    'middleware' => ['auth'],
 ]);
+
+Route::post('accessories/bulk/delete', [BulkAccessoriesController::class, 'destroy'])
+    ->middleware(['auth'])
+    ->name('accessories.bulk.delete');

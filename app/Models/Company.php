@@ -599,15 +599,37 @@ final class Company extends SnipeModel
                 });
             }
 
-            // Floater: also show null-company users (no pivot rows) to company-scoped actors.
+            // Floater mode on: a company-scoped caller also sees null-company
+            // (floater) users. This mirrors the item-level floater rule
+            // documented at https://snipe-it.readme.io/docs/multi-tenancy-ish
+            // and is required so checkout dropdowns can offer floater users
+            // as valid targets under the "items from any company can be
+            // checked out to targets with no company assignment" policy.
+            //
+            // The "no pivot rows" branch queries the company_user pivot
+            // directly. Going through the Eloquent relation instead would
+            // apply the companies-table CompanyableScope to the subquery,
+            // restricting the JOIN to the caller's own companies. A user
+            // whose only pivot rows point at OTHER companies would then
+            // look pivot-less under that scoping and get picked up by the
+            // floater branch, leaking cross-company users into the caller's
+            // list. Reading the pivot directly bypasses that recursive
+            // scope and matches the intended "genuinely no pivot rows at
+            // all" semantics. This is the original bug fix from support
+            // ticket 56305. Floater visibility itself is deliberate per
+            // docs; only the cross-company leak was wrong.
             if ($floater) {
                 return $query->where(function ($q) use ($companyIds) {
                     $q->whereIn('users.id', function ($sub) use ($companyIds) {
                         $sub->select('user_id')->from('company_user')->whereIn('company_id', $companyIds);
-                    })->orWhereDoesntHave('companies');
+                    })->orWhereNotIn('users.id', function ($sub) {
+                        $sub->select('user_id')->from('company_user');
+                    });
                 });
             }
 
+            // Floater mode off (strict): only users pivoted to one of the
+            // caller's companies. Null-company users are not visible.
             return $query->whereIn('users.id', function ($sub) use ($companyIds) {
                 $sub->select('user_id')->from('company_user')->whereIn('company_id', $companyIds);
             });
@@ -657,13 +679,23 @@ final class Company extends SnipeModel
     public static function scopeUsersByCompanyIds($query, array $companyIds): mixed
     {
         if (Setting::getSettings()->null_company_is_floater) {
+            // The "no pivot rows" branch queries the company_user pivot
+            // directly, for the same reason as scopeCompanyablesDirectly
+            // above: walking the Eloquent companies relation would apply
+            // the companies-table CompanyableScope to the subquery and let
+            // cross-company users leak in as apparent floaters. See ticket 56305.
             return $query->where(function ($q) use ($companyIds) {
-                $q->whereHas('companies', fn ($q2) => $q2->whereIn('companies.id', $companyIds))
-                    ->orWhereDoesntHave('companies');
+                $q->whereIn('users.id', function ($sub) use ($companyIds) {
+                    $sub->select('user_id')->from('company_user')->whereIn('company_id', $companyIds);
+                })->orWhereNotIn('users.id', function ($sub) {
+                    $sub->select('user_id')->from('company_user');
+                });
             });
         }
 
-        return $query->whereHas('companies', fn ($q) => $q->whereIn('companies.id', $companyIds));
+        return $query->whereIn('users.id', function ($sub) use ($companyIds) {
+            $sub->select('user_id')->from('company_user')->whereIn('company_id', $companyIds);
+        });
     }
 
     /**

@@ -145,18 +145,14 @@
                                         />
 
                                         <!-- Update actual location  -->
-                                        <div class="form-group">
-                                            <div class="col-md-9 col-md-offset-3">
-                                                <label class="form-control">
-                                                    <input name="update_default_location" type="radio" value="1" checked="checked" aria-label="update_default_location" />
-                                                    {{ trans('admin/hardware/form.asset_location') }}
-                                                </label>
-                                                <label class="form-control">
-                                                    <input name="update_default_location" type="radio" value="0" aria-label="update_default_location" />
-                                                    {{ trans('admin/hardware/form.asset_location_update_default_current') }}
-                                                </label>
-                                            </div>
-                                        </div> <!--/form-group-->
+                                        <x-form.radio-row
+                                            name="update_default_location"
+                                            selected="1"
+                                            :options="[
+                                                '1' => trans('admin/hardware/form.asset_location'),
+                                                '0' => trans('admin/hardware/form.asset_location_update_default_current'),
+                                            ]"
+                                        /> <!--/form-group-->
 
                                         <!-- Checkout/Checkin Date -->
                                         <div class="form-group{{ $errors->has('checkin_at') ? ' has-error' : '' }}">

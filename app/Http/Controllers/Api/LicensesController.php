@@ -45,7 +45,7 @@ class LicensesController extends Controller
             $licenses->ExpiredLicenses();
         } elseif ($request->input('status') == 'expiring') {
             $licenses->ExpiringLicenses($settings->alert_interval);
-        } elseif ($request->input('status') == 'active') {
+        } else {
             $licenses->ActiveLicenses();
         }
 

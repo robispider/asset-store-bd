@@ -159,7 +159,7 @@ class ExportUsersTest extends TestCase
         [$companyA, $companyB] = Company::factory()->count(2)->create();
 
         $actorCompany = $companyA;
-        $inScope  = User::factory()->create();
+        $inScope = User::factory()->create();
         $inScope->companies()->sync([$actorCompany->id]);
 
         $outScope = User::factory()->create();
@@ -182,7 +182,7 @@ class ExportUsersTest extends TestCase
 
         $company = Company::factory()->create();
 
-        $inScope    = User::factory()->create();
+        $inScope = User::factory()->create();
         $inScope->companies()->sync([$company->id]);
 
         $nullCompany = User::factory()->create(['company_id' => null]);
@@ -204,7 +204,7 @@ class ExportUsersTest extends TestCase
 
         $company = Company::factory()->create();
 
-        $inScope    = User::factory()->create();
+        $inScope = User::factory()->create();
         $inScope->companies()->sync([$company->id]);
 
         $nullCompany = User::factory()->create(['company_id' => null]);

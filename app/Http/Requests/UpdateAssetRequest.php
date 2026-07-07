@@ -48,6 +48,13 @@ class UpdateAssetRequest extends ImageUploadRequest
         // route through checkOut() and produce the required audit-log entry).
         unset($assetRules['assigned_to'], $assetRules['assigned_type']);
 
+        // On the singular endpoint we can tell Rule::unique to ignore the
+        // asset being updated. Bulk (BulkUpdateAssetsRequest) overrides this
+        // to null because it would have to ignore N different ids at once,
+        // which Rule::unique->ignore() can't express — collisions on the
+        // bulk path are caught per-row by Watson at save time.
+        $ignoreId = $this->ignoreIdForUnique();
+
         $rules = array_merge(
             parent::rules(),
             $assetRules,
@@ -59,15 +66,25 @@ class UpdateAssetRequest extends ImageUploadRequest
                 'status_id' => ['integer', 'exists:status_labels,id'],
                 'asset_tag' => [
                     'min:1', 'max:255', 'not_array',
-                    Rule::unique('assets', 'asset_tag')->ignore($this->asset)->withoutTrashed(),
+                    Rule::unique('assets', 'asset_tag')->ignore($ignoreId)->withoutTrashed(),
                 ],
                 'serial' => [
                     'string', 'max:255', 'not_array',
-                    $setting->unique_serial == '1' ? Rule::unique('assets', 'serial')->ignore($this->asset)->withoutTrashed() : 'nullable',
+                    $setting->unique_serial == '1' ? Rule::unique('assets', 'serial')->ignore($ignoreId)->withoutTrashed() : 'nullable',
                 ],
             ],
         );
 
         return $rules;
+    }
+
+    /**
+     * ID that Rule::unique should ignore when checking asset_tag / serial. The
+     * singular endpoint has an Asset via route-model-binding; the bulk subclass
+     * has no single id to point at and returns null.
+     */
+    protected function ignoreIdForUnique(): ?int
+    {
+        return $this->asset instanceof Asset ? $this->asset->id : null;
     }
 }
