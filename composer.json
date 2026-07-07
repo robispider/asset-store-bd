@@ -14,7 +14,19 @@
     {
       "type": "vcs",
       "url": "https://github.com/grokability/laravel-scim-server"
-    }
+    },
+      {
+            "type": "path",
+            "url": "./packages/gov-store/custom-requests"
+        },
+        {
+            "type": "path",
+            "url": "./packages/gov-store/organization"
+        },
+        {
+            "type": "path",
+            "url": "./packages/gov-store/geo-areas"
+        }
   ],
   "require": {
     "php": "^8.2",
@@ -70,7 +82,10 @@
     "tecnickcom/tc-lib-pdf-font": "^2.6",
     "tecnickcom/tcpdf": "^6.5",
     "unicodeveloper/laravel-password": "^1.0",
-    "watson/validating": "^8.1"
+    "watson/validating": "^8.1",
+       "gov-store/custom-requests": "dev-master",
+        "gov-store/organization": "dev-master",
+         "gov-store/geo-areas": "dev-master"
   },
   "suggest": {
     "ext-ldap": "*",
@@ -102,6 +117,8 @@
     ],
     "psr-4": {
       "GovStore\\CustomRequests\\": "packages/gov-store/custom-requests/src/",
+        "GovStore\\Organization\\": "packages/gov-store/organization/src/",
+        "GovStore\\GeoAreas\\": "packages/gov-store/geo-areas/src/",
       "App\\": "app/",
       "Database\\Factories\\": "database/factories/",
       "Database\\Seeders\\": "database/seeders/"

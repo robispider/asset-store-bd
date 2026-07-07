@@ -12,11 +12,13 @@ class Request extends Model
 
     protected $table = 'custom_service_requests';
 
-    protected $fillable = [
+protected $fillable = [
         'request_number',
         'requested_by',
         'approved_by',
         'request_type',
+        'resolved_policy', // NEW
+        'assigned_approver_id', // NEW
         'purpose',
         'justification',
         'required_by_date',

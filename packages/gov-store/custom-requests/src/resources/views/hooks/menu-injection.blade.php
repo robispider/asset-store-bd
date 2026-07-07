@@ -5,12 +5,15 @@ $(document).ready(function() {
 
     
     // 1. INJECT SIDEBAR "GOV APPROVALS" & "FULFILLMENT QUEUE" (Only for Admins/Storekeepers)
+  // 1. INJECT SIDEBAR ADMIN SETTINGS (Only for Admins)
     @if(auth()->user()->isSuperUser() || auth()->user()->hasAccess('admin') || auth()->user()->hasAccess('superuser'))
         console.log("Gov-Store: User is verified as Admin/Superuser.");
         
         if ($('.sidebar-menu').length) {
-            var approvalsActive = window.location.pathname.includes('gov-requests/admin') ? 'active' : '';
+            var approvalsActive = window.location.pathname.includes('gov-requests/admin') && !window.location.pathname.includes('settings') ? 'active' : '';
             var fulfillmentActive = window.location.pathname.includes('gov-requests/fulfillment') ? 'active' : '';
+            var locationsActive = window.location.pathname.includes('settings/locations') ? 'active' : '';
+            var policiesActive = window.location.pathname.includes('settings/policies') ? 'active' : '';
             
             var sidebarLink = `
                 <li class="${approvalsActive}" id="gov-approvals-sidebar-item">
@@ -25,6 +28,18 @@ $(document).ready(function() {
                         <span>Fulfillment Queue</span>
                     </a>
                 </li>
+                <li class="${locationsActive}" id="gov-locations-sidebar-item">
+                    <a href="{{ route('gov.requests.admin.locations.index') }}">
+                        <i class="fas fa-map-marked-alt fa-fw"></i>
+                        <span>Office Assignments</span>
+                    </a>
+                </li>
+                <li class="${policiesActive}" id="gov-policies-sidebar-item">
+                    <a href="{{ route('gov.requests.admin.policies.index') }}">
+                        <i class="fas fa-tags fa-fw"></i>
+                        <span>Category Policies</span>
+                    </a>
+                </li>
             `;
             
             if ($('.sidebar-menu li.firstnav').length) {
@@ -32,7 +47,7 @@ $(document).ready(function() {
             } else {
                 $('.sidebar-menu').prepend(sidebarLink);
             }
-            console.log("Gov-Store: Left sidebar links appended successfully.");
+            console.log("Gov-Store: Sidebar links appended successfully.");
         } else {
             console.log("Gov-Store: ERROR - '.sidebar-menu' not found.");
         }

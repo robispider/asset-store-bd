@@ -12,23 +12,43 @@ use Exception;
 
 class FulfillmentService
 {
-    /**
-     * Executes the physical progressive checkout and updates document state.
-     */
-    public function issueItems(ServiceRequest $request, User $storekeeper, array $issueQuantities): ServiceRequest
+    public function issueItems(ServiceRequest $request, User $storekeeper, array $issueQuantities, array $substitutions = []): ServiceRequest
     {
         if (in_array($request->fulfillment_status, ['closed', 'cannot_fulfill'])) {
             throw new Exception("This service request has already been closed.");
         }
 
-        DB::transaction(function () use ($request, $storekeeper, $issueQuantities) {
+        DB::transaction(function () use ($request, $storekeeper, $issueQuantities, $substitutions) {
             $totalLinesCount = $request->items()->where('line_approval_status', 'approved')->count();
             $completedLinesCount = 0;
 
             foreach ($request->items as $item) {
-                // If the line was rejected during approval, skip it
                 if ($item->line_approval_status !== 'approved') {
                     continue;
+                }
+
+                // 1. Process Product Substitution if submitted
+                $subId = $substitutions[$item->id] ?? null;
+                if ($subId && (int)$subId !== (int)$item->requested_id) {
+                    $altAdapter = RequestableFactory::make($item->requested_type, $subId);
+                    $origName = $item->requested->name ?? $item->requested->asset_tag ?? 'Original Item';
+                    $subName = $altAdapter->getDisplayName();
+
+                    $item->update([
+                        'fulfilled_type' => $item->requested_type, // Must remain same general type
+                        'fulfilled_id' => $subId
+                    ]);
+
+                    // Log substitution to the timeline
+                    RequestEvent::create([
+                        'request_id' => $request->id,
+                        'user_id' => $storekeeper->id,
+                        'event_type' => 'item_substituted',
+                        'details' => [
+                            'original' => $origName,
+                            'substituted_with' => $subName
+                        ]
+                    ]);
                 }
 
                 $qtyToIssue = (int)($issueQuantities[$item->id] ?? 0);
@@ -37,26 +57,26 @@ class FulfillmentService
                     $remainingToIssue = $item->approved_qty - $item->issued_qty;
 
                     if ($qtyToIssue > $remainingToIssue) {
-                        throw new Exception("You cannot issue more than the remaining approved quantity for item: " . ($item->requested->name ?? 'Item'));
+                        throw new Exception("You cannot issue more than the remaining approved quantity.");
                     }
 
-                    // 1. Handshake with Snipe-IT Adapter: Execute physical database checkout
+                    // 2. Resolve target polymorphic identity (Use fulfilled/substituted item if set, else requested)
                     $type = $item->fulfilled_type ?: $item->requested_type;
                     $id = $item->fulfilled_id ?: $item->requested_id;
                     
+                    // 3. Handshake with Snipe-IT: Check out alternative product
                     $adapter = RequestableFactory::make($type, $id);
                     $checkoutSuccess = $adapter->checkout(
                         $request->requester, 
                         $storekeeper, 
                         $qtyToIssue, 
-                        "Issued via Service Request {$request->request_number}"
+                        "Issued via Service Request {$request->request_number} (Substitution)"
                     );
 
                     if (!$checkoutSuccess) {
-                        throw new Exception("Snipe-IT failed to checkout the item: " . ($item->requested->name ?? 'Item'));
+                        throw new Exception("Snipe-IT failed to checkout the item.");
                     }
 
-                    // 2. Update line item cumulative quantities
                     $newIssuedQty = $item->issued_qty + $qtyToIssue;
                     $lineFulfillmentStatus = ($newIssuedQty === $item->approved_qty) ? 'issued' : 'partially_issued';
 
@@ -65,13 +85,14 @@ class FulfillmentService
                         'line_fulfillment_status' => $lineFulfillmentStatus
                     ]);
 
-                    // 3. Log immutable timeline event
+                    // 4. Log cumulative physical issuance
+                    $finalName = isset($subName) ? $subName : ($item->requested->name ?? 'Item');
                     RequestEvent::create([
                         'request_id' => $request->id,
                         'user_id' => $storekeeper->id,
                         'event_type' => 'item_issued',
                         'details' => [
-                            'item' => $item->requested->name ?? 'Item',
+                            'item' => $finalName,
                             'issued_qty' => $qtyToIssue,
                             'total_issued' => $newIssuedQty,
                             'approved_qty' => $item->approved_qty
@@ -79,18 +100,16 @@ class FulfillmentService
                     ]);
                 }
 
-                // Check if this line is now fully completed
                 if ($item->issued_qty === $item->approved_qty) {
                     $completedLinesCount++;
                 }
             }
 
-            // 4. Update Parent Document State
+            // 5. Update Parent Document State
             $finalFulfillmentStatus = 'partially_issued';
             $finalApprovalStatus = $request->approval_status;
 
             if ($completedLinesCount === $totalLinesCount) {
-                // All approved items have been physically issued -> Transaction Closed
                 $finalFulfillmentStatus = 'issued';
                 $finalApprovalStatus = 'closed';
                 $request->closed_at = now();
@@ -112,9 +131,6 @@ class FulfillmentService
         return $request;
     }
 
-    /**
-     * Manually terminates and closes any remaining unfulfilled lines in the request.
-     */
     public function forceClose(ServiceRequest $request, User $storekeeper, string $reason = null): ServiceRequest
     {
         DB::transaction(function () use ($request, $storekeeper, $reason) {

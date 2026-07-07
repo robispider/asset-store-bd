@@ -1,0 +1,17 @@
+{
+    "name": "gov-store/geo-areas",
+    "description": "Government Shared Geographic Reference Library for Bangladesh",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "ICT Division"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "GovStore\\GeoAreas\\": "src/"
+        }
+    }
+}

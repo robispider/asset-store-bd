@@ -36,5 +36,16 @@ Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'gov-requests'], func
     Route::get('/fulfillment/{id}', [GovStore\CustomRequests\Http\Controllers\GovFulfillmentController::class, 'show'])->name('gov.requests.fulfillment.show');
     Route::post('/fulfillment/{id}/issue', [GovStore\CustomRequests\Http\Controllers\GovFulfillmentController::class, 'process'])->name('gov.requests.fulfillment.process');
     Route::post('/fulfillment/{id}/close', [GovStore\CustomRequests\Http\Controllers\GovFulfillmentController::class, 'close'])->name('gov.requests.fulfillment.close');
+
+    // Ajax Catalog Search for substitutions
+    Route::get('/catalog/search', [GovStore\CustomRequests\Http\Controllers\GovRequestController::class, 'search'])->name('gov.requests.catalog.search');
+
+    // Admin Settings: Office Location Assignments
+    Route::get('/admin/settings/locations', [GovStore\CustomRequests\Http\Controllers\GovApprovalController::class, 'locationsIndex'])->name('gov.requests.admin.locations.index');
+    Route::post('/admin/settings/locations/store', [GovStore\CustomRequests\Http\Controllers\GovApprovalController::class, 'locationsStore'])->name('gov.requests.admin.locations.store');
+
+    // Admin Settings: Category Policies
+    Route::get('/admin/settings/policies', [GovStore\CustomRequests\Http\Controllers\GovApprovalController::class, 'policiesIndex'])->name('gov.requests.admin.policies.index');
+    Route::post('/admin/settings/policies/store', [GovStore\CustomRequests\Http\Controllers\GovApprovalController::class, 'policiesStore'])->name('gov.requests.admin.policies.store');
     
 });

@@ -20,7 +20,7 @@
                                 <th style="width: 100px;">Approved</th>
                                 <th style="width: 100px;">Already Issued</th>
                                 <th style="width: 100px;">Remaining</th>
-                                <th style="width: 130px;">Issue Qty Now</th>
+                                <th style="width: 150px;">Issue Qty Now</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -32,10 +32,16 @@
                                     $name = $model ? ($model->present()->name ?: ($model->name ?? $model->asset_tag)) : 'Unknown Item';
                                     $remaining = $item->approved_qty - $item->issued_qty;
                                 @endphp
-                                <tr>
+                                <tr id="row_{{ $item->id }}">
                                     <td>
-                                        <strong>{{ $name }}</strong><br>
+                                        <strong id="item_name_{{ $item->id }}">{{ $name }}</strong><br>
                                         <small class="text-muted">{{ ucfirst($item->requested_type) }}</small>
+                                        
+                                        <!-- Substituted Product Badge Area -->
+                                        <div id="sub_badge_{{ $item->id }}" style="margin-top: 5px;"></div>
+                                        
+                                        <!-- Hidden inputs holding chosen substitution ID -->
+                                        <input type="hidden" name="substitutions[{{ $item->id }}]" id="sub_input_{{ $item->id }}" value="">
                                     </td>
                                     <td style="vertical-align: middle;" class="text-center"><strong>{{ $item->approved_qty }}</strong></td>
                                     <td style="vertical-align: middle;" class="text-center text-success"><strong>{{ $item->issued_qty }}</strong></td>
@@ -45,6 +51,11 @@
                                             <span class="text-success" style="font-weight: bold;"><i class="fas fa-check"></i> Fully Issued</span>
                                         @else
                                             <input type="number" name="issue[{{ $item->id }}]" class="form-control input-sm text-center" value="{{ $remaining }}" min="0" max="{{ $remaining }}">
+                                            
+                                            <!-- Substitute Trigger Button -->
+                                            <button type="button" class="btn btn-xs btn-default btn-block" style="margin-top: 5px;" onclick="openSubstitutionModal({{ $item->id }}, '{{ $item->requested_type }}', '{{ $name }}')">
+                                                <i class="fas fa-exchange-alt"></i> Substitute
+                                            </button>
                                         @endif
                                     </td>
                                 </tr>
@@ -97,6 +108,8 @@
                                 <i class="fa fa-paper-plane bg-yellow-active"></i>
                             @elseif($event->event_type === 'under_review')
                                 <i class="fa fa-eye bg-purple"></i>
+                            @elseif($event->event_type === 'item_substituted')
+                                <i class="fa fa-exchange-alt bg-orange"></i>
                             @elseif($event->event_type === 'item_issued')
                                 <i class="fa fa-truck bg-green-active"></i>
                             @else
@@ -110,12 +123,18 @@
                                 </h3>
                                 <div class="timeline-body" style="padding: 5px 10px; font-size: 12px; color: #555;">
                                     Executed by: <strong>{{ $event->user->display_name }}</strong>
-                                    @if(isset($event->details['item']))
+                                    @if($event->event_type === 'item_substituted')
+                                        <p style="margin-top: 5px;">
+                                            Swapped: <strong>{{ $event->details['original'] }}</strong> <br>
+                                            With: <span class="text-orange" style="font-weight: bold;">{{ $event->details['substituted_with'] }}</span>
+                                        </p>
+                                    @endif
+                                    @if($event->event_type === 'item_issued')
                                         <p style="margin-top: 5px;">
                                             Issued: <strong>{{ $event->details['item'] }}</strong> (Qty: {{ $event->details['issued_qty'] }})
                                         </p>
                                     @endif
-                                    @if(isset($event->details['message']))
+                                    @if(isset($event->details['message']) && $event->event_type !== 'item_substituted')
                                         <p style="margin-top: 5px;">{{ $event->details['message'] }}</p>
                                     @endif
                                 </div>
@@ -128,4 +147,89 @@
         </div>
     </div>
 </div>
+
+<!-- SUBSTITUTION MODAL -->
+<div class="modal fade" id="substitutionModal" tabindex="-1" role="dialog" aria-labelledby="substitutionModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="substitutionModalLabel"><i class="fas fa-exchange-alt"></i> Alternative Substitution</h4>
+            </div>
+            <div class="modal-body">
+                <p>Select an alternative item to fulfill the request for: <strong id="modalOriginalItemName"></strong></p>
+                
+                <input type="hidden" id="modalLineItemId">
+                <input type="hidden" id="modalItemType">
+
+                <div class="form-group">
+                    <label for="substituteSelector">Search Stock Alternatives</label>
+                    <select id="substituteSelector" class="form-control" style="width: 100%;"></select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="applySubstitution()">Save Substitution</button>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+@section('moar_scripts')
+<script>
+function openSubstitutionModal(lineId, type, originalName) {
+    $('#modalLineItemId').val(lineId);
+    $('#modalItemType').val(type);
+    $('#modalOriginalItemName').text(originalName);
+    
+    // Clear old Select2 choice
+    $('#substituteSelector').val(null).trigger('change');
+    
+    // Initialize standard Select2 with live Ajax search from our new route
+    $('#substituteSelector').select2({
+        dropdownParent: $('#substitutionModal'),
+        ajax: {
+            url: '{{ route("gov.requests.catalog.search") }}',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term,
+                    type: $('#modalItemType').val()
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: data
+                };
+            },
+            cache: true
+        },
+        minimumInputLength: 1,
+        placeholder: "Type to search alternative inventory..."
+    });
+
+    $('#substitutionModal').modal('show');
+}
+
+function applySubstitution() {
+    var lineId = $('#modalLineItemId').val();
+    var selectedData = $('#substituteSelector').select2('data')[0];
+
+    if (selectedData) {
+        // Update hidden input with the selected substitute ID
+        $('#sub_input_' + lineId).val(selectedData.id);
+
+        // Draw an orange substitution badge below the name
+        $('#sub_badge_' + lineId).html(
+            '<span class="label bg-orange" style="margin-top: 5px; display: inline-block;"><i class="fas fa-exchange-alt"></i> Substitute: ' + selectedData.text + '</span>'
+        );
+
+        $('#substitutionModal').modal('hide');
+    } else {
+        alert('Please select an item first.');
+    }
+}
+</script>
 @endsection

@@ -58,7 +58,7 @@ class BasketController extends Controller
         return redirect()->back()->with('success', 'Item removed from basket.');
     }
 
-    public function submit(Request $request, BasketService $service)
+ public function submit(Request $request, BasketService $service)
     {
         $request->validate([
             'request_type' => 'required|string',
@@ -69,9 +69,14 @@ class BasketController extends Controller
         ]);
 
         try {
-            $basket = $service->submitBasket(auth()->id(), $request->all());
+            // Submit and split the basket
+            $requests = $service->submitBasket(auth()->id(), $request->all());
+            
+            // Extract the generated request numbers
+            $numbers = collect($requests)->pluck('request_number')->join(', ');
+            
             return redirect()->route('gov.requests.user.index')
-                             ->with('success', "Service Request {$basket->request_number} submitted successfully!");
+                             ->with('success', "Service Request(s) [{$numbers}] submitted successfully!");
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }

@@ -1,0 +1,17 @@
+{
+    "name": "gov-store/organization",
+    "description": "Government Cloud Store Office Provisioning and Administration Extension for Bangladesh",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "ICT Division"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "GovStore\\Organization\\": "src/"
+        }
+    }
+}

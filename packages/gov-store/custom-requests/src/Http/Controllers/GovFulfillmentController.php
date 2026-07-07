@@ -5,6 +5,7 @@ namespace GovStore\CustomRequests\Http\Controllers;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use GovStore\CustomRequests\Models\Request as ServiceRequest;
+use GovStore\CustomRequests\Models\LocationRole;
 use GovStore\CustomRequests\Services\FulfillmentService;
 
 class GovFulfillmentController extends Controller
@@ -19,13 +20,21 @@ class GovFulfillmentController extends Controller
     public function index()
     {
         $this->checkStorekeeperAccess();
+        $user = auth()->user();
 
-        // Get requests that are approved or partially approved, and not yet closed
-        $activeRequests = ServiceRequest::with(['requester', 'items'])
-                            ->whereIn('approval_status', ['approved', 'partially_approved'])
-                            ->whereNotIn('fulfillment_status', ['closed', 'issued'])
-                            ->orderBy('approved_at', 'asc')
-                            ->get();
+        // 1. Base query for active fulfillment requests
+        $query = ServiceRequest::with(['requester', 'items'])
+                    ->whereIn('approval_status', ['approved', 'partially_approved'])
+                    ->whereNotIn('fulfillment_status', ['closed', 'issued']);
+
+        // 2. ZERO-TOUCH LOCATION FILTER: 
+        // If not a Superuser, restrict queue strictly to the locations where this user is the Storekeeper
+        if (!$user->isSuperUser()) {
+            $myLocationIds = LocationRole::where('storekeeper_id', $user->id)->pluck('location_id');
+            $query->whereIn('delivery_location_id', $myLocationIds);
+        }
+
+        $activeRequests = $query->orderBy('approved_at', 'asc')->get();
 
         return view('govstore::fulfillment.index', compact('activeRequests'));
     }
@@ -49,11 +58,17 @@ class GovFulfillmentController extends Controller
         $serviceRequest = ServiceRequest::findOrFail($id);
 
         $request->validate([
-            'issue' => 'required|array'
+            'issue' => 'required|array',
+            'substitutions' => 'nullable|array'
         ]);
 
         try {
-            $service->issueItems($serviceRequest, auth()->user(), $request->input('issue'));
+            $service->issueItems(
+                $serviceRequest, 
+                auth()->user(), 
+                $request->input('issue'),
+                $request->input('substitutions', [])
+            );
             return redirect()->route('gov.requests.fulfillment.index')
                              ->with('success', "Fulfillment logged. Snipe-IT inventory updated.");
         } catch (\Exception $e) {

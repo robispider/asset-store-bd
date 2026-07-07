@@ -8,6 +8,13 @@ use GovStore\CustomRequests\Models\Request as ServiceRequest;
 use GovStore\CustomRequests\Models\RequestEvent;
 use GovStore\CustomRequests\Services\ApprovalService;
 
+use App\Models\Location;
+use App\Models\Category;
+use App\Models\User;
+use GovStore\CustomRequests\Models\LocationRole;
+use GovStore\CustomRequests\Models\ApprovalPolicy;
+
+
 class GovApprovalController extends Controller
 {
     private function checkAdminAccess()
@@ -17,22 +24,28 @@ class GovApprovalController extends Controller
         }
     }
 
-    public function index()
+ public function index()
     {
         $this->checkAdminAccess();
+        $user = auth()->user();
 
-        // 1. Fetch requests waiting for decision
-        $pendingRequests = ServiceRequest::with(['requester', 'items'])
-                            ->whereIn('approval_status', ['submitted', 'under_review'])
-                            ->orderBy('created_at', 'desc')
-                            ->get();
+        // 1. Prepare base query for pending requests
+        $pendingQuery = ServiceRequest::with(['requester', 'items'])
+                            ->whereIn('approval_status', ['submitted', 'under_review', 'pending_primary', 'pending_final']);
 
-        // 2. Fetch recently processed requests for audit history reference
-        $processedRequests = ServiceRequest::with(['requester'])
-                            ->whereNotIn('approval_status', ['draft', 'submitted', 'under_review'])
-                            ->orderBy('updated_at', 'desc')
-                            ->limit(10)
-                            ->get();
+        // 2. Prepare base query for recently processed requests
+        $processedQuery = ServiceRequest::with(['requester'])
+                            ->whereNotIn('approval_status', ['draft', 'submitted', 'under_review', 'pending_primary', 'pending_final']);
+
+        // 3. ZERO-TOUCH SECURITY FILTER: 
+        // If not a Superuser, restrict views strictly to items assigned to them
+        if (!$user->isSuperUser()) {
+            $pendingQuery->where('assigned_approver_id', $user->id);
+            $processedQuery->where('approved_by', $user->id);
+        }
+
+        $pendingRequests = $pendingQuery->orderBy('created_at', 'desc')->get();
+        $processedRequests = $processedQuery->orderBy('updated_at', 'desc')->limit(10)->get();
 
         return view('govstore::admin.index', compact('pendingRequests', 'processedRequests'));
     }
@@ -76,5 +89,74 @@ class GovApprovalController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Workflow error: ' . $e->getMessage());
         }
+    }
+
+    
+    public function locationsIndex()
+    {
+        $this->checkAdminAccess();
+
+        $locations = Location::orderBy('name')->get();
+        // Load existing roles mapped to location IDs
+        $locationRoles = LocationRole::all()->keyBy('location_id');
+        $users = User::orderBy('first_name')->get();
+
+        return view('govstore::admin.locations', compact('locations', 'locationRoles', 'users'));
+    }
+
+    public function locationsStore(Request $request)
+    {
+        $this->checkAdminAccess();
+
+        $request->validate([
+            'location_id' => 'required|integer',
+            'primary_approver_id' => 'required|integer',
+            'final_approver_id' => 'nullable|integer',
+            'storekeeper_id' => 'required|integer',
+        ]);
+
+        LocationRole::updateOrCreate(
+            ['location_id' => $request->location_id],
+            [
+                'primary_approver_id' => $request->primary_approver_id,
+                'final_approver_id' => $request->final_approver_id ?: null,
+                'storekeeper_id' => $request->storekeeper_id,
+            ]
+        );
+
+        return redirect()->back()->with('success', 'Office roles updated successfully.');
+    }
+
+    public function policiesIndex()
+    {
+        $this->checkAdminAccess();
+
+        $categories = Category::orderBy('name')->get();
+        // Fetch existing category policies
+        $policies = ApprovalPolicy::where('target_type', 'category')->get()->keyBy('target_id');
+
+        return view('govstore::admin.policies', compact('categories', 'policies'));
+    }
+
+    public function policiesStore(Request $request)
+    {
+        $this->checkAdminAccess();
+
+        $request->validate([
+            'category_id' => 'required|integer',
+            'policy_name' => 'required|string',
+        ]);
+
+        ApprovalPolicy::updateOrCreate(
+            [
+                'target_type' => 'category',
+                'target_id' => $request->category_id
+            ],
+            [
+                'policy_name' => $request->policy_name
+            ]
+        );
+
+        return redirect()->back()->with('success', 'Category approval policy updated successfully.');
     }
 }

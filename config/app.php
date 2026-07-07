@@ -438,6 +438,8 @@ return [
         BreadcrumbsServiceProvider::class,
 
         GovStore\CustomRequests\Providers\CustomRequestServiceProvider::class,
+        GovStore\Organization\Providers\OrganizationServiceProvider::class,
+         GovStore\GeoAreas\Providers\GeoAreasServiceProvider::class,
 
     ],
 

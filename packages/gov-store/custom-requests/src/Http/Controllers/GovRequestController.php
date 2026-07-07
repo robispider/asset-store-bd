@@ -72,4 +72,43 @@ class GovRequestController extends Controller
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
+
+    public function search(Request $request)
+    {
+        $term = $request->input('q', '');
+        $type = strtolower($request->input('type', ''));
+
+        if (empty($term) || empty($type)) {
+            return response()->json([]);
+        }
+
+        $results = [];
+
+        // Query Snipe-IT's core tables directly with optimized limits
+        if ($type === 'consumable') {
+            $items = \App\Models\Consumable::where('name', 'like', "%{$term}%")->limit(15)->get();
+            foreach ($items as $item) {
+                $results[] = ['id' => $item->id, 'text' => $item->name . ' (Stock: ' . $item->numRemaining() . ')'];
+            }
+        } elseif ($type === 'accessory') {
+            $items = \App\Models\Accessory::where('name', 'like', "%{$term}%")->limit(15)->get();
+            foreach ($items as $item) {
+                $results[] = ['id' => $item->id, 'text' => $item->name . ' (Stock: ' . $item->numRemaining() . ')'];
+            }
+        } elseif ($type === 'asset') {
+            $items = \App\Models\Asset::where('requestable', 1)
+                ->whereNull('assigned_to')
+                ->where(function($q) use ($term) {
+                    $q->where('asset_tag', 'like', "%{$term}%")
+                      ->orWhere('name', 'like', "%{$term}%");
+                })
+                ->limit(15)
+                ->get();
+            foreach ($items as $item) {
+                $results[] = ['id' => $item->id, 'text' => ($item->present()->name() ?: $item->asset_tag)];
+            }
+        }
+
+        return response()->json($results);
+    }
 }
