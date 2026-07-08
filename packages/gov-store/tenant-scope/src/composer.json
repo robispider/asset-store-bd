@@ -1,0 +1,17 @@
+{
+    "name": "gov-store/tenant-scope",
+    "description": "Government Shared Tenant Scoping and Catalog Isolation Library for Bangladesh",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "DoICT"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "GovStore\\TenantScope\\": "src/"
+        }
+    }
+}

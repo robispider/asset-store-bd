@@ -439,7 +439,8 @@ return [
 
         GovStore\CustomRequests\Providers\CustomRequestServiceProvider::class,
         GovStore\Organization\Providers\OrganizationServiceProvider::class,
-         GovStore\GeoAreas\Providers\GeoAreasServiceProvider::class,
+        GovStore\GeoAreas\Providers\GeoAreasServiceProvider::class,
+           GovStore\TenantScope\Providers\TenantScopeServiceProvider::class,
 
     ],
 

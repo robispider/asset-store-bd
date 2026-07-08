@@ -11,6 +11,7 @@ return [
         'ar-SA' => 'Arabic',
         'hy-AM' => 'Armenian',
         'bg-BG' => 'Bulgarian',
+        'bn-BD' => 'বাংলা (বাংলাদেশ)',
         'zh-CN' => 'Chinese Simplified',
         'zh-TW' => 'Chinese Traditional',
         'ca-ES' => 'Catalan',

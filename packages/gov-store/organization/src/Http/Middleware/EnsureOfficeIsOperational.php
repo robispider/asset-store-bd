@@ -12,16 +12,21 @@ class EnsureOfficeIsOperational
 {
     public function handle($request, Closure $next)
     {
+        // 1. GUEST SAFE GUARD: Pass standard guest/login calls downstream cleanly
+        if (!auth()->check()) {
+            return $next($request);
+        }
+
         $user = auth()->user();
 
-        // 1. Exception-Safe: Standard Laravel gates bypass operational checks
+        // 2. Exception-Safe: Standard Laravel gates bypass operational checks
         if ($user->isSuperUser() || Gate::allows('admin') || Gate::allows('superadmin')) {
             return $next($request);
         }
 
         $path = $request->path();
         
-        // 2. We only intercept catalog browsing and shopping basket actions
+        // 3. We only intercept catalog browsing and shopping basket actions
         $isTargetRoute = (str_contains($path, 'gov-requests/catalog') || str_contains($path, 'gov-requests/basket')) 
                          && !str_contains($path, 'my-requests');
 
@@ -32,20 +37,43 @@ class EnsureOfficeIsOperational
                 return response()->view('govorg::readiness.unassigned');
             }
 
-            $profile = LocationProfile::where('location_id', $user->location_id)->first();
+            try {
+                $profile = LocationProfile::where('location_id', $user->location_id)->first();
 
-            // 3. Intercept if the location profile has not met operational criteria
-            if (!$profile || $profile->lifecycle_status !== 'operational') {
-                $readinessService = app(OfficeReadinessService::class);
-                $readiness = $readinessService->evaluateAndTransition($user->location_id);
-                $location = $user->location;
+                // 4. Intercept if the location profile has not met operational criteria
+                if (!$profile || $profile->lifecycle_status !== 'operational') {
+                    $readinessService = app(OfficeReadinessService::class);
+                    $readiness = $readinessService->evaluateAndTransition($user->location_id);
+                    $location = $user->location;
 
-                // Fallback check if the Snipe-IT Location model was deleted or is orphaned
+                    // Fallback check if the Snipe-IT Location model was deleted or is orphaned
+                    if (!$location) {
+                        return response()->view('govorg::readiness.unassigned');
+                    }
+
+                    return response()->view('govorg::readiness.waiting', compact('profile', 'location', 'readiness'));
+                }
+            } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+                // If a ModelNotFound is thrown, render the unconfigured warnings page
+                $location = $user->location ?: \App\Models\Location::find($user->location_id);
                 if (!$location) {
                     return response()->view('govorg::readiness.unassigned');
                 }
-
+                
+                $profile = LocationProfile::where('location_id', $user->location_id)->first();
+                $readiness = [
+                    'is_operational' => false,
+                    'checklist' => [
+                        'has_office_admin' => $profile && !is_null($profile->office_admin_id),
+                        'has_primary_approver' => false,
+                        'has_storekeeper' => false,
+                        'has_users' => true
+                    ],
+                    'users_count' => 1
+                ];
                 return response()->view('govorg::readiness.waiting', compact('profile', 'location', 'readiness'));
+            } catch (\Exception $e) {
+                return response()->view('govorg::readiness.unassigned');
             }
         }
 

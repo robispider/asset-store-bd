@@ -9,6 +9,11 @@ class EnsureUserIsIctOfficer
 {
     public function handle($request, Closure $next)
     {
+        // GUEST SAFE GUARD: Pass standard guest/login calls downstream cleanly
+        if (!auth()->check()) {
+            return $next($request);
+        }
+
         $user = auth()->user();
 
         // Superadmins bypass geographic tag checks

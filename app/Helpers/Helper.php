@@ -36,6 +36,7 @@ class Helper
         'af' => 'af-ZA', // Afrikaans
         'am' => 'am-ET', // Amharic
         'ar' => 'ar-SA', // Arabic
+        'bn' => 'bn-BD', // Bengali
         'bg' => 'bg-BG', // Bulgarian
         'ca' => 'ca-ES', // Catalan
         'cs' => 'cs-CZ', // Czech

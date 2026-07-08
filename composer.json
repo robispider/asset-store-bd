@@ -26,6 +26,10 @@
         {
             "type": "path",
             "url": "./packages/gov-store/geo-areas"
+        },
+        {
+            "type": "path",
+            "url": "./packages/gov-store/tenant-scope"
         }
   ],
   "require": {
@@ -83,9 +87,10 @@
     "tecnickcom/tcpdf": "^6.5",
     "unicodeveloper/laravel-password": "^1.0",
     "watson/validating": "^8.1",
-       "gov-store/custom-requests": "dev-master",
-        "gov-store/organization": "dev-master",
-         "gov-store/geo-areas": "dev-master"
+       "gov-store/custom-requests": "*",
+        "gov-store/organization": "*",
+         "gov-store/geo-areas": "*",
+           "gov-store/tenant-scope": "*"
   },
   "suggest": {
     "ext-ldap": "*",
@@ -119,6 +124,7 @@
       "GovStore\\CustomRequests\\": "packages/gov-store/custom-requests/src/",
         "GovStore\\Organization\\": "packages/gov-store/organization/src/",
         "GovStore\\GeoAreas\\": "packages/gov-store/geo-areas/src/",
+          "GovStore\\TenantScope\\": "packages/gov-store/tenant-scope/src/",
       "App\\": "app/",
       "Database\\Factories\\": "database/factories/",
       "Database\\Seeders\\": "database/seeders/"
