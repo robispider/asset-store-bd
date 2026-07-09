@@ -10,9 +10,17 @@ use GovStore\CustomRequests\Services\FulfillmentService;
 
 class GovFulfillmentController extends Controller
 {
-    private function checkStorekeeperAccess()
+   private function checkStorekeeperAccess()
     {
-        if (!auth()->user()->isSuperUser() && !auth()->user()->hasAccess('admin')) {
+        $user = auth()->user();
+        if ($user->isSuperUser() || $user->hasAccess('admin')) {
+            return;
+        }
+
+        // Allow delegated local storekeepers
+        $isStorekeeper = \GovStore\CustomRequests\Models\LocationRole::where('storekeeper_id', $user->id)->exists();
+
+        if (!$isStorekeeper) {
             abort(403, 'Unauthorized access to fulfillment logs.');
         }
     }

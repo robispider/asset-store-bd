@@ -11,22 +11,45 @@ use GovStore\CustomRequests\Services\ApprovalService;
 use App\Models\Location;
 use App\Models\Category;
 use App\Models\User;
-use GovStore\CustomRequests\Models\LocationRole;
+use GovStore\Organization\Models\LocationRole; // Correct namespace mapped to organization package
 use GovStore\CustomRequests\Models\ApprovalPolicy;
-
 
 class GovApprovalController extends Controller
 {
-    private function checkAdminAccess()
+    /**
+     * Scoped Check: For local line-item approvals (permits delegated Primary/Final Approvers and Admins)
+     */
+    private function checkApproverAccess()
     {
-        if (!auth()->user()->isSuperUser() && !auth()->user()->hasAccess('admin')) {
+        $user = auth()->user();
+        if ($user->isSuperUser() || $user->hasAccess('admin')) {
+            return;
+        }
+
+        // Checks if they are assigned as primary or final approver inside the LocationRole table
+        $isApprover = LocationRole::where('primary_approver_id', $user->id)
+            ->orWhere('final_approver_id', $user->id)
+            ->exists();
+
+        if (!$isApprover) {
             abort(403, 'Unauthorized access to approval workflows.');
         }
     }
 
- public function index()
+    /**
+     * Strict Check: For global administrative settings (strictly limited to system administrators)
+     */
+    private function checkSystemAdminAccess()
     {
-        $this->checkAdminAccess();
+        $user = auth()->user();
+        if (!$user->isSuperUser() && !$user->hasAccess('admin')) {
+            abort(403, 'Unauthorized. Policy configuration requires system administrator privileges.');
+        }
+    }
+
+    public function index()
+    {
+        $this->checkApproverAccess();
         $user = auth()->user();
 
         // 1. Prepare base query for pending requests
@@ -52,7 +75,7 @@ class GovApprovalController extends Controller
 
     public function show($id)
     {
-        $this->checkAdminAccess();
+        $this->checkApproverAccess();
 
         $serviceRequest = ServiceRequest::with([
             'requester', 
@@ -77,7 +100,7 @@ class GovApprovalController extends Controller
 
     public function process(Request $request, $id, ApprovalService $service)
     {
-        $this->checkAdminAccess();
+        $this->checkApproverAccess();
         $serviceRequest = ServiceRequest::findOrFail($id);
 
         try {
@@ -91,10 +114,9 @@ class GovApprovalController extends Controller
         }
     }
 
-    
     public function locationsIndex()
     {
-        $this->checkAdminAccess();
+        $this->checkSystemAdminAccess();
 
         $locations = Location::orderBy('name')->get();
         // Load existing roles mapped to location IDs
@@ -106,7 +128,7 @@ class GovApprovalController extends Controller
 
     public function locationsStore(Request $request)
     {
-        $this->checkAdminAccess();
+        $this->checkSystemAdminAccess();
 
         $request->validate([
             'location_id' => 'required|integer',
@@ -129,7 +151,7 @@ class GovApprovalController extends Controller
 
     public function policiesIndex()
     {
-        $this->checkAdminAccess();
+        $this->checkSystemAdminAccess();
 
         $categories = Category::orderBy('name')->get();
         // Fetch existing category policies
@@ -140,7 +162,7 @@ class GovApprovalController extends Controller
 
     public function policiesStore(Request $request)
     {
-        $this->checkAdminAccess();
+        $this->checkSystemAdminAccess();
 
         $request->validate([
             'category_id' => 'required|integer',
