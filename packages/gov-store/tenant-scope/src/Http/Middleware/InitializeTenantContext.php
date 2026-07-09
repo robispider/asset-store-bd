@@ -14,12 +14,14 @@ class InitializeTenantContext
         // 1. Resolve Singleton Context container
         $context = app(TenantContext::class);
 
-        // 2. Ignore CLI runs or Guests
-        if (!auth()->check()) {
+        // 2. Resolve the user across the web (session) AND api (token) guards, so tenant
+        //    isolation also applies to REST/token requests — not only browser sessions.
+        //    Guests (and CLI, which has no authenticated user) fall through unscoped.
+        $user = auth()->user() ?: auth('api')->user();
+
+        if (!$user) {
             return $next($request);
         }
-
-        $user = auth()->user();
 
         // 3. Superadmins completely bypass tenant scopes (Global administrative rights)
         if ($user->isSuperUser()) {

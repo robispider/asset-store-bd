@@ -12,8 +12,7 @@ Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'gov-store/admin/orga
     Route::get('/create', [ProvisioningController::class, 'create'])->name('gov.org.provisioning.create');
     Route::post('/store', [ProvisioningController::class, 'provision'])->name('gov.org.provisioning.store');
     
-    // 2. Select2 AJAX Geo Search & Pre-check Duplicates API
-    Route::get('/geo-search', [ProvisioningController::class, 'geoSearch'])->name('gov.org.provisioning.geo-search');
+    // 2. Pre-check Duplicates API (geo search is served by the shared gov.geo.search endpoint)
     Route::get('/check-duplicate', [ProvisioningController::class, 'checkDuplicate'])->name('gov.org.provisioning.check-duplicate');
 
     // 3. Admin Settings: ICT Officer Jurisdictions (The Setup Tag)
