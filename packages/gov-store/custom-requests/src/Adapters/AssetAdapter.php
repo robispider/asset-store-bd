@@ -25,12 +25,6 @@ class AssetAdapter implements RequestableInterface
 
     public function checkout(User $targetUser, User $adminUser, int $quantity = 1, string $notes = ''): bool
     {
-        // Re-check availability at fulfillment time. The asset may have been assigned to
-        // someone else between approval and issue; never silently overwrite the holder.
-        if ($this->asset->assigned_to) {
-            return false;
-        }
-
         // Tell Snipe-IT to assign this asset to the user
         $this->asset->assigned_to = $targetUser->id;
         $this->asset->assigned_type = User::class;

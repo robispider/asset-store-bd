@@ -3,11 +3,14 @@
 namespace GovStore\CustomRequests\Http\Controllers;
 
 use Illuminate\Routing\Controller;
-use GovStore\CustomRequests\Services\CatalogService;
+use Illuminate\Http\Request;
+use GovStore\CustomRequests\Services\RequestService;
+use Illuminate\Support\Facades\Log;
+ use GovStore\CustomRequests\Services\CatalogService;
 
 class GovRequestController extends Controller
 {
-    public function index()
+ public function index()
     {
         // Fetch only submitted requests made by the currently logged-in user (excluding active drafts)
         $requests = \GovStore\CustomRequests\Models\Request::with(['items.requested'])
@@ -18,8 +21,7 @@ class GovRequestController extends Controller
 
         return view('govstore::user.index', compact('requests'));
     }
-
-    public function catalog(CatalogService $catalogService)
+   public function catalog(CatalogService $catalogService)
     {
         $userId = auth()->id();
 
@@ -42,13 +44,12 @@ class GovRequestController extends Controller
 
         // 3. Return the single unified dashboard view
         return view('govstore::catalog.index', compact(
-            'catalogItems',
-            'pendingCount',
-            'approvedCount',
+            'catalogItems', 
+            'pendingCount', 
+            'approvedCount', 
             'rejectedCount'
         ));
     }
-
     public function store(Request $request, RequestService $service)
     {
         // Validate incoming form data
