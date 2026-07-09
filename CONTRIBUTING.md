@@ -1,3 +1,5 @@
+### contributing in this repository 
+create branch. test and then create a pull request. After review code will be marged to master branch. have fun. 
 ### Contributing
 
 Please see the documentation on [contributing and developing for Snipe-IT](https://snipe-it.readme.io/docs/contributing-overview).
