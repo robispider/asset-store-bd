@@ -19,6 +19,8 @@ class FulfillmentService
         }
 
         DB::transaction(function () use ($request, $storekeeper, $issueQuantities, $substitutions) {
+        $this->assertSeparationOfDuties($request, $storekeeper);
+
             $totalLinesCount = $request->items()->where('line_approval_status', 'approved')->count();
             $completedLinesCount = 0;
 
@@ -131,8 +133,13 @@ class FulfillmentService
         return $request;
     }
 
-    public function forceClose(ServiceRequest $request, User $storekeeper, string $reason = null): ServiceRequest
+    /**
+     * Manually terminates and closes any remaining unfulfilled lines in the request.
+     */
+    public function forceClose(ServiceRequest $request, User $storekeeper, ?string $reason = null): ServiceRequest
     {
+        $this->assertSeparationOfDuties($request, $storekeeper);
+
         DB::transaction(function () use ($request, $storekeeper, $reason) {
             foreach ($request->items as $item) {
                 if ($item->line_fulfillment_status !== 'issued' && $item->line_approval_status === 'approved') {
@@ -155,5 +162,22 @@ class FulfillmentService
         });
 
         return $request;
+    }
+
+    /**
+     * Separation of duties: the administrator who approved a request may not also
+     * fulfill (issue or force-close) it, unless they are a super-user. This prevents a
+     * single non-super admin from both authorising and physically releasing the same
+     * goods. To relax this control, remove this guard or grant the actor super-user rights.
+     */
+    protected function assertSeparationOfDuties(ServiceRequest $request, User $storekeeper): void
+    {
+        if (
+            $request->approved_by
+            && (int) $request->approved_by === (int) $storekeeper->id
+            && ! $storekeeper->isSuperUser()
+        ) {
+            throw new Exception("Separation of duties: the administrator who approved this request cannot also fulfill it. A different storekeeper must issue the items.");
+        }
     }
 }

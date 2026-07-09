@@ -25,7 +25,12 @@ class ConsumableAdapter implements RequestableInterface
 
   public function checkout(User $targetUser, User $adminUser, int $quantity = 1, string $notes = ''): bool
     {
-        // Use Snipe-IT's native relationship. 
+        // Re-check stock at fulfillment time to avoid over-issuing beyond availability.
+        if ($this->consumable->numRemaining() < $quantity) {
+            return false;
+        }
+
+        // Use Snipe-IT's native relationship.
         // We pass the Target User ID as the primary key, and let Snipe-IT map the pivot columns.
         $this->consumable->users()->attach($targetUser->id, [
             'assigned_to' => $targetUser->id,

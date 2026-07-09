@@ -25,6 +25,11 @@ class AccessoryAdapter implements RequestableInterface
 
    public function checkout(User $targetUser, User $adminUser, int $quantity = 1, string $notes = ''): bool
     {
+        // Re-check stock at fulfillment time to avoid over-issuing beyond availability.
+        if ($this->accessory->numRemaining() < $quantity) {
+            return false;
+        }
+
         // Use Snipe-IT's native relationship safely
         $this->accessory->users()->attach($targetUser->id, [
             'assigned_to' => $targetUser->id,
