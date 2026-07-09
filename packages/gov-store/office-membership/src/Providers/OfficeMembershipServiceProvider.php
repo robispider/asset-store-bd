@@ -4,6 +4,7 @@ namespace GovStore\OfficeMembership\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use GovStore\OfficeMembership\Services\ClearanceEngine;
+use GovStore\OfficeMembership\Services\OfficeMembershipService;
 use GovStore\OfficeMembership\Rules\NoActiveAssetsRule;
 use GovStore\OfficeMembership\Rules\NoActiveRolesRule;
 use GovStore\OfficeMembership\Rules\NoPendingRequestsRule;
@@ -18,9 +19,12 @@ class OfficeMembershipServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'govmem');
 
-        // Inject UI
+        // Inject UI Middlewares
         $router = $this->app['router'];
         $router->pushMiddlewareToGroup('web', InjectMembershipUi::class);
+
+       
+        $router->pushMiddlewareToGroup('web', \GovStore\OfficeMembership\Http\Middleware\SetWorkingContext::class); // NEW
 
         if ($this->app->runningInConsole()) {
             $this->commands([SyncInitialMemberships::class]);
@@ -29,7 +33,12 @@ class OfficeMembershipServiceProvider extends ServiceProvider
 
     public function register()
     {
-        // Register the Engine as a Singleton and inject the Rules!
+        // 1. Bind the decoupled membership service
+        $this->app->singleton(OfficeMembershipService::class, function ($app) {
+            return new OfficeMembershipService();
+        });
+
+        // 2. Bind the Clearance Engine & Rules
         $this->app->singleton(ClearanceEngine::class, function ($app) {
             $engine = new ClearanceEngine();
             $engine->registerRule(new NoActiveAssetsRule());
@@ -37,5 +46,7 @@ class OfficeMembershipServiceProvider extends ServiceProvider
             $engine->registerRule(new NoPendingRequestsRule());
             return $engine;
         });
+
+        
     }
 }

@@ -8,48 +8,51 @@ class CreateGovOfficeMembershipTables extends Migration
 {
     public function up()
     {
+        // 1. Drop older versions to ensure clean structure mapping
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('gov_override_audit_logs');
+        Schema::dropIfExists('gov_role_handshakes');
         Schema::dropIfExists('gov_role_assignments');
         Schema::dropIfExists('gov_office_memberships');
+        Schema::enableForeignKeyConstraints();
 
-        // 1. Office Memberships (Maps Users to Multiple Offices with a specific Status)
+        // 2. Active Office Memberships (Decouples user identity from physical building context)
         Schema::create('gov_office_memberships', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned()->index();
             $table->integer('location_id')->unsigned()->index();
-            $table->boolean('is_default')->default(false);
-            $table->string('status', 30)->default('active')->index(); // 'active', 'release_requested', 'released', 'suspended'
+            $table->boolean('is_home_office')->default(false); // Declares if this is their primary HR home base
+            $table->string('status', 30)->default('active')->index(); // active, suspended, inactive
+            $table->date('valid_until')->nullable(); // Supports temporary active acting designations
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('location_id')->references('id')->on('locations')->onDelete('cascade');
-            
-            // A user can only have one membership record per physical location
             $table->unique(['user_id', 'location_id']);
         });
 
-        // 2. Generic Role Assignments (The 3-way handshake engine)
-        Schema::create('gov_role_assignments', function (Blueprint $table) {
+        // 3. Operational Role Handshakes (Proposals and Acceptances transitions)
+        Schema::create('gov_role_handshakes', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('location_id')->unsigned();
-            $table->string('role_type', 50); // e.g. 'storekeeper', 'primary_approver'
-            $table->integer('assigned_user_id')->unsigned(); // Person receiving
-            $table->integer('assigned_by_user_id')->unsigned(); // Person delegating/outgoing
-            $table->string('status', 30)->default('pending'); // 'pending', 'accepted', 'rejected', 'completed'
+            $table->string('role_type', 50); // e.g., 'storekeeper', 'primary_approver'
+            $table->integer('outgoing_user_id')->unsigned(); // Person handing over
+            $table->integer('incoming_user_id')->unsigned(); // Person receiving
+            $table->string('status', 30)->default('pending')->index(); // pending, accepted, rejected, cancelled
             $table->timestamps();
 
             $table->foreign('location_id')->references('id')->on('locations')->onDelete('cascade');
-            $table->foreign('assigned_user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('assigned_by_user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('outgoing_user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('incoming_user_id')->references('id')->on('users')->onDelete('cascade');
         });
 
-        // 3. Superadmin Override Audit Logs (Mandatory Compliance Log)
+        // 4. Emergency Override Audit Logs (Compliance Preservation)
         Schema::create('gov_override_audit_logs', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('target_user_id')->unsigned();
-            $table->string('override_type', 50); // e.g., 'force_release', 'force_claim', 'force_role_swap'
+            $table->string('override_type', 50); // e.g., 'force_release', 'force_role_swap'
             $table->text('reason'); // Mandatory justification
-            $table->integer('executed_by')->unsigned(); // The Superadmin
+            $table->integer('executed_by')->unsigned();
             $table->integer('old_location_id')->unsigned()->nullable();
             $table->integer('new_location_id')->unsigned()->nullable();
             $table->timestamps();
@@ -62,7 +65,7 @@ class CreateGovOfficeMembershipTables extends Migration
     public function down()
     {
         Schema::dropIfExists('gov_override_audit_logs');
-        Schema::dropIfExists('gov_role_assignments');
+        Schema::dropIfExists('gov_role_handshakes');
         Schema::dropIfExists('gov_office_memberships');
     }
 }

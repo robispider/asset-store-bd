@@ -113,7 +113,7 @@
                 <button type="submit" class="btn btn-sm btn-default"><i class="fas fa-filter"></i> Filter</button>
                 <a href="{{ route('gov.org.provisioning.index') }}" class="btn btn-sm btn-link">Reset</a>
 
-                <!-- DUAL ONBOARD & CREATE TRIGGERS -->
+                <!-- INTEGRATED ONBOARD & CREATE TRIGGERS -->
                 <div class="pull-right">
                     <a href="{{ route('gov.org.provisioning.onboard') }}" class="btn btn-sm btn-default" style="margin-right: 5px;">
                         <i class="fas fa-plug text-success"></i> Onboard Existing Location
@@ -132,7 +132,7 @@
     <div class="col-md-12">
         <div class="box box-default">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-sitemap"></i> Registered Government Offices ({{ isset($offices) ? $offices->count() : 0 }})</h3>
+                <h3 class="box-title"><i class="fas fa-sitemap"></i> Registered Government Offices ({{ $offices->count() }})</h3>
             </div>
             <div class="box-body table-responsive">
                 <table class="table table-striped table-hover registry-table">
@@ -147,7 +147,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($offices ?? [] as $loc)
+                        @forelse($offices as $loc)
                             @php
                                 $profile = $loc->profile ?? null;
                                 $status = $profile ? $profile->lifecycle_status : 'unconfigured';
@@ -155,7 +155,7 @@
                                 $geoType = $profile && $profile->geoArea ? ucfirst($profile->geoArea->geo_type) : 'N/A';
                                 $adminName = $profile && $profile->officeAdmin ? $profile->officeAdmin->present()->fullName : 'Unassigned';
                                 
-                                // Direct role checklist checks
+                                // Direct checklist evaluation
                                 $roles = \GovStore\Organization\Models\LocationRole::where('location_id', $loc->id)->first();
                                 $hasPrimary = $roles && $roles->primary_approver_id;
                                 $hasStorekeeper = $roles && $roles->storekeeper_id;
@@ -193,24 +193,15 @@
                                                 <span class="{{ $hasStorekeeper ? 'text-success' : 'text-danger' }}">{{ $hasStorekeeper ? '✓' : '✗' }} Storekeeper</span>
                                             </small>
                                         @else
-                                            <!-- Bypasses and flags standard unmapped locations -->
-                                            <span class="label label-danger">Unconfigured</span>
+                                            <span class="label label-default">{{ ucfirst($status) }}</span>
                                         @endif
                                     </div>
                                 </td>
 
-                                <td style="vertical-align: middle;">
-                                    @if($status === 'unconfigured')
-                                        <!-- Context-Aware Onboard Link -->
-                                        <a href="{{ route('gov.org.provisioning.onboard', ['location_id' => $loc->id]) }}" class="btn btn-xs btn-success btn-block" title="Map Geography to this Location">
-                                            <i class="fas fa-plug"></i> Onboard Office
-                                        </a>
-                                    @else
-                                        <!-- Open Core Config Hub -->
-                                        <a href="{{ route('gov.org.hub.show', $loc->id) }}" class="btn btn-xs btn-primary btn-block" title="Open Office Hub">
-                                            <i class="fas fa-external-link-alt"></i> View Hub
-                                        </a>
-                                    @endif
+                                <td>
+                                    <a href="{{ route('gov.org.hub.show', $loc->id) }}" class="btn btn-xs btn-primary btn-block" title="Open Office Hub">
+                                        <i class="fas fa-external-link-alt"></i> View Hub
+                                    </a>
                                 </td>
                             </tr>
                         @empty

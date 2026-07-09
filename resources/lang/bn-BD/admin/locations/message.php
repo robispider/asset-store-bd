@@ -2,33 +2,33 @@
 
 return [
 
-    'does_not_exist' => 'Location does not exist.',
-    'assoc_users' => 'This location is not currently deletable because it is the location of record for at least one item or user, has assets assigned to it, or is the parent location of another location. Please update your records to no longer reference this location and try again ',
-    'assoc_assets' => 'This location is currently associated with at least one asset and cannot be deleted. Please update your assets to no longer reference this location and try again. ',
-    'assoc_child_loc' => 'This location is currently the parent of at least one child location and cannot be deleted. Please update your locations to no longer reference this location and try again. ',
-    'assigned_assets' => 'Assigned Assets',
-    'current_location' => 'Current Location',
-    'deleted_warning' => 'This location has been deleted. Please restore it before attempting to make any changes.',
+    'does_not_exist' => 'কার্যালয়টি বিদ্যমান নেই।',
+    'assoc_users' => 'এই কার্যালয়টি বর্তমানে মুছে ফেলা সম্ভব নয় কারণ এটি অন্তত একজন ব্যবহারকারী বা আইটেমের রেকর্ড কার্যালয় হিসেবে ব্যবহৃত হচ্ছে, এতে সম্পদ বরাদ্দ করা আছে, অথবা এটি অন্য কোনো কার্যালয়ের মূল কার্যালয়। অনুগ্রহ করে আপনার রেকর্ডগুলো আপডেট করুন যাতে এই কার্যালয়ের রেফারেন্স না থাকে এবং পুনরায় চেষ্টা করুন ',
+    'assoc_assets' => 'এই কার্যালয়টি বর্তমানে অন্তত একটি সম্পদের সাথে যুক্ত এবং এটি মুছে ফেলা সম্ভব নয়। অনুগ্রহ করে আপনার সম্পদগুলো আপডেট করুন যাতে এই কার্যালয়ের রেফারেন্স না থাকে এবং পুনরায় চেষ্টা করুন। ',
+    'assoc_child_loc' => 'এই কার্যালয়টি বর্তমানে অন্তত একটি অধীনস্থ কার্যালয়ের মূল কার্যালয় এবং এটি মুছে ফেলা সম্ভব নয়। অনুগ্রহ করে আপনার কার্যালয়গুলো আপডেট করুন যাতে এই কার্যালয়ের রেফারেন্স না থাকে এবং পুনরায় চেষ্টা করুন। ',
+    'assigned_assets' => 'বরাদ্দকৃত সম্পদ',
+    'current_location' => 'বর্তমান কার্যালয়',
+    'deleted_warning' => 'এই কার্যালয়টি মুছে ফেলা হয়েছে। অনুগ্রহ করে কোনো পরিবর্তন করার আগে এটি পুনরুদ্ধার করুন।',
 
     'create' => [
-        'error' => 'Location was not created, please try again.',
-        'success' => 'Location created successfully.',
+        'error' => 'কার্যালয়টি তৈরি করা যায়নি, অনুগ্রহ করে পুনরায় চেষ্টা করুন।',
+        'success' => 'কার্যালয়টি সফলভাবে তৈরি করা হয়েছে।',
     ],
 
     'update' => [
-        'error' => 'Location was not updated, please try again',
-        'success' => 'Location updated successfully.',
+        'error' => 'কার্যালয়টি আপডেট করা যায়নি, অনুগ্রহ করে পুনরায় চেষ্টা করুন',
+        'success' => 'কার্যালয়টি সফলভাবে আপডেট করা হয়েছে।',
     ],
 
     'restore' => [
-        'error' => 'Location was not restored, please try again',
-        'success' => 'Location restored successfully.',
+        'error' => 'কার্যালয়টি পুনরুদ্ধার করা যায়নি, অনুগ্রহ করে পুনরায় চেষ্টা করুন',
+        'success' => 'কার্যালয়টি সফলভাবে পুনরুদ্ধার করা হয়েছে।',
     ],
 
     'delete' => [
-        'confirm' => 'Are you sure you wish to delete this location?',
-        'error' => 'There was an issue deleting the location. Please try again.',
-        'success' => 'The location was deleted successfully.',
+        'confirm' => 'আপনি কি নিশ্চিত যে আপনি এই কার্যালয়টি মুছে ফেলতে চান?',
+        'error' => 'কার্যালয়টি মুছে ফেলার সময় একটি সমস্যা হয়েছে। অনুগ্রহ করে পুনরায় চেষ্টা করুন।',
+        'success' => 'কার্যালয়টি সফলভাবে মুছে ফেলা হয়েছে।',
     ],
 
 ];

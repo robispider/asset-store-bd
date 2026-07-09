@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'title' => 'Consumable Name',
+    'title' => 'ব্যবহার্য সামগ্রীর নাম',
 ];

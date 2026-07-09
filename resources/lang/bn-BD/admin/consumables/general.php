@@ -1,12 +1,12 @@
 <?php
 
 return [
-    'checkout' => 'Checkout Consumable to User',
-    'consumable_name' => 'Consumable Name',
-    'create' => 'Create Consumable',
-    'item_no' => 'Item No.',
-    'remaining' => 'Remaining',
-    'total' => 'Total',
-    'update' => 'Update Consumable',
-    'inventory_warning' => 'The inventory of this consumable is below the minimum amount of :min_count',
+    'checkout' => 'ব্যবহারকারীকে ব্যবহার্য সামগ্রী প্রদান করা',
+    'consumable_name' => 'ব্যবহার্য সামগ্রীর নাম',
+    'create' => 'ব্যবহার্য সামগ্রী তৈরি করুন',
+    'item_no' => 'আইটেম নম্বর',
+    'remaining' => 'অবশিষ্ট',
+    'total' => 'মোট',
+    'update' => 'ব্যবহার্য সামগ্রী আপডেট করুন',
+    'inventory_warning' => 'এই ব্যবহার্য সামগ্রীর ইনভেন্টরি সর্বনিম্ন পরিমাণ :min_count এর নিচে নেমে গেছে',
 ];

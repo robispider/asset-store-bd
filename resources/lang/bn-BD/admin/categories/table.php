@@ -2,9 +2,9 @@
 
 return [
     'eula_text' => 'EULA',
-    'id' => 'ID',
-    'parent' => 'Parent',
-    'require_acceptance' => 'Acceptance',
-    'title' => 'Asset Category Name',
+    'id' => 'আইডি',
+    'parent' => 'মূল বিভাগ',
+    'require_acceptance' => 'গ্রহণ নিশ্চিতকরণ',
+    'title' => 'সম্পদের বিভাগের নাম',
 
 ];

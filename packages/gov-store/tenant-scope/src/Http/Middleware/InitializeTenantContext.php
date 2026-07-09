@@ -21,20 +21,21 @@ class InitializeTenantContext
 
         $user = auth()->user();
 
-        // 3. Superadmins completely bypass tenant scopes (Global administrative rights)
-        if ($user->isSuperUser()) {
+        // 3. SMART SUPERADMIN BYPASS:
+        // Superadmins only bypass scoping if they have NOT explicitly selected a local working office in their session dropdown.
+        // This allows admins to manage settings globally, yet switch into "Local Mode" to check storefront stock.
+        if ($user->isSuperUser() && !session()->has('gov_working_location_id')) {
             return $next($request);
         }
 
         // 4. Lock standard Office Admin and Employee boundaries into memory
         $context->isActive = true;
         $context->companyId = $user->company_id;
-        // $context->locationId = $user->location_id;
 
-           // BRIDGE: Read from Session Working Context, fallback to Snipe-IT core location
+        // BRIDGE: Read from Session Working Context, fallback to Snipe-IT core location
         $context->locationId = session('gov_working_location_id', $user->location_id);
         
-        // 5. Query and Cache configs once (Using Raw DB to completely prevent Eloquent loops)
+        // 5. Query and Cache configs once
         $context->configs = Cache::remember('tenant_scope_configs', 3600, function () {
             $rawConfigs = DB::table('gov_tenant_scopes')->get();
             

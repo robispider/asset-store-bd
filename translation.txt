@@ -1,0 +1,20 @@
+ translate the  language file into official Bangladeshi Bangla, tailored for a government office store management context.
+
+Key terminology used:
+
+Company 
+→
+→ মন্ত্রণালয়/বিভাগ/দপ্তর/সংস্থা
+Location 
+→
+→ কার্যালয়
+Checkout 
+→
+→ প্রদান করা
+Checkin 
+→
+→ ফেরত নেওয়া
+
+take one file at a time. complete the translation. replace the file. then take next file and translate.
+replace the same file not any other file
+dont translate paralal .

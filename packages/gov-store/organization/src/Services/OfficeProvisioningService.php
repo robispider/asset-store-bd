@@ -16,68 +16,85 @@ class OfficeProvisioningService
 {
     /**
      * Creates a core Snipe-IT Location and maps its mandatory geographic profile.
+     * Fully defensive: uses null-coalescing to prevent PHP 8.2+ Undefined Array Key errors.
      */
     public function provisionOffice(array $data, int $executorId): Location
     {
         $geoService = app(GeoAreaService::class);
         $user = \App\Models\User::findOrFail($executorId);
 
+        $geoAreaId = (int)($data['geo_area_id'] ?? 0);
+
         // 1. SECURITY BOUNDARY CHECK (Enforce geographical boundary for non-superusers)
         if (!$user->isSuperUser() && !$user->hasAccess('admin')) {
             $jurisdiction = IctJurisdiction::where('user_id', $user->id)->firstOrFail();
-            
-            if (!$geoService->isWithinBoundary($jurisdiction->geo_area_id, (int)$data['geo_area_id'])) {
+            if (!$geoService->isWithinBoundary($jurisdiction->geo_area_id, $geoAreaId)) {
                 throw new Exception("Access Denied: The chosen territory lies outside of your assigned geographical jurisdiction.");
             }
         }
 
         // 2. CONTEXTUAL DUPLICATE PREVENTION PRE-CHECK
-        // Warn if an office belonging to the same department already exists inside this Upazila
-        if (!empty($data['company_id'])) {
-            $duplicateExists = Location::where('company_id', $data['company_id'])
-                ->whereHas('profile', function($query) use ($data) {
-                    $query->where('geo_area_id', $data['geo_area_id']);
+        $companyId = $data['company_id'] ?? null;
+        if (!empty($companyId)) {
+            $duplicateExists = Location::where('company_id', $companyId)
+                ->whereHas('profile', function($query) use ($geoAreaId) {
+                    $query->where('geo_area_id', $geoAreaId);
                 })->exists();
 
             if ($duplicateExists) {
-                // We write a session trigger so the controller can flag a soft duplicate warning on redirect
                 session()->flash('duplicate_warning', 'Notice: An office belonging to this Department/Ministry is already registered within this geographic territory.');
             }
         }
 
-        return DB::transaction(function () use ($data, $executorId) {
-            // 3. Create Snipe-IT Location
-            $location = Location::create([
-                'name' => $data['name'],
-                'parent_id' => $data['parent_id'] ?: null,
-                'company_id' => $data['company_id'] ?: null,
-                'city' => $data['city'] ?? null,
-                'state' => $data['state'] ?? null,
-                'country' => 'Bangladesh',
+        return DB::transaction(function () use ($data, $executorId, $geoAreaId) {
+            
+            $existingId = $data['existing_location_id'] ?? null;
+            $name = $data['name'] ?? null;
+
+            // 3. IDENTITY CHECK: If onboarding a legacy location, reload it. Otherwise create fresh.
+            if (!empty($existingId)) {
+                $location = Location::findOrFail($existingId);
+                if (!empty($name)) {
+                    $location->update(['name' => $name]);
+                }
+            } else {
+                $location = Location::create([
+                    'name' => $name,
+                    'parent_id' => $data['parent_id'] ?? null,
+                    'company_id' => $data['company_id'] ?? null,
+                    'city' => $data['city'] ?? null,
+                    'state' => $data['state'] ?? null,
+                    'country' => 'Bangladesh',
+                ]);
+            }
+
+            // Sync structural attributes on change safely
+            $location->update([
+                'parent_id'  => $data['parent_id'] ?? $location->parent_id,
+                'company_id' => $data['company_id'] ?? $location->company_id,
+                'city'       => $data['city'] ?? $location->city,
+                'state'      => $data['state'] ?? $location->state,
             ]);
 
-            // 4. Create Location Profile with MANDATORY geo_area_id
+            // 4. Create active Location Profile
             LocationProfile::create([
                 'location_id' => $location->id,
-                'geo_area_id' => $data['geo_area_id'],
-                'office_admin_id' => $data['office_admin_id'] ?: null,
+                'geo_area_id' => $geoAreaId,
+                'office_admin_id' => $data['office_admin_id'] ?? null,
                 'lifecycle_status' => 'provisioned',
             ]);
 
-            // 5. Instantiate Roles container
-            LocationRole::create([
-                'location_id' => $location->id,
-            ]);
+            // 5. Instantiate Roles
+            LocationRole::updateOrCreate(['location_id' => $location->id]);
 
-            // 6. Log immutable action
+            // 6. Log change
             OrganizationActivityLog::create([
                 'location_id' => $location->id,
                 'performed_by' => $executorId,
                 'event_type' => 'office_created',
                 'details' => [
-                    'name' => $data['name'],
-                    'geo_area_id' => (int)$data['geo_area_id'],
-                    'company_id' => $data['company_id'] ? (int)$data['company_id'] : null
+                    'name' => $location->name,
+                    'geo_area_id' => $geoAreaId
                 ]
             ]);
 

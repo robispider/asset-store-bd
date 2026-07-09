@@ -12,8 +12,11 @@ class NoPendingRequestsRule implements IClearanceRule
 
     public function check(User $user, int $locationId): ClearanceResult
     {
-        if (!class_exists(\GovStore\CustomRequests\Models\Request::class)) return new ClearanceResult(true);
+        if (!class_exists(\GovStore\CustomRequests\Models\Request::class)) {
+            return new ClearanceResult(true);
+        }
 
+        // Checks if they have active requests in progress
         $pendingCount = \GovStore\CustomRequests\Models\Request::where('requested_by', $user->id)
             ->where('delivery_location_id', $locationId)
             ->whereNotIn('approval_status', ['rejected', 'cancelled', 'closed'])

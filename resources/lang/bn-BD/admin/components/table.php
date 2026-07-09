@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'title' => 'Component Name',
+    'title' => 'যন্ত্রাংশের নাম',
 ];

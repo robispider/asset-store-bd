@@ -2,31 +2,30 @@
 
 use Illuminate\Support\Facades\Route;
 use GovStore\OfficeMembership\Http\Controllers\MembershipController;
+use GovStore\OfficeMembership\Http\Controllers\RoleHandshakeController;
+use GovStore\OfficeMembership\Http\Controllers\MembershipAdminController;
 
 Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'gov-store/my-memberships'], function () {
+    // 1. Employee-Facing Clearance
     Route::get('/', [MembershipController::class, 'index'])->name('gov.membership.index');
     Route::post('/{id}/request-release', [MembershipController::class, 'requestRelease'])->name('gov.membership.request-release');
+    Route::post('/switch', [MembershipController::class, 'switchContext'])->name('gov.membership.switch');
 
-       // Role Handshakes
-    Route::post('/role/propose', [RoleAssignmentController::class, 'propose'])->name('gov.membership.role.propose');
-    Route::post('/role/{id}/accept', [RoleAssignmentController::class, 'accept'])->name('gov.membership.role.accept');
-    Route::post('/role/{id}/reject', [RoleAssignmentController::class, 'reject'])->name('gov.membership.role.reject');
-    Route::post('/role/{id}/cancel', [RoleAssignmentController::class, 'cancel'])->name('gov.membership.role.cancel');
+    // 2. Peer-to-Peer Handshakes
+    Route::post('/handshake/propose', [RoleHandshakeController::class, 'propose'])->name('gov.membership.handshake.propose');
+    Route::post('/handshake/{id}/accept', [RoleHandshakeController::class, 'accept'])->name('gov.membership.handshake.accept');
+    Route::post('/handshake/{id}/reject', [RoleHandshakeController::class, 'reject'])->name('gov.membership.handshake.reject');
+    Route::post('/handshake/{id}/cancel', [RoleHandshakeController::class, 'cancel'])->name('gov.membership.handshake.cancel');
 
-    // Context Switcher
-    Route::post('/switch-context', [GovStore\OfficeMembership\Http\Controllers\MembershipAdminController::class, 'switchContext'])->name('gov.membership.switch');
+    // 3. Office Admin Onboarding & Claims
+    Route::post('/claim/{locationId}', [MembershipAdminController::class, 'claimEmployee'])->name('gov.membership.claim');
 
-    // Office Admin Claiming
-    Route::post('/claim/{locationId}', [GovStore\OfficeMembership\Http\Controllers\MembershipAdminController::class, 'claimEmployee'])->name('gov.membership.claim');
+    // 4. Superadmin Emergency Compliance Overrides
+    Route::get('/override/console', [MembershipAdminController::class, 'overrideConsole'])->name('gov.membership.override.console');
+    Route::post('/override/force', [MembershipAdminController::class, 'forceOverride'])->name('gov.membership.override');
 
-    // Superadmin Override Console
-    Route::post('/override/force', [GovStore\OfficeMembership\Http\Controllers\MembershipAdminController::class, 'forceOverride'])->name('gov.membership.override');
-    Route::get('/override/console', function() {
-        if (!auth()->user()->isSuperUser()) abort(403);
-        $logs = \GovStore\OfficeMembership\Models\OverrideAuditLog::with(['targetUser', 'executor'])->orderBy('created_at', 'desc')->get();
-        // Fetch users requesting release for easy action
-        $pendingUsers = \App\Models\User::whereHas('memberships', function($q) { $q->where('status', 'release_requested'); })->get();
-        return view('govmem::admin.override_console', compact('logs', 'pendingUsers'));
-    })->name('gov.membership.override.console');
+    // 5. Onboard Existing unprovisioned Location routes
+    Route::get('/onboard', [\GovStore\Organization\Http\Controllers\OnboardLocationController::class, 'create'])->name('gov.org.provisioning.onboard');
+    Route::post('/onboard', [\GovStore\Organization\Http\Controllers\OnboardLocationController::class, 'store'])->name('gov.org.provisioning.onboard.store');
     
 });

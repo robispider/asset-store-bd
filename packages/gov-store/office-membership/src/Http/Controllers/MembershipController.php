@@ -9,13 +9,13 @@ use GovStore\OfficeMembership\Services\ClearanceEngine;
 
 class MembershipController extends Controller
 {
-   public function index(ClearanceEngine $engine)
+    public function index(ClearanceEngine $engine)
     {
         $user = auth()->user();
         
         $memberships = OfficeMembership::with('location.company')
                             ->where('user_id', $user->id)
-                            ->orderBy('is_default', 'desc')
+                            ->orderBy('is_home_office', 'desc') // Sort by primary home base
                             ->get();
 
         $clearanceMatrix = [];
@@ -27,12 +27,12 @@ class MembershipController extends Controller
                 $locId = $membership->location_id;
                 $clearanceMatrix[$membership->id] = $engine->runChecks($user, $locId);
 
-                // Fetch colleagues in the same building (for delegation dropdown)
+                // Fetch colleagues assigned to this location inside Snipe-IT
                 $eligibleColleagues[$locId] = \App\Models\User::where('location_id', $locId)
                                                 ->where('id', '!=', $user->id)
                                                 ->get();
 
-                // Detect what roles I currently hold in this office
+                // Load any active administrative roles currently held by this user
                 if (class_exists(\GovStore\Organization\Models\LocationRole::class)) {
                     $profile = \GovStore\Organization\Models\LocationProfile::where('location_id', $locId)->first();
                     $roles = \GovStore\Organization\Models\LocationRole::where('location_id', $locId)->first();
@@ -45,13 +45,13 @@ class MembershipController extends Controller
             }
         }
 
-        // Fetch pending handshakes (Incoming and Outgoing)
-        $incomingRequests = \GovStore\OfficeMembership\Models\RoleAssignment::with(['assignedBy', 'location'])
-                                ->where('assigned_user_id', $user->id)
+        // Fetch pending handshakes (Incoming and Outgoing) using updated column mappings
+        $incomingRequests = \GovStore\OfficeMembership\Models\RoleHandshake::with(['outgoingUser', 'location'])
+                                ->where('incoming_user_id', $user->id) // UPDATED
                                 ->where('status', 'pending')->get();
                                 
-        $outgoingRequests = \GovStore\OfficeMembership\Models\RoleAssignment::with(['assignedUser', 'location'])
-                                ->where('assigned_by_user_id', $user->id)
+        $outgoingRequests = \GovStore\OfficeMembership\Models\RoleHandshake::with(['incomingUser', 'location'])
+                                ->where('outgoing_user_id', $user->id) // UPDATED
                                 ->where('status', 'pending')->get();
 
         return view('govmem::user.index', compact(
@@ -72,11 +72,35 @@ class MembershipController extends Controller
         // Final backend validation guard
         $results = $engine->runChecks($user, $membership->location_id);
         if (!$engine->isCleared($results)) {
-            return redirect()->back()->with('error', 'Clearance failed. You must resolve all outstanding assets and roles before requesting release.');
+            return redirect()->back()->with('error', 'Clearance failed. Resolve outstanding issues first.');
         }
 
         $membership->update(['status' => 'release_requested']);
 
         return redirect()->back()->with('success', 'Release requested successfully. Awaiting final office sign-off.');
+    }
+
+    public function switchContext(Request $request)
+    {
+        $request->validate(['location_id' => 'required|integer']);
+        $user = auth()->user();
+
+        // GLOBAL RESTORE HOOK: 
+        // If an Admin/Superuser selects "0", clear session context to restore unrestricted global views
+        if ((int)$request->location_id === 0 && ($user->isSuperUser() || $user->hasAccess('admin'))) {
+            session()->forget('gov_working_location_id');
+            return redirect()->back()->with('success', 'Working context restored to Global Overview.');
+        }
+
+        // Verify the user actually holds an active membership here
+        $membership = OfficeMembership::where('user_id', $user->id)
+            ->where('location_id', $request->location_id)
+            ->where('status', 'active')
+            ->firstOrFail();
+
+        // Set session context (This dynamically drives the TenantScope packages!)
+        session()->put('gov_working_location_id', $membership->location_id);
+
+        return redirect()->back()->with('success', 'Working context switched to ' . ($membership->location->name ?? 'selected office') . '.');
     }
 }

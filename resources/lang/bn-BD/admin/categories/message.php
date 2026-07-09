@@ -2,27 +2,27 @@
 
 return [
 
-    'does_not_exist' => 'Category does not exist.',
-    'assoc_models' => 'This category is currently associated with at least one model and cannot be deleted. Please update your models to no longer reference this category and try again. ',
-    'assoc_items' => 'This category is currently associated with at least one :asset_type and cannot be deleted. Please update your :asset_type  to no longer reference this category and try again. ',
+    'does_not_exist' => 'বিভাগটি বিদ্যমান নেই।',
+    'assoc_models' => 'এই বিভাগটি বর্তমানে অন্তত একটি মডেলের সাথে যুক্ত এবং এটি মুছে ফেলা সম্ভব নয়। অনুগ্রহ করে আপনার মডেলগুলো আপডেট করুন যাতে এই বিভাগের রেফারেন্স না থাকে এবং পুনরায় চেষ্টা করুন। ',
+    'assoc_items' => 'এই বিভাগটি বর্তমানে অন্তত একটি :asset_type এর সাথে যুক্ত এবং এটি মুছে ফেলা সম্ভব নয়। অনুগ্রহ করে আপনার :asset_type আপডেট করুন যাতে এই বিভাগের রেফারেন্স না থাকে এবং পুনরায় চেষ্টা করুন। ',
 
     'create' => [
-        'error' => 'Category was not created, please try again.',
-        'success' => 'Category created successfully.',
+        'error' => 'বিভাগটি তৈরি করা যায়নি, অনুগ্রহ করে পুনরায় চেষ্টা করুন।',
+        'success' => 'বিভাগটি সফলভাবে তৈরি করা হয়েছে।',
     ],
 
     'update' => [
-        'error' => 'Category was not updated, please try again',
-        'success' => 'Category updated successfully.',
-        'cannot_change_category_type' => 'You cannot change the category type once it has been created',
+        'error' => 'বিভাগটি আপডেট করা যায়নি, অনুগ্রহ করে পুনরায় চেষ্টা করুন',
+        'success' => 'বিভাগটি সফলভাবে আপডেট করা হয়েছে।',
+        'cannot_change_category_type' => 'একবার তৈরি করার পর আপনি বিভাগের ধরন পরিবর্তন করতে পারবেন না',
     ],
 
     'delete' => [
-        'confirm' => 'Are you sure you wish to delete this category?',
-        'error' => 'There was an issue deleting the category. Please try again.',
-        'success' => 'Category was deleted successfully.',
-        'bulk_success' => 'Category deleted successfully.|:count categories were deleted successfully.',
-        'partial_success' => 'Category deleted successfully. See additional information below. | :count categories were deleted successfully. See additional information below.',
+        'confirm' => 'আপনি কি নিশ্চিত যে আপনি এই বিভাগটি মুছে ফেলতে চান?',
+        'error' => 'বিভাগটি মুছে ফেলার সময় একটি সমস্যা হয়েছে। অনুগ্রহ করে পুনরায় চেষ্টা করুন।',
+        'success' => 'বিভাগটি সফলভাবে মুছে ফেলা হয়েছে।',
+        'bulk_success' => 'বিভাগটি সফলভাবে মুছে ফেলা হয়েছে।|:count টি বিভাগ সফলভাবে মুছে ফেলা হয়েছে।',
+        'partial_success' => 'বিভাগটি সফলভাবে মুছে ফেলা হয়েছে। নিচে অতিরিক্ত তথ্য দেখুন। | :count টি বিভাগ সফলভাবে মুছে ফেলা হয়েছে। নিচে অতিরিক্ত তথ্য দেখুন।',
     ],
 
 ];

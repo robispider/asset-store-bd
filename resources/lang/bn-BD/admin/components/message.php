@@ -2,36 +2,36 @@
 
 return [
 
-    'does_not_exist' => 'Component does not exist.',
+    'does_not_exist' => 'যন্ত্রাংশটি বিদ্যমান নেই।',
 
     'create' => [
-        'error' => 'Component was not created, please try again.',
-        'success' => 'Component created successfully.',
+        'error' => 'যন্ত্রাংশটি তৈরি করা সম্ভব হয়নি, অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'success' => 'যন্ত্রাংশটি সফলভাবে তৈরি করা হয়েছে।',
     ],
 
     'update' => [
-        'error' => 'Component was not updated, please try again',
-        'success' => 'Component updated successfully.',
+        'error' => 'যন্ত্রাংশটি আপডেট করা সম্ভব হয়নি, অনুগ্রহ করে আবার চেষ্টা করুন',
+        'success' => 'যন্ত্রাংশটি সফলভাবে আপডেট করা হয়েছে।',
     ],
 
     'delete' => [
-        'confirm' => 'Are you sure you wish to delete this component?',
-        'error' => 'There was an issue deleting the component. Please try again.',
-        'success' => 'The component was deleted successfully.',
-        'error_qty' => 'Some components of this type are still checked out. Please check them in and try again.',
+        'confirm' => 'আপনি কি নিশ্চিত যে আপনি এই যন্ত্রাংশটি মুছে ফেলতে চান?',
+        'error' => 'যন্ত্রাংশটি মুছতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'success' => 'যন্ত্রাংশটি সফলভাবে মুছে ফেলা হয়েছে।',
+        'error_qty' => 'এই ধরণের কিছু যন্ত্রাংশ এখনও প্রদান করা অবস্থায় আছে। অনুগ্রহ করে সেগুলো ফেরত নিয়ে পুনরায় চেষ্টা করুন।',
     ],
 
     'checkout' => [
-        'error' => 'Component was not checked out, please try again',
-        'success' => 'Component checked out successfully.',
-        'user_does_not_exist' => 'That user is invalid. Please try again.',
-        'unavailable' => 'Not enough components remaining: :remaining remaining, :requested requested ',
+        'error' => 'যন্ত্রাংশটি প্রদান করা সম্ভব হয়নি, অনুগ্রহ করে আবার চেষ্টা করুন',
+        'success' => 'যন্ত্রাংশটি সফলভাবে প্রদান করা হয়েছে।',
+        'user_does_not_exist' => 'ব্যবহারকারী সঠিক নয়। অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'unavailable' => 'পর্যাপ্ত যন্ত্রাংশ অবশিষ্ট নেই: :remaining অবশিষ্ট, :requested অনুরোধ করা হয়েছে ',
     ],
 
     'checkin' => [
-        'error' => 'Component was not checked in, please try again',
-        'success' => 'Component checked in successfully.',
-        'user_does_not_exist' => 'That user is invalid. Please try again.',
+        'error' => 'যন্ত্রাংশটি ফেরত নেওয়া সম্ভব হয়নি, অনুগ্রহ করে আবার চেষ্টা করুন',
+        'success' => 'যন্ত্রাংশটি সফলভাবে ফেরত নেওয়া হয়েছে।',
+        'user_does_not_exist' => 'ব্যবহারকারী সঠিক নয়। অনুগ্রহ করে আবার চেষ্টা করুন।',
     ],
 
 ];

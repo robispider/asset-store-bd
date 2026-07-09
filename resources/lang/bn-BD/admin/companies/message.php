@@ -1,22 +1,22 @@
 <?php
 
 return [
-    'does_not_exist' => 'Company does not exist.',
-    'deleted' => 'Deleted company',
-    'assoc_users' => 'This company is currently associated with at least one model and cannot be deleted. Please update your models to no longer reference this company and try again. ',
+    'does_not_exist' => 'মন্ত্রণালয়/বিভাগ/দপ্তর/সংস্থাটি বিদ্যমান নেই।',
+    'deleted' => 'মুছে ফেলা মন্ত্রণালয়/বিভাগ/দপ্তর/সংস্থা',
+    'assoc_users' => 'এই মন্ত্রণালয়/বিভাগ/দপ্তর/সংস্থাটি বর্তমানে অন্তত একটি মডেলের সাথে যুক্ত এবং এটি মুছে ফেলা সম্ভব নয়। অনুগ্রহ করে আপনার মডেলগুলো আপডেট করুন যাতে এই সংস্থার রেফারেন্স না থাকে এবং পুনরায় চেষ্টা করুন। ',
     'create' => [
-        'error' => 'Company was not created, please try again.',
-        'success' => 'Company created successfully.',
+        'error' => 'মন্ত্রণালয়/বিভাগ/দপ্তর/সংস্থাটি তৈরি করা যায়নি, অনুগ্রহ করে পুনরায় চেষ্টা করুন।',
+        'success' => 'মন্ত্রণালয়/বিভাগ/দপ্তর/সংস্থা সফলভাবে তৈরি করা হয়েছে।',
     ],
     'update' => [
-        'error' => 'Company was not updated, please try again',
-        'success' => 'Company updated successfully.',
+        'error' => 'মন্ত্রণালয়/বিভাগ/দপ্তর/সংস্থাটি আপডেট করা যায়নি, অনুগ্রহ করে পুনরায় চেষ্টা করুন',
+        'success' => 'মন্ত্রণালয়/বিভাগ/দপ্তর/সংস্থা সফলভাবে আপডেট করা হয়েছে।',
     ],
     'delete' => [
-        'confirm' => 'Are you sure you wish to delete this company?',
-        'error' => 'There was an issue deleting the company. Please try again.',
-        'success' => 'The Company was deleted successfully.',
-        'bulk_success' => 'Company deleted successfully.|:count companies were deleted successfully.',
-        'partial_success' => 'Company deleted successfully. See additional information below. | :count companies were deleted successfully. See additional information below.',
+        'confirm' => 'আপনি কি নিশ্চিত যে আপনি এই মন্ত্রণালয়/বিভাগ/দপ্তর/সংস্থাটি মুছে ফেলতে চান?',
+        'error' => 'মন্ত্রণালয়/বিভাগ/দপ্তর/সংস্থাটি মুছে ফেলার সময় একটি সমস্যা হয়েছে। অনুগ্রহ করে পুনরায় চেষ্টা করুন।',
+        'success' => 'মন্ত্রণালয়/বিভাগ/দপ্তর/সংস্থা সফলভাবে মুছে ফেলা হয়েছে।',
+        'bulk_success' => 'মন্ত্রণালয়/বিভাগ/দপ্তর/সংস্থা সফলভাবে মুছে ফেলা হয়েছে।|:count টি মন্ত্রণালয়/বিভাগ/দপ্তর/সংস্থা সফলভাবে মুছে ফেলা হয়েছে।',
+        'partial_success' => 'মন্ত্রণালয়/বিভাগ/দপ্তর/সংস্থা সফলভাবে মুছে ফেলা হয়েছে। নিচে অতিরিক্ত তথ্য দেখুন। | :count টি মন্ত্রণালয়/বিভাগ/দপ্তর/সংস্থা সফলভাবে মুছে ফেলা হয়েছে। নিচে অতিরিক্ত তথ্য দেখুন।',
     ],
 ];

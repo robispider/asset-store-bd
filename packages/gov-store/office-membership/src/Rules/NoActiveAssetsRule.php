@@ -13,7 +13,7 @@ class NoActiveAssetsRule implements IClearanceRule
 
     public function check(User $user, int $locationId): ClearanceResult
     {
-        // Check if user has Snipe-IT assets checked out to them at this specific location
+        // Check if the user has Snipe-IT assets checked out to them at this specific location
         $assetsCount = Asset::where('assigned_to', $user->id)
                             ->where('location_id', $locationId)
                             ->count();

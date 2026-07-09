@@ -1,0 +1,95 @@
+Office Membership & Identity Lifecycle (gov-store/office-membership) package.
+By separating the user's permanent Identity from their transient Membership, Workflow Responsibilities, and active Working Context, we have established a highly resilient, enterprise-grade user lifecycle framework. This design prevents orphaned configurations and data corruption, keeping Snipe-IT's core tables secure and structured.
+Part 1: Bounded Context Codebase Audit
+The office-membership package is structured into clean layers that handle data, rules, routing, and user interface actions independently:
+code
+Code
+packages/gov-store/office-membership/
+├── src/
+│   ├── Contracts/
+│   │   └── IClearanceRule.php           <-- Generic interface contract
+│   │
+│   ├── DTOs/
+│   │   └── ClearanceResult.php          <-- Clean payload object for checks
+│   │
+│   ├── Models/
+│   │   ├── OfficeMembership.php         <-- Mapped to 'gov_office_memberships'
+│   │   ├── RoleAssignment.php           <-- Mapped to 'gov_role_assignments'
+│   │   └── OverrideAuditLog.php         <-- Mapped to 'gov_override_audit_logs'
+│   │
+│   ├── Rules/
+│   │   ├── NoActiveAssetsRule.php       <-- Scans checked out Snipe-IT inventory
+│   │   ├── NoActiveRolesRule.php        <-- Scans organizational responsibilities
+│   │   └── NoPendingRequestsRule.php    <-- Scans open storefront service requests
+│   │
+│   ├── Services/
+│   │   ├── ClearanceEngine.php          <-- Runs the registered rules stack
+│   │   └── RoleAssignmentService.php    <-- Manages database transactions for swaps
+│   │
+│   └── Http/Controllers/
+│       ├── MembershipController.php     <-- Employee-facing operations
+│       └── MembershipAdminController.php<-- Office Admin claims & Superadmin overrides
+Part 2: The Five Core Workflows
+The package implements exactly five distinct administrative and operational workflows to manage employee movement across offices safely.
+Workflow 1: Self-Release & The Clearance Engine (Employee Side)
+The Business Problem: An employee is leaving their current office (e.g. transferring to another district) but must not leave behind unresolved inventory or orphaned management slots.
+The Workflow Step-by-Step:
+The employee opens My Office Memberships (/gov-store/my-memberships).
+The ClearanceEngine automatically iterates through all registered IClearanceRules:
+Physical Inventory Check: Calls NoActiveAssetsRule 
+→
+→
+ Queries if any core Snipe-IT assets are currently checked out to this user at this location.
+Office Responsibility Check: Calls NoActiveRolesRule 
+→
+→
+ Queries if this user is designated as the Storekeeper, Primary, or Final Approver for this location.
+Pending Service Requests Check: Calls NoPendingRequestsRule 
+→
+→
+ Queries if the user has any unclosed request documents in progress.
+Validation Check: If any check fails, the "Request Release" form action is disabled, and the specific failure reason is rendered on-screen (e.g., Blocked: You currently hold 2 active assets).
+Submission: Once all checks pass (the column turns green), the employee can submit the form. The system updates their gov_office_memberships.status to release_requested.
+Workflow 2: The Peer-to-Peer Role Handshake (Fulfillment Handover)
+The Business Problem: An employee cannot leave because they are the designated Storekeeper or Approver. They must delegate this responsibility to a colleague first.
+The Workflow Step-by-Step:
+On their memberships screen under My Office Responsibilities, the employee clicks Delegate next to their active role.
+A modal lists only local colleagues assigned to that same physical office building.
+The employee selects a colleague and clicks Propose Handover. The system creates a pending row in gov_role_assignments.
+The selected colleague logs in. Our injection middleware displays a prominent orange warning box: "Pending Handshakes".
+The colleague reviews and clicks Accept:
+The backend starts a safe database transaction.
+It updates your core settings table (gov_location_roles or gov_location_profiles), re-assigning the role to the new colleague.
+It marks the role assignment as completed.
+It logs the handshake event to the immutable activity log.
+The outgoing employee is instantly cleared of that responsibility, unblocking their clearance!
+Workflow 3: Onboarding & The "Claim Employee" Gate (Receiving Office Admin)
+The Business Problem: Adding a transferred employee into a new office location securely, syncing their Snipe-IT location profile without manual database intervention.
+The Workflow Step-by-Step:
+Once an employee has been successfully cleared and marked as release_requested or released, their name appears in the global floating pool.
+The receiving Office Administrator in the new office logs into their Office Hub 
+→
+→
+ Local Employees tab.
+They click "Claim Incoming Employee" and select the released employee from the dropdown list.
+Clicking "Approve Transfer & Claim" executes a database transaction:
+Updates their previous office membership status to released.
+Generates/Updates a new membership record for the new office, marking it active and setting is_default = true.
+Syncs Snipe-IT Core: Updates users.location_id to the new physical building ID inside Snipe-IT. This ensures that any future checkouts natively belong to the new office.
+Workflow 4: The Emergency Override (Superadmin Panel)
+The Business Problem: An employee has taken sudden leave or abandoned their post without delegating their critical roles (e.g. Storekeeper), blocking operations.
+The Workflow Step-by-Step:
+The Superadmin navigates to the Emergency Override Console (/override/console).
+They select the target employee and choose an action:
+Force Release: Bypasses all active assets/requests clearance checks and releases the user.
+Force Strip Roles: Instantly clears their ID from all storekeeper, approver, and admin slots across the platform.
+The Superadmin must input a written "Mandatory Justification" (min: 10 characters).
+The system executes the action and writes a permanent entry containing the old location ID, action, and text explanation to the gov_override_audit_logs table, preserving absolute audit compliance.
+Workflow 5: Multi-Office Context Switching (Working Context)
+The Business Problem: A regional director or acting officer oversees multiple offices and needs to switch their catalog view to inspect or request items for different branches without logging out.
+The Workflow Step-by-Step:
+Our SetWorkingContext middleware checks the active session for gov_working_location_id.
+If empty, it falls back to the user's is_default membership location.
+If a user has multiple active memberships, they can select a location and POST to /switch-context.
+The session is updated with the selected location ID.
+Our global data isolation middleware (InitializeTenantContext) reads this active session parameter and dynamically injects it into your global SQL scoping engine (TenantScope), instantly changing their visible catalog, stock balances, and requests, while keeping Snipe-IT's core user table perfectly stable.

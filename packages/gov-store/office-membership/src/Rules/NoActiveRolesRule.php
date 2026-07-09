@@ -12,17 +12,24 @@ class NoActiveRolesRule implements IClearanceRule
 
     public function check(User $user, int $locationId): ClearanceResult
     {
-        if (!class_exists(\GovStore\Organization\Models\LocationRole::class)) return new ClearanceResult(true);
+        // Check if the organization package's mapping tables are present on disk
+        if (!class_exists(\GovStore\Organization\Models\LocationRole::class)) {
+            return new ClearanceResult(true);
+        }
 
-        $role = \GovStore\Organization\Models\LocationRole::where('location_id', $locationId)
-            ->where(function ($q) use ($user) {
-                $q->where('primary_approver_id', $user->id)
-                  ->orWhere('final_approver_id', $user->id)
-                  ->orWhere('storekeeper_id', $user->id);
-            })->first();
+        $profile = \GovStore\Organization\Models\LocationProfile::where('location_id', $locationId)->first();
+        $roles = \GovStore\Organization\Models\LocationRole::where('location_id', $locationId)->first();
 
-        if ($role) {
-            return new ClearanceResult(false, "You hold an active administrative or storekeeper role. You must delegate this responsibility to another user first.");
+        // Check if the user is currently registered as the Admin, Approver, or Storekeeper for this location
+        $hasRole = ($profile && $profile->office_admin_id === $user->id) ||
+                   ($roles && (
+                       $roles->primary_approver_id === $user->id || 
+                       $roles->final_approver_id === $user->id || 
+                       $roles->storekeeper_id === $user->id
+                   ));
+
+        if ($hasRole) {
+            return new ClearanceResult(false, "You hold an active administrative or storekeeper role. You must delegate this responsibility to a colleague first.");
         }
 
         return new ClearanceResult(true, "No blocking administrative roles.");

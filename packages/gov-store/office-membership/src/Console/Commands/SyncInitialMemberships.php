@@ -19,9 +19,12 @@ class SyncInitialMemberships extends Command
         $count = 0;
 
         foreach ($users as $user) {
-            OfficeMembership::firstOrCreate(
+            OfficeMembership::updateOrCreate(
                 ['user_id' => $user->id, 'location_id' => $user->location_id],
-                ['is_default' => true, 'status' => 'active']
+                [
+                    'is_home_office' => true, 
+                    'status' => 'active'
+                ]
             );
             $count++;
         }

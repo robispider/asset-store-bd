@@ -12,36 +12,23 @@ use Illuminate\Support\Facades\DB;
 
 class MembershipAdminController extends Controller
 {
-    /**
-     * Switch the user's active session working context.
-     */
-    public function switchContext(Request $request)
+    private function checkSuperadminAccess()
     {
-        $request->validate(['location_id' => 'required|integer']);
-        $user = auth()->user();
-
-        // Verify the user actually holds an active membership here
-        $membership = OfficeMembership::where('user_id', $user->id)
-            ->where('location_id', $request->location_id)
-            ->where('status', 'active')
-            ->firstOrFail();
-
-        // Set session context (This will be read by the TenantScope package!)
-        session()->put('gov_working_location_id', $membership->location_id);
-
-        return redirect()->back()->with('success', 'Working context switched to ' . ($membership->location->name ?? 'selected office') . '.');
+        if (!auth()->user()->isSuperUser()) {
+            abort(403, 'Unauthorized. Emergency overrides require system superadministrator access.');
+        }
     }
 
     /**
-     * Office Admin claims an employee who has requested release from another office.
+     * Office Administrator claims an employee who has requested release or is floating
      */
     public function claimEmployee(Request $request, $locationId)
     {
         $admin = auth()->user();
         
-        // Verify executor is the Office Admin for this location
+        // Safety verification: Is the executor authorized to manage this office building?
         if (!$admin->isSuperUser() && !$admin->hasAccess('admin')) {
-            $profile = LocationProfile::where('location_id', $locationId)->where('office_admin_id', $admin->id)->firstOrFail();
+            LocationProfile::where('location_id', $locationId)->where('office_admin_id', $admin->id)->firstOrFail();
         }
 
         $request->validate(['user_id' => 'required|integer']);
@@ -50,60 +37,67 @@ class MembershipAdminController extends Controller
             $user = User::findOrFail($request->user_id);
             $oldLocationId = $user->location_id;
 
-            // 1. Mark old memberships as released
+            // 1. Mark previous active office memberships as released/archived
             OfficeMembership::where('user_id', $user->id)
                 ->where('status', 'release_requested')
-                ->update(['status' => 'released', 'is_default' => false]);
+                ->update(['status' => 'released', 'is_home_office' => false]);
 
-            // 2. Create or activate the new membership
+            // 2. Set up their active membership under the new office
             OfficeMembership::updateOrCreate(
                 ['user_id' => $user->id, 'location_id' => $locationId],
-                ['status' => 'active', 'is_default' => true]
+                ['status' => 'active', 'is_home_office' => true]
             );
 
-            // 3. Sync Snipe-IT Core (This safely moves their physical inventory target!)
+            // 3. HANDSHAKE: Update Snipe-IT's core column (keeping physical checkouts stable)
             $user->location_id = $locationId;
             $user->save();
-
-            // Log event (Optional tracking)
-            OverrideAuditLog::create([
-                'target_user_id' => $user->id,
-                'override_type' => 'employee_claimed',
-                'reason' => 'Standard onboarding claim by Office Admin',
-                'executed_by' => auth()->id(),
-                'old_location_id' => $oldLocationId,
-                'new_location_id' => $locationId
-            ]);
         });
 
-        return redirect()->back()->with('success', 'Employee successfully claimed and integrated into this office.');
+        return redirect()->back()->with('success', 'Employee successfully claimed and assigned to your office.');
     }
 
     /**
-     * SUPERADMIN ONLY: Forcibly release an employee and strip their roles.
+     * Superadmin emergency override console
+     */
+    public function overrideConsole()
+    {
+        $this->checkSuperadminAccess();
+
+        $logs = OverrideAuditLog::with(['targetUser', 'executor'])->orderBy('created_at', 'desc')->get();
+        
+        // Fetch users who are currently stuck in transitional release requested phases
+        $pendingUsers = User::whereHas('memberships', function($q) {
+            $q->where('status', 'release_requested');
+        })->get();
+
+        $allUsers = User::orderBy('first_name')->get();
+
+        return view('govmem::admin.override_console', compact('logs', 'pendingUsers', 'allUsers'));
+    }
+
+    /**
+     * Forcibly drops memberships or clears administrative slots, bypass checks
      */
     public function forceOverride(Request $request)
     {
-        $admin = auth()->user();
-        if (!$admin->isSuperUser()) abort(403, 'Strictly reserved for Superadmins.');
+        $this->checkSuperadminAccess();
 
         $request->validate([
             'user_id' => 'required|integer',
-            'override_type' => 'required|string', // 'force_release', 'strip_roles'
+            'override_type' => 'required|string', // 'force_release' or 'strip_roles'
             'reason' => 'required|string|min:10'
         ]);
 
-        DB::transaction(function () use ($request, $admin) {
+        DB::transaction(function () use ($request) {
             $user = User::findOrFail($request->user_id);
             $oldLocationId = $user->location_id;
 
             if ($request->override_type === 'force_release') {
-                OfficeMembership::where('user_id', $user->id)->update(['status' => 'released', 'is_default' => false]);
+                OfficeMembership::where('user_id', $user->id)->update(['status' => 'released', 'is_home_office' => false]);
             }
 
             if ($request->override_type === 'strip_roles') {
                 if (class_exists(\GovStore\Organization\Models\LocationRole::class)) {
-                    // Strip administrative designations
                     \GovStore\Organization\Models\LocationRole::where('primary_approver_id', $user->id)->update(['primary_approver_id' => null]);
                     \GovStore\Organization\Models\LocationRole::where('final_approver_id', $user->id)->update(['final_approver_id' => null]);
                     \GovStore\Organization\Models\LocationRole::where('storekeeper_id', $user->id)->update(['storekeeper_id' => null]);
@@ -111,16 +105,16 @@ class MembershipAdminController extends Controller
                 }
             }
 
-            // Write mandatory compliance log
+            // Write permanent justification log
             OverrideAuditLog::create([
                 'target_user_id' => $user->id,
-                'override_type' => $request->override_type,
-                'reason' => $request->reason,
-                'executed_by' => $admin->id,
-                'old_location_id' => $oldLocationId
+                'override_type'  => $request->override_type,
+                'reason'         => $request->reason,
+                'executed_by'    => auth()->id(),
+                'old_location_id'=> $oldLocationId
             ]);
         });
 
-        return redirect()->back()->with('success', 'Emergency override executed and logged to audit trail.');
+        return redirect()->back()->with('success', 'Emergency compliance override logged and executed.');
     }
 }

@@ -2,36 +2,36 @@
 
 return [
 
-    'invalid_category_type' => 'The category must be a consumable category.',
-    'does_not_exist' => 'Consumable does not exist.',
+    'invalid_category_type' => 'ক্যাটাগরিটি অবশ্যই একটি ব্যবহার্য সামগ্রীর ক্যাটাগরি হতে হবে।',
+    'does_not_exist' => 'ব্যবহার্য সামগ্রীটি বিদ্যমান নেই।',
 
     'create' => [
-        'error' => 'Consumable was not created, please try again.',
-        'success' => 'Consumable created successfully.',
+        'error' => 'ব্যবহার্য সামগ্রীটি তৈরি করা সম্ভব হয়নি, অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'success' => 'ব্যবহার্য সামগ্রীটি সফলভাবে তৈরি করা হয়েছে।',
     ],
 
     'update' => [
-        'error' => 'Consumable was not updated, please try again',
-        'success' => 'Consumable updated successfully.',
+        'error' => 'ব্যবহার্য সামগ্রীটি আপডেট করা সম্ভব হয়নি, অনুগ্রহ করে আবার চেষ্টা করুন',
+        'success' => 'ব্যবহার্য সামগ্রীটি সফলভাবে আপডেট করা হয়েছে।',
     ],
 
     'delete' => [
-        'confirm' => 'Are you sure you wish to delete this consumable?',
-        'error' => 'There was an issue deleting the consumable. Please try again.',
-        'success' => 'The consumable was deleted successfully.',
+        'confirm' => 'আপনি কি নিশ্চিত যে আপনি এই ব্যবহার্য সামগ্রীটি মুছে ফেলতে চান?',
+        'error' => 'ব্যবহার্য সামগ্রীটি মুছতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'success' => 'ব্যবহার্য সামগ্রীটি সফলভাবে মুছে ফেলা হয়েছে।',
     ],
 
     'checkout' => [
-        'error' => 'Consumable was not checked out, please try again',
-        'success' => 'Consumable checked out successfully.',
-        'user_does_not_exist' => 'That user is invalid. Please try again.',
-        'unavailable' => 'There are not enough consumables for this checkout. Please check the quantity left. ',
+        'error' => 'ব্যবহার্য সামগ্রীটি প্রদান করা সম্ভব হয়নি, অনুগ্রহ করে আবার চেষ্টা করুন',
+        'success' => 'ব্যবহার্য সামগ্রীটি সফলভাবে প্রদান করা হয়েছে।',
+        'user_does_not_exist' => 'ব্যবহারকারী সঠিক নয়। অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'unavailable' => 'এই প্রদানের জন্য পর্যাপ্ত ব্যবহার্য সামগ্রী নেই। অনুগ্রহ করে অবশিষ্ট পরিমাণ যাচাই করুন। ',
     ],
 
     'checkin' => [
-        'error' => 'Consumable was not checked in, please try again',
-        'success' => 'Consumable checked in successfully.',
-        'user_does_not_exist' => 'That user is invalid. Please try again.',
+        'error' => 'ব্যবহার্য সামগ্রীটি ফেরত নেওয়া সম্ভব হয়নি, অনুগ্রহ করে আবার চেষ্টা করুন',
+        'success' => 'ব্যবহার্য সামগ্রীটি সফলভাবে ফেরত নেওয়া হয়েছে।',
+        'user_does_not_exist' => 'ব্যবহারকারী সঠিক নয়। অনুগ্রহ করে আবার চেষ্টা করুন।',
     ],
 
 ];

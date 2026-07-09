@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'select_company' => 'Select Company',
-    'about_companies' => 'About Companies',
-    'about_companies_description' => '        You can use companies as a simple informative field, or you can use them to restrict asset visibility and availability to users with a specific company by enabling Full Company Support in your Admin Settings.',
+    'select_company' => 'মন্ত্রণালয়/বিভাগ/দপ্তর/সংস্থা নির্বাচন করুন',
+    'about_companies' => 'মন্ত্রণালয়/বিভাগ/দপ্তর/সংস্থা সম্পর্কে',
+    'about_companies_description' => '        আপনি মন্ত্রণালয়/বিভাগ/দপ্তর/সংস্থাকে একটি সাধারণ তথ্যমূলক ফিল্ড হিসেবে ব্যবহার করতে পারেন, অথবা আপনার অ্যাডমিন সেটিংস থেকে Full Company Support সক্রিয় করে নির্দিষ্ট মন্ত্রণালয়/বিভাগ/দপ্তর/সংস্থার ব্যবহারকারীদের জন্য সম্পদের দৃশ্যমানতা এবং প্রাপ্যতা সীমিত করতে পারেন।',
 ];
