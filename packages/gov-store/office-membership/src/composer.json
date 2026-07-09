@@ -1,0 +1,17 @@
+{
+    "name": "gov-store/office-membership",
+    "description": "Government Office Membership, Role Handshakes, and Clearance Rules",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "ICT Division"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "GovStore\\OfficeMembership\\": "src/"
+        }
+    }
+}
