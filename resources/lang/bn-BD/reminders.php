@@ -13,9 +13,9 @@ return [
     |
     */
 
-    'password' => 'Passwords must be six characters and match the confirmation.',
-    'user' => 'Username or email address is incorrect',
-    'token' => 'This password reset token is invalid or expired, or does not match the username provided.',
-    'sent' => 'If a matching user with a valid email address exists in our system, a password recovery email has been sent.',
+    'password' => 'পাসওয়ার্ড অবশ্যই ছয়টি অক্ষরের হতে হবে এবং নিশ্চিতকরণের সাথে মিলতে হবে।',
+    'user' => 'ব্যবহারকারীর নাম বা ইমেইল ঠিকানা ভুল',
+    'token' => 'এই পাসওয়ার্ড রিসেট টোকেনটি অবৈধ বা মেয়াদোত্তীর্ণ, অথবা এটি প্রদত্ত ব্যবহারকারীর নামের সাথে মিলছে না।',
+    'sent' => 'আমাদের সিস্টেমে যদি একটি বৈধ ইমেইল ঠিকানা সহ মিল থাকা ব্যবহারকারী থাকে, তবে একটি পাসওয়ার্ড পুনরুদ্ধারের ইমেইল পাঠানো হয়েছে।',
 
 ];

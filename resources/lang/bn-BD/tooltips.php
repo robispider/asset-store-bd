@@ -3,22 +3,22 @@
 return [
 
     'disabled_assoc' => [
-        'accessory' => 'This accessory cannot be deleted because it still has items, users, or locations associated with it',
-        'asset' => 'This asset cannot be deleted because it still has items associated with it',
-        'category' => 'This category cannot be deleted because it still has items associated with it',
-        'company' => 'This company cannot be deleted because it still has items or users associated with it',
-        'component' => 'This component cannot be deleted because it still has items associated with it',
-        'custom_field' => 'This custom field cannot be deleted because it is still associated with at least one fieldset',
-        'department' => 'This department cannot be deleted because it still has users associated with it',
-        'location' => 'This location cannot be deleted because it still has items or users associated with it',
-        'manufacturer' => 'This manufacturer cannot be deleted because it still has items associated with it',
-        'supplier' => 'This supplier cannot be deleted because it still has items associated with it',
-        'user' => 'This user cannot be deleted because it still has items associated with it',
-        'user_self' => 'You cannot delete yourself',
+        'accessory' => 'এই আনুষঙ্গিক সরঞ্জামটি মুছে ফেলা সম্ভব নয় কারণ এর সাথে এখনও আইটেম, ব্যবহারকারী বা কার্যালয় যুক্ত আছে',
+        'asset' => 'এই সম্পদটি মুছে ফেলা সম্ভব নয় কারণ এর সাথে এখনও আইটেম যুক্ত আছে',
+        'category' => 'এই বিভাগটি মুছে ফেলা সম্ভব নয় কারণ এর সাথে এখনও আইটেম যুক্ত আছে',
+        'company' => 'এই মন্ত্রণালয়/বিভাগ/দপ্তর/সংস্থাটি মুছে ফেলা সম্ভব নয় কারণ এর সাথে এখনও আইটেম বা ব্যবহারকারী যুক্ত আছে',
+        'component' => 'এই উপাদানটি মুছে ফেলা সম্ভব নয় কারণ এর সাথে এখনও আইটেম যুক্ত আছে',
+        'custom_field' => 'এই কাস্টম ফিল্ডটি মুছে ফেলা সম্ভব নয় কারণ এটি এখনও অন্তত একটি ফিল্ডসেটের সাথে যুক্ত আছে',
+        'department' => 'এই শাখা/বিভাগটি মুছে ফেলা সম্ভব নয় কারণ এর সাথে এখনও ব্যবহারকারী যুক্ত আছে',
+        'location' => 'এই কার্যালয়টি মুছে ফেলা সম্ভব নয় কারণ এর সাথে এখনও আইটেম বা ব্যবহারকারী যুক্ত আছে',
+        'manufacturer' => 'এই প্রস্তুতকারকটি মুছে ফেলা সম্ভব নয় কারণ এর সাথে এখনও আইটেম যুক্ত আছে',
+        'supplier' => 'এই সরবরাহকারীটি মুছে ফেলা সম্ভব নয় কারণ এর সাথে এখনও আইটেম যুক্ত আছে',
+        'user' => 'এই ব্যবহারকারীকে মুছে ফেলা সম্ভব নয় কারণ তার সাথে এখনও আইটেম যুক্ত আছে',
+        'user_self' => 'আপনি নিজেকে মুছে ফেলতে পারবেন না',
     ],
 
     'checkin_all' => [
-        'user' => 'Checkin all items for this user and optionally delete them. You will be able to confirm this on the next page.',
+        'user' => 'এই ব্যবহারকারীর সকল আইটেম ফেরত নিন এবং চাইলে সেগুলো মুছে ফেলুন। আপনি পরবর্তী পৃষ্ঠায় এটি নিশ্চিত করতে পারবেন।',
     ],
 
 ];

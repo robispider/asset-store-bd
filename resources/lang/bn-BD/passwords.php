@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'sent' => 'If a matching user with a valid email address exists in our system, a password recovery email has been sent.',
-    'user' => 'If a matching user with a valid email address exists in our system, a password recovery email has been sent.',
-    'token' => 'This password reset token is invalid or expired, or does not match the username provided.',
-    'reset' => 'Your password has been reset!',
-    'password_change' => 'Your password has been updated!',
+    'sent' => 'আমাদের সিস্টেমে যদি একটি বৈধ ইমেইল ঠিকানা সহ মিল থাকা ব্যবহারকারী থাকে, তবে একটি পাসওয়ার্ড পুনরুদ্ধারের ইমেইল পাঠানো হয়েছে।',
+    'user' => 'আমাদের সিস্টেমে যদি একটি বৈধ ইমেইল ঠিকানা সহ মিল থাকা ব্যবহারকারী থাকে, তবে একটি পাসওয়ার্ড পুনরুদ্ধারের ইমেইল পাঠানো হয়েছে।',
+    'token' => 'এই পাসওয়ার্ড রিসেট টোকেনটি অবৈধ বা মেয়াদোত্তীর্ণ, অথবা এটি প্রদত্ত ব্যবহারকারীর নামের সাথে মিলছে না।',
+    'reset' => 'আপনার পাসওয়ার্ড রিসেট করা হয়েছে!',
+    'password_change' => 'আপনার পাসওয়ার্ড আপডেট করা হয়েছে!',
 ];

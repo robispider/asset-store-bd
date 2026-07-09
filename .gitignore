@@ -51,6 +51,7 @@ tests/coverage/*
 /npm-debug.log
 /storage/oauth-private.key
 /storage/oauth-public.key
+/storage/framework/views
 logs/*
 *.cache
 

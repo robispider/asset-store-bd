@@ -13,23 +13,23 @@ return [
     |
     */
 
-    'more_info_title' => 'More Info',
+    'more_info_title' => 'আরও তথ্য',
 
-    'audit_help' => 'Checking this box will edit the asset record to reflect this new location. Leaving it unchecked will simply note the location in the audit log.<br><br>Note that if this asset is checked out, it will not change the location of the person, asset or location it is checked out to.',
+    'audit_help' => 'এই বক্সটি চেক করলে সম্পদ রেকর্ডে এই নতুন কার্যালয়টি আপডেট হয়ে যাবে। আনচেক করে রাখলে এটি শুধুমাত্র নিরীক্ষা লগে নথিভুক্ত হবে।<br><br>মনে রাখবেন যে যদি এই সম্পদটি প্রদান করা থাকে, তবে ব্যক্তি, সম্পদ বা কার্যালয়ের অবস্থান পরিবর্তিত হবে না।',
 
-    'assets' => 'Assets are items tracked by serial number or asset tag.  They tend to be higher value items where identifying a specific item matters.',
+    'assets' => 'সম্পদ হলো এমন আইটেম যা সিরিয়াল নম্বর বা সম্পদ ট্যাগ দ্বারা ট্র্যাক করা হয়। এগুলো সাধারণত উচ্চমূল্যের আইটেম হয় যেখানে নির্দিষ্ট আইটেম শনাক্ত করা গুরুত্বপূর্ণ।',
 
-    'categories' => 'Categories help you organize your items. Some example categories might be &quot;Desktops&quot;, &quot;Laptops&quot;, &quot;Mobile Phones&quot;, &quot;Tablets&quot;, and so on, but you can use categories any way that makes sense for you.',
+    'categories' => 'বিভাগসমূহ আপনাকে আপনার আইটেমগুলো গুছিয়ে রাখতে সাহায্য করে। কিছু উদাহরণ হতে পারে "ডেস্কটপ", "ল্যাপটপ", "মোবাইল ফোন", "ট্যাবলেট" ইত্যাদি, তবে আপনি আপনার প্রয়োজন অনুযায়ী বিভাগ ব্যবহার করতে পারেন।',
 
-    'accessories' => 'Accessories are anything you issue to users but that do not have a serial number (or you do not care about tracking them uniquely). For example, computer mice or keyboards.',
+    'accessories' => 'আনুষঙ্গিক সরঞ্জাম হলো এমন সব জিনিস যা আপনি ব্যবহারকারীদের প্রদান করেন কিন্তু সেগুলোর কোনো সিরিয়াল নম্বর নেই (অথবা আপনি সেগুলো আলাদাভাবে ট্র্যাক করা গুরুত্বপূর্ণ মনে করেন না)। উদাহরণস্বরূপ, কম্পিউটার মাউস বা কিবোর্ড।',
 
-    'companies' => 'Companies can be used as a simple identifier field, or can be used to limit visibility of assets, users, etc if full company support is enabled in your Admin settings.',
+    'companies' => 'মন্ত্রণালয়/বিভাগ/দপ্তর/সংস্থা একটি সাধারণ শনাক্তকারী ফিল্ড হিসেবে ব্যবহৃত হতে পারে, অথবা যদি আপনার অ্যাডমিন সেটিংসে ফুল কোম্পানি সাপোর্ট সক্রিয় থাকে তবে এটি সম্পদ, ব্যবহারকারী ইত্যাদির দৃশ্যমানতা সীমিত করতে ব্যবহৃত হতে পারে।',
 
-    'components' => 'Components are items that are part of an asset, for example HDD, RAM, etc.',
+    'components' => 'উপাদান হলো এমন আইটেম যা একটি সম্পদের অংশ, উদাহরণস্বরূপ HDD, RAM ইত্যাদি।',
 
-    'consumables' => 'Consumables are anything purchased that will be used up over time. For example, printer ink or copier paper.',
+    'consumables' => 'ব্যবহার্য সামগ্রী হলো এমন সব জিনিস যা কেনা হয় এবং সময়ের সাথে সাথে শেষ হয়ে যায়। উদাহরণস্বরূপ, প্রিন্টারের কালি বা ফটোকপি কাগজ।',
 
-    'depreciations' => 'You can set up asset depreciations to depreciate assets based on straight-line depreciation.',
+    'depreciations' => 'আপনি সরলরৈখিক অবচয়ের (straight-line depreciation) ভিত্তিতে সম্পদের অবচয় সেট আপ করতে পারেন।',
 
-    'empty_file' => 'The importer detects that this file is empty.',
+    'empty_file' => 'ইমপোর্টার শনাক্ত করেছে যে এই ফাইলটি খালি।',
 ];

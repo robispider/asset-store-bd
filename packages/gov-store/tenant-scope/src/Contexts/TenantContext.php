@@ -10,7 +10,7 @@ class TenantContext
     public array $configs = [];
 
     /**
-     * Retrieves the loaded configuration for a specific reference type.
+     * Safely retrieves the cached configuration for a specific reference type.
      */
     public function getConfig(string $referenceType): ?object
     {

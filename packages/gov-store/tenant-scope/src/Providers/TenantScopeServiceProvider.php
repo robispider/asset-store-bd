@@ -8,6 +8,7 @@ use GovStore\TenantScope\Scopes\MinistryLocationScope;
 use GovStore\TenantScope\Contexts\TenantContext;
 use GovStore\TenantScope\Http\Middleware\InitializeTenantContext;
 use GovStore\TenantScope\Http\Middleware\InjectTenantScopeUi;
+use GovStore\TenantScope\Observers\TenantMutationObserver;
 
 class TenantScopeServiceProvider extends ServiceProvider
 {
@@ -27,31 +28,48 @@ class TenantScopeServiceProvider extends ServiceProvider
 
         $router = $this->app['router'];
         
-        // 2. Push middlewares to HTTP execution pipeline
+        // 2. Register Middlewares globally on the appropriate routing groups
         $router->pushMiddlewareToGroup('web', InjectTenantScopeUi::class);
         $router->pushMiddlewareToGroup('web', InitializeTenantContext::class);
+        $router->pushMiddlewareToGroup('api', InitializeTenantContext::class);
 
-        // 3. Register Global Scopes (now pure readers)
-        if (class_exists(\App\Models\Asset::class)) {
-            \App\Models\Asset::addGlobalScope(new MinistryLocationScope());
+        // 3. Transactional Models (Left Branch Scoping)
+        $transactionalModels = [
+            \App\Models\Asset::class,
+            \App\Models\User::class,
+            \App\Models\Consumable::class,
+            \App\Models\Accessory::class,
+            \App\Models\Component::class,
+            \App\Models\License::class,
+        ];
+
+        // 4. Reference Models (Right Branch Scoping)
+        $referenceModels = [
+            'categories'    => \App\Models\Category::class,
+            'models'        => \App\Models\AssetModel::class,
+            'suppliers'     => \App\Models\Supplier::class,
+            'manufacturers' => \App\Models\Manufacturer::class,
+            'locations'     => \App\Models\Location::class,
+        ];
+
+        // 5. Register Scopes at Runtime
+        foreach ($transactionalModels as $modelClass) {
+            if (class_exists($modelClass)) {
+                $modelClass::addGlobalScope(new MinistryLocationScope());
+            }
         }
-        if (class_exists(\App\Models\User::class)) {
-            \App\Models\User::addGlobalScope(new MinistryLocationScope());
+        foreach ($referenceModels as $type => $modelClass) {
+            if (class_exists($modelClass)) {
+                $modelClass::addGlobalScope(new TenantScope($type));
+            }
         }
-        if (class_exists(\App\Models\Category::class)) {
-            \App\Models\Category::addGlobalScope(new TenantScope('categories'));
-        }
-        if (class_exists(\App\Models\AssetModel::class)) {
-            \App\Models\AssetModel::addGlobalScope(new TenantScope('models'));
-        }
-        if (class_exists(\App\Models\Supplier::class)) {
-            \App\Models\Supplier::addGlobalScope(new TenantScope('suppliers'));
-        }
-        if (class_exists(\App\Models\Manufacturer::class)) {
-            \App\Models\Manufacturer::addGlobalScope(new TenantScope('manufacturers'));
-        }
-        if (class_exists(\App\Models\Location::class)) {
-            \App\Models\Location::addGlobalScope(new TenantScope('locations'));
+
+        // 6. Register Observers for Mutations (Fires only on Eloquent saves)
+        $allProtectedModels = array_merge($transactionalModels, array_values($referenceModels));
+        foreach ($allProtectedModels as $modelClass) {
+            if (class_exists($modelClass)) {
+                $modelClass::observe(TenantMutationObserver::class);
+            }
         }
     }
 }

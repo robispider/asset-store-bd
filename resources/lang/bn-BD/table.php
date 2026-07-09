@@ -2,10 +2,10 @@
 
 return [
 
-    'actions' => 'Actions',
-    'action' => 'Action',
-    'by' => 'By',
-    'item' => 'Item',
-    'no_matching_records' => 'No matching records found',
+    'actions' => 'পদক্ষেপসমূহ',
+    'action' => 'পদক্ষেপ',
+    'by' => 'দ্বারা',
+    'item' => 'আইটেম',
+    'no_matching_records' => 'কোনো মিল থাকা রেকর্ড পাওয়া যায়নি',
 
 ];
