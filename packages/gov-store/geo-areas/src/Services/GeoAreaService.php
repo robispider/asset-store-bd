@@ -56,6 +56,12 @@ class GeoAreaService
             return false;
         }
 
+        // A null/empty officer hid must DENY (fail closed). Otherwise str_starts_with($x, '')
+        // returns true for every territory — a full boundary bypass.
+        if (empty($officerArea->hid) || empty($targetArea->hid)) {
+            return false;
+        }
+
         return str_starts_with($targetArea->hid, $officerArea->hid);
     }
 }

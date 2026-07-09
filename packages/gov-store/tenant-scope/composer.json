@@ -1,6 +1,6 @@
 {
-    "name": "gov-store/organization",
-    "description": "Government Cloud Store Office Provisioning and Administration Extension for Bangladesh",
+    "name": "gov-store/tenant-scope",
+    "description": "Government Cloud Store — multi-tenant data isolation (ministry/office scoping).",
     "type": "library",
     "version": "1.0.0",
     "license": "MIT",
@@ -12,13 +12,13 @@
     "require": {},
     "autoload": {
         "psr-4": {
-            "GovStore\\Organization\\": "src/"
+            "GovStore\\TenantScope\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "GovStore\\Organization\\Providers\\OrganizationServiceProvider"
+                "GovStore\\TenantScope\\Providers\\TenantScopeServiceProvider"
             ]
         }
     }

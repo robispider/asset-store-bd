@@ -1,6 +1,6 @@
 {
-    "name": "gov-store/organization",
-    "description": "Government Cloud Store Office Provisioning and Administration Extension for Bangladesh",
+    "name": "gov-store/geo-areas",
+    "description": "Government Cloud Store — shared geographical reference library (Bangladesh geo areas).",
     "type": "library",
     "version": "1.0.0",
     "license": "MIT",
@@ -12,13 +12,13 @@
     "require": {},
     "autoload": {
         "psr-4": {
-            "GovStore\\Organization\\": "src/"
+            "GovStore\\GeoAreas\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "GovStore\\Organization\\Providers\\OrganizationServiceProvider"
+                "GovStore\\GeoAreas\\Providers\\GeoAreasServiceProvider"
             ]
         }
     }

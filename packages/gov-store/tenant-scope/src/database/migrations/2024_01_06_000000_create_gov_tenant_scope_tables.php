@@ -56,7 +56,6 @@ class CreateGovTenantScopeTables extends Migration
             ['reference_type' => 'models',         'scope_strategy' => 'global',  'show_only_used' => false],
             ['reference_type' => 'manufacturers',  'scope_strategy' => 'global',  'show_only_used' => false],
             ['reference_type' => 'suppliers',      'scope_strategy' => 'office',  'show_only_used' => false], // Decentralized Office Procurement
-            ['reference_type' => 'fieldsets',      'scope_strategy' => 'company', 'show_only_used' => false], // Customized by Ministry
             ['reference_type' => 'locations',      'scope_strategy' => 'company', 'show_only_used' => false], // Strict Ministry Building Trees
         ];
 

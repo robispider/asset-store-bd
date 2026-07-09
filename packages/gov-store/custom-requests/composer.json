@@ -1,6 +1,6 @@
 {
-    "name": "gov-store/organization",
-    "description": "Government Cloud Store Office Provisioning and Administration Extension for Bangladesh",
+    "name": "gov-store/custom-requests",
+    "description": "Government Cloud Store — catalog, basket, service requests, approval & fulfillment.",
     "type": "library",
     "version": "1.0.0",
     "license": "MIT",
@@ -12,13 +12,13 @@
     "require": {},
     "autoload": {
         "psr-4": {
-            "GovStore\\Organization\\": "src/"
+            "GovStore\\CustomRequests\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "GovStore\\Organization\\Providers\\OrganizationServiceProvider"
+                "GovStore\\CustomRequests\\Providers\\CustomRequestServiceProvider"
             ]
         }
     }

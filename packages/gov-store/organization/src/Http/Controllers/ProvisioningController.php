@@ -35,14 +35,21 @@ class ProvisioningController extends Controller
         $officesQuery = Location::with(['company', 'parent', 'profile.geoArea', 'profile.officeAdmin']);
         
         if (!$user->isSuperUser() && !$user->hasAccess('admin')) {
-            $jurisdiction = IctJurisdiction::where('user_id', $user->id)->firstOrFail();
-            $officesQuery->whereHas('profile', function ($q) use ($jurisdiction) {
-                $q->whereIn('geo_area_id', function ($sub) use ($jurisdiction) {
-                    $sub->select('GeoAreaId')
-                        ->from('gov_geo_areas')
-                        ->where('hid', 'like', $jurisdiction->geoArea->hid . '%');
+            $jurisdiction = IctJurisdiction::with('geoArea')->where('user_id', $user->id)->firstOrFail();
+            $officerHid = $jurisdiction->geoArea->hid ?? null;
+
+            if (empty($officerHid)) {
+                // Broken/missing jurisdiction geo → show nothing (fail closed), never everything.
+                $officesQuery->whereRaw('1 = 0');
+            } else {
+                $officesQuery->whereHas('profile', function ($q) use ($officerHid) {
+                    $q->whereIn('geo_area_id', function ($sub) use ($officerHid) {
+                        $sub->select('GeoAreaId')
+                            ->from('gov_geo_areas')
+                            ->where('hid', 'like', $officerHid . '%');
+                    });
                 });
-            });
+            }
         }
 
         $offices = $officesQuery->orderBy('name')->get();
