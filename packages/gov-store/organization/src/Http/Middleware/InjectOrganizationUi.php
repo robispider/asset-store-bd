@@ -12,12 +12,8 @@ class InjectOrganizationUi
         $response = $next($request);
 
         // Inject only if user is logged in, and we are loading a standard HTML page
-        // Only rewrite real, full HTML page responses. Skip AJAX (datatables/select2),
-        // redirects, downloads and errors — no point rendering + rebuilding those bodies.
-        if (auth()->check() &&
-            !$request->ajax() &&
-            $response instanceof Response &&
-            $response->getStatusCode() === 200 &&
+        if (auth()->check() && 
+            $response instanceof Response && 
             str_contains($response->headers->get('Content-Type') ?? '', 'text/html')
         ) {
             $content = $response->getContent();

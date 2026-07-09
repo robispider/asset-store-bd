@@ -13,35 +13,10 @@ use Illuminate\Support\Facades\Log;
 class TenantBoundaryService
 {
     /**
-     * When true, all boundary enforcement is skipped. Wrap trusted server-side flows
-     * (e.g. workflow-driven checkout/fulfillment) via runWithoutBoundaries().
-     */
-    public static bool $bypass = false;
-
-    /**
-     * Runs a callback with boundary enforcement temporarily disabled, restoring the
-     * previous state afterwards (nesting-safe).
-     */
-    public static function runWithoutBoundaries(callable $callback)
-    {
-        $previous = static::$bypass;
-        static::$bypass = true;
-        try {
-            return $callback();
-        } finally {
-            static::$bypass = $previous;
-        }
-    }
-
-    /**
      * Validates both ownership, relationship mappings, and business integrity rules.
      */
     public function verify(Model $model, string $action): void
     {
-        // Never enforce during CLI (imports, seeders, migrations, queue workers, tinker)
-        // or when a trusted flow has explicitly bypassed enforcement.
-        if (static::$bypass || app()->runningInConsole()) return;
-
         if (!app()->bound(TenantContext::class)) return;
         $context = app(TenantContext::class);
         if (!$context->isActive) return; // Superadmins are bypassed

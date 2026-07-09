@@ -3,6 +3,8 @@
 namespace GovStore\Organization\Http\Middleware;
 
 use Closure;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Gate;
 use GovStore\Organization\Models\LocationProfile;
 use GovStore\Organization\Services\OfficeReadinessService;
 
@@ -17,9 +19,8 @@ class EnsureOfficeIsOperational
 
         $user = auth()->user();
 
-        // 2. Admins/superusers bypass operational checks.
-        //    Snipe-IT authorises via User::hasAccess(), not named Gate abilities.
-        if ($user->isSuperUser() || $user->hasAccess('admin') || $user->hasAccess('superuser')) {
+        // 2. Exception-Safe: Standard Laravel gates bypass operational checks
+        if ($user->isSuperUser() || Gate::allows('admin') || Gate::allows('superadmin')) {
             return $next($request);
         }
 
@@ -41,9 +42,8 @@ class EnsureOfficeIsOperational
 
                 // 4. Intercept if the location profile has not met operational criteria
                 if (!$profile || $profile->lifecycle_status !== 'operational') {
-                    // Read-only evaluation — a GET request/middleware must not write.
                     $readinessService = app(OfficeReadinessService::class);
-                    $readiness = $readinessService->evaluate($user->location_id);
+                    $readiness = $readinessService->evaluateAndTransition($user->location_id);
                     $location = $user->location;
 
                     // Fallback check if the Snipe-IT Location model was deleted or is orphaned

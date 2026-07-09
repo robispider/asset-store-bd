@@ -4,7 +4,6 @@ namespace GovStore\TenantScope\Http\Controllers;
 
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use GovStore\TenantScope\Models\TenantScopeConfig;
 use GovStore\TenantScope\Models\TenantScopeMapping;
 use App\Models\Company;
@@ -53,10 +52,6 @@ class TenantScopeController extends Controller
                 ]
             );
         }
-
-        // Bust the cached configs so the new strategy takes effect immediately
-        // (InitializeTenantContext caches this key for 1 hour).
-        Cache::forget('tenant_scope_configs');
 
         return redirect()->back()->with('success', 'Scoping policies successfully saved.');
     }

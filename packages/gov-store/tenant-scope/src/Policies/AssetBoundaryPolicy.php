@@ -26,16 +26,13 @@ class AssetBoundaryPolicy
 
     public function canMutate(Model $model, TenantContext $context): bool
     {
-        // Cast both sides to int: reference models (Category, Supplier, …) may return
-        // these keys as strings, and a strict !== would falsely deny same-tenant rows.
-
         // 1. Check Company Ownership
-        if ($model->company_id && (int) $model->company_id !== (int) $context->companyId) {
+        if ($model->company_id && $model->company_id !== $context->companyId) {
             return false;
         }
 
         // 2. Check Location Ownership
-        if ($model->location_id && (int) $model->location_id !== (int) $context->locationId) {
+        if ($model->location_id && $model->location_id !== $context->locationId) {
             return false;
         }
 

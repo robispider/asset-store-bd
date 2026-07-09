@@ -17,9 +17,13 @@ class GeoAreaController extends Controller
         $restrictToHid = $request->input('restrict_hid', null);
         $types = $request->input('types', []);
 
-        // Empty query returns an empty result set (no debug dumps in production)
-        if (empty($term)) {
-            return response()->json([]);
+        // Diagnostic visual pre-check
+        if (empty($term) && !$request->ajax()) {
+            $count = \GovStore\GeoAreas\Models\GeoArea::count();
+            dd([
+                'STATUS' => 'Shared Geographical Reference API is active!',
+                'Total Registered Territories' => $count
+            ]);
         }
 
         // Query our decoupled library service
