@@ -11,8 +11,7 @@ use GovStore\Organization\Models\LocationProfile;
 use GovStore\Organization\Models\LocationRole;
 use GovStore\Organization\Models\OrganizationActivityLog;
 use GovStore\Organization\Services\OfficeConfigurationService;
-use GovStore\GeoAreas\Services\GeoAreaService;
-use GovStore\GeoAreas\Models\GeoArea;
+use GovStore\GeoAreas\Services\GeoAreaService; // ONLY IMPORT SERVICE
 
 class OfficeHubController extends Controller
 {
@@ -38,7 +37,6 @@ class OfficeHubController extends Controller
 
         $location = Location::with(['company', 'parent'])->findOrFail($id);
         
-        // EXCEPTION-SAFE: Use first() and redirect gracefully if the profile was deleted or is missing
         $profile = LocationProfile::with(['geoArea', 'officeAdmin'])->where('location_id', $id)->first();
         
         if (!$profile) {
@@ -62,6 +60,10 @@ class OfficeHubController extends Controller
         ));
     }
 
+    /**
+     * Fully Decoupled: Updates office metadata and resolves parent geographic spellings 
+     * exclusively through the shared GeoAreaService library API.
+     */
     public function update(Request $request, $id, GeoAreaService $geoService)
     {
         $this->checkAccess($id);
@@ -87,15 +89,10 @@ class OfficeHubController extends Controller
         if ((int)$request->geo_area_id !== (int)$profile->geo_area_id) {
             $geoArea = $geoService->getById((int)$request->geo_area_id);
             if ($geoArea) {
-                $parts = array_filter(explode('/', $geoArea->hid));
-                $city = ''; $state = '';
-                foreach ($parts as $code) {
-                    $parent = GeoArea::where('geo_code', $code)->first();
-                    if ($parent) {
-                        if (in_array($parent->geo_type, ['upazilla', 'city'])) $city = $parent->en_name;
-                        if ($parent->geo_type === 'district') $state = $parent->en_name;
-                    }
-                }
+                // Resolved parent names using the decoupled Service API (NO DIRECT MODEL QUERIES)
+                $geoNames = $geoService->resolveParentNames($geoArea->hid);
+                $city = $geoNames['city'];
+                $state = $geoNames['state'];
             }
         }
 

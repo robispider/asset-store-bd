@@ -55,6 +55,7 @@ storage/framework/views
 storage/framework/cache/data/*
 storage/framework/views/*
 storage/framework/sessions/*
+storage\framework\views\*
 logs/*
 *.cache
 

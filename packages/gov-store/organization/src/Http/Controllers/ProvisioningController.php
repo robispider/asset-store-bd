@@ -9,8 +9,10 @@ use App\Models\Company;
 use App\Models\User;
 use GovStore\Organization\Models\LocationProfile;
 use GovStore\Organization\Models\IctJurisdiction;
-use GovStore\GeoAreas\Services\GeoAreaService;
+use GovStore\Organization\Models\LocationRole;
+use GovStore\GeoAreas\Services\GeoAreaService; // ONLY IMPORT THE SERVICE
 use GovStore\Organization\Services\OfficeProvisioningService;
+use GovStore\Organization\ViewModels\OfficeRegistryViewModel;
 
 class ProvisioningController extends Controller
 {
@@ -27,16 +29,27 @@ class ProvisioningController extends Controller
         }
     }
 
-    public function index()
+    /**
+     * Renders the Office Registry (Master Command Dashboard)
+     */
+    public function index(Request $request, GeoAreaService $geoService)
     {
         $this->checkIctOfficerAccess();
         $user = auth()->user();
 
-        $officesQuery = Location::with(['company', 'parent', 'profile.geoArea', 'profile.officeAdmin']);
-        
+        // 1. Calculate Real-Time Rollout Stats Metrics (Top Dashboard Badges)
+        $totalOfficesCount = Location::count();
+        $operationalCount = LocationProfile::where('lifecycle_status', 'operational')->count();
+        $pendingCount = LocationProfile::where('lifecycle_status', '!=', 'operational')->count();
+        $ministriesCount = Location::whereNotNull('company_id')->distinct('company_id')->count();
+
+        // 2. Build Core Scoped Query eager loading Snipe-IT relationships
+        $query = Location::with(['company', 'parent', 'profile.geoArea', 'profile.officeAdmin']);
+
+        // Scope queue strictly to the officer's jurisdiction bounds
         if (!$user->isSuperUser() && !$user->hasAccess('admin')) {
             $jurisdiction = IctJurisdiction::where('user_id', $user->id)->firstOrFail();
-            $officesQuery->whereHas('profile', function ($q) use ($jurisdiction) {
+            $query->whereHas('profile', function ($q) use ($jurisdiction) {
                 $q->whereIn('geo_area_id', function ($sub) use ($jurisdiction) {
                     $sub->select('GeoAreaId')
                         ->from('gov_geo_areas')
@@ -45,12 +58,64 @@ class ProvisioningController extends Controller
             });
         }
 
-        $offices = $officesQuery->orderBy('name')->get();
-        $profiles = LocationProfile::with('officeAdmin')->get()->keyBy('location_id');
-        $users = User::orderBy('first_name')->get();
-        $companies = Company::orderBy('name')->get();
+        // Apply Filters
+        if ($request->filled('search')) {
+            $term = $request->input('search');
+            $query->where(function($q) use ($term) {
+                $q->where('name', 'like', "%{$term}%")
+                  ->orWhereHas('profile.officeAdmin', function($sq) use ($term) {
+                      $sq->where('first_name', 'like', "%{$term}%")
+                         ->orWhere('last_name', 'like', "%{$term}%")
+                         ->orWhere('username', 'like', "%{$term}%");
+                  });
+            });
+        }
 
-        return view('govorg::provisioning.index', compact('offices', 'profiles', 'users', 'companies'));
+        if ($request->filled('ministry_id')) {
+            $query->where('company_id', $request->input('ministry_id'));
+        }
+
+        if ($request->filled('district_id')) {
+            $districtId = $request->input('district_id');
+            $query->whereHas('profile.geoArea', function($q) use ($districtId, $geoService) {
+                $district = $geoService->getById($districtId);
+                if ($district) {
+                    $q->where('hid', 'like', $district->hid . '%');
+                }
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->whereHas('profile', function($q) use ($request) {
+                $q->where('lifecycle_status', $request->input('status'));
+            });
+        }
+
+        // Execute query
+        $offices = $query->orderBy('name')->get();
+
+        // 3. DICTIONARY LOOKUP: Fetch roles for only the locations currently on this page
+        $locationIds = $offices->pluck('id');
+        $rolesDictionary = LocationRole::whereIn('location_id', $locationIds)
+                            ->get()
+                            ->keyBy('location_id');
+
+        // 4. MAP ELOCUENT MODELS TO THE VIEWMODEL (Dynamic Paginator check)
+        $collection = $offices instanceof \Illuminate\Pagination\LengthAwarePaginator ? $offices->getCollection() : $offices;
+        
+        $collection->transform(function ($loc) use ($rolesDictionary) {
+            $role = $rolesDictionary->get($loc->id); // Match role to location in memory
+            return new OfficeRegistryViewModel($loc, $role);
+        });
+
+        // Fetch select list values using the decoupled Shared Service API
+        $companies = Company::orderBy('name')->get();
+        $districts = $geoService->getAllDistricts(); // BOUNDARY CORRECTED
+
+        return view('govorg::provisioning.index', compact(
+            'offices', 'companies', 'districts',
+            'totalOfficesCount', 'operationalCount', 'pendingCount', 'ministriesCount'
+        ));
     }
 
     public function create()
@@ -119,22 +184,10 @@ class ProvisioningController extends Controller
             $geoArea = $geoService->getById((int)$data['geo_area_id']);
             
             if ($geoArea) {
-                $parts = array_filter(explode('/', $geoArea->hid));
-                $city = ''; $state = '';
-
-                foreach ($parts as $code) {
-                    $parent = \GovStore\GeoAreas\Models\GeoArea::where('geo_code', $code)->first();
-                    if ($parent) {
-                        if ($parent->geo_type === 'upazilla' || $parent->geo_type === 'city') {
-                            $city = $parent->en_name;
-                        } elseif ($parent->geo_type === 'district') {
-                            $state = $parent->en_name;
-                        }
-                    }
-                }
-
-                $data['city'] = $city;
-                $data['state'] = $state;
+                // Resolved parents names using the decoupled Service API
+                $geoNames = $geoService->resolveParentNames($geoArea->hid); // BOUNDARY CORRECTED
+                $data['city'] = $geoNames['city'];
+                $data['state'] = $geoNames['state'];
             }
 
             $service->provisionOffice($data, auth()->id());
@@ -173,7 +226,10 @@ class ProvisioningController extends Controller
     {
         $this->checkIctOfficerAccess();
 
+        // Load all active officer mappings with their home office users and geographic territories
         $jurisdictions = IctJurisdiction::with(['user.location', 'geoArea'])->get();
+        
+        // Fetch all users to select from
         $users = User::orderBy('first_name')->get();
 
         return view('govorg::provisioning.jurisdictions', compact('jurisdictions', 'users'));

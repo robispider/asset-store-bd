@@ -14,7 +14,42 @@ class GeoAreaService
     {
         return GeoArea::find($id);
     }
+  /**
+     * Returns all registered District-level territories in Bangladesh.
+     * Decoupled API: consumed by other packages to populate filter select lists.
+     */
+    public function getAllDistricts(): Collection
+    {
+        return GeoArea::where('geo_type', 'district')->orderBy('en_name')->get();
+    }
 
+    /**
+     * Parses the hierarchical 'hid' path and extracts the English names of the 
+     * corresponding Upazila (city) and Zila/District (state) nodes.
+     */
+    public function resolveParentNames(string $hid): array
+    {
+        $parts = array_filter(explode('/', $hid));
+        $city = '';
+        $state = '';
+
+        foreach ($parts as $code) {
+            $parent = GeoArea::where('geo_code', $code)->first();
+            if ($parent) {
+                if (in_array($parent->geo_type, ['upazilla', 'city'])) {
+                    $city = $parent->en_name;
+                }
+                if ($parent->geo_type === 'district') {
+                    $state = $parent->en_name;
+                }
+            }
+        }
+
+        return [
+            'city' => $city,
+            'state' => $state
+        ];
+    }
     /**
      * Generic Search API: Filters by term, supports matching arrays of geo-types,
      * and restricts results to an active hierarchy tree branch using high-performance 'hid' indexing.

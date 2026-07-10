@@ -146,68 +146,55 @@
                             <th style="width: 120px;">Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @forelse($offices ?? [] as $loc)
-                            @php
-                                $profile = $loc->profile ?? null;
-                                $status = $profile ? $profile->lifecycle_status : 'unconfigured';
-                                $geoName = $profile && $profile->geoArea ? $profile->geoArea->en_name : 'Unmapped';
-                                $geoType = $profile && $profile->geoArea ? ucfirst($profile->geoArea->geo_type) : 'N/A';
-                                $adminName = $profile && $profile->officeAdmin ? $profile->officeAdmin->present()->fullName : 'Unassigned';
-                                
-                                // Direct role checklist checks
-                                $roles = \GovStore\Organization\Models\LocationRole::where('location_id', $loc->id)->first();
-                                $hasPrimary = $roles && $roles->primary_approver_id;
-                                $hasStorekeeper = $roles && $roles->storekeeper_id;
-                            @endphp
+                   <tbody>
+                        @forelse($offices ?? [] as $office)
                             <tr>
                                 <td>
-                                    <strong>{{ $loc->name }}</strong><br>
-                                    <small class="text-muted"><i class="fas fa-sitemap"></i> Parent: {{ $loc->parent->name ?? 'Root Office' }}</small>
+                                    <strong>{{ $office->name }}</strong><br>
+                                    <small class="text-muted"><i class="fas fa-sitemap"></i> Parent: {{ $office->parentName }}</small>
                                 </td>
                                 
                                 <td>
-                                    <span class="text-primary" style="font-weight: bold;"><i class="fas fa-map-marker-alt"></i> {{ $geoName }}</span><br>
-                                    <small class="text-muted">Type: {{ $geoType }}</small>
+                                    <span class="text-primary" style="font-weight: bold;"><i class="fas fa-map-marker-alt"></i> {{ $office->geoName }}</span><br>
+                                    <small class="text-muted">Type: {{ $office->geoType }}</small>
                                 </td>
 
                                 <td>
-                                    <i class="fas fa-university text-muted"></i> {{ $loc->company->name ?? 'Standalone Office' }}
+                                    <i class="fas fa-university text-muted"></i> {{ $office->ministryName }}
                                 </td>
 
                                 <td>
-                                    <i class="fas fa-user-tie text-muted"></i> {{ $adminName }}
+                                    <i class="fas fa-user-tie text-muted"></i> {{ $office->adminName }}
                                 </td>
 
                                 <td>
                                     <div class="status-badge-container">
-                                        @if($status === 'operational')
+                                        @if($office->status === 'operational')
                                             <span class="label label-success"><i class="fas fa-check-double"></i> Operational</span>
-                                        @elseif($status === 'configured')
+                                        @elseif($office->status === 'configured')
                                             <span class="label label-info"><i class="fas fa-sliders-h"></i> Configured</span>
-                                        @elseif($status === 'provisioned')
+                                        @elseif($office->status === 'provisioned')
                                             <span class="label label-warning"><i class="fas fa-building"></i> Provisioned</span>
                                             <small class="text-muted" style="display:block; margin-top: 3px;">
                                                 Needs: 
-                                                <span class="{{ $hasPrimary ? 'text-success' : 'text-danger' }}">{{ $hasPrimary ? '✓' : '✗' }} Primary</span> &bull; 
-                                                <span class="{{ $hasStorekeeper ? 'text-success' : 'text-danger' }}">{{ $hasStorekeeper ? '✓' : '✗' }} Storekeeper</span>
+                                                <span class="{{ $office->hasPrimary ? 'text-success' : 'text-danger' }}">{{ $office->hasPrimary ? '✓' : '✗' }} Primary</span> &bull; 
+                                                <span class="{{ $office->hasStorekeeper ? 'text-success' : 'text-danger' }}">{{ $office->hasStorekeeper ? '✓' : '✗' }} Storekeeper</span>
                                             </small>
                                         @else
-                                            <!-- Bypasses and flags standard unmapped locations -->
                                             <span class="label label-danger">Unconfigured</span>
                                         @endif
                                     </div>
                                 </td>
 
                                 <td style="vertical-align: middle;">
-                                    @if($status === 'unconfigured')
-                                        <!-- Context-Aware Onboard Link -->
-                                        <a href="{{ route('gov.org.provisioning.onboard', ['location_id' => $loc->id]) }}" class="btn btn-xs btn-success btn-block" title="Map Geography to this Location">
+                                    @if($office->status === 'unconfigured')
+                                        <!-- Clean Context-Aware Onboard Link -->
+                                        <a href="{{ route('gov.org.provisioning.onboard', ['location_id' => $office->id]) }}" class="btn btn-xs btn-success btn-block" title="Map Geography to this Location">
                                             <i class="fas fa-plug"></i> Onboard Office
                                         </a>
                                     @else
                                         <!-- Open Core Config Hub -->
-                                        <a href="{{ route('gov.org.hub.show', $loc->id) }}" class="btn btn-xs btn-primary btn-block" title="Open Office Hub">
+                                        <a href="{{ route('gov.org.hub.show', $office->id) }}" class="btn btn-xs btn-primary btn-block" title="Open Office Hub">
                                             <i class="fas fa-external-link-alt"></i> View Hub
                                         </a>
                                     @endif

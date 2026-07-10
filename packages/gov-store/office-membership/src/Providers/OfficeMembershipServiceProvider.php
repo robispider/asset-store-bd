@@ -19,16 +19,19 @@ class OfficeMembershipServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'govmem');
 
-        // Inject UI Middlewares
+        // Inject UI Middlewares & Session Context Loader
         $router = $this->app['router'];
         $router->pushMiddlewareToGroup('web', InjectMembershipUi::class);
-
-       
-        $router->pushMiddlewareToGroup('web', \GovStore\OfficeMembership\Http\Middleware\SetWorkingContext::class); // NEW
+        $router->pushMiddlewareToGroup('web', \GovStore\OfficeMembership\Http\Middleware\SetWorkingContext::class);
 
         if ($this->app->runningInConsole()) {
             $this->commands([SyncInitialMemberships::class]);
         }
+
+        // DYNAMIC RELATIONSHIP SHIELD (Corrected variable inside closure)
+        \App\Models\User::resolveRelationUsing('memberships', function ($userModel) {
+            return $userModel->hasMany(\GovStore\OfficeMembership\Models\OfficeMembership::class, 'user_id', 'id');
+        });
     }
 
     public function register()
@@ -46,7 +49,5 @@ class OfficeMembershipServiceProvider extends ServiceProvider
             $engine->registerRule(new NoPendingRequestsRule());
             return $engine;
         });
-
-        
     }
 }

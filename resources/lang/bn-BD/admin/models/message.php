@@ -2,46 +2,46 @@
 
 return [
 
-    'deleted' => 'Deleted asset model',
-    'does_not_exist' => 'Model does not exist.',
-    'no_association' => 'WARNING! The asset model for this item is invalid or missing!',
-    'no_association_fix' => 'This will break things in weird and horrible ways. Edit this asset now to assign it a model.',
-    'assoc_users' => 'This model is currently associated with one or more assets and cannot be deleted. Please delete the assets, and then try deleting again. ',
-    'invalid_category_type' => 'This category must be an asset category.',
+    'deleted' => 'মুছে ফেলা সম্পদের মডেল',
+    'does_not_exist' => 'মডেলটি বিদ্যমান নেই।',
+    'no_association' => 'সতর্কতা! এই আইটেমটির জন্য সম্পদের মডেলটি অবৈধ বা অনুপস্থিত!',
+    'no_association_fix' => 'এটি গুরুতর সমস্যা তৈরি করবে। অনুগ্রহ করে এখনই সম্পদটি সম্পাদনা করে একটি মডেল নির্ধারণ করুন।',
+    'assoc_users' => 'এই মডেলটি বর্তমানে এক বা একাধিক সম্পদের সাথে যুক্ত, তাই এটি মুছে ফেলা সম্ভব নয়। অনুগ্রহ করে প্রথমে সম্পদগুলো মুছে ফেলুন এবং তারপর পুনরায় চেষ্টা করুন। ',
+    'invalid_category_type' => 'এই বিভাগটিকে অবশ্যই একটি সম্পদ বিভাগ হতে হবে।',
 
     'create' => [
-        'error' => 'Model was not created, please try again.',
-        'success' => 'Model created successfully.',
-        'duplicate_set' => 'An asset model with that name, manufacturer and model number already exists.',
+        'error' => 'মডেলটি তৈরি করা যায়নি, অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'success' => 'মডেলটি সফলভাবে তৈরি করা হয়েছে।',
+        'duplicate_set' => 'এই নাম, প্রস্তুতকারক এবং মডেল নম্বরের একটি সম্পদ মডেল ইতিমধ্যে বিদ্যমান।',
     ],
 
     'update' => [
-        'error' => 'Model was not updated, please try again',
-        'success' => 'Model updated successfully.',
+        'error' => 'মডেলটি আপডেট করা যায়নি, অনুগ্রহ করে আবার চেষ্টা করুন',
+        'success' => 'মডেলটি সফলভাবে আপডেট করা হয়েছে।',
     ],
 
     'delete' => [
-        'confirm' => 'Are you sure you wish to delete this asset model?',
-        'error' => 'There was an issue deleting the model. Please try again.',
-        'success' => 'The model was deleted successfully.',
+        'confirm' => 'আপনি কি নিশ্চিত যে আপনি এই সম্পদ মডেলটি মুছে ফেলতে চান?',
+        'error' => 'মডেলটি মুছতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'success' => 'মডেলটি সফলভাবে মুছে ফেলা হয়েছে।',
     ],
 
     'restore' => [
-        'error' => 'Model was not restored, please try again',
-        'success' => 'Model restored successfully.',
+        'error' => 'মডেলটি পুনরুদ্ধার করা যায়নি, অনুগ্রহ করে আবার চেষ্টা করুন',
+        'success' => 'মডেলটি সফলভাবে পুনরুদ্ধার করা হয়েছে।',
     ],
 
     'bulkedit' => [
-        'error' => 'No fields were changed, so nothing was updated.',
-        'success' => 'Model successfully updated. |:model_count models successfully updated.',
-        'warn' => 'You are about to update the properties of the following model:|You are about to edit the properties of the following :model_count models:',
+        'error' => 'কোনো ফিল্ড পরিবর্তন করা হয়নি, তাই কিছুই আপডেট করা হয়নি।',
+        'success' => 'মডেলটি সফলভাবে আপডেট করা হয়েছে। |:model_count টি মডেল সফলভাবে আপডেট করা হয়েছে।',
+        'warn' => 'আপনি নিম্নলিখিত মডেলটির বৈশিষ্ট্যগুলো আপডেট করতে যাচ্ছেন:|আপনি নিম্নলিখিত :model_count টি মডেলের বৈশিষ্ট্যগুলো সম্পাদনা করতে যাচ্ছেন:',
 
     ],
 
     'bulkdelete' => [
-        'error' => 'No models were selected, so nothing was deleted.',
-        'success' => 'Model deleted!|:success_count models deleted!',
-        'success_partial' => ':success_count model(s) were deleted, however :fail_count were unable to be deleted because they still have assets associated with them.',
+        'error' => 'কোনো মডেল নির্বাচন করা হয়নি, তাই কিছুই মুছে ফেলা হয়নি।',
+        'success' => 'মডেল মুছে ফেলা হয়েছে!|:success_count টি মডেল মুছে ফেলা হয়েছে!',
+        'success_partial' => ':success_count টি মডেল মুছে ফেলা হয়েছে, তবে :fail_count টি মডেল মুছে ফেলা সম্ভব হয়নি কারণ সেগুলোর সাথে সম্পদ যুক্ত রয়েছে।',
     ],
 
 ];

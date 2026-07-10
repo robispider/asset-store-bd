@@ -1,16 +1,16 @@
 <?php
 
 return [
-    'about_templates' => 'About Saved Templates',
-    'saving_templates_description' => 'Select your options, then enter the name of your template in the box above and click the \'Save Template\' button. Use the dropdown to select a previously saved template.',
+    'about_templates' => 'সংরক্ষিত টেমপ্লেট সম্পর্কে',
+    'saving_templates_description' => 'আপনার বিকল্পগুলো নির্বাচন করুন, তারপর উপরের বক্সে আপনার টেমপ্লেটের নাম লিখুন এবং \'টেমপ্লেট সংরক্ষণ করুন\' বাটনে ক্লিক করুন। আগে সংরক্ষিত টেমপ্লেট নির্বাচন করতে ড্রপডাউন ব্যবহার করুন।',
     'create' => [
-        'success' => 'Template saved successfully',
+        'success' => 'টেমপ্লেটটি সফলভাবে সংরক্ষণ করা হয়েছে',
     ],
     'update' => [
-        'success' => 'Template updated successfully',
+        'success' => 'টেমপ্লেটটি সফলভাবে আপডেট করা হয়েছে',
     ],
     'delete' => [
-        'success' => 'Template deleted',
-        'no_delete_permission' => 'Template does not exist or you do not have permission to delete it.',
+        'success' => 'টেমপ্লেট মুছে ফেলা হয়েছে',
+        'no_delete_permission' => 'টেমপ্লেটটি বিদ্যমান নেই অথবা এটি মুছে ফেলার অনুমতি আপনার নেই।',
     ],
 ];
