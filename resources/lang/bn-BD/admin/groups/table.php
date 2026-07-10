@@ -2,8 +2,8 @@
 
 return [
 
-    'id' => 'Id',
-    'name' => 'Name',
-    'users' => '# of Users',
+    'id' => 'আইডি',
+    'name' => 'নাম',
+    'users' => 'ব্যবহারকারীর সংখ্যা',
 
 ];

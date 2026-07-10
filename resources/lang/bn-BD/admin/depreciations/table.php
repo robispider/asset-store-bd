@@ -2,10 +2,10 @@
 
 return [
 
-    'id' => 'ID',
-    'months' => 'Months',
-    'term' => 'Term',
-    'title' => 'Name ',
-    'depreciation_min' => 'Floor Value',
+    'id' => 'আইডি',
+    'months' => 'মাস',
+    'term' => 'মেয়াদ',
+    'title' => 'নাম ',
+    'depreciation_min' => 'সর্বনিম্ন মূল্য (Floor Value)',
 
 ];

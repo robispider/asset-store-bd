@@ -1,16 +1,16 @@
 <?php
 
 return [
-    'about_groups_title' => 'About Groups',
-    'about_groups' => 'Groups are used to generalize user permissions.',
-    'group_management' => 'Group Management',
-    'create' => 'Create New Group',
-    'update' => 'Edit Group',
-    'group_name' => 'Group Name',
-    'group_admin' => 'Group Admin',
-    'allow' => 'Allow',
-    'deny' => 'Deny',
-    'permission' => 'Permission',
-    'grant' => 'Grant',
-    'no_permissions' => 'This group has no permissions.',
+    'about_groups_title' => 'গ্রুপ সম্পর্কে',
+    'about_groups' => 'গ্রুপগুলো ব্যবহারকারীর অনুমতিগুলোকে সাধারণীকরণ করতে ব্যবহৃত হয়।',
+    'group_management' => 'গ্রুপ ব্যবস্থাপনা',
+    'create' => 'নতুন গ্রুপ তৈরি করুন',
+    'update' => 'গ্রুপ সম্পাদনা করুন',
+    'group_name' => 'গ্রুপের নাম',
+    'group_admin' => 'গ্রুপ অ্যাডমিন',
+    'allow' => 'অনুমতি দিন',
+    'deny' => 'নিষেধ করুন',
+    'permission' => 'অনুমতি',
+    'grant' => 'প্রদান করুন',
+    'no_permissions' => 'এই গ্রুপের কোনো অনুমতি নেই।',
 ];

@@ -3,56 +3,56 @@
 return [
 
     'field' => [
-        'invalid' => 'That field does not exist.',
-        'already_added' => 'Field already added',
-        'none_selected' => 'No field selected',
+        'invalid' => 'সেই ফিল্ডটি বিদ্যমান নেই।',
+        'already_added' => 'ফিল্ডটি ইতিমধ্যে যোগ করা হয়েছে',
+        'none_selected' => 'কোনো ফিল্ড নির্বাচন করা হয়নি',
 
         'create' => [
-            'error' => 'Field was not created, please try again.',
-            'success' => 'Field created successfully.',
-            'assoc_success' => 'Field successfully added to fieldset.',
+            'error' => 'ফিল্ডটি তৈরি করা সম্ভব হয়নি, অনুগ্রহ করে আবার চেষ্টা করুন।',
+            'success' => 'ফিল্ডটি সফলভাবে তৈরি করা হয়েছে।',
+            'assoc_success' => 'ফিল্ডটি সফলভাবে ফিল্ডসেটে যোগ করা হয়েছে।',
         ],
 
         'update' => [
-            'error' => 'Field was not updated, please try again',
-            'success' => 'Field updated successfully.',
+            'error' => 'ফিল্ডটি আপডেট করা সম্ভব হয়নি, অনুগ্রহ করে আবার চেষ্টা করুন',
+            'success' => 'ফিল্ডটি সফলভাবে আপডেট করা হয়েছে।',
         ],
 
         'delete' => [
-            'confirm' => 'Are you sure you wish to delete this field?',
-            'error' => 'There was an issue deleting the field. Please try again.',
-            'success' => 'The field was deleted successfully.',
-            'in_use' => 'Field is still in use.',
+            'confirm' => 'আপনি কি নিশ্চিত যে আপনি এই ফিল্ডটি মুছে ফেলতে চান?',
+            'error' => 'ফিল্ডটি মুছতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।',
+            'success' => 'ফিল্ডটি সফলভাবে মুছে ফেলা হয়েছে।',
+            'in_use' => 'ফিল্ডটি এখনও ব্যবহৃত হচ্ছে।',
         ],
 
     ],
 
     'fieldset' => [
 
-        'does_not_exist' => 'Fieldset does not exist',
+        'does_not_exist' => 'ফিল্ডসেট বিদ্যমান নেই',
 
         'create' => [
-            'error' => 'Fieldset was not created, please try again.',
-            'success' => 'Fieldset created successfully.',
+            'error' => 'ফিল্ডসেট তৈরি করা সম্ভব হয়নি, অনুগ্রহ করে আবার চেষ্টা করুন।',
+            'success' => 'ফিল্ডসেট সফলভাবে তৈরি করা হয়েছে।',
         ],
 
         'update' => [
-            'error' => 'Fieldset was not updated, please try again',
-            'success' => 'Fieldset updated successfully.',
+            'error' => 'ফিল্ডসেট আপডেট করা সম্ভব হয়নি, অনুগ্রহ করে আবার চেষ্টা করুন',
+            'success' => 'ফিল্ডসেট সফলভাবে আপডেট করা হয়েছে।',
         ],
 
         'delete' => [
-            'confirm' => 'Are you sure you wish to delete this fieldset?',
-            'error' => 'There was an issue deleting the fieldset. Please try again.',
-            'success' => 'The fieldset was deleted successfully.',
-            'in_use' => 'Fieldset is still in use.',
+            'confirm' => 'আপনি কি নিশ্চিত যে আপনি এই ফিল্ডসেটটি মুছে ফেলতে চান?',
+            'error' => 'ফিল্ডসেট মুছতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।',
+            'success' => 'ফিল্ডসেটটি সফলভাবে মুছে ফেলা হয়েছে।',
+            'in_use' => 'ফিল্ডসেটটি এখনও ব্যবহৃত হচ্ছে।',
         ],
 
     ],
 
     'fieldset_default_value' => [
 
-        'error' => 'Error validating default fieldset values.',
+        'error' => 'ডিফল্ট ফিল্ডসেট মান যাচাই করতে ত্রুটি হয়েছে।',
 
     ],
 

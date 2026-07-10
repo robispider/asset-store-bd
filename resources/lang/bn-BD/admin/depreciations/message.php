@@ -2,25 +2,25 @@
 
 return [
 
-    'does_not_exist' => 'Depreciation class does not exist.',
-    'assoc_users' => 'This depreciation is currently associated with one or more models and cannot be deleted. Please delete the models, and then try deleting again. ',
+    'does_not_exist' => 'অবচয় শ্রেণীটি বিদ্যমান নেই।',
+    'assoc_users' => 'এই অবচয়টি বর্তমানে এক বা একাধিক মডেলের সাথে যুক্ত এবং এটি মুছে ফেলা সম্ভব নয়। অনুগ্রহ করে প্রথমে মডেলগুলো মুছে ফেলুন, তারপর পুনরায় চেষ্টা করুন। ',
 
     'create' => [
-        'error' => 'Depreciation class was not created, please try again. :(',
-        'success' => 'Depreciation class created successfully. :)',
+        'error' => 'অবচয় শ্রেণীটি তৈরি করা সম্ভব হয়নি, অনুগ্রহ করে আবার চেষ্টা করুন। :(',
+        'success' => 'অবচয় শ্রেণীটি সফলভাবে তৈরি করা হয়েছে। :)',
     ],
 
     'update' => [
-        'error' => 'Depreciation class was not updated, please try again',
-        'success' => 'Depreciation class updated successfully.',
+        'error' => 'অবচয় শ্রেণীটি আপডেট করা সম্ভব হয়নি, অনুগ্রহ করে আবার চেষ্টা করুন',
+        'success' => 'অবচয় শ্রেণীটি সফলভাবে আপডেট করা হয়েছে।',
     ],
 
     'delete' => [
-        'confirm' => 'Are you sure you wish to delete this depreciation class?',
-        'error' => 'There was an issue deleting the depreciation class. Please try again.',
-        'success' => 'The depreciation class was deleted successfully.',
-        'bulk_success' => 'Depreciation class deleted successfully.|:count depreciation classes were deleted successfully.',
-        'partial_success' => 'Depreciation class deleted successfully. See additional information below.|:count depreciation classes were deleted successfully. See additional information below.',
+        'confirm' => 'আপনি কি নিশ্চিত যে আপনি এই অবচয় শ্রেণীটি মুছে ফেলতে চান?',
+        'error' => 'অবচয় শ্রেণীটি মুছতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'success' => 'অবচয় শ্রেণীটি সফলভাবে মুছে ফেলা হয়েছে।',
+        'bulk_success' => 'অবচয় শ্রেণী সফলভাবে মুছে ফেলা হয়েছে।|:count টি অবচয় শ্রেণী সফলভাবে মুছে ফেলা হয়েছে।',
+        'partial_success' => 'অবচয় শ্রেণী সফলভাবে মুছে ফেলা হয়েছে। নিচে অতিরিক্ত তথ্য দেখুন।|:count টি অবচয় শ্রেণী সফলভাবে মুছে ফেলা হয়েছে। নিচে অতিরিক্ত তথ্য দেখুন।',
     ],
 
 ];

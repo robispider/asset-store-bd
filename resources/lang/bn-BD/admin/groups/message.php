@@ -2,22 +2,22 @@
 
 return [
 
-    'group_exists' => 'Group already exists!',
-    'group_not_found' => 'Group ID :id does not exist.',
-    'group_name_required' => 'The name field is required',
-    'assoc_users' => 'This department is currently associated with at least one user and cannot be deleted. Please update your users to no longer reference this department and try again. ',
+    'group_exists' => 'গ্রুপটি ইতিমধ্যে বিদ্যমান!',
+    'group_not_found' => 'গ্রুপ আইডি :id বিদ্যমান নেই।',
+    'group_name_required' => 'নাম ফিল্ডটি আবশ্যক',
+    'assoc_users' => 'এই বিভাগটি বর্তমানে অন্তত একজন ব্যবহারকারীর সাথে যুক্ত এবং এটি মুছে ফেলা সম্ভব নয়। অনুগ্রহ করে আপনার ব্যবহারকারীদের আপডেট করুন যাতে তারা আর এই বিভাগের সাথে যুক্ত না থাকে এবং পুনরায় চেষ্টা করুন। ',
 
     'success' => [
-        'create' => 'Group was successfully created.',
-        'update' => 'Group was successfully updated.',
-        'delete' => 'Group was successfully deleted.',
+        'create' => 'গ্রুপটি সফলভাবে তৈরি করা হয়েছে।',
+        'update' => 'গ্রুপটি সফলভাবে আপডেট করা হয়েছে।',
+        'delete' => 'গ্রুপটি সফলভাবে মুছে ফেলা হয়েছে।',
     ],
 
     'delete' => [
-        'confirm' => 'Are you sure you wish to delete this group?',
-        'create' => 'There was an issue creating the group. Please try again.',
-        'update' => 'There was an issue updating the group. Please try again.',
-        'delete' => 'There was an issue deleting the group. Please try again.',
+        'confirm' => 'আপনি কি নিশ্চিত যে আপনি এই গ্রুপটি মুছে ফেলতে চান?',
+        'create' => 'গ্রুপটি তৈরি করতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'update' => 'গ্রুপটি আপডেট করতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'delete' => 'গ্রুপটি মুছতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।',
     ],
 
 ];

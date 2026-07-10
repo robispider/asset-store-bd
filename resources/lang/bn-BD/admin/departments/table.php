@@ -2,10 +2,10 @@
 
 return [
 
-    'id' => 'ID',
-    'name' => 'Department Name',
-    'manager' => 'Manager',
-    'location' => 'Location',
-    'create' => 'Create Department',
-    'update' => 'Update Department',
+    'id' => 'আইডি',
+    'name' => 'বিভাগের নাম',
+    'manager' => 'ব্যবস্থাপক',
+    'location' => 'কার্যালয়',
+    'create' => 'বিভাগ তৈরি করুন',
+    'update' => 'বিভাগ আপডেট করুন',
 ];

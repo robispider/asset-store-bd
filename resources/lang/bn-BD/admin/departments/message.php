@@ -2,23 +2,23 @@
 
 return [
 
-    'does_not_exist' => 'Department does not exist.',
-    'department_already_exists' => 'A department already exists with that name at this company location. Or choose a more specific name for this department. ',
-    'assoc_users' => 'This department is currently associated with at least one user and cannot be deleted. Please update your users to no longer reference this department and try again. ',
+    'does_not_exist' => 'বিভাগটি বিদ্যমান নেই।',
+    'department_already_exists' => 'এই কার্যালয়ে এই নামে একটি বিভাগ ইতিমধ্যে বিদ্যমান। অথবা এই বিভাগের জন্য আরও নির্দিষ্ট নাম বেছে নিন। ',
+    'assoc_users' => 'এই বিভাগটি বর্তমানে অন্তত একজন ব্যবহারকারীর সাথে যুক্ত এবং এটি মুছে ফেলা সম্ভব নয়। অনুগ্রহ করে আপনার ব্যবহারকারীদের আপডেট করুন যাতে তারা আর এই বিভাগের সাথে যুক্ত না থাকে এবং পুনরায় চেষ্টা করুন। ',
     'create' => [
-        'error' => 'Department was not created, please try again.',
-        'success' => 'Department created successfully.',
+        'error' => 'বিভাগটি তৈরি করা সম্ভব হয়নি, অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'success' => 'বিভাগটি সফলভাবে তৈরি করা হয়েছে।',
     ],
     'update' => [
-        'error' => 'Department was not updated, please try again',
-        'success' => 'Department updated successfully.',
+        'error' => 'বিভাগটি আপডেট করা সম্ভব হয়নি, অনুগ্রহ করে আবার চেষ্টা করুন',
+        'success' => 'বিভাগটি সফলভাবে আপডেট করা হয়েছে।',
     ],
     'delete' => [
-        'confirm' => 'Are you sure you wish to delete this department?',
-        'error' => 'There was an issue deleting the department. Please try again.',
-        'success' => 'The department was deleted successfully.',
-        'bulk_success' => 'Department deleted successfully.|:count departments were deleted successfully.',
-        'partial_success' => 'Department deleted successfully. See additional information below. | :count departments were deleted successfully. See additional information below.',
+        'confirm' => 'আপনি কি নিশ্চিত যে আপনি এই বিভাগটি মুছে ফেলতে চান?',
+        'error' => 'বিভাগটি মুছতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'success' => 'বিভাগটি সফলভাবে মুছে ফেলা হয়েছে।',
+        'bulk_success' => 'বিভাগ সফলভাবে মুছে ফেলা হয়েছে।|:count টি বিভাগ সফলভাবে মুছে ফেলা হয়েছে।',
+        'partial_success' => 'বিভাগ সফলভাবে মুছে ফেলা হয়েছে। নিচে অতিরিক্ত তথ্য দেখুন। | :count টি বিভাগ সফলভাবে মুছে ফেলা হয়েছে। নিচে অতিরিক্ত তথ্য দেখুন।',
     ],
 
 ];
