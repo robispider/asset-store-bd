@@ -11,7 +11,12 @@
     "require": {},
     "autoload": {
         "psr-4": {
-            "GovStore\\OfficeMembership\\": "src/"
-        }
+            "GovStore\\OfficeMembership\\": "src/",
+                 "GovStore\\OfficeMembership\\Database\\Seeds\\": "src/database/seeds/"
+        },
+    "exclude-from-classmap": [
+        "src/database/migrations",
+        "src/database/seeds"
+    ]
     }
 }

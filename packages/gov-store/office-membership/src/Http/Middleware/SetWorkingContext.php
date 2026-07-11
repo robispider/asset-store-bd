@@ -16,26 +16,28 @@ class SetWorkingContext
 
         $user = auth()->user();
 
-        // 2. USER MISMATCH SHIELD: 
-        // If the logged-in user ID does not match the active session owner, 
-        // instantly purge any old working context to prevent cross-tenant data leaks!
+        // 2. Clear stale session contexts if a new user logs in
         if (session('gov_working_user_id') !== $user->id) {
-            session()->forget('gov_working_location_id');
+            session()->forget('gov_working_membership_id');
             session()->put('gov_working_user_id', $user->id);
         }
 
-        // 3. Resolve and lock default home office membership if empty
-        if (!session()->has('gov_working_location_id')) {
+        // 3. Resolve and store the default home office membership if empty
+        if (!session()->has('gov_working_membership_id')) {
             $defaultMembership = OfficeMembership::where('user_id', $user->id)
                 ->where('status', 'active')
                 ->where('is_home_office', true)
                 ->first();
 
-            // Fallback to Snipe-IT's core home office location if no membership exists yet
-            $activeLocationId = $defaultMembership ? $defaultMembership->location_id : $user->location_id;
+            // Fallback to their first active membership if no home base is flagged
+            if (!$defaultMembership) {
+                $defaultMembership = OfficeMembership::where('user_id', $user->id)
+                    ->where('status', 'active')
+                    ->first();
+            }
 
-            if ($activeLocationId) {
-                session()->put('gov_working_location_id', $activeLocationId);
+            if ($defaultMembership) {
+                session()->put('gov_working_membership_id', $defaultMembership->id);
             }
         }
 

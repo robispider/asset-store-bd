@@ -33,31 +33,23 @@ class LocationRole extends Model
     {
         return $this->belongsTo(Location::class, 'location_id');
     }
+public function primaryApprover() { return $this->belongsTo(\App\Models\User::class, 'primary_approver_id')->withoutGlobalScopes(); }
+    public function finalApprover() { return $this->belongsTo(\App\Models\User::class, 'final_approver_id')->withoutGlobalScopes(); }
+    public function storekeeper() { return $this->belongsTo(\App\Models\User::class, 'storekeeper_id')->withoutGlobalScopes(); }
 
-    public function primaryApprover()
-    {
-        return $this->belongsTo(User::class, 'primary_approver_id');
-    }
 
     public function primaryDelegate()
     {
         return $this->belongsTo(User::class, 'primary_delegate_id');
     }
 
-    public function finalApprover()
-    {
-        return $this->belongsTo(User::class, 'final_approver_id');
-    }
 
     public function finalDelegate()
     {
         return $this->belongsTo(User::class, 'final_delegate_id');
     }
 
-    public function storekeeper()
-    {
-        return $this->belongsTo(User::class, 'storekeeper_id');
-    }
+
 
     public function storekeeperDelegate()
     {

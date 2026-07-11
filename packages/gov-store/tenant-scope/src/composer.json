@@ -12,6 +12,9 @@
     "autoload": {
         "psr-4": {
             "GovStore\\TenantScope\\": "src/"
-        }
+        },
+    "exclude-from-classmap": [
+        "src/database/migrations"
+    ]
     }
 }

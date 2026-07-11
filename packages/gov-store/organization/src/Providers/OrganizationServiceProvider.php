@@ -8,6 +8,8 @@ use GovStore\Organization\Models\LocationProfile;
 use GovStore\Organization\Models\LocationRole;
 use GovStore\Organization\Http\Middleware\InjectOrganizationUi;
 use GovStore\Organization\Http\Middleware\EnsureOfficeIsOperational;
+use GovStore\Organization\Models\IctJurisdiction;
+use GovStore\Organization\Observers\IctJurisdictionObserver;
 
 class OrganizationServiceProvider extends ServiceProvider
 {
@@ -28,6 +30,9 @@ class OrganizationServiceProvider extends ServiceProvider
 
         // 5. THE INTEGRATION HANDSHAKE
         $router->pushMiddlewareToGroup('web', EnsureOfficeIsOperational::class);
+
+         // Bind the Observer
+    IctJurisdiction::observe(IctJurisdictionObserver::class);
 
         // 6. DYNAMIC COUPLING SHIELD (The runtime relations)
         // Dynamically injects 'profile' relationship into Snipe-IT's core Location model

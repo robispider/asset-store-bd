@@ -8,20 +8,28 @@ use GovStore\TenantScope\Exceptions\TenantBoundaryException;
 use GovStore\TenantScope\Policies\AssetBoundaryPolicy;
 use GovStore\TenantScope\Policies\CategoryBoundaryPolicy;
 use GovStore\TenantScope\Validators\BusinessRuleValidator;
+use GovStore\TenantScope\Validators\ResponsibilityRegistry;
+use GovStore\OfficeMembership\Models\OfficeResponsibility;
 use Illuminate\Support\Facades\Log;
 
 class TenantBoundaryService
 {
-    /**
-     * Validates both ownership, relationship mappings, and business integrity rules.
-     */
     public function verify(Model $model, string $action): void
     {
-        if (!app()->bound(TenantContext::class)) return;
+        if (!app()->bound(TenantContext::class)) {
+            return;
+        }
+        
         $context = app(TenantContext::class);
-        if (!$context->isActive) return; // Superadmins are bypassed
 
-        // 1. Enforce Primary Ownership Verification
+        // =========================================================
+        // FIX: Bypass verification if context is inactive OR Global
+        // =========================================================
+        if (!$context->isActive || $context->isGlobal) {
+            return; 
+        }
+
+        // 1. Enforce Primary Ownership Verification (Core Scoping)
         $policy = $this->resolvePolicy($model);
         if ($policy) {
             
@@ -40,16 +48,58 @@ class TenantBoundaryService
                 );
             }
 
-            // 2. Enforce Relationship Integrity validation
+            // Enforce Relationship Integrity validation
             if (in_array($action, ['create', 'update'])) {
                 $this->validateRelationshipIntegrity($model, $policy);
             }
         }
 
-        // 3. Enforce Business Rule validation
+        // 2. Enforce Operational Responsibilities (e.g., Storekeeper checkouts)
+        if (get_class($model) === \App\Models\Asset::class) {
+            $this->verifyAssetMutation($model, $action, $context);
+        }
+
+        // 3. Enforce Deletion and Data Integrity business validations
         app(BusinessRuleValidator::class)->validate($model, $action);
     }
 
+    protected function verifyAssetMutation(Model $asset, string $action, TenantContext $context): void
+    {
+        if ((int)$asset->location_id !== (int)$context->locationId) {
+            throw new TenantBoundaryException(
+                "Access Denied: The target item belongs to another office context.",
+                'OUT_OF_BOUNDS',
+                403
+            );
+        }
+
+        if ($action === 'update' && $asset->isDirty(['assigned_to', 'status_id', 'location_id'])) {
+            
+            $user = auth()->user();
+            if (!$user) {
+                return;
+            }
+
+            $responsibility = OfficeResponsibility::where('location_id', $context->locationId)
+                ->where('user_id', $user->id)
+                ->first();
+
+            $canCheckout = $responsibility && ResponsibilityRegistry::can($responsibility->role_slug, 'checkout_assets');
+
+            if (!$canCheckout) {
+                $this->logViolation($asset, 'checkout');
+                throw new TenantBoundaryException(
+                    "Security Violation: You do not hold active storekeeper responsibility inside this office context to execute checkouts.",
+                    'ROLE_VIOLATION',
+                    403
+                );
+            }
+        }
+    }
+
+   /**
+     * Verifies relationship allocations across tenant boundaries.
+     */
     protected function validateRelationshipIntegrity(Model $model, $policy): void
     {
         if (!isset($policy->relationMap)) {
@@ -57,9 +107,9 @@ class TenantBoundaryService
         }
 
         foreach ($policy->relationMap as $column => $relatedModelClass) {
-            if (isset($model->{$column})) {
+            if (!empty($model->{$column})) {
                 
-                // Query without scopes first to check physical existence (Resolves 404)
+                // 1. Query without scopes first to check absolute physical existence (Resolves 404)
                 $rawItem = $relatedModelClass::withoutGlobalScopes()->find($model->{$column});
                 if (!$rawItem) {
                     throw new TenantBoundaryException(
@@ -69,17 +119,16 @@ class TenantBoundaryService
                     );
                 }
 
-                // Verify that the retrieved reference belongs to the user's scope (Resolves 403)
-                $policyForRelated = $this->resolvePolicy($rawItem);
-                if ($policyForRelated) {
-                    $context = app(TenantContext::class);
-                    if (!$policyForRelated->canMutate($rawItem, $context)) {
-                        throw new TenantBoundaryException(
-                            "Security Violation: You are not authorized to assign " . class_basename($rawItem) . " '{$rawItem->name}' to this resource.",
-                            'RELATIONSHIP',
-                            403
-                        );
-                    }
+                // 2. Query WITH scopes to check Contextual Visibility (Resolves 403)
+                // If TenantScope/UserScope allows this user to see the item, they are allowed to assign it.
+                $isVisible = $relatedModelClass::find($model->{$column}) !== null;
+
+                if (!$isVisible) {
+                    throw new TenantBoundaryException(
+                        "Security Violation: You are not authorized to assign " . class_basename($rawItem) . " '{$rawItem->name}' to this resource. It lies outside your active data boundary.",
+                        'RELATIONSHIP',
+                        403
+                    );
                 }
             }
         }
@@ -106,11 +155,11 @@ class TenantBoundaryService
             \App\Models\Location::class,
         ];
 
-        if (in_array($className, $transactionalModels)) {
+        if (in_array($className, $transactionalModels, true)) {
             return app(AssetBoundaryPolicy::class);
         }
 
-        if (in_array($className, $referenceModels)) {
+        if (in_array($className, $referenceModels, true)) {
             return app(CategoryBoundaryPolicy::class);
         }
 

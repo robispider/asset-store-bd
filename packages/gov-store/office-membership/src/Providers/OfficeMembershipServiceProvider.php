@@ -9,7 +9,10 @@ use GovStore\OfficeMembership\Rules\NoActiveAssetsRule;
 use GovStore\OfficeMembership\Rules\NoActiveRolesRule;
 use GovStore\OfficeMembership\Rules\NoPendingRequestsRule;
 use GovStore\OfficeMembership\Http\Middleware\InjectMembershipUi;
+use GovStore\OfficeMembership\Http\Middleware\SetWorkingContext;
 use GovStore\OfficeMembership\Console\Commands\SyncInitialMemberships;
+use GovStore\OfficeMembership\Models\OfficeMembership;
+use GovStore\OfficeMembership\Observers\MembershipActivityLogObserver;
 
 class OfficeMembershipServiceProvider extends ServiceProvider
 {
@@ -19,29 +22,32 @@ class OfficeMembershipServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'govmem');
 
-        // Inject UI Middlewares & Session Context Loader
+        // Inject UI Middlewares & Session Context Loader into global routing group
         $router = $this->app['router'];
         $router->pushMiddlewareToGroup('web', InjectMembershipUi::class);
-        $router->pushMiddlewareToGroup('web', \GovStore\OfficeMembership\Http\Middleware\SetWorkingContext::class);
+        $router->pushMiddlewareToGroup('web', SetWorkingContext::class);
 
         if ($this->app->runningInConsole()) {
             $this->commands([SyncInitialMemberships::class]);
         }
 
-        // DYNAMIC RELATIONSHIP SHIELD (Corrected variable inside closure)
+        // Register Eloquent Observers for Compliance logging
+        OfficeMembership::observe(MembershipActivityLogObserver::class);
+
+        // Dynamic Relationship mapping directly into core Snipe-IT User model
         \App\Models\User::resolveRelationUsing('memberships', function ($userModel) {
-            return $userModel->hasMany(\GovStore\OfficeMembership\Models\OfficeMembership::class, 'user_id', 'id');
+            return $userModel->hasMany(OfficeMembership::class, 'user_id', 'id');
         });
     }
 
     public function register()
     {
-        // 1. Bind the decoupled membership service
+        // Bind the decoupled membership service helper
         $this->app->singleton(OfficeMembershipService::class, function ($app) {
             return new OfficeMembershipService();
         });
 
-        // 2. Bind the Clearance Engine & Rules
+        // Bind the Clearance Engine & seed validation rules
         $this->app->singleton(ClearanceEngine::class, function ($app) {
             $engine = new ClearanceEngine();
             $engine->registerRule(new NoActiveAssetsRule());

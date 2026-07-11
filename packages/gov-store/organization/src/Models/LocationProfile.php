@@ -34,9 +34,9 @@ class LocationProfile extends Model
         return $this->belongsTo(GeoArea::class, 'geo_area_id', 'GeoAreaId');
     }
 
-    public function officeAdmin()
+   public function officeAdmin()
     {
-        return $this->belongsTo(User::class, 'office_admin_id');
+        return $this->belongsTo(\App\Models\User::class, 'office_admin_id')->withoutGlobalScopes();
     }
 
     public function verifier()
