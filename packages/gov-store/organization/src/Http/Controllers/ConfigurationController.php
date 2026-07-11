@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Location;
 use App\Models\User;
 use GovStore\Organization\Models\LocationProfile;
-use GovStore\Organization\Models\LocationRole;
+use GovStore\OfficeMembership\Models\OfficeResponsibility;
 use GovStore\Organization\Services\OfficeConfigurationService;
 use GovStore\Organization\Services\OfficeReadinessService;
 
@@ -38,7 +38,17 @@ class ConfigurationController extends Controller
         
         $location = Location::findOrFail($locationId);
         $profile = LocationProfile::where('location_id', $locationId)->firstOrFail();
-        $roles = LocationRole::where('location_id', $locationId)->first();
+        
+        // =========================================================================
+        // REFACTORED: Load roles from the new pivot matrix, keeping view compatible
+        // =========================================================================
+        $rolesList = OfficeResponsibility::where('location_id', $locationId)->get();
+
+        $roles = (object)[
+            'primary_approver_id' => $rolesList->where('role_slug', 'primary_approver')->first()?->user_id,
+            'final_approver_id'   => $rolesList->where('role_slug', 'final_approver')->first()?->user_id,
+            'storekeeper_id'      => $rolesList->where('role_slug', 'storekeeper')->first()?->user_id,
+        ];
         
         // Fetch all local staff users mapped to this physical building/location
         $localStaff = User::where('location_id', $locationId)->orderBy('first_name')->get();

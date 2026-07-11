@@ -8,27 +8,46 @@ use App\Models\Location;
 use App\Models\Company;
 use App\Models\User;
 use GovStore\Organization\Models\LocationProfile;
-use GovStore\Organization\Models\LocationRole;
+use GovStore\OfficeMembership\Models\OfficeResponsibility;
 use GovStore\Organization\Models\OrganizationActivityLog;
 use GovStore\Organization\Services\OfficeConfigurationService;
-use GovStore\GeoAreas\Services\GeoAreaService; // ONLY IMPORT SERVICE
+use GovStore\GeoAreas\Services\GeoAreaService;
 
 class OfficeHubController extends Controller
 {
-    private function checkAccess($locationId)
+   private function checkAccess($locationId)
     {
         $user = auth()->user();
+        
+        // 1. Superadmins and Global Admins always have access
         if ($user->isSuperUser() || $user->hasAccess('admin')) {
             return;
         }
 
-        $profile = LocationProfile::where('location_id', $locationId)
-                                  ->where('office_admin_id', $user->id)
-                                  ->first();
-
+        // Fetch the location's profile to inspect its territory
+        $profile = LocationProfile::where('location_id', $locationId)->first();
         if (!$profile) {
-            abort(403, 'Access Denied: You are not authorized to administer this office.');
+            abort(403, 'Access Denied: This office building is not profiled.');
         }
+
+        // 2. ICT OFFICER CHECK: Are they the authorized ICT Officer for this territory?
+        $jurisdiction = \GovStore\Organization\Models\IctJurisdiction::where('user_id', $user->id)->first();
+        if ($jurisdiction && $jurisdiction->geo_area_id) {
+            $geoService = app(GeoAreaService::class);
+            
+            // Allow access if the office falls recursively inside their jurisdiction boundary
+            if ($geoService->isWithinBoundary($jurisdiction->geo_area_id, $profile->geo_area_id)) {
+                return;
+            }
+        }
+
+        // 3. OFFICE ADMIN CHECK: Are they the designated administrator for this specific building?
+        if ((int)$profile->office_admin_id === (int)$user->id) {
+            return;
+        }
+
+        // If all checks fail, block access
+        abort(403, 'Access Denied: You are not authorized to administer this office.');
     }
 
     public function show($id)
@@ -44,7 +63,16 @@ class OfficeHubController extends Controller
                              ->with('error', 'This office building has not been configured with geographic territory parameters yet. Please provision it first.');
         }
 
-        $roles = LocationRole::where('location_id', $id)->first();
+        // 1. Fetch assigned responsibilities from our new pivot matrix
+        $rolesList = OfficeResponsibility::where('location_id', $id)->get();
+
+        // 2. Format into a flat object to maintain compatibility with the Blade template
+        $roles = (object)[
+            'primary_approver_id' => $rolesList->where('role_slug', 'primary_approver')->first()?->user_id,
+            'final_approver_id'   => $rolesList->where('role_slug', 'final_approver')->first()?->user_id,
+            'storekeeper_id'      => $rolesList->where('role_slug', 'storekeeper')->first()?->user_id,
+        ];
+
         $localStaff = User::where('location_id', $id)->orderBy('first_name')->get();
         $allUsers = User::orderBy('first_name')->get();
         $companies = Company::orderBy('name')->get();
@@ -60,10 +88,6 @@ class OfficeHubController extends Controller
         ));
     }
 
-    /**
-     * Fully Decoupled: Updates office metadata and resolves parent geographic spellings 
-     * exclusively through the shared GeoAreaService library API.
-     */
     public function update(Request $request, $id, GeoAreaService $geoService)
     {
         $this->checkAccess($id);
@@ -89,7 +113,6 @@ class OfficeHubController extends Controller
         if ((int)$request->geo_area_id !== (int)$profile->geo_area_id) {
             $geoArea = $geoService->getById((int)$request->geo_area_id);
             if ($geoArea) {
-                // Resolved parent names using the decoupled Service API (NO DIRECT MODEL QUERIES)
                 $geoNames = $geoService->resolveParentNames($geoArea->hid);
                 $city = $geoNames['city'];
                 $state = $geoNames['state'];

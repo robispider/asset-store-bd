@@ -17,15 +17,15 @@ class OfficeResponsibility extends Model
     ];
 
     /**
-     * Get the user who holds this contextual responsibility.
+     * Get the user who holds this responsibility in the active office.
      */
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id')->withoutGlobalScope(\GovStore\TenantScope\Scopes\UserScope::class);
     }
 
     /**
-     * Get the office building where this responsibility is executed.
+     * Get the office location where this responsibility applies.
      */
     public function location()
     {

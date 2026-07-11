@@ -22,9 +22,7 @@ class TenantBoundaryService
         
         $context = app(TenantContext::class);
 
-        // =========================================================
-        // FIX: Bypass verification if context is inactive OR Global
-        // =========================================================
+        // Bypass verification if context is inactive OR Global
         if (!$context->isActive || $context->isGlobal) {
             return; 
         }
@@ -134,13 +132,18 @@ class TenantBoundaryService
         }
     }
 
+    /**
+     * Resolves the boundary policy matching the model class.
+     */
     private function resolvePolicy(Model $model)
     {
         $className = get_class($model);
 
+        // =========================================================================
+        // REMOVED \App\Models\User::class from transactional policy resolution
+        // =========================================================================
         $transactionalModels = [
             \App\Models\Asset::class,
-            \App\Models\User::class,
             \App\Models\Consumable::class,
             \App\Models\Accessory::class,
             \App\Models\Component::class,

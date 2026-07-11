@@ -18,28 +18,30 @@ class TenantScopeServiceProvider extends ServiceProvider
         $this->app->singleton(TenantContext::class, function () {
             return new TenantContext();
         });
+
+        // Merge the new capability configuration file cleanly
+        $this->mergeConfigFrom(
+            __DIR__.'/../config/permissions.php', 'govstore-permissions'
+        );
     }
 
     public function boot()
     {
-        // =========================================================================
-        // 1. RESTORED PACKAGE RESOURCES
-        // =========================================================================
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'govscope');
 
-        // =========================================================================
-        // 2. MIDDLEWARE REGISTRATION
-        // =========================================================================
+        // Publish the configuration so it can be overridden in the root config directory if necessary
+        $this->publishes([
+            __DIR__.'/../config/permissions.php' => config_path('govstore-permissions.php'),
+        ], 'config');
+
         $router = $this->app['router'];
         $router->pushMiddlewareToGroup('web', InjectTenantScopeUi::class);
         $router->pushMiddlewareToGroup('web', InitializeTenantContext::class);
         $router->pushMiddlewareToGroup('api', InitializeTenantContext::class);
 
-        // =========================================================================
-        // 3. SCOPE ARRAYS
-        // =========================================================================
+        // 1. Operational Models (Strict Physical Scoping ONLY)
         $operationalModels = [
             \App\Models\Asset::class,
             \App\Models\Consumable::class,
@@ -48,6 +50,7 @@ class TenantScopeServiceProvider extends ServiceProvider
             \App\Models\License::class,
         ];
 
+        // 2. Reference Models (Catalog Mapping Scoping)
         $referenceModels = [
             'categories'    => \App\Models\Category::class,
             'models'        => \App\Models\AssetModel::class,
@@ -56,23 +59,19 @@ class TenantScopeServiceProvider extends ServiceProvider
             'locations'     => \App\Models\Location::class,
         ];
 
-        // =========================================================================
-        // 4. ATTACH SCOPES AT RUNTIME
-        // =========================================================================
-        
-        // Identity Scope (Hierarchical visibility)
+        // 3. Register Custom Hierarchical User Scope
         if (class_exists(\App\Models\User::class)) {
             \App\Models\User::addGlobalScope(new UserScope());
         }
 
-        // Operational Scopes
+        // 4. Register Operational Scopes
         foreach ($operationalModels as $modelClass) {
             if (class_exists($modelClass)) {
                 $modelClass::addGlobalScope(new MinistryLocationScope());
             }
         }
 
-        // Reference Scopes
+        // 5. Register Reference Scopes
         foreach ($referenceModels as $type => $modelClass) {
             if (class_exists($modelClass)) {
                 $modelClass::addGlobalScope(new TenantScope($type));
@@ -80,9 +79,9 @@ class TenantScopeServiceProvider extends ServiceProvider
         }
 
         // =========================================================================
-        // 5. OBSERVERS
+        // 6. OBSERVERS (REMOVED [\App\Models\User::class] from protected observers)
         // =========================================================================
-        $allProtectedModels = array_merge($operationalModels, array_values($referenceModels), [\App\Models\User::class]);
+        $allProtectedModels = array_merge($operationalModels, array_values($referenceModels));
         foreach ($allProtectedModels as $modelClass) {
             if (class_exists($modelClass)) {
                 $modelClass::observe(TenantMutationObserver::class);
