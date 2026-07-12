@@ -2,33 +2,33 @@
 
 return [
 
-    'does_not_exist' => 'Status Label does not exist.',
-    'deleted_label' => 'Deleted Status Label',
-    'assoc_assets' => 'This Status Label is currently associated with at least one Asset and cannot be deleted. Please update your assets to no longer reference this status and try again. ',
+    'does_not_exist' => 'স্ট্যাটাস লেবেলটি পাওয়া যায়নি।',
+    'deleted_label' => 'মুছে ফেলা স্ট্যাটাস লেবেল',
+    'assoc_assets' => 'এই স্ট্যাটাস লেবেলটি বর্তমানে অন্তত একটি অ্যাসেটের সাথে যুক্ত এবং এটি মুছে ফেলা সম্ভব নয়। অনুগ্রহ করে আপনার অ্যাসেটগুলো আপডেট করুন যাতে এই স্ট্যাটাসের রেফারেন্স না থাকে এবং পুনরায় চেষ্টা করুন। ',
 
     'create' => [
-        'error' => 'Status Label was not created, please try again.',
-        'success' => 'Status Label created successfully.',
+        'error' => 'স্ট্যাটাস লেবেল তৈরি করা যায়নি, অনুগ্রহ করে পুনরায় চেষ্টা করুন।',
+        'success' => 'স্ট্যাটাস লেবেল সফলভাবে তৈরি করা হয়েছে।',
     ],
 
     'update' => [
-        'error' => 'Status Label was not updated, please try again',
-        'success' => 'Status Label updated successfully.',
+        'error' => 'স্ট্যাটাস লেবেল আপডেট করা যায়নি, অনুগ্রহ করে পুনরায় চেষ্টা করুন',
+        'success' => 'স্ট্যাটাস লেবেল সফলভাবে আপডেট করা হয়েছে।',
     ],
 
     'delete' => [
-        'confirm' => 'Are you sure you wish to delete this Status Label?',
-        'error' => 'There was an issue deleting the Status Label. Please try again.',
-        'success' => 'The Status Label was deleted successfully.',
-        'bulk_success' => 'Status Label deleted successfully.|:count status labels were deleted successfully.',
-        'partial_success' => 'Status Label deleted successfully. See additional information below. | :count status labels were deleted successfully. See additional information below.',
+        'confirm' => 'আপনি কি নিশ্চিত যে আপনি এই স্ট্যাটাস লেবেলটি মুছে ফেলতে চান?',
+        'error' => 'স্ট্যাটাস লেবেল মুছে ফেলার সময় একটি সমস্যা হয়েছে। অনুগ্রহ করে পুনরায় চেষ্টা করুন।',
+        'success' => 'স্ট্যাটাস লেবেল সফলভাবে মুছে ফেলা হয়েছে।',
+        'bulk_success' => 'স্ট্যাটাস লেবেল সফলভাবে মুছে ফেলা হয়েছে।|:count টি স্ট্যাটাস লেবেল সফলভাবে মুছে ফেলা হয়েছে।',
+        'partial_success' => 'স্ট্যাটাস লেবেল সফলভাবে মুছে ফেলা হয়েছে। নিচের অতিরিক্ত তথ্য দেখুন। | :count টি স্ট্যাটাস লেবেল সফলভাবে মুছে ফেলা হয়েছে। নিচের অতিরিক্ত তথ্য দেখুন।',
     ],
 
     'help' => [
-        'undeployable' => 'These assets cannot be assigned to anyone.',
-        'deployable' => 'These assets can be checked out. Once they are assigned, they will assume a meta status of <i class="fas fa-circle text-blue"></i> <strong>Deployed</strong>.',
-        'archived' => 'These assets cannot be checked out, and will only show up in the Archived view. This is useful for retaining information about assets for budgeting/historic purposes but keeping them out of the day-to-day asset list.',
-        'pending' => 'These assets can not yet be assigned to anyone, often used for items that are out for repair, but are expected to return to circulation.',
+        'undeployable' => 'এই অ্যাসেটগুলো কাউকে প্রদান করা সম্ভব নয়।',
+        'deployable' => 'এই অ্যাসেটগুলো প্রদান করা সম্ভব। একবার প্রদান করা হলে, তারা <i class="fas fa-circle text-blue"></i> <strong>প্রদান করা হয়েছে (Deployed)</strong> মেটা স্ট্যাটাস গ্রহণ করবে।',
+        'archived' => 'এই অ্যাসেটগুলো প্রদান করা যাবে না এবং শুধুমাত্র আর্কাইভ ভিউতে প্রদর্শিত হবে। এটি বাজেট বা ঐতিহাসিক উদ্দেশ্যে অ্যাসেটের তথ্য ধরে রাখার জন্য কার্যকর, তবে দৈনন্দিন অ্যাসেট তালিকা থেকে দূরে রাখে।',
+        'pending' => 'এই অ্যাসেটগুলো এখনও কাউকে প্রদান করা সম্ভব নয়, সাধারণত মেরামতের জন্য পাঠানো আইটেমগুলোর ক্ষেত্রে ব্যবহৃত হয় যা প্রত্যাশিতভাবে ফিরে আসবে।',
     ],
 
 ];

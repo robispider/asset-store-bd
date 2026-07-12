@@ -2,43 +2,43 @@
 
 return [
 
-    'account_already_exists' => 'An account with the this email already exists.',
-    'account_not_found' => 'The username or password is incorrect.',
-    'account_not_activated' => 'This user account is not activated.',
-    'account_suspended' => 'This user account is suspended.',
+    'account_already_exists' => 'এই ইমেইল ঠিকানা দিয়ে ইতিমধ্যে একটি অ্যাকাউন্ট তৈরি করা হয়েছে।',
+    'account_not_found' => 'ইউজারনেম বা পাসওয়ার্ড সঠিক নয়।',
+    'account_not_activated' => 'এই ইউজার অ্যাকাউন্টটি সক্রিয় করা হয়নি।',
+    'account_suspended' => 'এই ইউজার অ্যাকাউন্টটি স্থগিত করা হয়েছে।',
 
     'two_factor' => [
-        'already_enrolled' => 'Your device is already enrolled.',
-        'success' => 'You have successfully logged in.',
-        'code_required' => 'Two-factor code is required.',
-        'invalid_code' => 'Two-factor code is invalid.',
-        'enter_two_factor_code' => 'Please enter your two-factor authentication code.',
-        'please_enroll' => 'Please enroll a device in two-factor authentication.',
+        'already_enrolled' => 'আপনার ডিভাইসটি ইতিমধ্যে নিবন্ধিত।',
+        'success' => 'আপনি সফলভাবে লগইন করেছেন।',
+        'code_required' => 'টু-ফ্যাক্টর কোড প্রয়োজন।',
+        'invalid_code' => 'টু-ফ্যাক্টর কোডটি সঠিক নয়।',
+        'enter_two_factor_code' => 'অনুগ্রহ করে আপনার টু-ফ্যাক্টর অথেন্টিকেশন কোড লিখুন।',
+        'please_enroll' => 'অনুগ্রহ করে টু-ফ্যাক্টর অথেন্টিকেশনে একটি ডিভাইস নিবন্ধিত করুন।',
     ],
 
     'signin' => [
-        'error' => 'There was a problem while trying to log you in, please try again.',
-        'success' => 'You have successfully logged in.',
+        'error' => 'আপনাকে লগইন করার সময় একটি সমস্যা হয়েছে, অনুগ্রহ করে পুনরায় চেষ্টা করুন।',
+        'success' => 'আপনি সফলভাবে লগইন করেছেন।',
     ],
 
     'logout' => [
-        'error' => 'There was a problem while trying to log you out, please try again.',
-        'success' => 'You have successfully logged out.',
+        'error' => 'আপনাকে লগ আউট করার সময় একটি সমস্যা হয়েছে, অনুগ্রহ করে পুনরায় চেষ্টা করুন।',
+        'success' => 'আপনি সফলভাবে লগ আউট করেছেন।',
     ],
 
     'signup' => [
-        'error' => 'There was a problem while trying to create your account, please try again.',
-        'success' => 'Account sucessfully created.',
+        'error' => 'আপনার অ্যাকাউন্ট তৈরি করার সময় একটি সমস্যা হয়েছে, অনুগ্রহ করে পুনরায় চেষ্টা করুন।',
+        'success' => 'অ্যাকাউন্ট সফলভাবে তৈরি করা হয়েছে।',
     ],
 
     'forgot-password' => [
-        'error' => 'There was a problem while trying to get a reset password code, please try again.',
-        'success' => 'If that email address exists in our system, a password recovery email has been sent.',
+        'error' => 'পাসওয়ার্ড রিসেট কোড পাওয়ার সময় একটি সমস্যা হয়েছে, অনুগ্রহ করে পুনরায় চেষ্টা করুন।',
+        'success' => 'যদি এই ইমেইল ঠিকানাটি আমাদের সিস্টেমে থাকে, তবে একটি পাসওয়ার্ড রিকভারি ইমেইল পাঠানো হয়েছে।',
     ],
 
     'forgot-password-confirm' => [
-        'error' => 'There was a problem while trying to reset your password, please try again.',
-        'success' => 'Your password has been successfully reset.',
+        'error' => 'আপনার পাসওয়ার্ড রিসেট করার সময় একটি সমস্যা হয়েছে, অনুগ্রহ করে পুনরায় চেষ্টা করুন।',
+        'success' => 'আপনার পাসওয়ার্ড সফলভাবে রিসেট করা হয়েছে।',
     ],
 
 ];

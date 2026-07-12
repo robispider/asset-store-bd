@@ -1,19 +1,19 @@
 <?php
 
 return [
-    'send_password_link' => 'Send Password Reset Link',
-    'email_reset_password' => 'Email Password Reset',
-    'reset_password' => 'Reset Password',
-    'saml_login' => 'Login via SAML',
-    'login' => 'Login',
-    'login_prompt' => 'Please Login',
-    'forgot_password' => 'I forgot my password',
-    'ldap_reset_password' => 'Please click here to reset your LDAP password',
-    'remember_me' => 'Remember Me',
-    'username_help_top' => 'Enter your <strong>username</strong> to be emailed a password reset link.',
-    'username_help_bottom' => 'Your username and email address <em>may</em> be the same, but may not be, depending on your configuration. If you cannot remember your username, contact your administrator. <br><br><strong>Usernames without an associated email address will not be emailed a password reset link.</strong> ',
-    'google_login' => 'Login with Google Workspace',
-    'google_login_failed' => 'Google Login failed, please try again.',
-    'invite_password_expires' => 'This password reset link will expire on :expire_date. You can use the manual password reset link to receive a new reset token by clicking here',
+    'send_password_link' => 'পাসওয়ার্ড রিসেট লিঙ্ক পাঠান',
+    'email_reset_password' => 'ইমেইল পাসওয়ার্ড রিসেট',
+    'reset_password' => 'পাসওয়ার্ড রিসেট করুন',
+    'saml_login' => 'SAML-এর মাধ্যমে লগইন করুন',
+    'login' => 'লগইন',
+    'login_prompt' => 'অনুগ্রহ করে লগইন করুন',
+    'forgot_password' => 'আমি আমার পাসওয়ার্ড ভুলে গেছি',
+    'ldap_reset_password' => 'আপনার LDAP পাসওয়ার্ড রিসেট করতে এখানে ক্লিক করুন',
+    'remember_me' => 'আমাকে মনে রাখুন',
+    'username_help_top' => 'পাসওয়ার্ড রিসেট লিঙ্ক ইমেইল করতে আপনার <strong>ইউজারনেম</strong> লিখুন।',
+    'username_help_bottom' => 'আপনার ইউজারনেম এবং ইমেইল ঠিকানা একই হতে পারে, তবে কনফিগারেশনের উপর ভিত্তি করে ভিন্নও হতে পারে। আপনি যদি আপনার ইউজারনেম মনে করতে না পারেন, তবে আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন। <br><br><strong>যেসব ইউজারনেমের সাথে কোনো ইমেইল ঠিকানা যুক্ত নেই, তাদের পাসওয়ার্ড রিসেট লিঙ্ক পাঠানো হবে না।</strong> ',
+    'google_login' => 'Google Workspace-এর মাধ্যমে লগইন করুন',
+    'google_login_failed' => 'Google লগইন ব্যর্থ হয়েছে, অনুগ্রহ করে পুনরায় চেষ্টা করুন।',
+    'invite_password_expires' => 'এই পাসওয়ার্ড রিসেট লিঙ্কটি :expire_date তারিখে মেয়াদোত্তীর্ণ হবে। আপনি এখানে ক্লিক করে নতুন রিসেট টোকেন পেতে ম্যানুয়াল পাসওয়ার্ড রিসেট লিঙ্ক ব্যবহার করতে পারেন',
 
 ];

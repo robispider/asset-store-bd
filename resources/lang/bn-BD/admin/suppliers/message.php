@@ -2,25 +2,25 @@
 
 return [
 
-    'deleted' => 'Deleted supplier',
-    'does_not_exist' => 'Supplier does not exist.',
+    'deleted' => 'সরবরাহকারী মুছে ফেলা হয়েছে',
+    'does_not_exist' => 'সরবরাহকারী পাওয়া যায়নি।',
 
     'create' => [
-        'error' => 'Supplier was not created, please try again.',
-        'success' => 'Supplier created successfully.',
+        'error' => 'সরবরাহকারী তৈরি করা যায়নি, অনুগ্রহ করে পুনরায় চেষ্টা করুন।',
+        'success' => 'সরবরাহকারী সফলভাবে তৈরি করা হয়েছে।',
     ],
 
     'update' => [
-        'error' => 'Supplier was not updated, please try again',
-        'success' => 'Supplier updated successfully.',
+        'error' => 'সরবরাহকারী আপডেট করা যায়নি, অনুগ্রহ করে পুনরায় চেষ্টা করুন',
+        'success' => 'সরবরাহকারী সফলভাবে আপডেট করা হয়েছে।',
     ],
 
     'delete' => [
-        'confirm' => 'Are you sure you wish to delete this supplier?',
-        'error' => 'There was an issue deleting the supplier. Please try again.',
-        'success' => 'Supplier was deleted successfully.',
-        'not_found' => 'Supplier not found.',
-        'bulk_success' => 'Supplier deleted successfully.|:count suppliers were deleted successfully.',
+        'confirm' => 'আপনি কি নিশ্চিত যে আপনি এই সরবরাহকারীকে মুছে ফেলতে চান?',
+        'error' => 'সরবরাহকারী মুছে ফেলার সময় একটি সমস্যা হয়েছে। অনুগ্রহ করে পুনরায় চেষ্টা করুন।',
+        'success' => 'সরবরাহকারী সফলভাবে মুছে ফেলা হয়েছে।',
+        'not_found' => 'সরবরাহকারী পাওয়া যায়নি।',
+        'bulk_success' => 'সরবরাহকারী সফলভাবে মুছে ফেলা হয়েছে।|:count টি সরবরাহকারী সফলভাবে মুছে ফেলা হয়েছে।',
         'partial_success' => '.',
     ],
 

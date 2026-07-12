@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'created' => 'Created',
-    'size' => 'Size',
+    'created' => 'তৈরি হয়েছে',
+    'size' => 'আকার',
 ];
