@@ -13,6 +13,8 @@ use GovStore\OfficeMembership\Http\Middleware\SetWorkingContext;
 use GovStore\OfficeMembership\Console\Commands\SyncInitialMemberships;
 use GovStore\OfficeMembership\Models\OfficeMembership;
 use GovStore\OfficeMembership\Observers\MembershipActivityLogObserver;
+use GovStore\OfficeMembership\Observers\UserSyncObserver;
+use App\Models\User;
 
 class OfficeMembershipServiceProvider extends ServiceProvider
 {
@@ -33,6 +35,9 @@ class OfficeMembershipServiceProvider extends ServiceProvider
 
         // Register Eloquent Observers for Compliance logging
         OfficeMembership::observe(MembershipActivityLogObserver::class);
+
+          // Attach the Thin Observer to the Core User Model
+        User::observe(UserSyncObserver::class);
 
         // Dynamic Relationship mapping directly into core Snipe-IT User model
         \App\Models\User::resolveRelationUsing('memberships', function ($userModel) {

@@ -21,12 +21,15 @@ class GovRequestController extends Controller
 
         return view('govstore::user.index', compact('requests'));
     }
-   public function catalog(CatalogService $catalogService)
+  public function catalog(CatalogService $catalogService)
     {
         $userId = auth()->id();
 
-        // 1. Get the unified list of products
-        $catalogItems = $catalogService->getUnifiedCatalog();
+        // =========================================================================
+        // REFACTORED: Wrap the raw array output in a Laravel Collection
+        // This prevents the "Call to a member function count() on array" error in Blade
+        // =========================================================================
+        $catalogItems = collect($catalogService->getAvailableItems());
 
         // 2. Fetch the user's request counts using the correct 'approval_status' column
         // (Drafts are excluded; we count submitted, approved/in-progress, and rejected)
@@ -42,13 +45,7 @@ class GovRequestController extends Controller
                             ->where('approval_status', 'rejected')
                             ->count();
 
-        // 3. Return the single unified dashboard view
-        return view('govstore::catalog.index', compact(
-            'catalogItems', 
-            'pendingCount', 
-            'approvedCount', 
-            'rejectedCount'
-        ));
+        return view('govstore::catalog.index', compact('catalogItems', 'pendingCount', 'approvedCount', 'rejectedCount'));
     }
     public function store(Request $request, RequestService $service)
     {

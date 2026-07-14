@@ -5,70 +5,131 @@ namespace GovStore\CustomRequests\Services;
 use App\Models\Asset;
 use App\Models\Accessory;
 use App\Models\Consumable;
-use GovStore\CustomRequests\DTOs\CatalogItem;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Storage;
+use App\Models\Component;
+use App\Models\License;
 
 class CatalogService
 {
-    public function getUnifiedCatalog(): Collection
+    /**
+     * Retrieves all items available for requesting within the user's active context.
+     */
+    public function getAvailableItems(): array
     {
-        $catalog = collect();
-        $defaultImage = asset('img/default-sm.png');
+        $catalog = [];
 
-        // 1. Fetch Assets (Hardware)
-        $assets = Asset::with(['model.category', 'model.manufacturer'])->where('requestable', 1)->whereNull('assigned_to')->get();
+        // 1. HARDWARE ASSETS
+        $assets = Asset::with('model.category')
+            ->where('requestable', 1)
+            ->whereNull('assigned_to')
+            ->get();
+
         foreach ($assets as $asset) {
-            $image = $asset->image ? Storage::disk('public')->url('assets/'.$asset->image) : null;
-            if (!$image && $asset->model && $asset->model->image) {
-                $image = Storage::disk('public')->url('models/'.$asset->model->image);
-            }
-            
-            $details = [];
-            if ($asset->model && $asset->model->model_number) $details[] = "Model: " . $asset->model->model_number;
-            if ($asset->model && $asset->model->manufacturer) $details[] = "Brand: " . $asset->model->manufacturer->name;
-            if ($asset->asset_tag) $details[] = "Asset Tag: " . $asset->asset_tag;
-
-            $catalog->push(new CatalogItem(
-                'Asset', $asset->id, $asset->present()->name() ?: $asset->asset_tag,
-                $asset->model && $asset->model->category ? $asset->model->category->name : 'Hardware',
-                1, $image ?? $defaultImage, $asset->created_at->timestamp, $details
-            ));
+            $catalog[] = [
+                'id' => $asset->id,
+                'type' => 'Asset',
+                'name' => $asset->name ?: ($asset->model->name ?? 'Unknown Asset'),
+                'category' => $asset->model->category->name ?? 'Uncategorized',
+                'image_url' => $asset->getImageUrl(),
+                'available_qty' => 1,
+                'created_timestamp' => $asset->created_at ? $asset->created_at->timestamp : time(),
+                'details' => [
+                    'Asset Tag: ' . $asset->asset_tag,
+                    'Model: ' . ($asset->model->name ?? 'N/A')
+                ]
+            ];
         }
 
-        // 2. Fetch Accessories
-        $accessories = Accessory::with(['category', 'manufacturer'])->get()->filter(function($item) { return $item->numRemaining() > 0; });
+        // 2. ACCESSORIES
+        $accessories = Accessory::with('category')->get();
         foreach ($accessories as $acc) {
-            $image = $acc->image ? Storage::disk('public')->url('accessories/'.$acc->image) : $defaultImage;
-            
-            $details = [];
-            if ($acc->model_number) $details[] = "Model: " . $acc->model_number;
-            if ($acc->manufacturer) $details[] = "Brand: " . $acc->manufacturer->name;
-            
-            $catalog->push(new CatalogItem(
-                'Accessory', $acc->id, $acc->name,
-                $acc->category ? $acc->category->name : 'Peripherals',
-                $acc->numRemaining(), $image, $acc->created_at->timestamp, $details
-            ));
+            $available = $acc->qty - $acc->users_count;
+            if ($available > 0) {
+                $catalog[] = [
+                    'id' => $acc->id,
+                    'type' => 'Accessory',
+                    'name' => $acc->name,
+                    'category' => $acc->category->name ?? 'Accessory',
+                    'image_url' => $acc->getImageUrl(),
+                    'available_qty' => $available,
+                    'created_timestamp' => $acc->created_at ? $acc->created_at->timestamp : time(),
+                    'details' => [
+                        'Total Stock: ' . $acc->qty,
+                        'Min Amount: ' . $acc->min_amt
+                    ]
+                ];
+            }
         }
 
-        // 3. Fetch Consumables
-        $consumables = Consumable::with(['category', 'manufacturer'])->get()->filter(function($item) { return $item->numRemaining() > 0; });
+        // 3. CONSUMABLES
+        $consumables = Consumable::with('category')->get();
         foreach ($consumables as $con) {
-            $image = $con->image ? Storage::disk('public')->url('consumables/'.$con->image) : $defaultImage;
-            
-            $details = [];
-            if ($con->item_no) $details[] = "Item No: " . $con->item_no;
-            if ($con->manufacturer) $details[] = "Brand: " . $con->manufacturer->name;
-            if ($con->model_number) $details[] = "Model: " . $con->model_number;
-
-            $catalog->push(new CatalogItem(
-                'Consumable', $con->id, $con->name,
-                $con->category ? $con->category->name : 'Supplies',
-                $con->numRemaining(), $image, $con->created_at->timestamp, $details
-            ));
+            $available = $con->qty - $con->users_count;
+            if ($available > 0) {
+                $catalog[] = [
+                    'id' => $con->id,
+                    'type' => 'Consumable',
+                    'name' => $con->name,
+                    'category' => $con->category->name ?? 'Consumable',
+                    'image_url' => $con->getImageUrl(),
+                    'available_qty' => $available,
+                    'created_timestamp' => $con->created_at ? $con->created_at->timestamp : time(),
+                    'details' => [
+                        'Total Stock: ' . $con->qty,
+                        'Model/Item No: ' . ($con->item_no ?: 'N/A')
+                    ]
+                ];
+            }
         }
 
-        return $catalog->sortBy('name')->values();
+        // 4. COMPONENTS
+        $components = Component::with('category')->get();
+        foreach ($components as $comp) {
+            $available = $comp->qty - $comp->assets_count;
+            if ($available > 0) {
+                $catalog[] = [
+                    'id' => $comp->id,
+                    'type' => 'Component',
+                    'name' => $comp->name,
+                    'category' => $comp->category->name ?? 'Component',
+                    'image_url' => $comp->getImageUrl(),
+                    'available_qty' => $available,
+                    'created_timestamp' => $comp->created_at ? $comp->created_at->timestamp : time(),
+                    'details' => [
+                        'Total Stock: ' . $comp->qty
+                    ]
+                ];
+            }
+        }
+
+        // 5. LICENSES
+        $licenses = License::with('category')->get();
+        foreach ($licenses as $lic) {
+            $available = $lic->seats - $lic->assigned_seats_count;
+            if ($available > 0) {
+                $catalog[] = [
+                    'id' => $lic->id,
+                    'type' => 'License',
+                    'name' => $lic->name,
+                    'category' => $lic->category->name ?? 'Software License',
+                    'image_url' => null, 
+                    'available_qty' => $available,
+                    'created_timestamp' => $lic->created_at ? $lic->created_at->timestamp : time(),
+                    'details' => [
+                        'Total Seats: ' . $lic->seats,
+                        'Expiration: ' . ($lic->expiration_date ?? 'Perpetual')
+                    ]
+                ];
+            }
+        }
+
+        // Sort alphabetically by name
+        usort($catalog, function ($a, $b) {
+            return strcmp($a['name'], $b['name']);
+        });
+
+        // Cast to Objects for Blade syntax compatibility
+        return array_map(function($item) {
+            return (object) $item;
+        }, $catalog);
     }
 }
