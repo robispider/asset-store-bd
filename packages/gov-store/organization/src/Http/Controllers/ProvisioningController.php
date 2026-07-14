@@ -9,8 +9,8 @@ use App\Models\Company;
 use App\Models\User;
 use GovStore\Organization\Models\LocationProfile;
 use GovStore\Organization\Models\IctJurisdiction;
-use GovStore\Organization\Models\LocationRole;
-use GovStore\GeoAreas\Services\GeoAreaService; // ONLY IMPORT THE SERVICE
+use GovStore\OfficeMembership\Models\OfficeResponsibility; // IMPORT THE PIVOT
+use GovStore\GeoAreas\Services\GeoAreaService;
 use GovStore\Organization\Services\OfficeProvisioningService;
 use GovStore\Organization\ViewModels\OfficeRegistryViewModel;
 
@@ -94,17 +94,27 @@ class ProvisioningController extends Controller
         // Execute query
         $offices = $query->orderBy('name')->get();
 
-        // 3. DICTIONARY LOOKUP: Fetch roles for only the locations currently on this page
+        // =========================================================================
+        // 3. DICTIONARY LOOKUP: Fetch roles from our new pivot matrix (FAST DB LOAD)
+        // =========================================================================
         $locationIds = $offices->pluck('id');
-        $rolesDictionary = LocationRole::whereIn('location_id', $locationIds)
-                            ->get()
-                            ->keyBy('location_id');
+        $responsibilities = OfficeResponsibility::whereIn('location_id', $locationIds)->get();
 
-        // 4. MAP ELOCUENT MODELS TO THE VIEWMODEL (Dynamic Paginator check)
+        // Reconstruct flat mock role objects to maintain 100% compatibility with ViewModel
+        $rolesDictionary = collect();
+        foreach ($locationIds as $locId) {
+            $officeResps = $responsibilities->where('location_id', $locId);
+            $rolesDictionary->put($locId, (object)[
+                'primary_approver_id' => $officeResps->where('role_slug', 'primary_approver')->first()?->user_id,
+                'storekeeper_id'      => $officeResps->where('role_slug', 'storekeeper')->first()?->user_id,
+            ]);
+        }
+
+        // 4. MAP ELOQUENT MODELS TO THE VIEWMODEL (Dynamic Paginator check)
         $collection = $offices instanceof \Illuminate\Pagination\LengthAwarePaginator ? $offices->getCollection() : $offices;
         
         $collection->transform(function ($loc) use ($rolesDictionary) {
-            $role = $rolesDictionary->get($loc->id); // Match role to location in memory
+            $role = $rolesDictionary->get($loc->id); // Match mock role to location in memory
             return new OfficeRegistryViewModel($loc, $role);
         });
 
@@ -124,7 +134,6 @@ class ProvisioningController extends Controller
         $user = auth()->user();
 
         // DECOUPLED SECURITY PASSTHROUGH: 
-        // We pre-calculate the restricted HID tree serverside, and pass it to the view
         $restrictToHid = null;
         if (!$user->isSuperUser() && !$user->hasAccess('admin')) {
             $jurisdiction = IctJurisdiction::with('geoArea')->where('user_id', $user->id)->first();
@@ -226,7 +235,7 @@ class ProvisioningController extends Controller
     {
         $this->checkIctOfficerAccess();
 
-        // Load all active officer mappings with their home office users and geographic territories
+        // Load all active officer mappings with their home office users and geographical territories
         $jurisdictions = IctJurisdiction::with(['user.location', 'geoArea'])->get();
         
         // Fetch all users to select from
