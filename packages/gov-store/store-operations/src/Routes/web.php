@@ -16,6 +16,7 @@ Route::group([
     Route::post('/receipts/{id}/submit', [GoodsReceiptController::class, 'submit'])->name('storeops.receipts.submit');
 
     // Stock Register & Kardex (Audit Trail)
+    Route::get('/register', [StockRegisterController::class, 'index'])->name('storeops.register.index');
     Route::get('/kardex/{type}/{id}', [StockRegisterController::class, 'kardex'])->name('storeops.register.kardex');
 
     // Goods Issue Workflows

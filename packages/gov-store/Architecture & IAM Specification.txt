@@ -1,0 +1,90 @@
+
+GovStore: Enterprise Architecture & IAM Specification
+For Future Code Agent and Developer Reference
+This document serves as the authoritative architectural specification and coding standard for the GovStore government e-commerce and inventory extension built on top of the Snipe-IT core. Any future agent or developer modifying this codebase must adhere strictly to the boundaries, constraints, and patterns established below to prevent regression, security leaks, or infinite routing loops.
+1. Bounded Contexts & The 7-Layer IAM Engine
+The system strictly decouples Identity (Who a user is), Membership (Where they are allowed to operate), and Responsibility (What operational role they hold).
+To keep the extension fully decoupled from Snipe-IT's core, the platform evaluates authority at runtime using a 7-Layer in-memory permission engine during each HTTP request lifecycle.
+code
+Code
+HTTP REQUEST LIFECYCLE
+                                    │
+                                    ▼
+                      [Layer 1 & 2: Authenticated Identity]
+                      Loads User model (No Groups on disk)
+                                    │
+                                    ▼
+                     [Layer 3: SetWorkingContext Middleware]
+                      Resolves active working_membership_id
+                                    │
+                                    ▼
+                   [Layer 3: InitializeTenantContext Middleware]
+                     Hydrates TenantContext Singleton (Facts)
+                                    │
+                                    ▼
+                        [Layer 4: AssignmentResolver]
+                      Resolves role slug from pivot matrix
+                                    │
+                                    ▼
+                       [Layer 5: CapabilityProfileResolver]
+                     Maps role slug to permissions config array
+                                    │
+                                    ▼
+                     [Layer 6: SnipePermissionAdapter]
+                  Injects permissions & flushes Sentinel cache
+                                    │
+                                    ▼
+                     [Layer 7: Laravel Policies / Gates]
+                      Validates write state mutations
+The 7 Layers Defined:
+Identity: Represented by Snipe-IT’s native User model. Contains core authentication records. Holds no native group associations in the database to prevent global privilege escalation.
+Membership: Represented by the gov_office_memberships table. Declares access rights—which physical office buildings a user is legally allowed to enter and switch their session into.
+Context: Represented by the TenantContext singleton. Hydrated once per request by the InitializeTenantContext middleware. It stores the raw facts of the active request (Active Location ID, Active Company ID, Active Membership ID, and allowed hierarchical locations).
+Assignment: Represented by the AssignmentResolver service. It queries the gov_office_responsibilities pivot table (or legacy office_admin_id column) to identify the user's operational role slug (e.g., 'storekeeper') inside the active context.
+Capability: Represented by the CapabilityProfileResolver. It reads the central govstore-permissions.php configuration registry to translate the resolved role slug into a flat list of permissions (the EffectivePermissionSet DTO).
+Translation: Represented by the SnipePermissionAdapter. This infrastructure adapter translates business permissions into native Snipe-IT dotted keys (e.g., assets.view) and overwrites the user's $user->permissions attribute in-memory only. It also explicitly clears Sentinel’s internal compiled cache (unset($user->cached_permissions)) so the changes take effect instantly. It never calls $user->save().
+Policy: Standard Laravel Policies. While the UI menus are shown or hidden by the translated native gates (Layer 6), all database writes (checkouts, approvals, updates) are strictly guarded by Laravel Policies checking the EffectivePermissionSet.
+2. Bounded Workflows for Membership Acquisition
+To prevent database state corruption, the system enforces a strict business boundary: Membership acquisition never modifies user identity. Identity changes only through a dedicated Transfer workflow.
+There are exactly five ways a user gains access to an office, each governed by its own strict, non-overlapping application service:
+code
+Code
+┌─────────────────────────────────┬───────────────────────────┬─────────────────────────────────┐
+│ Workflow                        │ Aligns users.location_id? │ Membership Record (is_home)     │
+├─────────────────────────────────┼───────────────────────────┼─────────────────────────────────┤
+│ 1. Initial Employment           │ Yes (Home Office)         │ Active (is_home_office = true)  │
+│ 2. Additional Membership (Token)│ No (Untouched)            │ Active (is_home_office = false) │
+│ 3. Self-Join (Invite Code)      │ No (Untouched)            │ Pending -> Active (is_home = 0) │
+│ 4. Permanent Transfer (Claim)   │ Yes (Updates to New)      │ Old -> Released, New -> Home    │
+│ 5. ICT Administrative Override  │ Optional (Admin Choice)   │ Manual Override                 │
+└─────────────────────────────────┴───────────────────────────┴─────────────────────────────────┘
+The Golden Rule: The "Verification Code" onboarding flow only grants secondary, non-primary office memberships (is_home_office = false). It must never alter the user's native users.location_id or old active memberships.
+The Claim Workflow: The "Claim Transferred Employee" dropdown inside the Staff Management Hub is the only workflow authorized to process permanent relocations. It deactivates the old home membership, creates the new home membership, and aligns the core users.location_id record.
+3. Structural Multi-Tenant Scoping (Query Isolation)
+The platform isolates database records using three global Eloquent scopes. These scopes must remain pure and must never execute database queries or read from HTTP request route paths.
+MinistryLocationScope (Operational Data): Applied to transactional tables (Assets, Consumables, Accessories, Licenses). It reads the active locationId from the TenantContext and restricts queries strictly to that office.
+TenantScope (Reference Catalogs): Applied to reference models (Locations, Categories, Models). It reads the pre-computed allowedLocationIds array from the TenantContext to determine which reference catalogs are visible.
+UserScope (Identity Directory): Applied specifically to the User model. It reads the pre-computed allowedLocationIds array to determine which colleagues are visible.
+4. Architectural Constraints (The Guardrails)
+Any future code agent must respect these hard technical limitations:
+Constraint 1: Never Modify Snipe-IT Core Code. All extension features must exist entirely inside the /packages/gov-store/ packages. Hooking must happen through Laravel Service Providers, Middlewares, and Eloquent Observers.
+Constraint 2: No Database Queries in Global Scopes. Scopes like UserScope and TenantScope must only read pre-computed arrays from the TenantContext memory container. Writing SQL queries inside global scopes will trigger infinite loops and crash the server during bootstrap.
+Constraint 3: Avoid withoutGlobalScopes(). Broadly disabling all scopes is a security hazard. If a query needs to bypass tenant isolation, always use targeted bypasses instead:
+User::withoutGlobalScope(UserScope::class)->get();
+Constraint 4: No request()->is() Route Checks in Scopes. Scopes must remain completely presentation-ignorant. If an administrator needs to bypass a scope, it must be handled by setting the context state in the middleware (e.g., setting $context->isGlobal = true or $context->isActive = false), not by inspecting the URL.
+Constraint 5: Protect Authenticated Identity Queries. Any scope applied to the User model must include a self-query bypass check. If the query is fetching the logged-in user by their ID, the scope must return early. Failing to do this will cause recursive loops and trigger browser ERR_TOO_MANY_REDIRECTS crashes on login.
+Constraint 6: Defensive Blade Presenter Guards. Database records can sometimes be orphaned, deleted, or temporarily scoped out during role transitions. Blade views must never assume an Eloquent relationship is populated. Always use defensive checks:
+{{ $mem->user ? $mem->user->present()->fullName : 'Unknown Employee' }}
+5. Do's and Don'ts for Future Code Agents
+Do's
+DO write all role-permission mappings inside the central configuration file (packages/gov-store/tenant-scope/src/config/permissions.php).
+DO use the OfficeResponsibility model (table gov_office_responsibilities) to assign and check local office duties.
+DO ensure that any controller saving office roles first opens a secure database transaction (DB::transaction).
+DO use OfficeMembership::updateOrCreate() instead of create() when onboarding employees to satisfy database unique key constraints.
+DO ensure SetWorkingContext middleware executes before InitializeTenantContext so the session variables are populated first.
+Don'ts
+DON'T assign users to native Snipe-IT groups (groups table) in the database for local office roles. Keep database groups reserved only for global system admins.
+DON'T write database update or synchronization commands directly inside Controllers. Keep controllers thin; delegate all synchronization tasks to OfficeConfigurationService or OfficeMembershipService.
+DON'T use LocationRole or query gov_location_roles table. This flat-column table is completely deprecated.
+DON'T use Reflection or try to modify private framework properties inside the SnipePermissionAdapter to clear cache. Use native Sentinel and model cache-clearing methods instead.
+DON'T apply MinistryLocationScope to reference models or User models. Keep its usage restricted only to physical operational models.

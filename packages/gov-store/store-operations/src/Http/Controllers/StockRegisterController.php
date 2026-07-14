@@ -11,6 +11,19 @@ use App\Models\Component;
 class StockRegisterController extends Controller
 {
     /**
+     * Dashboard listing all items in the storekeeper's warehouse
+     */
+    public function index()
+    {
+        // Globally scoped: MinistryLocationScope applies automatically
+        $consumables = Consumable::with('category')->get();
+        $accessories = Accessory::with('category')->get();
+        $components  = Component::with('category')->get();
+
+        return view('storeops::register.index', compact('consumables', 'accessories', 'components'));
+    }
+
+    /**
      * Displays the Immutable Stock Card (Kardex) for a specific item
      */
     public function kardex($type, $id)

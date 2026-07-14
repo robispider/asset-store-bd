@@ -5,6 +5,7 @@ namespace GovStore\StoreOperations\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use GovStore\TenantScope\Scopes\MinistryLocationScope;
+use App\Models\User;
 
 class InventoryMovement extends Model
 {
@@ -33,5 +34,13 @@ class InventoryMovement extends Model
     public function document()
     {
         return $this->morphTo();
+    }
+
+    /**
+     * Define the relationship to the Snipe-IT user who generated this movement.
+     */
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

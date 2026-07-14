@@ -6,12 +6,21 @@ use GovStore\CustomRequests\Models\Request as ServiceRequest;
 use GovStore\CustomRequests\Models\RequestItem;
 use GovStore\CustomRequests\Models\RequestEvent;
 use GovStore\CustomRequests\Factories\RequestableFactory;
+use GovStore\StoreOperations\Contracts\StockIssuingServiceInterface;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
 class FulfillmentService
 {
+    protected StockIssuingServiceInterface $stockIssuer;
+
+    // Inject the ledger contract cleanly
+    public function __construct(StockIssuingServiceInterface $stockIssuer)
+    {
+        $this->stockIssuer = $stockIssuer;
+    }
+
     public function issueItems(ServiceRequest $request, User $storekeeper, array $issueQuantities, array $substitutions = []): ServiceRequest
     {
         if (in_array($request->fulfillment_status, ['closed', 'cannot_fulfill'])) {
@@ -21,6 +30,9 @@ class FulfillmentService
         DB::transaction(function () use ($request, $storekeeper, $issueQuantities, $substitutions) {
             $totalLinesCount = $request->items()->where('line_approval_status', 'approved')->count();
             $completedLinesCount = 0;
+
+            // Temporary array to hold counter-based items for batch ledger submission
+            $ledgerItems = [];
 
             foreach ($request->items as $item) {
                 if ($item->line_approval_status !== 'approved') {
@@ -35,11 +47,11 @@ class FulfillmentService
                     $subName = $altAdapter->getDisplayName();
 
                     $item->update([
-                        'fulfilled_type' => $item->requested_type, // Must remain same general type
+                        'fulfilled_type' => $item->requested_type,
                         'fulfilled_id' => $subId
                     ]);
 
-                    // Log substitution to the timeline
+                    // Log substitution to request timeline
                     RequestEvent::create([
                         'request_id' => $request->id,
                         'user_id' => $storekeeper->id,
@@ -60,44 +72,58 @@ class FulfillmentService
                         throw new Exception("You cannot issue more than the remaining approved quantity.");
                     }
 
-                    // 2. Resolve target polymorphic identity (Use fulfilled/substituted item if set, else requested)
+                    // Resolve target polymorphic identity
                     $type = $item->fulfilled_type ?: $item->requested_type;
                     $id = $item->fulfilled_id ?: $item->requested_id;
-                    
-                    // 3. Handshake with Snipe-IT: Check out alternative product
-                    $adapter = RequestableFactory::make($type, $id);
-                    $checkoutSuccess = $adapter->checkout(
-                        $request->requester, 
-                        $storekeeper, 
-                        $qtyToIssue, 
-                        "Issued via Service Request {$request->request_number} (Substitution)"
-                    );
 
-                    if (!$checkoutSuccess) {
-                        throw new Exception("Snipe-IT failed to checkout the item.");
+                    // Normalize type for classification
+                    $classBasename = class_basename($type);
+
+                    if (in_array(strtolower($classBasename), ['consumable', 'accessory', 'component'])) {
+                        
+                        // COUNTER-BASED ITEMS: Add to batch ledger payload (processed after database lock)
+                        $ledgerItems[] = [
+                            'stockable_type' => $type,
+                            'stockable_id' => $id,
+                            'quantity' => $qtyToIssue,
+                            'line_item_id' => $item->id,
+                            'name' => isset($subName) ? $subName : ($item->requested->name ?? 'Item')
+                        ];
+
+                    } else {
+                        // SERIALIZED ASSETS & LICENSES: Standard Checkout Adaption Flow
+                        $adapter = RequestableFactory::make($type, $id);
+                        $checkoutSuccess = $adapter->checkout(
+                            $request->requester, 
+                            $storekeeper, 
+                            $qtyToIssue, 
+                            "Issued via Service Request {$request->request_number}"
+                        );
+
+                        if (!$checkoutSuccess) {
+                            throw new Exception("Snipe-IT failed to checkout the asset item.");
+                        }
+
+                        $newIssuedQty = $item->issued_qty + $qtyToIssue;
+                        $lineFulfillmentStatus = ($newIssuedQty === $item->approved_qty) ? 'issued' : 'partially_issued';
+
+                        $item->update([
+                            'issued_qty' => $newIssuedQty,
+                            'line_fulfillment_status' => $lineFulfillmentStatus
+                        ]);
+
+                        RequestEvent::create([
+                            'request_id' => $request->id,
+                            'user_id' => $storekeeper->id,
+                            'event_type' => 'item_issued',
+                            'details' => [
+                                'item' => isset($subName) ? $subName : ($item->requested->name ?? 'Asset'),
+                                'issued_qty' => $qtyToIssue,
+                                'total_issued' => $newIssuedQty,
+                                'approved_qty' => $item->approved_qty
+                            ]
+                        ]);
                     }
-
-                    $newIssuedQty = $item->issued_qty + $qtyToIssue;
-                    $lineFulfillmentStatus = ($newIssuedQty === $item->approved_qty) ? 'issued' : 'partially_issued';
-
-                    $item->update([
-                        'issued_qty' => $newIssuedQty,
-                        'line_fulfillment_status' => $lineFulfillmentStatus
-                    ]);
-
-                    // 4. Log cumulative physical issuance
-                    $finalName = isset($subName) ? $subName : ($item->requested->name ?? 'Item');
-                    RequestEvent::create([
-                        'request_id' => $request->id,
-                        'user_id' => $storekeeper->id,
-                        'event_type' => 'item_issued',
-                        'details' => [
-                            'item' => $finalName,
-                            'issued_qty' => $qtyToIssue,
-                            'total_issued' => $newIssuedQty,
-                            'approved_qty' => $item->approved_qty
-                        ]
-                    ]);
                 }
 
                 if ($item->issued_qty === $item->approved_qty) {
@@ -105,7 +131,51 @@ class FulfillmentService
                 }
             }
 
-            // 5. Update Parent Document State
+            // 2. Handshake with Ledger: Process counter-based batch items through the contract
+            if (!empty($ledgerItems)) {
+                // Format payload matching StockIssuingServiceInterface requirements
+                $formattedItems = array_map(function ($item) {
+                    return [
+                        'stockable_type' => $item['stockable_type'],
+                        'stockable_id' => $item['stockable_id'],
+                        'quantity' => $item['quantity']
+                    ];
+                }, $ledgerItems);
+
+                // This handles all stock checks, ledger writes, and Snipe-IT updates atomatically
+                $giNo = $this->stockIssuer->issueSystemStock($formattedItems, $request->requested_by, $request);
+
+                // Update request line item records
+                foreach ($ledgerItems as $ledgerItem) {
+                    $itemModel = RequestItem::find($ledgerItem['line_item_id']);
+                    $newIssuedQty = $itemModel->issued_qty + $ledgerItem['quantity'];
+                    
+                    $itemModel->update([
+                        'issued_qty' => $newIssuedQty,
+                        'line_fulfillment_status' => ($newIssuedQty === $itemModel->approved_qty) ? 'issued' : 'partially_issued'
+                    ]);
+
+                    // Log individual line checkout with formal document reference
+                    RequestEvent::create([
+                        'request_id' => $request->id,
+                        'user_id' => $storekeeper->id,
+                        'event_type' => 'item_issued',
+                        'details' => [
+                            'item' => $ledgerItem['name'],
+                            'issued_qty' => $ledgerItem['quantity'],
+                            'total_issued' => $newIssuedQty,
+                            'approved_qty' => $itemModel->approved_qty,
+                            'message' => "Logged in Goods Issue: {$giNo}"
+                        ]
+                    ]);
+
+                    if ($newIssuedQty === $itemModel->approved_qty) {
+                        $completedLinesCount++;
+                    }
+                }
+            }
+
+            // 3. Update Parent Document State
             $finalFulfillmentStatus = 'partially_issued';
             $finalApprovalStatus = $request->approval_status;
 
