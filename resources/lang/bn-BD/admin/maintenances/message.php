@@ -1,26 +1,26 @@
 <?php
 
 return [
-    'not_found' => 'Asset Maintenance you were looking for was not found!',
+    'not_found' => 'আপনি যা খুঁজছিলেন এমন সম্পদ রক্ষণাবেক্ষণ পাওয়া যায়নি!',
     'delete' => [
-        'confirm' => 'Are you sure you wish to delete this asset maintenance?',
-        'error' => 'There was an issue deleting the asset maintenance. Please try again.',
-        'success' => 'The asset maintenance was deleted successfully.',
+        'confirm' => 'আপনি কি নিশ্চিতভাবে এই সম্পদ রক্ষণাবেক্ষণটি মুছে ফেলতে চান?',
+        'error' => 'সম্পদ রক্ষণাবেক্ষণ মুছে ফেলতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'success' => 'সম্পদ রক্ষণাবেক্ষণটি সফলভাবে মুছে ফেলা হয়েছে।',
     ],
     'create' => [
-        'error' => 'Asset Maintenance was not created, please try again.',
-        'success' => 'Asset Maintenance created successfully.',
+        'error' => 'সম্পদ রক্ষণাবেক্ষণ তৈরি করা যায়নি, অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'success' => 'সম্পদ রক্ষণাবেক্ষণ সফলভাবে তৈরি করা হয়েছে।',
     ],
     'edit' => [
-        'error' => 'Asset Maintenance was not edited, please try again.',
-        'success' => 'Asset Maintenance edited successfully.',
+        'error' => 'সম্পদ রক্ষণাবেক্ষণ সম্পাদনা করা যায়নি, অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'success' => 'সম্পদ রক্ষণাবেক্ষণ সফলভাবে সম্পাদনা করা হয়েছে।',
     ],
-    'asset_maintenance_incomplete' => 'Not Completed Yet',
-    'warranty' => 'Warranty',
-    'not_warranty' => 'Not Warranty',
+    'asset_maintenance_incomplete' => 'এখনও সম্পূর্ণ করা হয়নি',
+    'warranty' => 'ওয়ারেন্টি',
+    'not_warranty' => 'ওয়ারেন্টি নয়',
     'complete' => [
-        'confirm' => 'Are you sure you want to mark this maintenance as complete? This cannot be undone.',
-        'success' => 'Maintenance marked as complete.',
-        'error' => 'There was an issue marking this maintenance as complete. Please try again.',
+        'confirm' => 'আপনি কি নিশ্চিতভাবে এই রক্ষণাবেক্ষণটিকে সম্পূর্ণ হিসেবে চিহ্নিত করতে চান? এটি পূর্বাবস্থায় ফিরিয়ে আনা যাবে না।',
+        'success' => 'রক্ষণাবেক্ষণ সম্পূর্ণ হিসেবে চিহ্নিত করা হয়েছে।',
+        'error' => 'রক্ষণাবেক্ষণ সম্পূর্ণ হিসেবে চিহ্নিত করতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।',
     ],
 ];

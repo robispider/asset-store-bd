@@ -9,14 +9,11 @@ use GovStore\Organization\Models\OrganizationActivityLog;
 
 class OfficeReadinessService
 {
-    /**
-     * Exception-safe checklist evaluator.
-     */
     public function evaluateAndTransition(int $locationId): array
     {
         $profile = LocationProfile::where('location_id', $locationId)->first();
         
-        // Query the new responsibilities pivot matrix directly
+        // STRICT PIVOT LOOKUP: Read from the multi-office matrix
         $hasPrimary = OfficeResponsibility::where('location_id', $locationId)
             ->where('role_slug', 'primary_approver')
             ->exists();
@@ -25,9 +22,8 @@ class OfficeReadinessService
             ->where('role_slug', 'storekeeper')
             ->exists();
         
-        $usersCount = User::where('location_id', $locationId)->count();
+        $usersCount = User::withoutGlobalScopes()->where('location_id', $locationId)->count();
 
-        // Evaluate checklists based on pivot records
         $checklist = [
             'has_office_admin'     => $profile && !is_null($profile->office_admin_id),
             'has_primary_approver' => $hasPrimary,
@@ -44,7 +40,6 @@ class OfficeReadinessService
             if ($oldStatus !== $newStatus) {
                 $profile->update(['lifecycle_status' => $newStatus]);
 
-                // Log status transition changes
                 OrganizationActivityLog::create([
                     'location_id' => $locationId,
                     'performed_by' => auth()->id() ?: ($profile->office_admin_id ?: 1),

@@ -14,18 +14,21 @@ $(document).ready(function() {
         var isCatalogActive = path.includes('gov-requests/catalog');
         var isMyRequestsActive = path.includes('gov-requests/my-requests');
 
-        @php
+     @php
             $user = auth()->user();
             $isSysAdmin = $user->isSuperUser() || $user->hasAccess('admin');
             $isApprover = false;
             $isStorekeeper = false;
 
-            // Safely check if the user holds local operational roles
-            if (class_exists(\GovStore\CustomRequests\Models\LocationRole::class)) {
-                $isApprover = \GovStore\CustomRequests\Models\LocationRole::where('primary_approver_id', $user->id)
-                                ->orWhere('final_approver_id', $user->id)
+            // NEW MATRIX LOOKUP: Check if user holds roles in ANY office they are a member of
+            if (class_exists(\GovStore\OfficeMembership\Models\OfficeResponsibility::class)) {
+                $isApprover = \GovStore\OfficeMembership\Models\OfficeResponsibility::where('user_id', $user->id)
+                                ->whereIn('role_slug', ['primary_approver', 'final_approver'])
                                 ->exists();
-                $isStorekeeper = \GovStore\CustomRequests\Models\LocationRole::where('storekeeper_id', $user->id)->exists();
+                                
+                $isStorekeeper = \GovStore\OfficeMembership\Models\OfficeResponsibility::where('user_id', $user->id)
+                                ->where('role_slug', 'storekeeper')
+                                ->exists();
             }
         @endphp
 

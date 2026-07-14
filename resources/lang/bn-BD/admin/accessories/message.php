@@ -2,41 +2,41 @@
 
 return [
 
-    'does_not_exist' => 'The accessory [:id] does not exist.',
-    'not_found' => 'That accessory was not found.',
-    'assoc_users' => 'This accessory currently has :count items checked out to users. Please check in the accessories and and try again. ',
+    'does_not_exist' => 'অ্যাক্সেসরি [:id] বিদ্যমান নেই।',
+    'not_found' => 'সেই অ্যাক্সেসরিটি পাওয়া যায়নি।',
+    'assoc_users' => 'এই অ্যাক্সেসরিটির বর্তমানে :count টি আইটেম ব্যবহারকারীদের প্রদান করা হয়েছে। দয়া করে অ্যাক্সেসরিগুলো ফেরত নিন এবং আবার চেষ্টা করুন। ',
 
     'create' => [
-        'error' => 'The accessory was not created, please try again.',
-        'success' => 'The accessory was successfully created.',
+        'error' => 'অ্যাক্সেসরিটি তৈরি করা যায়নি, দয়া করে আবার চেষ্টা করুন।',
+        'success' => 'অ্যাক্সেসরিটি সফলভাবে তৈরি করা হয়েছে।',
     ],
 
     'update' => [
-        'error' => 'The accessory was not updated, please try again',
-        'success' => 'The accessory was updated successfully.',
+        'error' => 'অ্যাক্সেসরিটি আপডেট করা যায়নি, দয়া করে আবার চেষ্টা করুন',
+        'success' => 'অ্যাক্সেসরিটি সফলভাবে আপডেট করা হয়েছে।',
     ],
 
     'delete' => [
-        'confirm' => 'Are you sure you wish to delete this accessory?',
-        'error' => 'There was an issue deleting the accessory. Please try again.',
-        'success' => 'The accessory was deleted successfully.',
+        'confirm' => 'আপনি কি নিশ্চিত যে আপনি এই অ্যাক্সেসরিটিটি মুছে ফেলতে চান?',
+        'error' => 'অ্যাক্সেসরিটি মুছতে সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।',
+        'success' => 'অ্যাক্সেসরিটি সফলভাবে মুছে ফেলা হয়েছে।',
     ],
 
     'checkout' => [
-        'error' => 'Accessory was not checked out, please try again',
-        'success' => 'Accessory checked out successfully.',
-        'unavailable' => 'Accessory is not available for checkout. Check quantity available',
-        'user_does_not_exist' => 'That user is invalid. Please try again.',
+        'error' => 'অ্যাক্সেসরিটি প্রদান করা যায়নি, দয়া করে আবার চেষ্টা করুন',
+        'success' => 'অ্যাক্সেসরিটি সফলভাবে প্রদান করা হয়েছে।',
+        'unavailable' => 'অ্যাক্সেসরিটি প্রদানের জন্য উপলব্ধ নেই। উপলব্ধ পরিমাণ যাচাই করুন',
+        'user_does_not_exist' => 'সেই ব্যবহারকারীটি সঠিক নয়। দয়া করে আবার চেষ্টা করুন।',
         'checkout_qty' => [
-            'lte' => 'There is currently only one available accessory of this type, and you are trying to check out :checkout_qty. Please adjust the checkout quantity or the total stock of this accessory and try again.|There are :number_currently_remaining total available accessories, and you are trying to check out :checkout_qty. Please adjust the checkout quantity or the total stock of this accessory and try again.',
+            'lte' => 'বর্তমানে এই ধরনের মাত্র একটি অ্যাক্সেসরি উপলব্ধ আছে, এবং আপনি :checkout_qty টি প্রদান করার চেষ্টা করছেন। দয়া করে প্রদানের পরিমাণ অথবা এই অ্যাক্সেসরির মোট স্টক সমন্বয় করুন এবং আবার চেষ্টা করুন।|বর্তমানে মোট :number_currently_remaining টি অ্যাক্সেসরি উপলব্ধ আছে, এবং আপনি :checkout_qty টি প্রদান করার চেষ্টা করছেন। দয়া করে প্রদানের পরিমাণ অথবা এই অ্যাক্সেসরির মোট স্টক সমন্বয় করুন এবং আবার চেষ্টা করুন।',
         ],
 
     ],
 
     'checkin' => [
-        'error' => 'Accessory was not checked in, please try again',
-        'success' => 'Accessory checked in successfully.',
-        'user_does_not_exist' => 'That user is invalid. Please try again.',
+        'error' => 'অ্যাক্সেসরিটি ফেরত নেওয়া যায়নি, দয়া করে আবার চেষ্টা করুন',
+        'success' => 'অ্যাক্সেসরিটি সফলভাবে ফেরত নেওয়া হয়েছে।',
+        'user_does_not_exist' => 'সেই ব্যবহারকারীটি সঠিক নয়। দয়া করে আবার চেষ্টা করুন।',
     ],
 
 ];

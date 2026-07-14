@@ -2,15 +2,15 @@
 
 return [
 
-    'create' => 'Create Asset Model',
-    'created_at' => 'Created at',
+    'create' => 'সম্পদ মডেল তৈরি করুন',
+    'created_at' => 'তৈরির তারিখ',
     'eol' => 'EOL',
-    'modelnumber' => 'Model No.',
-    'name' => 'Asset Model Name',
-    'numassets' => 'Assets',
-    'title' => 'Asset Models',
-    'update' => 'Update Asset Model',
-    'view' => 'View Asset Model',
-    'clone' => 'Clone Model',
-    'edit' => 'Edit Model',
+    'modelnumber' => 'মডেল নং',
+    'name' => 'সম্পদ মডেলের নাম',
+    'numassets' => 'সম্পদ',
+    'title' => 'সম্পদ মডেল',
+    'update' => 'সম্পদ মডেল আপডেট করুন',
+    'view' => 'সম্পদ মডেল দেখুন',
+    'clone' => 'মডেল ক্লোন করুন',
+    'edit' => 'মডেল এডিট করুন',
 ];

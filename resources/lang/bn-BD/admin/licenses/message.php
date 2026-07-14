@@ -2,59 +2,59 @@
 
 return [
 
-    'does_not_exist' => 'License does not exist or you do not have permission to view it.',
-    'user_does_not_exist' => 'User does not exist or you do not have permission to view them.',
-    'asset_does_not_exist' => 'The asset you are trying to associate with this license does not exist.',
-    'owner_doesnt_match_asset' => 'The asset you are trying to associate with this license is owned by somene other than the person selected in the assigned to dropdown.',
-    'assoc_users' => 'This license is currently checked out to a user and cannot be deleted. Please check the license in first, and then try deleting again. ',
-    'select_asset_or_person' => 'You must select an asset or a user, but not both.',
-    'not_found' => 'License not found',
-    'seats_available' => ':seat_count seats available',
+    'does_not_exist' => 'লাইসেন্সটি বিদ্যমান নেই অথবা আপনার এটি দেখার অনুমতি নেই।',
+    'user_does_not_exist' => 'ব্যবহারকারী বিদ্যমান নেই অথবা আপনার তাদের দেখার অনুমতি নেই।',
+    'asset_does_not_exist' => 'আপনি এই লাইসেন্সের সাথে যে সম্পদটি যুক্ত করার চেষ্টা করছেন তা বিদ্যমান নেই।',
+    'owner_doesnt_match_asset' => 'আপনি এই লাইসেন্সের সাথে যে সম্পদটি যুক্ত করার চেষ্টা করছেন তার মালিক ড্রপডাউনে নির্বাচিত ব্যক্তির সাথে মিলছে না।',
+    'assoc_users' => 'এই লাইসেন্সটি বর্তমানে একজন ব্যবহারকারীকে প্রদান করা হয়েছে এবং এটি মুছে ফেলা যাবে না। অনুগ্রহ করে প্রথমে লাইসেন্সটি ফেরত নিন এবং তারপর আবার মুছে ফেলার চেষ্টা করুন।',
+    'select_asset_or_person' => 'আপনাকে একটি সম্পদ অথবা একজন ব্যবহারকারী নির্বাচন করতে হবে, তবে উভয়টি একসাথে নয়।',
+    'not_found' => 'লাইসেন্স পাওয়া যায়নি',
+    'seats_available' => ':seat_count টি সিট উপলব্ধ',
 
     'create' => [
-        'error' => 'License was not created, please try again.',
-        'success' => 'License created successfully.',
+        'error' => 'লাইসেন্সটি তৈরি করা যায়নি, অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'success' => 'লাইসেন্স সফলভাবে তৈরি করা হয়েছে।',
     ],
 
     'deletefile' => [
-        'error' => 'File not deleted. Please try again.',
-        'success' => 'File successfully deleted.',
+        'error' => 'ফাইলটি মুছে ফেলা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'success' => 'ফাইলটি সফলভাবে মুছে ফেলা হয়েছে।',
     ],
 
     'upload' => [
-        'error' => 'File(s) not uploaded. Please try again.',
-        'success' => 'File(s) successfully uploaded.',
-        'nofiles' => 'You did not select any files for upload, or the file you are trying to upload is too large',
-        'invalidfiles' => 'One or more of your files is too large or is a filetype that is not allowed. Allowed filetypes are png, gif, jpg, jpeg, doc, docx, pdf, txt, zip, rar, rtf, xml, and lic.',
+        'error' => 'ফাইল(গুলি) আপলোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'success' => 'ফাইল(গুলি) সফলভাবে আপলোড করা হয়েছে।',
+        'nofiles' => 'আপনি আপলোডের জন্য কোনো ফাইল নির্বাচন করেননি, অথবা আপনি যে ফাইলটি আপলোড করার চেষ্টা করছেন তা খুব বড়',
+        'invalidfiles' => 'আপনার একটি বা একাধিক ফাইল খুব বড় অথবা এমন একটি ফাইল টাইপ যা অনুমোদিত নয়। অনুমোদিত ফাইল টাইপ হলো png, gif, jpg, jpeg, doc, docx, pdf, txt, zip, rar, rtf, xml, এবং lic।',
     ],
 
     'update' => [
-        'error' => 'License was not updated, please try again',
-        'success' => 'License updated successfully.',
+        'error' => 'লাইসেন্সটি আপডেট করা যায়নি, অনুগ্রহ করে আবার চেষ্টা করুন',
+        'success' => 'লাইসেন্স সফলভাবে আপডেট করা হয়েছে।',
     ],
 
     'delete' => [
-        'confirm' => 'Are you sure you wish to delete this license?',
-        'error' => 'There was an issue deleting the license. Please try again.',
-        'success' => 'The license was deleted successfully.',
-        'bulk_success' => 'The selected licenses were deleted successfully.',
-        'partial_success' => 'License deleted successfully. See additional information below. | :count licenses were deleted successfully. See additional information below.',
-        'bulk_checkout_warning' => ':license_name has seats that are currently checked out and cannot be deleted. Please check in all seats before deleting.',
+        'confirm' => 'আপনি কি নিশ্চিত যে আপনি এই লাইসেন্সটি মুছে ফেলতে চান?',
+        'error' => 'লাইসেন্সটি মুছতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'success' => 'লাইসেন্সটি সফলভাবে মুছে ফেলা হয়েছে।',
+        'bulk_success' => 'নির্বাচিত লাইসেন্সগুলো সফলভাবে মুছে ফেলা হয়েছে।',
+        'partial_success' => 'লাইসেন্স সফলভাবে মুছে ফেলা হয়েছে। নিচে অতিরিক্ত তথ্য দেখুন। | :count টি লাইসেন্স সফলভাবে মুছে ফেলা হয়েছে। নিচে অতিরিক্ত তথ্য দেখুন।',
+        'bulk_checkout_warning' => ':license_name-এর সিটগুলো বর্তমানে প্রদান করা হয়েছে এবং এটি মুছে ফেলা যাবে না। অনুগ্রহ করে মুছে ফেলার আগে সমস্ত সিট ফেরত নিন।',
     ],
 
     'checkout' => [
-        'error' => 'There was an issue checking out the license. Please try again.',
-        'success' => 'The license was checked out successfully',
-        'not_enough_seats' => 'Not enough license seats available for checkout',
-        'mismatch' => 'The license seat provided does not match the license',
-        'unavailable' => 'This seat is not available for checkout.',
-        'license_is_inactive' => 'This license is expired or terminated.',
+        'error' => 'লাইসেন্স প্রদান করতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'success' => 'লাইসেন্সটি সফলভাবে প্রদান করা হয়েছে',
+        'not_enough_seats' => 'প্রদান করার জন্য পর্যাপ্ত লাইসেন্স সিট উপলব্ধ নেই',
+        'mismatch' => 'প্রদত্ত লাইসেন্স সিটটি লাইসেন্সের সাথে মিলছে না',
+        'unavailable' => 'এই সিটটি প্রদান করার জন্য উপলব্ধ নেই।',
+        'license_is_inactive' => 'এই লাইসেন্সের মেয়াদ শেষ হয়েছে অথবা এটি বাতিল করা হয়েছে।',
     ],
 
     'checkin' => [
-        'error' => 'There was an issue checking in the license. Please try again.',
-        'not_reassignable' => 'Seat has been used',
-        'success' => 'The license was checked in successfully',
+        'error' => 'লাইসেন্স ফেরত নিতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'not_reassignable' => 'সিটটি ব্যবহৃত হয়েছে',
+        'success' => 'লাইসেন্সটি সফলভাবে ফেরত নেওয়া হয়েছে',
     ],
 
 ];

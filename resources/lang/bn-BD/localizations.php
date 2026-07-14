@@ -2,7 +2,7 @@
 
 return [
 
-    'select_language' => 'Select a Language',
+    'select_language' => 'একটি ভাষা নির্বাচন করুন',
     'languages' => [
         'en-US' => 'English, US',
         'en-GB' => 'English, UK',
@@ -70,7 +70,7 @@ return [
         'zu-ZA' => 'Zulu',
     ],
 
-    'select_country' => 'Select a Country',
+    'select_country' => 'একটি দেশ নির্বাচন করুন',
 
     'countries' => [
         'AC' => 'Ascension Island',

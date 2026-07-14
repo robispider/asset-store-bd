@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'dl_csv' => 'Download CSV',
+    'dl_csv' => 'CSV ডাউনলোড করুন',
     'eula_text' => 'EULA',
-    'id' => 'ID',
-    'require_acceptance' => 'Acceptance',
-    'title' => 'Accessory Name',
+    'id' => 'আইডি',
+    'require_acceptance' => 'গ্রহণযোগ্যতা',
+    'title' => 'অ্যাক্সেসরির নাম',
 ];

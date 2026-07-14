@@ -15,21 +15,29 @@ class OfficeMembership extends Model
         'location_id',
         'is_home_office',
         'status',
-        'valid_until',
+        'approved_by_user_id',
+        'approved_at',
+        'approval_note',
     ];
 
     protected $casts = [
         'is_home_office' => 'boolean',
-        'valid_until' => 'date',
+        'approved_at' => 'datetime',
     ];
 
+    /**
+     * Get the user linked to this membership.
+     * TARGETED BYPASS: Allows the administrator to load the user profile regardless of active scopes.
+     */
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id')
+            ->withoutGlobalScope(\GovStore\TenantScope\Scopes\UserScope::class);
     }
 
-    public function location()
+   public function location()
     {
-        return $this->belongsTo(Location::class, 'location_id');
+        return $this->belongsTo(Location::class, 'location_id')
+            ->withoutGlobalScopes(); // Add this to bypass TenantScope hiding the name
     }
 }

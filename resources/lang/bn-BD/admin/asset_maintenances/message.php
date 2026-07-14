@@ -1,21 +1,21 @@
 <?php
 
 return [
-    'not_found' => 'Asset Maintenance you were looking for was not found!',
+    'not_found' => 'আপনি যে সম্পদ রক্ষণাবেক্ষণ খুঁজছিলেন তা পাওয়া যায়নি!',
     'delete' => [
-        'confirm' => 'Are you sure you wish to delete this asset maintenance?',
-        'error' => 'There was an issue deleting the asset maintenance. Please try again.',
-        'success' => 'The asset maintenance was deleted successfully.',
+        'confirm' => 'আপনি কি নিশ্চিত যে আপনি এই সম্পদ রক্ষণাবেক্ষণটি মুছে ফেলতে চান?',
+        'error' => 'সম্পদ রক্ষণাবেক্ষণটি মুছতে সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।',
+        'success' => 'সম্পদ রক্ষণাবেক্ষণটি সফলভাবে মুছে ফেলা হয়েছে।',
     ],
     'create' => [
-        'error' => 'Asset Maintenance was not created, please try again.',
-        'success' => 'Asset Maintenance created successfully.',
+        'error' => 'সম্পদ রক্ষণাবেক্ষণ তৈরি করা যায়নি, দয়া করে আবার চেষ্টা করুন।',
+        'success' => 'সম্পদ রক্ষণাবেক্ষণ সফলভাবে তৈরি করা হয়েছে।',
     ],
     'edit' => [
-        'error' => 'Asset Maintenance was not edited, please try again.',
-        'success' => 'Asset Maintenance edited successfully.',
+        'error' => 'সম্পদ রক্ষণাবেক্ষণ সম্পাদনা করা যায়নি, দয়া করে আবার চেষ্টা করুন।',
+        'success' => 'সম্পদ রক্ষণাবেক্ষণ সফলভাবে সম্পাদনা করা হয়েছে।',
     ],
-    'asset_maintenance_incomplete' => 'Not Completed Yet',
-    'warranty' => 'Warranty',
-    'not_warranty' => 'Not Warranty',
+    'asset_maintenance_incomplete' => 'এখনও সম্পন্ন হয়নি',
+    'warranty' => 'ওয়ারেন্টি',
+    'not_warranty' => 'ওয়ারেন্টি নেই',
 ];

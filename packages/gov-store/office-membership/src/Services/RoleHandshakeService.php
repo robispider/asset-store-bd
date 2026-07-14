@@ -16,7 +16,7 @@ class RoleHandshakeService
             throw new Exception("You cannot delegate a role to yourself.");
         }
 
-        // Verify the outgoing user actually holds this responsibility currently
+        // Check active responsibilities (New Pivot uses role_slug)
         $holdsRole = OfficeResponsibility::where('location_id', $locationId)
             ->where('user_id', $fromUserId)
             ->where('role_slug', $roleSlug)
@@ -26,9 +26,9 @@ class RoleHandshakeService
             throw new Exception("You cannot hand over a responsibility that you do not hold.");
         }
 
-        // Prevent duplicate pending requests for the same role
+        // ANTI-CORRUPTION LAYER: Map domain $roleSlug to legacy DB 'role_type'
         $existing = RoleHandshake::where('location_id', $locationId)
-            ->where('role_slug', $roleSlug)
+            ->where('role_type', $roleSlug)
             ->where('outgoing_user_id', $fromUserId)
             ->where('status', 'pending')
             ->first();
@@ -39,7 +39,7 @@ class RoleHandshakeService
 
         return RoleHandshake::create([
             'location_id' => $locationId,
-            'role_slug' => $roleSlug,
+            'role_type' => $roleSlug, // Map to legacy DB column
             'incoming_user_id' => $toUserId,
             'outgoing_user_id' => $fromUserId,
             'status' => 'pending'
@@ -54,9 +54,10 @@ class RoleHandshakeService
                                       ->findOrFail($handshakeId);
 
             $locId = $handshake->location_id;
-            $roleSlug = $handshake->role_slug;
+            
+            // Read via the Domain Accessor
+            $roleSlug = $handshake->role_slug; 
 
-            // 1. ATOMIC TRANSACTION: Revoke outgoing, grant incoming
             OfficeResponsibility::where('location_id', $locId)
                 ->where('user_id', $handshake->outgoing_user_id)
                 ->where('role_slug', $roleSlug)
@@ -68,17 +69,15 @@ class RoleHandshakeService
                 'role_slug' => $roleSlug
             ]);
 
-            // 2. Terminate any other pending handshakes for this same role
+            // Map to legacy DB column for query
             RoleHandshake::where('location_id', $locId)
-                ->where('role_slug', $roleSlug)
+                ->where('role_type', $roleSlug) 
                 ->where('id', '!=', $handshakeId)
                 ->where('status', 'pending')
                 ->update(['status' => 'cancelled']);
 
-            // 3. Mark active handshake as accepted
             $handshake->update(['status' => 'accepted']);
 
-            // 4. Log the administrative sign-off in the activity log
             OrganizationActivityLog::create([
                 'location_id' => $locId,
                 'performed_by' => $userId,
@@ -90,21 +89,13 @@ class RoleHandshakeService
         });
     }
 
-    public function rejectHandshake(int $handshakeId, int $userId): void
-    {
-        $handshake = RoleHandshake::where('incoming_user_id', $userId)
-                                  ->where('status', 'pending')
-                                  ->findOrFail($handshakeId);
-                                    
+    public function rejectHandshake(int $handshakeId, int $userId): void {
+        $handshake = RoleHandshake::where('incoming_user_id', $userId)->where('status', 'pending')->findOrFail($handshakeId);
         $handshake->update(['status' => 'rejected']);
     }
 
-    public function cancelHandshake(int $handshakeId, int $userId): void
-    {
-        $handshake = RoleHandshake::where('outgoing_user_id', $userId)
-                                  ->where('status', 'pending')
-                                  ->findOrFail($handshakeId);
-                                    
+    public function cancelHandshake(int $handshakeId, int $userId): void {
+        $handshake = RoleHandshake::where('outgoing_user_id', $userId)->where('status', 'pending')->findOrFail($handshakeId);
         $handshake->update(['status' => 'cancelled']);
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'maintenance_types' => 'Maintenance Types',
-    'create' => 'Create Maintenance Type',
-    'update' => 'Update Maintenance Type',
+    'maintenance_types' => 'রক্ষণাবেক্ষণ প্রকারসমূহ',
+    'create' => 'রক্ষণাবেক্ষণ প্রকার তৈরি করুন',
+    'update' => 'রক্ষণাবেক্ষণ প্রকার হালনাগাদ করুন',
 ];

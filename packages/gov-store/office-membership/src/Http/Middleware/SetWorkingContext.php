@@ -9,35 +9,39 @@ class SetWorkingContext
 {
     public function handle($request, Closure $next)
     {
-        // 1. Guest bypass
         if (!auth()->check()) {
             return $next($request);
         }
 
         $user = auth()->user();
 
-        // 2. Clear stale session contexts if a new user logs in
+        // Clear stale session contexts if a new user logs in
         if (session('gov_working_user_id') !== $user->id) {
             session()->forget('gov_working_membership_id');
             session()->put('gov_working_user_id', $user->id);
         }
 
-        // 3. Resolve and store the default home office membership if empty
         if (!session()->has('gov_working_membership_id')) {
-            $defaultMembership = OfficeMembership::where('user_id', $user->id)
+            
+            // 1. Resolve Active Home Membership strictly
+            $membership = OfficeMembership::where('user_id', $user->id)
                 ->where('status', 'active')
-                ->where('is_home_office', true)
+                ->orderByDesc('is_home_office') // Forces True (1) before False (0)
+                ->orderBy('created_at', 'asc') // Deterministic tie-breaker
                 ->first();
 
-            // Fallback to their first active membership if no home base is flagged
-            if (!$defaultMembership) {
-                $defaultMembership = OfficeMembership::where('user_id', $user->id)
-                    ->where('status', 'active')
-                    ->first();
-            }
-
-            if ($defaultMembership) {
-                session()->put('gov_working_membership_id', $defaultMembership->id);
+            if ($membership) {
+                session()->put('gov_working_membership_id', $membership->id);
+                
+                // Keep native cache synchronized (Self-healing alignment)
+                if ((int)$user->location_id !== (int)$membership->location_id) {
+                    $user->location_id = $membership->location_id;
+                    $user->saveQuietly(); // Saves without triggering observers
+                }
+            } 
+            // 2. Fallback ONLY if they have zero memberships (New native user)
+            else if ($user->location_id) {
+                // Do not set working_membership_id, allowing InitializeTenantContext to fallback safely
             }
         }
 

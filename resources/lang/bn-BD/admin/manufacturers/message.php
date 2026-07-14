@@ -2,31 +2,31 @@
 
 return [
 
-    'support_url_help' => 'Variables <code>{LOCALE}</code>, <code>{SERIAL}</code>, <code>{MODEL_NUMBER}</code>, and <code>{MODEL_NAME}</code> may be used in your URL to have those values auto-populate when viewing assets - for example https://checkcoverage.apple.com/{LOCALE}/{SERIAL}.',
-    'does_not_exist' => 'Manufacturer does not exist.',
-    'assoc_users' => 'This manufacturer is currently associated with at least one model and cannot be deleted. Please update your models to no longer reference this manufacturer and try again. ',
+    'support_url_help' => 'আপনার URL-এ <code>{LOCALE}</code>, <code>{SERIAL}</code>, <code>{MODEL_NUMBER}</code>, এবং <code>{MODEL_NAME}</code> ভেরিয়েবলগুলো ব্যবহার করা যেতে পারে যাতে সম্পদ দেখার সময় সেই মানগুলো অটো-পপুলেট হয় - উদাহরণস্বরূপ https://checkcoverage.apple.com/{LOCALE}/{SERIAL}।',
+    'does_not_exist' => 'ম্যানুফ্যাকচারার বিদ্যমান নেই।',
+    'assoc_users' => 'এই ম্যানুফ্যাকচারার বর্তমানে অন্তত একটি মডেলের সাথে যুক্ত এবং এটি মুছে ফেলা যাবে না। অনুগ্রহ করে আপনার মডেলগুলো আপডেট করুন যাতে তারা আর এই ম্যানুফ্যাকচারারকে রেফার না করে এবং তারপর আবার চেষ্টা করুন।',
 
     'create' => [
-        'error' => 'Manufacturer was not created, please try again.',
-        'success' => 'Manufacturer created successfully.',
+        'error' => 'ম্যানুফ্যাকচারার তৈরি করা যায়নি, অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'success' => 'ম্যানুফ্যাকচারার সফলভাবে তৈরি করা হয়েছে।',
     ],
 
     'update' => [
-        'error' => 'Manufacturer was not updated, please try again',
-        'success' => 'Manufacturer updated successfully.',
+        'error' => 'ম্যানুফ্যাকচারার আপডেট করা যায়নি, অনুগ্রহ করে আবার চেষ্টা করুন',
+        'success' => 'ম্যানুফ্যাকচারার সফলভাবে আপডেট করা হয়েছে।',
     ],
 
     'restore' => [
-        'error' => 'Manufacturer was not restored, please try again',
-        'success' => 'Manufacturer restored successfully.',
+        'error' => 'ম্যানুফ্যাকচারার রিস্টোর করা যায়নি, অনুগ্রহ করে আবার চেষ্টা করুন',
+        'success' => 'ম্যানুফ্যাকচারার সফলভাবে রিস্টোর করা হয়েছে।',
     ],
 
     'delete' => [
-        'confirm' => 'Are you sure you wish to delete this manufacturer?',
-        'error' => 'There was an issue deleting the manufacturer. Please try again.',
-        'success' => 'Manufacturer deleted successfully.',
-        'bulk_success' => 'Manufacturer deleted successfully.|:count manufacturers were deleted successfully.',
-        'partial_success' => 'Manufacturer deleted successfully. See additional information below. | :count manufacturers were deleted successfully. See additional information below.',
+        'confirm' => 'আপনি কি নিশ্চিত যে আপনি এই ম্যানুফ্যাকচারারটি মুছে ফেলতে চান?',
+        'error' => 'ম্যানুফ্যাকচারার মুছতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'success' => 'ম্যানুফ্যাকচারার সফলভাবে মুছে ফেলা হয়েছে।',
+        'bulk_success' => 'ম্যানুফ্যাকচারার সফলভাবে মুছে ফেলা হয়েছে।|:count টি ম্যানুফ্যাকচারার সফলভাবে মুছে ফেলা হয়েছে।',
+        'partial_success' => 'ম্যানুফ্যাকচারার সফলভাবে মুছে ফেলা হয়েছে। নিচে অতিরিক্ত তথ্য দেখুন। | :count টি ম্যানুফ্যাকচারার সফলভাবে মুছে ফেলা হয়েছে। নিচে অতিরিক্ত তথ্য দেখুন।',
     ],
 
 ];

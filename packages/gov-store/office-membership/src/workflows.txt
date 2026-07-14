@@ -93,3 +93,68 @@ If empty, it falls back to the user's is_default membership location.
 If a user has multiple active memberships, they can select a location and POST to /switch-context.
 The session is updated with the selected location ID.
 Our global data isolation middleware (InitializeTenantContext) reads this active session parameter and dynamically injects it into your global SQL scoping engine (TenantScope), instantly changing their visible catalog, stock balances, and requests, while keeping Snipe-IT's core user table perfectly stable.
+
+latest below : 13 july 2026
+Workflow 1: Initial Employment (Creating a New User)
+Who performs this: ICT Officer or Company Administrator.
+Business Intent: Establishing a new government employee’s absolute first HR Home Office.
+UI Steps:
+The ICT Officer logs into the Snipe-IT portal.
+Navigate to People > Create New on the sidebar (or click Users > Create New).
+Fill in the standard employee details (Name, Username, Email, etc.).
+Crucial Step: In the Location dropdown, select the specific office where the employee is being hired (e.g., জাতীয় মহিলা সংস্থা, পত্নীতলা).
+Click Save.
+What happens in the background:
+The core user is created. Because we run the php artisan gov-store:sync-memberships cron job or execute it via an event listener, the system sees the native location_id and automatically creates their first gov_office_memberships record (is_home_office = true, status = active). The user is now officially onboarded.
+Workflow 2: Additional Membership (The Verification Code)
+Who performs this: The Employee (Initiator) and the Target Office Administrator (Approver).
+Business Intent: An employee keeps their permanent home base, but needs authorized secondary access to a different office (e.g., to cover a shift or audit inventory).
+UI Steps:
+The Employee logs in and clicks their profile dropdown (top right) -> My Office Memberships.
+In the right-hand panel (Office Join Credential), the employee clicks Generate Verification Code.
+The UI displays a 6-character code (e.g., A7X93M). The employee shares this code and their username with the Administrator of the secondary office.
+The Office Administrator logs in and clicks My Office Setup > Staff Management on the sidebar.
+In the right-hand panel (Add External Employee), the Admin types the employee’s username and the 6-character code.
+The Admin clicks Verify & Add.
+What happens in the background:
+The system consumes the token and grants the employee a secondary membership (is_home_office = false). The employee can now select this secondary office from the top-bar "Working As:" dropdown menu.
+Workflow 3: Self-Join (Office Invitation Code)
+Who performs this: The Office Administrator (Generator) and Multiple Employees (Joiners).
+Business Intent: Mass onboarding (e.g., a new hospital opens, and 50 nurses need access).
+UI Steps:
+The Office Administrator clicks My Office Setup > Staff Management.
+In the right-hand panel (Mass Invitation Code), the Admin clicks Generate New Code.
+The UI displays a permanent code (e.g., OFF-PATN-8QXJ). The Admin prints this code and pins it to the office notice board.
+The Employees log into their portals, click their profile dropdown -> My Office Memberships.
+In the right-hand panel (Join an Office), the employees type the code OFF-PATN-8QXJ and click Send Join Request.
+The Office Administrator refreshes their Staff Management page. A new list appears called Pending Join Requests.
+The Admin reviews the names and clicks the Green Checkmark (Approve) next to each valid employee.
+What happens in the background:
+Pending memberships are shifted to active (as secondary memberships). The employees can now switch their context to this office.
+Workflow 4: Permanent Transfer (Release -> Claim)
+Who performs this: The Transferring Employee (Initiator) and the New Office Administrator (Claimer).
+Business Intent: An employee is permanently relocating. Their HR Home Base must change, and they must surrender all physical inventory at their old office.
+UI Steps:
+The Employee logs in and opens My Office Memberships.
+In the main table, they locate their current Home Base office. The system displays a live Clearance Rules checklist.
+If they hold any assets or administrative roles (e.g., Storekeeper), the checklist will show a Red Cross. They must return assets or delegate their roles using the Handover Office Responsibilities widget first.
+Once all clearances are Green, they click the red Request Release button. Their status changes to "Release Requested" (Floating).
+The employee travels to their new location and reports to the New Office Administrator.
+The New Office Administrator logs into Staff Management.
+In the right-hand panel (Claim Transferred Employee), they click the dropdown. The floating employee's name appears.
+The Admin selects the employee and clicks Approve Transfer & Claim.
+What happens in the background:
+The old membership is officially released. A new membership is created with is_home_office = true. The user's native Snipe-IT location_id is updated. Their HR identity is permanently relocated.
+Workflow 5: ICT Administrative Assignment (The Override)
+Who performs this: Superadmin or Regional ICT Officer.
+Business Intent: A government mandate requires an employee to be stripped of roles, forcibly released, or relocated instantly due to emergency, termination, or administrative non-compliance.
+UI Steps:
+The Superadmin logs in and clicks Membership Overrides in the bottom-left sidebar.
+The UI displays the Emergency Override Console.
+The Superadmin selects the target employee from the searchable dropdown.
+They select the action: Force Strip All Operational Roles OR Force Release Membership.
+They type a mandatory, minimum-10-character justification in the text box (e.g., "Officer terminated; forcing release to clear clearance matrix.").
+They click the red Execute Override button and accept the warning prompt.
+What happens in the background:
+The system bypasses all ClearanceEngine rules. It executes the database manipulation instantly and logs the exact date, action, executor, and justification into the permanent gov_override_audit_logs table for compliance tracking.
+

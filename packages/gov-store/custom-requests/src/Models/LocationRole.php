@@ -1,4 +1,4 @@
-<?php
+<!-- <?php
 
 namespace GovStore\CustomRequests\Models;
 
@@ -55,4 +55,4 @@ class LocationRole extends Model
     {
         return $this->belongsTo(User::class, 'storekeeper_id');
     }
-}
+} -->

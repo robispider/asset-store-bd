@@ -1,15 +1,15 @@
 <?php
 
 return [
-    'select_type' => 'Select Maintenance Type',
-    'asset_maintenance_type' => 'Asset Maintenance Type',
-    'title' => 'Title',
-    'start_date' => 'Start Date',
-    'completion_date' => 'Completion Date',
-    'cost' => 'Cost',
-    'is_warranty' => 'Warranty Improvement',
-    'asset_maintenance_time' => 'Asset Maintenance Time (in days)',
-    'notes' => 'Notes',
-    'update' => 'Update Asset Maintenance',
-    'create' => 'Create Asset Maintenance',
+    'select_type' => 'রক্ষণাবেক্ষণের ধরন নির্বাচন করুন',
+    'asset_maintenance_type' => 'সম্পদ রক্ষণাবেক্ষণের ধরন',
+    'title' => 'শিরোনাম',
+    'start_date' => 'শুরুর তারিখ',
+    'completion_date' => 'সম্পন্ন হওয়ার তারিখ',
+    'cost' => 'খরচ',
+    'is_warranty' => 'ওয়ারেন্টি উন্নতি',
+    'asset_maintenance_time' => 'সম্পদ রক্ষণাবেক্ষণের সময় (দিনে)',
+    'notes' => 'নোট',
+    'update' => 'সম্পদ রক্ষণাবেক্ষণ আপডেট করুন',
+    'create' => 'সম্পদ রক্ষণাবেক্ষণ তৈরি করুন',
 ];

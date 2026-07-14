@@ -1,22 +1,22 @@
 <?php
 
 return [
-    'not_found' => 'Maintenance type not found.',
+    'not_found' => 'আপনি যা খুঁজছিলেন তা রক্ষণাবেক্ষণ প্রকারে পাওয়া যায়নি।',
     'create' => [
-        'error' => 'Maintenance type was not created, please try again.',
-        'success' => 'Maintenance type created successfully.',
+        'error' => 'রক্ষণাবেক্ষণ প্রকার তৈরি করা যায়নি, অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'success' => 'রক্ষণাবেক্ষণ প্রকার সফলভাবে তৈরি করা হয়েছে।',
     ],
     'update' => [
-        'error' => 'Maintenance type was not updated, please try again.',
-        'success' => 'Maintenance type updated successfully.',
+        'error' => 'রক্ষণাবেক্ষণ প্রকার হালনাগাদ করা যায়নি, অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'success' => 'রক্ষণাবেক্ষণ প্রকার সফলভাবে হালনাগাদ করা হয়েছে।',
     ],
     'delete' => [
-        'confirm' => 'Are you sure you wish to delete this maintenance type?',
-        'error' => 'There was an issue deleting this maintenance type. Please try again.',
-        'success' => 'The maintenance type was deleted successfully.',
+        'confirm' => 'আপনি কি নিশ্চিতভাবে এই রক্ষণাবেক্ষণ প্রকারটি মুছে ফেলতে চান?',
+        'error' => 'রক্ষণাবেক্ষণ প্রকার মুছে ফেলতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।',
+        'success' => 'রক্ষণাবেক্ষণ প্রকারটি সফলভাবে মুছে ফেলা হয়েছে।',
     ],
     'complete' => [
-        'success' => 'Maintenance marked as complete.',
-        'error' => 'There was an issue marking this maintenance as complete. Please try again.',
+        'success' => 'রক্ষণাবেক্ষণ সম্পূর্ণ হিসেবে চিহ্নিত করা হয়েছে।',
+        'error' => 'রক্ষণাবেক্ষণ সম্পূর্ণ হিসেবে চিহ্নিত করতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।',
     ],
 ];

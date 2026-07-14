@@ -1,16 +1,16 @@
 <?php
 
 return [
-    'about_manufacturers_title' => 'About manufacturers',
-    'about_manufacturers_text' => 'Manufacturers are the companies that create your assets. You can store important support contact information about them here, which will be displayed on your asset detail pages.',
-    'asset_manufacturers' => 'Asset Manufacturers',
-    'create' => 'Create Manufacturer',
-    'id' => 'ID',
-    'name' => 'Name',
-    'support_email' => 'Support Email',
-    'support_phone' => 'Support Phone',
-    'support_url' => 'Support URL',
-    'warranty_lookup_url' => 'Warranty Lookup URL',
-    'update' => 'Update Manufacturer',
+    'about_manufacturers_title' => 'ম্যানুফ্যাকচারার সম্পর্কে',
+    'about_manufacturers_text' => 'ম্যানুফ্যাকচারার হলো সেই কোম্পানি যারা আপনার সম্পদগুলো তৈরি করে। আপনি এখানে তাদের সম্পর্কে গুরুত্বপূর্ণ সাপোর্ট কন্টাক্ট ইনফরমেশন সংরক্ষণ করতে পারেন, যা আপনার সম্পদ ডিটেইল পেজে প্রদর্শিত হবে।',
+    'asset_manufacturers' => 'সম্পদ ম্যানুফ্যাকচারার',
+    'create' => 'ম্যানুফ্যাকচারার তৈরি করুন',
+    'id' => 'আইডি',
+    'name' => 'নাম',
+    'support_email' => 'সাপোর্ট ইমেল',
+    'support_phone' => 'সাপোর্ট ফোন',
+    'support_url' => 'সাপোর্ট URL',
+    'warranty_lookup_url' => 'ওয়ারেন্টি লুকআপ URL',
+    'update' => 'ম্যানুফ্যাকচারার আপডেট করুন',
 
 ];

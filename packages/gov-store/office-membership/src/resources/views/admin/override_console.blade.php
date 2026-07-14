@@ -15,7 +15,7 @@
                         <select name="user_id" class="form-control select2" required style="width:100%;">
                             <option value="">-- Search Employee --</option>
                             @foreach(\App\Models\User::all() as $u)
-                                <option value="{{ $u->id }}">{{ $u->present()->fullName }} ({{ $u->username }})</option>
+                                <option value="{{ $u->id }}">{{ optional($u->present())->fullName ?? 'Unknown' }} ({{ $u->username }})</option>
                             @endforeach
                         </select>
                     </div>
@@ -53,7 +53,10 @@
                             <tr>
                                 <td>{{ $log->created_at->format('Y-m-d H:i') }}</td>
                                 <td><span class="label label-danger">{{ $log->executor->username ?? 'System' }}</span></td>
-                                <td><strong>{{ $log->targetUser->present()->fullName ?? 'Unknown' }}</strong></td>
+                                <td>
+                                    <!-- DEFENSIVE CHECK FOR HISTORICAL LOGS -->
+                                    <strong>{{ $log->targetUser ? $log->targetUser->present()->fullName : 'Unknown User' }}</strong>
+                                </td>
                                 <td><code>{{ $log->override_type }}</code></td>
                                 <td><small>{{ $log->reason }}</small></td>
                             </tr>

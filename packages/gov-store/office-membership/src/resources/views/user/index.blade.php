@@ -82,6 +82,60 @@
     <!-- RIGHT PANEL: Handshakes & Handovers -->
     <div class="col-md-5">
         
+        <!-- VERIFICATION CODE GENERATOR WIDGET -->
+        <div class="box box-success" style="border-top: 3px solid #00a65a;">
+            <div class="box-header with-border">
+                <h3 class="box-title"><i class="fas fa-qrcode text-success"></i> Office Join Credential</h3>
+            </div>
+            <div class="box-body text-center" style="padding: 20px;">
+                <p class="text-muted" style="font-size: 13px; margin-bottom: 15px;">
+                    Provide your Username and this temporary Verification Code to a local Office Administrator to securely grant them permission to add you to their office.
+                </p>
+                
+                @if(isset($activeToken) && $activeToken)
+                    <div style="background: #f4f4f4; border: 1px dashed #ccc; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                        <span style="font-size: 12px; color: #777; display: block; text-transform: uppercase;">Your Active Code</span>
+                        <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #333;">{{ $activeToken->token }}</span>
+                        <span style="display: block; font-size: 11px; color: #a94442; margin-top: 5px;">
+                            <i class="fas fa-clock"></i> Expires: {{ $activeToken->expires_at->diffForHumans() }}
+                        </span>
+                    </div>
+                @else
+                    <div style="background: #fafafa; border: 1px solid #eee; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                        <span style="font-size: 14px; color: #999;"><i class="fas fa-lock"></i> No active code</span>
+                    </div>
+                @endif
+
+                <form action="{{ route('gov.membership.token.generate') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn btn-success btn-sm btn-block">
+                        <i class="fas fa-sync-alt"></i> {{ isset($activeToken) && $activeToken ? 'Regenerate Code' : 'Generate Verification Code' }}
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- JOIN OFFICE VIA MASS INVITATION CODE WIDGET -->
+        <div class="box box-primary" style="border-top: 3px solid #3c8dbc;">
+            <div class="box-header with-border">
+                <h3 class="box-title"><i class="fas fa-building text-primary"></i> Join an Office</h3>
+            </div>
+            <form action="{{ route('gov.membership.join') }}" method="POST">
+                @csrf
+                <div class="box-body text-center" style="padding: 20px;">
+                    <p class="text-muted" style="font-size: 13px; margin-bottom: 15px;">
+                        If your Office Administrator provided you with an Office Invitation Code, enter it here to request access.
+                    </p>
+                    <div class="form-group">
+                        <input type="text" name="office_code" class="form-control text-center" placeholder="e.g. OFF-ABCD-1234" required style="font-size: 16px; letter-spacing: 2px; text-transform: uppercase;">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm btn-block">
+                        <i class="fas fa-paper-plane"></i> Send Join Request
+                    </button>
+                </div>
+            </form>
+        </div>
+        
         <!-- INCOMING HANDSHAKES PROPOSALS -->
         @if($incomingRequests->count() > 0)
         <div class="box box-warning" style="border-top: 3px solid #f39c12;">
@@ -91,8 +145,8 @@
             <div class="box-body">
                 @foreach($incomingRequests as $inc)
                     <div style="padding: 12px; border: 1px solid #faebcc; background: #fffcf5; border-radius: 4px; margin-bottom: 12px;">
-                        <strong>{{ $inc->outgoingUser->present()->fullName }}</strong> wishes to delegate the 
-                        <span class="label bg-orange" style="font-size: 11px;">{{ ucwords(str_replace('_', ' ', $inc->role_type)) }}</span> role to you for <strong>{{ $inc->location->name }}</strong>.
+                        <strong>{{ $inc->outgoingUser ? $inc->outgoingUser->present()->fullName : 'Unknown Colleague' }}</strong> wishes to delegate the 
+                        <span class="label bg-orange" style="font-size: 11px;">{{ ucwords(str_replace('_', ' ', $inc->role_slug)) }}</span> role to you for <strong>{{ $inc->location->name ?? 'an Office' }}</strong>.
                         
                         <div style="margin-top: 15px; display: flex; gap: 10px;">
                             <form action="{{ route('gov.membership.handshake.accept', $inc->id) }}" method="POST" style="flex: 1;">
@@ -109,9 +163,9 @@
         @endif
 
         <!-- MY ACTIVE RESPONSIBILITIES (DELEGATION CONTROLS) -->
-        <div class="box box-primary">
+        <div class="box box-default" style="border-top: 3px solid #d2d6de;">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-user-shield"></i> Handover Office Responsibilities</h3>
+                <h3 class="box-title"><i class="fas fa-user-shield text-muted"></i> Handover Office Responsibilities</h3>
             </div>
             <div class="box-body">
                 <p class="text-muted" style="font-size: 13px;">If you hold an active role, you cannot be released. You must delegate your role to a colleague below.</p>
@@ -123,7 +177,7 @@
                     <table class="table table-condensed">
                         @foreach($rolesList as $roleType)
                             @php
-                                $pendingOutgoing = $outgoingRequests->where('location_id', $locId)->where('role_type', $roleType)->first();
+                                $pendingOutgoing = $outgoingRequests->where('location_id', $locId)->where('role_slug', $roleType)->first();
                             @endphp
                             <tr>
                                 <td style="vertical-align: middle;">
@@ -131,12 +185,13 @@
                                 </td>
                                 <td style="vertical-align: middle; text-align: right;">
                                     @if($pendingOutgoing)
-                                        <span class="text-warning" style="font-size: 12px; margin-right: 10px;"><i class="fas fa-hourglass-half"></i> Awaiting {{ $pendingOutgoing->incomingUser->first_name }}</span>
+                                        <span class="text-warning" style="font-size: 12px; margin-right: 10px;">
+                                            <i class="fas fa-hourglass-half"></i> Awaiting {{ $pendingOutgoing->incomingUser ? $pendingOutgoing->incomingUser->first_name : 'Colleague' }}
+                                        </span>
                                         <form action="{{ route('gov.membership.handshake.cancel', $pendingOutgoing->id) }}" method="POST" style="display:inline;">
                                             @csrf <button type="submit" class="btn btn-xs btn-default text-danger" title="Cancel Request"><i class="fas fa-times"></i></button>
                                         </form>
                                     @else
-                                        <!-- Fixed Syntax Parameter below -->
                                         <button class="btn btn-xs btn-default" onclick="openDelegateModal({{ $locId }}, '{{ $roleType }}', '{{ ucwords(str_replace('_', ' ', $roleType)) }}')">
                                             <i class="fas fa-exchange-alt"></i> Delegate
                                         </button>

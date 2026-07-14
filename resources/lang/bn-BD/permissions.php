@@ -16,448 +16,386 @@ return [
     */
 
     'superuser' => [
-        'name' => 'Super User',
-        'note' => 'Determines whether the user has full access to all aspects of the admin. This setting overrides ALL more specific and restrictive permissions throughout the system. ',
+        'name' => 'সুপারইউজার',
+        'note' => 'ব্যবহারকারীর অ্যাডমিনের সমস্ত দিক পর্যন্ত পূর্ণ অ্যাক্সেস আছে কি না তা নির্ধারণ করে। এই সেটিংটি সিস্টেমের অন্যান্য সমস্ত নির্দিষ্ট এবং সীমাবদ্ধ পারমিশনকে ওভাররাইড করে। ',
     ],
     'admin' => [
-        'name' => 'Admin Access',
-        'note' => 'Determines whether the user has access to most aspects of the system EXCEPT the System Admin Settings. These users will be able to manage users, locations, categories, etc, but ARE constrained by Full Multiple Company Support if it is enabled.',
+        'name' => 'অ্যাডমিন অ্যাক্সেস',
+        'note' => 'ব্যবহারকারীর সিস্টেম অ্যাডমিন সেটিংস ব্যতীত সিস্টেমের অধিকাংশ দিকে অ্যাক্সেস আছে কি না তা নির্ধারণ করে। এই ব্যবহারকারীরা ব্যবহারকারী, কার্যালয়, ক্যাটাগরি ইত্যাদি পরিচালনা করতে পারবেন, তবে ফুল মাল্টিপল কোম্পানি সাপোর্ট চালু থাকলে তারা সীমাবদ্ধ থাকবেন।',
     ],
 
     'import' => [
-        'name' => 'CSV Import',
-        'note' => 'This will allow users to import even if access to users, assets, etc is denied elsewhere.',
+        'name' => 'CSV ইমপোর্ট',
+        'note' => 'এটি ব্যবহারকারীকে ইমপোর্ট করার অনুমতি দেবে এমনকি যদি ব্যবহারকারী, সম্পদ ইত্যাদির অ্যাক্সেস অন্য কোথাও অস্বীকার করা হয়।',
     ],
 
     'reports' => [
-        'name' => 'Reports Access',
-        'note' => 'Determines whether the user has access to the Reports section of the application.',
+        'name' => 'রিপোর্ট অ্যাক্সেস',
+        'note' => 'ব্যবহারকারীর অ্যাপ্লিকেশনের রিপোর্ট সেকশনে অ্যাক্সেস আছে কি না তা নির্ধারণ করে।',
     ],
 
     'assets' => [
-        'name' => 'Assets',
-        'note' => 'Grants access to the Assets section of the application.',
+        'name' => 'সম্পদ',
+        'note' => 'অ্যাপ্লিকেশনের সম্পদ সেকশনে অ্যাক্সেস প্রদান করে।',
     ],
 
     'assetsview' => [
-        'name' => 'View Assets',
+        'name' => 'সম্পদ দেখুন',
     ],
 
     'assetscreate' => [
-        'name' => 'Create New Assets',
+        'name' => 'নতুন সম্পদ তৈরি করুন',
     ],
 
     'assetsedit' => [
-        'name' => 'Edit Assets',
+        'name' => 'সম্পদ সম্পাদনা করুন',
     ],
 
     'assetsdelete' => [
-        'name' => 'Delete Assets',
+        'name' => 'সম্পদ মুছে ফেলুন',
     ],
 
     'assetscheckin' => [
-        'name' => 'Check In',
-        'note' => 'Check assets back into inventory that are currently checked out.',
+        'name' => 'সম্পদ ফেরত নেওয়া',
+        'note' => 'বর্তমানে প্রদান করা সম্পদগুলো ইনভেন্টরিতে ফেরত নিন।',
     ],
 
     'assetscheckout' => [
-        'name' => 'Check Out',
-        'note' => 'Assign assets in inventory by checking them out.',
+        'name' => 'সম্পদ প্রদান করা',
+        'note' => 'ইনভেন্টরিতে থাকা সম্পদগুলো প্রদান করে বরাদ্দ করুন।',
     ],
 
     'assetsaudit' => [
-        'name' => 'Audit Assets',
-        'note' => 'Allows the user to mark an asset as physically inventoried.',
+        'name' => 'সম্পদ অডিট',
+        'note' => 'ব্যবহারকারীকে একটি সম্পদ শারীরিকভাবে ইনভেন্টরি করা হয়েছে বলে চিহ্নিত করার অনুমতি দেয়।',
     ],
 
     'assetsviewrequestable' => [
-        'name' => 'View Requestable Assets',
-        'note' => 'Allows the user to view assets that are marked as requestable.',
+        'name' => 'অনুরোধযোগ্য সম্পদ দেখুন',
+        'note' => 'ব্যবহারকারীকে অনুরোধযোগ্য হিসেবে চিহ্নিত সম্পদগুলো দেখার অনুমতি দেয়।',
     ],
 
     'assetsviewencrypted-custom-fields' => [
-        'name' => 'View Encrypted Custom Fields',
-        'note' => 'Allows the user to view and modify encrypted custom fields on assets.',
+        'name' => 'এনক্রিপ্টেড কাস্টম ফিল্ড দেখুন',
+        'note' => 'ব্যবহারকারীকে সম্পদের এনক্রিপ্টেড কাস্টম ফিল্ড দেখতে এবং পরিবর্তন করতে অনুমতি দেয়।',
     ],
 
     'accessories' => [
-        'name' => 'Accessories',
-        'note' => 'Grants access to the Accessories section of the application.',
+        'name' => 'অ্যাক্সেসরি',
+        'note' => 'অ্যাপ্লিকেশনের অ্যাক্সেসরি সেকশনে অ্যাক্সেস প্রদান করে।',
     ],
 
     'accessoriesview' => [
-        'name' => 'View Accessories',
+        'name' => 'অ্যাক্সেসরি দেখুন',
     ],
     'accessoriescreate' => [
-        'name' => 'Create New Accessories',
+        'name' => 'নতুন অ্যাক্সেসরি তৈরি করুন',
     ],
     'accessoriesedit' => [
-        'name' => 'Edit Accessories',
+        'name' => 'অ্যাক্সেসরি সম্পাদনা করুন',
     ],
     'accessoriesdelete' => [
-        'name' => 'Delete Accessories',
+        'name' => 'অ্যাক্সেসরি মুছে ফেলুন',
     ],
     'accessoriescheckout' => [
-        'name' => 'Check Out Accessories',
-        'note' => 'Assign accessories in inventory by checking them out.',
+        'name' => 'অ্যাক্সেসরি প্রদান করা',
+        'note' => 'ইনভেন্টরিতে থাকা অ্যাক্সেসরিগুলো প্রদান করে বরাদ্দ করুন।',
     ],
     'accessoriescheckin' => [
-        'name' => 'Check In Accessories',
-        'note' => 'Check accessories back into inventory that are currently checked out.',
+        'name' => 'অ্যাক্সেসরি ফেরত নেওয়া',
+        'note' => 'বর্তমানে প্রদান করা অ্যাক্সেসরিগুলো ইনভেন্টরিতে ফেরত নিন।',
     ],
     'accessoriesfiles' => [
-        'name' => 'Manage Accessory Files',
-        'note' => 'Allows the user to upload, download, and delete files associated with accessories. (This only makes sense with view privileges or higher.)',
+        'name' => 'অ্যাক্সেসরি ফাইল পরিচালনা',
+        'note' => 'ব্যবহারকারীকে অ্যাক্সেসরির সাথে যুক্ত ফাইল আপলোড, ডাউনলোড এবং মুছে ফেলার অনুমতি দেয়। (এটি কেবল ভিউ প্রিভিলেজ বা তার বেশি থাকলে অর্থবহ।)',
     ],
 
     'assetsfiles' => [
-        'name' => 'Manage Asset Files',
-        'note' => 'Allows the user to upload, download, and delete files associated with assets. (This only makes sense with view privileges or higher.)',
+        'name' => 'সম্পদ ফাইল পরিচালনা',
+        'note' => 'ব্যবহারকারীকে সম্পদের সাথে যুক্ত ফাইল আপলোড, ডাউনলোড এবং মুছে ফেলার অনুমতি দেয়। (এটি কেবল ভিউ প্রিভিলেজ বা তার বেশি থাকলে অর্থবহ।)',
     ],
 
     'usersfiles' => [
-        'name' => 'Manage User Files',
-        'note' => 'Allows the user to upload, download, and delete files associated with users. (This only makes sense with view privileges or higher.)',
+        'name' => 'ব্যবহারকারী ফাইল পরিচালনা',
+        'note' => 'ব্যবহারকারীকে ব্যবহারকারীর সাথে যুক্ত ফাইল আপলোড, ডাউনলোড এবং মুছে ফেলার অনুমতি দেয়। (এটি কেবল ভিউ প্রিভিলেজ বা তার বেশি থাকলে অর্থবহ।)',
     ],
 
     'modelsfiles' => [
-        'name' => 'Manage Model Files',
-        'note' => 'Allows the user to upload, download, and delete files associated with asset models on both the model view and the asset view screens. (This only makes sense with view privileges or higher.)',
+        'name' => 'মডেল ফাইল পরিচালনা',
+        'note' => 'ব্যবহারকারীকে সম্পদ মডেলের ভিউ এবং সম্পদ ভিউ স্ক্রিনের উভয় জায়গায় মডেলের সাথে যুক্ত ফাইল আপলোড, ডাউনলোড এবং মুছে ফেলার অনুমতি দেয়। (এটি কেবল ভিউ প্রিভিলেজ বা তার বেশি থাকলে অর্থবহ।)',
     ],
 
     'departmentsfiles' => [
-        'name' => 'Manage Department Files',
-        'note' => 'Allows the user to upload, download, and delete files associated with departments. (This only makes sense with view privileges or higher.)',
+        'name' => 'বিভাগ ফাইল পরিচালনা',
+        'note' => 'ব্যবহারকারীকে বিভাগের সাথে যুক্ত ফাইল আপলোড, ডাউনলোড এবং মুছে ফেলার অনুমতি দেয়। (এটি কেবল ভিউ প্রিভিলেজ বা তার বেশি থাকলে অর্থবহ।)',
     ],
 
     'suppliersfiles' => [
-        'name' => 'Manage Supplier Files',
-        'note' => 'Allows the user to upload, download, and delete files associated with suppliers. (This only makes sense with view privileges or higher.)',
+        'name' => 'সরবরাহকারী ফাইল পরিচালনা',
+        'note' => 'ব্যবহারকারীকে সরবরাহকারীর সাথে যুক্ত ফাইল আপলোড, ডাউনলোড এবং মুছে ফেলার অনুমতি দেয়। (এটি কেবল ভিউ প্রিভিলেজ বা তার বেশি থাকলে অর্থবহ।)',
     ],
 
     'locationsfiles' => [
-        'name' => 'Manage Location Files',
-        'note' => 'Allows the user to upload, download, and delete files associated with locations.(This only makes sense with view privileges or higher.)',
+        'name' => 'কার্যালয় ফাইল পরিচালনা',
+        'note' => 'ব্যবহারকারীকে কার্যালয়ের সাথে যুক্ত ফাইল আপলোড, ডাউনলোড এবং মুছে ফেলার অনুমতি দেয়। (এটি কেবল ভিউ প্রিভিলেজ বা তার বেশি থাকলে অর্থবহ।)',
     ],
 
     'companiesfiles' => [
-        'name' => 'Manage Company Files',
-        'note' => 'Allows the user to upload, download, and delete files associated with companies. (This only makes sense with view privileges or higher.)',
+        'name' => 'মন্ত্রণালয়/বিভাগ/দপ্তর/সংস্থা ফাইল পরিচালনা',
+        'note' => 'ব্যবহারকারীকে মন্ত্রণালয়/বিভাগ/দপ্তর/সংস্থার সাথে যুক্ত ফাইল আপলোড, ডাউনলোড এবং মুছে ফেলার অনুমতি দেয়। (এটি কেবল ভিউ প্রিভিলেজ বা তার বেশি থাকলে অর্থবহ।)',
     ],
 
     'consumablesfiles' => [
-        'name' => 'Manage Consumable Files',
-        'note' => 'Allows the user to upload, download, and delete files associated with consumables. (This only makes sense with view privileges or higher.)',
+        'name' => 'কনজুমেবল ফাইল পরিচালনা',
+        'note' => 'ব্যবহারকারীকে কনজুমেবলের সাথে যুক্ত ফাইল আপলোড, ডাউনলোড এবং মুছে ফেলার অনুমতি দেয়। (এটি কেবল ভিউ প্রিভিলেজ বা তার বেশি থাকলে অর্থবহ।)',
     ],
 
     'consumables' => [
-        'name' => 'Consumables',
-        'note' => 'Grants access to the Consumables section of the application.',
+        'name' => 'কনজুমেবল',
+        'note' => 'অ্যাপ্লিকেশনের কনজুমেবল সেকশনে অ্যাক্সেস প্রদান করে।',
     ],
     'consumablesview' => [
-        'name' => 'View Consumables',
+        'name' => 'কনজুমেবল দেখুন',
     ],
     'consumablescreate' => [
-        'name' => 'Create New Consumables',
+        'name' => 'নতুন কনজুমেবল তৈরি করুন',
     ],
     'consumablesedit' => [
-        'name' => 'Edit Consumables',
+        'name' => 'কনজুমেবল সম্পাদনা করুন',
     ],
     'consumablesdelete' => [
-        'name' => 'Delete Consumables',
+        'name' => 'কনজুমেবল মুছে ফেলুন',
     ],
     'consumablescheckout' => [
-        'name' => 'Check Out Consumables',
-        'note' => 'Assign consumables in inventory by checking them out.',
+        'name' => 'কনজুমেবল প্রদান করা',
+        'note' => 'ইনভেন্টরিতে থাকা কনজুমেবলগুলো প্রদান করে বরাদ্দ করুন।',
     ],
 
     'licenses' => [
-        'name' => 'Licenses',
-        'note' => 'Grants access to the Licenses section of the application.',
+        'name' => 'লাইসেন্স',
+        'note' => 'অ্যাপ্লিকেশনের লাইসেন্স সেকশনে অ্যাক্সেস প্রদান করে।',
     ],
     'licensesview' => [
-        'name' => 'View Licenses',
+        'name' => 'লাইসেন্স দেখুন',
     ],
     'licensescreate' => [
-        'name' => 'Create New Licenses',
+        'name' => 'নতুন লাইসেন্স তৈরি করুন',
     ],
     'licensesedit' => [
-        'name' => 'Edit Licenses',
+        'name' => 'লাইসেন্স সম্পাদনা করুন',
     ],
     'licensesdelete' => [
-        'name' => 'Delete Licenses',
+        'name' => 'লাইসেন্স মুছে ফেলুন',
     ],
     'licensescheckout' => [
-        'name' => 'Assign Licenses',
-        'note' => 'Allows the user to assign licenses to assets or users.',
+        'name' => 'লাইসেন্স বরাদ্দ করা',
+        'note' => 'ব্যবহারকারীকে সম্পদ বা ব্যবহারকারীর সাথে লাইসেন্স বরাদ্দ করার অনুমতি দেয়।',
     ],
     'licensescheckin' => [
-        'name' => 'Unassign Licenses',
-        'note' => 'Allows the user to unassign licenses from assets or users.',
+        'name' => 'লাইসেন্স বরাদ্দ মুক্ত করা',
+        'note' => 'ব্যবহারকারীকে সম্পদ বা ব্যবহারকারীর কাছ থেকে লাইসেন্স বরাদ্দ মুক্ত করার অনুমতি দেয়।',
     ],
     'licensesfiles' => [
-        'name' => 'Manage License Files',
-        'note' => 'Allows the user to upload, download, and delete files associated with licenses.',
+        'name' => 'লাইসেন্স ফাইল পরিচালনা',
+        'note' => 'ব্যবহারকারীকে লাইসেন্সের সাথে যুক্ত ফাইল আপলোড, ডাউনলোড এবং মুছে ফেলার অনুমতি দেয়।',
     ],
     'componentsfiles' => [
-        'name' => 'Manage Component Files',
-        'note' => 'Allows the user to upload, download, and delete files associated with components.',
+        'name' => 'কম্পোনেন্ট ফাইল পরিচালনা',
+        'note' => 'ব্যবহারকারীকে কম্পোনেন্টের সাথে যুক্ত ফাইল আপলোড, ডাউনলোড এবং মুছে ফেলার অনুমতি দেয়।',
     ],
 
     'licenseskeys' => [
-        'name' => 'Manage License Keys',
-        'note' => 'Allows the user to view product keys associated with licenses.',
+        'name' => 'লাইসেন্স কি পরিচালনা',
+        'note' => 'ব্যবহারকারীকে লাইসেন্সের সাথে যুক্ত প্রোডাক্ট কি দেখার অনুমতি দেয়।',
     ],
     'components' => [
-        'name' => 'Components',
-        'note' => 'Grants access to the Components section of the application.',
+        'name' => 'কম্পোনেন্ট',
+        'note' => 'অ্যাপ্লিকেশনের কম্পোনেন্ট সেকশনে অ্যাক্সেস প্রদান করে।',
     ],
     'componentsview' => [
-        'name' => 'View Components',
+        'name' => 'কম্পোনেন্ট দেখুন',
     ],
     'componentscreate' => [
-        'name' => 'Create New Components',
+        'name' => 'নতুন কম্পোনেন্ট তৈরি করুন',
     ],
     'componentsedit' => [
-        'name' => 'Edit Components',
+        'name' => 'কম্পোনেন্ট সম্পাদনা করুন',
     ],
     'componentsdelete' => [
-        'name' => 'Delete Components',
+        'name' => 'কম্পোনেন্ট মুছে ফেলুন',
     ],
 
     'componentscheckout' => [
-        'name' => 'Check Out Components',
-        'note' => 'Assign components in inventory by checking them out.',
+        'name' => 'কম্পোনেন্ট প্রদান করা',
+        'note' => 'ইনভেন্টরিতে থাকা কম্পোনেন্টগুলো প্রদান করে বরাদ্দ করুন।',
     ],
     'componentscheckin' => [
-        'name' => 'Check In Components',
-        'note' => 'Check components back into inventory that are currently checked out.',
+        'name' => 'কম্পোনেন্ট ফেরত নেওয়া',
+        'note' => 'বর্তমানে প্রদান করা কম্পোনেন্টগুলো ইনভেন্টরিতে ফেরত নিন।',
     ],
     'kits' => [
-        'name' => 'Predefined Kits',
-        'note' => 'Grants access to the Predefined Kits section of the application.',
+        'name' => 'প্রি-ডিফাইনড কিটস',
+        'note' => 'অ্যাপ্লিকেশনের প্রি-ডিফাইনড কিটস সেকশনে অ্যাক্সেস প্রদান করে।',
     ],
     'kitsview' => [
-        'name' => 'View Predefined Kits',
+        'name' => 'প্রি-ডিফাইনড কিটস দেখুন',
     ],
     'kitscreate' => [
-        'name' => 'Create New Predefined Kits',
+        'name' => 'নতুন প্রি-ডিফাইনড কিটস তৈরি করুন',
     ],
     'kitsedit' => [
-        'name' => 'Edit Predefined Kits',
+        'name' => 'প্রি-ডিফাইনড কিটস সম্পাদনা করুন',
     ],
     'kitsdelete' => [
-        'name' => 'Delete Predefined Kits',
+        'name' => 'প্রি-ডিফাইনড কিটস মুছে ফেলুন',
     ],
     'users' => [
-        'name' => 'Users',
-        'note' => 'Grants access to the Users section of the application.',
+        'name' => 'ব্যবহারকারী',
+        'note' => 'অ্যাপ্লিকেশনের ব্যবহারকারী সেকশনে অ্যাক্সেস প্রদান করে।',
     ],
     'usersview' => [
-        'name' => 'View Users',
+        'name' => 'ব্যবহারকারী দেখুন',
     ],
     'userscreate' => [
-        'name' => 'Create New Users',
+        'name' => 'নতুন ব্যবহারকারী তৈরি করুন',
     ],
     'usersedit' => [
-        'name' => 'Edit Users',
+        'name' => 'ব্যবহারকারী সম্পাদনা করুন',
     ],
     'usersdelete' => [
-        'name' => 'Delete Users',
+        'name' => 'ব্যবহারকারী মুছে ফেলুন',
     ],
     'models' => [
-        'name' => 'Models',
-        'note' => 'Grants access to the Models section of the application.',
+        'name' => 'মডেল',
+        'note' => 'অ্যাপ্লিকেশনের মডেল সেকশনে অ্যাক্সেস প্রদান করে।',
     ],
     'modelsview' => [
-        'name' => 'View Models',
+        'name' => 'মডেল দেখুন',
     ],
 
     'modelscreate' => [
-        'name' => 'Create New Models',
+        'name' => 'নতুন মডেল তৈরি করুন',
     ],
     'modelsedit' => [
-        'name' => 'Edit Models',
+        'name' => 'মডেল সম্পাদনা করুন',
     ],
     'modelsdelete' => [
-        'name' => 'Delete Models',
+        'name' => 'মডেল মুছে ফেলুন',
     ],
     'categories' => [
-        'name' => 'Categories',
-        'note' => 'Grants access to the Categories section of the application.',
+        'name' => 'ক্যাটাগরি',
+        'note' => 'অ্যাপ্লিকেশনের ক্যাটাগরি সেকশনে অ্যাক্সেস প্রদান করে।',
     ],
     'categoriesview' => [
-        'name' => 'View Categories',
+        'name' => 'ক্যাটাগরি দেখুন',
     ],
     'categoriescreate' => [
-        'name' => 'Create New Categories',
+        'name' => 'নতুন ক্যাটাগরি তৈরি করুন',
     ],
     'categoriesedit' => [
-        'name' => 'Edit Categories',
+        'name' => 'ক্যাটাগরি সম্পাদনা করুন',
     ],
     'categoriesdelete' => [
-        'name' => 'Delete Categories',
+        'name' => 'ক্যাটাগরি মুছে ফেলুন',
     ],
     'departments' => [
-        'name' => 'Departments',
-        'note' => 'Grants access to the Departments section of the application.',
+        'name' => 'বিভাগ',
+        'note' => 'অ্যাপ্লিকেশনের বিভাগ সেকশনে অ্যাক্সেস প্রদান করে।',
     ],
     'departmentsview' => [
-        'name' => 'View Departments',
+        'name' => 'বিভাগ দেখুন',
     ],
     'departmentscreate' => [
-        'name' => 'Create New Departments',
+        'name' => 'নতুন বিভাগ তৈরি করুন',
     ],
     'departmentsedit' => [
-        'name' => 'Edit Departments',
+        'name' => 'বিভাগ সম্পাদনা করুন',
     ],
     'departmentsdelete' => [
-        'name' => 'Delete Departments',
+        'name' => 'বিভাগ মুছে ফেলুন',
     ],
     'locations' => [
-        'name' => 'Locations',
-        'note' => 'Grants access to the Locations section of the application.',
+        'name' => 'কার্যালয়',
+        'note' => 'অ্যাপ্লিকেশনের কার্যালয় সেকশনে অ্যাক্সেস প্রদান করে।',
     ],
     'locationsview' => [
-        'name' => 'View Locations',
+        'name' => 'কার্যালয় দেখুন',
     ],
     'locationscreate' => [
-        'name' => 'Create New Locations',
+        'name' => 'নতুন কার্যালয় তৈরি করুন',
     ],
     'locationsedit' => [
-        'name' => 'Edit Locations',
+        'name' => 'কার্যালয় সম্পাদনা করুন',
     ],
     'locationsdelete' => [
-        'name' => 'Delete Locations',
+        'name' => 'কার্যালয় মুছে ফেলুন',
     ],
     'status-labels' => [
-        'name' => 'Status Labels',
-        'note' => 'Grants access to the Status Labels section of the application used by Assets.',
+        'name' => 'স্ট্যাটাস লেবেল',
+        'note' => 'সম্পদের জন্য ব্যবহৃত স্ট্যাটাস লেবেল সেকশনে অ্যাক্সেস প্রদান করে।',
     ],
     'statuslabelsview' => [
-        'name' => 'View Status Labels',
+        'name' => 'স্ট্যাটাস লেবেল দেখুন',
     ],
     'statuslabelscreate' => [
-        'name' => 'Create New Status Labels',
+        'name' => 'নতুন স্ট্যাটাস লেবেল তৈরি করুন',
     ],
     'statuslabelsedit' => [
-        'name' => 'Edit Status Labels',
+        'name' => 'স্ট্যাটাস লেবেল সম্পাদনা করুন',
     ],
     'statuslabelsdelete' => [
-        'name' => 'Delete Status Labels',
+        'name' => 'স্ট্যাটাস লেবেল মুছে ফেলুন',
     ],
     'custom-fields' => [
-        'name' => 'Custom Fields',
-        'note' => 'Grants access to the Custom Fields section of the application used by Assets.',
+        'name' => 'কাস্টম ফিল্ড',
+        'note' => 'সম্পদের জন্য ব্যবহৃত কাস্টম ফিল্ড সেকশনে অ্যাক্সেস প্রদান করে।',
     ],
     'customfieldsview' => [
-        'name' => 'View Custom Fields',
+        'name' => 'কাস্টম ফিল্ড দেখুন',
     ],
     'customfieldscreate' => [
-        'name' => 'Create New Custom Fields',
+        'name' => 'নতুন কাস্টম ফিল্ড তৈরি করুন',
     ],
     'customfieldsedit' => [
-        'name' => 'Edit Custom Fields',
+        'name' => 'কাস্টম ফিল্ড সম্পাদনা করুন',
     ],
     'customfieldsdelete' => [
-        'name' => 'Delete Custom Fields',
+        'name' => 'কাস্টম ফিল্ড মুছে ফেলুন',
     ],
     'suppliers' => [
-        'name' => 'Suppliers',
-        'note' => 'Grants access to the Suppliers section of the application.',
+        'name' => 'সরবরাহকারী',
+        'note' => 'অ্যাপ্লিকেশনের সরবরাহকারী সেকশনে অ্যাক্সেস প্রদান করে।',
     ],
     'suppliersview' => [
-        'name' => 'View Suppliers',
+        'name' => 'সরবরাহকারী দেখুন',
     ],
     'supplierscreate' => [
-        'name' => 'Create New Suppliers',
+        'name' => 'নতুন সরবরাহকারী তৈরি করুন',
     ],
     'suppliersedit' => [
-        'name' => 'Edit Suppliers',
+        'name' => 'সরবরাহকারী সম্পাদনা করুন',
     ],
     'suppliersdelete' => [
-        'name' => 'Delete Suppliers',
+        'name' => 'সরবরাহকারী মুছে ফেলুন',
     ],
     'manufacturers' => [
-        'name' => 'Manufacturers',
-        'note' => 'Grants access to the Manufacturers section of the application.',
+        'name' => 'ম্যানুফ্যাকচারার',
+        'note' => 'ম্যানুফ্যাকচারার সেকশনে অ্যাক্সেস প্রদান করে।',
     ],
     'manufacturersview' => [
-        'name' => 'View Manufacturers',
+        'name' => 'ম্যানুফ্যাকচারার দেখুন',
     ],
     'manufacturerscreate' => [
-        'name' => 'Create New Manufacturers',
+        'name' => 'নতুন ম্যানুফ্যাকচারার তৈরি করুন',
     ],
     'manufacturersedit' => [
-        'name' => 'Edit Manufacturers',
+        'name' => 'ম্যানুফ্যাকচারার সম্পাদনা করুন',
     ],
     'manufacturersdelete' => [
-        'name' => 'Delete Manufacturers',
+        'name' => 'ম্যানুফ্যাকচারার মুছে ফেলুন',
     ],
     'companies' => [
-        'name' => 'Companies',
-        'note' => 'Grants access to the Companies section of the application.',
+        'name' => 'মন্ত্রণালয়/বিভাগ/দপ্তর/সংস্থা',
+        'note' => 'অ্যাপ্লিকেশনের মন্ত্রণালয়/বিভাগ/দপ্তর/সংস্থা সেকশনে অ্যাক্সেস প্রদান করে।',
     ],
-    'companiesview' => [
-        'name' => 'View Companies',
-    ],
-    'companiescreate' => [
-        'name' => 'Create New Companies',
-    ],
-    'companiesedit' => [
-        'name' => 'Edit Companies',
-    ],
-    'companiesdelete' => [
-        'name' => 'Delete Companies',
-    ],
-    'user-self-accounts' => [
-        'name' => 'User Self Accounts',
-        'note' => 'Grants non-admin users the ability to manage certain aspects of their own user accounts.',
-    ],
-    'selftwo-factor' => [
-        'name' => 'Manage Two-Factor Authentication',
-        'note' => 'Allows users to enable, disable, and manage two-factor authentication for their own accounts.',
-    ],
-    'selfapi' => [
-        'name' => 'Manage API Tokens',
-        'note' => 'Allows users to create, view, and revoke their own API tokens. User tokens will have the same permissions as the user who created them.',
-    ],
-    'selfedit-location' => [
-        'name' => 'Edit Location',
-        'note' => 'Allows users to edit the location associated with their own user account.',
-    ],
-    'selfcheckout-assets' => [
-        'name' => 'Self Check Out Assets',
-        'note' => 'Allows users to check out assets to themselves without admin intervention.',
-    ],
-    'selfview-purchase-cost' => [
-        'name' => 'View Purchase Cost',
-        'note' => 'Allows users to view the purchase cost of items in their account view.',
-    ],
-
-    'depreciations' => [
-        'name' => 'Depreciation Management',
-        'note' => 'Allows users to manage and view asset depreciation details.',
-    ],
-    'depreciationsview' => [
-        'name' => 'View Depreciation Details',
-    ],
-    'depreciationsedit' => [
-        'name' => 'Edit Depreciation Settings',
-    ],
-    'depreciationsdelete' => [
-        'name' => 'Delete Depreciation Records',
-    ],
-    'depreciationscreate' => [
-        'name' => 'Create Depreciation Records',
-    ],
-
-    'grant_all' => 'Grant all permissions for :area',
-    'deny_all' => 'Deny all permissions for :area',
-    'inherit_all' => 'Inherit all permissions for :area from permission groups',
-    'grant' => 'Grant Permission for :area',
-    'deny' => 'Deny Permission for :area',
-    'inherit' => 'Inherit Permission for :area from permission groups',
-    'use_groups' => 'We strongly suggest using Permission Groups instead of assigning individual permissions for easier management.',
-
 ];
