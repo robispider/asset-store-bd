@@ -17,7 +17,7 @@ class InventoryMovement extends Model
     const UPDATED_AT = null; 
 
     protected $fillable = [
-        'stockable_type', 'stockable_id', 'movement_type', 'quantity',
+        'stockable_type', 'stockable_id', 'movement_type', 'quantity', 'balance_after',
         'document_type', 'document_id', 'company_id', 'location_id', 'created_by'
     ];
 

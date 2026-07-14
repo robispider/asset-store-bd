@@ -5,14 +5,13 @@ namespace GovStore\StoreOperations\Contracts;
 interface StockIssuingServiceInterface
 {
     /**
-     * Outbound System Stock Handshake.
-     * Generates a SYSTEM_FULFILLMENT Goods Issue document, creates movements, 
-     * and projects quantities securely back to Snipe-IT tables.
+     * Accepts raw polymorphic types from external packages, sanitizes them, 
+     * and processes a SYSTEM_FULFILLMENT Goods Issue if the items are ledger-supported.
      *
-     * @param array $items Array of ['stockable_type' => string, 'stockable_id' => int, 'quantity' => int]
-     * @param int $issuedToUserId Target user ID receiving the goods
-     * @param mixed $referenceDocument The Eloquent Model triggering the checkout (e.g., ServiceRequest)
-     * @return string The generated Goods Issue Document Number (e.g., GI-2026-000001)
+     * @param array $items Array of ['type' => string, 'id' => int, 'qty' => int, 'line_id' => int]
+     * @param int $issuedToUserId
+     * @param mixed $referenceDocument
+     * @return array Returns an array of successfully issued line_ids mapping to their Goods Issue Document No.
      */
-    public function issueSystemStock(array $items, int $issuedToUserId, $referenceDocument): string;
+    public function issueSystemStock(array $items, int $issuedToUserId, $referenceDocument): array;
 }

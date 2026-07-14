@@ -10,7 +10,7 @@ use Exception;
 class UpdateSnipeQuantity
 {
     /**
-     * Handle the event to project quantities securely into Snipe-IT tables.
+     * Responsibility: Strictly handles the mathematical projection to Snipe-IT tables.
      */
     public function handle(InventoryMovementCreated $event)
     {
@@ -24,11 +24,9 @@ class UpdateSnipeQuantity
             } elseif ($movement->movement_type === 'OUT') {
                 $adapter->decrementQuantity($movement->quantity);
             }
-            
         } catch (Exception $e) {
-            // Log severe projection failure (Auditors will rely on movements, but Snipe UI will be out of sync)
             Log::critical("Projection Engine Failure: Could not update Snipe-IT quantity for Movement ID: {$movement->id}. Error: {$e->getMessage()}");
-            throw $e; // Re-throw to rollback the database transaction in the Service
+            throw $e;
         }
     }
 }

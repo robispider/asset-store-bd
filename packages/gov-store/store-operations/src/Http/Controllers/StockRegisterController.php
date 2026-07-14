@@ -2,20 +2,27 @@
 
 namespace GovStore\StoreOperations\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use GovStore\StoreOperations\Models\InventoryMovement;
+use GovStore\StoreOperations\Services\InventoryLedgerService;
 use App\Models\Consumable;
 use App\Models\Accessory;
 use App\Models\Component;
 
 class StockRegisterController extends Controller
 {
+    protected InventoryLedgerService $ledgerService;
+
+    public function __construct(InventoryLedgerService $ledgerService)
+    {
+        $this->ledgerService = $ledgerService;
+    }
+
     /**
      * Dashboard listing all items in the storekeeper's warehouse
      */
     public function index()
     {
-        // Globally scoped: MinistryLocationScope applies automatically
         $consumables = Consumable::with('category')->get();
         $accessories = Accessory::with('category')->get();
         $components  = Component::with('category')->get();
@@ -24,36 +31,25 @@ class StockRegisterController extends Controller
     }
 
     /**
-     * Displays the Immutable Stock Card (Kardex) for a specific item
+     * Displays the Immutable Stock Card (Kardex) for a specific item (Strictly Read-Only)
      */
-    public function kardex($type, $id)
+    public function kardex(Request $request, $type, $id)
     {
-        // Resolve model class safely
         $modelClass = match (strtolower($type)) {
             'consumable' => Consumable::class,
-            'accessory' => Accessory::class,
-            'component' => Component::class,
-            default => abort(404, 'Invalid stockable type')
+            'accessory'  => Accessory::class,
+            'component'  => Component::class,
+            default      => abort(404, 'Invalid stockable type')
         };
 
         $item = $modelClass::findOrFail($id);
 
-        // Fetch movements, ordered chronologically
-        $movements = InventoryMovement::with('document', 'creator')
-            ->where('stockable_type', $modelClass)
-            ->where('stockable_id', $id)
-            ->orderBy('created_at', 'asc')
-            ->get();
+        // Fetch pre-computed movements from the service layer
+        $movements = $this->ledgerService->getKardexFor($modelClass, $id);
 
-        // Calculate running balance in memory for display
-        $runningBalance = 0;
-        foreach ($movements as $movement) {
-            if ($movement->movement_type === 'IN') {
-                $runningBalance += $movement->quantity;
-            } else {
-                $runningBalance -= $movement->quantity;
-            }
-            $movement->running_balance = $runningBalance;
+        // Pure, elegant HTTP Content Negotiation - No custom query parameter parameters needed
+        if ($request->ajax()) {
+            return view('storeops::register.kardex-table', compact('movements'));
         }
 
         return view('storeops::register.kardex', compact('item', 'movements', 'type'));

@@ -5,14 +5,84 @@ namespace GovStore\CustomRequests\Services;
 use GovStore\CustomRequests\Models\Request as ServiceRequest;
 use GovStore\CustomRequests\Models\RequestItem;
 use GovStore\CustomRequests\Models\RequestEvent;
-use GovStore\OfficeMembership\Models\OfficeResponsibility; // IMPORT PIVOT
+use GovStore\CustomRequests\Models\DraftBasket;
+use GovStore\CustomRequests\Models\BasketItem;
+use GovStore\OfficeMembership\Models\OfficeResponsibility;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
 class BasketService
 {
-    // ... [keep getOrCreateDraftBasket, addItem, updateItemQty, removeItem untouched] ...
+    /**
+     * Get or create a draft basket for the given user.
+     */
+    public function getOrCreateDraftBasket(int $userId): DraftBasket
+    {
+        return DraftBasket::getOrCreateForUser($userId);
+    }
+
+    /**
+     * Add an item to the user's draft basket.
+     *
+     * @throws \Exception
+     */
+    public function addItem(int $userId, string $itemType, int $itemId): DraftBasket
+    {
+        $basket = DraftBasket::getOrCreateForUser($userId);
+
+        // Check if item already exists in basket
+        $existing = $basket->items()->where('requested_type', $itemType)
+            ->where('requested_id', $itemId)->first();
+
+        if ($existing) {
+            $existing->increment('requested_qty');
+            return $basket;
+        }
+
+        BasketItem::create([
+            'basket_id' => $basket->id,
+            'requested_type' => $itemType,
+            'requested_id' => $itemId,
+            'requested_qty' => 1,
+        ]);
+
+        return $basket;
+    }
+
+    /**
+     * Update the quantity of an item in the basket.
+     *
+     * @throws \Exception
+     */
+    public function updateItemQty(int $userId, int $itemId, int $qty): DraftBasket
+    {
+        if ($qty < 1) {
+            throw new Exception("Quantity must be at least 1.");
+        }
+
+        $basket = DraftBasket::where('user_id', $userId)
+            ->where('status', 'draft')->firstOrFail();
+
+        $item = $basket->items()->where('id', $itemId)->firstOrFail();
+        $item->update(['requested_qty' => $qty]);
+
+        return $basket;
+    }
+
+    /**
+     * Remove an item from the basket.
+     */
+    public function removeItem(int $userId, int $itemId): DraftBasket
+    {
+        $basket = DraftBasket::where('user_id', $userId)
+            ->where('status', 'draft')->firstOrFail();
+
+        $item = $basket->items()->where('id', $itemId)->firstOrFail();
+        $item->delete();
+
+        return $basket;
+    }
 
     public function submitBasket($userId, array $metadata): array
     {
