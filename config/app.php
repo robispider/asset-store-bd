@@ -12,6 +12,7 @@ use App\Providers\RouteServiceProvider;
 use App\Providers\SamlServiceProvider;
 use App\Providers\SettingsServiceProvider;
 use App\Providers\SnipeTranslationServiceProvider;
+use GovStore\StoreOperations\Providers\StoreOperationsServiceProvider;
 use Illuminate\Auth\AuthServiceProvider;
 use Illuminate\Auth\Passwords\PasswordResetServiceProvider;
 use Illuminate\Broadcasting\BroadcastServiceProvider;
@@ -442,6 +443,7 @@ return [
         GovStore\GeoAreas\Providers\GeoAreasServiceProvider::class,
         GovStore\TenantScope\Providers\TenantScopeServiceProvider::class,
                 GovStore\OfficeMembership\Providers\OfficeMembershipServiceProvider::class,
+        GovStore\StoreOperations\Providers\StoreOperationsServiceProvider::class,
 
     ],
 

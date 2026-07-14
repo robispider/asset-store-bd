@@ -1,0 +1,508 @@
+================================================================================
+          GOV-STORE PACKAGE INTEGRATION ANALYSIS REPORT
+          custom-requests vs store-operations
+          Generated: 2026-07-14
+================================================================================
+
+TABLE OF CONTENTS
+-----------------
+1. Executive Summary
+2. Package Purpose & Scope Comparison
+3. Detailed Workflow Analysis - custom-requests
+4. Detailed Workflow Analysis - store-operations
+5. Integration Points (Current State)
+6. Critical Gaps & Risks
+7. User Confusion Analysis
+8. Recommended Architecture
+9. Action Items
+
+================================================================================
+1. EXECUTIVE SUMMARY
+================================================================================
+
+The two packages serve COMPLEMENTARY but OVERLAPPING purposes:
+
+  custom-requests  = Employee request lifecycle (submit -> approve -> fulfill)
+  store-operations = Document-driven inventory accounting (receipts, issues, ledger)
+
+CRITICAL FINDING: The Fulfillment workflow in custom-requests updates Snipe-IT
+quantities DIRECTLY without creating any audit document in store-operations.
+This creates a gap where stock leaves the building but no Goods Issue document
+exists in the immutable ledger.
+
+Additionally, store-operations has its own Goods Issue flow that duplicates what
+Fulfillment already does, risking user confusion about which UI to use.
+
+================================================================================
+2. PACKAGE PURPOSE & SCOPE COMPARISON
+================================================================================
+
++---------------------------+--------------------------+------------------------+
+| Aspect                    | custom-requests          | store-operations       |
++---------------------------+--------------------------+------------------------+
+| Primary Actor             | Employee / Approver      | Storekeeper            |
+| Workflow Stage            | Pre-purchase (request)   | Post-approval (stock)  |
+| Core Entity               | Service Request (SR-)    | Goods Receipt/Issue    |
+| Approval Logic            | YES (multi-stage)        | NO (direct submit)     |
+| Audit Ledger              | Event timeline only      | Immutable movements    |
+| Snipe-IT Integration      | Via checkout() adapters  | Via projection engine  |
+| Substitution Support      | YES                      | NO                     |
+| Kardex / Stock Card       | NO                       | YES                    |
+| User-facing UI            | Catalog, Basket, Admin   | Fast Grid forms        |
+| Route Prefix              | /gov-requests/           | /gov-store/operations/ |
++---------------------------+--------------------------+------------------------+
+
+================================================================================
+3. DETAILED WORKFLOW ANALYSIS - custom-requests
+================================================================================
+
+3.1 Request Submission (Employee)
+---------------------------------
+  Path: /gov-requests/catalog or /gov-requests/basket
+  
+  Two submission methods exist:
+  
+  A) Single-item request (ItemRequest model - legacy/simple):
+     - User clicks "request" on any item page
+     - Creates a custom_item_requests record
+     - Status: pending
+     - NO approval workflow integration
+   
+  B) Multi-item service request (Request model - primary):
+     - User browses catalog or uses basket
+     - Groups items by approval policy
+     - Creates custom_service_requests record(s)
+     - Auto-approval if policy allows, else routes to approver
+
+3.2 Approval Processing (Approver)
+----------------------------------
+  Path: /gov-requests/admin
+  
+  Three approval policies:
+  - AUTO_APPROVE:   System auto-approves, no human needed
+  - PRIMARY_ONLY:   Single approver level
+  - PRIMARY_AND_FINAL: Two-level approval chain
+  
+  Approver actions:
+  - Approve with optional quantity modification
+  - Reject with reason
+  - Partial approval (some lines approved, some rejected)
+  
+  Self-approval conflict detection:
+  - If requester is also final_approver in PRIMARY_AND_FINAL, auto-approves
+
+3.3 Fulfillment (Storekeeper)
+-----------------------------
+  Path: /gov-requests/fulfillment
+  
+  Storekeeper actions:
+  1. View approved requests queue
+  2. Open request detail
+  3. Issue items with optional product substitution
+  4. Partial fulfillment supported
+  5. Close request when complete
+  
+  CRITICAL: Fulfillment calls RequestableFactory->checkout() which directly
+  updates Snipe-IT tables via Snipe-IT's native relationships. NO Goods Issue
+  document is created in store-operations.
+
+3.4 Key Models
+--------------
+  ItemRequest       -> Single-item, simple pending status (legacy)
+  Request           -> Multi-item service request with full lifecycle
+  RequestItem       -> Line items with approval/fulfillment tracking
+  RequestEvent      -> Timeline/events log
+  ApprovalPolicy    -> Category-level policy configuration
+  LocationRole      -> User role assignments per location
+
+================================================================================
+4. DETAILED WORKFLOW ANALYSIS - store-operations
+================================================================================
+
+4.1 Goods Receipt (Inbound Stock)
+----------------------------------
+  Path: /gov-store/operations/receipts/create
+  
+  Storekeeper receives goods, fills Fast Grid, submits.
+  Creates: gov_goods_receipts + gov_goods_receipt_items
+  Auto-generates: InventoryMovement records (IN type)
+  Projects to Snipe-IT: increment qty via atomic DB queries
+
+4.2 Goods Issue (Outbound Stock)
+--------------------------------
+  Path: /gov-store/operations/issues/create
+  
+  Storekeeper issues goods directly (no approval workflow).
+  Creates: gov_goods_issues + gov_goods_issue_items
+  Auto-generates: InventoryMovement records (OUT type)
+  Projects to Snipe-IT: decrement qty via atomic DB queries
+
+4.3 Stock Adjustment (Corrections)
+-----------------------------------
+  Path: Not yet implemented in UI
+  
+  For physical count corrections, damage, loss, expired items.
+  Creates: gov_stock_adjustments + gov_stock_adjustment_items
+  Auto-generates: InventoryMovement records (IN or OUT type)
+
+4.4 Stock Card / Kardex (Audit Trail)
+--------------------------------------
+  Path: /gov-store/operations/kardex/{type}/{id}
+  
+  Immutable ledger showing all movements for a specific item.
+  Columns: Date, Reference Document, Operator, IN(+), OUT(-), Running Balance
+
+4.5 Key Models
+--------------
+  GoodsReceipt      -> Inbound document header
+  GoodsReceiptItem  -> Inbound line items
+  GoodsIssue        -> Outbound document header
+  GoodsIssueItem    -> Outbound line items
+  StockAdjustment   -> Correction document header
+  StockAdjustmentItem -> Correction line items
+  InventoryMovement -> Immutable audit ledger (one record per item per doc)
+
+================================================================================
+5. INTEGRATION POINTS (CURRENT STATE)
+================================================================================
+
+5.1 Shared Infrastructure
+-------------------------
+  Both packages share:
+  - GovStore\TenantScope\Contexts\TenantContext (tenant scoping)
+  - MinistryLocationScope (global scope on models)
+  - Similar adapter pattern (store-operations has StockableInterface,
+    custom-requests has RequestableInterface)
+  - Factory pattern for polymorphic type resolution
+
+5.2 Adapter Comparison (Parallel Implementations)
+-------------------------------------------------
+  store-operations:                    custom-requests:
+  StockableInterface                   RequestableInterface
+  ConsumableAdapter                    ConsumableAdapter
+  AccessoryAdapter                     AccessoryAdapter
+  ComponentAdapter                     AssetAdapter
+                                     + ConsumableAdapter
+  
+  Key difference:
+  - store-operations adapters use atomic DB::table()->increment/decrement()
+    to bypass Snipe-IT observers (prevents side effects)
+  - custom-requests adapters call Snipe-IT's native ->checkout() which triggers
+    Snipe-IT's own observers and logging
+
+5.3 The Fulfillment Gap (CRITICAL)
+----------------------------------
+  When a Service Request is fulfilled in custom-requests:
+  
+  Current flow:
+    GovFulfillmentController::process()
+      -> FulfillmentService::issueItems()
+        -> RequestableFactory::make($type, $id)
+          -> Adapter->checkout($user, $storekeeper, $qty, $notes)
+            -> Snipe-IT native checkout (decrements qty directly)
+  
+  What's MISSING:
+    NO Goods Issue document created in store-operations
+    NO InventoryMovement record in the immutable ledger
+    NO audit trail linking stock outflow to the approved Service Request
+  
+  Result: Stock leaves the building but no formal Goods Issue document exists.
+
+5.4 Duplicate Outbound Flow
+---------------------------
+  Two separate UIs can reduce stock:
+  
+  A) /gov-requests/fulfillment/{id} (custom-requests)
+     - Linked to approved Service Request
+     - Has approval history, substitutions, timeline
+     - Updates Snipe-IT directly
+  
+  B) /gov-store/operations/issues/create (store-operations)
+     - Standalone Goods Issue form
+     - No approval workflow
+     - Creates formal audit document
+     - Projects to Snipe-IT via atomic queries
+  
+  USER CONFUSION RISK: A storekeeper may not know which UI to use.
+
+================================================================================
+6. CRITICAL GAPS & RISKS
+================================================================================
+
+6.1 AUDIT GAP (High Severity)
+-----------------------------
+  Problem: Service Request fulfillments bypass the immutable ledger.
+  
+  Scenario:
+    1. Employee submits SR-2026-000123 for 10 laptops
+    2. Approver approves
+    3. Storekeeper fulfills via /gov-requests/fulfillment
+    4. Snipe-IT qty decreases by 10
+  
+  What's missing:
+    - No gov_goods_issues record exists
+    - No InventoryMovement records exist
+    - Kardex for those laptops shows no OUT entry
+    - Auditors cannot trace stock outflow to the approved request
+  
+  Impact: Financial audit failure. Stock leaves without formal documentation.
+
+6.2 DUAL ENTRY RISK (Medium Severity)
+-------------------------------------
+  Problem: Storekeeper might use both UIs for the same stock movement.
+  
+  Scenario:
+    1. Fulfillment already issued 10 items via /gov-requests/fulfillment
+    2. Storekeeper creates Goods Issue at /gov-store/operations/issues/create
+       for the same 10 items
+    3. Snipe-IT qty decremented twice = -10 (negative stock)
+  
+  Mitigation: store-operations has pre-validation, but this is a procedural
+  issue, not technical. Users need clear guidance on when to use which UI.
+
+6.3 LEGACY MODEL CONFUSION (Low-Medium Severity)
+-------------------------------------------------
+  Problem: ItemRequest model exists alongside Request model.
+  
+  - ItemRequest: single-item, simple pending status, no lifecycle
+  - Request: multi-item, full approval/fulfillment workflow
+  
+  Both can be triggered from the same UI (item page "request" button).
+  Users won't know which path their request takes.
+
+6.4 ADAPTER PATTERN DUPLICATION (Low Severity)
+-----------------------------------------------
+  Both packages implement nearly identical adapter patterns:
+  
+  - StockableInterface vs RequestableInterface (same purpose, different names)
+  - ConsumableAdapter/AccessoryAdapter in both packages
+  - StockableFactory vs RequestableFactory
+  
+  This creates maintenance burden and potential inconsistency.
+
+6.5 NO CROSS-REFERENCE BETWEEN PACKAGES
+---------------------------------------
+  Problem: Service Requests and Goods Issues are completely disconnected.
+  
+  A fulfilled Service Request should automatically create a corresponding
+  Goods Issue document in store-operations, linking:
+    - gov_goods_issues.issue_no = GI-2026-XXXXXX
+    - gov_goods_issues.reference_type = GovStore\CustomRequests\Models\Request
+    - gov_goods_issues.reference_id = <service_request_id>
+  
+  Currently this link does not exist.
+
+================================================================================
+7. USER CONFUSION ANALYSIS
+================================================================================
+
+7.1 Scenario-Based Confusion Matrix
+------------------------------------
+
+  Scenario: Employee needs office supplies
+  +----------------------------------+-------------------+-------------------+
+  | Step                             | custom-requests   | store-operations  |
+  +----------------------------------+-------------------+-------------------+
+  | Submit request                   | YES (catalog)     | NO                |
+  | Get approval                     | YES               | NO                |
+  | Receive confirmation             | YES (status)      | NO                |
+  +----------------------------------+-------------------+-------------------+
+  
+  Verdict: Use custom-requests. No confusion here.
+
+  Scenario: Storekeeper receives new stock from supplier
+  +----------------------------------+-------------------+-------------------+
+  | Step                             | custom-requests   | store-operations  |
+  +----------------------------------+-------------------+-------------------+
+  | Record inbound stock             | NO                | YES (GR form)     |
+  | Generate audit document          | NO                | YES               |
+  | Update Snipe-IT qty              | NO                | YES               |
+  +----------------------------------+-------------------+-------------------+
+  
+  Verdict: Use store-operations. No confusion here.
+
+  Scenario: Storekeeper issues stock to employee (approved request)
+  +----------------------------------+-------------------+-------------------+
+  | Step                             | custom-requests   | store-operations  |
+  +----------------------------------+-------------------+-------------------+
+  | View approved items              | YES (queue)       | NO                |
+  | Issue with substitutions         | YES               | NO                |
+  | Create audit document            | NO                | YES (GI form)     |
+  | Update Snipe-IT qty              | YES               | YES               |
+  +----------------------------------+-------------------+-------------------+
+  
+  Verdict: CONFLICT. Both UIs can fulfill. Storekeeper must know which to use.
+
+  Scenario: Auditor traces stock movement for an item
+  +----------------------------------+-------------------+-------------------+
+  | Step                             | custom-requests   | store-operations  |
+  +----------------------------------+-------------------+-------------------+
+  | See all movements                | NO (events only)  | YES (Kardex)      |
+  | See formal document numbers      | Partially         | YES               |
+  | See running balance              | NO                | YES               |
+  +----------------------------------+-------------------+-------------------+
+  
+  Verdict: Use store-operations for audit. But data is incomplete if
+  fulfillments bypassed the ledger.
+
+7.2 Key Confusion Points Summary
+---------------------------------
+  1. "Should I use Fulfillment or Goods Issue to issue stock?"
+     -> Answer: Fulfillment for approved requests, Goods Issue for ad-hoc needs
+  
+  2. "Where do I see the complete stock history of an item?"
+     -> Answer: Kardex at /gov-store/operations/kardex/{type}/{id}
+  
+  3. "Why are there two request models (ItemRequest and Request)?"
+     -> Answer: ItemRequest is legacy; Request is the primary model
+  
+  4. "Does fulfilling a Service Request create an audit document?"
+     -> Answer: NO (current gap - this must be fixed)
+
+================================================================================
+8. RECOMMENDED ARCHITECTURE
+================================================================================
+
+8.1 Clear Separation of Concerns
+---------------------------------
+  
+  +---------------------------+-----------------------------------+
+  | custom-requests           | store-operations                  |
+  |                           |                                   |
+  | APPROVAL WORKFLOW         | INVENTORY ACCOUNTING              |
+  |                           |                                   |
+  | - Employee submits        | - Goods Receipt (inbound)         |
+  | - Approver reviews        | - Goods Issue (outbound)          |
+  | - Basket aggregation      | - Stock Adjustments               |
+  | - Policy-based routing    | - Immutable Movement Ledger       |
+  | - Product substitution    | - Kardex / Stock Card             |
+  |                           |                                   |
+  | OUTPUT: Approved Request  | INPUT: Formal Documents           |
+  +---------------------------+-----------------------------------+
+
+8.2 Required Integration: Fulfillment -> store-operations
+---------------------------------------------------------
+  
+  When FulfillmentService issues items, it MUST ALSO create a Goods Issue
+  document in store-operations:
+  
+  Current flow (INCOMPLETE):
+    FulfillmentService::issueItems()
+      -> Adapter->checkout() [updates Snipe-IT]
+  
+  Required flow (COMPLETE):
+    FulfillmentService::issueItems()
+      -> GoodsIssueService::createFromFulfillment($serviceRequest, $items)
+        -> Creates gov_goods_issues header
+          -> Creates gov_goods_issue_items lines
+            -> Creates InventoryMovement records (OUT)
+              -> Fires Projection Engine
+                -> Adapter->decrementQuantity() [updates Snipe-IT]
+  
+  This ensures:
+    - Every stock outflow has a formal Goods Issue document
+    - The Goods Issue references the Service Request (polymorphic link)
+    - Kardex shows complete audit trail
+    - Auditors can trace from ledger -> goods issue -> service request
+
+8.3 Recommended Changes to custom-requests
+-------------------------------------------
+  
+  A) Deprecate ItemRequest model
+     - Mark as legacy, redirect all new submissions to Request model
+     - Show deprecation notice in UI
+  
+  B) FulfillmentService must call store-operations
+     - Add dependency on GoodsIssueService or create integration layer
+     - Every fulfillment creates a corresponding Goods Issue document
+     - Link via polymorphic reference:
+       gov_goods_issues.reference_type = GovStore\CustomRequests\Models\Request
+       gov_goods_issues.reference_id = <request_id>
+  
+  C) Remove duplicate adapter logic
+     - Either share adapters between packages or keep them separate with
+       clear documentation of their different purposes
+
+8.4 Recommended Changes to store-operations
+--------------------------------------------
+  
+  A) Add polymorphic reference fields to GoodsIssue model
+     - reference_type (nullable) -> links to Service Request
+     - reference_id (nullable)   -> links to Service Request ID
+  
+  B) Add createFromFulfillment() method to GoodsIssueService
+     - Accepts a ServiceRequest and issue quantities
+     - Creates Goods Issue header with auto-generated number
+     - Maps each RequestItem to a GoodsIssueItem
+     - Sets reference_type/reference_id for traceability
+  
+  C) Clarify UI guidance
+     - Add tooltip/banner: "Use this form for ad-hoc stock issues.
+       For approved employee requests, use the Fulfillment queue."
+
+8.5 Unified Navigation Recommendation
+--------------------------------------
+  
+  Both packages should be accessible from a single "Gov Store" menu in the
+  Snipe-IT sidebar, organized by role:
+  
+  Gov Store Operations
+  ├── My Requests          -> custom-requests (employee view)
+  ├── Approval Queue       -> custom-requests (approver view)
+  ├── Fulfillment Queue    -> custom-requests (storekeeper view)
+  ├── Receive Goods        -> store-operations (inbound)
+  ├── Issue Stock          -> store-operations (ad-hoc outbound)
+  ├── Stock Cards          -> store-operations (kardex search)
+  └── Settings
+      ├── Approval Policies -> custom-requests
+      └── Office Locations  -> office-membership package
+
+================================================================================
+9. ACTION ITEMS
+================================================================================
+
+PRIORITY 1 - CRITICAL (Must implement before production)
+---------------------------------------------------------
+  [ ] A1: FulfillmentService must create Goods Issue documents
+         Impact: Audit gap - stock leaves without documentation
+         Effort: Medium (add integration layer between packages)
+  
+  [ ] A2: Add reference_type/reference_id to gov_goods_issues table
+         Impact: Traceability from ledger back to service request
+         Effort: Small (migration + model updates)
+  
+  [ ] A3: Add GoodsIssueService::createFromFulfillment() method
+         Impact: Enables A1 integration
+         Effort: Medium
+
+PRIORITY 2 - HIGH (Should implement before next release)
+---------------------------------------------------------
+  [ ] B1: Deprecate ItemRequest model and redirect to Request model
+         Impact: Eliminates dual submission paths confusion
+         Effort: Small
+  
+  [ ] B2: Add UI guidance banners on both issue forms
+         Impact: Prevents user confusion about which UI to use
+         Effort: Small
+  
+  [ ] B3: Consolidate adapter patterns between packages
+         Impact: Reduces maintenance burden and inconsistency risk
+         Effort: Medium
+
+PRIORITY 3 - MEDIUM (Nice to have)
+-----------------------------------
+  [ ] C1: Create unified "Gov Store" navigation menu
+         Impact: Better UX, single entry point for all store operations
+         Effort: Medium
+  
+  [ ] C2: Add Stock Adjustment UI (Phase 3 continuation)
+         Impact: Complete the document set (receipts, issues, adjustments)
+         Effort: Medium
+  
+  [ ] C3: Add cross-package search (search items across both catalogs)
+         Impact: Better discoverability for employees
+         Effort: Large
+
+================================================================================
+END OF REPORT
+================================================================================

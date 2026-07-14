@@ -1,0 +1,24 @@
+{
+    "name": "gov-store/store-operations",
+    "description": "Document-Driven Government Store Operations and Inventory Accounting",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "DoICT"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "GovStore\\StoreOperations\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "GovStore\\StoreOperations\\Providers\\StoreOperationsServiceProvider"
+            ]
+        }
+    }
+}

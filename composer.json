@@ -32,7 +32,11 @@
             "url": "./packages/gov-store/tenant-scope"
         },
         { "type": "path", "url": "./packages/gov-store/office-membership" 
-      }
+      },
+      {
+            "type": "path",
+            "url": "./packages/gov-store/store-operations"
+        }
 
   ],
   "require": {
@@ -130,6 +134,7 @@
       "GovStore\\GeoAreas\\": "packages/gov-store/geo-areas/src/",
       "GovStore\\TenantScope\\": "packages/gov-store/tenant-scope/src/",
       "GovStore\\OfficeMembership\\": "packages/gov-store/office-membership/src/",
+      "GovStore\\StoreOperations\\": "packages/gov-store/store-operations/src/",
       "App\\": "app/",
       "Database\\Factories\\": "database/factories/",
       "Database\\Seeders\\": "database/seeders/"
