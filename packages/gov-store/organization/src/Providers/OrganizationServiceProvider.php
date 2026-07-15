@@ -77,6 +77,17 @@ class OrganizationServiceProvider extends ServiceProvider
             'permission' => 'office_admin',
             'order' => 30,
         ]);
+
+        // 5. Government Directory Import Console (Superadmin only)
+        $registry->register([
+            'id' => 'gov-org-directory',
+            'parent' => 'gov-org', // Placed under the Office Provisioning folder
+            'title' => 'Government Directory',
+            'icon' => 'fas fa-cloud-download fa-fw text-green',
+            'route' => 'gov.org.directory.index',
+            'permission' => 'admin', // Superadmin only
+            'order' => 40,
+        ]);
     }
 
     public function register()

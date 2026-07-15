@@ -5,6 +5,7 @@ use GovStore\Organization\Http\Controllers\ProvisioningController;
 use GovStore\Organization\Http\Controllers\OfficeHubController;
 use GovStore\Organization\Http\Controllers\ConfigurationController;
 use GovStore\Organization\Http\Controllers\OnboardLocationController;
+use GovStore\Organization\Http\Controllers\MinistryDirectoryController;
 
 Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'gov-store/admin/organization'], function () {
     
@@ -34,7 +35,11 @@ Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'gov-store/admin/orga
     
 });
 
-// 6. Scoped Local Office Admin Activation checklist endpoints (Bypasses admin prefix)
+    // 6. Government Directory Importer console (Superadmin only)
+    Route::get('/directory', [MinistryDirectoryController::class, 'index'])->name('gov.org.directory.index');
+    Route::post('/directory/import', [MinistryDirectoryController::class, 'import'])->name('gov.org.directory.import');
+
+    // 7. Scoped Local Office Admin Activation checklist endpoints (Bypasses admin prefix)
 Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'gov-store/office'], function () {
     Route::get('/', [ConfigurationController::class, 'index'])->name('gov.org.config.index');
     Route::post('/save', [ConfigurationController::class, 'save'])->name('gov.org.config.save');

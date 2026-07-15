@@ -1,0 +1,515 @@
+﻿no,BanglaName,EnglishName,OrganizationType,EnglishParent,BanglaParent,domainname
+1,রাষ্ট্রপতির কার্যালয়,President's Office,Ministry/Division,,,bangabhaban.gov.bd
+2,আপন বিভাগ,Personal Division,Division,President's Office,রাষ্ট্রপতির কার্যালয়,personaldivision.portal.gov.bd
+3,জন বিভাগ,Public Division,Division,President's Office,রাষ্ট্রপতির কার্যালয়,publicdivision.portal.gov.bd
+4,প্রধানমন্ত্রীর কার্যালয়,Prime Minister’s Office,Ministry/Division,,,pmo.gov.bd
+5,প্রধানমন্ত্রীর প্রেস উইং,Prime Minister's Press Wing,Others,Prime Minister’s Office,প্রধানমন্ত্রীর কার্যালয়,presswing.pmo.gov.bd
+6,সশস্ত্র বাহিনী বিভাগ,Armed Forces Division,Ministry/Division,,,afd.portal.gov.bd
+7,মন্ত্রিপরিষদ বিভাগ,Cabinet Division,Ministry/Division,,,cabinet.gov.bd
+8,পার্বত্য চট্টগ্রাম বিষয়ক মন্ত্রণালয়,Ministry of Chittagong Hill Tracts Affairs,Ministry/Division,,,mochta.gov.bd
+9,বান্দরবান পার্বত্য জেলা পরিষদ,Bandarban Hill District Council,Others,Ministry of Chittagong Hill Tracts Affairs,পার্বত্য চট্টগ্রাম বিষয়ক মন্ত্রণালয়,bhdc.gov.bd
+10,পার্বত্য চট্টগ্রাম উন্নয়ন বোর্ড,Chittagong Hill Tracts Development Board,Others,Ministry of Chittagong Hill Tracts Affairs,পার্বত্য চট্টগ্রাম বিষয়ক মন্ত্রণালয়,chtdb.gov.bd
+11,পার্বত্য চট্টগ্রাম আঞ্চলিক পরিষদ,Chittagong Hill Tracts Regional Council,Others,Ministry of Chittagong Hill Tracts Affairs,পার্বত্য চট্টগ্রাম বিষয়ক মন্ত্রণালয়,chtrc.gov.bd
+12,খাগড়াছড়ি পার্বত্য জেলা পরিষদ,Khagrachari Hill District Council,Others,Ministry of Chittagong Hill Tracts Affairs,পার্বত্য চট্টগ্রাম বিষয়ক মন্ত্রণালয়,khdc.gov.bd
+13,রাঙ্গামাটি পার্বত্য জেলা পরিষদ,Rangamati Hill District Council,Others,Ministry of Chittagong Hill Tracts Affairs,পার্বত্য চট্টগ্রাম বিষয়ক মন্ত্রণালয়,rhdc.gov.bd
+14,উপজাতীয় শরণার্থী বিষয়ক টাস্কফোর্স,Tribal Refugee Affairs Task Force,Others,Ministry of Chittagong Hill Tracts Affairs,পার্বত্য চট্টগ্রাম বিষয়ক মন্ত্রণালয়,tratf.gov.bd
+15,প্রাথমিক ও গণশিক্ষা মন্ত্রণালয়,Ministry of Primary and Mass Education,Ministry/Division,,,mopme.gov.bd
+16,প্রাথমিক শিক্ষা অধিদপ্তর,Directorate of Primary Education,Directorate,Ministry of Primary and Mass Education,প্রাথমিক ও গণশিক্ষা মন্ত্রণালয়,dpe.gov.bd
+17,উপানুষ্ঠানিক শিক্ষা বোর্ড,Board of Non-Formal Education,Others,Ministry of Primary and Mass Education,প্রাথমিক ও গণশিক্ষা মন্ত্রণালয়,nfeboard.portal.gov.bd
+18,উপানুষ্ঠানিক শিক্ষা ব্যুরো,Bureau of Non-Formal Education (BNFE),Others,Ministry of Primary and Mass Education,প্রাথমিক ও গণশিক্ষা মন্ত্রণালয়,bnfe.gov.bd
+19,শিশু কল্যাণ ট্রাস্ট,Children Welfare Trust,Others,Ministry of Primary and Mass Education,প্রাথমিক ও গণশিক্ষা মন্ত্রণালয়,skt.gov.bd
+20,বাধ্যতামূলক প্রাথমিক শিক্ষা বাস্তবায়ন পরিবীক্ষন ইউনিট,Compulsory Primary Education Implementation Monitoring Unit (CPEIMU),Others,Ministry of Primary and Mass Education,প্রাথমিক ও গণশিক্ষা মন্ত্রণালয়,cpeimu.gov.bd
+21,জাতীয় প্রাথমিক শিক্ষা একাডেমি (নেপ),National Academy for Primary Education (NAPE),Others,Ministry of Primary and Mass Education,প্রাথমিক ও গণশিক্ষা মন্ত্রণালয়,nape.gov.bd
+22,প্রাথমিক শিক্ষার জন্য উপবৃত্তি প্রদান প্রকল্প (৩য় পর্যায়),Primary Education Stipend Project (Phase-III),Others,Ministry of Primary and Mass Education,প্রাথমিক ও গণশিক্ষা মন্ত্রণালয়,pesp.gov.bd
+23,কৃষি মন্ত্রণালয়,Ministry of Agriculture,Ministry/Division,,,moa.gov.bd
+24,কৃষি সম্প্রসারণ অধিদপ্তর,Department of Agricultural Extension,Directorate,Ministry of Agriculture,কৃষি মন্ত্রণালয়,dae.gov.bd
+25,কৃষি বিপণন অধিদপ্তর,Department of Agricultural Marketing (DAM),Directorate,Ministry of Agriculture,কৃষি মন্ত্রণালয়,dam.gov.bd
+26,কৃষি তথ্য সার্ভিস (এআইএস),Agriculture Information Service (AIS),Others,Ministry of Agriculture,কৃষি মন্ত্রণালয়,ais.gov.bd
+27,বাংলাদেশ কৃষি উন্নয়ন কর্পোরেশন (বিএডিসি),Bangladesh Agricultural Development Corporation (BADC),Others,Ministry of Agriculture,কৃষি মন্ত্রণালয়,badc.gov.bd
+28,বাংলাদেশ কৃষি গবেষণা কাউন্সিল,Bangladesh Agricultural Research Council (BARC),Others,Ministry of Agriculture,কৃষি মন্ত্রণালয়,barc.gov.bd
+29,বাংলাদেশ কৃষি গবেষণা ইনস্টিটিউট,Bangladesh Agricultural Research Institute (BARI),Others,Ministry of Agriculture,কৃষি মন্ত্রণালয়,bari.gov.bd
+30,বাংলাদেশ পরমাণু কৃষি গবেষণা ইনস্টিটিউট,Bangladesh Institute of Nuclear Agriculture (BINA),Others,Ministry of Agriculture,কৃষি মন্ত্রণালয়,bina.gov.bd
+31,বাংলাদেশ ফলিত পুষ্টি গবেষণা ও প্রশিক্ষণ ইনস্টিটিউট (বারটান),Bangladesh Institute of Research and Training on Applied Nutrition (BIRTAN),Others,Ministry of Agriculture,কৃষি মন্ত্রণালয়,birtan.gov.bd
+32,বাংলাদেশ পাট গবেষণা ইনস্টিটিউট (বিজেআরআই),Bangladesh Jute Research Institute (BJRI),Others,Ministry of Agriculture,কৃষি মন্ত্রণালয়,bjri.gov.bd
+33,বাংলাদেশ ধান গবেষণা ইনস্টিটিউট,Bangladesh Rice Research Institute,Others,Ministry of Agriculture,কৃষি মন্ত্রণালয়,brri.gov.bd
+34,বাংলাদেশ সুগারক্রপ গবেষণা ইনস্টিটিউট,Bangladesh Sugarcrop Research Institute (BSRI),Others,Ministry of Agriculture,কৃষি মন্ত্রণালয়,bsri.gov.bd
+35,বাংলাদেশ গম ও ভুট্টা গবেষণা ইনস্টিটিউট,Bangladesh Wheat and Maize Research Institute,Others,Ministry of Agriculture,কৃষি মন্ত্রণালয়,bwmri.gov.bd
+36,বরেন্দ্র বহুমুখী উন্নয়ন কর্তৃপক্ষ,Barind Multipurpose Development Authority (BMDA),Others,Ministry of Agriculture,কৃষি মন্ত্রণালয়,bmda.gov.bd
+37,তুলা উন্নয়ন বোর্ড,Cotton Development Board,Others,Ministry of Agriculture,কৃষি মন্ত্রণালয়,cdb.gov.bd
+38,হর্টেক্স ফাউন্ডেশন,Hortex Foundation,Others,Ministry of Agriculture,কৃষি মন্ত্রণালয়,hortex.gov.bd
+39,এনএটিপি বিএআরসি অঙ্গ,NATP BARC Component,Others,Ministry of Agriculture,কৃষি মন্ত্রণালয়,natpbarc.portal.gov.bd
+40,জাতীয় কৃষি প্রশিক্ষণ একাডেমি (নাটা),National Agriculture Training Academy (NATA),Others,Ministry of Agriculture,কৃষি মন্ত্রণালয়,nata.gov.bd
+41,বীজ প্রত্যয়ন এজেন্সী,Seed Certification Agency (SCA),Others,Ministry of Agriculture,কৃষি মন্ত্রণালয়,sca.gov.bd
+42,মৃত্তিকা সম্পদ উন্নয়ন ইনস্টিটিউট,Soil Resource Development Institute (SRDI),Others,Ministry of Agriculture,কৃষি মন্ত্রণালয়,srdi.gov.bd
+43,বেসামরিক বিমান পরিবহন ও পর্যটন মন্ত্রণালয়,Ministry of Civil Aviation and Tourism,Ministry/Division,,,mocat.gov.bd
+44,বাংলাদেশ পর্যটন করপোরেশন,Bangladesh Parjatan Corporation,Others,Ministry of Civil Aviation and Tourism,বেসামরিক বিমান পরিবহন ও পর্যটন মন্ত্রণালয়,parjatan.gov.bd
+45,বাংলাদেশ সার্ভিসেস লিমিটেড,Bangladesh Services Limited,Others,Ministry of Civil Aviation and Tourism,বেসামরিক বিমান পরিবহন ও পর্যটন মন্ত্রণালয়,bsl.gov.bd
+46,বাংলাদেশ ট্যুরিজম বোর্ড,Bangladesh Tourism Board,Others,Ministry of Civil Aviation and Tourism,বেসামরিক বিমান পরিবহন ও পর্যটন মন্ত্রণালয়,tourismboard.gov.bd
+47,বিমান বাংলাদেশ এয়ারলাইন্স,Biman Bangladesh Airlines,Others,Ministry of Civil Aviation and Tourism,বেসামরিক বিমান পরিবহন ও পর্যটন মন্ত্রণালয়,biman.gov.bd
+48,বাংলাদেশ বেসামরিক বিমান চলাচল কর্তৃপক্ষ,Civil Aviation Authority of Bangladesh,Others,Ministry of Civil Aviation and Tourism,বেসামরিক বিমান পরিবহন ও পর্যটন মন্ত্রণালয়,caab.gov.bd
+49,হোটেলস্‌ ইন্টারন্যাশনাল লিমিটেড,Hotels International Limited,Others,Ministry of Civil Aviation and Tourism,বেসামরিক বিমান পরিবহন ও পর্যটন মন্ত্রণালয়,hil.gov.bd
+50,বাণিজ্য মন্ত্রণালয়,Ministry of Commerce,Ministry/Division,,,mincom.gov.bd
+51,জাতীয় ভোক্তা-অধিকার সংরক্ষণ অধিদপ্তর,Directorate of National Consumers' Right Protection,Directorate,Ministry of Commerce,বাণিজ্য মন্ত্রণালয়,dncrp.gov.bd
+52,বাংলাদেশ প্রতিযোগিতা কমিশন,Bangladesh Competition Commission,Others,Ministry of Commerce,বাণিজ্য মন্ত্রণালয়,ccb.gov.bd
+53,বাংলাদেশ ফরেন ট্রেড ইনস্টিটিউট,Bangladesh Foreign Trade Institute,Others,Ministry of Commerce,বাণিজ্য মন্ত্রণালয়,bfti.portal.gov.bd
+54,বাংলাদেশ চা বোর্ড,Bangladesh Tea Board,Others,Ministry of Commerce,বাণিজ্য মন্ত্রণালয়,teaboard.gov.bd
+55,বাংলাদেশ ট্রেড এন্ড ট্যারিফ কমিশন,Bangladesh Trade and Tariff Commission,Others,Ministry of Commerce,বাণিজ্য মন্ত্রণালয়,btc.gov.bd
+56,বিজনেস প্রমোশন কাউন্সিল,Business Promotion Council,Others,Ministry of Commerce,বাণিজ্য মন্ত্রণালয়,bbpc.gov.bd
+57,রপ্তানি উন্নয়ন ব্যুরো,Export Promotion Bureau,Others,Ministry of Commerce,বাণিজ্য মন্ত্রণালয়,epb.gov.bd
+58,ইনস্টিটিউট অব চার্টার্ড একাউন্ট্যান্টস অব বাংলাদেশ,Institute of Chartered Accountants of Bangladesh,Others,Ministry of Commerce,বাণিজ্য মন্ত্রণালয়,icab.portal.gov.bd
+59,ইনস্টিটিউট অব চার্টাড সেক্রেটারীজ অব বাংলাদেশ,Institute of Chartered Secretaries of Bangladesh,Others,Ministry of Commerce,বাণিজ্য মন্ত্রণালয়,icsb.edu.bd
+60,ইনস্টিটিউট অব কস্ট এন্ড ম্যানেজমেন্ট একাউন্ট্যান্টস,Institute of Cost and Management Accountants,Others,Ministry of Commerce,বাণিজ্য মন্ত্রণালয়,icmab.portal.gov.bd
+61,যৌথমূলধন কোম্পানি ও ফার্মসমূহের পরিদপ্তর,Office of the Registrar of Joint Stock Companies and Firms,Others,Ministry of Commerce,বাণিজ্য মন্ত্রণালয়,roc.gov.bd
+62,আমদানি ও রপ্তানি প্রধান নিয়ন্ত্রকের দপ্তর,Office of the chief controller of Imports and Exports,Others,Ministry of Commerce,বাণিজ্য মন্ত্রণালয়,ccie.gov.bd
+63,"প্রকল্প উন্নয়ন ইউনিট, বাংলাদেশ চা বোর্ড","Project Development Unit, Bangladesh Tea Board",Others,Ministry of Commerce,বাণিজ্য মন্ত্রণালয়,pduteaboard.gov.bd
+64,ট্রেডিং কর্পোরেশন অব বাংলাদেশ (টিসিবি),Trading Corporation of Bangladesh (TCB),Others,Ministry of Commerce,বাণিজ্য মন্ত্রণালয়,tcb.gov.bd
+65,সড়ক পরিবহন ও সেতু মন্ত্রণালয়,Ministry of Road Transport and Bridges,Ministry/Division,,,mortb.gov.bd
+66,সেতু বিভাগ,Bridges Division,Division,Ministry of Road Transport and Bridges,সড়ক পরিবহন ও সেতু মন্ত্রণালয়,bridgesdivision.gov.bd
+67,বাংলাদেশ সেতু কর্তৃপক্ষ,Bangladesh Bridge Authority,Others,Bridges Division,সেতু বিভাগ,bba.gov.bd
+68,সড়ক পরিবহন ও মহাসড়ক বিভাগ,Road Transport And Highways Division,Division,Ministry of Road Transport and Bridges,সড়ক পরিবহন ও সেতু মন্ত্রণালয়,rthd.gov.bd
+69,সড়ক ও জনপথ অধিদপ্তর,Roads and Highways Department,Directorate,Road Transport And Highways Division,সড়ক পরিবহন ও মহাসড়ক বিভাগ,rhd.portal.gov.bd
+70,বাংলাদেশ সড়ক পরিবহন কর্তৃপক্ষ,Bangladesh Road Transport Authority,Others,Road Transport And Highways Division,সড়ক পরিবহন ও মহাসড়ক বিভাগ,brta.gov.bd
+71,বাংলাদেশ সড়ক পরিবহন কর্পোরেশন,Bangladesh Road Transport Corporation,Others,Road Transport And Highways Division,সড়ক পরিবহন ও মহাসড়ক বিভাগ,brtc.gov.bd
+72,ঢাকা ম্যাস ট্রানজিট কোম্পানি লিমিটেড (ডিএমটিসিএল),DHAKA MASS TRANSIT COMPANY LIMITED (DMTCL),Others,Road Transport And Highways Division,সড়ক পরিবহন ও মহাসড়ক বিভাগ,dmtcl.gov.bd
+73,ঢাকা বাস র‌্যাপিড ট্রানজিট পিএলসি।,Dhaka Bus Rapid Transit PLC,Others,Road Transport And Highways Division,সড়ক পরিবহন ও মহাসড়ক বিভাগ,dhakabrt.gov.bd
+74,ঢাকা পরিবহন সমন্বয় কর্তৃপক্ষ,Dhaka Transport Co-ordination Authority,Others,Road Transport And Highways Division,সড়ক পরিবহন ও মহাসড়ক বিভাগ,dtca.gov.bd
+75,সংস্কৃতি বিষয়ক মন্ত্রণালয়,Ministry of Cultural Affairs,Ministry/Division,,,moca.gov.bd
+76,প্রত্নতত্ত্ব অধিদপ্তর,Department of Archaeology,Directorate,Ministry of Cultural Affairs,সংস্কৃতি বিষয়ক মন্ত্রণালয়,archaeology.gov.bd
+77,আরকাইভস ও গ্রন্থাগার অধিদপ্তর,Department of Archives and Library,Directorate,Ministry of Cultural Affairs,সংস্কৃতি বিষয়ক মন্ত্রণালয়,nanl.gov.bd
+78,গণগ্রন্থাগার অধিদপ্তর,Department of Public Libraries,Directorate,Ministry of Cultural Affairs,সংস্কৃতি বিষয়ক মন্ত্রণালয়,publiclibrary.gov.bd
+79,বাংলা একাডেমি,Bangla Academy,Others,Ministry of Cultural Affairs,সংস্কৃতি বিষয়ক মন্ত্রণালয়,banglaacademy.gov.bd
+80,বাংলাদেশ লোক ও কারুশিল্প ফাউন্ডেশন,Bangladesh Folk Art & Crafts Foundation,Others,Ministry of Cultural Affairs,সংস্কৃতি বিষয়ক মন্ত্রণালয়,sonargaonmuseum.gov.bd
+81,বাংলাদেশ জাতীয় জাদুঘর,Bangladesh National Museum,Others,Ministry of Cultural Affairs,সংস্কৃতি বিষয়ক মন্ত্রণালয়,bangladeshmuseum.gov.bd
+82,বাংলাদেশ শিল্পকলা একাডেমি,Bangladesh Shilpakala Academy,Others,Ministry of Cultural Affairs,সংস্কৃতি বিষয়ক মন্ত্রণালয়,shilpakala.gov.bd
+83,বাংলাদেশ শিল্পী কল্যাণ ট্রাস্ট,Bangladesh Shilpi Kollan Trust,Others,Ministry of Cultural Affairs,সংস্কৃতি বিষয়ক মন্ত্রণালয়,shilpitrust.portal.gov.bd
+84,বাংলাদেশ কপিরাইট অফিস,Copyright Office Bangladesh,Others,Ministry of Cultural Affairs,সংস্কৃতি বিষয়ক মন্ত্রণালয়,copyrightoffice.gov.bd
+85,"কক্সবাজার সাংস্কৃতিক কেন্দ্র, কক্সবাজার","Cox's Bazar Cultural Center, Cox's Bazar",Others,Ministry of Cultural Affairs,সংস্কৃতি বিষয়ক মন্ত্রণালয়,coxculturecenter.portal.gov.bd
+86,"ক্ষুদ্র নৃগোষ্ঠীর কালচারাল একাডেমি, বিরিশিরি, নেত্রকোনা",Cultural Academy for Small Ethnic Groups,Others,Ministry of Cultural Affairs,সংস্কৃতি বিষয়ক মন্ত্রণালয়,kncabirisiri.portal.gov.bd
+87,"ক্ষুদ্র নৃগোষ্ঠীর সাংস্কৃতিক ইনস্টিটিউট, রাঙ্গামাটি",Cultural Institute for Small Ethnic Groups,Others,Ministry of Cultural Affairs,সংস্কৃতি বিষয়ক মন্ত্রণালয়,knsirangamati.portal.gov.bd
+88,জাতীয় গ্রন্থকেন্দ্র,Jatiya Grantha Kendro,Others,Ministry of Cultural Affairs,সংস্কৃতি বিষয়ক মন্ত্রণালয়,jgk.gov.bd
+89,কবি নজরুল ইনস্টিটিউট,Kabi Nazrul Institute,Others,Ministry of Cultural Affairs,সংস্কৃতি বিষয়ক মন্ত্রণালয়,nazrulinstitute.gov.bd
+90,"ক্ষুদ্র নৃগোষ্ঠীর সাংস্কৃতিক ইনস্টিটিউট, খাগড়াছড়ি","Khudra Nrigostir Sangskritik Institute, Khagrachari",Others,Ministry of Cultural Affairs,সংস্কৃতি বিষয়ক মন্ত্রণালয়,knsikhagrachari.gov.bd
+91,"মণিপুরী ললিতকলা একাডেমি, কমলগঞ্জ, মৌলভীবাজার","Monipuri Lolitokala Academy, Kamalganj, Moulvibazar",Others,Ministry of Cultural Affairs,সংস্কৃতি বিষয়ক মন্ত্রণালয়,mla.portal.gov.bd
+92,"ক্ষুদ্র নৃগোষ্ঠী কালচারাল একাডেমি, রাজশাহী","Small Ethnic Cultural Academy, Rajshahi",Others,Ministry of Cultural Affairs,সংস্কৃতি বিষয়ক মন্ত্রণালয়,kncaraj.portal.gov.bd
+93,"ক্ষুদ্র নৃগোষ্ঠীর সাংস্কৃতিক ইনস্টিটিউট, বান্দরবান","Small Ethnic Cultural Institute, Bandarban",Others,Ministry of Cultural Affairs,সংস্কৃতি বিষয়ক মন্ত্রণালয়,ksibandarban.portal.gov.bd
+94,প্রতিরক্ষা মন্ত্রণালয়,Ministry of Defence,Ministry/Division,,,mod.gov.bd
+95,বাংলাদেশ আবহাওয়া অধিদপ্তর,Bangladesh Meteorological Department,Directorate,Ministry of Defence,প্রতিরক্ষা মন্ত্রণালয়,bmd.gov.bd
+96,বাংলাদেশ ন্যাশনাল ক্যাডেট কোর অধিদপ্তর,Bangladesh National Cadet Corps,Directorate,Ministry of Defence,প্রতিরক্ষা মন্ত্রণালয়,bncc.portal.gov.bd
+97,সামরিক ভূমি ও ক্যান্টনমেন্ট অধিদপ্তর,Department of Military Lands & Cantonments,Directorate,Ministry of Defence,প্রতিরক্ষা মন্ত্রণালয়,dmlc.gov.bd
+98,বাংলাদেশ জরিপ অধিদপ্তর,Survey of Bangladesh,Directorate,Ministry of Defence,প্রতিরক্ষা মন্ত্রণালয়,sob.gov.bd
+99,আর্মড ফোর্সেস মেডিক্যাল কলেজ,Armed Forces Medical College (AFMC),Others,Ministry of Defence,প্রতিরক্ষা মন্ত্রণালয়,afmc.edu.bd
+100,বাংলাদেশ বিমান বাহিনী,Bangladesh Air Force (BAF),Others,Ministry of Defence,প্রতিরক্ষা মন্ত্রণালয়,baf.mil.bd
+101,বাংলাদেশ সেনাবাহিনী,Bangladesh Army,Others,Ministry of Defence,প্রতিরক্ষা মন্ত্রণালয়,army.mil.bd
+102,বাংলাদেশ নৌবাহিনী,Bangladesh Navy,Others,Ministry of Defence,প্রতিরক্ষা মন্ত্রণালয়,navy.mil.bd
+103,বাংলাদেশ সমরাস্ত্র কারখানা,Bangladesh Ordnance Factories,Others,Ministry of Defence,প্রতিরক্ষা মন্ত্রণালয়,bof.gov.bd
+104,বাংলাদেশ মহাকাশ গবেষণা ও দূর অনুধাবন প্রতিষ্ঠান (স্পারসো),Bangladesh Space Research and Remote Sensing Organization (SPARRSO),Others,Ministry of Defence,প্রতিরক্ষা মন্ত্রণালয়,sparrso.gov.bd
+105,প্রতিরক্ষা গোয়েন্দা মহাপরিদপ্তর,DGFI,Others,Ministry of Defence,প্রতিরক্ষা মন্ত্রণালয়,dgfi.gov.bd
+106,সামরিক বাহিনী কমান্ড এন্ড স্টাফ কলেজ,Defence Services Command and Staff College,Others,Ministry of Defence,প্রতিরক্ষা মন্ত্রণালয়,dscsc.portal.gov.bd
+107,গুপ্তসংকেত পরিদপ্তর,Department of Cyphers,Others,Ministry of Defence,প্রতিরক্ষা মন্ত্রণালয়,doc.portal.gov.bd
+108,প্রতিরক্ষা ক্রয় মহা-পরিদপ্তর,Directorate General of Defence Purchase,Others,Ministry of Defence,প্রতিরক্ষা মন্ত্রণালয়,dgdp.portal.gov.bd
+109,সামরিক চিকিৎসা সার্ভিস মহাপরিদপ্তর,Directorate General of Medical Service (DGMS),Others,Ministry of Defence,প্রতিরক্ষা মন্ত্রণালয়,dgms.portal.gov.bd
+110,"আন্ত:বাহিনী জনসংযোগ পরিদপ্তর (আইএসপিআর), ঢাকা সেনানিবাস।","Inter Services Public Relation Directorate (ISPR), Dhaka Cantonment.",Others,Ministry of Defence,প্রতিরক্ষা মন্ত্রণালয়,ispr.portal.gov.bd
+111,আন্তঃবাহিনী নির্বাচন পর্ষদ (আইএসএসবি),Inter Services Selection Board (ISSB),Others,Ministry of Defence,প্রতিরক্ষা মন্ত্রণালয়,issb-bd.org
+112,মিলিটারি ইঞ্জিনিয়ার সার্ভিসেস,Military Engineer Services,Others,Ministry of Defence,প্রতিরক্ষা মন্ত্রণালয়,mes.portal.gov.bd
+113,মিলিটারি ইনস্টিটিউট অব সায়েন্স অ্যান্ড টেকনোলজি,Military Institute of Science & Technology (MIST).,Others,Ministry of Defence,প্রতিরক্ষা মন্ত্রণালয়,mist.ac.bd
+114,মিনিস্ট্রি অব ডিফেন্স কনস্ট্যাবিউলারি (এমওডিসি),Ministry of Defence Constabulary (MODC),Others,Ministry of Defence,প্রতিরক্ষা মন্ত্রণালয়,modc.gov.bd
+115,ন্যাশনাল ডিফেন্স কলেজ,National Defence College,Others,Ministry of Defence,প্রতিরক্ষা মন্ত্রণালয়,ndc.gov.bd
+116,প্রধান প্রশাসনিক কর্মকর্তার কার্যালয়,Office of the Chief Administrative Officer,Others,Ministry of Defence,প্রতিরক্ষা মন্ত্রণালয়,dcd.gov.bd
+117,কন্ট্রোলার জেনারেল ডিফেন্স ফাইন্যান্স এর কার্যালয়,Office of the Controller General Defence Finance,Others,Ministry of Defence,প্রতিরক্ষা মন্ত্রণালয়,cgdf.gov.bd
+118,খাদ্য মন্ত্রণালয়,Ministry of Food,Ministry/Division,,,mofood.gov.bd
+119,খাদ্য অধিদপ্তর,Directorate General of Food,Directorate,Ministry of Food,খাদ্য মন্ত্রণালয়,dgfood.gov.bd
+120,বাংলাদেশ নিরাপদ খাদ্য কর্তৃপক্ষ,Bangladesh Food Safety Authority,Others,Ministry of Food,খাদ্য মন্ত্রণালয়,bfsa.gov.bd
+121,শিক্ষা মন্ত্রণালয়,Ministry of Education,Ministry/Division,,,moedu.gov.bd
+122,মাধ্যমিক ও উচ্চ শিক্ষা বিভাগ,Secondary and Higher Education Division,Division,Ministry of Education,শিক্ষা মন্ত্রণালয়,shed.gov.bd
+123,পরিদর্শন ও নিরীক্ষা অধিদপ্তর,Directorate of Inspection and Audit (DIA),Directorate,Secondary and Higher Education Division,মাধ্যমিক ও উচ্চ শিক্ষা বিভাগ,dia.gov.bd
+124,মাধ্যমিক ও উচ্চশিক্ষা অধিদপ্তর,Directorate of Secondary and Higher Education (DSHE),Directorate,Secondary and Higher Education Division,মাধ্যমিক ও উচ্চ শিক্ষা বিভাগ,dshe.gov.bd
+125,শিক্ষা প্রকৌশল অধিদপ্তর,Education Engineering Department (EED),Directorate,Secondary and Higher Education Division,মাধ্যমিক ও উচ্চ শিক্ষা বিভাগ,eedmoe.gov.bd
+126,বাংলাদেশ অ্যাক্রেডিটেশন কাউন্সিল,Bangladesh Accreditation Council,Others,Secondary and Higher Education Division,মাধ্যমিক ও উচ্চ শিক্ষা বিভাগ,bac.gov.bd
+127,বাংলাদেশ শিক্ষাতথ্য ও পরিসংখ্যান ব্যুরো (ব্যানবেইস),Bangladesh Bureau of Educational Information and Statistics (BANBEIS),Others,Secondary and Higher Education Division,মাধ্যমিক ও উচ্চ শিক্ষা বিভাগ,banbeis.gov.bd
+128,বাংলাদেশ ইউনেস্কো জাতীয় কমিশন,Bangladesh National Commission for UNESCO,Others,Secondary and Higher Education Division,মাধ্যমিক ও উচ্চ শিক্ষা বিভাগ,bncu.gov.bd
+129,বাংলাদেশ স্কাউটস,Bangladesh Scouts,Others,Secondary and Higher Education Division,মাধ্যমিক ও উচ্চ শিক্ষা বিভাগ,scouts.gov.bd
+130,"মাধ্যমিক ও উচ্চমাধ্যমিক শিক্ষা বোর্ড, সিলেট","Board of Intermediate & Secondary Education, Sylhet.",Others,Secondary and Higher Education Division,মাধ্যমিক ও উচ্চ শিক্ষা বিভাগ,sylhetboard.gov.bd
+131,"মাধ্যমিক ও উচ্চ মাধ্যমিক শিক্ষা বোর্ড, বরিশাল","Board of Intermediate and Secondary Education, Barisal",Others,Secondary and Higher Education Division,মাধ্যমিক ও উচ্চ শিক্ষা বিভাগ,barisalboard.portal.gov.bd
+132,"মাধ্যমিক ও উচ্চ মাধ্যমিক শিক্ষা বোর্ড, চট্টগ্রাম","Board of Intermediate and Secondary Education, Chittagong",Others,Secondary and Higher Education Division,মাধ্যমিক ও উচ্চ শিক্ষা বিভাগ,bise-ctg.portal.gov.bd
+133,"মাধ্যমিক ও উচ্চমাধ্যমিক শিক্ষা বোর্ড, কুমিল্লা","Board of Intermediate and Secondary Education, Comilla",Others,Secondary and Higher Education Division,মাধ্যমিক ও উচ্চ শিক্ষা বিভাগ,comillaboard.portal.gov.bd
+134,"মাধ্যমিক ও উচ্চ মাধ্যমিক শিক্ষা বোর্ড, ঢাকা","Board of Intermediate and Secondary Education, Dhaka",Others,Secondary and Higher Education Division,মাধ্যমিক ও উচ্চ শিক্ষা বিভাগ,dhakaeducationboard.portal.gov.bd
+135,"মাধ্যমিক ও উচ্চ মাধ্যমিক শিক্ষা বোর্ড, দিনাজপুর","Board of Intermediate and Secondary Education, Dinajpur",Others,Secondary and Higher Education Division,মাধ্যমিক ও উচ্চ শিক্ষা বিভাগ,dinajpureducationboard.gov.bd
+136,"মাধ্যমিক ও উচ্চ মাধ্যমিক শিক্ষা বোর্ড, যশোর","Board of Intermediate and Secondary Education, Jessore",Others,Secondary and Higher Education Division,মাধ্যমিক ও উচ্চ শিক্ষা বিভাগ,jessoreeducationboard.portal.gov.bd
+137,"মাধ্যমিক ও উচ্চ মাধ্যমিক শিক্ষা বোর্ড, ময়মনসিংহ","Board of Intermediate and Secondary Education, Mymensingh",Others,Secondary and Higher Education Division,মাধ্যমিক ও উচ্চ শিক্ষা বিভাগ,mymensingheducationboard.gov.bd
+138,"মাধ্যমিক ও উচ্চ মাধ্যমিক শিক্ষা বোর্ড, রাজশাহী","Board of Intermediate and Secondary Education, Rajshahi",Others,Secondary and Higher Education Division,মাধ্যমিক ও উচ্চ শিক্ষা বিভাগ,rajshahieducationboard.gov.bd
+139,আন্তর্জাতিক মাতৃভাষা ইনস্টিটিউট,International Mother Language Institute,Others,Secondary and Higher Education Division,মাধ্যমিক ও উচ্চ শিক্ষা বিভাগ,imli.gov.bd
+140,জাতীয় শিক্ষা ব্যবস্থাপনা একাডেমি (নায়েম),National Academy for Educational Management (NAEM),Others,Secondary and Higher Education Division,মাধ্যমিক ও উচ্চ শিক্ষা বিভাগ,naem.gov.bd
+141,জাতীয় শিক্ষাক্রম ও পাঠ্যপুস্তক বোর্ড (এনসিটিবি),National Curriculum and Textbook Board (NCTB),Others,Secondary and Higher Education Division,মাধ্যমিক ও উচ্চ শিক্ষা বিভাগ,nctb.gov.bd
+142,বেসরকারী শিক্ষা প্রতিষ্ঠান শিক্ষক ও কর্মচারী অবসর সুবিধা বোর্ড,Non Government Teacher Employee Retirement Benefit Board,Others,Secondary and Higher Education Division,মাধ্যমিক ও উচ্চ শিক্ষা বিভাগ,terbb.gov.bd
+143,বেসরকারি শিক্ষা প্রতিষ্ঠান শিক্ষক ও কর্মচারী কল্যাণ ট্রাস্ট,Non Government Teachers & Employee Welafare trust,Others,Secondary and Higher Education Division,মাধ্যমিক ও উচ্চ শিক্ষা বিভাগ,ngte-welfaretrust.gov.bd
+144,বেসরকারি শিক্ষক নিবন্ধন ও প্রত্যয়ন কর্তৃপক্ষ (এনটিআরসিএ),Non-Government Teachers' Registration and Certification Authority (NTRCA),Others,Secondary and Higher Education Division,মাধ্যমিক ও উচ্চ শিক্ষা বিভাগ,ntrca.gov.bd
+145,প্রধানমন্ত্রীর শিক্ষা সহায়তা ট্রাস্ট,Prime Minister's Education Assistance Trust,Others,Secondary and Higher Education Division,মাধ্যমিক ও উচ্চ শিক্ষা বিভাগ,pmeat.gov.bd
+146,বাংলাদেশ বিশ্ববিদ্যালয় মঞ্জুরী কমিশন,University Grants Commission of Bangladesh,Others,Secondary and Higher Education Division,মাধ্যমিক ও উচ্চ শিক্ষা বিভাগ,ugc.gov.bd
+147,কারিগরি ও মাদ্রাসা শিক্ষা বিভাগ,Technical and Madrasah Education Division,Division,Ministry of Education,শিক্ষা মন্ত্রণালয়,tmed.gov.bd
+148,মাদ্রাসা শিক্ষা অধিদপ্তর,Directorate of Madrasha Education (DME),Directorate,Technical and Madrasah Education Division,কারিগরি ও মাদ্রাসা শিক্ষা বিভাগ,dme.gov.bd
+149,কারিগরি শিক্ষা অধিদপ্তর,Directorate of Technical Education,Directorate,Technical and Madrasah Education Division,কারিগরি ও মাদ্রাসা শিক্ষা বিভাগ,techedu.gov.bd
+150,বাংলাদেশ মাদ্রাসা শিক্ষা বোর্ড,Bangladesh Madrasah Education Board,Others,Technical and Madrasah Education Division,কারিগরি ও মাদ্রাসা শিক্ষা বিভাগ,bmeb.gov.bd
+151,বাংলাদেশ মাদরাসা শিক্ষক প্রশিক্ষণ ইনস্টিটিউট (বিএমটিটিআই),Bangladesh Madrasah Teachers' Training Institute (BMTTI),Others,Technical and Madrasah Education Division,কারিগরি ও মাদ্রাসা শিক্ষা বিভাগ,bmtti.gov.bd
+152,বাংলাদেশ কারিগরি শিক্ষা বোর্ড,Bangladesh Technical Education Board (BTEB),Others,Technical and Madrasah Education Division,কারিগরি ও মাদ্রাসা শিক্ষা বিভাগ,bteb.gov.bd
+153,জাতীয় কম্পিউটার প্রশিক্ষণ ও গবেষণা একাডেমী (নেকটার),National Academy for Computer Training and Research (NACTAR),Others,Technical and Madrasah Education Division,কারিগরি ও মাদ্রাসা শিক্ষা বিভাগ,nactar.gov.bd
+154,"বিদ্যুৎ, জ্বালানি ও খনিজ সম্পদ মন্ত্রণালয়","Power, Energy and Mineral Resources Minisrty",Ministry/Division,,,poweren.portal.gov.bd
+155,জ্বালানি ও খনিজ সম্পদ বিভাগ,Energy and Mineral Resources Division,Division,"Power, Energy and Mineral Resources Minisrty","বিদ্যুৎ, জ্বালানি ও খনিজ সম্পদ মন্ত্রণালয়",emrd.gov.bd
+156,বাংলাদেশ ভূতাত্ত্বিক জরিপ অধিদপ্তর,Geological Survey of Bangladesh,Directorate,Energy and Mineral Resources Division,জ্বালানি ও খনিজ সম্পদ বিভাগ,gsb.gov.bd
+157,বাংলাদেশ পেট্রোলিয়াম ইন্সটিটিউট,Bangladesh Petroleum Institute,Others,Energy and Mineral Resources Division,জ্বালানি ও খনিজ সম্পদ বিভাগ,bpi.gov.bd
+158,বাংলাদেশ এনার্জি রেগুলেটরি কমিশন,Bangladesh Energy Regulatory Commission,Others,Energy and Mineral Resources Division,জ্বালানি ও খনিজ সম্পদ বিভাগ,berc.org.bd
+159,"বাংলাদেশ তেল, গ্যাস ও খনিজসম্পদ কর্পোরেশন (পেট্রোবাংলা)","Bangladesh Oil, Gas and Mineral Corporation (Petrobangla)",Others,Energy and Mineral Resources Division,জ্বালানি ও খনিজ সম্পদ বিভাগ,petrobangla.org.bd
+160,বাংলাদেশ পেট্রোলিয়াম কর্পোরেশন,Bangladesh Petroleum Corporation,Others,Energy and Mineral Resources Division,জ্বালানি ও খনিজ সম্পদ বিভাগ,bpc.gov.bd
+161,খনিজ সম্পদ উন্নয়ন ব্যুরো,Bureau of Mineral Development,Others,Energy and Mineral Resources Division,জ্বালানি ও খনিজ সম্পদ বিভাগ,bomd.gov.bd
+162,বিস্ফোরক পরিদপ্তর,Department of Explosives,Others,Energy and Mineral Resources Division,জ্বালানি ও খনিজ সম্পদ বিভাগ,explosives.gov.bd
+163,"হাইড্রোকার্বন ইউনিট, জ্বালানি ও খনিজ সম্পদ বিভাগ","Hydrocarbon Unit, Energy and Mineral Resources Division",Others,Energy and Mineral Resources Division,জ্বালানি ও খনিজ সম্পদ বিভাগ,hcu.gov.bd
+164,বিদ্যুৎ বিভাগ,Power Division,Division,"Power, Energy and Mineral Resources Minisrty","বিদ্যুৎ, জ্বালানি ও খনিজ সম্পদ মন্ত্রণালয়",powerdivision.gov.bd
+165,আশুগঞ্জ পাওয়ার স্টেশন কোম্পানী লিঃ,Ashuganj Power Station Company Ltd.,Others,Power Division,বিদ্যুৎ বিভাগ,apscl.gov.bd
+166,বি-আর পাওয়ারজেন লিঃ (বিআরপিএল),B-R Powergen Ltd. (BRPL),Others,Power Division,বিদ্যুৎ বিভাগ,brpowergen.gov.bd
+167,বাংলাদেশ জ্বালানি ও বিদ্যুৎ গবেষণা কাউন্সিল (বিইপিআরসি),Bangladesh Energy and Power Research Council (BEPRC),Others,Power Division,বিদ্যুৎ বিভাগ,eprc.gov.bd
+168,বাংলাদেশ বিদ্যুৎ উন্নয়ন বোর্ড,Bangladesh Power Development Board,Others,Power Division,বিদ্যুৎ বিভাগ,bpdb.gov.bd
+169,বাংলাদেশ পাওয়ার ম্যানেজমেন্ট ইনস্টিটিউট,Bangladesh Power Management Institute,Others,Power Division,বিদ্যুৎ বিভাগ,bpmi.gov.bd
+170,বাংলাদেশ পল্লী বিদ্যুতায়ন বোর্ড,Bangladesh Rural Electrification Board,Others,Power Division,বিদ্যুৎ বিভাগ,reb.gov.bd
+171,কোল পাওয়ার জেনারেশন কোম্পানী বাংলাদেশ লিমিটেড (সিপিজিসিবিএল),Coal Power Generation Company Bangladesh Limited (CPGCBL),Others,Power Division,বিদ্যুৎ বিভাগ,cpgcbl.gov.bd
+172,ঢাকা ইলেকট্রিসিটি সাপ্লাই পিএলসি (ডেসকো),Dhaka Electricity Supply PLC (DESCO),Others,Power Division,বিদ্যুৎ বিভাগ,desco.gov.bd
+173,ঢাকা পাওয়ার ডিস্ট্রিবিউশন কোম্পানি লিমিটেড (ডিপিডিসি),Dhaka Power Distribution Company Limited (DPDC),Others,Power Division,বিদ্যুৎ বিভাগ,dpdc.gov.bd
+174,ইলেক্ট্রিসিটি জেনারেশন বাংলাদেশ পিএলসি,Electricity Generation Bangladesh PLC.,Others,Power Division,বিদ্যুৎ বিভাগ,egcb.gov.bd
+175,নর্থ-ওয়েস্ট পাওয়ার জেনারেশন কোম্পানি লিমিটেড,North-West Power Generation Company Limited,Others,Power Division,বিদ্যুৎ বিভাগ,nwpgcl.gov.bd
+176,নর্দান ইলেকট্রিসিটি সাপ্লাই পিএলসি,Northern Electricity Supply PLC,Others,Power Division,বিদ্যুৎ বিভাগ,nesco.gov.bd
+177,প্রধান বিদ্যুৎ পরিদর্শকের দপ্তর,Office of the Chief Electric Inspector,Others,Power Division,বিদ্যুৎ বিভাগ,ocei.gov.bd
+178,পাওয়ার সেল,Power Cell,Others,Power Division,বিদ্যুৎ বিভাগ,powercell.gov.bd
+179,পাওয়ার গ্রিড বাংলাদেশ পিএলসি,Power Grid Bangladesh PLC,Others,Power Division,বিদ্যুৎ বিভাগ,pgcb.gov.bd
+180,রুরাল পাওয়ার কোম্পানী লিমিটেড,Rural Power Company Limited,Others,Power Division,বিদ্যুৎ বিভাগ,rpcl.gov.bd
+181,টেকসই ও নবায়নযোগ্য জ্বালানি উন্নয়ন কর্তৃপক্ষ (স্রেডা),Sustainable and Renewable Energy Development Authority (SREDA),Others,Power Division,বিদ্যুৎ বিভাগ,sreda.gov.bd
+182,ওয়েস্ট জোন পাওয়ার ডিস্ট্রিবিউশন কোম্পানি লি.,West Zone Power Distribution Company Ltd.,Others,Power Division,বিদ্যুৎ বিভাগ,wzpdcl.gov.bd
+183,"পরিবেশ, বন ও জলবায়ু পরিবর্তন মন্ত্রণালয়","Ministry of Environment, Forest and Climate Change",Ministry/Division,,,moef.gov.bd
+184,পরিবেশ অধিদপ্তর,Department of Environment,Directorate,"Ministry of Environment, Forest and Climate Change","পরিবেশ, বন ও জলবায়ু পরিবর্তন মন্ত্রণালয়",doe.gov.bd
+185,বন অধিদপ্তর,Forest Department,Directorate,"Ministry of Environment, Forest and Climate Change","পরিবেশ, বন ও জলবায়ু পরিবর্তন মন্ত্রণালয়",bforest.gov.bd
+186,বাংলাদেশ জলবায়ু পরিবর্তন ট্রাস্ট,Bangladesh Climate Change Trust,Others,"Ministry of Environment, Forest and Climate Change","পরিবেশ, বন ও জলবায়ু পরিবর্তন মন্ত্রণালয়",bcct.gov.bd
+187,বাংলাদেশ বনশিল্প উন্নয়ন কর্পোরেশন,Bangladesh Forest Industries Development Corporation. (BFIDC),Others,"Ministry of Environment, Forest and Climate Change","পরিবেশ, বন ও জলবায়ু পরিবর্তন মন্ত্রণালয়",bfidc.gov.bd
+188,বাংলাদেশ বন গবেষণা ইনস্টিটিউট (বিএফআরআই),Bangladesh Forest Research Institute (BFRI),Others,"Ministry of Environment, Forest and Climate Change","পরিবেশ, বন ও জলবায়ু পরিবর্তন মন্ত্রণালয়",bfri.gov.bd
+189,বাংলাদেশ ন্যাশনাল হারবেরিয়াম,Bangladesh National Herbarium (BNH),Others,"Ministry of Environment, Forest and Climate Change","পরিবেশ, বন ও জলবায়ু পরিবর্তন মন্ত্রণালয়",bnh.gov.bd
+190,বাংলাদেশ রাবার বোর্ড,Bangladesh Rubber Board,Others,"Ministry of Environment, Forest and Climate Change","পরিবেশ, বন ও জলবায়ু পরিবর্তন মন্ত্রণালয়",rubberboard.gov.bd
+191,জনপ্রশাসন মন্ত্রণালয়,Ministry of Public Administration,Ministry/Division,,,mopa.gov.bd
+192,মুদ্রণ ও প্রকাশনা অধিদপ্তর,Department of Printing and Publications,Directorate,Ministry of Public Administration,জনপ্রশাসন মন্ত্রণালয়,dpp.portal.gov.bd
+193,সরকারী যানবাহন অধিদপ্তর,Department of Government Transport,Directorate,Ministry of Public Administration,জনপ্রশাসন মন্ত্রণালয়,dgt.gov.bd
+194,"বিয়াম ফাউন্ডেশন, ঢাকা","BIAM Foundation, Dhaka",Others,Ministry of Public Administration,জনপ্রশাসন মন্ত্রণালয়,biam.gov.bd
+195,বাংলাদেশ সিভিল সার্ভিস প্রশাসন একাডেমি,Bangladesh Civil Service Administration Academy,Others,Ministry of Public Administration,জনপ্রশাসন মন্ত্রণালয়,bcsadminacademy.gov.bd
+196,বাংলাদেশ কর্মচারী কল্যাণ বোর্ড (বিকেকেবি),Bangladesh Karmachari Kallyan Board (BKKB),Others,Ministry of Public Administration,জনপ্রশাসন মন্ত্রণালয়,bkkb.gov.bd
+197,বাংলাদেশ লোক-প্রশাসন প্রশিক্ষণ কেন্দ্র (বিপিএটিসি),Bangladesh Public Administration Training Centre (BPATC),Others,Ministry of Public Administration,জনপ্রশাসন মন্ত্রণালয়,bpatc.gov.bd
+198,সরকারি কর্মচারী হাসপাতাল,Government Employees Hospital,Others,Ministry of Public Administration,জনপ্রশাসন মন্ত্রণালয়,skh.gov.bd
+199,জাতীয় উন্নয়ন প্রশাসন একাডেমি (নাডা),National Academy for Development Administration (NADA),Others,Ministry of Public Administration,জনপ্রশাসন মন্ত্রণালয়,nada.gov.bd
+200,জাতীয় পরিকল্পনা ও উন্নয়ন একাডেমি (এনএপিডি),National Academy for Planning and Development (NAPD),Others,Ministry of Public Administration,জনপ্রশাসন মন্ত্রণালয়,napd.gov.bd
+201,মৎস্য ও প্রাণিসম্পদ মন্ত্রণালয়,Ministry of Fisheries And Livestock,Ministry/Division,,,mofl.gov.bd
+202,মৎস্য অধিদপ্তর,DEPARTMENT OF FISHERIES,Directorate,Ministry of Fisheries And Livestock,মৎস্য ও প্রাণিসম্পদ মন্ত্রণালয়,fisheries.gov.bd
+203,প্রাণিসম্পদ অধিদপ্তর,DEPARTMENT OF LIVESTOCK SERVICES (DLS),Directorate,Ministry of Fisheries And Livestock,মৎস্য ও প্রাণিসম্পদ মন্ত্রণালয়,dls.gov.bd
+204,বাংলাদেশ মৎস্য উন্নয়ন কর্পোরেশন,BANGLADESH FISHERIES DEVELOPMENT CORPORATION (BFDC),Others,Ministry of Fisheries And Livestock,মৎস্য ও প্রাণিসম্পদ মন্ত্রণালয়,bfdc.gov.bd
+205,বাংলাদেশ মৎস্য গবেষণা ইনস্টিটিউট,BANGLADESH FISHERIES RESEARCH INSTITUTE (BFRI),Others,Ministry of Fisheries And Livestock,মৎস্য ও প্রাণিসম্পদ মন্ত্রণালয়,fri.gov.bd
+206,বাংলাদেশ প্রাণিসম্পদ গবেষণা ইনস্টিটিউট,Bangladesh Livestock Research Institute,Others,Ministry of Fisheries And Livestock,মৎস্য ও প্রাণিসম্পদ মন্ত্রণালয়,blri.gov.bd
+207,বাংলাদেশ ভেটেরিনারি কাউন্সিল,Bangladesh Veterinary Council,Others,Ministry of Fisheries And Livestock,মৎস্য ও প্রাণিসম্পদ মন্ত্রণালয়,bvc.gov.bd
+208,মৎস্য ও প্রাণিসম্পদ তথ্য দপ্তর,Fisheries and Livestock Information Department,Others,Ministry of Fisheries And Livestock,মৎস্য ও প্রাণিসম্পদ মন্ত্রণালয়,flid.gov.bd
+209,মেরিন ফিশারিজ একাডেমি (এমএফএ),Marine Fisheries Academy (MFA),Others,Ministry of Fisheries And Livestock,মৎস্য ও প্রাণিসম্পদ মন্ত্রণালয়,mfacademy.gov.bd
+210,"অর্থ বিভাগ, অর্থ মন্ত্রণালয়","Finance Division, Ministry of Finance",Ministry/Division,,,mof.gov.bd
+211,অর্থনৈতিক সম্পর্ক বিভাগ,Economic Relations Division,Division,"Finance Division, Ministry of Finance","অর্থ বিভাগ, অর্থ মন্ত্রণালয়",erd.gov.bd
+212,আর্থিক প্রতিষ্ঠান বিভাগ,Financial Institutions Division,Division,"Finance Division, Ministry of Finance","অর্থ বিভাগ, অর্থ মন্ত্রণালয়",fid.gov.bd
+213,বাংলাদেশ হাউজ বিল্ডিং ফাইনান্স কর্পোরেশন,Bangladesh House Building Finance Corporation,Others,Financial Institutions Division,আর্থিক প্রতিষ্ঠান বিভাগ,bhbfc.gov.bd
+214,বাংলাদেশ ইন্সটিটিউট অব ক্যাপিটাল মার্কেট,Bangladesh Institute of Capital Market,Others,Financial Institutions Division,আর্থিক প্রতিষ্ঠান বিভাগ,bicm.gov.bd
+215,বাংলাদেশ ইনসিওরেন্স একাডেমি,Bangladesh Insurance Academy,Others,Financial Institutions Division,আর্থিক প্রতিষ্ঠান বিভাগ,bia.gov.bd
+216,বাংলাদেশ মিউনিসিপল ডেভেলপমেন্ট ফান্ড (বিএমডিএফ),Bangladesh Municipal Development Fund (BMDF),Others,Financial Institutions Division,আর্থিক প্রতিষ্ঠান বিভাগ,bmdf.gov.bd
+217,বাংলাদেশ এনজিও ফাউন্ডেশন,Bangladesh NGO Foundation,Others,Financial Institutions Division,আর্থিক প্রতিষ্ঠান বিভাগ,bnf.gov.bd
+218,বাংলাদেশ সিকিউরিটিজ এন্ড একচেঞ্জ কমিশন,Bangladesh Securities and Exchange Commission (BSEC),Others,Financial Institutions Division,আর্থিক প্রতিষ্ঠান বিভাগ,sec.gov.bd
+219,আইসিবি অ্যাসেট ম্যানেজমেন্ট পিএলসি. (আইসিবি এএমসিএল),ICB Asset Management PLC. (ICB AMCL),Others,Financial Institutions Division,আর্থিক প্রতিষ্ঠান বিভাগ,icbamcl.portal.gov.bd
+220,আইসিবি ক্যাপিটাল ম্যানেজমেন্ট লিমিটেড,ICB Capital Management Limited,Others,Financial Institutions Division,আর্থিক প্রতিষ্ঠান বিভাগ,icml.gov.bd
+221,আইসিবি সিকিউরিটিজ ট্রেডিং কোং লিমিটেড,ICB Securities Trading Co. Ltd.,Others,Financial Institutions Division,আর্থিক প্রতিষ্ঠান বিভাগ,istcl.gov.bd
+222,বীমা উন্নয়ন ও নিয়ন্ত্রণ কর্তৃপক্ষ,Insurance Development & Regulatory Authority (IDRA),Others,Financial Institutions Division,আর্থিক প্রতিষ্ঠান বিভাগ,idra.portal.gov.bd
+223,ইনভেস্টমেন্ট কর্পোরেশন অব বাংলাদেশ,Investment Corporation of Bangladesh,Others,Financial Institutions Division,আর্থিক প্রতিষ্ঠান বিভাগ,icb.gov.bd
+224,জীবন বীমা কর্পোরেশন,Jiban Bima Corporation,Others,Financial Institutions Division,আর্থিক প্রতিষ্ঠান বিভাগ,jbc.gov.bd
+225,মাইক্রোক্রেডিট রেগুলেটরী অথরিটি,Microcredit Regulatory Authority,Others,Financial Institutions Division,আর্থিক প্রতিষ্ঠান বিভাগ,mra.gov.bd
+226,পল্লী কর্ম-সহায়ক ফাউন্ডেশন (পিকেএসএফ),Palli Karma-Sahayak Foundation (PKSF),Others,Financial Institutions Division,আর্থিক প্রতিষ্ঠান বিভাগ,pksf.org.bd
+227,সাধারণ বীমা কর্পোরেশন,Sadharan Bima Corporation,Others,Financial Institutions Division,আর্থিক প্রতিষ্ঠান বিভাগ,sbc.gov.bd
+228,সৌদি-বাংলাদেশ ইন্ডাস্ট্রিয়াল এন্ড এগ্রিকালচার ইনভেস্টমেন্ট কোম্পানী (সাবিনকো),Saudi Bangladesh Industrial and Agricultural Investment Company Limited,Others,Financial Institutions Division,আর্থিক প্রতিষ্ঠান বিভাগ,sabinco.com.bd
+229,সোশ্যাল ডেভেলপমেন্ট ফাউন্ডেশন(এসডিএফ),Social Development Foundation (SDF),Others,Financial Institutions Division,আর্থিক প্রতিষ্ঠান বিভাগ,sdf.org.bd
+230,দি সিকিউরিটি প্রিন্টিং করপোরেশন (বাংলাদেশ) লিঃ,The Security Printing Corporation (Bangladesh) Ltd.,Others,Financial Institutions Division,আর্থিক প্রতিষ্ঠান বিভাগ,spcbl.org.bd
+231,দি ইউনাইটেড আরব আমিরাত-বাংলাদেশ ইনভেস্টমেন্ট কোম্পানি (ইউবিকো),The UAE-Bangladesh Investment Company Limited: UBICO,Others,Financial Institutions Division,আর্থিক প্রতিষ্ঠান বিভাগ,ubinco.com
+232,অভ্যন্তরীণ সম্পদ বিভাগ,Internal Resources Division,Division,"Finance Division, Ministry of Finance","অর্থ বিভাগ, অর্থ মন্ত্রণালয়",ird.gov.bd
+233,জাতীয় সঞ্চয় অধিদপ্তর,Department of National Savings,Directorate,Internal Resources Division,অভ্যন্তরীণ সম্পদ বিভাগ,nationalsavings.gov.bd
+234,"কাস্টমস, এক্সাইজ ও ভ্যাট (আপীল) কমিশনারেট, ঢাকা-১","Customs, Excise & VAT (Appeal) Commissionerate, Dhaka-1",Others,Internal Resources Division,অভ্যন্তরীণ সম্পদ বিভাগ,ceva1.gov.bd
+235,"কাস্টমস, এক্সাইজ এবং মূল্য সংযোজন কর আপিল ট্রাইব্যুনাল","Customs, Excise and Value Added Tax Appellate Tribunal",Others,Internal Resources Division,অভ্যন্তরীণ সম্পদ বিভাগ,cevt.gov.bd
+236,জাতীয় রাজস্ব বোর্ড,National Board of Revenue (NBR),Others,Internal Resources Division,অভ্যন্তরীণ সম্পদ বিভাগ,nbr.portal.gov.bd
+237,ট্যাকসেস আপীলাত ট্রাইবুনাল,Taxes Appellate Tribunal,Others,Internal Resources Division,অভ্যন্তরীণ সম্পদ বিভাগ,tat.gov.bd
+238,পররাষ্ট্র মন্ত্রণালয়,Ministry of Foreign Affairs,Ministry/Division,,,mofa.gov.bd
+239,বিআইএলআইএ,BANGLADESH INSTITUTE OF LAW AND INTERNATIONAL AFFAIRS (BILIA),Others,Ministry of Foreign Affairs,পররাষ্ট্র মন্ত্রণালয়,biliabd.org
+240,বিআইএসএস,Bangladesh Institute of International and Strategic Studies,Others,Ministry of Foreign Affairs,পররাষ্ট্র মন্ত্রণালয়,biiss.org
+241,"ফরেন সার্ভিস একাডেমি, বাংলাদেশ","Foreign Service Academy, Bangladesh",Others,Ministry of Foreign Affairs,পররাষ্ট্র মন্ত্রণালয়,fsa.gov.bd
+242,স্বাস্থ্য ও পরিবার কল্যাণ মন্ত্রণালয়,Ministry of Health & Family Welfare,Ministry/Division,,,mohfw.gov.bd
+243,স্বাস্থ্য সেবা বিভাগ,Health Services Division,Division,Ministry of Health & Family Welfare,স্বাস্থ্য ও পরিবার কল্যাণ মন্ত্রণালয়,hsd.gov.bd
+244,ঔষধ প্রশাসন অধিদপ্তর,Directorate General of Drug Administration (DGDA),Directorate,Health Services Division,স্বাস্থ্য সেবা বিভাগ,dgda.gov.bd
+245,স্বাস্থ্য অধিদপ্তর,Directorate General of Health Services (DGHS),Directorate,Health Services Division,স্বাস্থ্য সেবা বিভাগ,dghs.gov.bd
+246,নার্সিং ও মিডওয়াইফারি অধিদপ্তর,Directorate General of Nursing and Midwifery,Directorate,Health Services Division,স্বাস্থ্য সেবা বিভাগ,dgnm.gov.bd
+247,স্বাস্থ্য প্রকৌশল অধিদপ্তর,Health Engineering Department (HED),Directorate,Health Services Division,স্বাস্থ্য সেবা বিভাগ,hed.gov.bd
+248,কমিউনিটি ক্লিনিক স্বাস্থ্য সহায়তা ট্রাষ্ট,Community Clinic Health Support Trust,Others,Health Services Division,স্বাস্থ্য সেবা বিভাগ,communityclinic.portal.gov.bd
+249,এসেনসিয়াল ড্রাগস্ কোম্পানী লিমিটেড,ESSENTIAL DRUGS COMPANY LIMITED,Others,Health Services Division,স্বাস্থ্য সেবা বিভাগ,edcl.gov.bd
+250,স্বাস্থ্য অর্থনীতি ইউনিট,Health Economics Unit,Others,Health Services Division,স্বাস্থ্য সেবা বিভাগ,heu.gov.bd
+251,"রোগতত্ত্ব, রোগ নিয়ন্ত্রণ ও গবেষণা ইনস্টিটিউট","Institute of Epidemiology, Disease Control and Research",Others,Health Services Division,স্বাস্থ্য সেবা বিভাগ,iedcr.gov.bd
+252,ন্যাশনাল ইলেকট্রো- মেডিক্যাল ইকুইপমেন্ট মেইনটেন্যান্স ওয়ার্কশপ এন্ড ট্রেনিং সেন্টার,National Electro- Medical Equipment Maintenance Workshop & Training Center,Others,Health Services Division,স্বাস্থ্য সেবা বিভাগ,nememw.gov.bd
+253,ন্যাশনাল ইনস্টিটিউট অব ল্যাবরেটরি মেডিসিন এন্ড রেফারেল সেন্টার,National Institute of Laboratory Medicine and Referral Centre,Others,Health Services Division,স্বাস্থ্য সেবা বিভাগ,nilmrc.gov.bd
+254,জাতীয় প্রতিষেধক ও সামাজিক চিকিৎসা প্রতিষ্ঠান (নিপসম),National Institute of Preventive and Social Medicine (NIPSOM),Others,Health Services Division,স্বাস্থ্য সেবা বিভাগ,nipsom.gov.bd
+255,জাতীয় তামাক নিয়ন্ত্রণ সেল,National Tobacco Control Cell,Others,Health Services Division,স্বাস্থ্য সেবা বিভাগ,ntcc.gov.bd
+256,বাংলাদেশ ফার্মেসী কাউন্সিল,Pharmacy Council of Bangladesh,Others,Health Services Division,স্বাস্থ্য সেবা বিভাগ,pcb.gov.bd
+257,ট্রান্সপোর্ট এন্ড ইকুইপমেন্ট মেইনটেনেন্স অর্গানাইজেশন (টেমো),Transport & Equipment Maintenance Organization (TEMO),Others,Health Services Division,স্বাস্থ্য সেবা বিভাগ,temo.gov.bd
+258,স্বাস্থ্য শিক্ষা ও পরিবার কল্যাণ বিভাগ,Medical Education and Family Welfare Division,Division,Ministry of Health & Family Welfare,স্বাস্থ্য ও পরিবার কল্যাণ মন্ত্রণালয়,mefwd.gov.bd
+259,পরিবার পরিকল্পনা অধিদপ্তর,Directorate General of Family Planning,Directorate,Medical Education and Family Welfare Division,স্বাস্থ্য শিক্ষা ও পরিবার কল্যাণ বিভাগ,dgfp.gov.bd
+260,স্বাস্থ্য শিক্ষা অধিদপ্তর,Directorate General of Medical Education(DGME),Directorate,Medical Education and Family Welfare Division,স্বাস্থ্য শিক্ষা ও পরিবার কল্যাণ বিভাগ,dgme.gov.bd
+261,বিএভিএস মেটারনিটি হাসপাতাল,BAVAS,Others,Medical Education and Family Welfare Division,স্বাস্থ্য শিক্ষা ও পরিবার কল্যাণ বিভাগ,bavs.gov.bd
+262,বাংলাদেশ বোর্ড অব ইউনানী এন্ড আয়ুর্বেদিক সিস্টেমস্‌ অব মেডিসিন,Bangladesh Board of Unani and Ayurvedic Systems of Medicine,Others,Medical Education and Family Welfare Division,স্বাস্থ্য শিক্ষা ও পরিবার কল্যাণ বিভাগ,bbuasm.portal.gov.bd
+263,বাংলাদেশ কলেজ অব ফিজিশিয়ানস্ এন্ড সার্জনস্,Bangladesh College of Physicians and Surgeons,Others,Medical Education and Family Welfare Division,স্বাস্থ্য শিক্ষা ও পরিবার কল্যাণ বিভাগ,bcps.gov.bd
+264,বাংলাদেশ জাতীয় পুষ্টি পরিষদ কার্যালয়,Bangladesh National Nutrition Council Office,Others,Medical Education and Family Welfare Division,স্বাস্থ্য শিক্ষা ও পরিবার কল্যাণ বিভাগ,bnnc.gov.bd
+265,"কেন্দ্রীয় পণ্যাগার, পরিবার পরিকল্পনা","Central Warehouse, Family Planning",Others,Medical Education and Family Welfare Division,স্বাস্থ্য শিক্ষা ও পরিবার কল্যাণ বিভাগ,cwh.dgfp.gov.bd
+266,ঢাকা মেডিকেল কলেজ,Dhaka Medical College,Others,Medical Education and Family Welfare Division,স্বাস্থ্য শিক্ষা ও পরিবার কল্যাণ বিভাগ,dmc.gov.bd
+267,মাতৃ ও ‍শিশুস্বাস্থ্য প্রশিক্ষণ প্রতিষ্ঠান,Maternal and Child Health Training Institute,Others,Medical Education and Family Welfare Division,স্বাস্থ্য শিক্ষা ও পরিবার কল্যাণ বিভাগ,mchti-mirpur.dgfp.gov.bd
+268,জাতীয় জনসংখ্যা গবেষণা ও প্রশিক্ষণ ইনস্টিটিউট (নিপোর্ট),National Institute of Population Research and Training (NIPORT),Others,Medical Education and Family Welfare Division,স্বাস্থ্য শিক্ষা ও পরিবার কল্যাণ বিভাগ,niport.gov.bd
+269,"রাজশাহী মেডিকেল কলেজ হাসপাতাল, রাজশাহী","Rajshahi Medical College Hospital, Rajshahi",Others,Medical Education and Family Welfare Division,স্বাস্থ্য শিক্ষা ও পরিবার কল্যাণ বিভাগ,rmch.portal.gov.bd
+270,শহীদ জিয়াউর রহমান মেডিকেল কলেজ হাসপাতাল,Shaheed Ziaur Rahman Medical College Hospital,Others,Medical Education and Family Welfare Division,স্বাস্থ্য শিক্ষা ও পরিবার কল্যাণ বিভাগ,szrmch.portal.gov.bd
+271,"শহীদ জিয়াউর রহমান মেডিকেল কলেজ, বগুড়া","Shaheed Ziaur Rahman medical college, Bogra",Others,Medical Education and Family Welfare Division,স্বাস্থ্য শিক্ষা ও পরিবার কল্যাণ বিভাগ,szmc.portal.gov.bd
+272,শেখ হাসিনা মেডিকেল কলেজ,Sheikh Hasina Medical College,Others,Medical Education and Family Welfare Division,স্বাস্থ্য শিক্ষা ও পরিবার কল্যাণ বিভাগ,shmc.portal.gov.bd
+273,শের-ই-বাংলা মেডিকেল কলেজ,Sher-e-Bangla Medical College,Others,Medical Education and Family Welfare Division,স্বাস্থ্য শিক্ষা ও পরিবার কল্যাণ বিভাগ,sbmc.gov.bd
+274,বাংলাদেশ রাষ্ট্রীয় চিকিৎসা অনুষদ,The State Medical Faculty of Bangladesh,Others,Medical Education and Family Welfare Division,স্বাস্থ্য শিক্ষা ও পরিবার কল্যাণ বিভাগ,smfb.gov.bd
+275,স্বরাষ্ট্র মন্ত্রণালয়,MINISTRY OF HOME AFFAIRS,Ministry/Division,,,moha.gov.bd
+276,ফায়ার সার্ভিস ও সিভিল ডিফেন্স অধিদপ্তর,Department of Fire Service and Civil Defence,Directorate,MINISTRY OF HOME AFFAIRS,স্বরাষ্ট্র মন্ত্রণালয়,fireservice.gov.bd
+277,ইমিগ্রেশন ও পাসপোর্ট অধিদপ্তর,Department of Immigration and Passports,Directorate,MINISTRY OF HOME AFFAIRS,স্বরাষ্ট্র মন্ত্রণালয়,dip.gov.bd
+278,মাদকদ্রব্য নিয়ন্ত্রণ অধিদপ্তর,Department of Narcotics Control,Directorate,MINISTRY OF HOME AFFAIRS,স্বরাষ্ট্র মন্ত্রণালয়,dnc.gov.bd
+279,কারা অধিদপ্তর,Department of Prisons,Directorate,MINISTRY OF HOME AFFAIRS,স্বরাষ্ট্র মন্ত্রণালয়,prison.gov.bd
+280,বাংলাদেশ আনসার ও গ্রাম প্রতিরক্ষা বাহিনী,Bangladesh Ansar and VDP,Others,MINISTRY OF HOME AFFAIRS,স্বরাষ্ট্র মন্ত্রণালয়,ansarvdp.gov.bd
+281,বাংলাদেশ কোস্ট গার্ড,Bangladesh Coast Guard,Others,MINISTRY OF HOME AFFAIRS,স্বরাষ্ট্র মন্ত্রণালয়,coastguard.gov.bd
+282,বর্ডার গার্ড বাংলাদেশ,Border Guard Bangladesh,Others,MINISTRY OF HOME AFFAIRS,স্বরাষ্ট্র মন্ত্রণালয়,bgb.gov.bd
+283,"তদন্ত সংস্থা, আন্তর্জাতিক অপরাধ ট্রাইব্যুনাল, বাংলাদেশ","Investigation Agency, International Crimes Tribunal, Bangladesh.",Others,MINISTRY OF HOME AFFAIRS,স্বরাষ্ট্র মন্ত্রণালয়,ictbdinvestigation.gov.bd
+284,ন্যাশনাল টেলিকমিউনিকেশন মনিটরিং সেন্টার,National Telecommunication Monitoring Center,Others,MINISTRY OF HOME AFFAIRS,স্বরাষ্ট্র মন্ত্রণালয়,ntmc.gov.bd
+285,"পুলিশ হেডকোয়ার্টার্স, বাংলাদেশ পুলিশ","Police Headquarters, Bangladesh Police",Others,MINISTRY OF HOME AFFAIRS,স্বরাষ্ট্র মন্ত্রণালয়,police.portal.gov.bd
+286,গৃহায়ন ও গণপূর্ত মন্ত্রণালয়,Ministry of Housing and Public Works,Ministry/Division,,,mohpw.gov.bd
+287,স্থাপত্য অধিদপ্তর,Department of Architecture,Directorate,Ministry of Housing and Public Works,গৃহায়ন ও গণপূর্ত মন্ত্রণালয়,architecture.gov.bd
+288,গণপূর্ত অধিদপ্তর,Public Works Department,Directorate,Ministry of Housing and Public Works,গৃহায়ন ও গণপূর্ত মন্ত্রণালয়,pwd.gov.bd
+289,নগর উন্নয়ন অধিদপ্তর,Urban Development Directorate (UDD),Directorate,Ministry of Housing and Public Works,গৃহায়ন ও গণপূর্ত মন্ত্রণালয়,udd.gov.bd
+290,চট্টগ্রাম উন্নয়ন কর্তৃপক্ষ,Chattogram Development Authority,Others,Ministry of Housing and Public Works,গৃহায়ন ও গণপূর্ত মন্ত্রণালয়,cda.gov.bd
+291,কক্সবাজার উন্নয়ন কর্তৃপক্ষ,Cox's Bazar Development Authority,Others,Ministry of Housing and Public Works,গৃহায়ন ও গণপূর্ত মন্ত্রণালয়,coxda.gov.bd
+292,সরকারি আবাসন পরিদপ্তর,Directorate of Government Accommodation,Others,Ministry of Housing and Public Works,গৃহায়ন ও গণপূর্ত মন্ত্রণালয়,doga.gov.bd
+293,অভ্যন্তরীণ নিরীক্ষা পরিদপ্তর,Directorate of Internal Audit,Others,Ministry of Housing and Public Works,গৃহায়ন ও গণপূর্ত মন্ত্রণালয়,doia.gov.bd
+294,গাজীপুর উন্নয়ন কর্তৃপক্ষ,Gazipur Development Authority,Others,Ministry of Housing and Public Works,গৃহায়ন ও গণপূর্ত মন্ত্রণালয়,gda.gov.bd
+295,হাউজিং এন্ড বিল্ডিং রিসার্চ ইনস্টিটিউট,Housing & Building Research Institute (HBRI),Others,Ministry of Housing and Public Works,গৃহায়ন ও গণপূর্ত মন্ত্রণালয়,hbri.gov.bd
+296,খুলনা উন্নয়ন কর্তৃপক্ষ,Khulna Development Authority,Others,Ministry of Housing and Public Works,গৃহায়ন ও গণপূর্ত মন্ত্রণালয়,kda.gov.bd
+297,জাতীয় গৃহায়ন কর্তৃপক্ষ,National Housing Authority (NHA),Others,Ministry of Housing and Public Works,গৃহায়ন ও গণপূর্ত মন্ত্রণালয়,nha.gov.bd
+298,রাজধানী উন্নয়ন কর্তৃপক্ষ (রাজউক),Rajdhani Unnayan Kartripakkha (RAJUK),Others,Ministry of Housing and Public Works,গৃহায়ন ও গণপূর্ত মন্ত্রণালয়,rajuk.gov.bd
+299,রাজশাহী উন্নয়ন কর্তৃপক্ষ,Rajshahi Developement Authority,Others,Ministry of Housing and Public Works,গৃহায়ন ও গণপূর্ত মন্ত্রণালয়,rdarajshahi.gov.bd
+300,শিল্প মন্ত্রণালয়,Ministry of Industries,Ministry/Division,,,moind.gov.bd
+301,"পেটেন্ট, শিল্প-নকশা ও ট্রেডমার্কস অধিদপ্তর","Department of Patents, Industrial Designs and Trademarks (DPDT)",Directorate,Ministry of Industries,শিল্প মন্ত্রণালয়,dpdt.gov.bd
+302,বাংলাদেশ এ্যাক্রেডিটেশন বোর্ড,Bangladesh Accreditation Board,Others,Ministry of Industries,শিল্প মন্ত্রণালয়,bab.gov.bd
+303,বাংলাদেশ কেমিক্যাল ইন্ডাস্ট্রিজ কর্পোরেশন,Bangladesh Chemical Industries Corporation (BCIC),Others,Ministry of Industries,শিল্প মন্ত্রণালয়,bcic.gov.bd
+304,বাংলাদেশ শিল্প কারিগরি সহায়তা কেন্দ্র (বিটাক),Bangladesh Industrial Technical Assistance Center (BITAC),Others,Ministry of Industries,শিল্প মন্ত্রণালয়,bitac.gov.bd
+305,বাংলাদেশ ইনস্টিটিউট অব ম্যানেজমেন্ট,Bangladesh Institute of Management (BIM),Others,Ministry of Industries,শিল্প মন্ত্রণালয়,bim.gov.bd
+306,বাংলাদেশ শিপ রিসাইক্লিং বোর্ড,Bangladesh Ship Recycling Board,Others,Ministry of Industries,শিল্প মন্ত্রণালয়,bsrb.portal.gov.bd
+307,বাংলাদেশ ক্ষুদ্র ও কুটির শিল্প কর্পোরেশন,Bangladesh Small and Cottage Industries Corporation (BSCIC),Others,Ministry of Industries,শিল্প মন্ত্রণালয়,bscic.gov.bd
+308,বাংলাদেশ স্ট্যান্ডার্ডস এন্ড টেস্টিং ইনস্টিটিউশন,Bangladesh Standards and Testing Institution (BSTI),Others,Ministry of Industries,শিল্প মন্ত্রণালয়,bsti.gov.bd
+309,বাংলাদেশ ইস্পাত ও প্রকৌশল কর্পোরেশন,Bangladesh Steel & Engineering Corporation (BSEC),Others,Ministry of Industries,শিল্প মন্ত্রণালয়,bsec.gov.bd
+310,বাংলাদেশ চিনি ও খাদ্য শিল্প করপোরেশন,Bangladesh Sugar & Food Industries Corporation,Others,Ministry of Industries,শিল্প মন্ত্রণালয়,bsfic.gov.bd
+311,ন্যাশনাল প্রোডাকটিভিটি অর্গানাইজেশন (এনপিও),National Productivity Organisation (NPO),Others,Ministry of Industries,শিল্প মন্ত্রণালয়,npo.gov.bd
+312,প্রধান বয়লার পরিদর্শকের কার্যালয়,Office of The Chief Inspector of Boilers,Others,Ministry of Industries,শিল্প মন্ত্রণালয়,boiler.gov.bd
+313,ক্ষুদ্র ও মাঝারি শিল্প ফাউন্ডেশন,Small and Medium Enterprise Foundation,Others,Ministry of Industries,শিল্প মন্ত্রণালয়,smef.gov.bd
+314,"ক্ষুদ্র, মাইক্রো ও কুটির শিল্প ফাউন্ডেশন","Small, Micro and Cottage Industry Foundation",Others,Ministry of Industries,শিল্প মন্ত্রণালয়,smcif.portal.gov.bd
+315,তথ্য ও সম্প্রচার মন্ত্রণালয়,Ministry of Information and Broadcasting,Ministry/Division,,,moi.gov.bd
+316,চলচ্চিত্র ও প্রকাশনা অধিদপ্তর,Department of Films & Publications,Directorate,Ministry of Information and Broadcasting,তথ্য ও সম্প্রচার মন্ত্রণালয়,dfp.gov.bd
+317,গণযোগাযোগ অধিদপ্তর,Mass Communication Department,Directorate,Ministry of Information and Broadcasting,তথ্য ও সম্প্রচার মন্ত্রণালয়,masscommunication.gov.bd
+318,বাংলাদেশ সাংবাদিক কল্যাণ ট্রাস্ট,Bangladesh Journalist Welfare Trust,Others,Ministry of Information and Broadcasting,তথ্য ও সম্প্রচার মন্ত্রণালয়,bjwt.gov.bd
+319,বাংলাদেশ বেতার,Bangladesh Betar,Others,Ministry of Information and Broadcasting,তথ্য ও সম্প্রচার মন্ত্রণালয়,betar.gov.bd
+320,বাংলাদেশ চলচ্চিত্র ও টেলিভিশন ইনস্টিটিউট,Bangladesh Cinema and Television Institute,Others,Ministry of Information and Broadcasting,তথ্য ও সম্প্রচার মন্ত্রণালয়,bcti.gov.bd
+321,বাংলাদেশ ফিল্ম আর্কাইভ,Bangladesh Film Archive,Others,Ministry of Information and Broadcasting,তথ্য ও সম্প্রচার মন্ত্রণালয়,bfa.gov.bd
+322,বাংলাদেশ চলচ্চিত্র সার্টিফিকেশন বোর্ড,Bangladesh Film Certification Board,Others,Ministry of Information and Broadcasting,তথ্য ও সম্প্রচার মন্ত্রণালয়,bfcb.gov.bd
+323,বাংলাদেশ চলচ্চিত্র উন্নয়ন কর্পোরেশন,Bangladesh Film Development Corporation (BFDC),Others,Ministry of Information and Broadcasting,তথ্য ও সম্প্রচার মন্ত্রণালয়,fdc.gov.bd
+324,বাংলাদেশ প্রেস কাউন্সিল,Bangladesh Press Council,Others,Ministry of Information and Broadcasting,তথ্য ও সম্প্রচার মন্ত্রণালয়,presscouncil.gov.bd
+325,বাংলাদেশ সংবাদ সংস্থা (বাসস),Bangladesh Sangbad Sangstha (BSS),Others,Ministry of Information and Broadcasting,তথ্য ও সম্প্রচার মন্ত্রণালয়,bss.org.bd
+326,বাংলাদেশ টেলিভিশন,Bangladesh Television,Others,Ministry of Information and Broadcasting,তথ্য ও সম্প্রচার মন্ত্রণালয়,btv.gov.bd
+327,তথ্য কমিশন বাংলাদেশ,Information Commission Bangladesh,Others,Ministry of Information and Broadcasting,তথ্য ও সম্প্রচার মন্ত্রণালয়,infocom.gov.bd
+328,জাতীয় গণমাধ্যম ইনস্টিটিউট,National Institute of Mass Communication,Others,Ministry of Information and Broadcasting,তথ্য ও সম্প্রচার মন্ত্রণালয়,nimc.gov.bd
+329,তথ্য অধিদফতর (পিআইডি),Press Information Department(PID),Others,Ministry of Information and Broadcasting,তথ্য ও সম্প্রচার মন্ত্রণালয়,pressinform.gov.bd
+330,প্রেস ইনস্টিটিউট বাংলাদেশ (পিআইবি),Press Institute Bangladesh (PIB),Others,Ministry of Information and Broadcasting,তথ্য ও সম্প্রচার মন্ত্রণালয়,pib.gov.bd
+331,বস্ত্র ও পাট মন্ত্রণালয়,Ministry of Textiles & Jute,Ministry/Division,,,motj.gov.bd
+332,পাট অধিদপ্তর,Department of Jute,Directorate,Ministry of Textiles & Jute,বস্ত্র ও পাট মন্ত্রণালয়,dgjute.gov.bd
+333,বস্ত্র অধিদপ্তর,Department of Textiles,Directorate,Ministry of Textiles & Jute,বস্ত্র ও পাট মন্ত্রণালয়,dot.gov.bd
+334,বাংলাদেশ তাঁত বোর্ড,Bangladesh Handloom Board (BHB),Others,Ministry of Textiles & Jute,বস্ত্র ও পাট মন্ত্রণালয়,bhb.gov.bd
+335,বাংলাদেশ জুট কর্পোরেশন,Bangladesh Jute Corporation,Others,Ministry of Textiles & Jute,বস্ত্র ও পাট মন্ত্রণালয়,bjc.gov.bd
+336,বাংলাদেশ পাটকল করপোরেশন,Bangladesh Jute Mills Corporation (BJMC),Others,Ministry of Textiles & Jute,বস্ত্র ও পাট মন্ত্রণালয়,bjmc.gov.bd
+337,বাংলাদেশ রেশম উন্নয়ন বোর্ড,Bangladesh Sericulture Development Board (BSDB),Others,Ministry of Textiles & Jute,বস্ত্র ও পাট মন্ত্রণালয়,bsb.gov.bd
+338,বাংলাদেশ টেক্সটাইল মিলস্ করপোরেশন,Bangladesh Textile Mills Corporation,Others,Ministry of Textiles & Jute,বস্ত্র ও পাট মন্ত্রণালয়,btmc.gov.bd
+339,"জুট ডাইভারসিফিকেশন প্রমোশন সেন্টার (জেডিপিসি), পিএলসি",Jute Diversification Promotion Centre PLC,Others,Ministry of Textiles & Jute,বস্ত্র ও পাট মন্ত্রণালয়,jdpc.gov.bd
+340,শ্রম ও কর্মসংস্থান মন্ত্রণালয়,Ministry of Labour and Employment,Ministry/Division,,,mole.gov.bd
+341,কলকারখানা ও প্রতিষ্ঠান পরিদর্শন অধিদপ্তর,Department of Inspection for Factories and Establishments,Directorate,Ministry of Labour and Employment,শ্রম ও কর্মসংস্থান মন্ত্রণালয়,dife.gov.bd
+342,শ্রম অধিদপ্তর,Department of Labour,Directorate,Ministry of Labour and Employment,শ্রম ও কর্মসংস্থান মন্ত্রণালয়,dol.gov.bd
+343,বাংলাদেশ শ্রমিক কল্যাণ ফাউন্ডেশন,Bangladesh Labour Welfare Foundation,Others,Ministry of Labour and Employment,শ্রম ও কর্মসংস্থান মন্ত্রণালয়,blwf.gov.bd
+344,কেন্দ্রীয় তহবিল,Central Fund,Others,Ministry of Labour and Employment,শ্রম ও কর্মসংস্থান মন্ত্রণালয়,centralfund.gov.bd
+345,শ্রম আপীল টাইব্যুনাল,Labour Appeal Taibunal,Others,Ministry of Labour and Employment,শ্রম ও কর্মসংস্থান মন্ত্রণালয়,lat.portal.gov.bd
+346,নিম্নতম মজুরী বোর্ড,Minimum Wages Board,Others,Ministry of Labour and Employment,শ্রম ও কর্মসংস্থান মন্ত্রণালয়,mwb.portal.gov.bd
+347,"আইন, বিচার ও সংসদ বিষয়ক মন্ত্রণালয়","Ministry of Law, Justice and Parliamentary Affairs",Ministry/Division,,,minlaw.gov.bd
+348,আইন ও বিচার বিভাগ,Law and Justice Division,Division,"Ministry of Law, Justice and Parliamentary Affairs","আইন, বিচার ও সংসদ বিষয়ক মন্ত্রণালয়",lawjusticediv.gov.bd
+349,বাংলাদেশ আইনগত সহায়তা অধিদপ্তর,Directorate of Bangladesh Legal Aid,Directorate,Law and Justice Division,আইন ও বিচার বিভাগ,dbla.gov.bd
+350,নিবন্ধন অধিদপ্তর,Directorate of Registration,Directorate,Law and Justice Division,আইন ও বিচার বিভাগ,rd.gov.bd
+351,বিচার প্রশাসন প্রশিক্ষণ ইনস্টিটিউট,Judicial Administration Training Institute,Others,Law and Justice Division,আইন ও বিচার বিভাগ,jati.portal.gov.bd
+352,লেজিসলেটিভ ও সংসদ বিষয়ক বিভাগ,Legislative and Parliamentary Affairs Division,Division,"Ministry of Law, Justice and Parliamentary Affairs","আইন, বিচার ও সংসদ বিষয়ক মন্ত্রণালয়",legislativediv.gov.bd
+353,"আইন কমিশন, বাংলাদেশ","Law Commission, Bangladesh",Others,Legislative and Parliamentary Affairs Division,লেজিসলেটিভ ও সংসদ বিষয়ক বিভাগ,lc.portal.gov.bd
+354,লেজিসলেটিভ প্রশিক্ষণ ও গবেষণা ইনস্টিটিউট,Legislative Training and Research Institute,Others,Legislative and Parliamentary Affairs Division,লেজিসলেটিভ ও সংসদ বিষয়ক বিভাগ,ltri.portal.gov.bd
+355,জাতীয় মানবাধিকার কমিশন বাংলাদেশ,National Human Rights Commission Bangladesh,Others,Legislative and Parliamentary Affairs Division,লেজিসলেটিভ ও সংসদ বিষয়ক বিভাগ,nhrc.org.bd
+356,ভূমি মন্ত্রণালয়,Ministry Of Land,Ministry/Division,,,minland.gov.bd
+357,ভূমি রেকর্ড ও জরিপ অধিদপ্তর,Land Record and Survey Department,Directorate,Ministry Of Land,ভূমি মন্ত্রণালয়,dlrs.gov.bd
+358,হিসাব নিয়ন্ত্রক (রাজস্ব)-এর দপ্তর,Controller of Accounts (Revenue),Others,Ministry Of Land,ভূমি মন্ত্রণালয়,coa-revenue.gov.bd
+359,ভূমি প্রশাসন প্রশিক্ষণ কেন্দ্র,Land Administration Training Centre (LATC),Others,Ministry Of Land,ভূমি মন্ত্রণালয়,latc.gov.bd
+360,ভূমি আপীল বোর্ড,Land Appeal Board,Others,Ministry Of Land,ভূমি মন্ত্রণালয়,lab.gov.bd
+361,ভূমি সংস্কার বোর্ড,Land Reforms Board,Others,Ministry Of Land,ভূমি মন্ত্রণালয়,lrb.gov.bd
+362,"স্থানীয় সরকার, পল্লী উন্নয়ন ও সমবায় মন্ত্রণালয়","Ministry of Local Government, Rural Development and Co-operatives",Ministry/Division,,,molgrdc.gov.bd
+363,স্থানীয় সরকার বিভাগ,Local Government Division,Division,"Ministry of Local Government, Rural Development and Co-operatives","স্থানীয় সরকার, পল্লী উন্নয়ন ও সমবায় মন্ত্রণালয়",lgd.gov.bd
+364,জনস্বাস্থ্য প্রকৌশল অধিদপ্তর,Department of Public Health Engineering,Directorate,Local Government Division,স্থানীয় সরকার বিভাগ,dphe.gov.bd
+365,স্থানীয় সরকার প্রকৌশল অধিদপ্তর,Local Government Engineering Department,Directorate,Local Government Division,স্থানীয় সরকার বিভাগ,lged.gov.bd
+366,বরিশাল সিটি কর্পোরেশন,Barishal city corporation,Others,Local Government Division,স্থানীয় সরকার বিভাগ,barishalcity.gov.bd
+367,চট্টগ্রাম পানি সরবরাহ ও পয়:নিষ্কাশন কর্তৃপক্ষ,Chattogram Water Supply and Sewerage Authority,Others,Local Government Division,স্থানীয় সরকার বিভাগ,ctg-wasa.org.bd
+368,চট্টগ্রাম সিটি কর্পোরেশন,Chittagong City Corporation,Others,Local Government Division,স্থানীয় সরকার বিভাগ,ccc.gov.bd
+369,কুমিল্লা সিটি কর্পোরেশন,Comilla City Corporation,Others,Local Government Division,স্থানীয় সরকার বিভাগ,cocc.portal.gov.bd
+370,ঢাকা মশক নিবারণী দপ্তর,Dhaka Mosquito Control Office,Others,Local Government Division,স্থানীয় সরকার বিভাগ,dmco.gov.bd
+371,ঢাকা উত্তর সিটি কর্পোরেশন,Dhaka North City Corporation,Others,Local Government Division,স্থানীয় সরকার বিভাগ,dncc.gov.bd
+372,ঢাকা দক্ষিণ সিটি কর্পোরেশন,Dhaka South City Corporation,Others,Local Government Division,স্থানীয় সরকার বিভাগ,dscc.gov.bd
+373,ঢাকা ওয়াসা,Dhaka WASA,Others,Local Government Division,স্থানীয় সরকার বিভাগ,dwasa.gov.bd
+374,গাজীপুর সিটি কর্পোরেশন,Gazipur City Corporation,Others,Local Government Division,স্থানীয় সরকার বিভাগ,gcc.gov.bd
+375,খুলনা সিটি কর্পোরেশন,Khulna City Corporation,Others,Local Government Division,স্থানীয় সরকার বিভাগ,khulnacity.gov.bd
+376,খুলনা ওয়াসা,Khulna WASA,Others,Local Government Division,স্থানীয় সরকার বিভাগ,kwasa.gov.bd
+377,ময়মনসিংহ সিটি কর্পোরেশন,Mymensingh City Corporation,Others,Local Government Division,স্থানীয় সরকার বিভাগ,mcc.gov.bd
+378,নারায়ণগঞ্জ সিটি কর্পোরেশন,Narayanganj City Corporation,Others,Local Government Division,স্থানীয় সরকার বিভাগ,ncc.gov.bd
+379,জাতীয় স্থানীয় সরকার ইনস্টিটিউট,National Institute of Local Government,Others,Local Government Division,স্থানীয় সরকার বিভাগ,nilg.gov.bd
+380,"রেজিস্ট্রার জেনারেলের কার্যালয়, জন্ম ও মৃত্যু নিবন্ধন","Office of the Registrar General, Birth and Death Registration",Others,Local Government Division,স্থানীয় সরকার বিভাগ,orgbdr.gov.bd
+381,রাজশাহী সিটি কর্পোরেশন,Rajshahi City Corporation,Others,Local Government Division,স্থানীয় সরকার বিভাগ,erajshahi.portal.gov.bd
+382,রাজশাহী ওয়াসা,Rajshahi WASA,Others,Local Government Division,স্থানীয় সরকার বিভাগ,rajshahiwasa.portal.gov.bd
+383,রংপুর সিটি কর্পোরেশন,Rangpur City Corporation,Others,Local Government Division,স্থানীয় সরকার বিভাগ,rpcc.gov.bd
+384,সিলেট সিটি কর্পোরেশন,Sylhet City Corporation,Others,Local Government Division,স্থানীয় সরকার বিভাগ,scc.gov.bd
+385,পল্লী উন্নয়ন ও সমবায় বিভাগ,Rural Development and Co-operatives Division,Division,"Ministry of Local Government, Rural Development and Co-operatives","স্থানীয় সরকার, পল্লী উন্নয়ন ও সমবায় মন্ত্রণালয়",rdcd.gov.bd
+386,সমবায় অধিদপ্তর,Department of Cooperatives,Directorate,Rural Development and Co-operatives Division,পল্লী উন্নয়ন ও সমবায় বিভাগ,coop.gov.bd
+387,"বাংলাদেশ পল্লী উন্নয়ন একাডেমি (বার্ড), কুমিল্লা","Bangladesh Academy for Rural Development (BARD), Cumilla",Others,Rural Development and Co-operatives Division,পল্লী উন্নয়ন ও সমবায় বিভাগ,bard.gov.bd
+388,বাংলাদেশ দুগ্ধ উৎপাদনকারী সমবায় ইউনিয়ন লিমিটেড,Bangladesh Milk Producer's Co-Operative Union Ltd.,Others,Rural Development and Co-operatives Division,পল্লী উন্নয়ন ও সমবায় বিভাগ,milkvita.org.bd
+389,বাংলাদেশ জাতীয় পল্লী উন্নয়ন সমবায় ফেডারেশন,Bangladesh National Cooperative Federation for Rural Development,Others,Rural Development and Co-operatives Division,পল্লী উন্নয়ন ও সমবায় বিভাগ,bncfrd.portal.gov.bd
+390,বাংলাদেশ পল্লী উন্নয়ন বোর্ড,Bangladesh Rural Development Board,Others,Rural Development and Co-operatives Division,পল্লী উন্নয়ন ও সমবায় বিভাগ,brdb.gov.bd
+391,বাংলাদেশ সমবায় ব্যাংক লিমিটেড,Bangladesh Samabaya Bank Limited,Others,Rural Development and Co-operatives Division,পল্লী উন্নয়ন ও সমবায় বিভাগ,bsbl.org.bd
+392,পল্লী দারিদ্র্য বিমোচন ফাউন্ডেশন (পিডিবিএফ),Palli Daridro Bimochon Foundation ( PDBF ),Others,Rural Development and Co-operatives Division,পল্লী উন্নয়ন ও সমবায় বিভাগ,pdbf.gov.bd
+393,পল্লী উন্নয়ন একাডেমি (আরডিএ) বগুড়া,Rural Development Academy (RDA) Bogura,Others,Rural Development and Co-operatives Division,পল্লী উন্নয়ন ও সমবায় বিভাগ,rda.gov.bd
+394,"পল্লী উন্নয়ন একাডেমি, গোপালগঞ্জ","Rural Development Academy, Gopalganj",Others,Rural Development and Co-operatives Division,পল্লী উন্নয়ন ও সমবায় বিভাগ,rdagopalganj.gov.bd
+395,"পল্লী উন্নয়ন একাডেমী, জামালপুর।","Rural Development Academy, Jamalpur",Others,Rural Development and Co-operatives Division,পল্লী উন্নয়ন ও সমবায় বিভাগ,rda.jamalpur.gov.bd
+396,"পল্লী উন্নয়ন একাডেমি, রংপুর","Rural Development Academy, Rangpur",Others,Rural Development and Co-operatives Division,পল্লী উন্নয়ন ও সমবায় বিভাগ,rda.rangpur.gov.bd
+397,ক্ষুদ্র কৃষক উন্নয়ন ফাউন্ডেশন (এসএফডিএফ),Small Farmers Development Foundation (SFDF),Others,Rural Development and Co-operatives Division,পল্লী উন্নয়ন ও সমবায় বিভাগ,sfdf.gov.bd
+398,পরিকল্পনা মন্ত্রণালয়,Ministry of Planning,Ministry/Division,,,mop.gov.bd
+399,বাংলাদেশ পরিকল্পনা কমিশন,Bangladesh Planning Commission,Division,Ministry of Planning,পরিকল্পনা মন্ত্রণালয়,plancomm.gov.bd
+400,বাস্তবায়ন পরিবীক্ষণ ও মূল্যায়ন বিভাগ,Implementation Monitoring and Evaluation Division,Division,Ministry of Planning,পরিকল্পনা মন্ত্রণালয়,imed.gov.bd
+401,বাংলাদেশ পাবলিক প্রকিউরমেন্ট অথরিটি,Bangladesh Public Procurement Authority,Others,Implementation Monitoring and Evaluation Division,বাস্তবায়ন পরিবীক্ষণ ও মূল্যায়ন বিভাগ,bppa.gov.bd
+402,পরিকল্পনা বিভাগ,Planning Division,Division,Ministry of Planning,পরিকল্পনা মন্ত্রণালয়,plandiv.gov.bd
+403,বাংলাদেশ উন্নয়ন গবেষণা প্রতিষ্ঠান (বিআইডিএস),Bangladesh Institute of Development Studies (BIDS),Others,Planning Division,পরিকল্পনা বিভাগ,bids.gov.bd
+404,সামাজিকবিজ্ঞান গবেষণা পরিষদ,Social Science Research Council,Others,Planning Division,পরিকল্পনা বিভাগ,ssrc.portal.gov.bd
+405,পরিসংখ্যান ও তথ্য ব্যবস্থাপনা বিভাগ,Statistics and Informatics Division,Division,Ministry of Planning,পরিকল্পনা মন্ত্রণালয়,sid.gov.bd
+406,বাংলাদেশ পরিসংখ্যান ব্যুরো,Bangladesh Bureau of Statistics,Others,Statistics and Informatics Division,পরিসংখ্যান ও তথ্য ব্যবস্থাপনা বিভাগ,bbs.gov.bd
+407,"ডাক, টেলিযোগাযোগ ও তথ্যপ্রযুক্তি মন্ত্রণালয়","Ministry of Posts, Telecommunications and Information Technology",Ministry/Division,,,moptit.gov.bd
+408,তথ্য ও যোগাযোগ প্রযুক্তি বিভাগ,ICT Division,Division,"Ministry of Posts, Telecommunications and Information Technology","ডাক, টেলিযোগাযোগ ও তথ্যপ্রযুক্তি মন্ত্রণালয়",ictd.gov.bd
+409,তথ্য ও যোগাযোগ প্রযুক্তি অধিদপ্তর,Department of ICT,Directorate,ICT Division,তথ্য ও যোগাযোগ প্রযুক্তি বিভাগ,doict.gov.bd
+410,এসপায়ার টু ইনোভেট (এটুআই),Aspire to Innovate (a2i),Others,ICT Division,তথ্য ও যোগাযোগ প্রযুক্তি বিভাগ,a2i.gov.bd
+411,বাংলাদেশ কম্পিউটার কাউন্সিল (বিসিসি),Bangladesh Computer Council (BCC),Others,ICT Division,তথ্য ও যোগাযোগ প্রযুক্তি বিভাগ,bcc.gov.bd
+412,বাংলাদেশ ডাটা সেন্টার কোম্পানি লিমিটেড (বিডিসিসিএল),Bangladesh Data Center Company Limited (BDCCL),Others,ICT Division,তথ্য ও যোগাযোগ প্রযুক্তি বিভাগ,bdccl.gov.bd
+413,বাংলাদেশ হাই-টেক পার্ক কর্তৃপক্ষ,Bangladesh Hi-Tech Park Authority,Others,ICT Division,তথ্য ও যোগাযোগ প্রযুক্তি বিভাগ,bhtpa.gov.bd
+414,জাতীয় সাইবার সুরক্ষা এজেন্সি,National Cyber Security Agency,Others,ICT Division,তথ্য ও যোগাযোগ প্রযুক্তি বিভাগ,dsa.portal.gov.bd
+415,কন্ট্রোলার অব সার্টিফাইং অথরিটিজ,Office of the Controller of Certifying Authorities (CCA),Others,ICT Division,তথ্য ও যোগাযোগ প্রযুক্তি বিভাগ,cca.gov.bd
+416,স্টার্ট আপ বাংলাদেশ লিমিটেড,Startup Bangladesh Limited,Others,ICT Division,তথ্য ও যোগাযোগ প্রযুক্তি বিভাগ,startupbangladesh.vc
+417,ডাক ও টেলিযোগাযোগ বিভাগ,Posts and Telecommunications Division,Division,"Ministry of Posts, Telecommunications and Information Technology","ডাক, টেলিযোগাযোগ ও তথ্যপ্রযুক্তি মন্ত্রণালয়",ptd.gov.bd
+418,টেলিযোগাযোগ অধিদপ্তর,Department of Telecommunications,Directorate,Posts and Telecommunications Division,ডাক ও টেলিযোগাযোগ বিভাগ,telecomdept.gov.bd
+419,ডাক অধিদপ্তর,Directorate Of Posts,Directorate,Posts and Telecommunications Division,ডাক ও টেলিযোগাযোগ বিভাগ,bdpost.gov.bd
+420,বাংলাদেশ ক্যাবল শিল্প লিমিটেড,Bangladesh Cable Shilpa Ltd,Others,Posts and Telecommunications Division,ডাক ও টেলিযোগাযোগ বিভাগ,bcsl.gov.bd
+421,বাংলাদেশ স্যাটেলাইট কোম্পানি লিমিটেড,Bangladesh Satellite Company Ltd.,Others,Posts and Telecommunications Division,ডাক ও টেলিযোগাযোগ বিভাগ,bscl.portal.gov.bd
+422,বাংলাদেশ সাবমেরিন ক্যাবলস পিএলসি,Bangladesh Submarine Cables PLC (BSCPLC),Others,Posts and Telecommunications Division,ডাক ও টেলিযোগাযোগ বিভাগ,bscplc.gov.bd
+423,বাংলাদেশ টেলিযোগাযোগ রেগুলেটরি কমিশন,Bangladesh Telecommunication Regulatory Commission,Others,Posts and Telecommunications Division,ডাক ও টেলিযোগাযোগ বিভাগ,btrc.gov.bd
+424,বাংলাদেশ টেলিকমিউনিকেশনস কোম্পানি লিমিটেড,Bangladesh Telecommunications Company Limited(BTCL),Others,Posts and Telecommunications Division,ডাক ও টেলিযোগাযোগ বিভাগ,btcl.gov.bd
+425,মেইলিং অপারেটর ও কুরিয়ার সার্ভিস লাইসেন্সিং কর্তৃপক্ষ,Mailing Operator and Courier Service Licensing Authority,Others,Posts and Telecommunications Division,ডাক ও টেলিযোগাযোগ বিভাগ,mocsla.portal.gov.bd
+426,টেলিফোন শিল্প সংস্থা লিমিটেড,Telephone Shilpa Sangstha Limited,Others,Posts and Telecommunications Division,ডাক ও টেলিযোগাযোগ বিভাগ,tss.gov.bd
+427,টেলিটক বাংলাদেশ লি:,Teletalk Bangladesh Ltd.,Others,Posts and Telecommunications Division,ডাক ও টেলিযোগাযোগ বিভাগ,teletalk.gov.bd
+428,ধর্ম বিষয়ক মন্ত্রণালয়,Ministry of Religious Affairs,Ministry/Division,,,mora.gov.bd
+429,"বাংলাদেশ হজ অফিস, জেদ্দা","Bangladesh Haj Office, Jeddah",Others,Ministry of Religious Affairs,ধর্ম বিষয়ক মন্ত্রণালয়,haj-jeddah.portal.gov.bd
+430,ইসলামিক ফাউন্ডেশন,Bangladesh Islamic Foundation,Others,Ministry of Religious Affairs,ধর্ম বিষয়ক মন্ত্রণালয়,islamicfoundation.gov.bd
+431,বৌদ্ধ ধর্মীয় কল্যাণ ট্রাস্ট,Buddhist Religious Welfare Trust,Others,Ministry of Religious Affairs,ধর্ম বিষয়ক মন্ত্রণালয়,brwt.gov.bd
+432,"হজ অফিস, ঢাকা","Haj Office, Dhaka",Others,Ministry of Religious Affairs,ধর্ম বিষয়ক মন্ত্রণালয়,hajoffice.gov.bd
+433,হিন্দু ধর্মীয় কল্যাণ ট্রাস্ট,Hindu Religious Welfare Trust,Others,Ministry of Religious Affairs,ধর্ম বিষয়ক মন্ত্রণালয়,hindutrust.gov.bd
+434,বাংলাদেশ ওয়াক্‌ফ প্রশাসকের কার্যালয়,Office of the Administrator of Waqfs Bangladesh,Others,Ministry of Religious Affairs,ধর্ম বিষয়ক মন্ত্রণালয়,waqf.gov.bd
+435,খ্রিস্টান ধর্মীয় কল্যাণ ট্রাস্ট,THE CHRISTIAN RELIGIOUS WELFARE TRUST (CRWT),Others,Ministry of Religious Affairs,ধর্ম বিষয়ক মন্ত্রণালয়,crwt.gov.bd
+436,দুর্যোগ ব্যবস্থাপনা ও ত্রাণ মন্ত্রণালয়,Ministry of Disaster Management and Relief,Ministry/Division,,,modmr.gov.bd
+437,দুর্যোগ ব্যবস্থাপনা অধিদপ্তর,Department Of Disaster Management,Directorate,Ministry of Disaster Management and Relief,দুর্যোগ ব্যবস্থাপনা ও ত্রাণ মন্ত্রণালয়,ddm.gov.bd
+438,ঘূর্ণিঝড় প্রস্তুতি কর্মসূচি (সিপিপি),Cyclone Preparedness Programme (CPP),Others,Ministry of Disaster Management and Relief,দুর্যোগ ব্যবস্থাপনা ও ত্রাণ মন্ত্রণালয়,cpp.gov.bd
+439,জাতীয় দুর্যোগ ব্যবস্থাপনা তথ্য বাতায়ন,National Disaster Management Information System (NDMIS),Others,Ministry of Disaster Management and Relief,দুর্যোগ ব্যবস্থাপনা ও ত্রাণ মন্ত্রণালয়,ndmis.gov.bd
+440,শরণার্থী ত্রাণ ও প্রত্যাবাসন কমিশনারের কার্যালয়,Office of The Refugee Relief and Repatriation Commissioner,Others,Ministry of Disaster Management and Relief,দুর্যোগ ব্যবস্থাপনা ও ত্রাণ মন্ত্রণালয়,rrrc.gov.bd
+441,নৌপরিবহন মন্ত্রণালয়,Ministry of Shipping,Ministry/Division,,,mos.gov.bd
+442,নৌপরিবহন অধিদপ্তর,Department of Shipping,Directorate,Ministry of Shipping,নৌপরিবহন মন্ত্রণালয়,dos.gov.bd
+443,বাংলাদেশ অভ্যন্তরীণ নৌ-পরিবহন কর্তৃপক্ষ,Bangladesh Inland Water Transport Authority,Others,Ministry of Shipping,নৌপরিবহন মন্ত্রণালয়,biwta.gov.bd
+444,বাংলাদেশ অভ্যন্তরীণ নৌ-পরিবহন করপোরেশন,Bangladesh Inland Water Transport Corporation,Others,Ministry of Shipping,নৌপরিবহন মন্ত্রণালয়,biwtc.gov.bd
+445,বাংলাদেশ স্থলবন্দর কর্তৃপক্ষ,Bangladesh Land Port Authority,Others,Ministry of Shipping,নৌপরিবহন মন্ত্রণালয়,blpa.gov.bd
+446,বাংলাদেশ মেরিন একাডেমী,Bangladesh Marine Academy,Others,Ministry of Shipping,নৌপরিবহন মন্ত্রণালয়,macademy.gov.bd
+447,"বাংলাদেশ মেরিন একাডেমি, বরিশাল","Bangladesh Marine Academy, Barishal",Others,Ministry of Shipping,নৌপরিবহন মন্ত্রণালয়,macademybarishal.gov.bd
+448,"বাংলাদেশ মেরিন একাডেমি, পাবনা","Bangladesh Marine Academy, Pabna",Others,Ministry of Shipping,নৌপরিবহন মন্ত্রণালয়,macademypabna.gov.bd
+449,"বাংলাদেশ মেরিন একাডেমি, রংপুর","Bangladesh Marine Academy, Rangpur",Others,Ministry of Shipping,নৌপরিবহন মন্ত্রণালয়,macademyrangpur.gov.bd
+450,"বাংলাদেশ মেরিন একাডেমি, সিলেট","Bangladesh Marine Academy, Sylhet",Others,Ministry of Shipping,নৌপরিবহন মন্ত্রণালয়,macademysylhet.gov.bd
+451,বাংলাদেশ শিপিং কর্পোরেশন,Bangladesh Shipping Corporation,Others,Ministry of Shipping,নৌপরিবহন মন্ত্রণালয়,bsc.portal.gov.bd
+452,চট্টগ্রাম বন্দর কর্তৃপক্ষ,Chittagong Port Authority,Others,Ministry of Shipping,নৌপরিবহন মন্ত্রণালয়,cpa.gov.bd
+453,নাবিক কল্যাণ পরিদপ্তর,Directorate of Seafarers Welfare,Others,Ministry of Shipping,নৌপরিবহন মন্ত্রণালয়,dsw.gov.bd
+454,মোংলা বন্দর কর্তৃপক্ষ,Mongla Port Authority,Others,Ministry of Shipping,নৌপরিবহন মন্ত্রণালয়,mpa.gov.bd
+455,ন্যাশনাল মেরিটাইম ইনস্টিটিউট,National Maritime Institute,Others,Ministry of Shipping,নৌপরিবহন মন্ত্রণালয়,nmi.gov.bd
+456,জাতীয় নদী রক্ষা কমিশন,National River Conservation Commission.,Others,Ministry of Shipping,নৌপরিবহন মন্ত্রণালয়,nrcc.gov.bd
+457,পায়রা বন্দর কর্তৃপক্ষ,Payra Port Authority,Others,Ministry of Shipping,নৌপরিবহন মন্ত্রণালয়,ppa.gov.bd
+458,সমাজকল্যাণ মন্ত্রণালয়,Ministry of Social Welfare,Ministry/Division,,,msw.gov.bd
+459,সমাজসেবা অধিদপ্তর,Department of Social Services,Directorate,Ministry of Social Welfare,সমাজকল্যাণ মন্ত্রণালয়,dss.gov.bd
+460,বাংলাদেশ জাতীয় সমাজকল্যাণ পরিষদ,Bangladesh National Social Welfare Council,Others,Ministry of Social Welfare,সমাজকল্যাণ মন্ত্রণালয়,bnswc.gov.bd
+461,বাংলাদেশ রিহ্যাবিলিটেশন কাউন্সিল,Bangladesh Rehabilitation Council,Others,Ministry of Social Welfare,সমাজকল্যাণ মন্ত্রণালয়,brc.portal.gov.bd
+462,জাতীয় প্রতিবন্ধী উন্নয়ন ফাউন্ডেশন,National Foundation for Development of the Disabled Persons,Others,Ministry of Social Welfare,সমাজকল্যাণ মন্ত্রণালয়,jpuf.gov.bd
+463,নিউরো-ডেভেলপমেন্টাল প্রতিবন্ধী সুরক্ষা ট্রাস্ট,Neuro-Developmental Disabilities Protection Trust,Others,Ministry of Social Welfare,সমাজকল্যাণ মন্ত্রণালয়,nddtrust.gov.bd
+464,"শারীরিক প্রতিবন্ধী সুরক্ষা ট্রাস্ট, মৈত্রী শিল্প",Physically Disabled Protection Trust,Others,Ministry of Social Welfare,সমাজকল্যাণ মন্ত্রণালয়,spst.portal.gov.bd
+465,শেখ জায়েদ বিন সুলতান আল নাহিয়ান ট্রাস্ট,Sheikh Zayed Bin Sultan Al Nahiyan Trust,Others,Ministry of Social Welfare,সমাজকল্যাণ মন্ত্রণালয়,alnahyantrust.gov.bd
+466,মহিলা ও শিশু বিষয়ক মন্ত্রণালয়,Ministry of Women and Children Affairs,Ministry/Division,,,mowca.gov.bd
+467,মহিলা বিষয়ক অধিদপ্তর,Department of Women Affairs,Directorate,Ministry of Women and Children Affairs,মহিলা ও শিশু বিষয়ক মন্ত্রণালয়,dwa.gov.bd
+468,ডিএনএ ল্যাবরেটরী ব্যবস্থাপনা অধিদপ্তর,Directorate of DNA Laboratory Management,Directorate,Ministry of Women and Children Affairs,মহিলা ও শিশু বিষয়ক মন্ত্রণালয়,ddlm.portal.gov.bd
+469,বাংলাদেশ শিশু একাডেমি,Bangladesh Shishu Academy,Others,Ministry of Women and Children Affairs,মহিলা ও শিশু বিষয়ক মন্ত্রণালয়,shishuacademy.gov.bd
+470,জাতীয় মহিলা সংস্থা,Jatiyo Mohila Sangstha,Others,Ministry of Women and Children Affairs,মহিলা ও শিশু বিষয়ক মন্ত্রণালয়,jms.gov.bd
+471,জয়িতা ফাউন্ডেশন,Joyeeta Foundation,Others,Ministry of Women and Children Affairs,মহিলা ও শিশু বিষয়ক মন্ত্রণালয়,joyeeta.gov.bd
+472,পানি সম্পদ মন্ত্রণালয়,Ministry of Water Resources,Ministry/Division,,,mowr.gov.bd
+473,বাংলাদেশ হাওর ও জলাভূমি উন্নয়ন অধিদপ্তর,Department of Bangladesh Haor and Wetlands Development,Directorate,Ministry of Water Resources,পানি সম্পদ মন্ত্রণালয়,dbhwd.gov.bd
+474,বাংলাদেশ পানি উন্নয়ন বোর্ড,Bangladesh Water Development Board,Others,Ministry of Water Resources,পানি সম্পদ মন্ত্রণালয়,bwdb.portal.gov.bd
+475,ইনষ্টিটিউট অব ওয়াটার মডেলিং,Institute of Water Modeling,Others,Ministry of Water Resources,পানি সম্পদ মন্ত্রণালয়,iwmbd.org
+476,"যৌথ নদী কমিশন, বাংলাদেশ","Joint Rivers Commission, Bangladesh",Others,Ministry of Water Resources,পানি সম্পদ মন্ত্রণালয়,jrcb.gov.bd
+477,নদী গবেষণা ইনস্টিটিউট,River Research Institute (RRI),Others,Ministry of Water Resources,পানি সম্পদ মন্ত্রণালয়,rri.gov.bd
+478,সিইজিআইএস,The Center for Environmental and Geographic Information Services (CEGIS),Others,Ministry of Water Resources,পানি সম্পদ মন্ত্রণালয়,cegisbd.com
+479,পানি সম্পদ পরিকল্পনা সংস্থা (ওয়ারপো),Water Resources Planning Organization (WARPO),Others,Ministry of Water Resources,পানি সম্পদ মন্ত্রণালয়,warpo.gov.bd
+480,যুব ও ক্রীড়া মন্ত্রণালয়,Ministry of Youth and Sports,Ministry/Division,,,moysports.gov.bd
+481,যুব উন্নয়ন অধিদপ্তর,Department of Youth Development,Directorate,Ministry of Youth and Sports,যুব ও ক্রীড়া মন্ত্রণালয়,dyd.gov.bd
+482,বাংলাদেশ ক্রীড়া শিক্ষা প্রতিষ্ঠান,Bangladesh Krira Shikkha Protisthan (BKSP),Others,Ministry of Youth and Sports,যুব ও ক্রীড়া মন্ত্রণালয়,bksp.gov.bd
+483,ক্রীড়া পরিদপ্তর,Directorate of Sports,Others,Ministry of Youth and Sports,যুব ও ক্রীড়া মন্ত্রণালয়,ds.gov.bd
+484,জাতীয় যুব উন্নয়ন ইনস্টিটিউট,National Institute of Youth Development,Others,Ministry of Youth and Sports,যুব ও ক্রীড়া মন্ত্রণালয়,niyd.gov.bd
+485,জাতীয় ক্রীড়াসেবী কল্যাণ ফাউন্ডেশন,National Krirashebi Kalyan Foundation,Others,Ministry of Youth and Sports,যুব ও ক্রীড়া মন্ত্রণালয়,bkkf.portal.gov.bd
+486,জাতীয় ক্রীড়া পরিষদ,National Sports Council,Others,Ministry of Youth and Sports,যুব ও ক্রীড়া মন্ত্রণালয়,nsc.gov.bd
+487,মুক্তিযুদ্ধ বিষয়ক মন্ত্রণালয়,Ministry of Liberation War Affairs,Ministry/Division,,,molwa.gov.bd
+488,জুলাই গণঅভ্যুত্থান অধিদপ্তর,Directorate of July Mass Uprising,Directorate,Ministry of Liberation War Affairs,মুক্তিযুদ্ধ বিষয়ক মন্ত্রণালয়,djmu.portal.gov.bd
+489,বাংলাদেশ মুক্তিযোদ্ধা কল্যাণ ট্রাস্ট,Bangladesh Freedom Fighter Welfare Trust,Others,Ministry of Liberation War Affairs,মুক্তিযুদ্ধ বিষয়ক মন্ত্রণালয়,bffwt.gov.bd
+490,জাতীয় মুক্তিযোদ্ধা কাউন্সিল (জামুকা),Jatio Muktijoddha Council (Jamuka),Others,Ministry of Liberation War Affairs,মুক্তিযুদ্ধ বিষয়ক মন্ত্রণালয়,jamuka.gov.bd
+491,চিফ একাউন্টস এন্ড ফিন্যান্স অফিসার এর কার্যালয়,Office of the Chief Accounts and Finance Officer,Others,Ministry of Liberation War Affairs,মুক্তিযুদ্ধ বিষয়ক মন্ত্রণালয়,cafomolwa.portal.gov.bd
+492,প্রবাসী কল্যাণ ও বৈদেশিক কর্মসংস্থান মন্ত্রণালয়,Ministry of Expatriates’ Welfare and Overseas Employment,Ministry/Division,,,probashi.gov.bd
+493,বাংলাদেশ ওভারসিজ এমপ্লয়মেন্ট অ্যান্ড সার্ভিসেস লিঃ (বোয়েসেল),Bangladesh Overseas Employment and Services Limited. (BOESL),Others,Ministry of Expatriates’ Welfare and Overseas Employment,প্রবাসী কল্যাণ ও বৈদেশিক কর্মসংস্থান মন্ত্রণালয়,boesl.gov.bd
+494,জনশক্তি কর্মসংস্থান ও প্রশিক্ষণ ব্যুরো,Bureau of Manpower Employment and Training,Others,Ministry of Expatriates’ Welfare and Overseas Employment,প্রবাসী কল্যাণ ও বৈদেশিক কর্মসংস্থান মন্ত্রণালয়,bmet.gov.bd
+495,প্রবাসী কল্যাণ ব্যাংক,Probashi Kallyan Bank,Others,Ministry of Expatriates’ Welfare and Overseas Employment,প্রবাসী কল্যাণ ও বৈদেশিক কর্মসংস্থান মন্ত্রণালয়,pkb.gov.bd
+496,ওয়েজ আর্নার্স কল্যাণ বোর্ড,Wage Earners' Welfare Board (WEWB),Others,Ministry of Expatriates’ Welfare and Overseas Employment,প্রবাসী কল্যাণ ও বৈদেশিক কর্মসংস্থান মন্ত্রণালয়,wewb.gov.bd
+497,রেলপথ মন্ত্রণালয়,Ministry of Railways,Ministry/Division,,,mor.gov.bd
+498,রেলপথ পরিদর্শন অধিদপ্তর,Department of Railway Inspection,Directorate,Ministry of Railways,রেলপথ মন্ত্রণালয়,dri.portal.gov.bd
+499,"বাংলাদেশ রেলওয়ে, ঢাকা বিভাগ","Bangladesh Railway, Dhaka Division",Others,Ministry of Railways,রেলপথ মন্ত্রণালয়,railwaydhaka.gov.bd
+500,"বাংলাদেশ রেলওয়ে, পশ্চিম","Bangladesh Railway, West",Others,Ministry of Railways,রেলপথ মন্ত্রণালয়,railwaywest.gov.bd
+501,কনটেইনার কোম্পানি অব বাংলাদেশ লিমিটেড (সিসিবিএল),Container Company of Bangladesh Limited (CCBL),Others,Ministry of Railways,রেলপথ মন্ত্রণালয়,ccbl.gov.bd
+502,"রেলওয়ে পূর্ব, বাংলাদেশ","Railway East, Bangladesh",Others,Ministry of Railways,রেলপথ মন্ত্রণালয়,railwayeast.portal.gov.bd
+503,বিজ্ঞান ও প্রযুক্তি মন্ত্রণালয়,Ministry of Science and Technology,Ministry/Division,,,most.gov.bd
+504,জাতীয় বিজ্ঞান ও প্রযুক্তি জাদুঘর,National Museum Of Science and Technology,Others,Ministry of Science and Technology,বিজ্ঞান ও প্রযুক্তি মন্ত্রণালয়,nmst.gov.bd
+505,নভোথিয়েটার,NovoTheatre,Others,Ministry of Science and Technology,বিজ্ঞান ও প্রযুক্তি মন্ত্রণালয়,novotheatre.gov.bd
+506,বাংলাদেশ পরমাণু শক্তি কমিশন,Bangladesh Atomic Energy Commission,Others,Ministry of Science and Technology,বিজ্ঞান ও প্রযুক্তি মন্ত্রণালয়,baec.gov.bd
+507,বাংলাদেশ পরমাণু শক্তি নিয়ন্ত্রণ কর্তৃপক্ষ,Bangladesh Atomic Energy Regulatory Authority,Others,Ministry of Science and Technology,বিজ্ঞান ও প্রযুক্তি মন্ত্রণালয়,baera.gov.bd
+508,বাংলাদেশ বিজ্ঞান ও শিল্প গবেষণা পরিষদ (বিসিএসআইআর),Bangladesh Council of Scientific and Industrial Research (BCSIR),Others,Ministry of Science and Technology,বিজ্ঞান ও প্রযুক্তি মন্ত্রণালয়,bcsir.gov.bd
+509,বাংলাদেশ ন্যাশনাল সায়েন্টিফিক এন্ড টেকনিক্যাল ডকুমেন্টেশন সেন্টার,Bangladesh National Scientific and Technical Documentation Centre,Others,Ministry of Science and Technology,বিজ্ঞান ও প্রযুক্তি মন্ত্রণালয়,bansdoc.gov.bd
+510,বাংলাদেশ ওশানোগ্রাফিক রিসার্চ ইনস্টিটিউট,Bangladesh Oceanographic Research Institute,Others,Ministry of Science and Technology,বিজ্ঞান ও প্রযুক্তি মন্ত্রণালয়,bori.gov.bd
+511,বাংলাদেশ রেফারেন্স ইনস্টিটিউট ফর কেমিক্যাল মেজারমেন্টস্‌ (বিআরআইসিএম),Bangladesh Reference Institute for Chemical Measurements (BRICM),Others,Ministry of Science and Technology,বিজ্ঞান ও প্রযুক্তি মন্ত্রণালয়,bricm.gov.bd
+512,ন্যাশনাল ইনস্টিটিউট অব বায়োটেকনোলজি,National Institute of Biotechnology,Others,Ministry of Science and Technology,বিজ্ঞান ও প্রযুক্তি মন্ত্রণালয়,nib.gov.bd
+513,নিউক্লিয়ার পাওয়ার প্ল্যান্ট কোম্পানী বাংলাদেশ লিমিটেড (এনপিসিবিএল),Nuclear Power Plant Company Bangladesh Limited (NPCBL),Others,Ministry of Science and Technology,বিজ্ঞান ও প্রযুক্তি মন্ত্রণালয়,npcbl.gov.bd
+514,বিজ্ঞান ও প্রযুক্তি ফেলোশিপ ট্রাস্ট,Science and Technology Fellowship Trust,Others,Ministry of Science and Technology,বিজ্ঞান ও প্রযুক্তি মন্ত্রণালয়,bstft.gov.bd
