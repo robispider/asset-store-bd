@@ -61,22 +61,31 @@ class MenuRegistry
                     $hasAccess  = false;
 
                     foreach ($qualifiers as $perm) {
-                        if ($perm === 'office_admin') {
-                            // 4. Office Admin — check LocationProfile.office_admin_id for active location
-                            $hasAccess = LocationProfile::where('location_id', $locationId)
-                                ->where('office_admin_id', $user->id)
-                                ->exists();
+                        if (in_array($perm, ['storekeeper', 'approver', 'office_admin', 'ict_officer'])) {
+                            $locationId = $context->locationId;
 
-                        } elseif (in_array($perm, ['storekeeper', 'approver'])) {
-                            // 2 & 3. Role-slug — check gov_office_responsibilities pivot
-                            $roleSlugs = ($perm === 'approver')
-                                ? ['primary_approver', 'final_approver']
-                                : ['storekeeper'];
+                            if ($perm === 'office_admin') {
+                                // 4. Office Admin — check LocationProfile.office_admin_id for active location
+                                $hasAccess = LocationProfile::where('location_id', $locationId)
+                                    ->where('office_admin_id', $user->id)
+                                    ->exists();
+                                    
+                            } elseif ($perm === 'ict_officer') {
+                                // ICT Officer — Check if an active geographical jurisdiction exists
+                                $hasAccess = \GovStore\Organization\Models\IctJurisdiction::where('user_id', $user->id)
+                                    ->exists();
+                                    
+                            } else {
+                                // 2 & 3. Role-slug — check gov_office_responsibilities pivot
+                                $roleSlugs = ($perm === 'approver')
+                                    ? ['primary_approver', 'final_approver']
+                                    : ['storekeeper'];
 
-                            $hasAccess = OfficeResponsibility::where('user_id', $user->id)
-                                ->where('location_id', $locationId)
-                                ->whereIn('role_slug', $roleSlugs)
-                                ->exists();
+                                $hasAccess = OfficeResponsibility::where('user_id', $user->id)
+                                    ->where('location_id', $locationId)
+                                    ->whereIn('role_slug', $roleSlugs)
+                                    ->exists();
+                            }
 
                         } else {
                             // 5. Standard capability via EffectivePermissionSet

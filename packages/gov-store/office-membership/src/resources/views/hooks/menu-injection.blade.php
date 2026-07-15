@@ -2,30 +2,10 @@
 <script nonce="{{ csrf_token() }}">
 $(document).ready(function() {
     
-    console.log("Gov-Store: Starting dynamic layout injection checks...");
+    console.log("Gov-Store: Starting navbar context switcher injection...");
 
     // =========================================================================
-    // 1. USER DROP-DOWN LINK: Inject My Office Memberships safely after "Edit Profile"
-    // =========================================================================
-    if ($('.dropdown.user-menu .dropdown-menu').length) {
-        var memActive = window.location.pathname.includes('gov-store/my-memberships') ? 'style="font-weight: bold; background:#eee;"' : '';
-        var link = '<li Handy-id="gov-memberships-dropdown-item" ' + memActive + '>' +
-            '<a href="{{ route("gov.membership.index") }}">' +
-                '<i class="fas fa-id-badge fa-fw"></i> My Office Memberships' +
-            '</a>' +
-        '</li>';
-        
-        var profileLink = $('.dropdown.user-menu .dropdown-menu a[href*="profile"]').parent();
-        if (profileLink.length) {
-            profileLink.after(link);
-            console.log("Gov-Store: Successfully injected memberships link after profile.");
-        } else {
-            $('.dropdown.user-menu .dropdown-menu').append(link);
-        }
-    }
-
-    // =========================================================================
-    // 2. TOP-BAR MULTI-OFFICE CONTEXT SWITCHER (PURE MEMBERSHIP ID LOGIC)
+    // 1. TOP-BAR MULTI-OFFICE CONTEXT SWITCHER (NATIVE EMBED)
     // =========================================================================
     @php
         $user = auth()->user();
@@ -40,7 +20,6 @@ $(document).ready(function() {
             ? \App\Models\Location::whereHas('profile', function($q) { $q->where('lifecycle_status', 'operational'); })->get() 
             : $activeMemberships->pluck('location')->filter();
 
-        // Read the pure working membership ID from the session
         $currentMembershipId = session('gov_working_membership_id');
         
         $currentWorkingName = null;
@@ -48,10 +27,8 @@ $(document).ready(function() {
             $activeMem = $activeMemberships->where('id', $currentMembershipId)->first();
             $currentWorkingName = $activeMem ? $activeMem->location->name : null;
         } elseif ($isAdmin) {
-            // Superadmins without an active membership show Global
             $currentWorkingName = null;
         } else {
-            // Fallback for native users without memberships
             $currentWorkingName = \App\Models\Location::find($user->location_id)?->name;
         }
     @endphp
@@ -87,10 +64,7 @@ $(document).ready(function() {
 
             @foreach($activeLocations as $loc)
                 @php 
-                    // Check if this location matches the currently active membership
                     $isCurrent = $currentMembershipId && $activeMemberships->where('id', $currentMembershipId)->first()?->location_id === $loc->id; 
-                    
-                    // Fallback visual check for Superadmins who don't have an active membership id but are viewing a specific location
                     if (!$currentMembershipId && $isAdmin && session('gov_working_location_id') == $loc->id) {
                         $isCurrent = true;
                     }
@@ -103,83 +77,19 @@ $(document).ready(function() {
                     '</a>' +
                     '<form id="switch-context-form-{{ $loc->id }}" action="{{ route("gov.membership.switch") }}" method="POST" style="display:none;">' +
                         '<input type="hidden" name="_token" value="{{ csrf_token() }}">' +
-                        
-                        // FOR ADMINS: Pass location_id. FOR STAFF: Pass specific membership_id.
                         @if($isAdmin)
                             '<input type="hidden" name="location_id" value="{{ $loc->id }}">' +
                         @else
                             @php $memId = $activeMemberships->where('location_id', $loc->id)->first()->id; @endphp
                             '<input type="hidden" name="membership_id" value="{{ $memId }}">' +
                         @endif
-                        
                     '</form>' +
                 '</li>';
             @endforeach
 
             dropdownHtml += '</ul></li>';
-
             navList.first().prepend(dropdownHtml);
-            console.log("Gov-Store: Multi-office context switcher successfully injected.");
-        }
-    @endif
-
-    // =========================================================================
-    // 3. ADMIN SIDEBAR: Inject Emergency Overrides console strictly for system Superusers
-    // =========================================================================
-    @if(auth()->user()->isSuperUser())
-        if ($('.sidebar-menu').length && !$('#gov-override-sidebar-item').length) {
-            var activeClass = window.location.pathname.includes('override/console') ? 'active' : '';
-            var sidebarLink = '<li class="' + activeClass + '" id="gov-override-sidebar-item">' +
-                '<a href="{{ route("gov.membership.override.console") }}">' +
-                    '<i class="fas fa-shield-alt fa-fw"></i>' +
-                    '<span>Membership Overrides</span>' +
-                '</a>' +
-            '</li>';
-            
-            if ($('#gov-jurisdictions-sidebar-item').length) {
-                $('#gov-jurisdictions-sidebar-item').after(sidebarLink);
-            } else {
-                $('.sidebar-menu').append(sidebarLink);
-            }
-            console.log("Gov-Membership: Emergency Console link injected successfully.");
-        }
-    @endif
-
-    // =========================================================================
-    // 4. INJECT STAFF MANAGEMENT LINK (For Office Admins - RESOLVED VIA SINGLETON)
-    // =========================================================================
-    @php
-        // Pure Singleton Resolution: Pulls the active context location ID from memory
-        $context = app(\GovStore\TenantScope\Contexts\TenantContext::class);
-        
-        $isAdminOfActiveContext = false;
-        if ($context->isActive && $context->locationId) {
-            $isAdminOfActiveContext = \GovStore\Organization\Models\LocationProfile::where('location_id', $context->locationId)
-                ->where('office_admin_id', auth()->id())
-                ->exists();
-        }
-    @endphp
-
-    @if($isAdminOfActiveContext)
-        if ($('.sidebar-menu').length) {
-            var staffActive = window.location.pathname.includes('gov-store/office/staff') ? 'active' : '';
-            var staffLink = '<li class="' + staffActive + '">' +
-                '<a href="{{ route("gov.membership.admin.index") }}">' +
-                    '<i class="fas fa-users-cog fa-fw"></i>' +
-                    '<span>Staff Management</span>' +
-                '</a>' +
-            '</li>';
-            
-            var setupMenu = $('.sidebar-menu a[href*="gov-store/office"]').filter(function() {
-                return $(this).attr('href').endsWith('gov-store/office') || $(this).attr('href').endsWith('gov-store/office/');
-            });
-
-            if (setupMenu.length) {
-                setupMenu.parent().after(staffLink);
-            } else {
-                $('.sidebar-menu').append(staffLink);
-            }
-            console.log("Gov-Membership: Staff Management link injected successfully.");
+            console.log("Gov-Store: Navbar context switcher successfully loaded.");
         }
     @endif
 });
