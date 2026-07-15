@@ -151,7 +151,7 @@ class FulfillmentService
                     $item->update(['line_fulfillment_status' => 'cancelled']);
                 }
             }
-
+  
             $request->update([
                 'approval_status' => 'closed',
                 'fulfillment_status' => 'closed',

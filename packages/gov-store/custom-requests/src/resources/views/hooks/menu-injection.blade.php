@@ -3,24 +3,23 @@
 $(document).ready(function() {
     console.log("Gov-Store: Building dynamic e-commerce menus.");
 
-    // --- 1. SIDEBAR FOLDERS AND LINKS ---
     if ($('.sidebar-menu').length) {
         var path = window.location.pathname;
         var isStoreActive = path.includes('gov-requests');
         var isApprovalsActive = path.includes('gov-requests/admin') && !path.includes('policies') && !path.includes('locations');
-        var isFulfillmentActive = path.includes('gov-requests/fulfillment');
+        var isFulfillmentActive = path.includes('gov-requests/fulfillment') && !path.includes('fulfillment-register');
+        var isFulfillmentRegisterActive = path.includes('gov-requests/fulfillment-register');
         var isPoliciesActive = path.includes('settings/policies');
         var isLocationsActive = path.includes('settings/locations');
         var isCatalogActive = path.includes('gov-requests/catalog');
         var isMyRequestsActive = path.includes('gov-requests/my-requests');
 
-     @php
+        @php
             $user = auth()->user();
             $isSysAdmin = $user->isSuperUser() || $user->hasAccess('admin');
             $isApprover = false;
             $isStorekeeper = false;
 
-            // NEW MATRIX LOOKUP: Check if user holds roles in ANY office they are a member of
             if (class_exists(\GovStore\OfficeMembership\Models\OfficeResponsibility::class)) {
                 $isApprover = \GovStore\OfficeMembership\Models\OfficeResponsibility::where('user_id', $user->id)
                                 ->whereIn('role_slug', ['primary_approver', 'final_approver'])
@@ -42,7 +41,6 @@ $(document).ready(function() {
                 '<li class="' + (isCatalogActive ? 'active' : '') + '"><a href="{{ route("gov.requests.catalog") }}"><i class="fas fa-store fa-fw"></i> Browse Catalog</a></li>' +
                 '<li class="' + (isMyRequestsActive ? 'active' : '') + '"><a href="{{ route("gov.requests.user.index") }}"><i class="fas fa-clipboard-list fa-fw"></i> My Requests</a></li>';
 
-        // Render Operations section if user is Admin, Approver, or Storekeeper
         @if($isSysAdmin || $isApprover || $isStorekeeper)
             storeMenu += '<li class="header" style="padding: 5px 15px; font-size: 10px; color: #72afd2; background: #1a2226; letter-spacing: 1px;">STORE OPERATIONS</li>';
             
@@ -52,6 +50,8 @@ $(document).ready(function() {
             
             @if($isSysAdmin || $isStorekeeper)
                 storeMenu += '<li class="' + (isFulfillmentActive ? 'active' : '') + '"><a href="{{ route("gov.requests.fulfillment.index") }}"><i class="fas fa-shipping-fast fa-fw"></i> Fulfillment Queue</a></li>';
+                // NEW MENU ITEM BOUND TO THE NEW CUSTOM REQUESTS ROUTE
+                storeMenu += '<li class="' + (isFulfillmentRegisterActive ? 'active' : '') + '"><a href="{{ route("gov.requests.fulfillment_register.index") }}"><i class="fas fa-archive fa-fw"></i> Fulfillment Register</a></li>';
             @endif
             
             @if($isSysAdmin)
@@ -69,7 +69,7 @@ $(document).ready(function() {
         }
     }
 
-    // --- 2. ADD TO BASKET BUTTON ON ITEM VIEWS ---
+    // --- 2. ADD TO BASKET BUTTON ---
     if ($('.side-box .box-footer').length) {
         var path = window.location.pathname;
         var itemType = '';

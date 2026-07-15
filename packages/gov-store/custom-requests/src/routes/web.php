@@ -47,5 +47,9 @@ Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'gov-requests'], func
     // Admin Settings: Category Policies
     Route::get('/admin/settings/policies', [GovStore\CustomRequests\Http\Controllers\GovApprovalController::class, 'policiesIndex'])->name('gov.requests.admin.policies.index');
     Route::post('/admin/settings/policies/store', [GovStore\CustomRequests\Http\Controllers\GovApprovalController::class, 'policiesStore'])->name('gov.requests.admin.policies.store');
+
+    // Fulfillment Register (Completed service requests and their ledger documents)
+    Route::get('/fulfillment-register', [GovStore\CustomRequests\Http\Controllers\FulfillmentRegisterController::class, 'index'])->name('gov.requests.fulfillment_register.index');
+    Route::get('/fulfillment-register/{id}', [GovStore\CustomRequests\Http\Controllers\FulfillmentRegisterController::class, 'show'])->name('gov.requests.fulfillment_register.show');
     
 });

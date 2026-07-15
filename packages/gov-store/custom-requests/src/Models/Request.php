@@ -80,4 +80,11 @@ protected $casts = [
     {
         return $this->belongsTo(User::class, 'approved_by');
     }
+    /**
+     * Define the relationship to the Snipe-IT user who approved this Service Request.
+     */
+    public function approvedBy()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'approved_by');
+    }
 }
