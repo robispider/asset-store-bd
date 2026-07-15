@@ -11,16 +11,22 @@ class InjectTenantScopeUi
     {
         $response = $next($request);
 
-        if (auth()->check() && 
-            $response instanceof Response && 
+        if ($request->ajax() || $request->wantsJson()) {
+            return $response;
+        }
+
+        if (
+            auth()->check() &&
+            $response instanceof Response &&
             str_contains($response->headers->get('Content-Type') ?? '', 'text/html')
         ) {
             $content = $response->getContent();
-            $script = view('govscope::hooks.menu-injection')->render();
 
-            $pos = strrpos($content, '</body>');
-            if ($pos !== false) {
-                $content = substr($content, 0, $pos) . $script . substr($content, $pos);
+            if (str_contains($content, '</body>')) {
+                // Render the single, unified GovStore menu from the Central Menu Registry
+                $menuHtml = view('govscope::hooks.unified-menu')->render();
+                $content  = str_replace('</body>', $menuHtml . '</body>', $content);
+
                 $response->setContent($content);
             }
         }

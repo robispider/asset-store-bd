@@ -9,12 +9,18 @@ use GovStore\TenantScope\Scopes\MinistryLocationScope;
 use GovStore\TenantScope\Contexts\TenantContext;
 use GovStore\TenantScope\Http\Middleware\InitializeTenantContext;
 use GovStore\TenantScope\Http\Middleware\InjectTenantScopeUi;
+use GovStore\TenantScope\Navigation\MenuRegistry;
 use GovStore\TenantScope\Observers\TenantMutationObserver;
 
 class TenantScopeServiceProvider extends ServiceProvider
 {
     public function register()
     {
+        // Register the Central Navigation Registry as a shared singleton across all packages
+        $this->app->singleton(MenuRegistry::class, function () {
+            return new MenuRegistry();
+        });
+
         $this->app->singleton(TenantContext::class, function () {
             return new TenantContext();
         });
@@ -40,6 +46,9 @@ class TenantScopeServiceProvider extends ServiceProvider
         $router->pushMiddlewareToGroup('web', InjectTenantScopeUi::class);
         $router->pushMiddlewareToGroup('web', InitializeTenantContext::class);
         $router->pushMiddlewareToGroup('api', InitializeTenantContext::class);
+
+        // Register the foundational GovStore navigation structure
+        $this->registerBaseMenuStructure();
 
         // 1. Operational Models (Strict Physical Scoping ONLY)
         $operationalModels = [
@@ -87,5 +96,34 @@ class TenantScopeServiceProvider extends ServiceProvider
                 $modelClass::observe(TenantMutationObserver::class);
             }
         }
+    }
+
+    /**
+     * Seeds the Central Menu Registry with the root GovStore tree node
+     * and the superadmin-only Tenant Scoping item.
+     */
+    protected function registerBaseMenuStructure(): void
+    {
+        $registry = $this->app->make(MenuRegistry::class);
+
+        // Root tree folder — all package sub-items nest under this parent
+        $registry->register([
+            'id'    => 'gov-store',
+            'title' => 'Government Store',
+            'icon'  => 'fas fa-shopping-cart text-aqua',
+            'order' => 10,
+        ]);
+
+        // Superadmin-only Tenant Scoping link (replaces the old raw JS injection)
+        $registry->register([
+            'id'             => 'gov-tenantscope',
+            'parent'         => 'gov-store',
+            'title'          => 'Tenant Scoping',
+            'icon'           => 'fas fa-user-lock fa-fw',
+            'route'          => 'gov.scope.index',
+            'permission'     => 'superuser',
+            'order'          => 1,
+            'active_patterns' => ['gov-store/admin/scope*'],
+        ]);
     }
 }

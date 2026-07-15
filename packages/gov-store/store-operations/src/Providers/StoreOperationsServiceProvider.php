@@ -10,10 +10,10 @@ use GovStore\StoreOperations\Services\SystemGoodsIssueService;
 use GovStore\StoreOperations\Events\InventoryMovementCreated;
 use GovStore\StoreOperations\Listeners\UpdateSnipeQuantity;
 use GovStore\StoreOperations\Listeners\WriteNativeAuditLogs;
-use GovStore\StoreOperations\Http\Middleware\InjectStoreOperationsUi;
 use GovStore\StoreOperations\Console\Commands\RepairLedgerBalances;
 use GovStore\StoreOperations\UI\TabRegistry;
 use GovStore\StoreOperations\UI\Tab;
+use GovStore\TenantScope\Navigation\MenuRegistry;
 
 class StoreOperationsServiceProvider extends ServiceProvider
 {
@@ -39,11 +39,7 @@ class StoreOperationsServiceProvider extends ServiceProvider
         // 5. Load Views (Case-sensitivity safe)
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'storeops');
 
-        // 6. Register Zero-Touch UI Injection Middleware
-        $router = $this->app['router'];
-        $router->pushMiddlewareToGroup('web', InjectStoreOperationsUi::class);
-
-        // 7. Register CLI Commands
+        // 6. Register CLI Commands
         if ($this->app->runningInConsole()) {
             $this->commands([
                 RepairLedgerBalances::class,
@@ -68,8 +64,47 @@ class StoreOperationsServiceProvider extends ServiceProvider
             'component'  => \App\Models\Component::class,
         ]);
 
-        // 10. Register the Kardex Workspace Tab to target entities
+        // 10. Register navigation menus in the Central Menu Registry
+        $this->registerNavigationMenus();
+
+        // 11. Register the Kardex Workspace Tab to target entities
         $this->registerKardexTabs();
+    }
+
+    protected function registerNavigationMenus(): void
+    {
+        $registry = $this->app->make(MenuRegistry::class);
+
+        $registry->register([
+            'id'              => 'storeops-register',
+            'parent'          => 'gov-store',
+            'title'           => 'Stock Register Dashboard',
+            'icon'            => 'fa fa-cube text-aqua',
+            'route'           => 'storeops.register.index',
+            'permission'      => 'storekeeper',
+            'order'           => 20,
+            'active_patterns' => ['storeops/operations/kardex/*'],
+        ]);
+
+        $registry->register([
+            'id'         => 'storeops-receipts',
+            'parent'     => 'gov-store',
+            'title'      => 'Receive Goods (GRN)',
+            'icon'       => 'fa fa-sign-in text-green',
+            'route'      => 'storeops.receipts.create',
+            'permission' => 'storekeeper',
+            'order'      => 30,
+        ]);
+
+        $registry->register([
+            'id'         => 'storeops-issues',
+            'parent'     => 'gov-store',
+            'title'      => 'Ad-Hoc Direct Issue',
+            'icon'       => 'fa fa-sign-out text-orange',
+            'route'      => 'storeops.issues.create',
+            'permission' => 'storekeeper',
+            'order'      => 40,
+        ]);
     }
 
     protected function registerKardexTabs()
