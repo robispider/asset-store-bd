@@ -5,18 +5,20 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "ICT Division"
+            "name": "DoICT"
         }
     ],
     "require": {},
     "autoload": {
         "psr-4": {
-            "GovStore\\OfficeMembership\\": "src/",
-                 "GovStore\\OfficeMembership\\Database\\Seeds\\": "src/database/seeds/"
-        },
-    "exclude-from-classmap": [
-        "src/database/migrations",
-        "src/database/seeds"
-    ]
+            "GovStore\\OfficeMembership\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "GovStore\\OfficeMembership\\Providers\\OfficeMembershipServiceProvider"
+            ]
+        }
     }
 }

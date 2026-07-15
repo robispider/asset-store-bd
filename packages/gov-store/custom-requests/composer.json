@@ -1,6 +1,6 @@
 {
-    "name": "gov-store/tenant-scope",
-    "description": "Government Shared Tenant Scoping and Catalog Isolation Library for Bangladesh",
+    "name": "gov-store/custom-requests",
+    "description": "Custom Request Handling and Processing for Government Store Operations",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -11,13 +11,13 @@
     "require": {},
     "autoload": {
         "psr-4": {
-            "GovStore\\TenantScope\\": "src/"
+            "GovStore\\CustomRequests\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "GovStore\\TenantScope\\Providers\\TenantScopeServiceProvider"
+                "GovStore\\CustomRequests\\Providers\\CustomRequestServiceProvider"
             ]
         }
     }

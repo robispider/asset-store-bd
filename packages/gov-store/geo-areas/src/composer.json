@@ -5,16 +5,20 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "ICT Division"
+            "name": "DoICT"
         }
     ],
     "require": {},
     "autoload": {
         "psr-4": {
             "GovStore\\GeoAreas\\": "src/"
-        },
-    "exclude-from-classmap": [
-        "src/database/migrations"
-    ]
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "GovStore\\GeoAreas\\Providers\\GeoAreasServiceProvider"
+            ]
+        }
     }
 }
