@@ -14,11 +14,11 @@ class CreateGovOrganizationTables extends Migration
         Schema::dropIfExists('gov_ict_jurisdictions');
         Schema::dropIfExists('gov_location_profiles');
 
-        // 2. Create Location Profiles (Fixed: geo_area_id changed to unsignedBigInteger)
+        // 2. Create Location Profiles (Fixed: geo_area_id changed to unsignedInteger to match GeoAreaId size)
         Schema::create('gov_location_profiles', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('location_id')->unsigned()->unique();
-            $table->unsignedBigInteger('geo_area_id'); // Matches the bigint unsigned size of GeoAreaId
+            $table->unsignedInteger('geo_area_id'); // 32-bit unsigned integer matching GeoAreaId
             $table->integer('office_admin_id')->unsigned()->nullable();
             $table->string('lifecycle_status', 30)->default('provisioned')->index();
             $table->timestamp('geo_area_verified_at')->nullable();
@@ -31,11 +31,11 @@ class CreateGovOrganizationTables extends Migration
             $table->foreign('geo_area_verified_by')->references('id')->on('users')->onDelete('set null');
         });
 
-        // 3. Create ICT Officer Jurisdictions (Fixed: geo_area_id changed to unsignedBigInteger)
+        // 3. Create ICT Officer Jurisdictions (Fixed: geo_area_id changed to unsignedInteger to match GeoAreaId size)
         Schema::create('gov_ict_jurisdictions', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned()->unique();
-            $table->unsignedBigInteger('geo_area_id'); // Matches the bigint unsigned size of GeoAreaId
+            $table->unsignedInteger('geo_area_id'); // 32-bit unsigned integer matching GeoAreaId
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
