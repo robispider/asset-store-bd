@@ -14,11 +14,11 @@ class CreateGovOrganizationTables extends Migration
         Schema::dropIfExists('gov_ict_jurisdictions');
         Schema::dropIfExists('gov_location_profiles');
 
-        // 2. Create Location Profiles (with MANDATORY non-nullable GeoAreaId mapping)
+        // 2. Create Location Profiles (Fixed: geo_area_id changed to unsignedBigInteger)
         Schema::create('gov_location_profiles', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('location_id')->unsigned()->unique();
-            $table->integer('geo_area_id')->unsigned(); // Mandatory non-nullable geographical link
+            $table->unsignedBigInteger('geo_area_id'); // Matches the bigint unsigned size of GeoAreaId
             $table->integer('office_admin_id')->unsigned()->nullable();
             $table->string('lifecycle_status', 30)->default('provisioned')->index();
             $table->timestamp('geo_area_verified_at')->nullable();
@@ -31,33 +31,30 @@ class CreateGovOrganizationTables extends Migration
             $table->foreign('geo_area_verified_by')->references('id')->on('users')->onDelete('set null');
         });
 
-        // 3. Create ICT Officer Jurisdictions (The ICTOfficerGeo Tag Container)
+        // 3. Create ICT Officer Jurisdictions (Fixed: geo_area_id changed to unsignedBigInteger)
         Schema::create('gov_ict_jurisdictions', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned()->unique();
-            $table->integer('geo_area_id')->unsigned(); // Mapped geo boundary tag
+            $table->unsignedBigInteger('geo_area_id'); // Matches the bigint unsigned size of GeoAreaId
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('geo_area_id')->references('GeoAreaId')->on('gov_geo_areas')->onDelete('restrict');
         });
 
-        // 4. Create Location Roles (Fulfillment and approvals)
+        // 4. Create Location Roles
         Schema::create('gov_location_roles', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('location_id')->unsigned()->unique();
             
-            // Primary Approver & Delegate
             $table->integer('primary_approver_id')->unsigned()->nullable();
             $table->integer('primary_delegate_id')->unsigned()->nullable();
             $table->date('primary_delegate_until')->nullable();
             
-            // Final Approver & Delegate
             $table->integer('final_approver_id')->unsigned()->nullable();
             $table->integer('final_delegate_id')->unsigned()->nullable();
             $table->date('final_delegate_until')->nullable();
             
-            // Storekeeper & Delegate
             $table->integer('storekeeper_id')->unsigned()->nullable();
             $table->integer('storekeeper_delegate_id')->unsigned()->nullable();
             $table->date('storekeeper_delegate_until')->nullable();
@@ -73,7 +70,7 @@ class CreateGovOrganizationTables extends Migration
             $table->foreign('storekeeper_delegate_id')->references('id')->on('users')->onDelete('set null');
         });
 
-        // 5. Create Organization Activity Log (Immutable audit trail)
+        // 5. Create Organization Activity Log
         Schema::create('gov_organization_activity_logs', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('location_id')->unsigned();
