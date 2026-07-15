@@ -78,12 +78,12 @@
     "tecnickcom/tcpdf": "^6.5",
     "unicodeveloper/laravel-password": "^1.0",
     "watson/validating": "^8.1",
-   "gov-store/custom-requests": "dev-main",
-    "gov-store/organization": "dev-main",
-    "gov-store/geo-areas": "dev-main",
-    "gov-store/tenant-scope": "dev-main",
-    "gov-store/office-membership": "dev-main",
-    "gov-store/store-operations": "dev-main"
+   "gov-store/custom-requests": "dev-master",
+    "gov-store/organization": "dev-master",
+    "gov-store/geo-areas": "dev-master",
+    "gov-store/tenant-scope": "dev-master",
+    "gov-store/office-membership": "dev-master",
+    "gov-store/store-operations": "dev-master"
   },
   "suggest": {
     "ext-ldap": "*",
