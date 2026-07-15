@@ -83,7 +83,8 @@
     "gov-store/geo-areas": "dev-master",
     "gov-store/tenant-scope": "dev-master",
     "gov-store/office-membership": "dev-master",
-    "gov-store/store-operations": "dev-master"
+    "gov-store/store-operations": "dev-master",
+    "gov-store/classification": "dev-master"
   },
   "suggest": {
     "ext-ldap": "*",
@@ -120,6 +121,7 @@
       "GovStore\\TenantScope\\": "packages/gov-store/tenant-scope/src/",
       "GovStore\\OfficeMembership\\": "packages/gov-store/office-membership/src/",
       "GovStore\\StoreOperations\\": "packages/gov-store/store-operations/src/",
+      "GovStore\\Classification\\": "packages/gov-store/classification/src/",
       "App\\": "app/",
       "Database\\Factories\\": "database/factories/",
       "Database\\Seeders\\": "database/seeders/"

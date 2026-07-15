@@ -1,0 +1,24 @@
+{
+    "name": "gov-store/classification",
+    "description": "Authoritative Reference Catalog for Government Store Classification Standards (UNSPSC, CGA, HS)",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "DoICT"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "GovStore\\Classification\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "GovStore\\Classification\\Providers\\ClassificationServiceProvider"
+            ]
+        }
+    }
+}

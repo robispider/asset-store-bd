@@ -444,6 +444,7 @@ return [
         GovStore\TenantScope\Providers\TenantScopeServiceProvider::class,
                 GovStore\OfficeMembership\Providers\OfficeMembershipServiceProvider::class,
         GovStore\StoreOperations\Providers\StoreOperationsServiceProvider::class,
+        GovStore\Classification\Providers\ClassificationServiceProvider::class,
 
     ],
 
