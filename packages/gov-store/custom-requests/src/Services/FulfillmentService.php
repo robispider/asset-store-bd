@@ -7,6 +7,7 @@ use GovStore\CustomRequests\Models\RequestItem;
 use GovStore\CustomRequests\Models\RequestEvent;
 use GovStore\CustomRequests\Factories\RequestableFactory;
 use GovStore\StoreOperations\Contracts\StockIssuingServiceInterface;
+use GovStore\StoreOperations\Enums\StockableType;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Exception;
@@ -62,7 +63,6 @@ class FulfillmentService
                     $type = $item->fulfilled_type ?: $item->requested_type;
                     $id = $item->fulfilled_id ?: $item->requested_id;
 
-                    // Pass raw data blindly to the contract for processing
                     $issuePayload[] = [
                         'type' => $type,
                         'id' => $id,
@@ -72,22 +72,31 @@ class FulfillmentService
                 }
             }
 
-            // 2. Cross-Boundary Handshake
-            // Let Store Operations determine what is an Asset vs Consumable
+            if (empty($issuePayload)) return;
+
+            // 2. ORCHESTRATION PHASE A: The Ledger Handshake
+            // Hand off the entire payload. Store Operations will safely ignore Assets/Licenses 
+            // and process the counter-based items into the immutable ledger.
             $processedLedgerLines = $this->stockIssuer->issueSystemStock($issuePayload, $request->requested_by, $request);
 
-            // 3. Update Request Status & Process Hardware Legacies
+            // 3. ORCHESTRATION PHASE B: Custody Assignment & Status Updates
             foreach ($issuePayload as $payloadItem) {
                 $itemModel = RequestItem::find($payloadItem['line_id']);
                 $newIssuedQty = $itemModel->issued_qty + $payloadItem['qty'];
-
                 $message = "Issued via Service Request {$request->request_number}";
 
-                // If it was processed by the ledger, log the formal document number.
                 if (isset($processedLedgerLines[$itemModel->id])) {
+                    // Item was successfully processed by the ledger. 
+                    // Update audit message to include formal Goods Issue document reference.
                     $message = "Logged in Goods Issue: " . $processedLedgerLines[$itemModel->id];
+                    
+                    // Proceed with Native Snipe-IT Custody Assignment
+                    // Resolves the legacy adapter to safely trigger ActionLogs, history, and pivot attachment.
+                    $adapter = RequestableFactory::make($payloadItem['type'], $payloadItem['id']);
+                    $adapter->checkout($request->requester, $storekeeper, $payloadItem['qty'], $message);
+
                 } else {
-                    // It's a Hardware Asset. Checkout normally via legacy Snipe-IT adapter.
+                    // It's a Hardware Asset/License (ignored by the ledger). Checkout normally.
                     $adapter = RequestableFactory::make($payloadItem['type'], $payloadItem['id']);
                     $adapter->checkout($request->requester, $storekeeper, $payloadItem['qty'], $message);
                 }
