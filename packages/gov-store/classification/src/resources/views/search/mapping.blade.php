@@ -57,33 +57,7 @@
         </div>
 
         <!-- Mapping Status Segment -->
-        <div class="box box-solid box-{{ $currentMapping ? 'success' : 'warning' }}" style="margin-top: 20px; border-top: 3px solid;" id="status-card-box">
-            <div class="box-body" style="padding: 20px;">
-                <div class="row">
-                    <div class="col-sm-8">
-                        <h4 style="margin-top: 0; font-weight: bold;" id="status-title-text">
-                            @if($currentMapping)
-                                <i class="fas fa-check-circle text-success"></i> Category Linked
-                            @else
-                                <i class="fas fa-exclamation-triangle text-warning"></i> Category Mapping Required
-                            @endif
-                        </h4>
-                        <p class="text-muted" style="margin-bottom: 0; font-size: 13px;" id="status-desc-text">
-                            @if($currentMapping)
-                                This node is mapped to Snipe-IT Category: <strong class="text-green">{{ $currentMapping->category ? $currentMapping->category->name : 'Unresolved' }}</strong>
-                            @else
-                                This classification code is not yet linked to any Snipe-IT category.
-                            @endif
-                        </p>
-                    </div>
-                    <div class="col-sm-4 text-right" style="margin-top: 5px;">
-                        <button class="btn btn-{{ $currentMapping ? 'default' : 'warning' }} btn-block" id="btn-trigger-mapping" style="font-weight: bold;">
-                            <i class="fas fa-link"></i> {{ $currentMapping ? 'Change Link' : 'Map Category' }}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+         @include('gov-classification::search.partials.adoption-card')
     </div>
 
     <!-- ==============================================
@@ -95,23 +69,7 @@
             <i class="fas fa-link text-blue"></i> Link Snipe-IT Category
         </h3>
 
-        <!-- Smart Map Recommendation (If found) -->
-        @if($suggestedCategory)
-            <div class="well bg-green-light" style="background-color: #f0fdf4; border: 1px solid #bbf7d0; padding: 15px; border-radius: 4px; margin-bottom: 25px;">
-                <h4 style="margin-top: 0; font-weight: bold; color: #15803d;"><i class="fas fa-magic"></i> Smart Map Suggestion</h4>
-                <p class="text-muted" style="font-size: 13px;">We detected a matching core Snipe-IT category:</p>
-                <div class="row" style="margin-top: 10px;">
-                    <div class="col-sm-8" style="padding-top: 5px;">
-                        <strong>{{ $suggestedCategory->name }}</strong>
-                    </div>
-                    <div class="col-sm-4">
-                        <button class="btn btn-sm btn-success btn-block" id="btn-accept-suggestion" data-id="{{ $suggestedCategory->id }}" data-name="{{ $suggestedCategory->name }}">
-                            Accept Suggestion
-                        </button>
-                    </div>
-                </div>
-            </div>
-        @endif
+       
 
         <!-- Manual Autocomplete Form -->
         <form id="mapping-submission-form">
@@ -163,12 +121,7 @@ $(document).ready(function() {
         drawer.css('right', '-105%');
     });
 
-    // One-Click Smart Suggestion Handler
-    $('#btn-accept-suggestion').on('click', function() {
-        const id = $(this).data('id');
-        const name = $(this).data('name');
-        saveMapping(id, name);
-    });
+  
 
     // Form Submission Handler
     $('#mapping-submission-form').on('submit', function(e) {

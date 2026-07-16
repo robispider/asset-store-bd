@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use GovStore\Classification\Http\Controllers\CatalogDashboardController;
 use GovStore\Classification\Http\Controllers\CatalogSearchController;
 use GovStore\Classification\Http\Controllers\CatalogAdminController;
-
+use GovStore\Classification\Http\Controllers\CategoryAdoptionController;
 /*
 |--------------------------------------------------------------------------
 | Global Catalog Routes
@@ -32,7 +32,7 @@ Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'admin/catalog'], fun
     // Mapping Actions
     Route::get('/snipe-categories/ajax', [CatalogSearchController::class, 'searchSnipeCategories'])->name('gov.catalog.snipe-categories.ajax');
     Route::post('/mapping/save', [CatalogSearchController::class, 'saveMapping'])->name('gov.catalog.mapping.save');
-    
+
     // Mapping editor (per-node) — aliased to gov.catalog.mapping for menu compatibility
     Route::get('/mapping', [CatalogSearchController::class, 'showMapping'])->name('gov.catalog.mapping');
     Route::get('/mapping/{id}', [CatalogSearchController::class, 'showMapping'])->name('gov.catalog.mapping.show');
@@ -59,4 +59,8 @@ Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'admin/catalog'], fun
         ->name('gov.catalog.import.execute');
 
 
+        // Operational Category Adoption Workflows
+  Route::post('/adoption/adopt', [CategoryAdoptionController::class, 'adopt'])->name('gov.catalog.adoption.adopt');
+    Route::post('/adoption/abandon', [CategoryAdoptionController::class, 'abandon'])->name('gov.catalog.adoption.abandon');
+    Route::post('/adoption/provision', [CategoryAdoptionController::class, 'provision'])->name('gov.catalog.adoption.provision');
 });

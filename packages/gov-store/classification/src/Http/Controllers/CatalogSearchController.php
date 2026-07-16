@@ -5,12 +5,14 @@ namespace GovStore\Classification\Http\Controllers;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use GovStore\Classification\Services\CatalogSearchService;
+use GovStore\Classification\Services\CategoryAdoptionService;
+use GovStore\Classification\Models\CategoryGovernance;
+use GovStore\TenantScope\Contexts\TenantContext;
 
 class CatalogSearchController extends Controller
 {
     /**
      * Display the human-centered search UI.
-     * No node editors — just search, view, and map.
      */
     public function index(Request $request, CatalogSearchService $searcher)
     {
@@ -43,7 +45,7 @@ class CatalogSearchController extends Controller
                     'level'       => $node->level,
                     'scheme'      => $node->scheme,
                     'version'     => $node->version,
-                    'hid'         => $node->hid, // Include HID for breadcrumbs
+                    'hid'         => $node->hid,
                     'has_mapping' => (bool) $node->snipeMapping,
                 ];
             }),
@@ -121,8 +123,8 @@ class CatalogSearchController extends Controller
         ]);
     }
 
-/**
-     * Show the mapping editor for a specific node, or the global overview if no code is passed.
+    /**
+     * Show the mapping editor and governance/adoption metadata. (Optimized & Clean)
      */
     public function showMapping(Request $request, $code = null)
     {
@@ -144,17 +146,33 @@ class CatalogSearchController extends Controller
             return response()->json(['success' => false, 'message' => 'Node not found.'], 404);
         }
 
-        // --- Smart Map Suggestion Algorithm ---
-        // Find a Snipe-IT Category with a name matching or sharing the first word of the commodity
-        $firstWord = explode(' ', trim($node->title_en))[0];
-        $suggestedCategory = \App\Models\Category::where('name', 'LIKE', "%{$node->title_en}%")
-            ->orWhere('name', 'LIKE', "{$firstWord}%")
-            ->first();
+        $tenantContext = app(TenantContext::class);
+        $adoptionService = app(CategoryAdoptionService::class);
+        
+        $activeCompanyId = $tenantContext->companyId ?? 0;
+        $isAdoptedByMe = false;
+        $governance = null;
+        
+        if ($node->snipeMapping) {
+            $categoryId = $node->snipeMapping->category_id;
+            
+            // 1. Check Adoption status safely in O(1) query
+            if ($activeCompanyId > 0) {
+                $isAdoptedByMe = $adoptionService->isUsedBy($categoryId, $activeCompanyId);
+            }
+            
+            // 2. Fetch Governance origin metadata
+            $governance = CategoryGovernance::with('originatingCompany')
+                ->where('category_id', $categoryId)
+                ->first();
+        }
 
         return view('gov-classification::search.mapping', [
-            'node'              => $node,
-            'currentMapping'    => $node->snipeMapping,
-            'suggestedCategory' => $suggestedCategory
+            'node'            => $node,
+            'currentMapping'  => $node->snipeMapping,
+            'isAdoptedByMe'   => $isAdoptedByMe,
+            'governance'      => $governance,
+            'activeCompanyId' => $activeCompanyId,
         ]);
     }
 
@@ -194,7 +212,7 @@ class CatalogSearchController extends Controller
             $categoryId = $request->input('category_id');
 
             // Secure idempotent upsert using DB builder
-            DB::table('gov_catalog_snipe_mappings')->updateOrInsert(
+            \Illuminate\Support\Facades\DB::table('gov_catalog_snipe_mappings')->updateOrInsert(
                 ['code' => $code],
                 [
                     'category_id' => $categoryId,
