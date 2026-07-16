@@ -32,8 +32,26 @@ Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'admin/catalog'], fun
     Route::get('/mapping', [CatalogSearchController::class, 'showMapping'])->name('gov.catalog.mapping');
     Route::get('/mapping/{id}', [CatalogSearchController::class, 'showMapping'])->name('gov.catalog.mapping.show');
 
-    // Administrative Actions
+
+    // Administrative Actions - MDM Import Wizard
     Route::get('/import', [CatalogAdminController::class, 'importForm'])->name('gov.catalog.import');
+    
+    Route::post('/import/execute', [CatalogAdminController::class, 'importExecute'])->name('gov.catalog.import.execute');
+    
+    // Other Admin routes...
     Route::get('/external', [CatalogAdminController::class, 'externalGrid'])->name('gov.catalog.external');
     Route::get('/history', [CatalogAdminController::class, 'importHistory'])->name('gov.catalog.history');
+
+      // The Execute Route with the Performance Guard Middleware attached
+ 
+
+            Route::post('/import/validate', [CatalogAdminController::class, 'importValidate'])
+        ->middleware(\GovStore\Classification\Http\Middleware\ImportPerformanceGuard::class) // ADDED HERE
+        ->name('gov.catalog.import.validate');
+        
+    Route::post('/import/execute', [CatalogAdminController::class, 'importExecute'])
+        ->middleware(\GovStore\Classification\Http\Middleware\ImportPerformanceGuard::class)
+        ->name('gov.catalog.import.execute');
+
+
 });

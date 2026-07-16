@@ -1,4 +1,4 @@
-@extends('layouts/default-blade')
+@extends('layouts/default')
 
 @section('title')
     {{ __('admin/general/global_catalog_dashboard') }}
@@ -9,7 +9,8 @@
     <div class="col-md-12">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('admin/dashboard') }}">{{ __('general.dashboard') }}</a></li>
+                
+                <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('general.dashboard') }}</a></li>
                 <li class="breadcrumb-item active">{{ __('admin/general/global_catalog_dashboard') }}</li>
             </ol>
         </nav>

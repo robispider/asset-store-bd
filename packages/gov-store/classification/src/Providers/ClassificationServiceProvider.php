@@ -12,7 +12,7 @@ class ClassificationServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+     
     }
 
     /**
@@ -35,23 +35,23 @@ class ClassificationServiceProvider extends ServiceProvider
         ], 'gov-classification-views');
 
 
-        // Register in GovStore Navigation — bypasses Tenant Context for Superadmins
+      // Register in GovStore Navigation — bypasses Tenant Context for Superadmins
+      // Register in GovStore Navigation as a Root-Level Node
         $this->app->booted(function () {
             $registry = $this->app->make(MenuRegistry::class);
 
-            // 1. Workspace Node: Global Catalog (Parent changed to the valid root 'gov-store')
+            // 1. Root Folder: Global Catalog (No parent, parallel to Gov Store & Office Provisioning)
             $registry->register([
                 'id'              => 'gov-catalog',
-                'parent'          => 'gov-store',
                 'title'           => 'Global Catalog',
                 'icon'            => 'fas fa-globe text-blue',
-                'route'           => 'gov.catalog.dashboard',
-                'permission'      => 'admin',
-                'order'           => 60,
+                'route'           => null, // Acts purely as an expandable root folder
+                'permission'      => 'admin', // Gated for administrators
+                'order'           => 45, // Rendered parallel to Gov Store (10) and Office Provisioning (50)
                 'active_patterns' => ['admin/catalog*'],
             ]);
 
-            // 2. Child Nodes nested under the Global Catalog Workspace
+            // 2. Child Nodes nested directly under the Global Catalog Root
             $registry->register([
                 'id'         => 'gov-catalog-dashboard',
                 'parent'     => 'gov-catalog',

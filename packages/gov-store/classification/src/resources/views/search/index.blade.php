@@ -1,4 +1,4 @@
-@extends('layouts/default-blade')
+@extends('layouts/default')
 
 @section('title')
     {{ __('admin/general/global_catalog_search') }}
@@ -9,7 +9,8 @@
     <div class="col-md-12">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('admin/dashboard') }}">{{ __('general.dashboard') }}</a></li>
+                <!-- Corrected legacy admin/dashboard URL path to the valid 'home' route -->
+                <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('general.dashboard') }}</a></li>
                 <li class="breadcrumb-item active">{{ __('admin/general/global_catalog_search') }}</li>
             </ol>
         </nav>
@@ -66,10 +67,10 @@
                                     <td>{{ $node->title_en }}</td>
                                     <td>
                                         @switch($node->level)
-                                            @case(1) {{ __('admin/general.segment') }}
-                                            @case(2) {{ __('admin/general.family') }}
-                                            @case(3) {{ __('admin/general.class') }}
-                                            @case(4) {{ __('admin/general.commodity') }}
+                                            @case(1) {{ __('admin/general.segment') }} @break
+                                            @case(2) {{ __('admin/general.family') }} @break
+                                            @case(3) {{ __('admin/general.class') }} @break
+                                            @case(4) {{ __('admin/general.commodity') }} @break
                                         @endswitch
                                     </td>
                                     <td>
@@ -82,7 +83,8 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <a href="{{ route('gov.catalog.mapping.show', ['code' => $node->code, 'scheme' => $node->scheme]) }}" 
+                                        <!-- Unified route generation parameters to prevent path matching exceptions -->
+                                        <a href="{{ route('gov.catalog.mapping', ['code' => $node->code, 'scheme' => $node->scheme]) }}" 
                                            class="btn btn-sm btn-info">
                                             <i class="fas fa-link"></i> {{ __('admin/general.manage_mapping') }}
                                         </a>
@@ -160,12 +162,13 @@ $(document).ready(function() {
         html += '<thead><tr><th>{{ __("general.code") }}</th><th>{{ __("general.title_en") }}</th><th>{{ __("admin/general.level") }}</th><th></th></tr></thead><tbody>';
 
         results.forEach(function(node) {
+            // Updated route mapping to prevent URL generation exceptions during AJAX rendering
             html += `<tr>
                 <td><code>[${node.code}]</code></td>
                 <td>${node.text}</td>
                 <td>Level ${node.level}</td>
                 <td>
-                    <a href="{{ route('gov.catalog.mapping.show') }}?code=${node.code}&scheme=${node.scheme}" 
+                    <a href="{{ route('gov.catalog.mapping') }}?code=${node.code}&scheme=${node.scheme}" 
                        class="btn btn-sm btn-info">
                         <i class="fas fa-link"></i> {{ __("admin/general.manage_mapping") }}
                     </a>

@@ -13,12 +13,13 @@
 
             <div class="box-body">
                 <p class="text-muted">
-                    Manage mappings between external classification schemes and the Global Catalog.
+                    Manage mappings between external classification schemes (such as CGA or HS Codes) and the Global Catalog.
                 </p>
 
-                <a href="{{ route('gov.catalog.external.create') }}" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> New External Mapping
-                </a>
+                <!-- Changed to a safe disabled placeholder button to prevent RouteNotFoundException -->
+                <button class="btn btn-primary" disabled title="External mapping creation will be available in the upcoming Phase 3 localization release.">
+                    <i class="fas fa-plus"></i> New External Mapping (Phase 3)
+                </button>
 
                 <table class="table table-striped table-bordered" style="margin-top: 15px;">
                     <thead>
@@ -32,7 +33,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td colspan="5" class="text-center text-muted">No external mappings configured.</td>
+                            <td colspan="5" class="text-center text-muted">No external mappings configured. External crosswalk integrations are scheduled for Phase 3.</td>
                         </tr>
                     </tbody>
                 </table>

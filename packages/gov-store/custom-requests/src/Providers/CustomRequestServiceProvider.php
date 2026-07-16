@@ -27,7 +27,10 @@ class CustomRequestServiceProvider extends ServiceProvider
             ItemApproved::class,
             ProcessItemCheckout::class
         );
-
+ // 5. RESTORED: Register the clean Widget Injection Middleware (web routing group)
+        $router = $this->app['router'];
+        $router->pushMiddlewareToGroup('web', \GovStore\CustomRequests\Http\Middleware\InjectGovStoreUi::class);
+        
         Relation::morphMap([
             'asset'       => \App\Models\Asset::class,
             'accessory'   => \App\Models\Accessory::class,

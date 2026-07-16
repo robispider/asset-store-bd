@@ -2,10 +2,30 @@
 <script nonce="{{ csrf_token() }}">
 $(document).ready(function() {
     
-    console.log("Gov-Store: Starting navbar context switcher injection...");
+    console.log("Gov-Store: Starting navbar and dropdown injection checks...");
 
     // =========================================================================
-    // 1. TOP-BAR MULTI-OFFICE CONTEXT SWITCHER (NATIVE EMBED)
+    // 1. RESTORED: USER DROP-DOWN LINK (Injects My Office Memberships safely)
+    // =========================================================================
+    if ($('.dropdown.user-menu .dropdown-menu').length) {
+        var memActive = window.location.pathname.includes('gov-store/my-memberships') ? 'style="font-weight: bold; background:#eee;"' : '';
+        var link = '<li Handy-id="gov-memberships-dropdown-item" ' + memActive + '>' +
+            '<a href="{{ route("gov.membership.index") }}">' +
+                '<i class="fas fa-id-badge fa-fw"></i> My Office Memberships' +
+            '</a>' +
+        '</li>';
+        
+        var profileLink = $('.dropdown.user-menu .dropdown-menu a[href*="profile"]').parent();
+        if (profileLink.length) {
+            profileLink.after(link);
+            console.log("Gov-Store: Successfully injected memberships link after profile.");
+        } else {
+            $('.dropdown.user-menu .dropdown-menu').append(link);
+        }
+    }
+
+    // =========================================================================
+    // 2. TOP-BAR MULTI-OFFICE CONTEXT SWITCHER (NATIVE EMBED)
     // =========================================================================
     @php
         $user = auth()->user();
@@ -45,7 +65,7 @@ $(document).ready(function() {
                 '<a href="#" class="dropdown-toggle" data-toggle="dropdown" style="color: white; font-weight: bold; padding: 15px 15px;">' +
                     '<i class="fas fa-hotel"></i> &nbsp;Working As: <span class="' + activeClassLabel + '">' + activeLabel + '</span> &nbsp;<span class="caret"></span>' +
                 '</a>' +
-                '<ul class="dropdown-menu" style="background-color: #fff; width: 280px; padding: 5px 0;">' +
+                '<ul class="dropdown-menu" style="background-color: #fff; width: 280px; padding: 5px 0;">' + // Fixed: Added missing leading single quote before <ul
                     '<li class="header" style="padding: 8px 15px; font-size: 11px; color: #777; border-bottom: 1px solid #f4f4f4; background-color: #fafafa; font-weight: bold;">CHOOSE WORKING CONTEXT</li>';
 
             @if($isAdmin)

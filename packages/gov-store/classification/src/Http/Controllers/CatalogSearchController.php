@@ -100,16 +100,28 @@ class CatalogSearchController extends Controller
         ]);
     }
 
-    /**
-     * Show the mapping editor for a specific node.
+ /**
+     * Show the mapping editor for a specific node, or the global overview if no code is passed.
      */
-    public function showMapping(Request $request)
+    public function showMapping(Request $request, $code = null)
     {
-        $code = $request->input('code');
+        // 1. Resolve code from route parameter or query string
+        $code = $code ?: $request->input('code');
         $scheme = $request->input('scheme', 'UNSPSC');
 
+        // 2. If NO code is provided, render the Global Category Mapping Overview Grid
+        if (empty($code)) {
+            // Retrieve catalog nodes that have established Snipe-IT category mappings
+            $mappings = \GovStore\Classification\Models\CatalogNode::whereHas('snipeMapping')
+                ->with(['snipeMapping'])
+                ->paginate(15);
+
+            return view('gov-classification::manager.mapping', compact('mappings'));
+        }
+
+        // 3. If a specific code IS provided, display its dedicated mapping modal/form
         $searcher = app(CatalogSearchService::class);
-        $node = $searcher->findByCode($scheme, $code);
+        $node = $searcher->findByCode($scheme, (string) $code);
 
         if (!$node) {
             return response()->json(['success' => false, 'message' => 'Node not found.'], 404);

@@ -7,24 +7,26 @@ use Illuminate\Http\Response;
 
 class InjectGovStoreUi
 {
+ 
+      /**
+     * Inject the custom floating basket widget and product page buttons.
+     */
     public function handle($request, Closure $next)
     {
         $response = $next($request);
 
-        // We only inject if the user is logged in, and we are loading a standard HTML page
-        if (auth()->check() && 
-            $response instanceof Response && 
-            str_contains($response->headers->get('Content-Type') ?? '', 'text/html')
-        ) {
+        if ($request->ajax() || $request->wantsJson()) {
+            return $response;
+        }
+
+        if (method_exists($response, 'getContent')) {
             $content = $response->getContent();
 
-            // Render our jQuery injection script
-            $script = view('govstore::hooks.menu-injection')->render();
-
-            // Find the closing </body> tag and inject our script right before it
-            $pos = strrpos($content, '</body>');
-            if ($pos !== false) {
-                $content = substr($content, 0, $pos) . $script . substr($content, $pos);
+            if (str_contains($content, '</body>')) {
+                // Renders the clean, decoupled basket widgets
+                $widgetHtml = view('govstore::hooks.basket-widget')->render();
+                
+                $content = str_replace('</body>', $widgetHtml . '</body>', $content);
                 $response->setContent($content);
             }
         }
