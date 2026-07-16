@@ -25,7 +25,7 @@ class CatalogSearchController extends Controller
     }
 
     /**
-     * AJAX: Search nodes for select2 / autocomplete.
+     * AJAX: Search nodes, now including the hid for breadcrumb rendering.
      */
     public function searchAjax(Request $request, CatalogSearchService $searcher)
     {
@@ -37,15 +37,36 @@ class CatalogSearchController extends Controller
         return response()->json([
             'results' => $results->map(function ($node) {
                 return [
-                    'id'         => $node->id,
-                    'code'       => $node->code,
-                    'text'       => "[{$node->code}] {$node->title_en}",
-                    'level'      => $node->level,
-                    'scheme'     => $node->scheme,
-                    'version'    => $node->version,
+                    'id'          => $node->id,
+                    'code'        => $node->code,
+                    'text'        => $node->title_en,
+                    'level'       => $node->level,
+                    'scheme'      => $node->scheme,
+                    'version'     => $node->version,
+                    'hid'         => $node->hid, // Include HID for breadcrumbs
                     'has_mapping' => (bool) $node->snipeMapping,
                 ];
             }),
+        ]);
+    }
+
+    /**
+     * AJAX: Get Contextual Hierarchy (Ancestors & Siblings) for a node.
+     */
+    public function contextAjax(Request $request, CatalogSearchService $searcher)
+    {
+        $code = $request->input('code');
+        $scheme = $request->input('scheme', 'UNSPSC');
+
+        $node = $searcher->findByCode($scheme, $code);
+
+        if (!$node) {
+            return response()->json([], 404);
+        }
+
+        return response()->json([
+            'ancestors' => $searcher->getAncestorsByHid($node->hid),
+            'siblings'  => $searcher->getSiblings($node),
         ]);
     }
 
@@ -100,18 +121,15 @@ class CatalogSearchController extends Controller
         ]);
     }
 
- /**
+/**
      * Show the mapping editor for a specific node, or the global overview if no code is passed.
      */
     public function showMapping(Request $request, $code = null)
     {
-        // 1. Resolve code from route parameter or query string
         $code = $code ?: $request->input('code');
         $scheme = $request->input('scheme', 'UNSPSC');
 
-        // 2. If NO code is provided, render the Global Category Mapping Overview Grid
         if (empty($code)) {
-            // Retrieve catalog nodes that have established Snipe-IT category mappings
             $mappings = \GovStore\Classification\Models\CatalogNode::whereHas('snipeMapping')
                 ->with(['snipeMapping'])
                 ->paginate(15);
@@ -119,7 +137,6 @@ class CatalogSearchController extends Controller
             return view('gov-classification::manager.mapping', compact('mappings'));
         }
 
-        // 3. If a specific code IS provided, display its dedicated mapping modal/form
         $searcher = app(CatalogSearchService::class);
         $node = $searcher->findByCode($scheme, (string) $code);
 
@@ -127,9 +144,76 @@ class CatalogSearchController extends Controller
             return response()->json(['success' => false, 'message' => 'Node not found.'], 404);
         }
 
+        // --- Smart Map Suggestion Algorithm ---
+        // Find a Snipe-IT Category with a name matching or sharing the first word of the commodity
+        $firstWord = explode(' ', trim($node->title_en))[0];
+        $suggestedCategory = \App\Models\Category::where('name', 'LIKE', "%{$node->title_en}%")
+            ->orWhere('name', 'LIKE', "{$firstWord}%")
+            ->first();
+
         return view('gov-classification::search.mapping', [
-            'node' => $node,
-            'currentMapping' => $node->snipeMapping,
+            'node'              => $node,
+            'currentMapping'    => $node->snipeMapping,
+            'suggestedCategory' => $suggestedCategory
         ]);
+    }
+
+    /**
+     * AJAX: Search native Snipe-IT Category catalog for Select2 autocomplete.
+     */
+    public function searchSnipeCategories(Request $request)
+    {
+        $query = $request->input('q');
+        
+        $categories = \App\Models\Category::where('name', 'LIKE', "%{$query}%")
+            ->limit(10)
+            ->get(['id', 'name']);
+
+        return response()->json([
+            'results' => $categories->map(function ($cat) {
+                return [
+                    'id'   => $cat->id,
+                    'text' => $cat->name
+                ];
+            })
+        ]);
+    }
+
+    /**
+     * POST: Persist the linked classification mapping safely.
+     */
+    public function saveMapping(Request $request)
+    {
+        $request->validate([
+            'code'        => 'required|string',
+            'category_id' => 'required|integer'
+        ]);
+
+        try {
+            $code = $request->input('code');
+            $categoryId = $request->input('category_id');
+
+            // Secure idempotent upsert using DB builder
+            DB::table('gov_catalog_snipe_mappings')->updateOrInsert(
+                ['code' => $code],
+                [
+                    'category_id' => $categoryId,
+                    'updated_at'  => now()
+                ]
+            );
+
+            $category = \App\Models\Category::find($categoryId);
+
+            return response()->json([
+                'success'       => true,
+                'category_name' => $category ? $category->name : 'Unresolved'
+            ]);
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to save mapping: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

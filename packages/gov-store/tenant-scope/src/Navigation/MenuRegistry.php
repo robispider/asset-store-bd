@@ -37,6 +37,9 @@ class MenuRegistry
      * The 'permission' key accepts either a single string or an array of qualifiers.
      * Access is granted if the user satisfies ANY ONE of the listed qualifiers.
      */
+    /**
+     * Compiles the sorted, permission-filtered hierarchical tree.
+     */
     public function tree(): array
     {
         $context  = app(TenantContext::class);
@@ -46,55 +49,53 @@ class MenuRegistry
             if ($item->permission) {
                 $user = auth()->user();
 
-                // No authenticated user — skip gated items
                 if (!$user) {
                     continue;
                 }
 
-                // 1. Superuser / admin bypass — always allowed
-                if ($user->isSuperUser() || $user->hasAccess('admin')) {
+                // 1. Global Superuser Bypass — always allowed
+                if ($user->isSuperUser()) {
                     // Allowed — fall through to $flatList
                 } else {
-                    // Normalize to array: supports both string and array permission definitions
                     $qualifiers = is_array($item->permission) ? $item->permission : [$item->permission];
                     $locationId = $context->locationId;
                     $hasAccess  = false;
 
                     foreach ($qualifiers as $perm) {
-                        if (in_array($perm, ['storekeeper', 'approver', 'office_admin', 'ict_officer'])) {
-                            $locationId = $context->locationId;
+                        // 2. Explicit Admin/Superuser Verification
+                        if ($perm === 'admin') {
+                            $hasAccess = $user->isSuperUser() || $user->hasAccess('admin');
+                        }
+                        // 3. Office Admin Verification
+                        elseif ($perm === 'office_admin') {
+                            $hasAccess = LocationProfile::where('location_id', $locationId)
+                                ->where('office_admin_id', $user->id)
+                                ->exists();
+                        } 
+                        // 4. ICT Officer Verification
+                        elseif ($perm === 'ict_officer') {
+                            $hasAccess = \GovStore\Organization\Models\IctJurisdiction::where('user_id', $user->id)
+                                ->exists();
+                        }
+                        // 5. Contextual Role-Slug Verification
+                        elseif (in_array($perm, ['storekeeper', 'approver'])) {
+                            $roleSlugs = ($perm === 'approver')
+                                ? ['primary_approver', 'final_approver']
+                                : ['storekeeper'];
 
-                            if ($perm === 'office_admin') {
-                                // 4. Office Admin — check LocationProfile.office_admin_id for active location
-                                $hasAccess = LocationProfile::where('location_id', $locationId)
-                                    ->where('office_admin_id', $user->id)
-                                    ->exists();
-                                    
-                            } elseif ($perm === 'ict_officer') {
-                                // ICT Officer — Check if an active geographical jurisdiction exists
-                                $hasAccess = \GovStore\Organization\Models\IctJurisdiction::where('user_id', $user->id)
-                                    ->exists();
-                                    
-                            } else {
-                                // 2 & 3. Role-slug — check gov_office_responsibilities pivot
-                                $roleSlugs = ($perm === 'approver')
-                                    ? ['primary_approver', 'final_approver']
-                                    : ['storekeeper'];
-
-                                $hasAccess = OfficeResponsibility::where('user_id', $user->id)
-                                    ->where('location_id', $locationId)
-                                    ->whereIn('role_slug', $roleSlugs)
-                                    ->exists();
-                            }
-
-                        } else {
-                            // 5. Standard capability via EffectivePermissionSet
+                            $hasAccess = OfficeResponsibility::where('user_id', $user->id)
+                                ->where('location_id', $locationId)
+                                ->whereIn('role_slug', $roleSlugs)
+                                ->exists();
+                        } 
+                        // 6. Standard Capability/Permission Verification
+                        else {
                             $hasAccess = $context->effectivePermissions
                                 && $context->effectivePermissions->has($perm);
                         }
 
                         if ($hasAccess) {
-                            break; // Short-circuit — one qualifier match is enough
+                            break; // Short-circuit
                         }
                     }
 
@@ -109,7 +110,6 @@ class MenuRegistry
 
         $tree = [];
 
-        // Build parent-child hierarchy from the filtered flat list
         foreach ($flatList as $item) {
             if ($item->parent && isset($flatList[$item->parent])) {
                 $flatList[$item->parent]->children[] = $item;

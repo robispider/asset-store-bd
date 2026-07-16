@@ -1,232 +1,416 @@
 @extends('layouts/default')
 
-@section('title')
-    {{ __('admin/general/global_catalog_search') }}
-@endsection
+@section('title', 'Global Catalog Explorer')
 
 @section('content')
 <div class="row">
     <div class="col-md-12">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <!-- Corrected legacy admin/dashboard URL path to the valid 'home' route -->
-                <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('general.dashboard') }}</a></li>
-                <li class="breadcrumb-item active">{{ __('admin/general/global_catalog_search') }}</li>
-            </ol>
-        </nav>
-
-        <!-- Search Box -->
-        <div class="box box-default">
-            <div class="box-header with-border">
-                <h3 class="box-title">
-                    <i class="fas fa-globe text-blue"></i>
-                    {{ __('admin/general/global_catalog') }}
-                </h3>
-            </div>
+        <!-- Main Explorer Header -->
+        <div class="box box-solid bg-gray-light" style="border-bottom: 2px solid #ddd; margin-bottom: 20px;">
             <div class="box-body">
-                <!-- Search Input -->
-                <div class="row" style="margin-bottom: 20px;">
-                    <div class="col-md-8">
-                        <div class="input-group">
-                            <input type="text" id="catalog-search-input" class="form-control input-lg" 
-                                   placeholder="{{ __('admin/general.search_catalog_placeholder') }}"
-                                   value="{{ $query ?? '' }}">
-                            <span class="input-group-btn">
-                                <button type="button" class="btn btn-primary btn-lg" id="btn-search-catalog">
-                                    <i class="fas fa-search"></i> {{ __('general.search') }}
-                                </button>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="col-md-4 text-right">
-                        <select id="scheme-selector" class="form-control">
-                            <option value="UNSPSC" selected>UNSPSC</option>
-                            <option value="CGA">CGA</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Results -->
-                <div id="catalog-results">
-                    @if(isset($query) && $results->count() > 0)
-                        <h4>{{ __('admin/general.search_results', ['count' => $results->count(), 'query' => $query]) }}</h4>
-                        <table class="table table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th>{{ __('general.code') }}</th>
-                                    <th>{{ __('general.title_en') }}</th>
-                                    <th>{{ __('admin/general.level') }}</th>
-                                    <th>{{ __('admin/general.snipe_mapping') }}</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($results as $node)
-                                <tr>
-                                    <td><code>[{{ $node->code }}]</code></td>
-                                    <td>{{ $node->title_en }}</td>
-                                    <td>
-                                        @switch($node->level)
-                                            @case(1) {{ __('admin/general.segment') }} @break
-                                            @case(2) {{ __('admin/general.family') }} @break
-                                            @case(3) {{ __('admin/general.class') }} @break
-                                            @case(4) {{ __('admin/general.commodity') }} @break
-                                        @endswitch
-                                    </td>
-                                    <td>
-                                        @if($node->snipeMapping)
-                                            <span class="label label-success">
-                                                {{ $node->snipeMapping->category ? $node->snipeMapping->category->name : 'N/A' }}
-                                            </span>
-                                        @else
-                                            <span class="label label-warning">{{ __('admin/general.not_mapped') }}</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <!-- Unified route generation parameters to prevent path matching exceptions -->
-                                        <a href="{{ route('gov.catalog.mapping', ['code' => $node->code, 'scheme' => $node->scheme]) }}" 
-                                           class="btn btn-sm btn-info">
-                                            <i class="fas fa-link"></i> {{ __('admin/general.manage_mapping') }}
-                                        </a>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    @elseif(isset($query))
-                        <p class="text-muted">{{ __('admin/general.no_results', ['query' => $query]) }}</p>
-                    @else
-                        <div class="text-center" style="padding: 40px;">
-                            <i class="fas fa-search fa-3x text-muted"></i>
-                            <p class="text-muted">{{ __('admin/general.search_catalog_hint') }}</p>
-                        </div>
-                    @endif
-                </div>
+                <h3 style="margin-top: 5px; font-weight: bold;"><i class="fas fa-search text-blue"></i> Global Catalog Explorer</h3>
+                <p class="text-muted" style="margin-bottom: 0;">Search, inspect, and map official UNSPSC classifications to Snipe-IT categories.</p>
             </div>
         </div>
 
-        <!-- Browse Tree -->
-        <div class="box box-default">
-            <div class="box-header with-border">
-                <h3 class="box-title">
-                    <i class="fas fa-sitemap"></i>
-                    {{ __('admin/general.browse_catalog') }}
-                </h3>
+        <!-- Master-Detail Split Container -->
+        <div class="row">
+            <!-- LEFT PANEL: Search & Results List (40% Width) -->
+            <div class="col-md-5">
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Search Results</h3>
+                    </div>
+                    <div class="box-body" style="padding: 15px;">
+                        <!-- Search Box and Autocomplete Input -->
+                        <div class="form-group" style="margin-bottom: 10px;">
+                            <div class="input-group">
+                                <span class="input-group-addon" style="background-color: #fff;"><i class="fas fa-search text-muted"></i></span>
+                                <input type="text" id="catalog-search-input" class="form-control input-lg" 
+                                       placeholder="Type code or keyword (e.g., Laptop, 10101501)..." autocomplete="off" autofocus>
+                            </div>
+                        </div>
+
+                        <!-- Filters & Recent Search Chips -->
+                        <div class="row" style="margin-bottom: 20px;">
+                            <div class="col-xs-12">
+                                <!-- Search Filters/Chips -->
+                                <div class="pull-left" style="margin-top: 5px;">
+                                    <label style="margin-right: 15px; font-weight: normal; cursor: pointer; font-size: 12px;" class="text-muted">
+                                        <input type="checkbox" id="filter-unmapped" style="margin-right: 5px; vertical-align: middle; position: relative; top: -1px;"> Unmapped Only
+                                    </label>
+                                    <label style="font-weight: normal; cursor: pointer; font-size: 12px;" class="text-muted">
+                                        <input type="checkbox" id="filter-commodities" checked style="margin-right: 5px; vertical-align: middle; position: relative; top: -1px;"> Commodities Only
+                                    </label>
+                                </div>
+                                
+                                <!-- Recent Searches container (Local Storage) -->
+                                <div class="pull-right" id="recent-searches-container" style="display: none; margin-top: 5px;">
+                                    <span class="text-muted" style="margin-right: 5px; font-size: 11px;">Recent:</span>
+                                    <span id="recent-searches-chips"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Results List Container -->
+                        <div id="catalog-results" style="max-height: 550px; overflow-y: auto; padding-right: 5px;">
+                            <div class="text-center text-muted" style="padding: 60px 20px;">
+                                <i class="fas fa-search fa-3x" style="margin-bottom: 15px; opacity: 0.5;"></i>
+                                <h4>Begin Typing to Search</h4>
+                                <p class="small">Enter a classification title or official UNSPSC code to inspect.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="box-body">
-                <div id="catalog-tree" style="max-height: 500px; overflow-y: auto;">
-                    <!-- Tree loaded via AJAX -->
+
+            <!-- RIGHT PANEL: Detail Workspace Panel (60% Width) -->
+            <div class="col-md-7">
+                <div class="box box-solid box-default" id="detail-workspace-box" style="min-height: 720px; border-left: 4px solid #d2d6de;">
+                    <div class="box-body" id="detail-workspace-container" style="padding: 30px 20px;">
+                        <!-- Initial Empty State -->
+                        <div class="text-center text-muted" style="padding-top: 200px;">
+                            <i class="fas fa-info-circle fa-4x" style="margin-bottom: 20px; opacity: 0.5;"></i>
+                            <h3>No Item Selected</h3>
+                            <p class="lead">Select a classification from the search results on the left to inspect its definitions, synonyms, and mapping status.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 @endsection
 
 @push('js')
 <script>
-$(document).ready(function() {
-    const schemeSelector = $('#scheme-selector');
+function bootstrapCatalogExplorer() {
     const searchInput = $('#catalog-search-input');
+    const resultsContainer = $('#catalog-results');
+    const workspaceContainer = $('#detail-workspace-container');
+    const workspaceBox = $('#detail-workspace-box');
 
-    // Search handler
-    $('#btn-search-catalog').on('click', function() {
+    let activeIndex = -1; // Keyboard navigation index tracker
+
+    // Debounce helper to prevent excessive SQL parsing during active typing
+    function debounce(func, wait) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+
+    // Capture keyup events for search
+    searchInput.on('keyup', debounce(function(e) {
+        // Prevent search firing on navigation keys
+        if ([38, 40, 13, 27].includes(e.keyCode)) return;
+
+        const query = $(this).val().trim();
+        
+        if (query.length < 2) {
+            resultsContainer.html(`
+                <div class="text-center text-muted" style="padding: 60px 20px;">
+                    <i class="fas fa-search fa-3x" style="margin-bottom: 15px; opacity: 0.5;"></i>
+                    <h4>Begin Typing to Search</h4>
+                    <p class="small">Enter a classification title or official UNSPSC code to inspect.</p>
+                </div>
+            `);
+            return;
+        }
+
+        executeSearch(query);
+    }, 250));
+
+    // Handle Checkbox / Chip clicks to instantly update search results
+    $('#filter-unmapped, #filter-commodities').on('change', function() {
         const query = searchInput.val().trim();
-        if (!query) return;
-
-        $.ajax({
-            url: '{{ route("gov.catalog.search.ajax") }}',
-            data: { q: query, scheme: schemeSelector.val() },
-            success: function(response) {
-                renderResults(response.results);
-            }
-        });
-    });
-
-    // Enter key search
-    searchInput.on('keypress', function(e) {
-        if (e.which === 13) {
-            $('#btn-search-catalog').click();
+        if (query.length >= 2) {
+            executeSearch(query);
         }
     });
 
-    // Scheme change
-    schemeSelector.on('change', function() {
-        loadTree();
-    });
+    // Execute AJAX Search
+    function executeSearch(query) {
+        resultsContainer.html(`
+            <div class="text-center" style="padding: 80px 20px;">
+                <i class="fas fa-spinner fa-spin fa-3x text-blue" style="margin-bottom: 15px;"></i>
+                <p class="text-muted">Searching official catalog records...</p>
+            </div>
+        `);
 
-    // Render search results
-    function renderResults(results) {
-        let html = '<table class="table table-striped table-hover">';
-        html += '<thead><tr><th>{{ __("general.code") }}</th><th>{{ __("general.title_en") }}</th><th>{{ __("admin/general.level") }}</th><th></th></tr></thead><tbody>';
+        // Save search keyword in LocalStorage list
+        saveRecentSearch(query);
+
+        $.ajax({
+            url: '{{ route("gov.catalog.search.ajax") }}',
+            data: { 
+                q: query, 
+                scheme: 'UNSPSC',
+                unmapped: $('#filter-unmapped').is(':checked') ? 'true' : 'false',
+                commodities: $('#filter-commodities').is(':checked') ? 'true' : 'false'
+            },
+            success: function(response) {
+                renderResultsList(response.results, query);
+            }
+        });
+    }
+
+    // Render Compact Left List Cards with Highlighted matches
+    function renderResultsList(results, query) {
+        activeIndex = -1; // Reset keyboard nav index on new search
+
+        if (results.length === 0) {
+            resultsContainer.html(`
+                <div class="well text-center" style="background-color: #fff; border-style: dashed; padding: 40px 10px;">
+                    <h4 class="text-muted"><i class="fas fa-search-minus"></i> No matches found</h4>
+                    <p class="small text-muted">Verify the spelling or filters and try again.</p>
+                </div>
+            `);
+            return;
+        }
+
+        let html = '<div class="list-group" style="margin-bottom: 0;" id="results-list-group">';
+        let breadcrumbCache = {}; 
 
         results.forEach(function(node) {
-            // Updated route mapping to prevent URL generation exceptions during AJAX rendering
-            html += `<tr>
-                <td><code>[${node.code}]</code></td>
-                <td>${node.text}</td>
-                <td>Level ${node.level}</td>
-                <td>
-                    <a href="{{ route('gov.catalog.mapping') }}?code=${node.code}&scheme=${node.scheme}" 
-                       class="btn btn-sm btn-info">
-                        <i class="fas fa-link"></i> {{ __("admin/general.manage_mapping") }}
-                    </a>
-                </td>
-            </tr>`;
-        });
-
-        html += '</tbody></table>';
-        $('#catalog-results').html(html);
-    }
-
-    // Load tree via AJAX
-    function loadTree(parentCode = null) {
-        $.ajax({
-            url: '{{ route("gov.catalog.browse.ajax") }}',
-            data: { parent_code: parentCode, scheme: schemeSelector.val() },
-            success: function(response) {
-                renderTree(response.results);
-            }
-        });
-    }
-
-    // Render tree
-    function renderTree(nodes) {
-        let html = '<ul class="list-unstyled">';
-        nodes.forEach(function(node) {
-            const hasChildren = node.children ? ' <i class="fas fa-chevron-right"></i>' : '';
-            html += `<li data-code="${node.code}">
-                <div style="padding: 5px 0;">
-                    <span class="toggle-icon" data-code="${node.code}" style="cursor: pointer; margin-right: 10px;">${hasChildren}</span>
-                    <span class="badge badge-primary">[${node.code}]</span>
-                    <span>${node.text}</span>
-                </div>
-                ${node.children ? '<ul class="list-unstyled" style="display: none; margin-left: 20px;"></ul>' : ''}
-            </li>`;
-        });
-        html += '</ul>';
-        $('#catalog-tree').html(html);
-
-        // Attach toggle handlers
-        $('.toggle-icon').on('click', function() {
-            const code = $(this).data('code');
-            const childList = $(this).closest('li').find('> ul');
+            const rawTitle = node.text.replace(/^\[.*?\]\s*/, ''); 
             
-            if (childList.is(':visible')) {
-                childList.slideUp();
-                $(this).find('i').removeClass('fa-chevron-down').addClass('fa-chevron-right');
-            } else {
-                loadTree(code).done(function(response) {
-                    childList.html(renderTree(response.results)).slideDown();
-                    $(this).find('i').removeClass('fa-chevron-right').addClass('fa-chevron-down');
-                });
+            // Apply fast O(1) text highlighting to titles and codes
+            const highlightedTitle = highlightMatchText(rawTitle, query);
+            const highlightedCode = highlightMatchText(node.code, query);
+
+            if (breadcrumbCache[node.hid] === undefined) {
+                const parts = node.hid.split('/').filter(Boolean);
+                breadcrumbCache[node.hid] = parts.length > 2 ? parts.slice(0, -1).join(' > ') : 'Top Level';
             }
+            
+            const breadcrumbHtml = `<div class="text-muted" style="font-size: 11px; margin-top: 4px;">${breadcrumbCache[node.hid]}</div>`;
+            const levelBadge = getLevelBadge(node.level);
+            const mappingStatus = node.has_mapping 
+                ? '<span class="text-success"><i class="fas fa-check-circle"></i> Mapped</span>' 
+                : '<span class="text-muted"><i class="far fa-circle"></i> Unmapped</span>';
+
+            html += `
+                <a href="#" class="list-group-item catalog-result-item" data-code="${node.code}" style="border-left: 4px solid #d2d6de; margin-bottom: 6px; padding: 12px 15px; transition: background 0.1s;">
+                    <h4 class="list-group-item-heading" style="font-size: 15px; font-weight: bold; line-height: 1.4; margin-bottom: 6px;">
+                        ${highlightedTitle} ${levelBadge}
+                    </h4>
+                    <p class="list-group-item-text text-muted" style="font-size: 12px; margin-bottom: 0;">
+                        Code: <code>${highlightedCode}</code> <span style="margin: 0 5px;">|</span> ${mappingStatus}
+                    </p>
+                    ${breadcrumbHtml}
+                </a>
+            `;
+        });
+
+        html += '</div>';
+        resultsContainer.html(html);
+
+        // Click Handler for Result Cards
+        $('.catalog-result-item').on('click', function(e) {
+            e.preventDefault();
+            
+            $('.catalog-result-item').css('border-left-color', '#d2d6de').removeClass('active kbd-focused').css('background-color', '');
+            $(this).css('border-left-color', '#3c8dbc').addClass('active');
+
+            activeIndex = $(this).index(); // Sync keyboard navigation to clicked card
+            const code = $(this).data('code');
+            loadWorkspaceDetails(code);
         });
     }
 
-    // Initial tree load
-    loadTree();
-});
+    // Load Right Detail Panel dynamically
+    function loadWorkspaceDetails(code) {
+        workspaceContainer.html(`
+            <div class="text-center" style="padding-top: 200px;">
+                <i class="fas fa-sync-alt fa-spin fa-4x text-blue" style="margin-bottom: 20px;"></i>
+                <h4>Retrieving metadata...</h4>
+            </div>
+        `);
+        workspaceBox.css('border-left-color', '#3c8dbc');
+
+        workspaceContainer.load('{{ route("gov.catalog.mapping") }}?code=' + code, function() {
+            $.ajax({
+                url: '{{ route("gov.catalog.context.ajax") }}',
+                data: { code: code },
+                success: function(response) {
+                    renderContextTree(response.ancestors, response.siblings, code);
+                }
+            });
+        });
+    }
+
+    // Render the mini "explorer" tree on the right panel
+    function renderContextTree(ancestors, siblings, selectedCode) {
+        let html = '<ul class="list-unstyled" style="padding-left: 5px; font-size: 13.5px; line-height: 1.8;">';
+        
+        // Render ancestor folders
+        ancestors.forEach(function(ancestor, index) {
+            if (ancestor.code === selectedCode) return;
+            html += `
+                <li style="padding-left: ${index * 15}px; margin-bottom: 3px; color: #666;">
+                    <i class="far fa-folder-open text-yellow" style="margin-right: 6px;"></i> ${ancestor.title_en}
+                </li>
+            `;
+        });
+
+        const activeIndent = ancestors.length > 0 ? (ancestors.length - 1) * 15 : 0;
+
+        // Render sibling nodes
+        siblings.forEach(function(sibling) {
+            html += `
+                <li style="padding-left: ${activeIndent}px; margin-bottom: 3px; color: #888;">
+                    <i class="far fa-file" style="margin-right: 6px;"></i> ${sibling.title_en}
+                </li>
+            `;
+        });
+        
+        html += '</ul>';
+
+        // Render and highlight active selection node
+        const selectedNode = ancestors.find(a => a.code === selectedCode);
+        if (selectedNode) {
+            const activeNodeHtml = `
+                <div style="background-color: #f0f7ff; padding: 6px 12px; border-left: 3px solid #3c8dbc; margin-left: ${activeIndent}px; margin-top: 5px; margin-bottom: 5px; border-radius: 0 4px 4px 0;">
+                    <strong class="text-blue"><i class="fas fa-file-alt" style="margin-right: 6px; color: #3c8dbc;"></i> ${selectedNode.title_en}</strong>
+                </div>
+            `;
+            html = html.replace('</ul>', activeNodeHtml + '</ul>');
+        }
+
+        $('#context-hierarchy-tree').html(html);
+    }
+
+    // Keyup highlighter using raw HTML wrapper matching
+    function highlightMatchText(text, query) {
+        if (!query) return text;
+        const escapedQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'); // Sanitize regex inputs
+        const regex = new RegExp(`(${escapedQuery})`, 'gi');
+        return text.replace(regex, '<mark style="background-color: #fcf8e3; padding: .1em .2em; border-radius: 2px;">$1</mark>');
+    }
+
+    // ==============================================
+    // KEYBOARD NAVIGATION SUBSYSTEM
+    // ==============================================
+    $(document).off('keydown').on('keydown', function(e) {
+        const resultItems = $('.catalog-result-item');
+        if (resultItems.length === 0) return;
+
+        if (e.keyCode === 40) { // Arrow Down
+            e.preventDefault();
+            activeIndex = (activeIndex + 1) % resultItems.length;
+            updateKeyboardSelection(resultItems);
+        } 
+        else if (e.keyCode === 38) { // Arrow Up
+            e.preventDefault();
+            activeIndex = (activeIndex - 1 + resultItems.length) % resultItems.length;
+            updateKeyboardSelection(resultItems);
+        } 
+        else if (e.keyCode === 13) { // Enter Key
+            if (activeIndex >= 0 && activeIndex < resultItems.length) {
+                e.preventDefault();
+                resultItems.eq(activeIndex).click();
+            }
+        } 
+        else if (e.keyCode === 27) { // Escape Key (Resets Search Focus)
+            e.preventDefault();
+            searchInput.val('').focus();
+            resultsContainer.html(`
+                <div class="text-center text-muted" style="padding: 60px 20px;">
+                    <i class="fas fa-search fa-3x" style="margin-bottom: 15px; opacity: 0.5;"></i>
+                    <h4>Begin Typing to Search</h4>
+                    <p class="small">Enter a classification title or official UNSPSC code to inspect.</p>
+                </div>
+            `);
+            workspaceContainer.html(`
+                <div class="text-center text-muted" style="padding-top: 200px;">
+                    <i class="fas fa-info-circle fa-4x" style="margin-bottom: 20px; opacity: 0.5;"></i>
+                    <h3>No Item Selected</h3>
+                    <p class="lead">Select a classification from the search results on the left to inspect its definitions, synonyms, and mapping status.</p>
+                </div>
+            `);
+            workspaceBox.css('border-left-color', '#d2d6de');
+        }
+    });
+
+    function updateKeyboardSelection(items) {
+        items.removeClass('kbd-focused').css('background-color', '');
+        
+        if (activeIndex >= 0) {
+            const activeItem = items.eq(activeIndex);
+            activeItem.addClass('kbd-focused').css('background-color', '#f4f4f4');
+            
+            // Auto-scroll the left panel to keep the keyboard selection visible
+            const container = resultsContainer;
+            const scrollPos = activeItem.position().top + container.scrollTop() - container.position().top - 100;
+            container.animate({ scrollTop: scrollPos }, 50);
+        }
+    }
+
+    // ==============================================
+    // LOCALSTORAGE RECENT SEARCH CHIPS
+    // ==============================================
+    function saveRecentSearch(query) {
+        if (!query || query.length < 2) return;
+        let recents = JSON.parse(localStorage.getItem('gov_catalog_recents') || '[]');
+        
+        recents = recents.filter(item => item !== query); // Deduplicate
+        recents.unshift(query); // Push to front
+        recents = recents.slice(0, 4); // Limit to top 4
+
+        localStorage.setItem('gov_catalog_recents', JSON.stringify(recents));
+        renderRecentChips();
+    }
+
+    function renderRecentChips() {
+        const recents = JSON.parse(localStorage.getItem('gov_catalog_recents') || '[]');
+        if (recents.length === 0) {
+            $('#recent-searches-container').hide();
+            return;
+        }
+
+        let html = '';
+        recents.forEach(function(query) {
+            html += `<span class="label label-info recent-chip" style="cursor: pointer; margin-right: 5px; font-weight: normal; padding: 4px 8px; font-size: 11px;">${query}</span>`;
+        });
+
+        $('#recent-searches-chips').html(html);
+        $('#recent-searches-container').show();
+
+        // Click handler to re-fire searches from chips
+        $('.recent-chip').off('click').on('click', function() {
+            searchInput.val($(this).text());
+            executeSearch($(this).text());
+        });
+    }
+
+    function getLevelBadge(level) {
+        switch(parseInt(level)) {
+            case 1: return '<span class="label label-default pull-right" style="font-size: 10px; font-weight: normal; padding: 3px 6px;">Segment</span>';
+            case 2: return '<span class="label label-default pull-right" style="font-size: 10px; font-weight: normal; padding: 3px 6px;">Family</span>';
+            case 3: return '<span class="label label-default pull-right" style="font-size: 10px; font-weight: normal; padding: 3px 6px;">Class</span>';
+            case 4: return '<span class="label label-primary pull-right" style="font-size: 10px; font-weight: normal; padding: 3px 6px;">Commodity</span>';
+            default: return '';
+        }
+    }
+
+    // Initialize Recent Searches on Load
+    renderRecentChips();
+}
+
+// ----------------------------------------------------
+// BULLETPROOF JQUERY BOOTSTRAPPER
+// ----------------------------------------------------
+if (typeof jQuery === 'undefined') {
+    window.addEventListener('load', function() {
+        if (typeof jQuery !== 'undefined') {
+            bootstrapCatalogExplorer();
+        } else {
+            console.error("Catalog Explorer Error: jQuery failed to load.");
+        }
+    });
+} else {
+    bootstrapCatalogExplorer();
+}
 </script>
-@endpush

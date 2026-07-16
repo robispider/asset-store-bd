@@ -28,6 +28,11 @@ Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'admin/catalog'], fun
     Route::get('/browse/ajax', [CatalogSearchController::class, 'browseAjax'])->name('gov.catalog.browse.ajax');
     Route::get('/ancestors/ajax', [CatalogSearchController::class, 'ancestorsAjax'])->name('gov.catalog.ancestors.ajax');
 
+    Route::get('/context/ajax', [CatalogSearchController::class, 'contextAjax'])->name('gov.catalog.context.ajax');
+    // Mapping Actions
+    Route::get('/snipe-categories/ajax', [CatalogSearchController::class, 'searchSnipeCategories'])->name('gov.catalog.snipe-categories.ajax');
+    Route::post('/mapping/save', [CatalogSearchController::class, 'saveMapping'])->name('gov.catalog.mapping.save');
+    
     // Mapping editor (per-node) — aliased to gov.catalog.mapping for menu compatibility
     Route::get('/mapping', [CatalogSearchController::class, 'showMapping'])->name('gov.catalog.mapping');
     Route::get('/mapping/{id}', [CatalogSearchController::class, 'showMapping'])->name('gov.catalog.mapping.show');

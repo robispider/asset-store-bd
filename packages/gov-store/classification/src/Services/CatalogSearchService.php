@@ -7,84 +7,90 @@ use Illuminate\Support\Collection;
 
 class CatalogSearchService
 {
-    /**
-     * Human-centered natural language search across titles, synonyms, and translations.
-     * Powers both the Admin UI and the Storekeeper Dropdowns.
-     * 
-     * @param string $query The search query
-     * @param string $scheme The classification scheme (UNSPSC, CGA, etc.)
-     * @param int $limit Maximum results to return
-     * @return Collection<CatalogNode> Eager loaded with all relations needed for UI
+ /**
+     * Staged search utilizing SQL Case Relevance Scoring.
      */
-    public function search(string $query, string $scheme = 'UNSPSC', int $limit = 20): Collection
+    public function search(string $query, string $scheme = 'UNSPSC', int $limit = 30): Collection
     {
-        if (empty(trim($query))) {
+        $query = trim($query);
+        if (empty($query)) {
             return collect();
         }
 
-        $query = trim($query);
+        $query_prefix = $query . '%';
+        $query_contains = '%' . $query . '%';
 
-        return CatalogNode::where('scheme', $scheme)
-            ->selectable()
-            ->where(function ($q) use ($query) {
-                // Exact/Partial Code match
-                $q->where('code', 'LIKE', "{$query}%")
-                  // English Reference Title
-                  ->orWhere('title_en', 'LIKE', "%{$query}%")
-                  // Operational Bangla Title (enrichment)
-                  ->orWhereHas('enrichment', function ($en) use ($query) {
-                      $en->where('title_bn', 'LIKE', "%{$query}%");
-                  })
-                  // Operational Synonyms (e.g. "Laptop", "গরু")
-                  ->orWhereHas('synonyms', function ($syn) use ($query) {
-                      $syn->where('synonym', 'LIKE', "%{$query}%");
+        // Use the Eloquent builder for proper hydration and relationship loading
+        $dbQuery = CatalogNode::where('scheme', $scheme);
+
+        if (is_numeric($query)) {
+            // Staged Numeric matching (Exact code -> Prefix range)
+            $dbQuery->where(function($q) use ($query, $query_prefix) {
+                $q->where('code', $query)
+                  ->orWhere('code', 'LIKE', $query_prefix);
+            })
+            ->select('gov_catalog_nodes.*')
+            ->selectRaw("
+                (CASE 
+                    WHEN code = ? THEN 100
+                    WHEN code LIKE ? THEN 90
+                    ELSE 50
+                END) as relevance_score
+            ", [$query, $query_prefix]);
+        } else {
+            // Staged Textual matching (Exact title -> Prefix -> Synonym -> Substring fallback)
+            $dbQuery->where(function($q) use ($query, $query_prefix, $query_contains) {
+                $q->where('title_en', 'LIKE', $query_prefix)
+                  ->orWhere('title_en', 'LIKE', $query_contains)
+                  ->orWhereHas('synonyms', function($syn) use ($query_contains) {
+                      $syn->where('synonym', 'LIKE', $query_contains);
                   });
             })
-            // Eager load everything needed for the UI
-            ->with(['definition', 'enrichment', 'synonyms', 'snipeMapping'])
+            ->select('gov_catalog_nodes.*')
+            ->selectRaw("
+                (CASE 
+                    WHEN title_en = ? THEN 80
+                    WHEN title_en LIKE ? THEN 70
+                    WHEN title_en LIKE ? THEN 50
+                    ELSE 30
+                END) as relevance_score
+            ", [$query, $query_prefix, $query_contains]);
+        }
+
+        return $dbQuery->with(['definition', 'enrichment', 'synonyms', 'snipeMapping'])
+            ->orderBy('relevance_score', 'desc')
+            ->orderBy('code', 'asc')
             ->limit($limit)
             ->get();
     }
 
     /**
-     * Browse direct children of a parent code.
-     * 
-     * @param string|null $parentCode The parent node code (null for root-level)
-     * @param string $scheme The classification scheme
-     * @return Collection<CatalogNode>
+     * Browse child items of a given parent node.
      */
-    public function browse(?string $parentCode = null, string $scheme = 'UNSPSC'): Collection
+    public function browse(?string $parentCode, string $scheme = 'UNSPSC'): Collection
     {
-        if ($parentCode === null) {
-            return CatalogNode::where('scheme', $scheme)
-                ->byLevel(CatalogNode::LEVEL_SEGMENT)
-                ->orderBy('code')
-                ->selectable()
-                ->get();
-        }
-
         return CatalogNode::where('scheme', $scheme)
             ->where('parent_code', $parentCode)
-            ->orderBy('code')
-            ->selectable()
+            ->orderBy('code', 'asc')
             ->get();
     }
 
     /**
-     * Get all ancestors for a node by traversing parent_code chain.
-     * 
-     * @param CatalogNode $node The node to find ancestors for
-     * @return Collection<CatalogNode> Ordered by level ascending
+     * Determine if a catalog node contains deeper sub-categories.
+     */
+    public function hasChildren(CatalogNode $node): bool
+    {
+        return CatalogNode::where('parent_code', $node->code)->exists();
+    }
+
+    /**
+     * Resolve the ancestor breadcrumb trail using the materialized hid path.
      */
     public function ancestors(CatalogNode $node): Collection
     {
-        if (empty($node->hid)) {
-            return collect();
-        }
-
-        // Split HID materialized path and retrieve all ancestors
-        $codes = array_filter(explode('/', trim($node->hid, '/')));
-
+        // Splits "/10000000/10100000/10101500/" into array ['10000000', '10100000', '10101500']
+        $codes = array_filter(explode('/', $node->hid));
+        
         if (empty($codes)) {
             return collect();
         }
@@ -95,11 +101,7 @@ class CatalogSearchService
     }
 
     /**
-     * Get a single node by its scheme/code identity.
-     * 
-     * @param string $scheme The classification scheme
-     * @param string $code The node code
-     * @return CatalogNode|null
+     * Fetch a single node with complete relationship trees loaded.
      */
     public function findByCode(string $scheme, string $code): ?CatalogNode
     {
@@ -109,6 +111,7 @@ class CatalogSearchService
             ->first();
     }
 
+    
     /**
      * Get all top-level (root/segment) nodes for a scheme.
      * 
@@ -124,16 +127,7 @@ class CatalogSearchService
             ->get();
     }
 
-    /**
-     * Check if a node has children.
-     * 
-     * @param CatalogNode $node
-     * @return bool
-     */
-    public function hasChildren(CatalogNode $node): bool
-    {
-        return CatalogNode::where('parent_code', $node->code)->exists();
-    }
+   
 
     /**
      * Get the full tree depth for a given node.
@@ -144,5 +138,40 @@ class CatalogSearchService
     public function getDepth(CatalogNode $node): int
     {
         return $node->level;
+    }
+    /**
+     * Resolve the ancestor breadcrumb trail using the materialized hid path.
+     * Replaces the previous `ancestors` method.
+     */
+    public function getAncestorsByHid(string $hid): Collection
+    {
+        // Splits "/10000000/10100000/10101500/" into an array of codes
+        $codes = array_filter(explode('/', $hid));
+        
+        if (empty($codes)) {
+            return collect();
+        }
+
+        // Fetch all parent nodes in a single, indexed query
+        return CatalogNode::whereIn('code', $codes)
+            ->orderBy('level', 'asc')
+            ->get();
+    }
+
+    /**
+     * Get the immediate sibling nodes of a given node.
+     */
+    public function getSiblings(CatalogNode $node): Collection
+    {
+        // No parent means no siblings
+        if (!$node->parent_code) {
+            return collect();
+        }
+
+        return CatalogNode::where('parent_code', $node->parent_code)
+            ->where('code', '!=', $node->code) // Exclude self
+            ->orderBy('code', 'asc')
+            ->limit(10) // Limit to a reasonable number for UI display
+            ->get();
     }
 }

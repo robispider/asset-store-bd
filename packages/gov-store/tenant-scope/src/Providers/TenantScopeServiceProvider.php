@@ -121,7 +121,7 @@ class TenantScopeServiceProvider extends ServiceProvider
             'title'          => 'Tenant Scoping',
             'icon'           => 'fas fa-user-lock fa-fw',
             'route'          => 'gov.scope.index',
-            'permission'     => 'superuser',
+            'permission'     => 'admin',
             'order'          => 1,
             'active_patterns' => ['gov-store/admin/scope*'],
         ]);
