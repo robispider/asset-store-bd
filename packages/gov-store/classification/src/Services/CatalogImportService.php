@@ -7,64 +7,80 @@ use Exception;
 
 class CatalogImportService
 {
-     /**
-     * STEP 1: OPTIONAL ANALYSIS (Diff Report)
-     * Streams the official CSV to compare code presence against the DB.
+   /**
+     * Executes the ultra-fast import using pre-compiled datasets.
+     * Prevents duplication at the database layer.
      */
-    public function analyzeDiff(string $metaPath, string $scheme): array
+    public function executeBundled(string $scheme, string $version, int $userId): array
     {
-        $csvCodes = [];
-        
-        if (($handle = fopen($metaPath, 'r')) !== false) {
-            $headers = fgetcsv($handle);
-            $idx = array_flip(array_map('trim', $headers));
-            
-            $codeCols = ['Segment', 'Family', 'Class', 'Commodity'];
-            
-            while (($row = fgetcsv($handle, 4000, ",")) !== false) {
-                foreach ($codeCols as $col) {
-                    if (isset($idx[$col]) && !empty(trim($row[$idx[$col]]))) {
-                        $csvCodes[trim($row[$idx[$col]])] = true;
-                    }
-                }
-            }
-            fclose($handle);
+        // Resolve absolute paths matching your directory structure
+        $baseDir = realpath(__DIR__ . '/../database/data');
+        $nodesPath = $baseDir . '/compiled_nodes.csv';
+        $defsPath  = $baseDir . '/compiled_definitions.csv';
+        $synsPath  = $baseDir . '/compiled_synonyms.csv';
+
+        if (!$baseDir || !file_exists($nodesPath)) {
+            throw new Exception("Pre-compiled nodes.csv missing at: " . ($nodesPath ?: 'invalid path'));
         }
 
-        $csvCodeArray = array_keys($csvCodes);
-        $dbCodes = DB::table('gov_catalog_nodes')->where('scheme', $scheme)->pluck('code')->toArray();
-
-        return [
-            'total_csv'  => count($csvCodeArray),
-            'additional' => count(array_diff($csvCodeArray, $dbCodes)),
-            'matched'    => count(array_intersect($csvCodeArray, $dbCodes)),
-            'missing'    => count(array_diff($dbCodes, $csvCodeArray)),
-            'errors'     => [] 
-        ];
-    }
-
-    /**
-     * STEP 2: EXECUTION
-     * Streams the Official Metadata CSV to build Nodes, Definitions, and Synonyms synchronously.
-     */
-    public function execute(string $metaPath, ?string $treePath, string $scheme, string $version, int $userId): array
-    {
         $startTime = microtime(true);
         DB::beginTransaction();
 
         try {
-            // Delete old official English synonyms (prevents endless duplication during upgrades)
-            DB::table('gov_catalog_synonyms')->where('language', 'en')->delete();
+            // 1. Import Nodes using strict database-level UPSERT (Zero duplicates created)
+            $nodeCount = $this->fastImport($nodesPath, 'gov_catalog_nodes', function($row) use ($scheme, $version) {
+                return [
+                    'scheme'        => $scheme,
+                    'version'       => $version,
+                    'code'          => trim($row[0]),
+                    'parent_code'   => trim($row[1]) ?: null,
+                    'level'         => (int)$row[2],
+                    'title_en'      => trim($row[3]),
+                    'hid'           => trim($row[4]),
+                    'is_selectable' => (int)$row[5],
+                    'created_at'    => now(),
+                    'updated_at'    => now(),
+                ];
+            }, ['scheme', 'version', 'parent_code', 'level', 'title_en', 'hid', 'is_selectable', 'updated_at']);
 
-            $stats = $this->streamOfficialDataset($metaPath, $scheme, $version);
-            
+            // 2. Import Definitions using strict database-level UPSERT
+            $defCount = 0;
+            if (file_exists($defsPath)) {
+                $defCount = $this->fastImport($defsPath, 'gov_catalog_definitions', function($row) {
+                    return [
+                        'code'          => trim($row[0]),
+                        'definition_en' => trim($row[1]),
+                        'updated_at'    => now()
+                    ];
+                }, ['definition_en', 'updated_at']);
+            }
+
+            // 3. Import Synonyms with safety checks (Skips if synonyms CSV is empty/headers-only)
+            $synCount = 0;
+            if (file_exists($synsPath) && $this->hasDataRows($synsPath)) {
+                // Only flush old reference synonyms if we have new ones to replace them
+                DB::table('gov_catalog_synonyms')->where('language', 'en')->whereIn('type', ['common', 'acronym'])->delete();
+                
+                $synCount = $this->fastImport($synsPath, 'gov_catalog_synonyms', function($row) {
+                    return [
+                        'code'       => trim($row[0]),
+                        'synonym'    => trim($row[1]),
+                        'type'       => trim($row[2]),
+                        'language'   => 'en',
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ];
+                });
+            }
+
             $duration = microtime(true) - $startTime;
             
+            // Log transaction audit
             DB::table('gov_catalog_import_history')->insert([
                 'scheme'           => $scheme,
                 'version'          => $version,
-                'filename'         => basename($metaPath),
-                'rows_processed'   => $stats['nodes'],
+                'filename'         => 'compiled_datasets.csv',
+                'rows_processed'   => $nodeCount,
                 'warnings'         => 0,
                 'duration_seconds' => $duration,
                 'user_id'          => $userId,
@@ -74,10 +90,11 @@ class CatalogImportService
             DB::commit();
 
             return [
-                'nodes' => $stats['nodes'],
-                'meta'  => $stats['defs'],
+                'nodes' => $nodeCount,
+                'meta'  => $defCount,
                 'time'  => round($duration, 2)
             ];
+
         } catch (Exception $e) {
             DB::rollBack();
             throw $e;
@@ -85,128 +102,62 @@ class CatalogImportService
     }
 
     /**
-     * Constant-Memory Streaming Parser
+     * Reusable fast-chunking CSV importer.
      */
-    protected function streamOfficialDataset(string $csvPath, string $scheme, string $version): array
+    private function fastImport(string $filePath, string $table, callable $mapper, array $updateCols = []): int
     {
-        $handle = fopen($csvPath, 'r');
-        $headers = fgetcsv($handle);
-        $idx = array_flip(array_map('trim', $headers));
+        $handle = fopen($filePath, 'r');
+        fgetcsv($handle); // Skip header
 
-        $chunkSize = 1000;
-        $nodeBuffer = [];
-        $defBuffer = [];
-        $synBuffer = [];
-        
-        $stats = ['nodes' => 0, 'defs' => 0];
-
-        // Keeps track of what has already been buffered in this file to prevent duplication within the same chunk
-        $processedCodes = []; 
-
-        $hierarchyMap = [
-            ['level' => 1, 'code' => 'Segment',   'title' => 'Segment Title',   'def' => 'Segment Definition'],
-            ['level' => 2, 'code' => 'Family',    'title' => 'Family Title',    'def' => 'Family Definition'],
-            ['level' => 3, 'code' => 'Class',     'title' => 'Class Title',     'def' => 'Class Definition'],
-            ['level' => 4, 'code' => 'Commodity', 'title' => 'Commodity Title', 'def' => 'Commodity Definition']
-        ];
+        $buffer = [];
+        $count = 0;
+        $chunkSize = 2000;
 
         while (($row = fgetcsv($handle, 4000, ",")) !== false) {
-            
-            $currentHid = '/';
-            $parentCode = null;
-            $deepestCode = null;
+            // Protect against trailing empty rows
+            if (empty($row) || !isset($row[0]) || empty(trim($row[0]))) continue;
 
-            // Process Horizontal Lineage left-to-right (Segment -> Family -> Class -> Commodity)
-            foreach ($hierarchyMap as $h) {
-                if (!isset($idx[$h['code']]) || empty(trim($row[$idx[$h['code']]]))) continue;
+            $buffer[] = $mapper($row);
+            $count++;
 
-                $code = trim($row[$idx[$h['code']]]);
-                $title = trim($row[$idx[$h['title']]]);
-                $def = trim($row[$idx[$h['def']]] ?? '');
-                
-                // Construct HID directly without recursion
-                $currentHid .= $code . '/';
-                $deepestCode = $code;
-
-                // 1. Buffer Node (Only if not already processed in this stream)
-                if (!isset($processedCodes[$code])) {
-                    $nodeBuffer[] = [
-                        'scheme'        => $scheme,
-                        'version'       => $version,
-                        'code'          => $code,
-                        'parent_code'   => $parentCode,
-                        'level'         => $h['level'],
-                        'title_en'      => $title,
-                        'hid'           => $currentHid,
-                        'is_selectable' => ($h['level'] === 4),
-                        'created_at'    => now(),
-                        'updated_at'    => now()
-                    ];
-                    $processedCodes[$code] = true;
-                    $stats['nodes']++;
-
-                    // 2. Buffer Definition
-                    if ($def) {
-                        $defBuffer[] = [
-                            'code'          => $code,
-                            'definition_en' => $def,
-                            'updated_at'    => now()
-                        ];
-                        $stats['defs']++;
-                    }
+            if (count($buffer) >= $chunkSize) {
+                if (empty($updateCols)) {
+                    DB::table($table)->insert($buffer); // Pure insert
+                } else {
+                    DB::table($table)->upsert($buffer, ['code'], $updateCols); // Safe Upsert
                 }
-
-                $parentCode = $code; // Next node in the loop treats this as parent
-            }
-
-            // 3. Buffer Synonyms (Attached to the deepest commodity row)
-            if ($deepestCode) {
-                if (isset($idx['Synonym']) && $syn = trim($row[$idx['Synonym']])) {
-                    $synBuffer[] = ['code' => $deepestCode, 'language' => 'en', 'synonym' => $syn, 'type' => 'common'];
-                }
-                if (isset($idx['Acronym']) && $acr = trim($row[$idx['Acronym']])) {
-                    $synBuffer[] = ['code' => $deepestCode, 'language' => 'en', 'synonym' => $acr, 'type' => 'acronym'];
-                }
-            }
-
-            // 4. Flush Buffers to Database when chunk size is reached
-            if (count($nodeBuffer) >= $chunkSize) {
-                $this->flushBuffers($nodeBuffer, $defBuffer, $synBuffer);
+                $buffer = [];
             }
         }
-        
+
+        if (count($buffer) > 0) {
+            if (empty($updateCols)) {
+                DB::table($table)->insert($buffer);
+            } else {
+                DB::table($table)->upsert($buffer, ['code'], $updateCols);
+            }
+        }
+
         fclose($handle);
-
-        // 5. Final flush for remaining rows
-        if (count($nodeBuffer) > 0) {
-            $this->flushBuffers($nodeBuffer, $defBuffer, $synBuffer);
-        }
-
-        return $stats;
+        return $count;
     }
 
     /**
-     * Empties arrays into the database, preserving memory.
+     * Helper to verify if a CSV file has any rows beyond the header.
      */
-    protected function flushBuffers(array &$nodes, array &$defs, array &$syns): void
+    private function hasDataRows(string $filePath): bool
     {
-        if (count($nodes) > 0) {
-            DB::table('gov_catalog_nodes')->upsert($nodes, ['code'], ['scheme', 'version', 'parent_code', 'level', 'title_en', 'hid', 'is_selectable', 'updated_at']);
+        $hasData = false;
+        if (($handle = fopen($filePath, 'r')) !== false) {
+            fgetcsv($handle); // Read header
+            $firstRow = fgetcsv($handle); // Check first line of actual data
+            if ($firstRow !== false && isset($firstRow[0]) && !empty(trim($firstRow[0]))) {
+                $hasData = true;
+            }
+            fclose($handle);
         }
-        if (count($defs) > 0) {
-            DB::table('gov_catalog_definitions')->upsert($defs, ['code'], ['definition_en', 'updated_at']);
-        }
-        if (count($syns) > 0) {
-            // Synonyms don't have unique constraint keys, so we insert directly (old ones were deleted beforehand)
-            DB::table('gov_catalog_synonyms')->insert($syns); 
-        }
-
-        // Wipe the arrays to free PHP Memory
-        $nodes = [];
-        $defs = [];
-        $syns = [];
+        return $hasData;
     }
-
     /**
      * Imports the base tree, dynamically computing HIDs and levels based on adjacency keys.
      */
@@ -359,5 +310,54 @@ class CatalogImportService
         }
 
         return $metaProcessed;
+    }
+    /**
+     * Analyze Diff. Natively supports both raw and pre-compiled nodes CSV structures.
+     */
+    public function analyzeDiff(string $metaPath, string $scheme): array
+    {
+        ini_set('memory_limit', '512M');
+        ini_set('max_execution_time', '300');
+
+        $csvCodes = [];
+        
+        if (($handle = fopen($metaPath, 'r')) !== false) {
+            $headers = fgetcsv($handle);
+            
+            // Normalize headers to lowercase to handle casing variations
+            $idx = array_flip(array_map('strtolower', array_map('trim', $headers)));
+            
+            // Scenario A: Pre-compiled file detected (contains direct 'code' column)
+            if (isset($idx['code'])) {
+                $codeCol = $idx['code'];
+                while (($row = fgetcsv($handle, 2000, ",")) !== false) {
+                    if (isset($row[$codeCol]) && !empty(trim($row[$codeCol]))) {
+                        $csvCodes[trim($row[$codeCol])] = true;
+                    }
+                }
+            } else {
+                // Scenario B: Raw UNSPSC Dataset detected (traverse Segment, Family, etc.)
+                $codeCols = ['segment', 'family', 'class', 'commodity'];
+                while (($row = fgetcsv($handle, 4000, ",")) !== false) {
+                    foreach ($codeCols as $col) {
+                        if (isset($idx[$col]) && !empty(trim($row[$idx[$col]]))) {
+                            $csvCodes[trim($row[$idx[$col]])] = true;
+                        }
+                    }
+                }
+            }
+            fclose($handle);
+        }
+
+        $csvCodeArray = array_keys($csvCodes);
+        $dbCodes = DB::table('gov_catalog_nodes')->where('scheme', $scheme)->pluck('code')->toArray();
+
+        return [
+            'total_csv'  => count($csvCodeArray),
+            'additional' => count(array_diff($csvCodeArray, $dbCodes)),
+            'matched'    => count(array_intersect($csvCodeArray, $dbCodes)),
+            'missing'    => count(array_diff($dbCodes, $csvCodeArray)),
+            'errors'     => [] 
+        ];
     }
 }

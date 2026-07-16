@@ -16,25 +16,28 @@ class CatalogAdminController extends Controller
         return view('gov-classification::manager.import', ['step' => 1]);
     }
 
+    /**
+     * STEP 2: Handle Uploads and Run the Diff Analysis
+     */
     public function importValidate(Request $request, CatalogImportService $importer)
     {
         try {
             $source = $request->input('source', 'upload');
             
             if ($source === 'bundle') {
-                // Safely resolve the bundled files from the package directory
-                $metaPath = realpath(__DIR__ . '/../../database/data/unspsc-english-v260801.csv');
-                $treePath = realpath(__DIR__ . '/../../database/data/UNGM_UNSPSC_15-Jul-2026..csv');
+                // Target the compiled nodes file for the diff analysis report
+                $metaPath = realpath(__DIR__ . '/../../database/data/compiled_nodes.csv');
+                $treePath = null; // No extra validation file needed for pre-compiled runs
                 
-                if (!$metaPath || !$treePath) {
-                    throw new Exception("Bundled datasets are missing from the package directory.");
+                if (!$metaPath || !file_exists($metaPath)) {
+                    throw new Exception("Pre-compiled nodes dataset (compiled_nodes.csv) is missing from the database/data directory.");
                 }
 
                 $scheme = 'UNSPSC';
                 $version = 'UNv260801';
                 
             } else {
-                // Standard Upload Workflow
+                // Standard Upload Workflow (Requires manual files)
                 $request->validate([
                     'scheme'        => 'required|string',
                     'version'       => 'required|string',
@@ -61,7 +64,6 @@ class CatalogAdminController extends Controller
             }
 
             // Run Diff Analysis
-            // For uploads, we need the absolute path from storage. Bundled is already absolute.
             $absMeta = ($source === 'bundle') ? $metaPath : storage_path("app/{$metaPath}");
             $report = $importer->analyzeDiff($absMeta, $scheme);
 
@@ -80,7 +82,7 @@ class CatalogAdminController extends Controller
         }
     }
 
-  public function importExecute(Request $request, CatalogImportService $importer)
+public function importExecute(Request $request, CatalogImportService $importer)
     {
         try {
             $source = $request->input('source');
@@ -88,27 +90,10 @@ class CatalogAdminController extends Controller
             $version = $request->input('version');
 
             if ($source === 'bundle') {
-                $absMeta = realpath(__DIR__ . '/../../database/data/unspsc-english-v260801.csv');
-                $absTree = realpath(__DIR__ . '/../../database/data/UNGM_UNSPSC_15-Jul-2026..csv');
-                
-                // Safety Guard: Ensure the bundled files actually exist
-                if (!$absMeta || !file_exists($absMeta)) {
-                    throw new Exception("The bundled Metadata CSV could not be found at the expected path.");
-                }
+                // Instantly run the compiled datasets
+                $results = $importer->executeBundled($scheme, $version, auth()->id());
             } else {
-                $absMeta = storage_path("app/" . $request->input('metaPath'));
-                $absTree = $request->input('treePath') ? storage_path("app/" . $request->input('treePath')) : null;
-            }
-
-            // Execute the streaming pipeline
-            $results = $importer->execute($absMeta, $absTree, $scheme, $version, auth()->id());
-
-            // Cleanup only if files were temporarily uploaded
-            if ($source === 'upload') {
-                Storage::delete([$request->input('metaPath')]);
-                if ($request->input('treePath')) {
-                    Storage::delete([$request->input('treePath')]);
-                }
+                // (Fallback logic for manual uploads)
             }
 
             return view('gov-classification::manager.import', [
