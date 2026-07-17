@@ -43,7 +43,8 @@ class TenantScope implements Scope
             return;
         }
 
-        // --- CATALOG MAPPING (Remains Unchanged) ---
+     
+        // --- CATALOG MAPPING ---
         $config = $context->getConfig($this->referenceType);
         if (!$config || $config->scope_strategy === 'global') return;
 
@@ -54,7 +55,9 @@ class TenantScope implements Scope
             $query->whereIn($keyName, function ($subQuery) use ($context, $strategy, $referenceSingular) {
                 $subQuery->select('reference_id')
                     ->from('gov_tenant_scope_mappings')
-                    ->where('reference_type', $referenceSingular);
+                    ->where('reference_type', $referenceSingular)
+                    ->where('is_active', true); // Fixed: Only show operationally active adoptions
+                
                 if ($strategy === 'company') {
                     $subQuery->where('scope_type', 'company')->where('scope_id', $context->companyId);
                 } else {
@@ -62,9 +65,11 @@ class TenantScope implements Scope
                 }
             })
             ->orWhereNotIn($keyName, function ($subQuery) use ($referenceSingular) {
+                // If it is completely unmapped, it acts as a global standard
                 $subQuery->select('reference_id')
                     ->from('gov_tenant_scope_mappings')
-                    ->where('reference_type', $referenceSingular);
+                    ->where('reference_type', $referenceSingular)
+                    ->where('is_active', true);
             });
         });
     }

@@ -100,4 +100,30 @@ class CategoryAdoptionService
 
         return false;
     }
+
+    /**
+     * Operationally soft-archives an adopted category (Hides it from creation menus).
+     */
+    public function archiveCategory(int $categoryId, int $companyId): void
+    {
+        DB::table('gov_tenant_scope_mappings')
+            ->where('reference_type', 'category')
+            ->where('reference_id', $categoryId)
+            ->where('scope_type', 'company')
+            ->where('scope_id', $companyId)
+            ->update(['is_active' => false]);
+    }
+
+    /**
+     * Operationally restores an archived adopted category.
+     */
+    public function restoreCategory(int $categoryId, int $companyId): void
+    {
+        DB::table('gov_tenant_scope_mappings')
+            ->where('reference_type', 'category')
+            ->where('reference_id', $categoryId)
+            ->where('scope_type', 'company')
+            ->where('scope_id', $companyId)
+            ->update(['is_active' => true]);
+    }
 }

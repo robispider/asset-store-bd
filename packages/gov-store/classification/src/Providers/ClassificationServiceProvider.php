@@ -61,6 +61,25 @@ class ClassificationServiceProvider extends ServiceProvider
                 'permission' => 'admin',
                 'order'      => 10,
             ]);
+               $registry->register([
+                'id'         => 'gov-catalog-governance',
+                'parent'     => 'gov-catalog',
+                'title'      => 'Category Governance',
+                'icon'       => 'fas fa-landmark text-orange',
+                'route'      => 'gov.catalog.governance.index',
+                'permission' => 'admin',
+                'order'      => 15,
+            ]);
+
+                  $registry->register([
+            'id'              => 'storeops-my-catalog',
+            'parent'          => 'gov-store',
+            'title'           => 'My Organization Catalog',
+            'icon'            => 'fas fa-folder-open text-blue',
+            'route'           => 'gov.catalog.my_catalog.index',
+            'permission'      => ['storekeeper', 'office_admin', 'ict_officer'],
+            'order'           => 15,
+        ]);
 
             $registry->register([
                 'id'         => 'gov-catalog-search',
