@@ -98,15 +98,17 @@ class TenantScopeServiceProvider extends ServiceProvider
         }
     }
 
+   
+
     /**
-     * Seeds the Central Menu Registry with the root GovStore tree node
-     * and the superadmin-only Tenant Scoping item.
+     * Seeds the Central Menu Registry with the base Government Store structure,
+     * and the flat, two-level Multitenant Administration dashboard items.
      */
     protected function registerBaseMenuStructure(): void
     {
         $registry = $this->app->make(MenuRegistry::class);
 
-        // Root tree folder — all package sub-items nest under this parent
+        // 1. ROOT FOLDER: Government Store (For standard operational modules)
         $registry->register([
             'id'    => 'gov-store',
             'title' => 'Government Store',
@@ -114,16 +116,47 @@ class TenantScopeServiceProvider extends ServiceProvider
             'order' => 10,
         ]);
 
-        // Superadmin-only Tenant Scoping link (replaces the old raw JS injection)
+        // 2. ROOT FOLDER: Multitenant Administration (Gated strictly to Superadmins)
         $registry->register([
-            'id'             => 'gov-tenantscope',
-            'parent'         => 'gov-store',
-            'title'          => 'Tenant Scoping',
-            'icon'           => 'fas fa-user-lock fa-fw',
-            'route'          => 'gov.scope.index',
-            'permission'     => 'admin',
-            'order'          => 1,
-            'active_patterns' => ['gov-store/admin/scope*'],
+            'id'         => 'gov-tenantscope-root',
+            'title'      => 'Multitenant Administration',
+            'icon'       => 'fas fa-user-shield text-red',
+            'permission' => 'admin',
+            'order'      => 60, // Rendered lower down, separate from everyday operations
+            'active_patterns' => ['gov-store/admin/scope*'], // Maintains open state on child routes
+        ]);
+
+        // 3. Child 1: Scoping Dashboard (Nested directly under Multitenant Administration)
+        $registry->register([
+            'id'         => 'gov-tenantscope-dashboard',
+            'parent'     => 'gov-tenantscope-root',
+            'title'      => 'Scoping Dashboard',
+            'icon'       => 'fas fa-tachometer-alt text-aqua',
+            'route'      => 'gov.scope.dashboard',
+            'permission' => 'admin',
+            'order'      => 10,
+        ]);
+
+        // 4. Child 2: Policy Configurator (Nested directly under Multitenant Administration)
+        $registry->register([
+            'id'         => 'gov-tenantscope-config',
+            'parent'     => 'gov-tenantscope-root',
+            'title'      => 'Policy Configurator',
+            'icon'       => 'fas fa-sliders-h text-orange',
+            'route'      => 'gov.scope.config',
+            'permission' => 'admin',
+            'order'      => 20,
+        ]);
+
+        // 5. Child 3: Boundary Explorer Grid (Nested directly under Multitenant Administration)
+        $registry->register([
+            'id'         => 'gov-tenantscope-mappings',
+            'parent'     => 'gov-tenantscope-root',
+            'title'      => 'Boundary Explorer',
+            'icon'       => 'fas fa-search-plus text-green',
+            'route'      => 'gov.scope.mappings',
+            'permission' => 'admin',
+            'order'      => 30,
         ]);
     }
 }
