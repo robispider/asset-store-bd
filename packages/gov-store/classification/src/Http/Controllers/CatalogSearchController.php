@@ -146,25 +146,30 @@ class CatalogSearchController extends Controller
             return response()->json(['success' => false, 'message' => 'Node not found.'], 404);
         }
 
-        $tenantContext = app(TenantContext::class);
+           $tenantContext = app(TenantContext::class);
         $adoptionService = app(CategoryAdoptionService::class);
         
-        $activeCompanyId = $tenantContext->companyId ?? 0;
         $isAdoptedByMe = false;
+        $activeScopeType = 'location';
+        $activeScopeId = $tenantContext->locationId;
+
+        // If they have a parent company, operations upgrade to the company scope
+        if ($tenantContext->companyId > 0) {
+            $activeScopeType = 'company';
+            $activeScopeId = $tenantContext->companyId;
+        }
+        
         $governance = null;
         
         if ($node->snipeMapping) {
             $categoryId = $node->snipeMapping->category_id;
             
-            // 1. Check Adoption status safely in O(1) query
-            if ($activeCompanyId > 0) {
-                $isAdoptedByMe = $adoptionService->isUsedBy($categoryId, $activeCompanyId);
+            if ($activeScopeId > 0) {
+                $isAdoptedByMe = $adoptionService->isUsedBy($categoryId, $activeScopeType, $activeScopeId);
             }
             
-            // 2. Fetch Governance origin metadata
-            $governance = CategoryGovernance::with('originatingCompany')
-                ->where('category_id', $categoryId)
-                ->first();
+            $governance = \GovStore\Classification\Models\CategoryGovernance::with('originatingCompany')
+                ->where('category_id', $categoryId)->first();
         }
 
         return view('gov-classification::search.mapping', [
@@ -172,7 +177,7 @@ class CatalogSearchController extends Controller
             'currentMapping'  => $node->snipeMapping,
             'isAdoptedByMe'   => $isAdoptedByMe,
             'governance'      => $governance,
-            'activeCompanyId' => $activeCompanyId,
+            'activeScopeType' => $activeScopeType,
         ]);
     }
 

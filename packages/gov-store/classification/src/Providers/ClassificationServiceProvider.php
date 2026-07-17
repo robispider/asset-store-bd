@@ -46,7 +46,7 @@ class ClassificationServiceProvider extends ServiceProvider
                 'title'           => 'Global Catalog',
                 'icon'            => 'fas fa-globe text-blue',
                 'route'           => null, // Acts purely as an expandable root folder
-                'permission'      => 'admin', // Gated for administrators
+                'permission'      => ['storekeeper', 'office_admin', 'admin'], // Gated for administrators
                 'order'           => 45, // Rendered parallel to Gov Store (10) and Office Provisioning (50)
                 'active_patterns' => ['admin/catalog*'],
             ]);
@@ -71,34 +71,28 @@ class ClassificationServiceProvider extends ServiceProvider
                 'order'      => 15,
             ]);
 
-                  $registry->register([
-            'id'              => 'storeops-my-catalog',
-            'parent'          => 'gov-store',
-            'title'           => 'My Organization Catalog',
-            'icon'            => 'fas fa-folder-open text-blue',
-            'route'           => 'gov.catalog.my_catalog.index',
-            'permission'      => ['storekeeper', 'office_admin', 'ict_officer'],
-            'order'           => 15,
-        ]);
+        
 
+          // Renamed and organized
+            $registry->register([
+                'id'              => 'storeops-my-catalog',
+                'parent'          => 'gov-catalog',
+                'title'           => 'My Organization Category Catalog', // New consistent title
+                'icon'            => 'fas fa-folder-open text-blue',
+                'route'           => 'gov.catalog.my_catalog.index',
+                'permission'      => ['storekeeper', 'office_admin', 'admin'],
+                'order'           => 15,
+            ]);
+
+            // Ensure the Search Master Catalog sits directly above it
             $registry->register([
                 'id'         => 'gov-catalog-search',
                 'parent'     => 'gov-catalog',
-                'title'      => 'Search Catalog',
-                'icon'       => 'fas fa-search',
+                'title'      => 'Search Master Category Catalog',
+                'icon'       => 'fas fa-search text-purple',
                 'route'      => 'gov.catalog.search',
-                'permission' => 'admin',
-                'order'      => 20,
-            ]);
-
-            $registry->register([
-                'id'         => 'gov-catalog-import',
-                'parent'     => 'gov-catalog',
-                'title'      => 'Import Catalog',
-                'icon'       => 'fas fa-cloud-upload-alt',
-                'route'      => 'gov.catalog.import',
-                'permission' => 'admin',
-                'order'      => 30,
+                'permission' => ['admin', 'storekeeper', 'office_admin', 'ict_officer'],
+                'order'      => 14, 
             ]);
 
             $registry->register([

@@ -1,6 +1,7 @@
 @php
     $user = auth()->user();
     $isSuperAdmin = $user->isSuperUser() || $user->hasAccess('admin');
+    $scopeNoun = ($activeScopeType === 'company') ? 'organization' : 'office location';
 @endphp
 
 <div id="adoption-card-container">
@@ -82,17 +83,20 @@
         <div class="box box-solid" style="margin-top: 20px; border: 1px solid #d2d6de; border-top: 3px solid #f39c12;">
             <div class="box-body" style="padding: 20px;">
                 <h4 style="margin-top: 0; font-weight: bold;"><i class="fas fa-link text-warning"></i> Mapped Category</h4>
+                <!-- Example update for State 3 Header -->
+<h4 style="margin-top: 0; font-weight: bold;"><i class="fas fa-check-circle text-success"></i> ✓ Used by your {{ $scopeNoun }}</h4>
                 <p class="lead" style="margin-bottom: 5px; color: #333;">{{ $currentMapping->category->name }}</p>
                 
                 <table class="table table-condensed text-muted" style="margin-top: 15px; font-size: 13px;">
                     <tr>
                         <th style="width: 150px; border-top: none;">Governance:</th>
                         <td style="border-top: none;">
-                           @if($governance && $governance->governance_type === 'global')
+                      @if($governance && $governance->governance_type === 'global')
                                 <span class="text-green"><i class="fas fa-globe"></i> Shared Government Standard</span>
+                            @elseif($governance)
+                                <span class="text-orange"><i class="fas fa-building"></i> Organization Standard</span>
                             @else
-                                <span class="text-orange"><i class="fas fa-building"></i> Organization Standard</span><br>
-                                <small>Owned by: {{ $governance->originatingCompany?->name ?? 'Unknown' }}</small>
+                                <span class="text-muted"><i class="fas fa-server"></i> Native Snipe-IT Category</span>
                             @endif
                         </td>
                     </tr>
@@ -112,17 +116,20 @@
         <div class="box box-solid" style="margin-top: 20px; border: 1px solid #d2d6de; border-top: 3px solid #00a65a;">
             <div class="box-body" style="padding: 20px;">
                 <h4 style="margin-top: 0; font-weight: bold;"><i class="fas fa-link text-success"></i> Mapped Category</h4>
+                <!-- Example update for State 3 Header -->
+<h4 style="margin-top: 0; font-weight: bold;"><i class="fas fa-check-circle text-success"></i> ✓ Used by your {{ $scopeNoun }}</h4>
                 <p class="lead" style="margin-bottom: 5px; color: #333;">{{ $currentMapping->category->name }}</p>
 
                 <table class="table table-condensed text-muted" style="margin-top: 15px; font-size: 13px;">
                     <tr>
                         <th style="width: 150px; border-top: none;">Governance:</th>
                         <td style="border-top: none;">
-                           @if($governance && $governance->governance_type === 'global')
+                        @if($governance && $governance->governance_type === 'global')
                                 <span class="text-green"><i class="fas fa-globe"></i> Shared Government Standard</span>
+                            @elseif($governance)
+                                <span class="text-orange"><i class="fas fa-building"></i> Organization Standard</span>
                             @else
-                                <span class="text-orange"><i class="fas fa-building"></i> Organization Standard</span><br>
-                                <small>Owned by: {{ $governance->originatingCompany?->name ?? 'Unknown' }}</small>
+                                <span class="text-muted"><i class="fas fa-server"></i> Native Snipe-IT Category</span>
                             @endif
                         </td>
                     </tr>

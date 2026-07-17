@@ -18,31 +18,43 @@ class MyCatalogController extends Controller
     }
 
     /**
+     * Helper to resolve the active operational scope.
+     * Prioritizes Company. If null, falls back to standalone Location.
+     */
+    private function resolveScope(TenantContext $context): array
+    {
+        if ($context->companyId > 0) {
+            return ['type' => 'company', 'id' => $context->companyId];
+        }
+        if ($context->locationId > 0) {
+            return ['type' => 'location', 'id' => $context->locationId];
+        }
+        abort(403, 'No active operational context found.');
+    }
+
+    /**
      * Contextual Security Shield
      */
     private function checkAccess(TenantContext $tenantContext): string
     {
         $user = auth()->user();
-        if (!$user) {
-            abort(401);
-        }
+        if (!$user) abort(401);
 
         // 1. Superadmin / Global Bypass
         if ($user->isSuperUser() || $user->hasAccess('admin')) {
             if (!$tenantContext->locationId) {
-                // If in Global Overview, redirect cleanly to the Governance Dashboard
                 redirect()->route('gov.catalog.governance.index')->send();
                 exit;
             }
             return 'admin';
         }
 
-        // 2. Regular Operational Staff Context Verification (Require locationId only)
+        // 2. Staff Context Verification
         if (!$tenantContext->locationId) {
             abort(403, 'No active operational context found for your session. Please choose an office from the top bar.');
         }
 
-        // Verify local role-responsibility in the active location
+        // 3. Verify local role-responsibility
         $hasRole = \GovStore\OfficeMembership\Models\OfficeResponsibility::where('user_id', $user->id)
             ->where('location_id', $tenantContext->locationId)
             ->whereIn('role_slug', ['storekeeper', 'office_admin', 'ict_officer'])
@@ -52,84 +64,60 @@ class MyCatalogController extends Controller
     }
 
     /**
-     * Dashboard listing all items in the storekeeper's warehouse (Strictly Location Scoped)
+     * Dashboard listing all items adopted by the active context
      */
     public function index(TenantContext $tenantContext)
     {
         $accessMode = $this->checkAccess($tenantContext);
+        $scope = $this->resolveScope($tenantContext);
+
+        $categories = $this->service->getLocalGrid($scope['type'], $scope['id'], 50);
         
-        // STRICT RULE: Resolve company ID purely from the active working location context (NO User fallbacks)
-        $companyId = $tenantContext->companyId ?? 0;
-
-        if ($companyId === 0) {
-            // Standalone Office: Browse only the globally shared standard categories
-            $categories = $this->service->getGlobalStandardsGrid(50);
-            return view('gov-classification::my-catalog.unassigned', compact('categories'));
-        }
-
-        $categories = $this->service->getLocalGrid($companyId, 50);
         $isReadOnly = ($accessMode === 'employee');
+        $scopeNoun = ($scope['type'] === 'company') ? 'organization' : 'office location';
 
-        return view('gov-classification::my-catalog.index', compact('categories', 'isReadOnly'));
+        return view('gov-classification::my-catalog.index', compact('categories', 'isReadOnly', 'scopeNoun'));
     }
 
-    /**
-     * Manage individual category lifecycle states (Gated strictly to Admins)
-     */
     public function show($id, TenantContext $tenantContext)
-    {
-        $accessMode = $this->checkAccess($tenantContext);
-        
-        if ($accessMode === 'employee') {
-            abort(403, 'Unauthorized access. Standard employees cannot manage category lifecycle states.');
-        }
-        
-        $companyId = $tenantContext->companyId ?? 0;
-
-        if ($companyId === 0) {
-            abort(403, 'You cannot manage category states in local-only mode. Your office must be assigned to a parent Ministry.');
-        }
-
-        $details = $this->service->getLocalDetails($id, $companyId, $tenantContext->locationId);
-        if (!$details) {
-            abort(404, 'Category not found in your operational catalog.');
-        }
-
-        return view('gov-classification::my-catalog.show', $details);
-    }
-
-    /**
-     * Soft-Archive Action
-     */
-    public function archive(Request $request, CategoryAdoptionService $adoptionService, TenantContext $tenantContext)
     {
         $accessMode = $this->checkAccess($tenantContext);
         if ($accessMode === 'employee') abort(403);
 
+        $scope = $this->resolveScope($tenantContext);
+
+        $details = $this->service->getLocalDetails($id, $scope['type'], $scope['id'], $tenantContext->locationId);
+        if (!$details) abort(404, 'Category not found in your operational catalog.');
+
+        return view('gov-classification::my-catalog.show', $details);
+    }
+
+    public function archive(Request $request, CategoryAdoptionService $adoptionService, TenantContext $tenantContext)
+    {
+        $accessMode = $this->checkAccess($tenantContext);
+        if ($accessMode === 'employee') abort(403);
         $request->validate(['category_id' => 'required|integer']);
-        $companyId = $tenantContext->companyId ?? 0;
+
+        $scope = $this->resolveScope($tenantContext);
 
         try {
-            $adoptionService->archiveCategory($request->category_id, $companyId);
+            $adoptionService->archiveCategory($request->category_id, $scope['type'], $scope['id']);
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 
-    /**
-     * Restore Action
-     */
     public function restore(Request $request, CategoryAdoptionService $adoptionService, TenantContext $tenantContext)
     {
         $accessMode = $this->checkAccess($tenantContext);
         if ($accessMode === 'employee') abort(403);
-
         $request->validate(['category_id' => 'required|integer']);
-        $companyId = $tenantContext->companyId ?? 0;
+
+        $scope = $this->resolveScope($tenantContext);
 
         try {
-            $adoptionService->restoreCategory($request->category_id, $companyId);
+            $adoptionService->restoreCategory($request->category_id, $scope['type'], $scope['id']);
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);

@@ -32,14 +32,13 @@
                                     <code>{{ $cat->unspsc_code ?? 'Unmapped' }}</code>
                                 </td>
                                 <td>{{ ucfirst($cat->category_type) }}</td>
-                                <td>
+                              <td>
                                     @if($cat->governance_type === 'global')
                                         <span class="text-green"><i class="fas fa-globe"></i> Gov Standard</span>
-                                    @elseif($cat->governance_type === 'company')
-                                        <span class="text-orange"><i class="fas fa-building"></i> Org Managed</span><br>
-                                        <small class="text-muted">{{ $cat->owner_name ?? 'Unknown' }}</small>
+                                    @elseif($cat->governance_type === 'company' || $cat->governance_type === 'location')
+                                        <span class="text-orange"><i class="fas fa-building"></i> Org Standard</span>
                                     @else
-                                        <span class="text-muted">Unmanaged</span>
+                                        <span class="text-muted"><i class="fas fa-server"></i> Native Creation</span>
                                     @endif
                                 </td>
                                 <td>{{ \Carbon\Carbon::parse($cat->adopted_at)->format('d M Y') }}</td>
