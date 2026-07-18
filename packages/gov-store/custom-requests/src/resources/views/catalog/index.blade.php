@@ -1,6 +1,6 @@
 @extends('layouts/default')
 
-@section('title', 'Service Catalog')
+@section('title', __('requestlabels::requests.catalog_title'))
 
 @section('content')
 
@@ -183,9 +183,9 @@
 <div class="row">
     <div class="col-md-12">
         <div class="search-section">
-            <p>What equipment or supplies do you need to fulfill your tasks today?</p>
+            <p>{{ __('requestlabels::requests.catalog_hero_question') }}</p>
             <div class="hero-search-wrapper">
-                <input type="text" id="catalogSearch" placeholder="Search for items, brands, or categories (e.g. 'Laptop', 'Mouse', 'Paper')...">
+                <input type="text" id="catalogSearch" placeholder="{{ __('requestlabels::requests.catalog_search_placeholder') }}">
             </div>
         </div>
     </div>
@@ -196,7 +196,7 @@
     <!-- Quick Requests Panel -->
     <div class="col-md-7">
         <div class="dashboard-panel">
-            <strong>Frequently Requested Items:</strong>
+            <strong>{{ __('requestlabels::requests.catalog_quick_requests_label') }}</strong>
             <div class="quick-requests-container">
                 <button class="quick-request-btn" data-search="laptop">💻 Laptop</button>
                 <button class="quick-request-btn" data-search="mouse">🖱 Mouse</button>
@@ -218,7 +218,7 @@
                 <a href="{{ route('gov.requests.user.index') }}" style="text-decoration: none; flex: 1;">
                     <div class="compact-pipeline-card">
                         <span class="badge bg-yellow-active">{{ $pendingCount }}</span>
-                        <span class="status-label">Pending</span>
+                        <span class="status-label">{{ __('requestlabels::requests.catalog_pipeline_pending_label') }}</span>
                     </div>
                 </a>
 
@@ -226,7 +226,7 @@
                 <a href="{{ route('gov.requests.user.index') }}" style="text-decoration: none; flex: 1;">
                     <div class="compact-pipeline-card">
                         <span class="badge bg-green-active">{{ $approvedCount }}</span>
-                        <span class="status-label">Approved</span>
+                        <span class="status-label">{{ __('requestlabels::requests.catalog_pipeline_approved_label') }}</span>
                     </div>
                 </a>
 
@@ -234,7 +234,7 @@
                 <a href="{{ route('gov.requests.user.index') }}" style="text-decoration: none; flex: 1;">
                     <div class="compact-pipeline-card">
                         <span class="badge bg-red-active">{{ $rejectedCount }}</span>
-                        <span class="status-label">Rejected</span>
+                        <span class="status-label">{{ __('requestlabels::requests.catalog_pipeline_rejected_label') }}</span>
                     </div>
                 </a>
 
@@ -276,8 +276,8 @@
                 </select>
                 
                 <div class="view-toggles">
-                    <button id="btnList" class="active" title="List View (Recommended)"><i class="fas fa-list"></i></button>
-                    <button id="btnGrid" title="Grid View"><i class="fas fa-th"></i></button>
+                    <button id="btnList" class="active" title="{{ __('requestlabels::requests.catalog_view_list_label') }}"><i class="fas fa-list"></i></button>
+                    <button id="btnGrid" title="{{ __('requestlabels::requests.catalog_view_grid_label') }}"><i class="fas fa-th"></i></button>
                 </div>
             </div>
         </div>
@@ -336,7 +336,8 @@
             @empty
                 <div class="col-md-12 text-center" style="padding: 50px;">
                     <i class="fas fa-box-open fa-3x text-muted"></i>
-                    <h3 class="text-muted">No items available for request right now.</h3>
+                    <h3 class="text-muted">{{ __('requestlabels::requests.catalog_empty_state_title') }}</h3>
+                    <p class="text-muted">{{ __('requestlabels::requests.catalog_empty_state_subtitle') }}</p>
                 </div>
             @endforelse
         </div>

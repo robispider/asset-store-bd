@@ -33,6 +33,9 @@ class TenantScopeServiceProvider extends ServiceProvider
 
     public function boot()
     {
+        // 0. Load Translations
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'tenantops');
+
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'govscope');
@@ -111,7 +114,7 @@ class TenantScopeServiceProvider extends ServiceProvider
         // 1. ROOT FOLDER: Government Store (For standard operational modules)
         $registry->register([
             'id'    => 'gov-store',
-            'title' => 'Government Store',
+            'title' => __('tenantops::ops.menu_gov_store'),
             'icon'  => 'fas fa-shopping-cart text-aqua',
             'order' => 10,
         ]);
@@ -119,18 +122,18 @@ class TenantScopeServiceProvider extends ServiceProvider
         // 2. ROOT FOLDER: Multitenant Administration (Gated strictly to Superadmins)
         $registry->register([
             'id'         => 'gov-tenantscope-root',
-            'title'      => 'Multitenant Administration',
+            'title'      => __('tenantops::ops.menu_multitenant_admin'),
             'icon'       => 'fas fa-user-shield text-red',
             'permission' => 'admin',
-            'order'      => 60, // Rendered lower down, separate from everyday operations
-            'active_patterns' => ['gov-store/admin/scope*'], // Maintains open state on child routes
+            'order'      => 60,
+            'active_patterns' => ['gov-store/admin/scope*'],
         ]);
 
         // 3. Child 1: Scoping Dashboard (Nested directly under Multitenant Administration)
         $registry->register([
             'id'         => 'gov-tenantscope-dashboard',
             'parent'     => 'gov-tenantscope-root',
-            'title'      => 'Scoping Dashboard',
+            'title'      => __('tenantops::ops.menu_scoping_dashboard'),
             'icon'       => 'fas fa-tachometer-alt text-aqua',
             'route'      => 'gov.scope.dashboard',
             'permission' => 'admin',
@@ -141,7 +144,7 @@ class TenantScopeServiceProvider extends ServiceProvider
         $registry->register([
             'id'         => 'gov-tenantscope-config',
             'parent'     => 'gov-tenantscope-root',
-            'title'      => 'Policy Configurator',
+            'title'      => __('tenantops::ops.menu_policy_configurator'),
             'icon'       => 'fas fa-sliders-h text-orange',
             'route'      => 'gov.scope.config',
             'permission' => 'admin',
@@ -152,7 +155,7 @@ class TenantScopeServiceProvider extends ServiceProvider
         $registry->register([
             'id'         => 'gov-tenantscope-mappings',
             'parent'     => 'gov-tenantscope-root',
-            'title'      => 'Boundary Explorer',
+            'title'      => __('tenantops::ops.menu_boundary_explorer'),
             'icon'       => 'fas fa-search-plus text-green',
             'route'      => 'gov.scope.mappings',
             'permission' => 'admin',

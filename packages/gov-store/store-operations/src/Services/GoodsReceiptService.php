@@ -26,11 +26,11 @@ class GoodsReceiptService
     public function submit(GoodsReceipt $receipt): void
     {
         if ($receipt->status === 'SUBMITTED') {
-            throw new Exception("This Goods Receipt has already been submitted.");
+            throw new Exception(__('storeops::storeops.already_processed', ['document' => 'Goods Receipt']));
         }
 
         if ($receipt->items()->count() === 0) {
-            throw new Exception("Cannot submit an empty Goods Receipt.");
+            throw new Exception(__('storeops::storeops.empty_document_error', ['document' => 'Goods Receipt']));
         }
 
         DB::transaction(function () use ($receipt) {

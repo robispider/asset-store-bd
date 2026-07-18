@@ -1,13 +1,13 @@
 @extends('layouts/default')
 
-@section('title', 'Fulfillment Ledger: ' . $serviceRequest->request_number)
+@section('title', __('requestlabels::requests.fulfillment_register_show_title_prefix') . $serviceRequest->request_number)
 
 @section('content')
 <div class="row">
     <div class="col-md-8">
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Service Request Summary</h3>
+                <h3 class="box-title">{{ __('requestlabels::requests.fulfillment_register_show_header_summary') }}</h3>
             </div>
             <div class="box-body">
                 <table class="table table-striped">
@@ -33,13 +33,13 @@
 
         <div class="box box-success">
             <div class="box-header with-border">
-                <h3 class="box-title">Linked Goods Issue Documents (Inventory Ledger)</h3>
+                <h3 class="box-title">{{ __('requestlabels::requests.fulfillment_register_show_header_documents') }}</h3>
             </div>
             <div class="box-body">
                 @forelse($goodsIssues as $issue)
                     <div class="panel panel-default">
                         <div class="panel-heading" style="background-color: #f9fafc;">
-                            <strong>Document No: </strong> <span class="text-green">{{ $issue->issue_no }}</span>
+                            <strong>{{ __('requestlabels::requests.fulfillment_register_show_doc_label') }}</strong> <span class="text-green">{{ $issue->issue_no }}</span>
                             <span class="pull-right text-muted">Issued By: {{ $issue->creator->first_name ?? 'System' }} on {{ $issue->created_at->format('d M Y') }}</span>
                         </div>
                         <table class="table table-bordered">
@@ -60,7 +60,7 @@
                         </table>
                     </div>
                 @empty
-                    <p class="text-muted text-center" style="padding: 10px;">No ledger documents generated for this request.</p>
+                    <p class="text-muted text-center" style="padding: 10px;">{{ __('requestlabels::requests.fulfillment_register_show_empty_ledger') }}</p>
                 @endforelse
             </div>
         </div>
@@ -69,7 +69,7 @@
     <div class="col-md-4">
         <div class="box box-default">
             <div class="box-header with-border">
-                <h3 class="box-title">Audit Timeline</h3>
+                <h3 class="box-title">{{ __('requestlabels::requests.fulfillment_register_show_header_audit') }}</h3>
             </div>
             <div class="box-body">
                 <ul class="timeline">

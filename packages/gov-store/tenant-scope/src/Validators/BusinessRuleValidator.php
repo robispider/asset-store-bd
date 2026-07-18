@@ -36,7 +36,7 @@ class BusinessRuleValidator
             // Check if the model defines an 'assets' relationship and assets exist
             if (method_exists($model, 'assets') && $model->assets()->exists()) {
                 throw new TenantBoundaryException(
-                    "Data Integrity Guard: You cannot delete this " . class_basename($model) . " because it is currently assigned to one or more active items in the inventory.",
+                    __('tenantops::ops.exception_deletion_guard', ['model' => class_basename($model)]),
                     'BUSINESS_RULE'
                 );
             }

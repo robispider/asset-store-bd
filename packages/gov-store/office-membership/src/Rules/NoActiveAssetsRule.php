@@ -9,7 +9,7 @@ use GovStore\OfficeMembership\Services\ClearanceResult;
 
 class NoActiveAssetsRule implements IClearanceRule
 {
-    public function getName(): string { return 'Physical Inventory Check'; }
+    public function getName(): string { return __('office_membership::member.rule_physical_inventory_name'); }
 
     public function check(User $user, int $locationId): ClearanceResult
     {
@@ -19,9 +19,9 @@ class NoActiveAssetsRule implements IClearanceRule
                             ->count();
 
         if ($assetsCount > 0) {
-            return new ClearanceResult(false, "You currently hold {$assetsCount} active asset(s). You must check them back into the storekeeper.");
+            return new ClearanceResult(false, __('office_membership::member.rule_assets_held', ['count' => $assetsCount]));
         }
 
-        return new ClearanceResult(true, "All physical assets returned.");
+        return new ClearanceResult(true, __('office_membership::member.rule_assets_returned'));
     }
 }

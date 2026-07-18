@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace GovStore\Classification\Http\Controllers;
 
@@ -19,7 +19,7 @@ class CategoryAdoptionController extends Controller
         if ($context->locationId > 0) {
             return ['type' => 'location', 'id' => $context->locationId];
         }
-        throw new Exception('No active operational context found.');
+        throw new Exception(__('classification::texts.ctrl_exception_no_operational_context'));
     }
 
     public function adopt(Request $request, CategoryAdoptionService $adoptionService, TenantContext $tenantContext)
@@ -72,7 +72,7 @@ class CategoryAdoptionController extends Controller
                 if ($governanceType === 'company') {
                     $targetScopeType = 'company';
                     $targetScopeId = $request->input('target_company_id');
-                    if (empty($targetScopeId)) throw new Exception('Select a target company.');
+                    if (empty($targetScopeId)) throw new Exception(__('classification::texts.ctrl_exception_select_target_company'));
                 } elseif ($governanceType === 'global') {
                     $targetScopeId = null;
                 }

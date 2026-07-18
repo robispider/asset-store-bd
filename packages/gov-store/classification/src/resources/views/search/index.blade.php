@@ -1,6 +1,6 @@
-@extends('layouts/default')
+﻿@extends('layouts/default')
 
-@section('title', 'Global Catalog Explorer')
+@section('title', __('classification::texts.search_title'))
 
 @section('content')
 <div class="row">
@@ -8,8 +8,8 @@
         <!-- Main Explorer Header -->
         <div class="box box-solid bg-gray-light" style="border-bottom: 2px solid #ddd; margin-bottom: 20px;">
             <div class="box-body">
-                <h3 style="margin-top: 5px; font-weight: bold;"><i class="fas fa-search text-blue"></i> Global Catalog Explorer</h3>
-                <p class="text-muted" style="margin-bottom: 0;">Search, inspect, and map official UNSPSC classifications to Snipe-IT categories.</p>
+                <h3 style="margin-top: 5px; font-weight: bold;"><i class="fas fa-search text-blue"></i> {{ __('classification::texts.search_header_title') }}</h3>
+                <p class="text-muted" style="margin-bottom: 0;">{{ __('classification::texts.search_header_desc') }}</p>
             </div>
         </div>
 
@@ -19,7 +19,7 @@
             <div class="col-md-5">
                 <div class="box box-primary">
                     <div class="box-header with-border">
-                        <h3 class="box-title">Search Results</h3>
+                        <h3 class="box-title">{{ __('classification::texts.search_col_results') }}</h3>
                     </div>
                     <div class="box-body" style="padding: 15px;">
                         <!-- Search Box and Autocomplete Input -->
@@ -27,7 +27,7 @@
                             <div class="input-group">
                                 <span class="input-group-addon" style="background-color: #fff;"><i class="fas fa-search text-muted"></i></span>
                                 <input type="text" id="catalog-search-input" class="form-control input-lg" 
-                                       placeholder="Type code or keyword (e.g., Laptop, 10101501)..." autocomplete="off" autofocus>
+                                       placeholder="{{ __('classification::texts.search_placeholder_code_or_keyword') }}" autocomplete="off" autofocus>
                             </div>
                         </div>
 
@@ -37,16 +37,16 @@
                                 <!-- Search Filters/Chips -->
                                 <div class="pull-left" style="margin-top: 5px;">
                                     <label style="margin-right: 15px; font-weight: normal; cursor: pointer; font-size: 12px;" class="text-muted">
-                                        <input type="checkbox" id="filter-unmapped" style="margin-right: 5px; vertical-align: middle; position: relative; top: -1px;"> Unmapped Only
+                                        <input type="checkbox" id="filter-unmapped" style="margin-right: 5px; vertical-align: middle; position: relative; top: -1px;"> {{ __('classification::texts.search_filter_unmapped_only') }}
                                     </label>
                                     <label style="font-weight: normal; cursor: pointer; font-size: 12px;" class="text-muted">
-                                        <input type="checkbox" id="filter-commodities" checked style="margin-right: 5px; vertical-align: middle; position: relative; top: -1px;"> Commodities Only
+                                        <input type="checkbox" id="filter-commodities" checked style="margin-right: 5px; vertical-align: middle; position: relative; top: -1px;"> {{ __('classification::texts.search_filter_commodities_only') }}
                                     </label>
                                 </div>
                                 
                                 <!-- Recent Searches container (Local Storage) -->
                                 <div class="pull-right" id="recent-searches-container" style="display: none; margin-top: 5px;">
-                                    <span class="text-muted" style="margin-right: 5px; font-size: 11px;">Recent:</span>
+                                    <span class="text-muted" style="margin-right: 5px; font-size: 11px;">{{ __('classification::texts.search_recent_label') }}</span>
                                     <span id="recent-searches-chips"></span>
                                 </div>
                             </div>
@@ -56,8 +56,8 @@
                         <div id="catalog-results" style="max-height: 550px; overflow-y: auto; padding-right: 5px;">
                             <div class="text-center text-muted" style="padding: 60px 20px;">
                                 <i class="fas fa-search fa-3x" style="margin-bottom: 15px; opacity: 0.5;"></i>
-                                <h4>Begin Typing to Search</h4>
-                                <p class="small">Enter a classification title or official UNSPSC code to inspect.</p>
+                                <h4>{{ __('classification::texts.search_begin_typing_title') }}</h4>
+                                <p class="small">{{ __('classification::texts.search_begin_typing_desc') }}</p>
                             </div>
                         </div>
                     </div>
@@ -71,8 +71,8 @@
                         <!-- Initial Empty State -->
                         <div class="text-center text-muted" style="padding-top: 200px;">
                             <i class="fas fa-info-circle fa-4x" style="margin-bottom: 20px; opacity: 0.5;"></i>
-                            <h3>No Item Selected</h3>
-                            <p class="lead">Select a classification from the search results on the left to inspect its definitions, synonyms, and mapping status.</p>
+                            <h3>{{ __('classification::texts.search_no_item_selected') }}</h3>
+                            <p class="lead">{{ __('classification::texts.search_no_item_desc') }}</p>
                         </div>
                     </div>
                 </div>
@@ -135,7 +135,7 @@ function bootstrapCatalogExplorer() {
         resultsContainer.html(`
             <div class="text-center" style="padding: 80px 20px;">
                 <i class="fas fa-spinner fa-spin fa-3x text-blue" style="margin-bottom: 15px;"></i>
-                <p class="text-muted">Searching official catalog records...</p>
+                <p class="text-muted">{{ __('classification::texts.search_searching_catalog_records') }}</p>
             </div>
         `);
 
@@ -163,8 +163,8 @@ function bootstrapCatalogExplorer() {
         if (results.length === 0) {
             resultsContainer.html(`
                 <div class="well text-center" style="background-color: #fff; border-style: dashed; padding: 40px 10px;">
-                    <h4 class="text-muted"><i class="fas fa-search-minus"></i> No matches found</h4>
-                    <p class="small text-muted">Verify the spelling or filters and try again.</p>
+                    <h4 class="text-muted"><i class="fas fa-search-minus"></i> {{ __('classification::texts.search_no_matches_found') }}</h4>
+                    <p class="small text-muted">{{ __('classification::texts.search_verify_spelling_filters') }}</p>
                 </div>
             `);
             return;
@@ -225,7 +225,7 @@ function bootstrapCatalogExplorer() {
         workspaceContainer.html(`
             <div class="text-center" style="padding-top: 200px;">
                 <i class="fas fa-sync-alt fa-spin fa-4x text-blue" style="margin-bottom: 20px;"></i>
-                <h4>Retrieving metadata...</h4>
+                <h4>{{ __('classification::texts.search_retrieving_metadata') }}</h4>
             </div>
         `);
         workspaceBox.css('border-left-color', '#3c8dbc');

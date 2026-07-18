@@ -67,7 +67,7 @@ class GoodsIssueController extends Controller
                 $issueService->submit($issue);
             });
 
-            return redirect()->back()->with('success', 'Goods successfully issued and stock updated!');
+            return redirect()->back()->with('success', __('storeops::storeops.success_goods_issued'));
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }

@@ -1,6 +1,6 @@
 @extends('layouts/default')
 
-@section('title', 'Provision Government Office')
+@section('title', __('organization_labels::orglabel.create_title'))
 
 @section('content')
 
@@ -68,7 +68,7 @@
         <div class="box onboarding-box" style="border-top: 3px solid var(--main-theme-color, #3c8dbc);">
             <div class="box-header with-border" style="padding: 15px 20px;">
                 <h3 class="box-title" style="font-weight: bold; font-size: 16px;">
-                    <i class="fas fa-plus-circle"></i> Office Registration Workspace
+                    <i class="fas fa-plus-circle"></i> {{ __('organization_labels::orglabel.create_workspace_title') }}
                 </h3>
             </div>
             
@@ -78,38 +78,38 @@
                     
                     <!-- SECTION 1: IDENTITY -->
                     <div class="form-section-header">
-                        <i class="fas fa-id-card"></i> <span>1. Office Building Identity</span>
+                        <i class="fas fa-id-card"></i> <span>{{ __('organization_labels::orglabel.create_section_identity') }}</span>
                     </div>
                     <div class="form-group" style="margin-bottom: 20px;">
-                        <label for="name">Office Name <span class="text-danger">*</span></label>
-                        <input type="text" name="name" id="name" class="form-control input-lg" placeholder="e.g. Debidwar Upazila Health Complex" required value="{{ old('name') }}">
+                        <label for="name">{{ __('organization_labels::orglabel.create_field_office_name') }} <span class="text-danger">*</span></label>
+                        <input type="text" name="name" id="name" class="form-control input-lg" placeholder="{{ __('organization_labels::orglabel.create_placeholder_office_name') }}" required value="{{ old('name') }}">
                     </div>
 
 
                     <!-- SECTION 2: GEOGRAPHY -->
                     <div class="form-section-header" style="margin-top: 25px;">
-                        <i class="fas fa-map-marked-alt"></i> <span>2. Geographical Boundary Tag</span>
+                        <i class="fas fa-map-marked-alt"></i> <span>{{ __('organization_labels::orglabel.create_section_geography') }}</span>
                     </div>
                     <div class="form-group" style="margin-bottom: 20px;">
-                        <label for="geoAreaSelector">Administrative Territory Boundary <span class="text-danger">*</span></label>
+                        <label for="geoAreaSelector">{{ __('organization_labels::orglabel.create_field_geo_area') }} <span class="text-danger">*</span></label>
                         <select name="geo_area_id" id="geoAreaSelector" class="form-control" required style="width: 100%;">
-                            <option value="">-- Type to search Division, Zila, Upazila or Union --</option>
+                            <option value="">{{ __('organization_labels::orglabel.create_placeholder_geo_area') }}</option>
                         </select>
-                        <p class="help-block" style="margin-top: 6px;"><i class="fas fa-info-circle"></i> Mandatory. This locks the building to its standard geo-code parameters.</p>
+                        <p class="help-block" style="margin-top: 6px;"><i class="fas fa-info-circle"></i> {{ __('organization_labels::orglabel.create_help_geo_area') }}</p>
                     </div>
 
 
                     <!-- SECTION 3: ADMINISTRATION & MAPPING -->
                     <div class="form-section-header" style="margin-top: 35px;">
-                        <i class="fas fa-sitemap"></i> <span>3. Organizational Hierarchy & Setup</span>
+                        <i class="fas fa-sitemap"></i> <span>{{ __('organization_labels::orglabel.create_section_hierarchy') }}</span>
                     </div>
                     
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group" style="margin-bottom: 20px;">
-                                <label for="company_id">Ministry / Department Ownership (Optional)</label>
+                                <label for="company_id">{{ __('organization_labels::orglabel.create_field_ministry') }}</label>
                                 <select name="company_id" id="company_id" class="form-control select2" style="width: 100%;">
-                                    <option value="">-- Standalone Office (No Ministry) --</option>
+                                    <option value="">{{ __('organization_labels::orglabel.create_placeholder_standalone') }}</option>
                                     @foreach($companies as $company)
                                         <option value="{{ $company->id }}">{{ $company->name }}</option>
                                     @endforeach
@@ -118,9 +118,9 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group" style="margin-bottom: 20px;">
-                                <label for="parent_id">Parent Regional/District Office (Optional)</label>
+                                <label for="parent_id">{{ __('organization_labels::orglabel.create_field_parent_office') }}</label>
                                 <select name="parent_id" id="parent_id" class="form-control select2" style="width: 100%;">
-                                    <option value="">-- No Parent (Root Location) --</option>
+                                    <option value="">{{ __('organization_labels::orglabel.create_placeholder_no_parent') }}</option>
                                     @foreach($offices as $parentLoc)
                                         <option value="{{ $parentLoc->id }}">{{ $parentLoc->name }}</option>
                                     @endforeach
@@ -130,24 +130,24 @@
                     </div>
 
                     <div class="form-group" style="margin-top: 10px; margin-bottom: 10px;">
-                        <label for="office_admin_id">Delegate Office Administrator (Optional)</label>
+                        <label for="office_admin_id">{{ __('organization_labels::orglabel.create_field_delegate_admin') }}</label>
                         <select name="office_admin_id" id="office_admin_id" class="form-control select2" style="width: 100%;">
-                            <option value="">-- Leave Unassigned for Now --</option>
+                            <option value="">{{ __('organization_labels::orglabel.create_placeholder_leave_unassigned') }}</option>
                             @foreach($users as $user)
                                 <option value="{{ $user->id }}">{{ $user->present()->fullName }} ({{ $user->username }})</option>
                             @endforeach
                         </select>
-                        <p class="help-block" style="margin-top: 6px;">The delegated administrator receives email setup credentials to configure their own workflow roles.</p>
+                        <p class="help-block" style="margin-top: 6px;">{{ __('organization_labels::orglabel.create_help_delegate_admin') }}</p>
                     </div>
 
                 </div>
                 
                 <div class="box-footer" style="padding: 15px 25px; background-color: #fafafa; border-top: 1px solid #f4f4f4;">
                     <a href="{{ route('gov.org.provisioning.index') }}" class="btn btn-default pull-left" style="padding: 8px 15px;">
-                        <i class="fas fa-arrow-left"></i> Return to Registry
+                        <i class="fas fa-arrow-left"></i> {{ __('organization_labels::orglabel.create_button_return_registry') }}
                     </a>
                     <button type="submit" class="btn btn-primary pull-right" style="padding: 8px 25px; font-weight: bold;">
-                        <i class="fas fa-building"></i> Save & Provision Office
+                        <i class="fas fa-building"></i> {{ __('organization_labels::orglabel.create_button_save_provision') }}
                     </button>
                 </div>
             </form>
@@ -160,34 +160,34 @@
         <!-- Live Duplicate Checker Callout Widget -->
         <div class="duplicate-alert-callout" id="duplicateWidget" style="display: none;">
             <h4 style="font-weight: bold; margin-top: 0; color: #c0392b !important;">
-                <i class="fas fa-exclamation-triangle text-warning"></i> Registry Warning: Similar Office Found
+                <i class="fas fa-exclamation-triangle text-warning"></i> {{ __('organization_labels::orglabel.create_duplicate_warning_title') }}
             </h4>
             <p class="text-muted" style="font-size: 13px; line-height: 1.5; margin-bottom: 15px;">
-                An office belonging to the selected Ministry is already registered within this geographic boundary. Verify if this is an intended separate building before saving:
+                {{ __('organization_labels::orglabel.create_duplicate_warning_desc') }}
             </p>
             <ul id="duplicateList" class="list-group list-group-custom" style="margin-bottom: 10px;"></ul>
             <p class="text-muted" style="font-size: 11px; margin-bottom: 0; font-style: italic;">
-                Note: This does not block registration; it acts as a data-integrity pre-check.
+                {{ __('organization_labels::orglabel.create_duplicate_note') }}
             </p>
         </div>
 
         <!-- Onboarding Advisory Panel -->
         <div class="box onboarding-box" style="border-top: 3px solid #d2d6de;">
             <div class="box-header with-border" style="padding: 15px 20px;">
-                <h3 class="box-title" style="font-weight: bold; font-size: 15px;"><i class="fas fa-info-circle text-muted"></i> Field Deployment Guidelines</h3>
+                <h3 class="box-title" style="font-weight: bold; font-size: 15px;"><i class="fas fa-info-circle text-muted"></i> {{ __('organization_labels::orglabel.create_guidelines_title') }}</h3>
             </div>
             <div class="box-body" style="padding: 20px 25px;">
                 <div class="advisory-box">
-                    <p style="margin-bottom: 0; font-size: 13px; font-weight: bold; color: #333;">Spatial-First Principle</p>
+                    <p style="margin-bottom: 0; font-size: 13px; font-weight: bold; color: #333;">{{ __('organization_labels::orglabel.create_advisory_spatial_title') }}</p>
                     <p class="text-muted" style="font-size: 12.5px; line-height: 1.6; margin-top: 5px; margin-bottom: 0;">
-                        Every office physically exists somewhere. By establishing its standardized geographic territory first, you enable spatial audit tracking, proximity dispatching, and coverage density statistics.
+                        {{ __('organization_labels::orglabel.create_advisory_spatial_desc') }}
                     </p>
                 </div>
 
                 <ul style="padding-left: 20px; line-height: 1.8; color: #555; font-size: 13px;">
-                    <li><strong>Step 1 (Office Identity):</strong> Use standardized spellings aligned with government directories.</li>
-                    <li><strong>Step 2 (Territory Tag):</strong> Select any administrative tier (Zila, Upazila, or Union) mapped inside the platform databases.</li>
-                    <li><strong>Step 3 (Ownership):</strong> Assigning parent and ministry structures is fully optional on day-one and can be mapped during secondary configurations inside the Hub.</li>
+                    <li><strong>{{ __('organization_labels::orglabel.create_step1_label') }}</strong> {{ __('organization_labels::orglabel.create_step1_desc') }}</li>
+                    <li><strong>{{ __('organization_labels::orglabel.create_step2_label') }}</strong> {{ __('organization_labels::orglabel.create_step2_desc') }}</li>
+                    <li><strong>{{ __('organization_labels::orglabel.create_step3_label') }}</strong> {{ __('organization_labels::orglabel.create_step3_desc') }}</li>
                 </ul>
             </div>
         </div>

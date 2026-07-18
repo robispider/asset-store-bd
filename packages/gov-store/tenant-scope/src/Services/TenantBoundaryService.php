@@ -41,7 +41,7 @@ class TenantBoundaryService
             if ($action !== 'create' && !$policy->canMutate($model, $context)) {
                 $this->logViolation($model, $action);
                 throw new TenantBoundaryException(
-                    "Access Denied: Your assigned office does not hold ownership rights to modify this " . class_basename($model) . ".",
+                    __('tenantops::ops.exception_ownership', ['model' => class_basename($model)]),
                     'OWNERSHIP'
                 );
             }
@@ -65,7 +65,7 @@ class TenantBoundaryService
     {
         if ((int)$asset->location_id !== (int)$context->locationId) {
             throw new TenantBoundaryException(
-                "Access Denied: The target item belongs to another office context.",
+                __('tenantops::ops.exception_out_of_bounds'),
                 'OUT_OF_BOUNDS',
                 403
             );
@@ -87,7 +87,7 @@ class TenantBoundaryService
             if (!$canCheckout) {
                 $this->logViolation($asset, 'checkout');
                 throw new TenantBoundaryException(
-                    "Security Violation: You do not hold active storekeeper responsibility inside this office context to execute checkouts.",
+                    __('tenantops::ops.exception_checkout_violation'),
                     'ROLE_VIOLATION',
                     403
                 );
@@ -111,7 +111,7 @@ class TenantBoundaryService
                 $rawItem = $relatedModelClass::withoutGlobalScopes()->find($model->{$column});
                 if (!$rawItem) {
                     throw new TenantBoundaryException(
-                        "Setup Error: The selected " . str_replace('_id', '', $column) . " (ID: {$model->{$column}}) does not exist in the database.",
+                        __('tenantops::ops.exception_not_found', ['column' => str_replace('_id', '', $column), 'id' => $model->{$column}]),
                         'NOT_FOUND',
                         404
                     );
@@ -123,7 +123,7 @@ class TenantBoundaryService
 
                 if (!$isVisible) {
                     throw new TenantBoundaryException(
-                        "Security Violation: You are not authorized to assign " . class_basename($rawItem) . " '{$rawItem->name}' to this resource. It lies outside your active data boundary.",
+                        __('tenantops::ops.exception_relationship', ['item' => class_basename($rawItem), 'name' => $rawItem->name]),
                         'RELATIONSHIP',
                         403
                     );

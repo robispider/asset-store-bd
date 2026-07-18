@@ -1,6 +1,6 @@
 @extends('layouts/default')
 
-@section('title', 'Review Service Request: ' . $serviceRequest->request_number)
+@section('title', __('requestlabels::requests.admin_show_title_prefix') . $serviceRequest->request_number)
 
 @section('content')
 <div class="row">
@@ -8,7 +8,7 @@
     <div class="col-md-8">
         <div class="box box-warning">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-clipboard-list"></i> Adjust and Process Line Items</h3>
+                <h3 class="box-title"><i class="fas fa-clipboard-list"></i> {{ __('requestlabels::requests.admin_show_header_adjust_items') }}</h3>
             </div>
             <form action="{{ route('gov.requests.admin.process', $serviceRequest->id) }}" method="POST">
                 @csrf
@@ -17,7 +17,7 @@
                     <!-- Metadata Header -->
                     <table class="table table-bordered" style="background-color: #fafafa; margin-bottom: 25px;">
                         <tr>
-                            <td style="width: 25%;"><strong>Purpose:</strong></td>
+                            <td style="width: 25%;"><strong>{{ __('requestlabels::requests.admin_show_label_purpose') }}</strong></td>
                             <td>{{ $serviceRequest->purpose }}</td>
                         </tr>
                         <tr>
@@ -27,8 +27,8 @@
                         <tr>
                             <td><strong>Required Date / Location:</strong></td>
                             <td>
-                                {{ $serviceRequest->required_by_date ?? 'No deadline set' }} / 
-                                {{ $serviceRequest->delivery_location_id ? \App\Models\Location::find($serviceRequest->delivery_location_id)?->name : 'No location specified' }}
+                                {{ $serviceRequest->required_by_date ?? __('requestlabels::requests.admin_show_label_no_deadline') }} / 
+                                {{ $serviceRequest->delivery_location_id ? \App\Models\Location::find($serviceRequest->delivery_location_id)?->name : __('requestlabels::requests.admin_show_label_no_location') }}
                             </td>
                         </tr>
                     </table>
@@ -66,15 +66,15 @@
                                     <td style="vertical-align: middle;">
                                         <div class="btn-group" data-toggle="buttons">
                                             <label class="btn btn-sm btn-default active">
-                                                <input type="radio" name="items[{{ $item->id }}][status]" value="approved" class="line-status-radio" data-id="{{ $item->id }}" checked> <i class="fas fa-check"></i> Approve
+                                                <input type="radio" name="items[{{ $item->id }}][status]" value="approved" class="line-status-radio" data-id="{{ $item->id }}" checked> <i class="fas fa-check"></i> {{ __('requestlabels::requests.admin_show_btn_approve') }}
                                             </label>
                                             <label class="btn btn-sm btn-default">
-                                                <input type="radio" name="items[{{ $item->id }}][status]" value="rejected" class="line-status-radio" data-id="{{ $item->id }}"> <i class="fas fa-times"></i> Reject
+                                                <input type="radio" name="items[{{ $item->id }}][status]" value="rejected" class="line-status-radio" data-id="{{ $item->id }}"> <i class="fas fa-times"></i> {{ __('requestlabels::requests.admin_show_btn_reject') }}
                                             </label>
                                         </div>
                                     </td>
                                     <td style="vertical-align: middle;">
-                                        <input type="text" name="items[{{ $item->id }}][notes]" class="form-control input-sm" placeholder="Reason for change/rejection...">
+                                        <input type="text" name="items[{{ $item->id }}][notes]" class="form-control input-sm" placeholder="{{ __('requestlabels::requests.admin_show_input_reason_placeholder') }}">
                                     </td>
                                 </tr>
                             @endforeach
@@ -82,9 +82,9 @@
                     </table>
                 </div>
                 <div class="box-footer">
-                    <a href="{{ route('gov.requests.admin.index') }}" class="btn btn-default pull-left"><i class="fas fa-arrow-left"></i> Cancel</a>
-                    <button type="submit" class="btn btn-warning pull-right" onclick="return confirm('Are you sure you want to finalize these line-item decisions?')">
-                        <i class="fas fa-signature"></i> Finalize Decisions
+                    <a href="{{ route('gov.requests.admin.index') }}" class="btn btn-default pull-left"><i class="fas fa-arrow-left"></i> {{ __('requestlabels::requests.admin_show_btn_cancel') }}</a>
+                    <button type="submit" class="btn btn-warning pull-right" onclick="return confirm('{{ __('requestlabels::requests.admin_show_confirm_finalize') }}')">
+                        <i class="fas fa-signature"></i> {{ __('requestlabels::requests.admin_show_btn_finalize') }}
                     </button>
                 </div>
             </form>
@@ -95,7 +95,7 @@
     <div class="col-md-4">
         <div class="box box-default">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-history"></i> Request Timeline</h3>
+                <h3 class="box-title"><i class="fas fa-history"></i> {{ __('requestlabels::requests.admin_show_header_timeline') }}</h3>
             </div>
             <div class="box-body">
                 <ul class="timeline">

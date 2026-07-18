@@ -1,13 +1,13 @@
 @extends('layouts/default')
 
-@section('title', 'Issue Goods')
+@section('title', __('storeops::storeops.issue_goods_title'))
 
 @section('content')
 <div class="row">
     <div class="col-md-10 col-md-offset-1">
         <div class="box box-warning">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fa fa-sign-out"></i> Create Goods Issue (Outbound)</h3>
+                <h3 class="box-title"><i class="fa fa-sign-out"></i> {{ __('storeops::storeops.create_goods_issue') }}</h3>
             </div>
             
             <form action="{{ route('storeops.issues.store') }}" method="POST">
@@ -16,16 +16,16 @@
                     <!-- Header Info -->
                     <div class="row" style="margin-bottom: 20px;">
                         <div class="col-md-4">
-                            <label>Issue Type</label>
+                            <label>{{ __('storeops::storeops.issue_type_label') }}</label>
                             <select name="issue_type" id="issueType" class="form-control" required>
-                                <option value="TO_USER">Issue to Employee</option>
-                                <option value="TO_DEPARTMENT">Issue to Department / General Use</option>
+                                <option value="TO_USER">{{ __('storeops::storeops.issue_to_employee') }}</option>
+                                <option value="TO_DEPARTMENT">{{ __('storeops::storeops.issue_to_department') }}</option>
                             </select>
                         </div>
                         <div class="col-md-5" id="userSelectDiv">
-                            <label>Issued To</label>
+                            <label>{{ __('storeops::storeops.issued_to_label') }}</label>
                             <select name="issued_to_id" class="form-control select2">
-                                <option value="">-- Select Employee --</option>
+                                <option value="">-- {{ __('storeops::storeops.select_employee') }} --</option>
                                 @foreach($users as $user)
                                     <option value="{{ $user->id }}">{{ $user->present()->fullName }}</option>
                                 @endforeach
@@ -34,13 +34,13 @@
                     </div>
 
                     <!-- The Fast Grid -->
-                    <h4>Items to Issue</h4>
+                    <h4>{{ __('storeops::storeops.items_to_issue') }}</h4>
                     <table class="table table-bordered" id="itemsTable">
                         <thead>
                             <tr style="background-color: #f9f9f9;">
-                                <th>Item Name</th>
-                                <th style="width: 150px;">Available Stock</th>
-                                <th style="width: 150px;">Issue Qty</th>
+                                <th>{{ __('storeops::storeops.item_name') }}</th>
+                                <th style="width: 150px;">{{ __('storeops::storeops.available_stock') }}</th>
+                                <th style="width: 150px;">{{ __('storeops::storeops.issue_qty') }}</th>
                                 <th style="width: 50px;"></th>
                             </tr>
                         </thead>
@@ -48,7 +48,7 @@
                             <tr>
                                 <td>
                                     <select name="items[0][id]" class="form-control item-select select2" required>
-                                        <option value="">-- Select Item --</option>
+                                        <option value="">-- {{ __('storeops::storeops.select_item') }} --</option>
                                         @foreach($stockables as $item)
                                             <option value="{{ $item->id }}" data-max="{{ $item->qty }}">{{ $item->name }}</option>
                                         @endforeach
@@ -65,12 +65,12 @@
                         </tbody>
                     </table>
                     <button type="button" class="btn btn-sm btn-primary" id="addRowBtn">
-                        <i class="fa fa-plus"></i> Add Item
+                        <i class="fa fa-plus"></i> {{ __('storeops::storeops.add_item') }}
                     </button>
                 </div>
                 
                 <div class="box-footer text-right">
-                    <button type="submit" class="btn btn-warning">Issue Stock</button>
+                    <button type="submit" class="btn btn-warning">{{ __('storeops::storeops.issue_stock_button') }}</button>
                 </div>
             </form>
         </div>

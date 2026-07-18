@@ -1,6 +1,6 @@
 @extends('layouts/default')
 
-@section('title', 'My Office Memberships & Handovers')
+@section('title', __('office_membership::member.user_page_title'))
 
 @section('content')
 <div class="row">
@@ -8,16 +8,16 @@
     <div class="col-md-7">
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-id-badge"></i> Active Office Memberships</h3>
+                <h3 class="box-title"><i class="fas fa-id-badge"></i> {{ __('office_membership::member.user_active_memberships_title') }}</h3>
             </div>
             <div class="box-body table-responsive">
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>Office Building</th>
-                            <th>Membership Status</th>
-                            <th>Clearance Rules</th>
-                            <th style="width: 150px;">Action</th>
+                            <th>{{ __('office_membership::member.user_table_office') }}</th>
+                            <th>{{ __('office_membership::member.user_table_status') }}</th>
+                            <th>{{ __('office_membership::member.user_table_clearance') }}</th>
+                            <th>style="width: 150px;">{{ __('office_membership::member.user_table_action') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -28,17 +28,17 @@
                             @endphp
                             <tr>
                                 <td>
-                                    <strong>{{ $mem->location->name ?? 'Unknown Location' }}</strong><br>
+                                    <strong>{{ $mem->location->name ?? __('office_membership::member.user_table_office') }}</strong><br>
                                     <small class="text-muted">{{ $mem->location->company->name ?? 'Standalone' }}</small>
                                 </td>
                                 <td style="vertical-align: middle;">
                                     @if($mem->status === 'active')
-                                        <span class="label label-success">Active</span>
-                                        @if($mem->is_home_office) <span class="label label-primary"><i class="fas fa-star"></i> Home Base</span> @endif
+                                        <span class="label label-success">{{ __('office_membership::member.user_status_active') }}</span>
+                                        @if($mem->is_home_office) <span class="label label-primary"><i class="fas fa-star"></i> {{ __('office_membership::member.user_status_home_base') }}</span> @endif
                                     @elseif($mem->status === 'release_requested')
-                                        <span class="label bg-orange">Release Requested</span>
+                                        <span class="label bg-orange">{{ __('office_membership::member.user_status_release_requested') }}</span>
                                     @elseif($mem->status === 'released')
-                                        <span class="label label-default">Released</span>
+                                        <span class="label label-default">{{ __('office_membership::member.user_status_released') }}</span>
                                     @endif
                                 </td>
                                 <td style="vertical-align: middle;">
@@ -54,24 +54,24 @@
                                             @endforeach
                                         </ul>
                                     @else
-                                        <span class="text-muted">N/A</span>
+                                        <span class="text-muted">{{ __('office_membership::member.user_clearance_na') }}</span>
                                     @endif
                                 </td>
                                 <td style="vertical-align: middle;">
                                     @if($mem->status === 'active')
                                         <form action="{{ route('gov.membership.request-release', $mem->id) }}" method="POST">
                                             @csrf
-                                            <button type="submit" class="btn btn-sm btn-block {{ $isCleared ? 'btn-danger' : 'btn-default' }}" {{ $isCleared ? '' : 'disabled title="Clearance blocks exist"' }} onclick="return confirm('Request formal release from this office?')">
-                                                <i class="fas fa-sign-out-alt"></i> Request Release
+                                            <button type="submit" class="btn btn-sm btn-block {{ $isCleared ? 'btn-danger' : 'btn-default' }}" {{ $isCleared ? '' : 'disabled title="Clearance blocks exist"' }} onclick="return confirm('{{ __('office_membership::member.user_request_release_confirm') }}')">
+                                                <i class="fas fa-sign-out-alt"></i> {{ __('office_membership::member.user_request_release_button') }}
                                             </button>
                                         </form>
                                     @else
-                                        <button class="btn btn-sm btn-block btn-default" disabled><i class="fas fa-lock"></i> Locked</button>
+                                        <button class="btn btn-sm btn-block btn-default" disabled><i class="fas fa-lock"></i> {{ __('office_membership::member.user_locked_button') }}</button>
                                     @endif
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="4" class="text-center text-muted" style="padding: 30px;">You do not belong to any registered office.</td></tr>
+                            <tr><td colspan="4" class="text-center text-muted" style="padding: 30px;">{{ __('office_membership::member.user_no_memberships') }}</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -85,16 +85,16 @@
         <!-- VERIFICATION CODE GENERATOR WIDGET -->
         <div class="box box-success" style="border-top: 3px solid #00a65a;">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-qrcode text-success"></i> Office Join Credential</h3>
+                <h3 class="box-title"><i class="fas fa-qrcode text-success"></i> {{ __('office_membership::member.user_credential_title') }}</h3>
             </div>
             <div class="box-body text-center" style="padding: 20px;">
                 <p class="text-muted" style="font-size: 13px; margin-bottom: 15px;">
-                    Provide your Username and this temporary Verification Code to a local Office Administrator to securely grant them permission to add you to their office.
+                    {{ __('office_membership::member.user_credential_hint') }}
                 </p>
                 
                 @if(isset($activeToken) && $activeToken)
                     <div style="background: #f4f4f4; border: 1px dashed #ccc; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
-                        <span style="font-size: 12px; color: #777; display: block; text-transform: uppercase;">Your Active Code</span>
+                        <span style="font-size: 12px; color: #777; display: block; text-transform: uppercase;">{{ __('office_membership::member.user_token_active_label') }}</span>
                         <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #333;">{{ $activeToken->token }}</span>
                         <span style="display: block; font-size: 11px; color: #a94442; margin-top: 5px;">
                             <i class="fas fa-clock"></i> Expires: {{ $activeToken->expires_at->diffForHumans() }}
@@ -102,14 +102,14 @@
                     </div>
                 @else
                     <div style="background: #fafafa; border: 1px solid #eee; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
-                        <span style="font-size: 14px; color: #999;"><i class="fas fa-lock"></i> No active code</span>
+                        <span style="font-size: 14px; color: #999;"><i class="fas fa-lock"></i> {{ __('office_membership::member.user_token_no_active') }}</span>
                     </div>
                 @endif
 
                 <form action="{{ route('gov.membership.token.generate') }}" method="POST">
                     @csrf
                     <button type="submit" class="btn btn-success btn-sm btn-block">
-                        <i class="fas fa-sync-alt"></i> {{ isset($activeToken) && $activeToken ? 'Regenerate Code' : 'Generate Verification Code' }}
+                        <i class="fas fa-sync-alt"></i> {{ isset($activeToken) && $activeToken ? __('office_membership::member.user_token_regenerate') : __('office_membership::member.user_token_generate') }}
                     </button>
                 </form>
             </div>
@@ -118,19 +118,19 @@
         <!-- JOIN OFFICE VIA MASS INVITATION CODE WIDGET -->
         <div class="box box-primary" style="border-top: 3px solid #3c8dbc;">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-building text-primary"></i> Join an Office</h3>
+                <h3 class="box-title"><i class="fas fa-building text-primary"></i> {{ __('office_membership::member.user_join_title') }}</h3>
             </div>
             <form action="{{ route('gov.membership.join') }}" method="POST">
                 @csrf
                 <div class="box-body text-center" style="padding: 20px;">
                     <p class="text-muted" style="font-size: 13px; margin-bottom: 15px;">
-                        If your Office Administrator provided you with an Office Invitation Code, enter it here to request access.
+                        {{ __('office_membership::member.user_join_hint') }}
                     </p>
                     <div class="form-group">
-                        <input type="text" name="office_code" class="form-control text-center" placeholder="e.g. OFF-ABCD-1234" required style="font-size: 16px; letter-spacing: 2px; text-transform: uppercase;">
+                        <input type="text" name="office_code" class="form-control text-center" placeholder="{{ __('office_membership::member.user_join_code_placeholder') }}" required style="font-size: 16px; letter-spacing: 2px; text-transform: uppercase;">
                     </div>
                     <button type="submit" class="btn btn-primary btn-sm btn-block">
-                        <i class="fas fa-paper-plane"></i> Send Join Request
+                        <i class="fas fa-paper-plane"></i> {{ __('office_membership::member.user_join_send_button') }}
                     </button>
                 </div>
             </form>
@@ -140,20 +140,20 @@
         @if($incomingRequests->count() > 0)
         <div class="box box-warning" style="border-top: 3px solid #f39c12;">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-bell text-warning"></i> Action Required: Incoming Handovers</h3>
+                <h3 class="box-title"><i class="fas fa-bell text-warning"></i> {{ __('office_membership::member.user_handover_title') }}</h3>
             </div>
             <div class="box-body">
                 @foreach($incomingRequests as $inc)
                     <div style="padding: 12px; border: 1px solid #faebcc; background: #fffcf5; border-radius: 4px; margin-bottom: 12px;">
-                        <strong>{{ $inc->outgoingUser ? $inc->outgoingUser->present()->fullName : 'Unknown Colleague' }}</strong> wishes to delegate the 
-                        <span class="label bg-orange" style="font-size: 11px;">{{ ucwords(str_replace('_', ' ', $inc->role_slug)) }}</span> role to you for <strong>{{ $inc->location->name ?? 'an Office' }}</strong>.
+                        <strong>{{ $inc->outgoingUser ? $inc->outgoingUser->present()->fullName : __('office_membership::member.staff_unknown_employee') }}</strong> {{ __('office_membership::member.user_handover_delegate_text') }} 
+                        <span class="label bg-orange" style="font-size: 11px;">{{ ucwords(str_replace('_', ' ', $inc->role_slug)) }}</span> {{ __('office_membership::member.user_handover_role_to_you_for') }} <strong>{{ $inc->location->name ?? __('office_membership::member.staff_claim_hint') }}</strong>.
                         
                         <div style="margin-top: 15px; display: flex; gap: 10px;">
                             <form action="{{ route('gov.membership.handshake.accept', $inc->id) }}" method="POST" style="flex: 1;">
-                                @csrf <button class="btn btn-success btn-sm btn-block" onclick="return confirm('Confirm acceptance? This updates active database roles instantly.')"><i class="fas fa-check"></i> Accept</button>
+                                @csrf <button class="btn btn-success btn-sm btn-block" onclick="return confirm('{{ __('office_membership::member.user_handover_accept_confirm') }}')"><i class="fas fa-check"></i> {{ __('office_membership::member.user_handover_accept_button') }}</button>
                             </form>
                             <form action="{{ route('gov.membership.handshake.reject', $inc->id) }}" method="POST" style="flex: 1;">
-                                @csrf <button class="btn btn-danger btn-sm btn-block"><i class="fas fa-times"></i> Reject</button>
+                                @csrf <button class="btn btn-danger btn-sm btn-block"><i class="fas fa-times"></i> {{ __('office_membership::member.user_handover_reject_button') }}</button>
                             </form>
                         </div>
                     </div>
@@ -165,10 +165,10 @@
         <!-- MY ACTIVE RESPONSIBILITIES (DELEGATION CONTROLS) -->
         <div class="box box-default" style="border-top: 3px solid #d2d6de;">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-user-shield text-muted"></i> Handover Office Responsibilities</h3>
+                <h3 class="box-title"><i class="fas fa-user-shield text-muted"></i> {{ __('office_membership::member.user_responsibilities_title') }}</h3>
             </div>
             <div class="box-body">
-                <p class="text-muted" style="font-size: 13px;">If you hold an active role, you cannot be released. You must delegate your role to a colleague below.</p>
+                <p class="text-muted" style="font-size: 13px;">{{ __('office_membership::member.user_responsibilities_hint') }}</p>
                 
                 @forelse($myActiveRoles as $locId => $rolesList)
                     @php $locName = \App\Models\Location::find($locId)->name ?? 'Office'; @endphp
@@ -201,7 +201,7 @@
                         @endforeach
                     </table>
                 @empty
-                    <div class="text-center text-muted" style="padding: 15px; font-size: 13px;">You currently hold no administrative roles inside active offices.</div>
+                    <div class="text-center text-muted" style="padding: 15px; font-size: 13px;">{{ __('office_membership::member.user_no_active_roles') }}</div>
                 @endforelse
             </div>
         </div>
@@ -216,7 +216,7 @@
                 @csrf
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title"><i class="fas fa-exchange-alt"></i> Propose Role Delegation Handshake</h4>
+                    <h4 class="modal-title"><i class="fas fa-exchange-alt"></i> {{ __('office_membership::member.user_modal_title') }}</h4>
                 </div>
                 <div class="modal-body">
                     <p>Select a local colleague to take over the <strong id="modalRoleName"></strong> role. Once they accept, you will be cleared from this responsibility.</p>
@@ -225,15 +225,15 @@
                     <input type="hidden" name="role_type" id="modalRoleType">
 
                     <div class="form-group">
-                        <label>Select Colleague</label>
+                        <label>{{ __('office_membership::member.user_modal_colleague_label') }}</label>
                         <select name="assigned_user_id" id="colleagueSelector" class="form-control" required style="width: 100%;">
-                            <option value="">-- Choose Colleague --</option>
+                            <option value="">{{ __('office_membership::member.user_modal_colleague_placeholder') }}</option>
                         </select>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Propose Handover</button>
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">{{ __('office_membership::member.user_modal_cancel_button') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ __('office_membership::member.user_modal_propose_button') }}</button>
                 </div>
             </form>
         </div>
@@ -244,6 +244,7 @@
 @section('moar_scripts')
 <script>
     var colleagues = @json($eligibleColleagues);
+    var modalColleaguePlaceholder = '{{ __('office_membership::member.user_modal_colleague_placeholder') }}';
 
     function openDelegateModal(locId, roleType, roleName) {
         $('#modalLocId').val(locId);
@@ -251,7 +252,7 @@
         $('#modalRoleName').text(roleName);
         
         var select = $('#colleagueSelector');
-        select.empty().append('<option value="">-- Choose Colleague --</option>');
+        select.empty().append('<option value="">' + modalColleaguePlaceholder + '</option>');
         
         if (colleagues[locId]) {
             colleagues[locId].forEach(function(user) {

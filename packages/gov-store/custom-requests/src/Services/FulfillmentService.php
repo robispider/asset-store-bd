@@ -24,7 +24,7 @@ class FulfillmentService
     public function issueItems(ServiceRequest $request, User $storekeeper, array $issueQuantities, array $substitutions = []): ServiceRequest
     {
         if (in_array($request->fulfillment_status, ['closed', 'cannot_fulfill'])) {
-            throw new Exception("This service request has already been closed.");
+            throw new Exception(__('requestlabels::requests.fulfillmentservice_exception_already_closed'));
         }
 
         DB::transaction(function () use ($request, $storekeeper, $issueQuantities, $substitutions) {
@@ -58,7 +58,7 @@ class FulfillmentService
 
                 if ($qtyToIssue > 0) {
                     $remainingToIssue = $item->approved_qty - $item->issued_qty;
-                    if ($qtyToIssue > $remainingToIssue) throw new Exception("You cannot issue more than the remaining approved quantity.");
+                    if ($qtyToIssue > $remainingToIssue) throw new Exception(__('requestlabels::requests.fulfillmentservice_exception_over_issue_qty'));
 
                     $type = $item->fulfilled_type ?: $item->requested_type;
                     $id = $item->fulfilled_id ?: $item->requested_id;

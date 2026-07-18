@@ -1,6 +1,6 @@
-@extends('layouts/default')
+﻿@extends('layouts/default')
 
-@section('title', 'Tenant Scoping & Data Isolation')
+@section('title', __('tenantops::ops.index_title'))
 
 @section('content')
 <div class="row">
@@ -8,8 +8,8 @@
     <div class="col-md-7">
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-sliders-h"></i> Reference Scoping Strategy Policies</h3>
-                <p class="text-muted" style="margin-top: 5px; margin-bottom: 0;">Specify which spatial or corporate boundary limits apply to each catalog data model.</p>
+                <h3 class="box-title"><i class="fas fa-sliders-h"></i> {{ __('tenantops::ops.index_header') }}</h3>
+                <p class="text-muted" style="margin-top: 5px; margin-bottom: 0;">{{ __('tenantops::ops.index_description') }}</p>
             </div>
             
             <form action="{{ route('gov.scope.save-strategy') }}" method="POST">
@@ -18,9 +18,9 @@
                     <table class="table table-striped table-hover">
                         <thead>
                             <tr>
-                                <th>Catalog Reference Type</th>
-                                <th style="width: 250px;">Isolation Boundary</th>
-                                <th style="width: 150px;" class="text-center">"Show Only Used"</th>
+                                <th>{{ __('tenantops::ops.label_catalog_type') }}</th>
+                                <th style="width: 250px;">{{ __('tenantops::ops.label_isolation_boundary') }}</th>
+                                <th style="width: 150px;" class="text-center">{{ __('tenantops::ops.label_show_only_used') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -45,9 +45,9 @@
                                     <td style="vertical-align: middle;"><strong>{{ $label }}</strong></td>
                                     <td style="vertical-align: middle;">
                                         <select name="strategies[{{ $key }}][strategy]" class="form-control input-sm">
-                                            <option value="global" {{ $strategy === 'global' ? 'selected' : '' }}>🌎 Global (Shared by all)</option>
-                                            <option value="company" {{ $strategy === 'company' ? 'selected' : '' }}>🏛 Company (Ministry scoped)</option>
-                                            <option value="office" {{ $strategy === 'office' ? 'selected' : '' }}>📍 Office (Local building scoped)</option>
+                                            <option value="global" {{ $strategy === 'global' ? 'selected' : '' }}>{{ __('tenantops::ops.strategy_global') }}</option>
+                                            <option value="company" {{ $strategy === 'company' ? 'selected' : '' }}>{{ __('tenantops::ops.strategy_company') }}</option>
+                                            <option value="office" {{ $strategy === 'office' ? 'selected' : '' }}>{{ __('tenantops::ops.strategy_location') }}</option>
                                         </select>
                                     </td>
                                     <td style="vertical-align: middle;" class="text-center">
@@ -59,7 +59,7 @@
                     </table>
                 </div>
                 <div class="box-footer">
-                    <button type="submit" class="btn btn-primary pull-right"><i class="fas fa-save"></i> Save Scoping Policies</button>
+                    <button type="submit" class="btn btn-primary pull-right"><i class="fas fa-save"></i> {{ __('tenantops::ops.btn_save_policies') }}</button>
                 </div>
             </form>
         </div>
@@ -67,15 +67,15 @@
         <!-- ACTIVE POLYS MAPPING REGISTRY -->
         <div class="box box-default">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-user-lock"></i> Explicit Scoping Boundaries Map ({{ $mappings->count() }})</h3>
+                <h3 class="box-title"><i class="fas fa-user-lock"></i> {{ __('tenantops::ops.index_explicit_map') }} ({{ $mappings->count() }})</h3>
             </div>
             <div class="box-body table-responsive" style="max-height: 350px; overflow-y: auto;">
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>Reference Item</th>
-                            <th>Scoped Scope Boundary</th>
-                            <th style="width: 80px;">Action</th>
+                            <th>{{ __('tenantops::ops.table_reference_item') }}</th>
+                            <th>{{ __('tenantops::ops.table_scoped_boundary') }}</th>
+                            <th style="width: 80px;">{{ __('tenantops::ops.table_action') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -95,7 +95,7 @@
                             <tr>
                                 <td>
                                     <strong>{{ $refName }}</strong><br>
-                                    <small class="text-muted">Type: {{ ucfirst($map->reference_type) }}</small>
+                                    <small class="text-muted">{{ __('tenantops::ops.label_type') }} {{ ucfirst($map->reference_type) }}</small>
                                 </td>
                                 <td style="vertical-align: middle;">
                                     <span class="label {{ $map->scope_type === 'company' ? 'bg-purple' : 'bg-blue' }}">
@@ -106,15 +106,15 @@
                                 <td style="vertical-align: middle;">
                                     <form action="{{ route('gov.scope.mappings.destroy', $map->id) }}" method="POST">
                                         @csrf
-                                        <button type="submit" class="btn btn-xs btn-danger btn-block" onclick="return confirm('Revoke this data isolation limit?')">
-                                            <i class="fas fa-trash"></i> Revoke
+                                        <button type="submit" class="btn btn-xs btn-danger btn-block" onclick="return confirm('{{ __('tenantops::ops.confirm_revoke') }}')">
+                                            <i class="fas fa-trash"></i> {{ __('tenantops::ops.btn_delete') }}
                                         </button>
                                     </form>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="3" class="text-center text-muted" style="padding: 20px;">No private boundaries mapped yet. All items default to Global.</td>
+                                <td colspan="3" class="text-center text-muted" style="padding: 20px;">{{ __('tenantops::ops.index_empty_boundaries') }}</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -127,16 +127,16 @@
     <div class="col-md-5">
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-user-lock"></i> Map Private Scoping Bounds</h3>
+                <h3 class="box-title"><i class="fas fa-user-lock"></i> {{ __('tenantops::ops.index_map_header') }}</h3>
             </div>
             <form action="{{ route('gov.scope.mappings.store') }}" method="POST">
                 @csrf
                 <div class="box-body">
                     
                     <div class="form-group">
-                        <label for="reference_type">1. Choose Catalog Type</label>
+                        <label for="reference_type">{{ __('tenantops::ops.modal_step1_label') }}</label>
                         <select name="reference_type" id="reference_type" class="form-control" required>
-                            <option value="">-- Choose Type --</option>
+                            <option value="">{{ __('tenantops::ops.modal_step1_placeholder') }}</option>
                             <option value="category">Product Category</option>
                             <option value="model">Brand & Model</option>
                             <option value="manufacturer">Manufacturer</option>
@@ -145,31 +145,31 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="referenceSelector">2. Select Specific Item</label>
+                        <label for="referenceSelector">{{ __('tenantops::ops.modal_step2_label') }}</label>
                         <select name="reference_id" id="referenceSelector" class="form-control" required style="width: 100%;" disabled>
-                            <option value="">-- Select type first --</option>
+                            <option value="">{{ __('tenantops::ops.modal_step2_placeholder') }}</option>
                         </select>
                     </div>
 
                     <div class="form-group" style="margin-top: 25px;">
-                        <label for="scope_type">3. Choose Scoping Level</label>
+                        <label for="scope_type">{{ __('tenantops::ops.modal_step3_label') }}</label>
                         <select name="scope_type" id="scope_type" class="form-control" required>
-                            <option value="">-- Choose Scope --</option>
+                            <option value="">{{ __('tenantops::ops.modal_step3_placeholder') }}</option>
                             <option value="company">Company (Ministry Scope)</option>
                             <option value="location">Location (Local Office Scope)</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="scopeSelector">4. Map Scoped Boundary Target</label>
+                        <label for="scopeSelector">{{ __('tenantops::ops.modal_step4_label') }}</label>
                         <select name="scope_id" id="scopeSelector" class="form-control" required style="width: 100%;" disabled>
-                            <option value="">-- Select scope level first --</option>
+                            <option value="">{{ __('tenantops::ops.modal_step4_placeholder') }}</option>
                         </select>
                     </div>
 
                 </div>
                 <div class="box-footer">
-                    <button type="submit" class="btn btn-success btn-block"><i class="fas fa-lock"></i> Lock Reference to Boundary</button>
+                    <button type="submit" class="btn btn-success btn-block"><i class="fas fa-lock"></i> {{ __('tenantops::ops.index_btn_lock') }}</button>
                 </div>
             </form>
         </div>

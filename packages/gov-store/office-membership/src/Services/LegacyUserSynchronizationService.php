@@ -29,7 +29,7 @@ class LegacyUserSynchronizationService
             'status' => 'active',
             'approved_by_user_id' => auth()->id() ?? 1,
             'approved_at' => now(),
-            'approval_note' => 'System Auto-Onboarding'
+                'approval_note' => __('office_membership::member.sync_auto_onboarding_note')
         ]);
     }
 
@@ -58,8 +58,8 @@ class LegacyUserSynchronizationService
                 $user->location_id = $oldLocationId;
                 $user->saveQuietly();
 
-                Log::warning("Native User Transfer Blocked: User {$user->username} attempted native location change but holds uncleared assets/roles in Location {$oldLocationId}.");
-                session()->flash('error', "Warning: User location update was reverted. The user must return assets and delegate roles before transferring.");
+                Log::warning(__('office_membership::member.sync_transfer_blocked_warning', ['username' => $user->username, 'locationId' => $oldLocationId]));
+                session()->flash('error', __('office_membership::member.sync_transfer_reverted_flash'));
                 return;
             }
 
@@ -78,7 +78,7 @@ class LegacyUserSynchronizationService
                 'is_home_office' => true,
                 'approved_by_user_id' => auth()->id() ?? 1,
                 'approved_at' => now(),
-                'approval_note' => 'Native Admin Transfer'
+                'approval_note' => __('office_membership::member.sync_native_transfer_note')
             ]
         );
     }

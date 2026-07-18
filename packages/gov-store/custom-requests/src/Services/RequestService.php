@@ -22,7 +22,7 @@ class RequestService
             ->first();
 
         if ($existing) {
-            throw new Exception("You already have a pending request for this item.");
+            throw new Exception(__('requestlabels::requests.requestservice_exception_duplicate_pending'));
         }
 
         // 2. Create the request in our custom table

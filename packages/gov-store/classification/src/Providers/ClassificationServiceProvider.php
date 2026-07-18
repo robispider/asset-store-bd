@@ -20,7 +20,10 @@ class ClassificationServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-          // Load migrations (Reference/Operational split)
+        // Load translations (Namespace: classification)
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'classification');
+
+        // Load migrations (Reference/Operational split)
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 
         // Load views (search/, dashboard/, livewire/, manager/)

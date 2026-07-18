@@ -1,6 +1,6 @@
 @extends('layouts/default')
 
-@section('title', 'ICT Officer Jurisdictions')
+@section('title', __('organization_labels::orglabel.jurisdictions_title'))
 
 @section('content')
 <div class="row">
@@ -8,7 +8,7 @@
     <div class="col-md-4">
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-user-shield"></i> Map ICT Officer Boundary</h3>
+                <h3 class="box-title"><i class="fas fa-user-shield"></i> {{ __('organization_labels::orglabel.jurisdictions_map_title') }}</h3>
             </div>
             <form action="{{ route('gov.org.jurisdictions.store') }}" method="POST">
                 @csrf
@@ -22,7 +22,7 @@
                                 <option value="{{ $user->id }}">{{ $user->present()->fullName }} ({{ $user->username }})</option>
                             @endforeach
                         </select>
-                        <p class="help-block">Select the employee user account who will act as the field ICT Officer.</p>
+                        <p class="help-block">{{ __('organization_labels::orglabel.jurisdictions_help_employee') }}</p>
                     </div>
 
                     <!-- GEOGRAPHIC JURISDICTION SELECTOR -->
@@ -36,7 +36,7 @@
 
                 </div>
                 <div class="box-footer">
-                    <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-shield-alt"></i> Save & Delegate Officer</button>
+                    <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-shield-alt"></i> {{ __('organization_labels::orglabel.jurisdictions_save_button') }}</button>
                 </div>
             </form>
         </div>
@@ -46,16 +46,16 @@
     <div class="col-md-8">
         <div class="box box-default">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-user-cog"></i> Mapped ICT Provisioning Officers</h3>
+                <h3 class="box-title"><i class="fas fa-user-cog"></i> {{ __('organization_labels::orglabel.jurisdictions_assigned_title') }}</h3>
             </div>
             <div class="box-body table-responsive">
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>Officer Details</th>
-                            <th>Home Office Base</th>
-                            <th>Assigned Jurisdiction Boundary</th>
-                            <th style="width: 100px;">Action</th>
+                            <th>{{ __('organization_labels::orglabel.jurisdictions_col_officer_details') }}</th>
+                            <th>{{ __('organization_labels::orglabel.jurisdictions_col_home_office') }}</th>
+                            <th>{{ __('organization_labels::orglabel.jurisdictions_col_jurisdiction_boundary') }}</th>
+                            <th style="width: 100px;">{{ __('organization_labels::orglabel.jurisdictions_col_action') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -63,10 +63,10 @@
                             <tr>
                                 <td>
                                     <strong>{{ $jur->user->present()->fullName ?? 'Unknown User' }}</strong><br>
-                                    <small class="text-muted"><i class="fas fa-user"></i> Username: {{ $jur->user->username ?? '-' }}</small>
+                                    <small class="text-muted"><i class="fas fa-user"></i> {{ __('organization_labels::orglabel.jurisdictions_username_label') }} {{ $jur->user->username ?? '-' }}</small>
                                 </td>
                                 <td style="vertical-align: middle;">
-                                    <small class="text-muted"><i class="fas fa-building"></i> {{ $jur->user->location->name ?? 'No home office set' }}</small>
+                                    <small class="text-muted"><i class="fas fa-building"></i> {{ $jur->user->location->name ?? __('organization_labels::orglabel.jurisdictions_no_home_office') }}</small>
                                 </td>
                                 <td style="vertical-align: middle;">
                                     <span class="label bg-orange" style="font-size: 11px;">
@@ -76,15 +76,15 @@
                                 <td style="vertical-align: middle;">
                                     <form action="{{ route('gov.org.jurisdictions.destroy', $jur->id) }}" method="POST">
                                         @csrf
-                                        <button type="submit" class="btn btn-sm btn-danger btn-block" onclick="return confirm('Revoke geographic provisioning privileges for this user?')">
-                                            <i class="fas fa-trash"></i> Revoke
+                                        <button type="submit" class="btn btn-sm btn-danger btn-block" onclick="return confirm('{{ __('organization_labels::orglabel.jurisdictions_revoke_confirm') }}')">
+                                            <i class="fas fa-trash"></i> {{ __('organization_labels::orglabel.jurisdictions_revoke_button') }}
                                         </button>
                                     </form>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="text-center text-muted" style="padding: 30px;">No ICT Officers mapped in the database yet.</td>
+                                <td colspan="4" class="text-center text-muted" style="padding: 30px;">{{ __('organization_labels::orglabel.jurisdictions_empty_state') }}</td>
                             </tr>
                         @endforelse
                     </tbody>

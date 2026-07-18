@@ -1,7 +1,7 @@
 @auth
 <script nonce="{{ csrf_token() }}">
 $(document).ready(function() {
-    console.log("Gov-Store: Building dynamic e-commerce menus.");
+    console.log("{{ __('requestlabels::requests.menu_injection_console_build') }}");
 
     if ($('.sidebar-menu').length) {
         var path = window.location.pathname;
@@ -34,29 +34,29 @@ $(document).ready(function() {
         var storeMenu = '<li class="treeview ' + (isStoreActive ? 'active' : '') + '" id="gov-store-parent-menu">' +
             '<a href="#">' +
                 '<i class="fas fa-shopping-cart fa-fw"></i>' +
-                '<span>Government Store</span>' +
+                '<span>{{ __('requestlabels::requests.menu_injection_store_menu_title') }}</span>' +
                 '<span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>' +
             '</a>' +
             '<ul class="treeview-menu">' +
-                '<li class="' + (isCatalogActive ? 'active' : '') + '"><a href="{{ route("gov.requests.catalog") }}"><i class="fas fa-store fa-fw"></i> Browse Catalog</a></li>' +
-                '<li class="' + (isMyRequestsActive ? 'active' : '') + '"><a href="{{ route("gov.requests.user.index") }}"><i class="fas fa-clipboard-list fa-fw"></i> My Requests</a></li>';
+                '<li class="' + (isCatalogActive ? 'active' : '') + '"><a href="{{ route("gov.requests.catalog") }}"><i class="fas fa-store fa-fw"></i> {{ __('requestlabels::requests.serviceprovider_menu_browse_catalog') }}</a></li>' +
+                '<li class="' + (isMyRequestsActive ? 'active' : '') + '"><a href="{{ route("gov.requests.user.index") }}"><i class="fas fa-clipboard-list fa-fw"></i> {{ __('requestlabels::requests.basket_index_title') }}</a></li>';
 
         @if($isSysAdmin || $isApprover || $isStorekeeper)
             storeMenu += '<li class="header" style="padding: 5px 15px; font-size: 10px; color: #72afd2; background: #1a2226; letter-spacing: 1px;">STORE OPERATIONS</li>';
             
             @if($isSysAdmin || $isApprover)
-                storeMenu += '<li class="' + (isApprovalsActive ? 'active' : '') + '"><a href="{{ route("gov.requests.admin.index") }}"><i class="fas fa-clipboard-check fa-fw"></i> Gov Approvals</a></li>';
+                storeMenu += '<li class="' + (isApprovalsActive ? 'active' : '') + '"><a href="{{ route("gov.requests.admin.index") }}"><i class="fas fa-clipboard-check fa-fw"></i> {{ __('requestlabels::requests.serviceprovider_menu_gov_approvals') }}</a></li>';
             @endif
             
             @if($isSysAdmin || $isStorekeeper)
-                storeMenu += '<li class="' + (isFulfillmentActive ? 'active' : '') + '"><a href="{{ route("gov.requests.fulfillment.index") }}"><i class="fas fa-shipping-fast fa-fw"></i> Fulfillment Queue</a></li>';
+                storeMenu += '<li class="' + (isFulfillmentActive ? 'active' : '') + '"><a href="{{ route("gov.requests.fulfillment.index") }}"><i class="fas fa-shipping-fast fa-fw"></i> {{ __('requestlabels::requests.serviceprovider_menu_fulfillment_queue') }}</a></li>';
                 // NEW MENU ITEM BOUND TO THE NEW CUSTOM REQUESTS ROUTE
-                storeMenu += '<li class="' + (isFulfillmentRegisterActive ? 'active' : '') + '"><a href="{{ route("gov.requests.fulfillment_register.index") }}"><i class="fas fa-archive fa-fw"></i> Fulfillment Register</a></li>';
+                storeMenu += '<li class="' + (isFulfillmentRegisterActive ? 'active' : '') + '"><a href="{{ route("gov.requests.fulfillment_register.index") }}"><i class="fas fa-archive fa-fw"></i> {{ __('requestlabels::requests.serviceprovider_menu_fulfillment_register') }}</a></li>';
             @endif
             
             @if($isSysAdmin)
-                storeMenu += '<li class="' + (isLocationsActive ? 'active' : '') + '"><a href="{{ route("gov.requests.admin.locations.index") }}"><i class="fas fa-map-marked-alt fa-fw"></i> Office Assignments</a></li>';
-                storeMenu += '<li class="' + (isPoliciesActive ? 'active' : '') + '"><a href="{{ route("gov.requests.admin.policies.index") }}"><i class="fas fa-tags fa-fw"></i> Category Policies</a></li>';
+                storeMenu += '<li class="' + (isLocationsActive ? 'active' : '') + '"><a href="{{ route("gov.requests.admin.locations.index") }}"><i class="fas fa-map-marked-alt fa-fw"></i> {{ __('requestlabels::requests.locations_title') }}</a></li>';
+                storeMenu += '<li class="' + (isPoliciesActive ? 'active' : '') + '"><a href="{{ route("gov.requests.admin.policies.index") }}"><i class="fas fa-tags fa-fw"></i> {{ __('requestlabels::requests.policies_title') }}</a></li>';
             @endif
         @endif
 
@@ -97,7 +97,7 @@ $(document).ready(function() {
                         '<input type="hidden" name="item_type" value="' + itemType + '">' +
                         '<input type="hidden" name="item_id" value="' + itemId + '">' +
                         '<button type="submit" class="btn btn-primary btn-sm btn-block add-to-basket-btn">' +
-                            '<i class="fas fa-cart-plus"></i> Add to Request Basket' +
+                            '<i class="fas fa-cart-plus"></i> {{ __('requestlabels::requests.requestbutton_btn_add_to_basket') }}' +
                         '</button>' +
                     '</form>' +
                 '</div>';
@@ -117,7 +117,7 @@ $(document).ready(function() {
     var basketWidget = '<a href="{{ route("gov.requests.basket.index") }}" id="floating-basket-btn" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999; display: flex; align-items: center; justify-content: center; text-decoration: none;">' +
         '<div style="background: #3c8dbc; color: white; padding: 12px 20px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-weight: bold; display: flex; align-items: center; gap: 10px;">' +
             '<i class="fas fa-shopping-basket fa-lg"></i>' +
-            '<span>Basket (<span id="floating-basket-count">{{ $draftCount }}</span>)</span>' +
+                '<span>{{ __('requestlabels::requests.basket_widget_basket_label') }} (<span id="floating-basket-count">{{ $draftCount }}</span>)</span>' +
         '</div>' +
     '</a>';
     

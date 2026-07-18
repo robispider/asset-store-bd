@@ -9,7 +9,7 @@ use GovStore\OfficeMembership\Models\OfficeResponsibility;
 
 class NoActiveRolesRule implements IClearanceRule
 {
-    public function getName(): string { return 'Office Responsibility Check'; }
+    public function getName(): string { return __('office_membership::member.rule_office_responsibility_name'); }
 
     public function check(User $user, int $locationId): ClearanceResult
     {
@@ -21,10 +21,10 @@ class NoActiveRolesRule implements IClearanceRule
         if ($activeResponsibilitiesCount > 0) {
             return new ClearanceResult(
                 false, 
-                "You currently hold {$activeResponsibilitiesCount} administrative/storekeeper responsibility here. You must delegate this custody to a colleague first."
+                __('office_membership::member.rule_roles_held', ['count' => $activeResponsibilitiesCount])
             );
         }
 
-        return new ClearanceResult(true, "No blocking administrative roles.");
+        return new ClearanceResult(true, __('office_membership::member.rule_no_blocking_roles'));
     }
 }

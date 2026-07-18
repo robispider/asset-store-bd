@@ -1,6 +1,6 @@
-@extends('layouts/default')
+﻿@extends('layouts/default')
 
-@section('title', 'Boundary Mappings Explorer')
+@section('title', __('tenantops::ops.explorer_title'))
 
 @section('content')
 <div class="row" style="margin-bottom: 15px;">
@@ -17,14 +17,14 @@
     <div class="col-md-3">
         <div class="box box-solid box-default" style="border: 1px solid #d2d6de;">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-filter"></i> Filter Grid</h3>
+                <h3 class="box-title"><i class="fas fa-filter"></i> {{ __('tenantops::ops.filter_header') }}</h3>
             </div>
             <form action="{{ route('gov.scope.mappings') }}" method="GET">
                 <div class="box-body">
                     <div class="form-group">
-                        <label>Reference Type</label>
+                        <label>{{ __('tenantops::ops.filter_reference_type') }}</label>
                         <select name="reference_type" class="form-control input-sm">
-                            <option value="">-- All Types --</option>
+                            <option value="">{{ __('tenantops::ops.filter_all_types') }}</option>
                             <option value="category" {{ request('reference_type') === 'category' ? 'selected' : '' }}>Category</option>
                             <option value="model" {{ request('reference_type') === 'model' ? 'selected' : '' }}>Asset Model</option>
                             <option value="manufacturer" {{ request('reference_type') === 'manufacturer' ? 'selected' : '' }}>Manufacturer</option>
@@ -33,17 +33,17 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Scope Type</label>
+                        <label>{{ __('tenantops::ops.filter_scope_type') }}</label>
                         <select name="scope_type" class="form-control input-sm">
-                            <option value="">-- All Scopes --</option>
+                            <option value="">{{ __('tenantops::ops.filter_all_scopes') }}</option>
                             <option value="company" {{ request('scope_type') === 'company' ? 'selected' : '' }}>Company (Ministry)</option>
                             <option value="location" {{ request('scope_type') === 'location' ? 'selected' : '' }}>Location (Office)</option>
                         </select>
                     </div>
                 </div>
                 <div class="box-footer">
-                    <a href="{{ route('gov.scope.mappings') }}" class="btn btn-sm btn-default pull-left">Reset</a>
-                    <button type="submit" class="btn btn-sm btn-primary pull-right">Apply Filters</button>
+                    <a href="{{ route('gov.scope.mappings') }}" class="btn btn-sm btn-default pull-left">{{ __('tenantops::ops.btn_reset') }}</a>
+                    <button type="submit" class="btn btn-sm btn-primary pull-right">{{ __('tenantops::ops.btn_apply_filters') }}</button>
                 </div>
             </form>
         </div>
@@ -56,9 +56,9 @@
                 <table class="table table-striped table-hover" style="margin-bottom: 0;">
                     <thead>
                         <tr style="background-color: #fcfcfc;">
-                            <th style="padding-left: 15px;">Reference Item</th>
-                            <th>Scoped Scope Boundary</th>
-                            <th class="text-center" style="width: 100px;">Action</th>
+                            <th style="padding-left: 15px;">{{ __('tenantops::ops.table_reference_item') }}</th>
+                            <th>{{ __('tenantops::ops.table_scoped_boundary') }}</th>
+                            <th class="text-center" style="width: 100px;">{{ __('tenantops::ops.table_action') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -77,7 +77,7 @@
                             <tr>
                                 <td style="padding-left: 15px;">
                                     <strong>{{ $refName }}</strong><br>
-                                    <small class="text-muted">Type: {{ ucfirst($map->reference_type) }}</small>
+                                    <small class="text-muted">{{ __('tenantops::ops.label_type') }} {{ ucfirst($map->reference_type) }}</small>
                                 </td>
                                 <td style="vertical-align: middle;">
                                     <span class="label {{ $map->scope_type === 'company' ? 'bg-purple' : 'bg-blue' }}">
@@ -88,15 +88,15 @@
                                 <td style="vertical-align: middle;" class="text-center">
                                     <form action="{{ route('gov.scope.mappings.destroy', $map->id) }}" method="POST" style="margin: 0;">
                                         @csrf
-                                        <button type="submit" class="btn btn-xs btn-danger" onclick="return confirm('Revoke this data isolation limit?')">
-                                            <i class="fas fa-trash"></i> Delete
+                                        <button type="submit" class="btn btn-xs btn-danger" onclick="return confirm('{{ __('tenantops::ops.confirm_revoke') }}')">
+                                            <i class="fas fa-trash"></i> {{ __('tenantops::ops.btn_delete') }}
                                         </button>
                                     </form>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="3" class="text-center text-muted" style="padding: 30px;">No private mapping rules found.</td>
+                                <td colspan="3" class="text-center text-muted" style="padding: 30px;">{{ __('tenantops::ops.empty_no_mappings') }}</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -115,15 +115,15 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="mappingModalLabel"><i class="fas fa-user-lock text-blue"></i> Map Private Scoping Bounds</h4>
+                <h4 class="modal-title" id="mappingModalLabel"><i class="fas fa-user-lock text-blue"></i> {{ __('tenantops::ops.modal_title') }}</h4>
             </div>
             <form action="{{ route('gov.scope.mappings.store') }}" method="POST" style="margin-bottom: 0;">
                 @csrf
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>1. Choose Catalog Type</label>
+                        <label>{{ __('tenantops::ops.modal_step1_label') }}</label>
                         <select name="reference_type" id="reference_type" class="form-control" required>
-                            <option value="">-- Choose Type --</option>
+                            <option value="">{{ __('tenantops::ops.modal_step1_placeholder') }}</option>
                             <option value="category">Product Category</option>
                             <option value="model">Brand & Model</option>
                             <option value="manufacturer">Manufacturer</option>
@@ -132,31 +132,31 @@
                     </div>
 
                     <div class="form-group">
-                        <label>2. Select Specific Item</label>
+                        <label>{{ __('tenantops::ops.modal_step2_label') }}</label>
                         <select name="reference_id" id="referenceSelector" class="form-control" required style="width: 100%;" disabled>
-                            <option value="">-- Select type first --</option>
+                            <option value="">{{ __('tenantops::ops.modal_step2_placeholder') }}</option>
                         </select>
                     </div>
 
                     <div class="form-group" style="margin-top: 20px;">
-                        <label>3. Choose Scoping Level</label>
+                        <label>{{ __('tenantops::ops.modal_step3_label') }}</label>
                         <select name="scope_type" id="scope_type" class="form-control" required>
-                            <option value="">-- Choose Scope --</option>
+                            <option value="">{{ __('tenantops::ops.modal_step3_placeholder') }}</option>
                             <option value="company">Company (Ministry Scope)</option>
                             <option value="location">Location (Local Office Scope)</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label>4. Map Scoped Boundary Target</label>
+                        <label>{{ __('tenantops::ops.modal_step4_label') }}</label>
                         <select name="scope_id" id="scopeSelector" class="form-control" required style="width: 100%;" disabled>
-                            <option value="">-- Select scope level first --</option>
+                            <option value="">{{ __('tenantops::ops.modal_step4_placeholder') }}</option>
                         </select>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-success"><i class="fas fa-lock"></i> Lock Reference</button>
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">{{ __('tenantops::ops.btn_cancel') }}</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-lock"></i> {{ __('tenantops::ops.btn_lock_reference') }}</button>
                 </div>
             </form>
         </div>

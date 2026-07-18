@@ -39,7 +39,13 @@ class SystemGoodsIssueService implements StockIssuingServiceInterface
                 $currentQty = $adapter->getCurrentQuantity();
 
                 if ($currentQty < $item['qty']) {
-                    throw new Exception("Insufficient stock for " . $adapter->getDisplayName() . ". Available: {$currentQty}, Requested: {$item['qty']}.");
+                    throw new Exception(
+                        __('storeops::storeops.insufficient_stock', [
+                            'item' => $adapter->getDisplayName(),
+                            'available' => $currentQty,
+                            'requested' => $item['qty'],
+                        ])
+                    );
                 }
 
                 $validLedgerItems[] = [

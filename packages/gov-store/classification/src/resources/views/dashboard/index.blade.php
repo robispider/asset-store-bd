@@ -1,4 +1,4 @@
-@extends('layouts/default')
+﻿@extends('layouts/default')
 
 @section('title')
     {{ __('admin/general/global_catalog_dashboard') }}
@@ -20,8 +20,8 @@
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="small-box bg-aqua">
                     <div class="inner">
-                        <h3>{{ __('admin/general.total_nodes') }}</h3>
-                        <p>{{ __('admin/general.catalog_nodes') }}</p>
+                        <h3>{{ __('classification::texts.dashboard_stat_total_nodes') }}</h3>
+                        <p>{{ __('classification::texts.dashboard_stat_catalog_nodes') }}</p>
                     </div>
                     <div class="icon">
                         <i class="fas fa-sitemap"></i>
@@ -32,8 +32,8 @@
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="small-box bg-green">
                     <div class="inner">
-                        <h3>{{ __('admin/general.mapped_count') }}</h3>
-                        <p>{{ __('admin/general.snipe_mapped') }}</p>
+                        <h3>{{ __('classification::texts.dashboard_stat_mapped_count') }}</h3>
+                        <p>{{ __('classification::texts.dashboard_stat_snipe_mapped') }}</p>
                     </div>
                     <div class="icon">
                         <i class="fas fa-link"></i>
@@ -44,8 +44,8 @@
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="small-box bg-yellow">
                     <div class="inner">
-                        <h3>{{ __('admin/general.unmapped_count') }}</h3>
-                        <p>{{ __('admin/general.not_mapped') }}</p>
+                        <h3>{{ __('classification::texts.dashboard_stat_unmapped_count') }}</h3>
+                        <p>{{ __('classification::texts.dashboard_stat_not_mapped') }}</p>
                     </div>
                     <div class="icon">
                         <i class="fas fa-exclamation-triangle"></i>
@@ -56,8 +56,8 @@
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="small-box bg-red">
                     <div class="inner">
-                        <h3>{{ __('admin/general.import_count') }}</h3>
-                        <p>{{ __('admin/general.total_imports') }}</p>
+                        <h3>{{ __('classification::texts.dashboard_stat_import_count') }}</h3>
+                        <p>{{ __('classification::texts.dashboard_stat_total_imports') }}</p>
                     </div>
                     <div class="icon">
                         <i class="fas fa-history"></i>
@@ -71,24 +71,24 @@
             <div class="box-header with-border">
                 <h3 class="box-title">
                     <i class="fas fa-bolt"></i>
-                    {{ __('admin/general.quick_actions') }}
+                    {{ __('classification::texts.dashboard_quick_actions') }}
                 </h3>
             </div>
             <div class="box-body">
                 <div class="row">
                     <div class="col-md-4">
                         <a href="{{ route('gov.catalog.search') }}" class="btn btn-primary btn-block btn-lg">
-                            <i class="fas fa-search"></i> {{ __('admin/general.search_catalog') }}
+                            <i class="fas fa-search"></i> {{ __('classification::texts.dashboard_btn_search_catalog') }}
                         </a>
                     </div>
                     <div class="col-md-4">
                         <a href="#" class="btn btn-info btn-block btn-lg">
-                            <i class="fas fa-upload"></i> {{ __('admin/general.import_data') }}
+                            <i class="fas fa-upload"></i> {{ __('classification::texts.dashboard_btn_import_data') }}
                         </a>
                     </div>
                     <div class="col-md-4">
                         <a href="#" class="btn btn-success btn-block btn-lg">
-                            <i class="fas fa-cog"></i> {{ __('admin/general.settings') }}
+                            <i class="fas fa-cog"></i> {{ __('classification::texts.dashboard_btn_settings') }}
                         </a>
                     </div>
                 </div>

@@ -21,7 +21,7 @@ class FulfillmentRegisterController extends Controller
             ->whereIn('role_slug', ['storekeeper', 'primary_approver', 'final_approver'])
             ->exists();
 
-        if (!$hasAccess) abort(403, 'Unauthorized access to the Fulfillment Register.');
+        if (!$hasAccess) abort(403, __('requestlabels::requests.fulfillmentregistercontroller_abort_unauthorized'));
     }
 
     /**

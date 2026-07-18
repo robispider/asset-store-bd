@@ -1,6 +1,6 @@
 @extends('layouts/default')
 
-@section('title', 'Office Hub: ' . $location->name)
+@section('title', __('organization_labels::orglabel.hub_title_prefix') . ' ' . $location->name)
 
 @section('content')
 
@@ -44,11 +44,11 @@
                 </div>
                 <div>
                     @if($profile->lifecycle_status === 'operational')
-                        <span class="label label-success" style="font-size: 14px; padding: 8px 15px;"><i class="fas fa-check-double"></i> OPERATIONAL</span>
+                        <span class="label label-success" style="font-size: 14px; padding: 8px 15px;"><i class="fas fa-check-double"></i> {{ __('organization_labels::orglabel.hub_status_operational') }}</span>
                     @elseif($profile->lifecycle_status === 'configured')
-                        <span class="label label-info" style="font-size: 14px; padding: 8px 15px;"><i class="fas fa-sliders-h"></i> CONFIGURED</span>
+                        <span class="label label-info" style="font-size: 14px; padding: 8px 15px;"><i class="fas fa-sliders-h"></i> {{ __('organization_labels::orglabel.hub_status_configured') }}</span>
                     @else
-                        <span class="label label-warning" style="font-size: 14px; padding: 8px 15px;"><i class="fas fa-building"></i> PROVISIONED (PENDING)</span>
+                        <span class="label label-warning" style="font-size: 14px; padding: 8px 15px;"><i class="fas fa-building"></i> {{ __('organization_labels::orglabel.hub_status_provisioned') }}</span>
                     @endif
                 </div>
             </div>
@@ -61,11 +61,11 @@
         <div class="nav-tabs-custom">
             <!-- TAB BAR SELECTORS -->
             <ul class="nav nav-tabs">
-                <li class="active"><a href="#tab_overview" data-toggle="tab"><i class="fas fa-id-card"></i> General Info</a></li>
-                <li><a href="#tab_roles" data-toggle="tab"><i class="fas fa-user-shield"></i> Workflow Roles</a></li>
-                <li><a href="#tab_employees" data-toggle="tab"><i class="fas fa-users"></i> Local Employees <span class="badge bg-blue">{{ $localStaff->count() }}</span></a></li>
-                <li><a href="#tab_geography" data-toggle="tab"><i class="fas fa-map-marked-alt"></i> Spatial Integrity</a></li>
-                <li><a href="#tab_timeline" data-toggle="tab"><i class="fas fa-history"></i> Activity Timeline</a></li>
+                <li class="active"><a href="#tab_overview" data-toggle="tab"><i class="fas fa-id-card"></i> {{ __('organization_labels::orglabel.hub_tab_overview') }}</a></li>
+                <li><a href="#tab_roles" data-toggle="tab"><i class="fas fa-user-shield"></i> {{ __('organization_labels::orglabel.hub_tab_roles') }}</a></li>
+                <li><a href="#tab_employees" data-toggle="tab"><i class="fas fa-users"></i> {{ __('organization_labels::orglabel.hub_tab_employees') }} <span class="badge bg-blue">{{ $localStaff->count() }}</span></a></li>
+                <li><a href="#tab_geography" data-toggle="tab"><i class="fas fa-map-marked-alt"></i> {{ __('organization_labels::orglabel.hub_tab_geography') }}</a></li>
+                <li><a href="#tab_timeline" data-toggle="tab"><i class="fas fa-history"></i> {{ __('organization_labels::orglabel.hub_tab_timeline') }}</a></li>
             </ul>
 
             <div class="tab-content" style="background-color: white;">
@@ -75,14 +75,14 @@
                     <form action="{{ route('gov.org.hub.update', $location->id) }}" method="POST" style="max-width: 700px; padding: 15px 0;">
                         @csrf
                         <div class="form-group">
-                            <label for="name">Office Building Name <span class="text-danger">*</span></label>
+                            <label for="name">{{ __('organization_labels::orglabel.hub_field_office_name') }} <span class="text-danger">*</span></label>
                             <input type="text" name="name" id="name" class="form-control" value="{{ $location->name }}" required>
                         </div>
 
                         <div class="form-group">
-                            <label for="company_id">Ministry / Department Ownership (Optional)</label>
+                            <label for="company_id">{{ __('organization_labels::orglabel.hub_field_ministry') }}</label>
                             <select name="company_id" id="company_id" class="form-control select2" style="width: 100%;">
-                                <option value="">-- Standalone Office (No Ministry) --</option>
+                                <option value="">{{ __('organization_labels::orglabel.create_placeholder_standalone') }}</option>
                                 @foreach($companies as $comp)
                                     <option value="{{ $comp->id }}" {{ $location->company_id == $comp->id ? 'selected' : '' }}>{{ $comp->name }}</option>
                                 @endforeach
@@ -90,9 +90,9 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="parent_id">Parent Regional / District Office (Optional)</label>
+                            <label for="parent_id">{{ __('organization_labels::orglabel.hub_field_parent_office') }}</label>
                             <select name="parent_id" id="parent_id" class="form-control select2" style="width: 100%;">
-                                <option value="">-- No Parent (Root Location) --</option>
+                                <option value="">{{ __('organization_labels::orglabel.create_placeholder_no_parent') }}</option>
                                 @foreach($allOffices as $parent)
                                     <option value="{{ $parent->id }}" {{ $location->parent_id == $parent->id ? 'selected' : '' }}>{{ $parent->name }}</option>
                                 @endforeach
@@ -100,7 +100,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="geoAreaSelector">Geographical Boundary Territory <span class="text-danger">*</span></label>
+                            <label for="geoAreaSelector">{{ __('organization_labels::orglabel.hub_field_geo_area') }} <span class="text-danger">*</span></label>
                             <select name="geo_area_id" id="geoAreaSelector" class="form-control" required style="width: 100%;">
                                 @if($profile->geoArea)
                                     <option value="{{ $profile->geo_area_id }}" selected>
@@ -111,9 +111,9 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="office_admin_id">Designated Office Administrator</label>
+                            <label for="office_admin_id">{{ __('organization_labels::orglabel.hub_field_office_admin') }}</label>
                             <select name="office_admin_id" id="office_admin_id" class="form-control select2" style="width: 100%;">
-                                <option value="">-- No Administrator Assigned --</option>
+                                <option value="">{{ __('organization_labels::orglabel.hub_placeholder_no_admin') }}</option>
                                 @foreach($allUsers as $user)
                                     <option value="{{ $user->id }}" {{ $profile->office_admin_id == $user->id ? 'selected' : '' }}>
                                         {{ $user->present()->fullName }} ({{ $user->username }})
@@ -123,7 +123,7 @@
                         </div>
 
                         <div style="margin-top: 25px;">
-                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Office Details</button>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> {{ __('organization_labels::orglabel.hub_save_button') }}</button>
                         </div>
                     </form>
                 </div>
@@ -138,44 +138,44 @@
                                 <div class="form-group">
                                     <label for="primary_approver_id">Primary Approver (Supervisor) <span class="text-danger">*</span></label>
                                     <select name="primary_approver_id" id="primary_approver_id" class="form-control select2" required style="width: 100%;">
-                                        <option value="">-- Select Employee --</option>
+                                        <option value="">{{ __('organization_labels::orglabel.jurisdictions_select_employee_placeholder') }}</option>
                                         @foreach($localStaff as $user)
                                             <option value="{{ $user->id }}" {{ $roles && $roles->primary_approver_id == $user->id ? 'selected' : '' }}>
                                                 {{ $user->present()->fullName }} ({{ $user->username }})
                                             </option>
                                         @endforeach
                                     </select>
-                                    <p class="help-block">Line manager responsible for checking and authorizing employee baskets first.</p>
+                                    <p class="help-block">{{ __('organization_labels::orglabel.config_help_primary_approver') }}</p>
                                 </div>
 
                                 <div class="form-group" style="margin-top: 20px;">
                                     <label for="final_approver_id">Final Approver (Optional)</label>
                                     <select name="final_approver_id" id="final_approver_id" class="form-control select2" style="width: 100%;">
-                                        <option value="">-- None (Single Level Approval Only) --</option>
+                                        <option value="">{{ __('organization_labels::orglabel.config_role_none_single_level') }}</option>
                                         @foreach($localStaff as $user)
                                             <option value="{{ $user->id }}" {{ $roles && $roles->final_approver_id == $user->id ? 'selected' : '' }}>
                                                 {{ $user->present()->fullName }} ({{ $user->username }})
                                             </option>
                                         @endforeach
                                     </select>
-                                    <p class="help-block">If specified, requests automatically move to this final director after primary sign-off.</p>
+                                    <p class="help-block">{{ __('organization_labels::orglabel.config_help_final_approver') }}</p>
                                 </div>
 
                                 <div class="form-group" style="margin-top: 20px;">
                                     <label for="storekeeper_id">Storekeeper (Inventory Officer) <span class="text-danger">*</span></label>
                                     <select name="storekeeper_id" id="storekeeper_id" class="form-control select2" required style="width: 100%;">
-                                        <option value="">-- Select Employee --</option>
+                                        <option value="">{{ __('organization_labels::orglabel.jurisdictions_select_employee_placeholder') }}</option>
                                         @foreach($localStaff as $user)
                                             <option value="{{ $user->id }}" {{ $roles && $roles->storekeeper_id == $user->id ? 'selected' : '' }}>
                                                 {{ $user->present()->fullName }} ({{ $user->username }})
                                             </option>
                                         @endforeach
                                     </select>
-                                    <p class="help-block">Fulfiller responsible for packing and registering physical checkout handovers.</p>
+                                    <p class="help-block">{{ __('organization_labels::orglabel.config_help_storekeeper') }}</p>
                                 </div>
 
                                 <div style="margin-top: 25px; margin-bottom: 15px;">
-                                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Office Assignments</button>
+                                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> {{ __('organization_labels::orglabel.config_save_button') }}</button>
                                 </div>
                             </form>
                         </div>
@@ -190,34 +190,34 @@
                                     
                                     <div class="checklist-row">
                                         <span class="checklist-indicator {{ $hasAdmin ? 'text-success' : 'text-gray' }}"><i class="fas {{ $hasAdmin ? 'fa-check-circle' : 'fa-circle' }}"></i></span>
-                                        <span class="checklist-label">Office Administrator Assigned</span>
-                                        <span class="label {{ $hasAdmin ? 'label-success' : 'label-default' }}">{{ $hasAdmin ? 'Ready' : 'Missing' }}</span>
+                                        <span class="checklist-label">{{ __('organization_labels::orglabel.hub_checklist_admin_assigned') }}</span>
+                                        <span class="label {{ $hasAdmin ? 'label-success' : 'label-default' }}">{{ $hasAdmin ? __('organization_labels::orglabel.hub_checklist_ready') : __('organization_labels::orglabel.hub_checklist_missing') }}</span>
                                     </div>
 
                                     <div class="checklist-row">
                                         <span class="checklist-indicator {{ $hasPrimary ? 'text-success' : 'text-gray' }}"><i class="fas {{ $hasPrimary ? 'fa-check-circle' : 'fa-circle' }}"></i></span>
-                                        <span class="checklist-label">Primary Approver Assigned</span>
-                                        <span class="label {{ $hasPrimary ? 'label-success' : 'label-default' }}">{{ $hasPrimary ? 'Ready' : 'Missing' }}</span>
+                                        <span class="checklist-label">{{ __('organization_labels::orglabel.hub_checklist_primary_assigned') }}</span>
+                                        <span class="label {{ $hasPrimary ? 'label-success' : 'label-default' }}">{{ $hasPrimary ? __('organization_labels::orglabel.hub_checklist_ready') : __('organization_labels::orglabel.hub_checklist_missing') }}</span>
                                     </div>
 
                                     <div class="checklist-row">
                                         <span class="checklist-indicator {{ $hasStorekeeper ? 'text-success' : 'text-gray' }}"><i class="fas {{ $hasStorekeeper ? 'fa-check-circle' : 'fa-circle' }}"></i></span>
-                                        <span class="checklist-label">Storekeeper Assigned</span>
-                                        <span class="label {{ $hasStorekeeper ? 'label-success' : 'label-default' }}">{{ $hasStorekeeper ? 'Ready' : 'Missing' }}</span>
+                                        <span class="checklist-label">{{ __('organization_labels::orglabel.hub_checklist_storekeeper_assigned') }}</span>
+                                        <span class="label {{ $hasStorekeeper ? 'label-success' : 'label-default' }}">{{ $hasStorekeeper ? __('organization_labels::orglabel.hub_checklist_ready') : __('organization_labels::orglabel.hub_checklist_missing') }}</span>
                                     </div>
 
                                     <div class="checklist-row">
                                         <span class="checklist-indicator {{ $hasStaff ? 'text-success' : 'text-gray' }}"><i class="fas {{ $hasStaff ? 'fa-check-circle' : 'fa-circle' }}"></i></span>
-                                        <span class="checklist-label">Staff Count (Min: 1)</span>
-                                        <span class="badge {{ $hasStaff ? 'bg-green' : 'bg-gray' }}">{{ $localStaff->count() }} Mapped</span>
+                                        <span class="checklist-label">{{ __('organization_labels::orglabel.hub_checklist_staff_count') }}</span>
+                                        <span class="badge {{ $hasStaff ? 'bg-green' : 'bg-gray' }}">{{ $localStaff->count() }} {{ __('organization_labels::orglabel.hub_checklist_mapped') }}</span>
                                     </div>
 
                                 </div>
                                 <div class="box-footer" style="font-size: 12px; line-height: 1.5;">
                                     @if($isOperational)
-                                        <span class="text-success"><i class="fas fa-check-circle"></i> Verification passed. The employee storefront is active.</span>
+                                        <span class="text-success"><i class="fas fa-check-circle"></i> {{ __('organization_labels::orglabel.hub_checklist_verified_passed') }}</span>
                                     @else
-                                        <span class="text-warning"><i class="fas fa-exclamation-triangle"></i> Complete the outstanding items above to unlock the catalog for local employees.</span>
+                                        <span class="text-warning"><i class="fas fa-exclamation-triangle"></i> {{ __('organization_labels::orglabel.hub_checklist_pending_unlock') }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -231,10 +231,10 @@
                         <table class="table table-striped table-hover">
                             <thead>
                                 <tr>
-                                    <th>Employee Name</th>
-                                    <th>Username</th>
-                                    <th>Email Address</th>
-                                    <th>Job Title</th>
+                                    <th>{{ __('organization_labels::orglabel.hub_employee_name') }}</th>
+                                    <th>{{ __('organization_labels::orglabel.hub_employee_username') }}</th>
+                                    <th>{{ __('organization_labels::orglabel.hub_employee_email') }}</th>
+                                    <th>{{ __('organization_labels::orglabel.hub_employee_jobtitle') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -248,8 +248,7 @@
                                 @empty
                                     <tr>
                                         <td colspan="4" class="text-center text-muted" style="padding: 30px;">
-                                            No employee profiles are currently mapped to this location inside Snipe-IT. <br>
-                                            To add staff, edit their User profiles natively inside Snipe-IT and assign their <strong>Location</strong> field to this building.
+                                            {{ __('organization_labels::orglabel.hub_no_employees_message') }}
                                         </td>
                                     </tr>
                                 @endforelse
@@ -264,19 +263,19 @@
                         <div class="col-md-6">
                             <table class="table table-bordered">
                                 <tr>
-                                    <td style="width: 35%;"><strong>Mapped District (Zila):</strong></td>
-                                    <td><strong>{{ $location->state ?: 'Unassigned' }}</strong></td>
+                                    <td style="width: 35%;"><strong>{{ __('organization_labels::orglabel.hub_geo_mapped_district') }}</strong></td>
+                                    <td><strong>{{ $location->state ?: __('organization_labels::orglabel.hub_geo_unassigned') }}</strong></td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Mapped Upazila/City:</strong></td>
-                                    <td><strong>{{ $location->city ?: 'Unassigned' }}</strong></td>
+                                    <td><strong>{{ __('organization_labels::orglabel.hub_geo_mapped_upazila') }}</strong></td>
+                                    <td><strong>{{ $location->city ?: __('organization_labels::orglabel.hub_geo_unassigned') }}</strong></td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Geographical Level:</strong></td>
+                                    <td><strong>{{ __('organization_labels::orglabel.hub_geo_geographical_level') }}</strong></td>
                                     <td>{{ $profile->geoArea ? $profile->geoArea->GeoLevel : 'N/A' }}</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Hierarchy ID Path:</strong></td>
+                                    <td><strong>{{ __('organization_labels::orglabel.hub_geo_hierarchy_path') }}</strong></td>
                                     <td><code>{{ $profile->geoArea ? $profile->geoArea->hid : 'N/A' }}</code></td>
                                 </tr>
                             </table>
@@ -285,24 +284,24 @@
                         <div class="col-md-6">
                             <div class="box box-solid box-default" style="box-shadow: none; border: 1px solid #ddd;">
                                 <div class="box-header with-border">
-                                    <h4 class="box-title" style="font-weight: bold; font-size: 14px;"><i class="fas fa-user-check"></i> Administrative Verification</h4>
+                                    <h4 class="box-title" style="font-weight: bold; font-size: 14px;"><i class="fas fa-user-check"></i> {{ __('organization_labels::orglabel.hub_geo_admin_verification') }}</h4>
                                 </div>
                                 <div class="box-body">
                                     @if($profile->geo_area_verified_at)
                                         <div class="text-center" style="padding: 10px 0;">
                                             <span style="font-size: 35px; color: #00a65a;"><i class="fas fa-shield-alt"></i></span>
-                                            <h4 style="font-weight: bold; margin-top: 10px; margin-bottom: 5px;">Geographic Coordinates Verified</h4>
+                                            <h4 style="font-weight: bold; margin-top: 10px; margin-bottom: 5px;">{{ __('organization_labels::orglabel.hub_geo_verified_title') }}</h4>
                                             <p class="text-muted" style="font-size: 12px; margin-bottom: 0;">
-                                                Sign-off executed on: <strong>{{ $profile->geo_area_verified_at->format('Y-m-d H:i') }}</strong> <br>
-                                                Audited by: <strong>{{ $profile->verifier->display_name ?? 'System Administrator' }}</strong>
+                                                {{ __('organization_labels::orglabel.hub_geo_signoff_label') }} <strong>{{ $profile->geo_area_verified_at->format('Y-m-d H:i') }}</strong> <br>
+                                                {{ __('organization_labels::orglabel.hub_geo_audited_by') }} <strong>{{ $profile->verifier->display_name ?? __('organization_labels::orglabel.hub_geo_system_administrator') }}</strong>
                                             </p>
                                         </div>
                                     @else
-                                        <p class="text-muted">This office building is currently assigned to approximate geographical coordinates. Click below to verify and lock its spatial territory placement.</p>
+                                        <p class="text-muted">{{ __('organization_labels::orglabel.hub_geo_not_verified') }}</p>
                                         
                                         <form action="{{ route('gov.org.hub.verify-geo', $location->id) }}" method="POST" style="margin-top: 15px;">
                                             @csrf
-                                            <button type="submit" class="btn btn-success"><i class="fas fa-check-shield"></i> Verify Geographic Tag Accuracy</button>
+                                            <button type="submit" class="btn btn-success"><i class="fas fa-check-shield"></i> {{ __('organization_labels::orglabel.hub_geo_verify_button') }}</button>
                                         </form>
                                     @endif
                                 </div>
@@ -346,7 +345,7 @@
                                 <li>
                                     <i class="fa fa-info bg-gray"></i>
                                     <div class="timeline-item">
-                                        <h3 class="timeline-header">No timeline entries found.</h3>
+                                        <h3 class="timeline-header">{{ __('organization_labels::orglabel.hub_activity_empty') }}</h3>
                                     </div>
                                 </li>
                             @endforelse

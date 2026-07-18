@@ -23,7 +23,7 @@ class RoleHandshakeController extends Controller
                 auth()->id(), 
                 $request->assigned_user_id
             );
-            return redirect()->back()->with('success', 'Handover proposed. Awaiting colleague acceptance.');
+            return redirect()->back()->with('success', __('office_membership::member.handshake_proposed'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
@@ -33,7 +33,7 @@ class RoleHandshakeController extends Controller
     {
         try {
             $service->acceptHandshake($id, auth()->id());
-            return redirect()->back()->with('success', 'Handover accepted. Your colleagues clearance has been updated.');
+            return redirect()->back()->with('success', __('office_membership::member.handshake_accepted'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
@@ -43,7 +43,7 @@ class RoleHandshakeController extends Controller
     {
         try {
             $service->rejectHandshake($id, auth()->id());
-            return redirect()->back()->with('success', 'Handover proposal rejected.');
+            return redirect()->back()->with('success', __('office_membership::member.handshake_rejected'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
@@ -53,7 +53,7 @@ class RoleHandshakeController extends Controller
     {
         try {
             $service->cancelHandshake($id, auth()->id());
-            return redirect()->back()->with('success', 'Handover proposal cancelled.');
+            return redirect()->back()->with('success', __('office_membership::member.handshake_cancelled'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }

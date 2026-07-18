@@ -1,6 +1,6 @@
-@extends('layouts/default')
+﻿@extends('layouts/default')
 
-@section('title', 'Category Mapping')
+@section('title', __('classification::texts.mapping_title'))
 
 @section('content')
 
@@ -8,18 +8,18 @@
     <div class="col-md-12">
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Catalog → Snipe-IT Category Mapping</h3>
+                <h3 class="box-title">{{ __('classification::texts.mapping_header_title') }}</h3>
             </div>
 
             <div class="box-body">
                 <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
-                            <th>Catalog Code</th>
-                            <th>Catalog Title</th>
-                            <th>Scheme</th>
-                            <th>Snipe-IT Category</th>
-                            <th>Actions</th>
+                            <th>{{ __('classification::texts.mapping_col_catalog_code') }}</th>
+                            <th>{{ __('classification::texts.mapping_col_catalog_title') }}</th>
+                            <th>{{ __('classification::texts.mapping_col_scheme') }}</th>
+                            <th>{{ __('classification::texts.mapping_col_snipe_category') }}</th>
+                            <th>{{ __('classification::texts.mapping_col_actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -31,13 +31,13 @@
                             <td>{{ $mapping->snipe_category ?? '—' }}</td>
                             <td>
                                 <a href="{{ route('gov.catalog.mapping.show', ['id' => $mapping->id]) }}" class="btn btn-xs btn-primary">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit"></i> {{ __('classification::texts.mapping_btn_edit') }}
                                 </a>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="5" class="text-center text-muted">No mappings found. Import a catalog first.</td>
+                            <td colspan="5" class="text-center text-muted">{{ __('classification::texts.mapping_empty_state') }}</td>
                         </tr>
                         @endforelse
                     </tbody>

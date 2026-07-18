@@ -1,15 +1,15 @@
 @extends('layouts/default')
 
-@section('title', 'My Service Requests')
+@section('title', __('requestlabels::requests.user_index_title'))
 
 @section('content')
 <div class="row">
     <div class="col-md-12">
         <div class="box box-default">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-folder-open"></i> My Submitted Service Requests</h3>
+                <h3 class="box-title"><i class="fas fa-folder-open"></i> {{ __('requestlabels::requests.user_index_header_my_requests') }}</h3>
                 <div class="box-tools pull-right">
-                    <a href="{{ route('gov.requests.catalog') }}" class="btn btn-sm btn-primary"><i class="fas fa-plus"></i> New Request</a>
+                    <a href="{{ route('gov.requests.catalog') }}" class="btn btn-sm btn-primary"><i class="fas fa-plus"></i> {{ __('requestlabels::requests.user_index_btn_new_request') }}</a>
                 </div>
             </div>
             <div class="box-body table-responsive">
@@ -41,15 +41,15 @@
                                 </td>
                               <td>
                                     @if($req->approval_status === 'submitted')
-                                        <span class="label label-warning"><i class="fas fa-clock"></i> Under Review</span>
-                                    @elseif($req->approval_status === 'approved')
-                                        <span class="label label-success"><i class="fas fa-check"></i> Approved</span>
-                                    @elseif($req->approval_status === 'partially_approved')
-                                        <span class="label bg-purple"><i class="fas fa-adjust"></i> Partially Approved</span>
-                                    @elseif($req->approval_status === 'closed')
-                                        <span class="label label-success"><i class="fas fa-check-double"></i> Closed (Fulfilled)</span>
-                                    @elseif($req->approval_status === 'rejected')
-                                        <span class="label label-danger"><i class="fas fa-times"></i> Rejected</span>
+                                    <span class="label label-warning"><i class="fas fa-clock"></i> {{ __('requestlabels::requests.user_index_status_under_review') }}</span>
+                                @elseif($req->approval_status === 'approved')
+                                    <span class="label label-success"><i class="fas fa-check"></i> {{ __('requestlabels::requests.user_index_status_approved') }}</span>
+                                @elseif($req->approval_status === 'partially_approved')
+                                    <span class="label bg-purple"><i class="fas fa-adjust"></i> {{ __('requestlabels::requests.user_index_status_partially_approved') }}</span>
+                                @elseif($req->approval_status === 'closed')
+                                    <span class="label label-success"><i class="fas fa-check-double"></i> {{ __('requestlabels::requests.user_index_status_closed_fulfilled') }}</span>
+                                @elseif($req->approval_status === 'rejected')
+                                    <span class="label label-danger"><i class="fas fa-times"></i> {{ __('requestlabels::requests.user_index_status_rejected') }}</span>
                                     @else
                                         <span class="label label-info">{{ ucfirst($req->approval_status) }}</span>
                                     @endif

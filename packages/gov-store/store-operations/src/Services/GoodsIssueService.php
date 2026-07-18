@@ -25,11 +25,11 @@ class GoodsIssueService
     public function submit(GoodsIssue $issue): void
     {
         if ($issue->status === 'SUBMITTED') {
-            throw new Exception("This Goods Issue has already been processed.");
+            throw new Exception(__('storeops::storeops.already_processed', ['document' => 'Goods Issue']));
         }
 
         if ($issue->items()->count() === 0) {
-            throw new Exception("Cannot process an empty Goods Issue.");
+            throw new Exception(__('storeops::storeops.empty_document_error', ['document' => 'Goods Issue']));
         }
 
         DB::transaction(function () use ($issue) {
@@ -40,8 +40,11 @@ class GoodsIssueService
 
                 if ($currentQty < $item->quantity) {
                     throw new Exception(
-                        "Insufficient stock for " . $adapter->getDisplayName() . 
-                        ". Available: {$currentQty}, Requested: {$item->quantity}."
+                        __('storeops::storeops.insufficient_stock', [
+                            'item' => $adapter->getDisplayName(),
+                            'available' => $currentQty,
+                            'requested' => $item->quantity,
+                        ])
                     );
                 }
             }

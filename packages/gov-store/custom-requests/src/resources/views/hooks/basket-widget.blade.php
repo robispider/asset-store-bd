@@ -1,7 +1,7 @@
 @auth
 <script nonce="{{ csrf_token() }}">
 $(document).ready(function() {
-    console.log("Gov-Store: Initializing basket widgets.");
+    console.log("{{ __('requestlabels::requests.basket_widget_console_init') }}");
 
     // --- 1. ADD TO BASKET BUTTON ON PRODUCT SPECIFIC VIEWS ---
     if ($('.side-box .box-footer').length) {
@@ -31,7 +31,7 @@ $(document).ready(function() {
                         '<input type="hidden" name="item_type" value="' + itemType + '">' +
                         '<input type="hidden" name="item_id" value="' + itemId + '">' +
                         '<button type="submit" class="btn btn-primary btn-sm btn-block add-to-basket-btn">' +
-                            '<i class="fas fa-cart-plus"></i> Add to Request Basket' +
+                            '<i class="fas fa-cart-plus"></i> {{ __('requestlabels::requests.requestbutton_btn_add_to_basket') }}' +
                         '</button>' +
                     '</form>' +
                 '</div>';
@@ -52,7 +52,7 @@ $(document).ready(function() {
         var basketWidget = '<a href="{{ route("gov.requests.basket.index") }}" id="floating-basket-btn" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999; display: flex; align-items: center; justify-content: center; text-decoration: none;">' +
             '<div style="background: #3c8dbc; color: white; padding: 12px 20px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-weight: bold; display: flex; align-items: center; gap: 10px;">' +
                 '<i class="fas fa-shopping-basket fa-lg"></i>' +
-                '<span>Basket (<span id="floating-basket-count">{{ $draftCount }}</span>)</span>' +
+                '<span>{{ __('requestlabels::requests.basket_widget_basket_label') }} (<span id="floating-basket-count">{{ $draftCount }}</span>)</span>' +
             '</div>' +
         '</a>';
         

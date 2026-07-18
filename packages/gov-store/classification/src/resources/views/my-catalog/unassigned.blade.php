@@ -1,6 +1,6 @@
-@extends('layouts/default')
+﻿@extends('layouts/default')
 
-@section('title', 'Local Office Catalog')
+@section('title', __('classification::texts.unassigned_title'))
 
 @section('content')
 <div class="row">
@@ -19,17 +19,17 @@
 
         <div class="box box-default">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-globe text-blue"></i> Globally Available Standard Categories</h3>
-                <span class="label label-info pull-right" style="font-size: 12px;">Shared Reference Data</span>
+                <h3 class="box-title"><i class="fas fa-globe text-blue"></i> {{ __('classification::texts.unassigned_header_title') }}</h3>
+                <span class="label label-info pull-right" style="font-size: 12px;">{{ __('classification::texts.unassigned_label_shared_ref_data') }}</span>
             </div>
             <div class="box-body table-responsive">
                 <table class="table table-striped table-hover table-bordered">
                     <thead style="background-color: #f9f9f9;">
                         <tr>
-                            <th>Category Name</th>
-                            <th>Category Type</th>
-                            <th>UNSPSC Code</th>
-                            <th>Governance Status</th>
+                            <th>{{ __('classification::texts.unassigned_col_category_name') }}</th>
+                            <th>{{ __('classification::texts.unassigned_col_category_type') }}</th>
+                            <th>{{ __('classification::texts.unassigned_col_unspsc_code') }}</th>
+                            <th>{{ __('classification::texts.unassigned_col_governance_status') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -39,12 +39,12 @@
                                 <td>{{ ucfirst($cat->category_type) }}</td>
                                 <td><code>{{ $cat->unspsc_code ?? 'Unmapped' }}</code></td>
                                 <td>
-                                    <span class="text-green"><i class="fas fa-globe"></i> Shared Government Standard</span>
+                                    <span class="text-green"><i class="fas fa-globe"></i> {{ __('classification::texts.unassigned_shared_gov_standard') }}</span>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="text-center text-muted" style="padding: 30px;">No global standard categories have been provisioned yet in the master catalog.</td>
+                                <td colspan="4" class="text-center text-muted" style="padding: 30px;">{{ __('classification::texts.unassigned_empty_state') }}</td>
                             </tr>
                         @endforelse
                     </tbody>

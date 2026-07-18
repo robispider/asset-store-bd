@@ -15,7 +15,7 @@ class ApprovalService
     public function processDecision(ServiceRequest $request, User $admin, array $itemDecisions): ServiceRequest
     {
         if (!in_array($request->approval_status, ['submitted', 'under_review', 'pending_primary', 'pending_final'])) {
-            throw new Exception("This service request has already been processed.");
+            throw new Exception(__('requestlabels::requests.approvals_service_exception_already_processed'));
         }
 
         $requester = $request->requester;
@@ -29,14 +29,14 @@ class ApprovalService
 
             foreach ($request->items as $item) {
                 $decision = $itemDecisions[$item->id] ?? null;
-                if (!$decision) throw new Exception("No decision provided.");
+                if (!$decision) throw new Exception(__('requestlabels::requests.approvals_service_exception_no_decision'));
 
                 $status = $decision['status'];
                 $qty = (int)($decision['qty'] ?? 1);
                 $notes = $decision['notes'] ?? null;
 
                 if ($status === 'approved') {
-                    if ($qty <= 0) throw new Exception("Approved quantity must be greater than 0.");
+                    if ($qty <= 0) throw new Exception(__('requestlabels::requests.approvals_service_exception_qty_must_be_positive'));
 
                     if ($isPrimaryReview) {
                         if ($request->resolved_policy === 'PRIMARY_ONLY') {

@@ -13,7 +13,7 @@ class RepairLedgerBalances extends Command
 
     public function handle()
     {
-        $this->info("Scanning inventory movement records for missing balances...");
+        $this->info(__('storeops::storeops.scanning_movements'));
 
         // Find unique stockable items that have NULL balances
         $unbalancedItems = InventoryMovement::whereNull('balance_after')
@@ -22,11 +22,11 @@ class RepairLedgerBalances extends Command
             ->get();
 
         if ($unbalancedItems->isEmpty()) {
-            $this->info("All ledger balances are already calculated and healthy!");
+            $this->info(__('storeops::storeops.all_balances_healthy'));
             return 0;
         }
 
-        $this->info("Found " . $unbalancedItems->count() . " items with uncalculated balances. Repairing sequentially...");
+        $this->info(__('storeops::storeops.found_unbalanced_items', ['count' => $unbalancedItems->count()]));
 
         DB::transaction(function () use ($unbalancedItems) {
             foreach ($unbalancedItems as $item) {

@@ -30,7 +30,10 @@ class StoreOperationsServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        // 3. Load Migrations
+        // 0. Load Translations
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'storeops');
+
+        // 1. Load Migrations
         $this->loadMigrationsFrom(__DIR__.'/../Database/migrations');
 
         // 4. Load Routes
@@ -78,7 +81,7 @@ class StoreOperationsServiceProvider extends ServiceProvider
         $registry->register([
             'id'              => 'storeops-register',
             'parent'          => 'gov-store',
-            'title'           => 'Stock Register Dashboard',
+            'title'           => __('storeops::storeops.stock_register_dashboard'),
             'icon'            => 'fa fa-cube text-aqua',
             'route'           => 'storeops.register.index',
             'permission'      => 'storekeeper',
@@ -89,7 +92,7 @@ class StoreOperationsServiceProvider extends ServiceProvider
         $registry->register([
             'id'         => 'storeops-receipts',
             'parent'     => 'gov-store',
-            'title'      => 'Receive Goods (GRN)',
+            'title'      => __('storeops::storeops.receive_goods_menu'),
             'icon'       => 'fa fa-sign-in text-green',
             'route'      => 'storeops.receipts.create',
             'permission' => 'storekeeper',
@@ -99,7 +102,7 @@ class StoreOperationsServiceProvider extends ServiceProvider
         $registry->register([
             'id'         => 'storeops-issues',
             'parent'     => 'gov-store',
-            'title'      => 'Ad-Hoc Direct Issue',
+            'title'      => __('storeops::storeops.ad_hoc_direct_issue'),
             'icon'       => 'fa fa-sign-out text-orange',
             'route'      => 'storeops.issues.create',
             'permission' => 'storekeeper',
@@ -113,8 +116,8 @@ class StoreOperationsServiceProvider extends ServiceProvider
         $kardexTabUrl = '/gov-store/operations/kardex/{type}/{id}';
 
         // Register Kardex to all 3 target counter-based categories
-        $registry->registerTab('consumable', new Tab('govstore-ledger-tab', 'Kardex Ledger', $kardexTabUrl, 'fa fa-book text-aqua'));
-        $registry->registerTab('accessory',  new Tab('govstore-ledger-tab', 'Kardex Ledger', $kardexTabUrl, 'fa fa-book text-aqua'));
-        $registry->registerTab('component',  new Tab('govstore-ledger-tab', 'Kardex Ledger', $kardexTabUrl, 'fa fa-book text-aqua'));
+        $registry->registerTab('consumable', new Tab('govstore-ledger-tab', __('storeops::storeops.stock_card_title'), $kardexTabUrl, 'fa fa-book text-aqua'));
+        $registry->registerTab('accessory',  new Tab('govstore-ledger-tab', __('storeops::storeops.stock_card_title'), $kardexTabUrl, 'fa fa-book text-aqua'));
+        $registry->registerTab('component',  new Tab('govstore-ledger-tab', __('storeops::storeops.stock_card_title'), $kardexTabUrl, 'fa fa-book text-aqua'));
     }
 }

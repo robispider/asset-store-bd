@@ -4,7 +4,7 @@
     <input type="hidden" name="item_id" value="{{ $itemId }}">
     
     <button type="submit" class="btn btn-primary btn-sm btn-block add-to-basket-btn">
-        <i class="fas fa-cart-plus"></i> Add to Request Basket
+        <i class="fas fa-cart-plus"></i> {{ __('requestlabels::requests.requestbutton_btn_add_to_basket') }}
     </button>
 </form>
 
@@ -19,7 +19,7 @@ if (typeof window.basketAjaxInitialized === 'undefined') {
             let btn = form.querySelector('button');
             let originalText = btn.innerHTML;
             
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {{ __('requestlabels::requests.requestbutton_btn_adding') }}';
             btn.disabled = true;
 
             fetch(form.action, {
@@ -30,7 +30,7 @@ if (typeof window.basketAjaxInitialized === 'undefined') {
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    btn.innerHTML = '<i class="fas fa-check"></i> Added!';
+                    btn.innerHTML = '<i class="fas fa-check"></i> {{ __('requestlabels::requests.requestbutton_btn_added') }}';
                     btn.classList.remove('btn-primary');
                     btn.classList.add('btn-success');
                     
@@ -45,7 +45,7 @@ if (typeof window.basketAjaxInitialized === 'undefined') {
                         btn.disabled = false;
                     }, 1500);
                 } else {
-                    alert(data.message || 'Error adding item');
+                    alert('{{ __('requestlabels::requests.requestbutton_ajax_error') }}' || 'Error adding item');
                     btn.innerHTML = originalText;
                     btn.disabled = false;
                 }

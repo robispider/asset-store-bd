@@ -23,7 +23,7 @@ class RoleAssignmentController extends Controller
                 auth()->id(), 
                 $request->assigned_user_id
             );
-            return redirect()->back()->with('success', 'Role handover proposed. Awaiting colleague acceptance.');
+            return redirect()->back()->with('success', __('office_membership::member.assignment_proposed'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
@@ -33,7 +33,7 @@ class RoleAssignmentController extends Controller
     {
         try {
             $service->acceptTransfer($id, auth()->id());
-            return redirect()->back()->with('success', 'Role accepted successfully. Your colleague\'s clearance is updated.');
+            return redirect()->back()->with('success', __('office_membership::member.assignment_accepted'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
@@ -43,7 +43,7 @@ class RoleAssignmentController extends Controller
     {
         try {
             $service->rejectTransfer($id, auth()->id());
-            return redirect()->back()->with('success', 'Role handover rejected.');
+            return redirect()->back()->with('success', __('office_membership::member.assignment_rejected'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
@@ -53,7 +53,7 @@ class RoleAssignmentController extends Controller
     {
         try {
             $service->cancelTransfer($id, auth()->id());
-            return redirect()->back()->with('success', 'Pending role handover cancelled.');
+            return redirect()->back()->with('success', __('office_membership::member.assignment_cancelled'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }

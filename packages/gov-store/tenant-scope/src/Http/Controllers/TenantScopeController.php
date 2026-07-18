@@ -18,7 +18,7 @@ class TenantScopeController extends Controller
     private function checkSuperadminAccess()
     {
         if (!auth()->user()->isSuperUser() && !auth()->user()->hasAccess('admin')) {
-            abort(403, 'Unauthorized. Data isolation settings require system superadministrator privileges.');
+            abort(403, __('tenantops::ops.unauthorized_access'));
         }
     }
 
@@ -67,7 +67,7 @@ class TenantScopeController extends Controller
             );
         }
 
-        return redirect()->back()->with('success', 'Global Scoping Policies successfully saved.');
+        return redirect()->back()->with('success', __('tenantops::ops.strategy_saved'));
     }
 
     // ==========================================
@@ -115,7 +115,7 @@ class TenantScopeController extends Controller
                 'reference_id'   => $request->reference_id,
             ]);
 
-            return redirect()->back()->with('success', 'Data isolation boundary mapped successfully.');
+            return redirect()->back()->with('success', __('tenantops::ops.mapping_created'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
@@ -126,7 +126,7 @@ class TenantScopeController extends Controller
         $this->checkSuperadminAccess();
         try {
             TenantScopeMapping::findOrFail($id)->delete();
-            return redirect()->back()->with('success', 'Scoping boundary rule permanently deleted.');
+            return redirect()->back()->with('success', __('storeops::ops.mapping_deleted'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }

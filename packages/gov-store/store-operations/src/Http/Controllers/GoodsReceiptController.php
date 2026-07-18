@@ -62,7 +62,7 @@ class GoodsReceiptController extends Controller
                 app(GoodsReceiptService::class)->submit($receipt);
             });
 
-            return redirect()->back()->with('success', 'Goods Receipt submitted and inventory projected successfully!');
+            return redirect()->back()->with('success', __('storeops::storeops.success_receipt_submitted'));
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }

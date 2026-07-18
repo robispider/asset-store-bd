@@ -13,6 +13,9 @@ class CustomRequestServiceProvider extends ServiceProvider
 {
     public function boot()
     {
+        // 0. Load Translations (Namespace: requestlabels)
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'requestlabels');
+
         // 1. Load Migrations
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
@@ -30,7 +33,7 @@ class CustomRequestServiceProvider extends ServiceProvider
  // 5. RESTORED: Register the clean Widget Injection Middleware (web routing group)
         $router = $this->app['router'];
         $router->pushMiddlewareToGroup('web', \GovStore\CustomRequests\Http\Middleware\InjectGovStoreUi::class);
-        
+
         Relation::morphMap([
             'asset'       => \App\Models\Asset::class,
             'accessory'   => \App\Models\Accessory::class,

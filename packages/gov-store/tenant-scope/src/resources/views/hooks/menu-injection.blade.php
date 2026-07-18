@@ -10,7 +10,7 @@ $(document).ready(function() {
             var sidebarLink = '<li class="' + activeClass + '" id="gov-tenantscope-sidebar-item">' +
                 '<a href="{{ route('gov.scope.index') }}">' +
                     '<i class="fas fa-user-lock fa-fw"></i>' +
-                    '<span>Tenant Scoping</span>' +
+                    '<span>{{ __('tenantops::ops.sidebar_tenant_scoping') }}</span>' +
                 '</a>' +
             '</li>';
             

@@ -31,7 +31,7 @@ class RequestableFactory
                 return new ConsumableAdapter(Consumable::findOrFail($id));
 
             default:
-                throw new Exception("Unsupported requestable type: {$type}");
+                throw new Exception(__('requestlabels::requests.requestablefactory_exception_unsupported_type', ['type' => $type]));
         }
     }
 }

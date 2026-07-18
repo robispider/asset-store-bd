@@ -12,7 +12,7 @@ class MembershipActivityLogObserver
      */
     public function created(OfficeMembership $membership)
     {
-        $this->log($membership, 'membership_granted', 'Office membership granted.');
+        $this->log($membership, 'membership_granted', __('office_membership::member.log_membership_granted'));
     }
 
     /**
@@ -24,7 +24,7 @@ class MembershipActivityLogObserver
             $this->log(
                 $membership, 
                 'status_changed', 
-                "Membership status transitioned from '{$membership->getOriginal('status')}' to '{$membership->status}'."
+                __('office_membership::member.log_status_changed', ['old' => $membership->getOriginal('status'), 'new' => $membership->status])
             );
         }
     }
@@ -34,7 +34,7 @@ class MembershipActivityLogObserver
      */
     public function deleted(OfficeMembership $membership)
     {
-        $this->log($membership, 'membership_revoked', 'Office membership revoked.');
+        $this->log($membership, 'membership_revoked', __('office_membership::member.log_membership_revoked'));
     }
 
     /**

@@ -1,6 +1,6 @@
 @extends('layouts/default')
 
-@section('title', 'Pick & Issue Items: ' . $serviceRequest->request_number)
+@section('title', __('requestlabels::requests.fulfillment_show_title_prefix') . $serviceRequest->request_number)
 
 @section('content')
 <div class="row">
@@ -8,7 +8,7 @@
     <div class="col-md-8">
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-boxes"></i> Log Inventory Handover</h3>
+                <h3 class="box-title"><i class="fas fa-boxes"></i> {{ __('requestlabels::requests.fulfillment_show_header_log_handover') }}</h3>
             </div>
             <form action="{{ route('gov.requests.fulfillment.process', $serviceRequest->id) }}" method="POST">
                 @csrf
@@ -48,13 +48,13 @@
                                     <td style="vertical-align: middle;" class="text-center text-danger"><strong>{{ $remaining }}</strong></td>
                                     <td style="vertical-align: middle;">
                                         @if($remaining === 0)
-                                            <span class="text-success" style="font-weight: bold;"><i class="fas fa-check"></i> Fully Issued</span>
+                                            <span class="text-success" style="font-weight: bold;"><i class="fas fa-check"></i> {{ __('requestlabels::requests.fulfillment_show_fully_issued') }}</span>
                                         @else
                                             <input type="number" name="issue[{{ $item->id }}]" class="form-control input-sm text-center" value="{{ $remaining }}" min="0" max="{{ $remaining }}">
                                             
                                             <!-- Substitute Trigger Button -->
                                             <button type="button" class="btn btn-xs btn-default btn-block" style="margin-top: 5px;" onclick="openSubstitutionModal({{ $item->id }}, '{{ $item->requested_type }}', '{{ $name }}')">
-                                                <i class="fas fa-exchange-alt"></i> Substitute
+                                                <i class="fas fa-exchange-alt"></i> {{ __('requestlabels::requests.fulfillment_show_btn_substitute') }}
                                             </button>
                                         @endif
                                     </td>
@@ -64,9 +64,9 @@
                     </table>
                 </div>
                 <div class="box-footer">
-                    <a href="{{ route('gov.requests.fulfillment.index') }}" class="btn btn-default pull-left"><i class="fas fa-arrow-left"></i> Back</a>
-                    <button type="submit" class="btn btn-primary pull-right" onclick="return confirm('Confirming handover? This will deduct Snipe-IT inventory and write to history logs.')">
-                        <i class="fas fa-clipboard-check"></i> Log Checkout & Issue Items
+                    <a href="{{ route('gov.requests.fulfillment.index') }}" class="btn btn-default pull-left"><i class="fas fa-arrow-left"></i> {{ __('requestlabels::requests.fulfillment_show_btn_back') }}</a>
+                    <button type="submit" class="btn btn-primary pull-right" onclick="return confirm('{{ __('requestlabels::requests.fulfillment_show_confirm_handover') }}')">
+                        <i class="fas fa-clipboard-check"></i> {{ __('requestlabels::requests.fulfillment_show_btn_log_checkout') }}
                     </button>
                 </div>
             </form>
@@ -75,17 +75,17 @@
         <!-- FORCE CLOSURE OPTION -->
         <div class="box box-danger">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-ban"></i> Terminate / Close Request</h3>
+                <h3 class="box-title"><i class="fas fa-ban"></i> {{ __('requestlabels::requests.fulfillment_show_header_terminate') }}</h3>
             </div>
             <form action="{{ route('gov.requests.fulfillment.close', $serviceRequest->id) }}" method="POST">
                 @csrf
                 <div class="box-body">
-                    <p class="text-muted">If items cannot be fulfilled due to permanent stockout, you can force close the remaining line items.</p>
-                    <input type="text" name="reason" class="form-control" placeholder="Provide reason for force closure..." required>
+                    <p class="text-muted">{{ __('requestlabels::requests.fulfillment_show_text_stockout') }}</p>
+                    <input type="text" name="reason" class="form-control" placeholder="{{ __('requestlabels::requests.fulfillment_show_input_reason_placeholder') }}" required>
                 </div>
                 <div class="box-footer">
-                    <button type="submit" class="btn btn-danger pull-right" onclick="return confirm('Are you sure you want to terminate this request? Unissued lines will be cancelled.')">
-                        <i class="fas fa-times-circle"></i> Force Close Request
+                    <button type="submit" class="btn btn-danger pull-right" onclick="return confirm('{{ __('requestlabels::requests.fulfillment_show_confirm_force_close') }}')">
+                        <i class="fas fa-times-circle"></i> {{ __('requestlabels::requests.fulfillment_show_btn_force_close') }}
                     </button>
                 </div>
             </form>
@@ -96,7 +96,7 @@
     <div class="col-md-4">
         <div class="box box-default">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-history"></i> Request Timeline</h3>
+                <h3 class="box-title"><i class="fas fa-history"></i> {{ __('requestlabels::requests.fulfillment_show_header_timeline') }}</h3>
             </div>
             <div class="box-body">
                 <ul class="timeline">
@@ -154,7 +154,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="substitutionModalLabel"><i class="fas fa-exchange-alt"></i> Alternative Substitution</h4>
+                <h4 class="modal-title" id="substitutionModalLabel"><i class="fas fa-exchange-alt"></i> {{ __('requestlabels::requests.fulfillment_show_modal_title') }}</h4>
             </div>
             <div class="modal-body">
                 <p>Select an alternative item to fulfill the request for: <strong id="modalOriginalItemName"></strong></p>
@@ -163,13 +163,13 @@
                 <input type="hidden" id="modalItemType">
 
                 <div class="form-group">
-                    <label for="substituteSelector">Search Stock Alternatives</label>
+                    <label for="substituteSelector">{{ __('requestlabels::requests.fulfillment_show_modal_search_label') }}</label>
                     <select id="substituteSelector" class="form-control" style="width: 100%;"></select>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="applySubstitution()">Save Substitution</button>
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">{{ __('requestlabels::requests.fulfillment_show_modal_btn_cancel') }}</button>
+                <button type="button" class="btn btn-primary" onclick="applySubstitution()">{{ __('requestlabels::requests.fulfillment_show_modal_btn_save') }}</button>
             </div>
         </div>
     </div>

@@ -1,5 +1,4 @@
 <?php
-
 namespace GovStore\Classification\Http\Controllers;
 
 use Illuminate\Routing\Controller;
@@ -12,7 +11,7 @@ class CategoryGovernanceController extends Controller
     {
         $user = auth()->user();
         if (!$user || (!$user->isSuperUser() && !$user->hasAccess('admin'))) {
-            abort(403, 'Unauthorized access. Global Category Governance requires Superadmin privileges.');
+            abort(403, __('classification::texts.ctrl_exception_unauthorized_governance'));
         }
     }
 

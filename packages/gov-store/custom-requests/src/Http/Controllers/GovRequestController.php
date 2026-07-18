@@ -63,9 +63,9 @@ class GovRequestController extends Controller
             $service->submitRequest($modelClass, $request->item_id, auth()->user(), $request->notes);
             
             // Redirect back to the item page with a Snipe-IT success banner
-            return redirect()->back()->with('success', 'Item request submitted successfully and is pending approval.');
+            return redirect()->back()->with('success', __('requestlabels::requests.govrequestcontroller_flash_request_submitted'));
         } catch (\Exception $e) {
-            Log::error("Request Submit Error: " . $e->getMessage());
+            Log::error(__('requestlabels::requests.govrequestcontroller_log_submit_error', ['message' => $e->getMessage()]));
             return redirect()->back()->with('error', $e->getMessage());
         }
     }

@@ -79,7 +79,7 @@ class CatalogAdminController extends Controller
             
         } catch (\Throwable $e) {
             return redirect()->route('gov.catalog.import')
-                ->with('error', 'Analysis failed: ' . $e->getMessage());
+                ->with('error', __('classification::texts.ctrl_analysis_failed') . ' ' . $e->getMessage());
         }
     }
 
@@ -107,7 +107,7 @@ class CatalogAdminController extends Controller
 
         } catch (Throwable $e) {
             return redirect()->route('gov.catalog.import')
-                ->with('error', 'Update failed: ' . $e->getMessage());
+                ->with('error', __('classification::texts.ctrl_update_failed') . ' ' . $e->getMessage());
         }
     }
 

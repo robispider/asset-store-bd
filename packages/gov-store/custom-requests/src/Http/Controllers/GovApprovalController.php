@@ -23,14 +23,14 @@ class GovApprovalController extends Controller
             ->whereIn('role_slug', ['primary_approver', 'final_approver'])
             ->exists();
 
-        if (!$isApprover) abort(403, 'Unauthorized access to approval workflows.');
+        if (!$isApprover) abort(403, __('requestlabels::requests.govapprovalcontroller_abort_unauthorized'));
     }
 
     private function checkSystemAdminAccess()
     {
         $user = auth()->user();
         if (!$user->isSuperUser() && !$user->hasAccess('admin')) {
-            abort(403, 'Unauthorized. Policy configuration requires system administrator privileges.');
+            abort(403, __('requestlabels::requests.govapprovalcontroller_abort_admin_required'));
         }
     }
 
@@ -77,9 +77,9 @@ class GovApprovalController extends Controller
         $serviceRequest = ServiceRequest::findOrFail($id);
         try {
             $service->processDecision($serviceRequest, auth()->user(), $request->input('items', []));
-            return redirect()->route('gov.requests.admin.index')->with('success', "Service Request {$serviceRequest->request_number} has been processed.");
+            return redirect()->route('gov.requests.admin.index')->with('success', __('requestlabels::requests.govapprovalcontroller_flash_processed', ['number' => $serviceRequest->request_number]));
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Workflow error: ' . $e->getMessage());
+            return redirect()->back()->with('error', __('requestlabels::requests.govapprovalcontroller_flash_workflow_error', ['message' => $e->getMessage()]));
         }
     }
 
@@ -98,6 +98,6 @@ class GovApprovalController extends Controller
         $this->checkSystemAdminAccess();
         $request->validate(['category_id' => 'required|integer', 'policy_name' => 'required|string']);
         ApprovalPolicy::updateOrCreate(['target_type' => 'category', 'target_id' => $request->category_id], ['policy_name' => $request->policy_name]);
-        return redirect()->back()->with('success', 'Category approval policy updated successfully.');
+        return redirect()->back()->with('success', __('requestlabels::requests.govapprovalcontroller_flash_policy_updated'));
     }
 }

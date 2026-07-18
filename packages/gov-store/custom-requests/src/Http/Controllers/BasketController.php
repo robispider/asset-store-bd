@@ -31,11 +31,11 @@ class BasketController extends Controller
             if ($request->ajax()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Item added to your basket.',
+                    'message' => __('requestlabels::requests.basketcontroller_flash_item_added_ajax'),
                     'count' => $basket->items()->count()
                 ]);
             }
-            return redirect()->back()->with('success', 'Item added to your service request basket.');
+            return redirect()->back()->with('success', __('requestlabels::requests.basketcontroller_flash_item_added'));
         } catch (\Exception $e) {
             if ($request->ajax()) return response()->json(['success' => false, 'message' => $e->getMessage()], 400);
             return redirect()->back()->with('error', $e->getMessage());
@@ -46,16 +46,14 @@ class BasketController extends Controller
     {
         try {
             $service->updateItemQty(auth()->id(), $request->item_id, (int)$request->qty);
-            return redirect()->back()->with('success', 'Basket quantity updated.');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
+            return redirect()->back()->with('success', __('requestlabels::requests.basketcontroller_flash_qty_updated'));
         }
     }
 
     public function remove($itemId, BasketService $service)
     {
         $service->removeItem(auth()->id(), $itemId);
-        return redirect()->back()->with('success', 'Item removed from basket.');
+        return redirect()->back()->with('success', __('requestlabels::requests.basketcontroller_flash_item_removed'));
     }
 
  public function submit(Request $request, BasketService $service)
@@ -76,7 +74,7 @@ class BasketController extends Controller
             $numbers = collect($requests)->pluck('request_number')->join(', ');
             
             return redirect()->route('gov.requests.user.index')
-                             ->with('success', "Service Request(s) [{$numbers}] submitted successfully!");
+                             ->with('success', __('requestlabels::requests.basketcontroller_flash_request_submitted', ['numbers' => $numbers]));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }

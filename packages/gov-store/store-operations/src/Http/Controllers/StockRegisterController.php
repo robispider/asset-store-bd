@@ -39,7 +39,7 @@ class StockRegisterController extends Controller
             'consumable' => Consumable::class,
             'accessory'  => Accessory::class,
             'component'  => Component::class,
-            default      => abort(404, 'Invalid stockable type')
+            default      => abort(404, __('storeops::storeops.invalid_stockable_type'))
         };
 
         $item = $modelClass::findOrFail($id);

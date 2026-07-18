@@ -88,7 +88,7 @@ class MembershipController extends Controller
             'expires_at' => now()->addHours(24),
         ]);
 
-        return redirect()->back()->with('success', 'New Verification Code generated successfully. It will expire in 24 hours.');
+        return redirect()->back()->with('success', __('office_membership::member.membership_token_generated'));
     }
 
 
@@ -98,13 +98,13 @@ class MembershipController extends Controller
         $membership = OfficeMembership::where('user_id', $user->id)->findOrFail($id);
 
         if ($membership->status !== 'active') {
-            return redirect()->back()->with('error', 'Only active memberships can be released.');
+            return redirect()->back()->with('error', __('office_membership::member.membership_only_active_release'));
         }
 
         // Final backend validation guard
         $results = $engine->runChecks($user, $membership->location_id);
         if (!$engine->isCleared($results)) {
-            return redirect()->back()->with('error', 'Clearance failed. Resolve outstanding issues first.');
+            return redirect()->back()->with('error', __('office_membership::member.membership_clearance_failed'));
         }
 
         $membership->update(['status' => 'release_requested']);
@@ -120,7 +120,7 @@ class MembershipController extends Controller
         // Global restore hook for admins
         if ($isAdmin && $request->has('location_id') && (int)$request->location_id === 0) {
             session()->forget('gov_working_membership_id');
-            return redirect()->back()->with('success', 'Working context restored to Global Overview.');
+            return redirect()->back()->with('success', __('office_membership::member.membership_context_restored'));
         }
 
         // Admin switching via raw location_id
@@ -128,7 +128,7 @@ class MembershipController extends Controller
             $locId = $request->input('location_id');
             // Mock a temporary membership in session for the admin
             session()->put('gov_working_membership_id', 'ADMIN_MOCK_' . $locId);
-            return redirect()->back()->with('success', 'Context switched.');
+            return redirect()->back()->with('success', __('office_membership::member.membership_context_switched'));
         }
 
         // Standard user switching via their authorized membership_id
@@ -141,7 +141,7 @@ class MembershipController extends Controller
 
         session()->put('gov_working_membership_id', $membership->id);
 
-        return redirect()->back()->with('success', 'Working context switched to ' . ($membership->location->name ?? 'selected office') . '.');
+        return redirect()->back()->with('success', str_replace(':office', $membership->location->name ?? __('office_membership::member.staff_claim_hint'), __('office_membership::member.membership_context_switched_to')));
     }
 
     /**
@@ -156,14 +156,14 @@ class MembershipController extends Controller
         $profile = \GovStore\Organization\Models\LocationProfile::where('invitation_code', $code)->first();
 
         if (!$profile || !$profile->invitation_code_expires_at || $profile->invitation_code_expires_at->isPast()) {
-            return redirect()->back()->with('error', 'The Office Code is invalid or has expired.');
+            return redirect()->back()->with('error', __('office_membership::member.membership_invalid_code'));
         }
 
         $existing = OfficeMembership::where('user_id', $user->id)->where('location_id', $profile->location_id)->first();
 
         if ($existing) {
-            if ($existing->status === 'active') return redirect()->back()->with('error', 'You are already an active member.');
-            if ($existing->status === 'pending') return redirect()->back()->with('error', 'Request is already pending approval.');
+            if ($existing->status === 'active') return redirect()->back()->with('error', __('office_membership::member.membership_already_member'));
+            if ($existing->status === 'pending') return redirect()->back()->with('error', __('office_membership::member.membership_request_pending'));
         }
 
         // =========================================================================
@@ -177,6 +177,6 @@ class MembershipController extends Controller
             ]
         );
 
-        return redirect()->back()->with('success', 'Membership request sent! Waiting for approval.');
+        return redirect()->back()->with('success', __('office_membership::member.membership_request_sent'));
     }
 }

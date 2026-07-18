@@ -18,7 +18,7 @@ class GovFulfillmentController extends Controller
 
         // MATRIX LOOKUP
         $isStorekeeper = OfficeResponsibility::where('user_id', $user->id)->where('role_slug', 'storekeeper')->exists();
-        if (!$isStorekeeper) abort(403, 'Unauthorized access to fulfillment logs.');
+        if (!$isStorekeeper) abort(403, __('requestlabels::requests.govfulfillmentcontroller_abort_unauthorized'));
     }
 
     public function index()
@@ -71,9 +71,9 @@ class GovFulfillmentController extends Controller
                 $request->input('substitutions', [])
             );
             return redirect()->route('gov.requests.fulfillment.index')
-                             ->with('success', "Fulfillment logged. Snipe-IT inventory updated.");
+                             ->with('success', __('requestlabels::requests.govfulfillmentcontroller_flash_fulfillment'));
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Fulfillment error: ' . $e->getMessage());
+            return redirect()->back()->with('error', __('requestlabels::requests.govfulfillmentcontroller_flash_fulfillment_error', ['message' => $e->getMessage()]));
         }
     }
 
@@ -85,7 +85,7 @@ class GovFulfillmentController extends Controller
         try {
             $service->forceClose($serviceRequest, auth()->user(), $request->input('reason'));
             return redirect()->route('gov.requests.fulfillment.index')
-                             ->with('success', "Service Request {$serviceRequest->request_number} closed permanently.");
+                             ->with('success', __('requestlabels::requests.govfulfillmentcontroller_flash_closed', ['number' => $serviceRequest->request_number]));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }

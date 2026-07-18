@@ -11,7 +11,7 @@ $(document).ready(function() {
         var memActive = window.location.pathname.includes('gov-store/my-memberships') ? 'style="font-weight: bold; background:#eee;"' : '';
         var link = '<li Handy-id="gov-memberships-dropdown-item" ' + memActive + '>' +
             '<a href="{{ route("gov.membership.index") }}">' +
-                '<i class="fas fa-id-badge fa-fw"></i> My Office Memberships' +
+                '<i class="fas fa-id-badge fa-fw"></i> {{ __('office_membership::member.menu_my_memberships') }}' +
             '</a>' +
         '</li>';
         
@@ -66,14 +66,14 @@ $(document).ready(function() {
                     '<i class="fas fa-hotel"></i> &nbsp;Working As: <span class="' + activeClassLabel + '">' + activeLabel + '</span> &nbsp;<span class="caret"></span>' +
                 '</a>' +
                 '<ul class="dropdown-menu" style="background-color: #fff; width: 280px; padding: 5px 0;">' + // Fixed: Added missing leading single quote before <ul
-                    '<li class="header" style="padding: 8px 15px; font-size: 11px; color: #777; border-bottom: 1px solid #f4f4f4; background-color: #fafafa; font-weight: bold;">CHOOSE WORKING CONTEXT</li>';
+                    '<li class="header" style="padding: 8px 15px; font-size: 11px; color: #777; border-bottom: 1px solid #f4f4f4; background-color: #fafafa; font-weight: bold;">{{ __('office_membership::member.menu_choose_context') }}</li>';
 
             @if($isAdmin)
                 var isGlobalActive = !'{{ $currentWorkingName }}';
                 dropdownHtml += '<li style="border-bottom: 1px dashed #eee;">' +
                     '<a href="#" onclick="event.preventDefault(); document.getElementById(\'switch-context-form-global\').submit();" style="padding: 10px 15px; display: block; clear: both; font-weight: bold; color: #3c8dbc; background: ' + (isGlobalActive ? '#eef7ff' : 'transparent') + '">' +
                         '<i class="fas fa-globe" style="margin-right: 10px;"></i>' +
-                        '🌎 Global Overview (All Offices)' +
+                        '{{ __('office_membership::member.menu_global_overview') }} (All Offices)' +
                     '</a>' +
                     '<form id="switch-context-form-global" action="{{ route("gov.membership.switch") }}" method="POST" style="display:none;">' +
                         '<input type="hidden" name="_token" value="{{ csrf_token() }}">' +

@@ -19,7 +19,7 @@ class MembershipAdminController extends Controller
 {
     private function checkSuperadminAccess() {
         if (!auth()->user()->isSuperUser()) {
-            abort(403, 'Unauthorized. Emergency overrides require system superadministrator access.');
+            abort(403, __('office_membership::member.admin_unauthorized_override'));
         }
     }
 
@@ -35,7 +35,7 @@ class MembershipAdminController extends Controller
         $profile = LocationProfile::where('location_id', $locId)->where('office_admin_id', auth()->id())->first();
         
         if (!$profile && !auth()->user()->isSuperUser()) {
-            abort(403, 'Access Denied: You are not the administrator of this office.');
+            abort(403, __('office_membership::member.admin_access_denied'));
         }
         return $locId;
     }
@@ -66,10 +66,10 @@ class MembershipAdminController extends Controller
         $request->validate(['username' => 'required|string', 'verification_code' => 'required|string|size:6']);
 
         $targetUser = User::withoutGlobalScope(\GovStore\TenantScope\Scopes\UserScope::class)->where('username', trim($request->input('username')))->first();
-        if (!$targetUser) return redirect()->back()->with('error', 'User not found.');
+        if (!$targetUser) return redirect()->back()->with('error', __('office_membership::member.admin_user_not_found'));
 
         $token = EmployeeVerificationToken::where('user_id', $targetUser->id)->where('token', strtoupper(trim($request->input('verification_code'))))->first();
-        if (!$token || !$token->isValid()) return redirect()->back()->with('error', 'Invalid or expired code.');
+        if (!$token || !$token->isValid()) return redirect()->back()->with('error', __('office_membership::member.admin_invalid_code'));
 
         $isTransferring = OfficeMembership::where('user_id', $targetUser->id)
             ->where('is_home_office', true)
@@ -77,11 +77,11 @@ class MembershipAdminController extends Controller
             ->exists();
 
         if ($isTransferring) {
-            return redirect()->back()->with('error', 'This employee is permanently transferring. Please use the "Claim Transferred Employee" widget below instead.');
+            return redirect()->back()->with('error', __('office_membership::member.admin_permanently_transferring'));
         }
 
         if (OfficeMembership::where('user_id', $targetUser->id)->where('location_id', $locId)->where('status', 'active')->exists()) {
-            return redirect()->back()->with('error', 'Employee is already an active member of this office.');
+            return redirect()->back()->with('error', __('office_membership::member.admin_already_member'));
         }
 
         DB::transaction(function () use ($token, $targetUser, $locId) {
@@ -104,7 +104,7 @@ class MembershipAdminController extends Controller
             OrganizationActivityLog::create(['location_id' => $locId, 'performed_by' => auth()->id(), 'event_type' => 'membership_granted', 'details' => ['message' => "Secondary access granted to {$targetUser->username} via Token.", 'target_user_id' => $targetUser->id]]);
         });
 
-        return redirect()->back()->with('success', 'Employee granted secondary access to this office.');
+        return redirect()->back()->with('success', __('office_membership::member.admin_secondary_access_granted'));
     }
 
     // =========================================================================
@@ -134,7 +134,7 @@ class MembershipAdminController extends Controller
             $user->saveQuietly();
         });
 
-        return redirect()->back()->with('success', 'Employee claimed successfully as their new Home Office.');
+        return redirect()->back()->with('success', __('office_membership::member.admin_employee_claimed'));
     }
 
     // =========================================================================
@@ -147,7 +147,7 @@ class MembershipAdminController extends Controller
         do { $code = strtoupper(Str::random(8)); } while (LocationProfile::where('invitation_code', $code)->exists());
 
         $profile->update(['invitation_code' => $code, 'invitation_code_created_at' => now(), 'invitation_code_expires_at' => now()->addDays(30)]);
-        return redirect()->back()->with('success', 'New Office Invitation Code generated.');
+        return redirect()->back()->with('success', __('office_membership::member.admin_invite_code_generated'));
     }
 
     public function approveMembership($membershipId) {
@@ -162,14 +162,14 @@ class MembershipAdminController extends Controller
             'approved_at' => now(), 
             'approval_note' => 'Approved Self-Join via Dashboard'
         ]);
-        return redirect()->back()->with('success', 'Employee membership request approved.');
+        return redirect()->back()->with('success', __('office_membership::member.admin_membership_approved'));
     }
 
     public function rejectMembership($membershipId) {
         $locId = $this->getActiveAdminLocation();
         $membership = OfficeMembership::where('location_id', $locId)->where('id', $membershipId)->where('status', 'pending')->firstOrFail();
         $membership->delete();
-        return redirect()->back()->with('success', 'Employee membership request rejected.');
+        return redirect()->back()->with('success', __('office_membership::member.admin_membership_rejected'));
     }
 
     public function overrideConsole() {
@@ -211,6 +211,6 @@ class MembershipAdminController extends Controller
             ]);
         });
 
-        return redirect()->back()->with('success', 'Emergency compliance override logged and executed.');
+        return redirect()->back()->with('success', __('office_membership::member.admin_override_executed'));
     }
 }

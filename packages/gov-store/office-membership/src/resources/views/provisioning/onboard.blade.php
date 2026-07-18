@@ -1,6 +1,6 @@
 @extends('layouts/default')
 
-@section('title', 'Onboard Existing Snipe-IT Location')
+@section('title', __('office_membership::member.onboard_page_title'))
 
 @section('content')
 <style>
@@ -14,7 +14,7 @@
         <div class="box onboarding-box" style="border-top: 3px solid var(--main-theme-color, #3c8dbc);">
             <div class="box-header with-border" style="padding: 15px 20px;">
                 <h3 class="box-title" style="font-weight: bold; font-size: 16px;">
-                    <i class="fas fa-plug"></i> Map Existing Office Location
+                    <i class="fas fa-plug"></i> {{ __('office_membership::member.onboard_map_title') }}
                 </h3>
             </div>
             
@@ -24,41 +24,41 @@
                     
                     <!-- SECTION 1: IDENTITY -->
                     <div class="form-section-header">
-                        <i class="fas fa-id-card"></i> <span>1. Select Registered Building</span>
+                        <i class="fas fa-id-card"></i> <span>{{ __('office_membership::member.onboard_section_identity') }}</span>
                     </div>
                     <div class="form-group" style="margin-bottom: 20px;">
-                        <label for="existing_location_id">Select Snipe-IT Location <span class="text-danger">*</span></label>
+                        <label for="existing_location_id">{{ __('office_membership::member.onboard_location_label') }} <span class="text-danger">*</span></label>
                         <select name="existing_location_id" id="existing_location_id" class="form-control select2" required style="width: 100%;">
-                            <option value="">-- Choose unprovisioned building --</option>
+                            <option value="">{{ __('office_membership::member.onboard_location_placeholder') }}</option>
                             @foreach($unprovisionedLocations as $unmapped)
                                 <option value="{{ $unmapped->id }}">{{ $unmapped->name }}</option>
                             @endforeach
                         </select>
-                        <p class="help-block">This lists only active Snipe-IT Locations currently missing geographic configuration mappings.</p>
+                        <p class="help-block">{{ __('office_membership::member.onboard_location_hint') }}</p>
                     </div>
 
                     <!-- SECTION 2: GEOGRAPHY -->
                     <div class="form-section-header" style="margin-top: 25px;">
-                        <i class="fas fa-map-marked-alt"></i> <span>2. Geographical Boundary Tag</span>
+                        <i class="fas fa-map-marked-alt"></i> <span>{{ __('office_membership::member.onboard_section_geography') }}</span>
                     </div>
                     <div class="form-group" style="margin-bottom: 20px;">
-                        <label for="geoAreaSelector">Administrative Territory Boundary <span class="text-danger">*</span></label>
+                        <label for="geoAreaSelector">{{ __('office_membership::member.onboard_geo_label') }} <span class="text-danger">*</span></label>
                         <select name="geo_area_id" id="geoAreaSelector" class="form-control" required style="width: 100%;">
-                            <option value="">-- Search and select Division, Zila, Upazila or Union --</option>
+                            <option value="">{{ __('office_membership::member.onboard_geo_placeholder') }}</option>
                         </select>
                     </div>
 
                     <!-- SECTION 3: ADMINISTRATION & MAPPING -->
                     <div class="form-section-header" style="margin-top: 35px;">
-                        <i class="fas fa-sitemap"></i> <span>3. Organizational Hierarchy & Setup</span>
+                        <i class="fas fa-sitemap"></i> <span>{{ __('office_membership::member.onboard_section_hierarchy') }}</span>
                     </div>
                     
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group" style="margin-bottom: 20px;">
-                                <label for="company_id">Ministry / Department Ownership (Optional)</label>
+                                <label for="company_id">{{ __('office_membership::member.onboard_ministry_label') }}</label>
                                 <select name="company_id" id="company_id" class="form-control select2" style="width: 100%;">
-                                    <option value="">-- Leave Standalone (No Ministry override) --</option>
+                                    <option value="">{{ __('office_membership::member.onboard_ministry_placeholder') }}</option>
                                     @foreach($companies as $company)
                                         <option value="{{ $company->id }}">{{ $company->name }}</option>
                                     @endforeach
@@ -67,9 +67,9 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group" style="margin-bottom: 20px;">
-                                <label for="office_admin_id">Assign Office Administrator (Optional)</label>
+                                <label for="office_admin_id">{{ __('office_membership::member.onboard_admin_label') }}</label>
                                 <select name="office_admin_id" id="office_admin_id" class="form-control select2" style="width: 100%;">
-                                    <option value="">-- Leave Unassigned for Now --</option>
+                                    <option value="">{{ __('office_membership::member.onboard_admin_placeholder') }}</option>
                                     @foreach($users as $user)
                                         <option value="{{ $user->id }}">{{ $user->present()->fullName }} ({{ $user->username }})</option>
                                     @endforeach
@@ -82,10 +82,10 @@
                 
                 <div class="box-footer" style="padding: 15px 25px; background-color: #fafafa; border-top: 1px solid #f4f4f4;">
                     <a href="{{ route('gov.org.provisioning.index') }}" class="btn btn-default pull-left" style="padding: 8px 15px;">
-                        <i class="fas fa-arrow-left"></i> Return to Registry
+                        <i class="fas fa-arrow-left"></i> {{ __('office_membership::member.onboard_return_button') }}
                     </a>
                     <button type="submit" class="btn btn-success pull-right" style="padding: 8px 25px; font-weight: bold;">
-                        <i class="fas fa-check-shield"></i> Onboard & Map Office
+                        <i class="fas fa-check-shield"></i> {{ __('office_membership::member.onboard_submit_button') }}
                     </button>
                 </div>
             </form>
@@ -96,13 +96,13 @@
     <div class="col-md-5">
         <div class="box onboarding-box" style="border-top: 3px solid #d2d6de;">
             <div class="box-header with-border" style="padding: 15px 20px;">
-                <h3 class="box-title" style="font-weight: bold; font-size: 15px;"><i class="fas fa-info-circle text-muted"></i> Onboarding Guidelines</h3>
+                <h3 class="box-title" style="font-weight: bold; font-size: 15px;"><i class="fas fa-info-circle text-muted"></i> {{ __('office_membership::member.onboard_guidelines_title') }}</h3>
             </div>
             <div class="box-body" style="padding: 20px 25px; font-size: 13px; line-height: 1.6; color: #555;">
-                <p>This panel allows you to integrate pre-existing, legacy Snipe-IT Location records into your new geographical workspace model.</p>
+                <p>{{ __('office_membership::member.onboard_guidelines_text') }}</p>
                 <ul>
-                    <li>Selecting an existing building maps it to its physical territory in <code>gov_geo_areas</code>.</li>
-                    <li>This process does **not** duplicate the building inside Snipe-IT's core directories; it enriches it with spatial context.</li>
+                    <li>{{ __('office_membership::member.onboard_guidelines_point1') }}</li>
+                    <li>{{ __('office_membership::member.onboard_guidelines_point2') }}</li>
                 </ul>
             </div>
         </div>
@@ -130,7 +130,7 @@ $(document).ready(function() {
             },
             cache: true
         },
-        placeholder: "Type to search Division, District, Upazila, or Union..."
+        'placeholder': "{{ __('office_membership::member.onboard_search_geo_placeholder') }}"
     });
 });
 </script>

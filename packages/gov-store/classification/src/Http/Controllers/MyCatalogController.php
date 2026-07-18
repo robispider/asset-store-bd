@@ -17,10 +17,6 @@ class MyCatalogController extends Controller
         $this->service = $service;
     }
 
-    /**
-     * Helper to resolve the active operational scope.
-     * Prioritizes Company. If null, falls back to standalone Location.
-     */
     private function resolveScope(TenantContext $context): array
     {
         if ($context->companyId > 0) {
@@ -29,18 +25,14 @@ class MyCatalogController extends Controller
         if ($context->locationId > 0) {
             return ['type' => 'location', 'id' => $context->locationId];
         }
-        abort(403, 'No active operational context found.');
+        abort(403, __('classification::texts.ctrl_exception_no_active_context'));
     }
 
-    /**
-     * Contextual Security Shield
-     */
     private function checkAccess(TenantContext $tenantContext): string
     {
         $user = auth()->user();
         if (!$user) abort(401);
 
-        // 1. Superadmin / Global Bypass
         if ($user->isSuperUser() || $user->hasAccess('admin')) {
             if (!$tenantContext->locationId) {
                 redirect()->route('gov.catalog.governance.index')->send();
@@ -49,12 +41,10 @@ class MyCatalogController extends Controller
             return 'admin';
         }
 
-        // 2. Staff Context Verification
         if (!$tenantContext->locationId) {
-            abort(403, 'No active operational context found for your session. Please choose an office from the top bar.');
+            abort(403, __('classification::texts.ctrl_exception_no_active_context_session'));
         }
 
-        // 3. Verify local role-responsibility
         $hasRole = \GovStore\OfficeMembership\Models\OfficeResponsibility::where('user_id', $user->id)
             ->where('location_id', $tenantContext->locationId)
             ->whereIn('role_slug', ['storekeeper', 'office_admin', 'ict_officer'])
@@ -63,9 +53,6 @@ class MyCatalogController extends Controller
         return $hasRole ? 'admin' : 'employee';
     }
 
-    /**
-     * Dashboard listing all items adopted by the active context
-     */
     public function index(TenantContext $tenantContext)
     {
         $accessMode = $this->checkAccess($tenantContext);
@@ -87,7 +74,7 @@ class MyCatalogController extends Controller
         $scope = $this->resolveScope($tenantContext);
 
         $details = $this->service->getLocalDetails($id, $scope['type'], $scope['id'], $tenantContext->locationId);
-        if (!$details) abort(404, 'Category not found in your operational catalog.');
+        if (!$details) abort(404, __('classification::texts.ctrl_exception_category_not_found'));
 
         return view('gov-classification::my-catalog.show', $details);
     }

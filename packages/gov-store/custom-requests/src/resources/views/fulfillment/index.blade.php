@@ -1,13 +1,13 @@
 @extends('layouts/default')
 
-@section('title', 'Fulfillment Queue')
+@section('title', __('requestlabels::requests.fulfillment_title'))
 
 @section('content')
 <div class="row">
     <div class="col-md-12">
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-shipping-fast"></i> Approved Items Awaiting Issuance</h3>
+                <h3 class="box-title"><i class="fas fa-shipping-fast"></i> {{ __('requestlabels::requests.fulfillment_header_title') }}</h3>
             </div>
             <div class="box-body table-responsive">
                 <table class="table table-striped table-hover">
@@ -33,22 +33,22 @@
                                 <td>{{ $req->approved_at ? $req->approved_at->format('Y-m-d H:i') : '-' }}</td>
                                 <td>
                                     @if($req->fulfillment_status === 'unstarted')
-                                        <span class="label label-default">Awaiting Picking</span>
-                                    @elseif($req->fulfillment_status === 'partially_issued')
-                                        <span class="label bg-purple">Partially Dispatched</span>
+                                    <span class="label label-default">{{ __('requestlabels::requests.fulfillment_status_awaiting_picking') }}</span>
+                                @elseif($req->fulfillment_status === 'partially_issued')
+                                    <span class="label bg-purple">{{ __('requestlabels::requests.fulfillment_status_partially_dispatched') }}</span>
                                     @else
                                         <span class="label label-info">{{ ucfirst($req->fulfillment_status) }}</span>
                                     @endif
                                 </td>
                                 <td>
                                     <a href="{{ route('gov.requests.fulfillment.show', $req->id) }}" class="btn btn-sm btn-primary">
-                                        <i class="fas fa-box-open"></i> Pick & Issue Items
+                                        <i class="fas fa-box-open"></i> {{ __('requestlabels::requests.fulfillment_btn_pick_issue') }}
                                     </a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center" style="padding: 30px;">No requests are currently awaiting inventory fulfillment.</td>
+                                <td colspan="6" class="text-center" style="padding: 30px;">{{ __('requestlabels::requests.fulfillment_empty_state') }}</td>
                             </tr>
                         @endforelse
                     </tbody>

@@ -16,7 +16,7 @@ class CatalogDatasetLocator
         $baseDir = realpath(__DIR__ . '/../database/data');
 
         if (!$baseDir || !is_dir($baseDir)) {
-            throw new Exception("The target directory [src/database/data] could not be resolved on disk.");
+            throw new Exception(__('classification::texts.svc_directory_not_resolved'));
         }
 
         $paths = [

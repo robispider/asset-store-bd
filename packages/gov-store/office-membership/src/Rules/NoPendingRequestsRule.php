@@ -8,7 +8,7 @@ use GovStore\OfficeMembership\Services\ClearanceResult;
 
 class NoPendingRequestsRule implements IClearanceRule
 {
-    public function getName(): string { return 'Pending Service Requests'; }
+    public function getName(): string { return __('office_membership::member.rule_pending_requests_name'); }
 
     public function check(User $user, int $locationId): ClearanceResult
     {
@@ -23,9 +23,9 @@ class NoPendingRequestsRule implements IClearanceRule
             ->count();
 
         if ($pendingCount > 0) {
-            return new ClearanceResult(false, "You have {$pendingCount} active service request(s) in progress. Please cancel them or wait for fulfillment.");
+            return new ClearanceResult(false, __('office_membership::member.rule_requests_active', ['count' => $pendingCount]));
         }
 
-        return new ClearanceResult(true, "All service requests completed.");
+        return new ClearanceResult(true, __('office_membership::member.rule_requests_completed'));
     }
 }

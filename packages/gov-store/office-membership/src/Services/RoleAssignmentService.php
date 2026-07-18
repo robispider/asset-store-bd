@@ -14,7 +14,7 @@ class RoleAssignmentService
     public function proposeTransfer(int $locationId, string $roleType, int $fromUserId, int $toUserId): RoleAssignment
     {
         if ($fromUserId === $toUserId) {
-            throw new Exception("You cannot delegate a role to yourself.");
+            throw new Exception(__('office_membership::member.assignment_self_delegate_error'));
         }
 
         // Prevent duplicate pending requests for the same role
@@ -25,7 +25,7 @@ class RoleAssignmentService
             ->first();
 
         if ($existing) {
-            throw new Exception("You already have a pending transfer request for this role.");
+            throw new Exception(__('office_membership::member.assignment_pending_exists'));
         }
 
         return RoleAssignment::create([
@@ -67,7 +67,7 @@ class RoleAssignmentService
                 'performed_by' => $userId,
                 'event_type' => 'roles_configured',
                 'details' => [
-                    'message' => "Role Handshake: Accepted {$roleType} from user ID {$assignment->assigned_by_user_id}"
+                    'message' => __('office_membership::member.assignment_audit_message', ['role' => $roleType, 'userId' => $assignment->assigned_by_user_id])
                 ]
             ]);
         });

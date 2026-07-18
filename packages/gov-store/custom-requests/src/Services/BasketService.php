@@ -58,7 +58,7 @@ class BasketService
     public function updateItemQty(int $userId, int $itemId, int $qty): DraftBasket
     {
         if ($qty < 1) {
-            throw new Exception("Quantity must be at least 1.");
+            throw new Exception(__('requestlabels::requests.basketservice_exception_qty_minimum'));
         }
 
         $basket = DraftBasket::where('user_id', $userId)
@@ -87,10 +87,10 @@ class BasketService
     public function submitBasket($userId, array $metadata): array
     {
         $draftBasket = $this->getOrCreateDraftBasket($userId);
-        if ($draftBasket->items()->count() === 0) throw new Exception("You cannot submit an empty service request basket.");
+        if ($draftBasket->items()->count() === 0) throw new Exception(__('requestlabels::requests.basketservice_exception_empty_basket'));
 
         $requester = User::findOrFail($userId);
-        if (!$requester->location_id) throw new Exception("Your user account does not have an assigned office location.");
+        if (!$requester->location_id) throw new Exception(__('requestlabels::requests.basketservice_exception_no_office_location'));
 
         $policyService = app(PolicyService::class);
         $draftItems = $draftBasket->items()->get();
@@ -105,7 +105,7 @@ class BasketService
         $hasApprovers = OfficeResponsibility::where('location_id', $requester->location_id)->whereIn('role_slug', ['primary_approver', 'final_approver'])->exists();
         foreach (array_keys($groupedItems) as $policy) {
             if ($policy !== 'AUTO_APPROVE' && !$hasApprovers) {
-                throw new Exception("Your office location does not have approval roles configured. Please contact an administrator.");
+                throw new Exception(__('requestlabels::requests.basketservice_exception_no_approval_roles'));
             }
         }
 

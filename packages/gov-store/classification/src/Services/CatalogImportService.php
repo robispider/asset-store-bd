@@ -20,7 +20,7 @@ class CatalogImportService
         $synsPath  = $baseDir . '/compiled_synonyms.csv';
 
         if (!$baseDir || !file_exists($nodesPath)) {
-            throw new Exception("Pre-compiled nodes.csv missing at: " . ($nodesPath ?: 'invalid path'));
+            throw new Exception(__('classification::texts.svc_precompiled_nodes_missing') . ($nodesPath ?: 'invalid path'));
         }
 
         $startTime = microtime(true);
@@ -172,7 +172,7 @@ class CatalogImportService
 
         // Required headers
         if (!isset($idx['Code'], $idx['Title'], $idx['Key'])) {
-            throw new Exception("Tree CSV is missing one of the required headers: 'Key', 'Code', or 'Title'.");
+            throw new Exception(__('classification::texts.svc_tree_csv_missing_headers'));
         }
 
         // Pass 1: Load flat nodes into memory

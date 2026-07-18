@@ -13,7 +13,7 @@ class RoleHandshakeService
     public function proposeHandshake(int $locationId, string $roleSlug, int $fromUserId, int $toUserId): RoleHandshake
     {
         if ($fromUserId === $toUserId) {
-            throw new Exception("You cannot delegate a role to yourself.");
+            throw new Exception(__('office_membership::member.handshake_self_delegate_error'));
         }
 
         // Check active responsibilities (New Pivot uses role_slug)
@@ -23,7 +23,7 @@ class RoleHandshakeService
             ->exists();
 
         if (!$holdsRole) {
-            throw new Exception("You cannot hand over a responsibility that you do not hold.");
+            throw new Exception(__('office_membership::member.handshake_no_role_error'));
         }
 
         // ANTI-CORRUPTION LAYER: Map domain $roleSlug to legacy DB 'role_type'
@@ -34,7 +34,7 @@ class RoleHandshakeService
             ->first();
 
         if ($existing) {
-            throw new Exception("You already have a pending handover proposal in flight for this role.");
+            throw new Exception(__('office_membership::member.handshake_pending_exists'));
         }
 
         return RoleHandshake::create([

@@ -1,12 +1,12 @@
 <table class="table table-striped table-bordered">
     <thead>
         <tr style="background-color: #f4f4f4;">
-            <th>Date & Time</th>
-            <th>Reference Document</th>
-            <th>Operator</th>
-            <th class="text-center text-success">IN (+)</th>
-            <th class="text-center text-danger">OUT (-)</th>
-            <th class="text-center" style="background-color: #e8e8e8;">Running Balance</th>
+            <th>{{ __('storeops::storeops.date_time') }}</th>
+            <th>{{ __('storeops::storeops.reference_document') }}</th>
+            <th>{{ __('storeops::storeops.operator') }}</th>
+            <th class="text-center text-success">{{ __('storeops::storeops.in_column') }}</th>
+            <th class="text-center text-danger">{{ __('storeops::storeops.out_column') }}</th>
+            <th class="text-center" style="background-color: #e8e8e8;">{{ __('storeops::storeops.running_balance') }}</th>
         </tr>
     </thead>
     <tbody>
@@ -17,10 +17,10 @@
                     @if($movement->document)
                         <strong>{{ $movement->document->receipt_no ?? $movement->document->issue_no ?? $movement->document->adjustment_no }}</strong>
                     @else
-                        System Initialization
+                        {{ __('storeops::storeops.system_initialization') }}
                     @endif
                 </td>
-                <td>{{ $movement->creator->first_name ?? 'System' }}</td>
+                <td>{{ $movement->creator->first_name ?? __('storeops::storeops.system_initialization') }}</td>
                 
                 <td class="text-center text-success">
                     {{ $movement->movement_type === 'IN' ? $movement->quantity : '-' }}
@@ -34,7 +34,7 @@
             </tr>
         @empty
             <tr>
-                <td colspan="6" class="text-center text-muted">No inventory movements recorded yet.</td>
+                <td colspan="6" class="text-center text-muted">{{ __('storeops::storeops.no_movements_recorded') }}</td>
             </tr>
         @endforelse
     </tbody>

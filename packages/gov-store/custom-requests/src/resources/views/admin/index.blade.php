@@ -1,6 +1,6 @@
 @extends('layouts/default')
 
-@section('title', 'Gov Approvals Dashboard')
+@section('title', __('requestlabels::requests.admin_index_title'))
 
 @section('content')
 <div class="row">
@@ -8,7 +8,7 @@
     <div class="col-md-12">
         <div class="box box-warning">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-hourglass-half"></i> Requests Awaiting Review</h3>
+                <h3 class="box-title"><i class="fas fa-hourglass-half"></i> {{ __('requestlabels::requests.admin_index_header_pending') }}</h3>
             </div>
             <div class="box-body table-responsive">
                 <table class="table table-striped table-hover">
@@ -40,7 +40,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center" style="padding: 30px;">No pending requests awaiting approval.</td>
+                                <td colspan="7" class="text-center" style="padding: 30px;">{{ __('requestlabels::requests.admin_index_empty_pending') }}</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -55,7 +55,7 @@
     <div class="col-md-12">
         <div class="box box-default">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-history"></i> Recently Processed Requests</h3>
+                <h3 class="box-title"><i class="fas fa-history"></i> {{ __('requestlabels::requests.admin_index_header_processed') }}</h3>
             </div>
             <div class="box-body table-responsive">
                 <table class="table table-striped">
@@ -74,13 +74,13 @@
                                 <td>{{ $req->requester->present()->fullName ?? 'Unknown' }}</td>
                                <td>
                                     @if($req->approval_status === 'approved')
-                                        <span class="label label-success">Approved</span>
+                                        <span class="label label-success">{{ __('requestlabels::requests.admin_index_status_approved') }}</span>
                                     @elseif($req->approval_status === 'partially_approved')
-                                        <span class="label bg-purple">Partially Approved</span>
+                                        <span class="label bg-purple">{{ __('requestlabels::requests.admin_index_status_partially_approved') }}</span>
                                     @elseif($req->approval_status === 'closed')
-                                        <span class="label label-success"><i class="fas fa-check-double"></i> Closed / Fulfilled</span>
+                                        <span class="label label-success"><i class="fas fa-check-double"></i> {{ __('requestlabels::requests.admin_index_status_closed_fulfilled') }}</span>
                                     @elseif($req->approval_status === 'rejected')
-                                        <span class="label label-danger">Rejected</span>
+                                        <span class="label label-danger">{{ __('requestlabels::requests.admin_index_status_rejected') }}</span>
                                     @else
                                         <span class="label label-info">{{ ucfirst($req->approval_status) }}</span>
                                     @endif
@@ -89,7 +89,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="text-center" style="padding: 20px;">No processed history available.</td>
+                                <td colspan="4" class="text-center" style="padding: 20px;">{{ __('requestlabels::requests.admin_index_empty_processed') }}</td>
                             </tr>
                         @endforelse
                     </tbody>

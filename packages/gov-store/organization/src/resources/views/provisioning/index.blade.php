@@ -1,6 +1,6 @@
 @extends('layouts/default')
 
-@section('title', 'Government Office Registry')
+@section('title', __('organization_labels::orglabel.registry_title'))
 
 @section('content')
 
@@ -24,7 +24,7 @@
         <div class="small-box bg-blue">
             <div class="inner">
                 <h3>{{ $totalOfficesCount ?? 0 }}</h3>
-                <p>Total Registered Offices</p>
+                <p>{{ __('organization_labels::orglabel.registry_metric_total_offices') }}</p>
             </div>
             <div class="icon"><i class="fas fa-building"></i></div>
         </div>
@@ -34,7 +34,7 @@
         <div class="small-box bg-green">
             <div class="inner">
                 <h3>{{ $operationalCount ?? 0 }}</h3>
-                <p>Operational Offices</p>
+                <p>{{ __('organization_labels::orglabel.registry_metric_operational') }}</p>
             </div>
             <div class="icon"><i class="fas fa-check-double"></i></div>
         </div>
@@ -44,7 +44,7 @@
         <div class="small-box bg-yellow">
             <div class="inner">
                 <h3>{{ $pendingCount ?? 0 }}</h3>
-                <p>Configuration Pending</p>
+                <p>{{ __('organization_labels::orglabel.registry_metric_pending') }}</p>
             </div>
             <div class="icon"><i class="fas fa-hourglass-half"></i></div>
         </div>
@@ -54,7 +54,7 @@
         <div class="small-box bg-purple">
             <div class="inner">
                 <h3>{{ $ministriesCount ?? 0 }}</h3>
-                <p>Ministries Engaged</p>
+                <p>{{ __('organization_labels::orglabel.registry_metric_ministries') }}</p>
             </div>
             <div class="icon"><i class="fas fa-university"></i></div>
         </div>
@@ -69,15 +69,15 @@
                 
                 <!-- Search term -->
                 <div class="form-group" style="margin-right: 15px;">
-                    <label for="search" style="margin-right: 5px;"><i class="fas fa-search"></i> Search:</label>
-                    <input type="text" name="search" id="search" class="form-control input-sm" placeholder="Office name or admin..." value="{{ request('search') }}">
+                    <label for="search" style="margin-right: 5px;"><i class="fas fa-search"></i> {{ __('organization_labels::orglabel.registry_search_label') }}</label>
+                    <input type="text" name="search" id="search" class="form-control input-sm" placeholder="{{ __('organization_labels::orglabel.registry_search_placeholder') }}" value="{{ request('search') }}">
                 </div>
 
                 <!-- Ministry Filter -->
                 <div class="form-group" style="margin-right: 15px;">
-                    <label for="ministry_id" style="margin-right: 5px;"><i class="fas fa-university"></i> Ministry:</label>
+                    <label for="ministry_id" style="margin-right: 5px;"><i class="fas fa-university"></i> {{ __('organization_labels::orglabel.registry_ministry_label') }}</label>
                     <select name="ministry_id" id="ministry_id" class="form-control input-sm select2" style="min-width: 180px;">
-                        <option value="">-- All Ministries --</option>
+                        <option value="">{{ __('organization_labels::orglabel.registry_all_ministries') }}</option>
                         @foreach($companies ?? [] as $company)
                             <option value="{{ $company->id }}" {{ request('ministry_id') == $company->id ? 'selected' : '' }}>
                                 {{ $company->name }}
@@ -88,9 +88,9 @@
 
                 <!-- District Filter -->
                 <div class="form-group" style="margin-right: 15px;">
-                    <label for="district_id" style="margin-right: 5px;"><i class="fas fa-map-marker-alt"></i> District:</label>
+                    <label for="district_id" style="margin-right: 5px;"><i class="fas fa-map-marker-alt"></i> {{ __('organization_labels::orglabel.registry_district_label') }}</label>
                     <select name="district_id" id="district_id" class="form-control input-sm select2" style="min-width: 180px;">
-                        <option value="">-- All Districts --</option>
+                        <option value="">{{ __('organization_labels::orglabel.registry_all_districts') }}</option>
                         @foreach($districts ?? [] as $dist)
                             <option value="{{ $dist->GeoAreaId }}" {{ request('district_id') == $dist->GeoAreaId ? 'selected' : '' }}>
                                 {{ $dist->en_name }} ({{ $dist->bn_name }})
@@ -101,25 +101,25 @@
 
                 <!-- Status Filter -->
                 <div class="form-group" style="margin-right: 15px;">
-                    <label for="status" style="margin-right: 5px;"><i class="fas fa-tasks"></i> Status:</label>
+                    <label for="status" style="margin-right: 5px;"><i class="fas fa-tasks"></i> {{ __('organization_labels::orglabel.registry_status_label') }}</label>
                     <select name="status" id="status" class="form-control input-sm">
-                        <option value="">-- All Statuses --</option>
-                        <option value="operational" {{ request('status') == 'operational' ? 'selected' : '' }}>Operational</option>
-                        <option value="configured" {{ request('status') == 'configured' ? 'selected' : '' }}>Configured</option>
-                        <option value="provisioned" {{ request('status') == 'provisioned' ? 'selected' : '' }}>Provisioned (Pending)</option>
+                        <option value="">{{ __('organization_labels::orglabel.registry_all_statuses') }}</option>
+                        <option value="operational" {{ request('status') == 'operational' ? 'selected' : '' }}>{{ __('organization_labels::orglabel.registry_status_operational') }}</option>
+                        <option value="configured" {{ request('status') == 'configured' ? 'selected' : '' }}>{{ __('organization_labels::orglabel.registry_status_configured') }}</option>
+                        <option value="provisioned" {{ request('status') == 'provisioned' ? 'selected' : '' }}>{{ __('organization_labels::orglabel.registry_status_provisioned') }}</option>
                     </select>
                 </div>
 
-                <button type="submit" class="btn btn-sm btn-default"><i class="fas fa-filter"></i> Filter</button>
-                <a href="{{ route('gov.org.provisioning.index') }}" class="btn btn-sm btn-link">Reset</a>
+                <button type="submit" class="btn btn-sm btn-default"><i class="fas fa-filter"></i> {{ __('organization_labels::orglabel.registry_filter_button') }}</button>
+                <a href="{{ route('gov.org.provisioning.index') }}" class="btn btn-sm btn-link">{{ __('organization_labels::orglabel.registry_reset_button') }}</a>
 
                 <!-- DUAL ONBOARD & CREATE TRIGGERS -->
                 <div class="pull-right">
                     <a href="{{ route('gov.org.provisioning.onboard') }}" class="btn btn-sm btn-default" style="margin-right: 5px;">
-                        <i class="fas fa-plug text-success"></i> Onboard Existing Location
+                        <i class="fas fa-plug text-success"></i> {{ __('organization_labels::orglabel.registry_onboard_button') }}
                     </a>
                     <a href="{{ route('gov.org.provisioning.create') }}" class="btn btn-sm btn-primary">
-                        <i class="fas fa-plus"></i> Provision New Office
+                        <i class="fas fa-plus"></i> {{ __('organization_labels::orglabel.registry_create_button') }}
                     </a>
                 </div>
             </form>
@@ -132,18 +132,18 @@
     <div class="col-md-12">
         <div class="box box-default">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-sitemap"></i> Registered Government Offices ({{ isset($offices) ? $offices->count() : 0 }})</h3>
+                <h3 class="box-title"><i class="fas fa-sitemap"></i> {{ __('organization_labels::orglabel.registry_table_offices_count') }} ({{ isset($offices) ? $offices->count() : 0 }})</h3>
             </div>
             <div class="box-body table-responsive">
                 <table class="table table-striped table-hover registry-table">
                     <thead>
                         <tr>
-                            <th>Office Building</th>
-                            <th>Administrative Territory</th>
-                            <th>Owning Ministry</th>
-                            <th>Office Administrator</th>
-                            <th>Readiness Status</th>
-                            <th style="width: 120px;">Actions</th>
+                            <th>{{ __('organization_labels::orglabel.registry_col_office_building') }}</th>
+                            <th>{{ __('organization_labels::orglabel.registry_col_administrative_territory') }}</th>
+                            <th>{{ __('organization_labels::orglabel.registry_col_owning_ministry') }}</th>
+                            <th>{{ __('organization_labels::orglabel.registry_col_office_administrator') }}</th>
+                            <th>{{ __('organization_labels::orglabel.registry_col_readiness_status') }}</th>
+                            <th style="width: 120px;">{{ __('organization_labels::orglabel.registry_col_actions') }}</th>
                         </tr>
                     </thead>
                    <tbody>
@@ -151,7 +151,7 @@
                             <tr>
                                 <td>
                                     <strong>{{ $office->name }}</strong><br>
-                                    <small class="text-muted"><i class="fas fa-sitemap"></i> Parent: {{ $office->parentName }}</small>
+                                    <small class="text-muted"><i class="fas fa-sitemap"></i> {{ __('organization_labels::orglabel.registry_parent_label') }} {{ $office->parentName }}</small>
                                 </td>
                                 
                                 <td>
@@ -170,18 +170,18 @@
                                 <td>
                                     <div class="status-badge-container">
                                         @if($office->status === 'operational')
-                                            <span class="label label-success"><i class="fas fa-check-double"></i> Operational</span>
+                                            <span class="label label-success"><i class="fas fa-check-double"></i> {{ __('organization_labels::orglabel.registry_status_operational_label') }}</span>
                                         @elseif($office->status === 'configured')
-                                            <span class="label label-info"><i class="fas fa-sliders-h"></i> Configured</span>
+                                            <span class="label label-info"><i class="fas fa-sliders-h"></i> {{ __('organization_labels::orglabel.registry_status_configured_label') }}</span>
                                         @elseif($office->status === 'provisioned')
-                                            <span class="label label-warning"><i class="fas fa-building"></i> Provisioned</span>
+                                            <span class="label label-warning"><i class="fas fa-building"></i> {{ __('organization_labels::orglabel.registry_status_provisioned_label') }}</span>
                                             <small class="text-muted" style="display:block; margin-top: 3px;">
                                                 Needs: 
                                                 <span class="{{ $office->hasPrimary ? 'text-success' : 'text-danger' }}">{{ $office->hasPrimary ? '✓' : '✗' }} Primary</span> &bull; 
                                                 <span class="{{ $office->hasStorekeeper ? 'text-success' : 'text-danger' }}">{{ $office->hasStorekeeper ? '✓' : '✗' }} Storekeeper</span>
                                             </small>
                                         @else
-                                            <span class="label label-danger">Unconfigured</span>
+                                            <span class="label label-danger">{{ __('organization_labels::orglabel.registry_status_unconfigured') }}</span>
                                         @endif
                                     </div>
                                 </td>
@@ -204,7 +204,7 @@
                             <tr>
                                 <td colspan="6" class="text-center text-muted" style="padding: 40px;">
                                     <i class="fas fa-building fa-2x"></i>
-                                    <p style="margin-top: 10px;">No government offices found matching your criteria.</p>
+                                    <p style="margin-top: 10px;">{{ __('organization_labels::orglabel.registry_empty_state') }}</p>
                                 </td>
                             </tr>
                         @endforelse
