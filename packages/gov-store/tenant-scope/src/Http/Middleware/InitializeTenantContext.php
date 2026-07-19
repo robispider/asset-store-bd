@@ -28,13 +28,6 @@ class InitializeTenantContext
         $this->permissionAdapter = $permissionAdapter;
     }
 
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
-     */
     public function handle($request, Closure $next)
     {
         $context = app(TenantContext::class);
@@ -56,7 +49,7 @@ class InitializeTenantContext
         $context->isActive = true;
         $context->isGlobal = false;
 
-        // 3. Resolve Active Working Context (From Session Membership ID)
+        // 3. Resolve Active Working Context
         $workingLocId = null;
         if ($membershipId = session('gov_working_membership_id')) {
             $membership = OfficeMembership::with('location')->find($membershipId);
@@ -68,21 +61,26 @@ class InitializeTenantContext
             }
         }
         
-        // Fallback for floating/newly created users
+        // Fallback for native/new users
         if (!$workingLocId) {
             $context->locationId = $user->location_id;
             $context->companyId = $user->company_id;
             $workingLocId = $user->location_id;
         }
 
-        // 4. Pre-Compute Hierarchy (Allowed Locations for Scopes)
+        // 4. Pre-Compute Hierarchy (Allowed Locations & Companies)
         if ($user->hasAccess('admin') && $user->company_id) {
-            // Company Admin: Gets all locations in their Ministry
+            
+            // Company Admin: Gets all locations in their Ministry. Sees ALL Companies.
             $context->allowedLocationIds = Location::withoutGlobalScopes()
                 ->where('company_id', $user->company_id)
                 ->pluck('id')->toArray();
+                
+            $context->allowedCompanyIds = null; // Null means "allowed to see all companies"
+
         } elseif ($jurisdiction = IctJurisdiction::with('geoArea')->where('user_id', $user->id)->first()) {
-            // ICT Officer: Gets all locations in their Geographic Tree
+            
+            // ICT Officer: Gets all locations within their Geographic Tree. Sees ALL Companies.
             if ($jurisdiction->geoArea) {
                 $context->allowedLocationIds = LocationProfile::withoutGlobalScopes()
                     ->whereIn('geo_area_id', function($q) use ($jurisdiction) {
@@ -92,21 +90,23 @@ class InitializeTenantContext
             } else {
                 $context->allowedLocationIds = [];
             }
+            
+            $context->allowedCompanyIds = null; // Null means "allowed to see all companies"
+
         } else {
-            // Standard Employee: Only sees their active working context
+            // Standard Employee/Storekeeper/Approver: Only sees their active working context
             $context->allowedLocationIds = $workingLocId ? [$workingLocId] : [];
+            
+            // Restrict companies to their active working session only. If standalone, array is empty.
+            $context->allowedCompanyIds = $context->companyId ? [$context->companyId] : [];
         }
 
-        // =========================================================================
-        // 5. RESOLVE RESPONSIBILITY & ADAPT PERMISSIONS (The Phase 4 Hook)
-        // =========================================================================
+        // 5. RESOLVE RESPONSIBILITY & ADAPT PERMISSIONS
         $roleSlug = $this->assignmentResolver->resolveActiveRole($user->id, $context->locationId);
         $permissionSet = $this->capabilityResolver->resolveSchema($roleSlug);
 
-        // Cache the calculated permission set inside the request-scoped context
         $context->effectivePermissions = $permissionSet;
 
-        // Translate and inject the capability set into Snipe-IT's native model memory space
         $this->permissionAdapter->adaptAndInject($user, $permissionSet);
 
         return $next($request);

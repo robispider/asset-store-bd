@@ -10,6 +10,7 @@ class TenantContext
     public bool $isGlobal = false; // True for Superadmins
     
     public ?array $allowedLocationIds = null; // Pre-computed hierarchy bounds for viewing users/offices
+    public ?array $allowedCompanyIds = null;  // Pre-computed bounds for viewing/selecting Companies
     
     public ?int $membershipId = null;
     public ?int $companyId = null;

@@ -31,7 +31,7 @@ class TenantScope implements Scope
         $table = $model->getTable();
         $keyName = $table . '.' . $model->getKeyName();
 
-        // --- LOCATION HIERARCHY SCOPING (Strict physical boundary constraint) ---
+        // --- LOCATION HIERARCHY SCOPING ---
         if ($this->referenceType === 'locations') {
             if (is_array($context->allowedLocationIds)) {
                 if (empty($context->allowedLocationIds)) {
@@ -43,24 +43,40 @@ class TenantScope implements Scope
             return;
         }
 
+        
+   // --- COMPANY (MINISTRY) HIERARCHY SCOPING ---
+        if ($this->referenceType === 'companies') {
+            // If allowedCompanyIds is null, it means the user (e.g. ICT Officer) is allowed to see all companies.
+            if ($context->allowedCompanyIds === null) {
+                return; 
+            }
+            
+            // If it is an array, they are restricted.
+            if (is_array($context->allowedCompanyIds)) {
+                if (empty($context->allowedCompanyIds)) {
+                    $builder->whereRaw('1 = 0'); // Standalone users see no companies
+                } else {
+                    $builder->whereIn($table . '.id', $context->allowedCompanyIds);
+                }
+            }
+            return;
+        }
+
         // --- REFERENCE CATALOG SCOPING (Categories, Models, Suppliers, etc.) ---
         $referenceSingular = Str::singular($this->referenceType);
 
-        // Intelligently enforce Isolation without relying on external config tables
         $builder->where(function ($query) use ($context, $referenceSingular, $keyName) {
             
-            // CONDITION A: The item is explicitly adopted by the user's active company or location
+            // CONDITION A: Item explicitly adopted by active context
             $query->whereIn($keyName, function ($subQuery) use ($context, $referenceSingular) {
                 $subQuery->select('reference_id')
                     ->from('gov_tenant_scope_mappings')
                     ->where('reference_type', $referenceSingular)
-                    ->where('is_active', 1) // Must be operationally active to appear in dropdowns
+                    ->where('is_active', 1) 
                     ->where(function ($q) use ($context) {
-                        // Match Company Scope
                         if ($context->companyId > 0) {
                             $q->where('scope_type', 'company')->where('scope_id', $context->companyId);
                         }
-                        // Match Location Scope (For standalone offices)
                         if ($context->locationId > 0) {
                             $q->orWhere(function ($sq) use ($context) {
                                 $sq->where('scope_type', 'location')->where('scope_id', $context->locationId);
@@ -68,10 +84,8 @@ class TenantScope implements Scope
                         }
                     });
             })
-            // CONDITION B: The item is completely unadopted by ANYONE (Shared Government Standard)
+            // CONDITION B: Shared Government Standard (Unadopted completely)
             ->orWhereNotIn($keyName, function ($subQuery) use ($referenceSingular) {
-                // By selecting ALL rows (active or archived), we guarantee that if an item 
-                // belongs to another organization, it is strictly hidden from this user.
                 $subQuery->select('reference_id')
                     ->from('gov_tenant_scope_mappings')
                     ->where('reference_type', $referenceSingular);

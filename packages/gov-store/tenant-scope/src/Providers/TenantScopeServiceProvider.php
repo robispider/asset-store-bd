@@ -69,6 +69,7 @@ class TenantScopeServiceProvider extends ServiceProvider
             'suppliers'     => \App\Models\Supplier::class,
             'manufacturers' => \App\Models\Manufacturer::class,
             'locations'     => \App\Models\Location::class,
+             'companies'     => \App\Models\Company::class,
         ];
 
         // 3. Register Custom Hierarchical User Scope
