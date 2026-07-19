@@ -189,12 +189,12 @@ class ProvisioningController extends Controller
         ]);
 
         try {
-            $data = $request->all();
+             $data = $request->all();
             $geoArea = $geoService->getById((int)$data['geo_area_id']);
             
             if ($geoArea) {
-                // Resolved parents names using the decoupled Service API
-                $geoNames = $geoService->resolveParentNames($geoArea->hid); // BOUNDARY CORRECTED
+                // Safely resolve parents names, protecting against null `hid` values
+                $geoNames = $geoService->resolveParentNames($geoArea->hid ?? '');
                 $data['city'] = $geoNames['city'];
                 $data['state'] = $geoNames['state'];
             }
