@@ -4,11 +4,9 @@ namespace GovStore\Organization\Services;
 
 use App\Models\Location;
 use GovStore\Organization\Models\LocationProfile;
-use GovStore\Organization\Models\LocationRole;
 use GovStore\Organization\Models\IctJurisdiction;
 use GovStore\Organization\Models\OrganizationActivityLog;
 use GovStore\GeoAreas\Services\GeoAreaService;
-use GovStore\GeoAreas\Models\GeoArea;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
@@ -16,7 +14,6 @@ class OfficeProvisioningService
 {
     /**
      * Creates a core Snipe-IT Location and maps its mandatory geographic profile.
-     * Fully defensive: uses null-coalescing to prevent PHP 8.2+ Undefined Array Key errors.
      */
     public function provisionOffice(array $data, int $executorId): Location
     {
@@ -25,7 +22,7 @@ class OfficeProvisioningService
 
         $geoAreaId = (int)($data['geo_area_id'] ?? 0);
 
-        // 1. SECURITY BOUNDARY CHECK (Enforce geographical boundary for non-superusers)
+        // 1. SECURITY BOUNDARY CHECK
         if (!$user->isSuperUser() && !$user->hasAccess('admin')) {
             $jurisdiction = IctJurisdiction::where('user_id', $user->id)->firstOrFail();
             if (!$geoService->isWithinBoundary($jurisdiction->geo_area_id, $geoAreaId)) {
@@ -55,28 +52,33 @@ class OfficeProvisioningService
             if (!empty($existingId)) {
                 $location = Location::findOrFail($existingId);
                 if (!empty($name)) {
-                    $location->update(['name' => $name]);
+                    $location->name = $name;
                 }
             } else {
-                $location = Location::create([
-                    'name' => $name,
-                    'parent_id' => $data['parent_id'] ?? null,
-                    'company_id' => $data['company_id'] ?? null,
-                    'city' => $data['city'] ?? null,
-                    'state' => $data['state'] ?? null,
-                    'country' => 'Bangladesh',
-                ]);
+                $location = new Location();
+                $location->name = $name;
             }
 
-            // Sync structural attributes on change safely
-            $location->update([
-                'parent_id'  => $data['parent_id'] ?? $location->parent_id,
-                'company_id' => $data['company_id'] ?? $location->company_id,
-                'city'       => $data['city'] ?? $location->city,
-                'state'      => $data['state'] ?? $location->state,
-            ]);
+            // Sync structural attributes
+            $location->parent_id  = $data['parent_id'] ?? $location->parent_id;
+            $location->company_id = $data['company_id'] ?? $location->company_id;
+            $location->city       = $data['city'] ?? $location->city;
+            $location->state      = $data['state'] ?? $location->state;
+            $location->country    = 'Bangladesh';
+            $location->currency   = 'BDT'; // Default currency required by Snipe-IT
 
-            // 4. Create active Location Profile
+            // Attempt to save the core Snipe-IT Location
+            if (!$location->save()) {
+                // Extract Snipe-IT's internal Watson Validation errors
+                $errors = $location->getErrors() ? $location->getErrors()->first() : 'Unknown Snipe-IT validation error.';
+                throw new Exception("Failed to save core Snipe-IT Location: " . $errors);
+            }
+
+            if (!$location->id) {
+                throw new Exception("Critical Error: Location saved but database returned null ID.");
+            }
+
+            // 4. Create active Location Profile safely using the verified ID
             LocationProfile::create([
                 'location_id' => $location->id,
                 'geo_area_id' => $geoAreaId,
@@ -84,8 +86,8 @@ class OfficeProvisioningService
                 'lifecycle_status' => 'provisioned',
             ]);
 
-            // 5. Instantiate Roles
-            LocationRole::updateOrCreate(['location_id' => $location->id]);
+            // 5. DEPRECATED TABLE REMOVED: LocationRole::updateOrCreate(...) was removed.
+            // Office roles are now handled exclusively by OfficeResponsibility in the membership package.
 
             // 6. Log change
             OrganizationActivityLog::create([

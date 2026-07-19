@@ -218,7 +218,7 @@ function fontSelectionScript() {
             },
             cache: true
         },
-        placeholder: "Search Division, District, Upazila, or Union..."
+        placeholder: "{{ __('organization_labels::orglabel.create_placeholder_geo_area') }}"
     });
 
     // 2. Live Duplicate Awareness Checking
