@@ -127,6 +127,17 @@ class ClassificationServiceProvider extends ServiceProvider
                 'permission' => 'admin',
                 'order'      => 60,
             ]);
+
+            // Import Catalog — positioned between Dashboard and Governance
+            $registry->register([
+                'id'         => 'gov-catalog-import',
+                'parent'     => 'gov-catalog',
+                'title'      => 'Import Catalog',
+                'icon'       => 'fas fa-upload text-green',
+                'route'      => 'gov.catalog.import',
+                'permission' => 'admin',
+                'order'      => 12,
+            ]);
         });
     }
 }
