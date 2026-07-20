@@ -84,7 +84,8 @@
     "gov-store/tenant-scope": "dev-master",
     "gov-store/office-membership": "dev-master",
     "gov-store/store-operations": "dev-master",
-    "gov-store/classification": "dev-master"
+    "gov-store/classification": "dev-master",
+    "gov-store/user-onboarding": "dev-master"
   },
   "suggest": {
     "ext-ldap": "*",
@@ -122,6 +123,7 @@
       "GovStore\\OfficeMembership\\": "packages/gov-store/office-membership/src/",
       "GovStore\\StoreOperations\\": "packages/gov-store/store-operations/src/",
       "GovStore\\Classification\\": "packages/gov-store/classification/src/",
+      "GovStore\\UserOnboarding\\": "packages/gov-store/user-onboarding/src/",
       "App\\": "app/",
       "Database\\Factories\\": "database/factories/",
       "Database\\Seeders\\": "database/seeders/"

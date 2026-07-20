@@ -442,9 +442,10 @@ return [
         GovStore\Organization\Providers\OrganizationServiceProvider::class,
         GovStore\GeoAreas\Providers\GeoAreasServiceProvider::class,
         GovStore\TenantScope\Providers\TenantScopeServiceProvider::class,
-                GovStore\OfficeMembership\Providers\OfficeMembershipServiceProvider::class,
+        GovStore\OfficeMembership\Providers\OfficeMembershipServiceProvider::class,
         GovStore\StoreOperations\Providers\StoreOperationsServiceProvider::class,
         GovStore\Classification\Providers\ClassificationServiceProvider::class,
+        GovStore\UserOnboarding\Providers\UserOnboardingServiceProvider::class,
 
     ],
 
