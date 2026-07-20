@@ -26,19 +26,6 @@ class MenuRegistry
 
     /**
      * Compiles the sorted, permission-filtered hierarchical tree.
-     *
-     * Authorization model (evaluated in order, OR logic across array items):
-     *  1. Superuser / admin     → bypass, always visible
-     *  2. 'storekeeper'         → role row in gov_office_responsibilities for active location
-     *  3. 'approver'            → primary_approver or final_approver row for active location
-     *  4. 'office_admin'        → office_admin_id on the LocationProfile for active location
-     *  5. any other string      → checked via effectivePermissions capability set
-     *
-     * The 'permission' key accepts either a single string or an array of qualifiers.
-     * Access is granted if the user satisfies ANY ONE of the listed qualifiers.
-     */
-    /**
-     * Compiles the sorted, permission-filtered hierarchical tree.
      */
     public function tree(): array
     {
@@ -77,7 +64,12 @@ class MenuRegistry
                             $hasAccess = \GovStore\Organization\Models\IctJurisdiction::where('user_id', $user->id)
                                 ->exists();
                         }
-                        // 5. Contextual Role-Slug Verification
+                        // 5. Company Admin Verification
+                        elseif ($perm === 'company_admin') {
+                            $hasAccess = \GovStore\Organization\Models\CompanyAdmin::where('user_id', $user->id)
+                                ->exists();
+                        }
+                        // 6. Contextual Role-Slug Verification
                         elseif (in_array($perm, ['storekeeper', 'approver'])) {
                             $roleSlugs = ($perm === 'approver')
                                 ? ['primary_approver', 'final_approver']
@@ -88,7 +80,7 @@ class MenuRegistry
                                 ->whereIn('role_slug', $roleSlugs)
                                 ->exists();
                         } 
-                        // 6. Standard Capability/Permission Verification
+                        // 7. Standard Capability/Permission Verification
                         else {
                             $hasAccess = $context->effectivePermissions
                                 && $context->effectivePermissions->has($perm);

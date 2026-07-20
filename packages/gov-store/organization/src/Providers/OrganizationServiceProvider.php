@@ -10,6 +10,10 @@ use GovStore\Organization\Models\IctJurisdiction;
 use GovStore\Organization\Observers\IctJurisdictionObserver;
 use GovStore\TenantScope\Navigation\MenuRegistry;
 
+use GovStore\Organization\Models\CompanyAdmin;
+use GovStore\Organization\Observers\CompanyAdminObserver;
+
+
 class OrganizationServiceProvider extends ServiceProvider
 {
     public function boot()
@@ -19,7 +23,10 @@ class OrganizationServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'govorg');
 
+        
+
         IctJurisdiction::observe(IctJurisdictionObserver::class);
+        CompanyAdmin::observe(CompanyAdminObserver::class);
 
         Location::resolveRelationUsing('profile', function ($locationModel) {
             return $locationModel->hasOne(LocationProfile::class, 'location_id', 'id');
@@ -33,16 +40,17 @@ class OrganizationServiceProvider extends ServiceProvider
         $this->registerNavigationMenus();
     }
 
-    protected function registerNavigationMenus(): void
+   protected function registerNavigationMenus(): void
     {
         $registry = $this->app->make(MenuRegistry::class);
 
-        // 1. Root Folder: Office Provisioning (Visible if user is Admin, ICT Officer, or Office Admin)
+        // 1. Root Folder: Office Provisioning
         $registry->register([
             'id' => 'gov-org',
-            'title' => 'Office Provisioning',
+            'title' => __('organization_labels::orglabel.menu_provisioning_root'),
             'icon' => 'fas fa-sitemap fa-fw text-aqua',
-            'permission' => ['office_admin', 'ict_officer'], // Multi-role support
+            // Added company_admin so Ministry Administrators can see the provisioning folder
+            'permission' => ['office_admin', 'ict_officer', 'company_admin'],
             'order' => 50,
         ]);
 
@@ -50,10 +58,11 @@ class OrganizationServiceProvider extends ServiceProvider
         $registry->register([
             'id' => 'gov-org-registry',
             'parent' => 'gov-org',
-            'title' => 'Office Registry',
+            'title' => __('organization_labels::orglabel.menu_office_registry'),
             'icon' => 'fas fa-building fa-fw',
             'route' => 'gov.org.provisioning.index',
-            'permission' => 'ict_officer',
+            // Added company_admin so Ministry Administrators can oversee all offices in their bounds
+            'permission' => ['ict_officer', 'company_admin'],
             'order' => 10,
         ]);
 
@@ -61,7 +70,7 @@ class OrganizationServiceProvider extends ServiceProvider
         $registry->register([
             'id' => 'gov-org-jurisdictions',
             'parent' => 'gov-org',
-            'title' => 'ICT Jurisdictions',
+            'title' => __('organization_labels::orglabel.menu_ict_jurisdictions'),
             'icon' => 'fas fa-shield-alt fa-fw',
             'route' => 'gov.org.jurisdictions.index',
             'permission' => 'admin',
@@ -72,22 +81,34 @@ class OrganizationServiceProvider extends ServiceProvider
         $registry->register([
             'id' => 'gov-org-setup',
             'parent' => 'gov-org',
-            'title' => 'My Office Setup',
+            'title' => __('organization_labels::orglabel.menu_office_setup'),
             'icon' => 'fas fa-hotel fa-fw',
             'route' => 'gov.org.config.index',
+            // Keep this scoped to office_admin only (Company admins oversee, but local admins configure their own staff)
             'permission' => 'office_admin',
             'order' => 30,
         ]);
 
-        // 5. Government Directory Import Console (Superadmin only)
+        // 5. Government Directory
         $registry->register([
             'id' => 'gov-org-directory',
-            'parent' => 'gov-org', // Placed under the Office Provisioning folder
-            'title' => 'Government Directory',
-            'icon' => 'fas fa-cloud-download fa-fw text-green',
+            'parent' => 'gov-org',
+            'title' => __('organization_labels::orglabel.menu_gov_directory'),
+            'icon' => 'fas fa-cloud-download-alt fa-fw text-green',
             'route' => 'gov.org.directory.index',
-            'permission' => 'admin', // Superadmin only
+            'permission' => 'admin',
             'order' => 40,
+        ]);
+
+        // 6. Company Admins (Superadmin Only)
+        $registry->register([
+            'id' => 'gov-org-company-admins',
+            'parent' => 'gov-org',
+            'title' => __('organization_labels::orglabel.menu_company_admins'),
+            'icon' => 'fas fa-university fa-fw text-purple',
+            'route' => 'gov.org.company_admins.index',
+            'permission' => 'admin',
+            'order' => 25, 
         ]);
     }
 

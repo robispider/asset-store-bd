@@ -341,4 +341,39 @@ return [
     'waiting_contact_admin'                   => 'Contact your Office Administrator:',
     'waiting_return_dashboard'                => 'Return to Main Dashboard',
 
+    // ==========================================
+    // 19. Company Administrator Assignments
+    // ==========================================
+    
+    'company_admin_title' => 'Company Administrators',
+    'company_admin_assign_title' => 'Assign Ministry Administrator',
+    'company_admin_select_user' => 'Select Employee User',
+    'company_admin_help_user' => 'Select the employee account who will act as the Global Administrator for this Ministry.',
+    'company_admin_select_company' => 'Select Ministry / Department',
+    'company_admin_help_company' => 'This employee will be granted cross-regional administrative oversight over all offices, staff, and assets belonging to this specific Ministry.',
+    'company_admin_btn_save' => 'Assign Administrator',
+    'company_admin_list_title' => 'Active Ministry Administrators',
+    'company_admin_col_user' => 'Administrator Details',
+    'company_admin_col_company' => 'Assigned Ministry',
+    'company_admin_col_home_office' => 'Home Office Base',
+    'company_admin_col_action' => 'Action',
+    'company_admin_btn_revoke' => 'Revoke',
+    'company_admin_confirm_revoke' => 'Revoke organizational oversight privileges for this user?',
+    'company_admin_empty_state' => 'No Company Administrators mapped in the database yet.',
+    
+    // Controller Messages
+    'company_admin_unauthorized' => 'Unauthorized. Administrative assignments require superadministrator privileges.',
+    'company_admin_assigned_success' => 'Company Administrator successfully assigned.',
+    'company_admin_revoked_success' => 'Company Administrator privileges revoked.',
+
+    // ==========================================
+    // Sidebar / Menu Integration
+    // ==========================================
+    'menu_provisioning_root'   => 'Office Provisioning',
+    'menu_office_registry'     => 'Office Registry',
+    'menu_ict_jurisdictions'   => 'ICT Jurisdictions',
+    'menu_company_admins'      => 'Assign Company Admins',
+    'menu_office_setup'        => 'My Office Setup',
+    'menu_gov_directory'       => 'Government Directory',
+
 ];

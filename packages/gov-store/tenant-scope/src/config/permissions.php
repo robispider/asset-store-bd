@@ -17,6 +17,7 @@ return [
         'final_approver'   => 'workflow_operator',
         'office_admin'     => 'office_operations',
         'ict_officer'      => 'ict_operations',
+        'company_admin'    => 'company_operations', 
     ],
 
     /*
@@ -94,7 +95,44 @@ return [
             'customfields.view',
             'reports.view',
         ],
-        
+         // NEW: Organizational Overseer Capability Profile
+        'company_operations' => [
+            'office.provision',
+            'office.onboard',
+            'jurisdictions.manage',
+            // Custom Business Policy Keys
+            'office.view',
+            'reports.advanced',
+
+            // --- NATIVE SNIPE-IT ADMINISTRATIVE CONTROLS ---
+            'users.view',
+            'users.create',
+            'users.edit',
+            'users.files',
+            'locations.view',
+            'locations.create',
+            'locations.edit',
+            'locations.files',
+            'departments.view',
+            'departments.create',
+            'departments.edit',
+            'departments.files',
+            'companies.view',
+
+            // --- NATIVE SNIPE-IT READ-ONLY OVER INVENTORY & CATALOGS ---
+            // They can see and audit all assets across their Ministry but cannot physically issue stock
+            'assets.view',
+            'accessories.view',
+            'consumables.view',
+            'components.view',
+            'licenses.view',
+            'models.view',
+            'categories.view',
+            'suppliers.view',
+            'manufacturers.view',
+            'statuslabels.view',
+            'reports.view',
+        ],
         'workflow_operator' => [
             // Custom Business Policy Keys
             'requests.approve',

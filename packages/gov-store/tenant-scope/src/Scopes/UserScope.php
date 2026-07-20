@@ -11,7 +11,7 @@ class UserScope implements Scope
 {
     public function apply(Builder $builder, Model $model)
     {
-        // 1. Fail safely if context is not bound (e.g. CLI or pre-boot operations)
+        // 1. Fail safely if context is not bound
         if (!app()->bound(TenantContext::class)) {
             return;
         }
@@ -25,27 +25,26 @@ class UserScope implements Scope
 
         $table = $model->getTable();
 
-        // 3. Apply the pure, pre-computed hierarchical boundaries
+        // 3. The Pure Isolation Boundary with Bulletproof Self-Bypass
         if (is_array($context->allowedLocationIds)) {
-            
-            // If the array is explicitly empty, the user has zero permitted visibility
-            if (empty($context->allowedLocationIds)) {
-                $builder->whereRaw('1 = 0');
-            } else {
-                // Safely isolate the data to the allowed location bounds
-                $builder->where(function ($query) use ($table, $context) {
+            $builder->where(function ($query) use ($table, $context) {
+                
+                // Allow them to see users within their allowed hierarchy bounds
+                if (!empty($context->allowedLocationIds)) {
                     $query->whereIn($table . '.location_id', $context->allowedLocationIds);
-                    
-                    // =========================================================================
-                    // THE BULLETPROOF IDENTITY BYPASS:
-                    // Guaranteed fail-safe preventing login redirect loops. 
-                    // An authenticated user must ALWAYS be able to retrieve their own record.
-                    // =========================================================================
-                    if ($authId = auth()->id()) {
-                        $query->orWhere($table . '.id', $authId);
-                    }
-                });
-            }
+                } else {
+                    $query->whereRaw('1 = 0'); // Block all external users if no bounds exist
+                }
+
+                // =========================================================================
+                // THE BULLETPROOF IDENTITY BYPASS:
+                // Regardless of location mapping, a user MUST always be able to retrieve 
+                // their own row from the database to prevent login redirect loops.
+                // =========================================================================
+                if ($authId = auth()->id()) {
+                    $query->orWhere($table . '.id', $authId);
+                }
+            });
         }
     }
 }

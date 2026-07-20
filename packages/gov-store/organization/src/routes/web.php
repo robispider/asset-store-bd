@@ -6,6 +6,7 @@ use GovStore\Organization\Http\Controllers\OfficeHubController;
 use GovStore\Organization\Http\Controllers\ConfigurationController;
 use GovStore\Organization\Http\Controllers\OnboardLocationController;
 use GovStore\Organization\Http\Controllers\MinistryDirectoryController;
+use GovStore\Organization\Http\Controllers\CompanyAdminController;
 
 Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'gov-store/admin/organization'], function () {
     
@@ -43,4 +44,8 @@ Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'gov-store/admin/orga
 Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'gov-store/office'], function () {
     Route::get('/', [ConfigurationController::class, 'index'])->name('gov.org.config.index');
     Route::post('/save', [ConfigurationController::class, 'save'])->name('gov.org.config.save');
+
+    Route::get('/company-admins', [CompanyAdminController::class, 'index'])->name('gov.org.company_admins.index');
+Route::post('/company-admins/store', [CompanyAdminController::class, 'store'])->name('gov.org.company_admins.store');
+Route::post('/company-admins/delete/{id}', [CompanyAdminController::class, 'destroy'])->name('gov.org.company_admins.destroy');
 });
