@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 namespace GovStore\Classification\Http\Controllers;
 
