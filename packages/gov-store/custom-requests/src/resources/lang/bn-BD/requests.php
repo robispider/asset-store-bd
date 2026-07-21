@@ -265,4 +265,26 @@ return [
     'locations_select_no_final'         => '-- কোনো ফাইনাল অ্যাপ্রুভার নেই (কেবল লেভেল ১) --',
     'locations_select_storekeeper'      => '-- স্টোরকিপার বরাদ্দ করুন --',
     'locations_btn_save'                => 'সেভ করুন',
+
+// =========================================================================
+// Origin: basket/index.blade.php
+// Basket page UI strings
+// =========================================================================
+'basket_index_title'                           => 'আমার সার্ভিস বাস্কেট',
+'basket_index_header_draft_items'              => 'বাস্কেটে থাকা ড্রাফট আইটেম',
+'basket_index_empty_basket'                    => 'আপনার বাস্কেট খালি। আইটেম যোগ করতে ক্যাটালগ দেখুন।',
+'basket_index_btn_browse_catalog'              => 'ক্যাটালগ দেখুন',
+'basket_index_tooltip_asset_restricted'        => 'অ্যাসেট কেবল ১টি পরিমাণে অনুরোধ করা যাবে।',
+'basket_index_header_service_request_details'  => 'সার্ভিস রিকোয়েস্ট ডিটেইলস',
+'basket_index_label_request_type'              => 'রিকোয়েস্ট টাইপ',
+'basket_index_label_purpose'                   => 'উদ্দেশ্য',
+'basket_index_placeholder_purpose'             => 'এই রিকোয়েস্টের সংক্ষিপ্ত উদ্দেশ্য লিখুন',
+'basket_index_label_justification'             => 'যৌক্তিকতা',
+'basket_index_placeholder_justification'       => 'কেন এই আইটেমগুলো প্রয়োজন তার ব্যাখ্যা দিন...',
+'basket_index_label_required_by_date'          => 'প্রয়োজনীয় তারিখ',
+'basket_index_label_cost_center'               => 'কস্ট সেন্টার',
+'basket_index_placeholder_cost_center'         => 'উদাঃ DEPT-1234',
+'basket_index_label_delivery_location'         => 'ডেলিভারি লোকেশন',
+'basket_index_select_no_location'              => 'কোনো লোকেশন নেই',
+'basket_index_btn_submit'                      => 'সার্ভিস রিকোয়েস্ট জমা দিন',
 ];

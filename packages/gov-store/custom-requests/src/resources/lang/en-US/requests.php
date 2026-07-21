@@ -74,6 +74,28 @@ return [
     'basketservice_exception_no_approval_roles' => 'Your office location does not have approval roles configured. Please contact an administrator.',
 
     // =========================================================================
+    // Origin: basket/index.blade.php
+    // Basket page UI strings
+    // =========================================================================
+    'basket_index_title'                           => 'My Service Basket',
+    'basket_index_header_draft_items'              => 'Draft Items in Basket',
+    'basket_index_empty_basket'                    => 'Your basket is empty. Browse the catalog to add items.',
+    'basket_index_btn_browse_catalog'              => 'Browse Catalog',
+    'basket_index_tooltip_asset_restricted'        => 'Assets can only be requested in quantity of 1.',
+    'basket_index_header_service_request_details'  => 'Service Request Details',
+    'basket_index_label_request_type'              => 'Request Type',
+    'basket_index_label_purpose'                   => 'Purpose',
+    'basket_index_placeholder_purpose'             => 'Brief purpose of this request',
+    'basket_index_label_justification'             => 'Justification',
+    'basket_index_placeholder_justification'       => 'Explain why these items are needed...',
+    'basket_index_label_required_by_date'          => 'Required By Date',
+    'basket_index_label_cost_center'               => 'Cost Center',
+    'basket_index_placeholder_cost_center'         => 'e.g., DEPT-1234',
+    'basket_index_label_delivery_location'         => 'Delivery Location',
+    'basket_index_select_no_location'              => 'No location',
+    'basket_index_btn_submit'                      => 'Submit Service Request',
+
+    // =========================================================================
     // Origin: FulfillmentService.php
     // Exception messages for fulfillment operations
     // =========================================================================
@@ -183,6 +205,8 @@ return [
     // =========================================================================
     'basket_widget_console_init'        => 'Gov-Store: Initializing basket widgets.',
     'basket_widget_basket_label'        => 'Basket (:count)',
+
+  
 
     // =========================================================================
     // Origin: hooks/menu-injection.blade.php
