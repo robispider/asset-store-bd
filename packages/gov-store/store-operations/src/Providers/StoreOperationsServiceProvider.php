@@ -61,12 +61,16 @@ class StoreOperationsServiceProvider extends ServiceProvider
         );
 
         // 9. Polymorphic Database Mapping (Bypasses class namespace changes from DB)
+    // 9. Polymorphic Database Mapping (Bypasses class namespace changes from DB)
         Relation::morphMap([
             'consumable' => \App\Models\Consumable::class,
             'accessory'  => \App\Models\Accessory::class,
             'component'  => \App\Models\Component::class,
+            
+            // REDIRECT LEGACY RECORDS: Automatically instantiates the generic Document class
+            'GovStore\StoreOperations\Models\GoodsReceipt' => \GovStore\StoreOperations\Models\Document::class,
+            'GovStore\StoreOperations\Models\GoodsIssue'   => \GovStore\StoreOperations\Models\Document::class,
         ]);
-
         // 10. Register navigation menus in the Central Menu Registry
         $this->registerNavigationMenus();
 
@@ -78,6 +82,7 @@ class StoreOperationsServiceProvider extends ServiceProvider
     {
         $registry = $this->app->make(MenuRegistry::class);
 
+        // 1. Immutable Ledger / Stock Register Dashboard
         $registry->register([
             'id'              => 'storeops-register',
             'parent'          => 'gov-store',
@@ -86,27 +91,23 @@ class StoreOperationsServiceProvider extends ServiceProvider
             'route'           => 'storeops.register.index',
             'permission'      => 'storekeeper',
             'order'           => 20,
-            'active_patterns' => ['storeops/operations/kardex/*'],
+            'active_patterns' => ['gov-store/operations/kardex/*'],
         ]);
 
+        // 2. The Unified Document Operations Hub (Replaces separate Receipt/Issue links)
         $registry->register([
-            'id'         => 'storeops-receipts',
-            'parent'     => 'gov-store',
-            'title'      => __('storeops::storeops.receive_goods_menu'),
-            'icon'       => 'fa fa-sign-in text-green',
-            'route'      => 'storeops.receipts.create',
-            'permission' => 'storekeeper',
-            'order'      => 30,
-        ]);
-
-        $registry->register([
-            'id'         => 'storeops-issues',
-            'parent'     => 'gov-store',
-            'title'      => __('storeops::storeops.ad_hoc_direct_issue'),
-            'icon'       => 'fa fa-sign-out text-orange',
-            'route'      => 'storeops.issues.create',
-            'permission' => 'storekeeper',
-            'order'      => 40,
+            'id'              => 'storeops-hub',
+            'parent'          => 'gov-store',
+            'title'           => 'Store Documents Hub', // Fallback if no translation exists yet
+            'icon'            => 'fa fa-folder-open text-yellow',
+            'route'           => 'storeops.hub',
+            'permission'      => 'storekeeper',
+            'order'           => 30,
+            // Keeps the sidebar active when inside ANY document workspace (Receipt, Issue, etc.)
+            'active_patterns' => [
+                'gov-store/operations/hub',
+                'gov-store/operations/documents/*'
+            ],
         ]);
     }
 

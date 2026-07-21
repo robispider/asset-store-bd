@@ -4,12 +4,16 @@ namespace GovStore\StoreOperations\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Support\Collection;
 use GovStore\TenantScope\Scopes\MinistryLocationScope;
-use App\Models\User;
+use GovStore\StoreOperations\Contracts\StoreDocumentInterface;
+use GovStore\StoreOperations\Traits\HasDocumentState;
+use GovStore\StoreOperations\Traits\HasStoreReferences;
+use GovStore\StoreOperations\Traits\HasStoreAttachments;
 
-class GoodsIssue extends Model
+class GoodsIssue extends Model implements StoreDocumentInterface
 {
-    use HasUuids;
+    use HasUuids, HasDocumentState, HasStoreReferences, HasStoreAttachments;
 
     protected $table = 'gov_goods_issues';
     
@@ -21,7 +25,6 @@ class GoodsIssue extends Model
 
     protected static function booted()
     {
-        // Enforce physical boundary scoping
         static::addGlobalScope(new MinistryLocationScope());
     }
 
@@ -32,6 +35,11 @@ class GoodsIssue extends Model
 
     public function creator()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(\App\Models\User::class, 'created_by');
     }
+
+    public function getDocumentId(): string { return $this->id; }
+    public function getDocumentType(): string { return self::class; }
+    public function getDocumentNumber(): string { return $this->issue_no; }
+    public function getLineItems(): Collection { return $this->items; }
 }

@@ -34,10 +34,10 @@
                         @forelse($movements as $movement)
                             <tr>
                                 <td>{{ \Carbon\Carbon::parse($movement->created_at)->format('d M Y, h:i A') }}</td>
-                                <td>
+                              <td>
                                     @if($movement->document)
-                                        <!-- Displays GR-2026-000001 or similar -->
-                                        <strong>{{ $movement->document->receipt_no ?? $movement->document->issue_no ?? $movement->document->adjustment_no }}</strong>
+                                        <!-- Reads new document_number, falling back to old columns for legacy data -->
+                                        <strong>{{ $movement->document->document_number ?? $movement->document->receipt_no ?? $movement->document->issue_no ?? $movement->document->adjustment_no }}</strong>
                                     @else
                                         {{ __('storeops::storeops.system_initialization') }}
                                     @endif
