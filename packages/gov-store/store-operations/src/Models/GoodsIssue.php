@@ -16,9 +16,9 @@ class GoodsIssue extends Model implements StoreDocumentInterface
     use HasUuids, HasDocumentState, HasStoreReferences, HasStoreAttachments;
 
     protected $table = 'gov_goods_issues';
-    
+
     protected $fillable = [
-        'issue_no', 'issue_type', 'issued_to_id', 
+        'issue_no', 'issue_type', 'issued_to_id',
         'reference_type', 'reference_id', 'status',
         'company_id', 'location_id', 'created_by'
     ];
@@ -38,8 +38,22 @@ class GoodsIssue extends Model implements StoreDocumentInterface
         return $this->belongsTo(\App\Models\User::class, 'created_by');
     }
 
-    public function getDocumentId(): string { return $this->id; }
-    public function getDocumentType(): string { return self::class; }
+    // --- StoreDocumentInterface Implementation ---
+
+    public function getDocumentId(): string|int { return $this->id; }
+    public function getDocumentType(): string { return 'issue'; }
     public function getDocumentNumber(): string { return $this->issue_no; }
     public function getLineItems(): Collection { return $this->items; }
+
+    // --- Added missing interface methods to resolve compiler exception ---
+
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    public function getCompiledProfileSnapshot(): ?array
+    {
+        return $this->compiled_profile_snapshot;
+    }
 }
