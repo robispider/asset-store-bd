@@ -16,7 +16,10 @@ class CatalogCategoryCreator
         $this->adoptionService = $adoptionService;
     }
 
- public function provisionAndMap(
+    /**
+     * Orchestrates the 1-Click Provisioning Workflow with self-healing duplicate resolution.
+     */
+    public function provisionAndMap(
         string $unspscCode, 
         string $categoryType, 
         string $governanceType, 
@@ -30,28 +33,46 @@ class CatalogCategoryCreator
 
         return DB::transaction(function () use ($node, $name, $categoryType, $governanceType, $targetScopeType, $targetScopeId, $creatorUserId) {
             
-            $category = Category::create([
-                'name' => $name,
-                'category_type' => $categoryType,
-                'checkin_email' => 0,
-                'require_acceptance' => 0,
-                'use_default_eula' => 0,
-            ]);
+            // 1. Defensively check if a Snipe-IT Category with this name already exists in the production DB
+            $category = Category::where('name', $name)->first();
 
+            if (!$category) {
+                // If missing, instantiate and save natively
+                $category = new Category();
+                $category->name = $name;
+                $category->category_type = $categoryType;
+                $category->checkin_email = 0;
+                $category->require_acceptance = 0;
+                $category->use_default_eula = 0;
+
+                // Attempt to save, catching Snipe-IT's Watson validations
+                if (!$category->save()) {
+                    $errors = $category->getErrors() ? $category->getErrors()->first() : 'Snipe-IT Category validation failed.';
+                    throw new Exception("Validation Error: " . $errors);
+                }
+            }
+
+            if (!$category->id) {
+                throw new Exception("Critical Error: Mapped category has no ID.");
+            }
+
+            // 2. Map UNSPSC Code to the verified Category ID
             DB::table('gov_catalog_snipe_mappings')->updateOrInsert(
                 ['code' => $node->code],
                 ['category_id' => $category->id, 'updated_at' => now()]
             );
 
-            // Governance type can be 'global', 'company', or 'location'
-            \GovStore\Classification\Models\CategoryGovernance::create([
-                'category_id'           => $category->id,
-                'governance_type'       => $governanceType, 
-                'created_by_company_id' => ($targetScopeType === 'company') ? $targetScopeId : null,
-                'created_by_user_id'    => $creatorUserId,
-            ]);
+            // 3. Write/Update Governance Metadata
+            \GovStore\Classification\Models\CategoryGovernance::updateOrCreate(
+                ['category_id' => $category->id],
+                [
+                    'governance_type'       => $governanceType,
+                    'created_by_company_id' => ($targetScopeType === 'company') ? $targetScopeId : null,
+                    'created_by_user_id'    => $creatorUserId,
+                ]
+            );
 
-            // Auto-Adopt using the correct dynamic scope
+            // 4. Auto-Adopt the category
             if ($governanceType !== 'global' && $targetScopeId) {
                 $this->adoptionService->useCategory($category->id, $targetScopeType, $targetScopeId);
             }
