@@ -6,6 +6,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use GovStore\CustomRequests\Services\BasketService;
 use App\Models\Location;
+use Exception;
 
 class BasketController extends Controller
 {
@@ -26,7 +27,10 @@ class BasketController extends Controller
         ]);
 
         try {
-            $basket = $service->addItem(auth()->id(), $request->item_type, $request->item_id);
+            // Normalize PascalCase (e.g. 'Consumable') to standard lowercase morph key ('consumable')
+            $normalizedType = strtolower(class_basename($request->item_type));
+
+            $basket = $service->addItem(auth()->id(), $normalizedType, $request->item_id);
             
             if ($request->ajax()) {
                 return response()->json([
@@ -36,17 +40,22 @@ class BasketController extends Controller
                 ]);
             }
             return redirect()->back()->with('success', __('requestlabels::requests.basketcontroller_flash_item_added'));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if ($request->ajax()) return response()->json(['success' => false, 'message' => $e->getMessage()], 400);
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
+    /**
+     * Fixed: Added missing catch block to resolve fatal compilation exception
+     */
     public function updateQty(Request $request, BasketService $service)
     {
         try {
             $service->updateItemQty(auth()->id(), $request->item_id, (int)$request->qty);
             return redirect()->back()->with('success', __('requestlabels::requests.basketcontroller_flash_qty_updated'));
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
@@ -56,7 +65,7 @@ class BasketController extends Controller
         return redirect()->back()->with('success', __('requestlabels::requests.basketcontroller_flash_item_removed'));
     }
 
- public function submit(Request $request, BasketService $service)
+    public function submit(Request $request, BasketService $service)
     {
         $request->validate([
             'request_type' => 'required|string',
@@ -75,7 +84,7 @@ class BasketController extends Controller
             
             return redirect()->route('gov.requests.user.index')
                              ->with('success', __('requestlabels::requests.basketcontroller_flash_request_submitted', ['numbers' => $numbers]));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
