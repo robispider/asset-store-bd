@@ -55,4 +55,6 @@ Integrates official, external classification schemes (e.g., UNSPSC). Features a 
 *   Laravel 10.x / 11.x
 *   Snipe-IT v7.x / v8.x
 *   MySQL 8.0+ or MariaDB 10.5+
-We thank snipeit https://github.com/grokability/snipe-it
+
+---
+# We thank snipeit https://github.com/grokability/snipe-it
