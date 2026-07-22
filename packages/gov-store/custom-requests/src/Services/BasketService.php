@@ -22,12 +22,12 @@ class BasketService
         return DraftBasket::getOrCreateForUser($userId);
     }
 
-    /**
-     * Add an item to the user's draft basket.
+   /**
+     * Add an item to the user's draft basket with dynamic quantity persistence.
      *
      * @throws \Exception
      */
-    public function addItem(int $userId, string $itemType, int $itemId): DraftBasket
+    public function addItem(int $userId, string $itemType, int $itemId, int $qty = 1): DraftBasket
     {
         $basket = DraftBasket::getOrCreateForUser($userId);
 
@@ -36,15 +36,17 @@ class BasketService
             ->where('requested_id', $itemId)->first();
 
         if ($existing) {
-            $existing->increment('requested_qty');
+            // Increment by the newly requested quantity
+            $existing->increment('requested_qty', $qty);
             return $basket;
         }
 
+        // Persist the requested quantity
         BasketItem::create([
             'basket_id' => $basket->id,
             'requested_type' => $itemType,
             'requested_id' => $itemId,
-            'requested_qty' => 1,
+            'requested_qty' => $qty,
         ]);
 
         return $basket;

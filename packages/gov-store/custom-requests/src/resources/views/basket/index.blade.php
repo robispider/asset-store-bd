@@ -25,12 +25,12 @@
                             <tr>
                                 <th>Item</th>
                                 <th>Type</th>
-                                <th style="width: 120px;">Requested Qty</th>
+                                <th style="width: 120px; text-align: center;">Requested Qty</th>
                                 <th style="width: 60px;">Action</th>
                             </tr>
                         </thead>
                        <tbody>
-                            @foreach($basket->items as $item)
+                            @foreach($basket->items as $item) {{-- FIXED: Changed @forelse to @foreach --}}
                                 @php
                                     try {
                                         // Leverage our Phase 2 factory to safely fetch the correct display name
@@ -45,26 +45,30 @@
                                     <td style="vertical-align: middle;">
                                         <span class="label label-info">{{ ucfirst($item->requested_type) }}</span>
                                     </td>
-                                    <td style="vertical-align: middle;">
+                                    <td style="vertical-align: middle; text-align: center;">
                                         @if($item->requested_type === 'asset')
-                                            <input type="text" class="form-control input-sm text-center" value="1" disabled title="{{ __('requestlabels::requests.basket_index_tooltip_asset_restricted') }}">
+                                            <input type="text" class="form-control input-sm text-center" value="1" disabled title="{{ __('requestlabels::requests.basket_index_tooltip_asset_restricted') }}" style="width: 70px; margin: 0 auto;">
                                         @else
-                                            <form action="{{ route('gov.requests.basket.update') }}" method="POST" style="display: flex; gap: 5px;">
-                                                @csrf
-                                                <input type="hidden" name="item_id" value="{{ $item->id }}">
-                                                <input type="number" name="qty" class="form-control input-sm text-center" value="{{ $item->requested_qty }}" min="1" style="width: 60px;">
-                                                <button type="submit" class="btn btn-default btn-sm" title="{{ __('requestlabels::requests.basket_index_btn_update_title') }}"><i class="fas fa-sync-alt"></i></button>
-                                            </form>
+                                            <!-- Modern Auto-saving Input Field (No nested forms, fully responsive) -->
+                                            <div class="qty-wrapper" style="display: inline-flex; align-items: center; gap: 8px;">
+                                                <input type="number" 
+                                                       class="form-control input-sm text-center basket-qty-input" 
+                                                       data-item-id="{{ $item->id }}" 
+                                                       value="{{ $item->requested_qty }}" 
+                                                       min="1" 
+                                                       style="width: 70px; margin: 0 auto; border: 1px solid #ccc; border-radius: 4px;">
+                                                <span class="save-status-indicator" data-item-id="{{ $item->id }}" style="font-size: 11px; color: #555; width: 45px; text-align: left;"></span>
+                                            </div>
                                         @endif
                                     </td>
                                     <td style="vertical-align: middle;">
-                                        <form action="{{ route('gov.requests.basket.remove', $item->id) }}" method="POST">
+                                        <form action="{{ route('gov.requests.basket.remove', $item->id) }}" method="POST" style="margin: 0;">
                                             @csrf
                                             <button type="submit" class="btn btn-danger btn-sm" title="{{ __('requestlabels::requests.basket_index_btn_remove_title') }}"><i class="fas fa-trash"></i></button>
                                         </form>
                                     </td>
                                 </tr>
-                            @endforeach
+                            @endforeach {{-- FIXED: Changed @endforelse to @endforeach --}}
                         </tbody>
                     </table>
                 @endif
@@ -139,4 +143,50 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('moar_scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Dynamic background auto-saver on quantity edit (600ms debounce)
+    let autoSaveTimer = null;
+
+    document.querySelectorAll('.basket-qty-input').forEach(input => {
+        input.addEventListener('input', function() {
+            let itemId = this.dataset.itemId;
+            let qty = this.value;
+            let statusIndicator = document.querySelector(`.save-status-indicator[data-item-id="${itemId}"]`);
+
+            if (qty < 1) return;
+
+            statusIndicator.innerHTML = '<i class="fas fa-spinner fa-spin text-muted"></i>';
+
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(function() {
+                fetch('{{ route("gov.requests.basket.update") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ item_id: itemId, qty: qty })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        statusIndicator.innerHTML = '<span class="text-success"><i class="fas fa-check"></i></span>';
+                        setTimeout(() => { statusIndicator.innerHTML = ''; }, 1500);
+                    } else {
+                        statusIndicator.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle"></i></span>';
+                    }
+                })
+                .catch(err => {
+                    statusIndicator.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle"></i></span>';
+                });
+            }, 600);
+        });
+    });
+});
+</script>
 @endsection

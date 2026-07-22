@@ -19,18 +19,22 @@ class BasketController extends Controller
         return view('govstore::basket.index', compact('basket', 'locations'));
     }
 
-    public function add(Request $request, BasketService $service)
+  public function add(Request $request, BasketService $service)
     {
         $request->validate([
             'item_type' => 'required|string',
             'item_id' => 'required|integer',
+            'qty' => 'nullable|integer|min:1' // Added validation
         ]);
 
         try {
             // Normalize PascalCase (e.g. 'Consumable') to standard lowercase morph key ('consumable')
             $normalizedType = strtolower(class_basename($request->item_type));
+            
+            // Capture selected quantity (Defaults to 1 for Assets or legacy buttons)
+            $qty = (int) $request->input('qty', 1);
 
-            $basket = $service->addItem(auth()->id(), $normalizedType, $request->item_id);
+            $basket = $service->addItem(auth()->id(), $normalizedType, $request->item_id, $qty);
             
             if ($request->ajax()) {
                 return response()->json([
@@ -46,15 +50,24 @@ class BasketController extends Controller
         }
     }
 
-    /**
-     * Fixed: Added missing catch block to resolve fatal compilation exception
+ 
+/**
+     * Update the quantity of an item in the basket.
+     * Supports both standard redirect and background AJAX auto-saves.
      */
     public function updateQty(Request $request, BasketService $service)
     {
         try {
             $service->updateItemQty(auth()->id(), $request->item_id, (int)$request->qty);
+            
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => true]);
+            }
             return redirect()->back()->with('success', __('requestlabels::requests.basketcontroller_flash_qty_updated'));
         } catch (Exception $e) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => $e->getMessage()], 400);
+            }
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
