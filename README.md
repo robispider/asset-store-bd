@@ -1,6 +1,6 @@
 (This is an in progress  r & d work by department of ICT in Bangladesh government )
 
-# GovStore: Enterprise Government Procurement & Logistics Engine
+# GovStore: Enterprise Government Inventory & Store Registry System
 
 GovStore is a highly modular, multi-tenant enterprise resource planning (ERP) extension built natively on top of the [Snipe-IT](https://snipeitapp.com/) asset management framework. It is specifically designed to meet the rigorous hierarchical, governance, and audit requirements of the Bangladesh Government (and similar large-scale public sector architectures).
 
