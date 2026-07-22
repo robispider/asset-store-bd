@@ -13,21 +13,21 @@ class GoodsReceiptService
     protected DocumentNumberService $numberService;
     protected TenantContext $tenantContext;
     protected ProfileCompilerService $compiler;
-    protected DocumentLineItemManager $lineItemManager; // Added
+    protected DocumentLineItemManager $lineItemManager;
+    protected PostingPipelineManager $pipelineManager;
 
-    /**
-     * Inject the DocumentLineItemManager into the constructor
-     */
     public function __construct(
         DocumentNumberService $numberService, 
         TenantContext $tenantContext,
         ProfileCompilerService $compiler,
-        DocumentLineItemManager $lineItemManager // Added
+        DocumentLineItemManager $lineItemManager,
+        PostingPipelineManager $pipelineManager
     ) {
         $this->numberService = $numberService;
         $this->tenantContext = $tenantContext;
         $this->compiler = $compiler;
-        $this->lineItemManager = $lineItemManager; // Added
+        $this->lineItemManager = $lineItemManager;
+        $this->pipelineManager = $pipelineManager;
     }
 
     /**
@@ -56,16 +56,15 @@ class GoodsReceiptService
                 $document->update($headerData);
             }
 
-            // 2. PROCESS AND NORMALIZE LINES (Translates type -> product_type, qty -> quantity, and merges duplicates)
+            // 2. Process and normalize lines
             $processedLines = $this->lineItemManager->processLines($rawLines, 'IN');
 
             $document->items()->delete();
             if (!empty($processedLines)) {
-                // Save the normalized, database-compatible columns
                 $document->items()->createMany($processedLines);
             }
 
-            // Refresh the relationship inside Eloquent's memory before compiling the snapshot
+            // Refresh relationship before snapshot compilation
             $document->load('items');
 
             // 3. Compile and save the frozen snapshot
@@ -79,33 +78,11 @@ class GoodsReceiptService
     }
 
     /**
-     * Transitions the document to POSTED, generating Ledger entries.
+     * Delegates posting entirely to the Materialization Pipeline Manager.
      */
     public function post(Document $document, int $userId): void
     {
-        if ($document->status === DocumentState::POSTED->value) {
-            throw new Exception("This Goods Receipt has already been posted.");
-        }
-
-        if ($document->items()->count() === 0) {
-            throw new Exception("A Goods Receipt must contain at least one valid item to post to the ledger.");
-        }
-
-        DB::transaction(function () use ($document, $userId) {
-            foreach ($document->items as $item) {
-                $this->ledger->postMovement(
-                    $item->product_type,
-                    $item->product_id,
-                    'IN',
-                    $item->quantity,
-                    $document,
-                    $document->company_id,
-                    $document->location_id,
-                    $userId
-                );
-            }
-
-            $document->transitionTo(DocumentState::POSTED, $userId, 'Document posted to ledger.');
-        });
+        // Delegate to the composable pipeline
+        $this->pipelineManager->materialize($document, $userId);
     }
 }

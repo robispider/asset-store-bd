@@ -26,4 +26,13 @@ class RequireQuantityCapability implements CapabilityInterface
     {
         // Executed natively during main document line processing
     }
+
+    /**
+     * ADDED: Implements missing interface method.
+     * Quantity is part of the standard line item row, so no extra sub-row UI is needed.
+     */
+    public function renderUI(object $item = null, array $config = []): string
+    {
+        return '';
+    }
 }

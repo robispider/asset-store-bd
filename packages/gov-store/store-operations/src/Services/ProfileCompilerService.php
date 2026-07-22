@@ -4,128 +4,162 @@ namespace GovStore\StoreOperations\Services;
 
 use GovStore\StoreOperations\Models\Document;
 use GovStore\StoreOperations\Models\Profile;
-use GovStore\StoreOperations\Models\Capability;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
 class ProfileCompilerService
 {
     /**
-     * Compile the complete operational snapshot for a Document based on its current line items.
-     * This is executed during the DRAFT phase.
+     * In-memory request cache. Prevents duplicate database queries 
+     * when processing multiple items of the same category in a single document.
+     */
+    protected static array $resolvedCache = [];
+
+    /**
+     * Compiles the immutable JSON snapshot for the entire document.
      */
     public function compileDocument(Document $document): array
     {
-        $itemsPayload = [];
+        $snapshot = [];
 
         foreach ($document->items as $item) {
-            $compiled = $this->compileItem($item->product_type, $item->product_id);
-            
-            $itemsPayload[] = [
-                'product_id'   => $item->product_id,
-                'product_type' => $item->product_type,
-                'capabilities' => $compiled['capabilities'],
-                'requirements' => $compiled['requirements'],
-            ];
+            $itemKey = "{$item->product_type}_{$item->product_id}";
+            $snapshot[$itemKey] = $this->compileItem($item->product_type, $item->product_id);
         }
 
-        return [
-            'document_id' => $document->id,
-            'items'       => $itemsPayload
-        ];
+        return ['items' => $snapshot];
     }
 
     /**
-     * Recursively compiles the profile for a single item.
-     * Walks up the parent chain: Model Override -> Category -> Major Type -> Global.
+     * The 4-Layer Resolution Engine. Merges capability codes and payloads Top-Down.
      */
     public function compileItem(string $productType, int $productId): array
     {
-        // 1. Resolve the starting Profile ID in the recursive chain
-        $startingProfileId = $this->resolveStartingProfileId($productType, $productId);
+        // 1. Resolve layers dynamically
+        $layers = [
+            $this->resolveGlobal(),
+            $this->resolveMajorType($productType),
+            $this->resolveCategory($productType, $productId),
+            $this->resolveModel($productType, $productId) // Optional
+        ];
 
-        // 2. Walk up the parent tree (from leaf to root)
-        $profileChain = [];
-        $currentProfile = Profile::with('capabilities.requirements')->find($startingProfileId);
-
-        while ($currentProfile) {
-            // Push to beginning of array so Global (root) sits at index 0, followed by Major Type, etc.
-            array_unshift($profileChain, $currentProfile);
-            $currentProfile = $currentProfile->parent_id 
-                ? Profile::with('capabilities.requirements')->find($currentProfile->parent_id) 
-                : null;
-        }
-
-        // 3. Merge capabilities and requirements Top-Down (Global -> Major Type -> Category -> Override)
         $mergedCapabilities = [];
-        $mergedRequirements = [];
 
-        foreach ($profileChain as $profile) {
-            foreach ($profile->capabilities as $capability) {
-                $code = $capability->code;
+        // 2. Top-down CSS-style merge
+        foreach (array_filter($layers) as $profile) {
+            foreach ($profile->capabilities as $cap) {
+                $code = $cap->capability_code;
+                $config = $cap->config_payload ?? [];
 
-                // Merge capability configuration (child redefinitions override parents)
-                $config = json_decode($capability->pivot->config_payload ?? '{}', true) ?? [];
-                $mergedCapabilities[$code] = [
-                    'code'   => $code,
-                    'type'   => $capability->type,
-                    'config' => $config
-                ];
-
-                // Gather requirements exposed by this capability
-                foreach ($capability->requirements as $req) {
-                    $mergedRequirements[$req->field_key] = [
-                        'key'   => $req->field_key,
-                        'type'  => $req->field_type,
-                        'rules' => $req->validation_rules
-                    ];
+                // Child redefinitions override parent configurations
+                if (isset($mergedCapabilities[$code])) {
+                    $mergedCapabilities[$code] = array_merge($mergedCapabilities[$code], $config);
+                } else {
+                    $mergedCapabilities[$code] = $config;
                 }
             }
         }
 
-        return [
-            'capabilities' => array_values($mergedCapabilities),
-            'requirements' => array_values($mergedRequirements)
-        ];
+        return $mergedCapabilities;
     }
 
     /**
-     * Core resolution mapping logic. Determines which Profile ID 
-     * a Snipe-IT product model, consumable, or accessory starts with.
+     * Dynamically determines which Profile ID is the deepest entry point 
+     * for a given line item. Uses cascading logic (Model -> Category -> Major Type -> Global).
      */
     protected function resolveStartingProfileId(string $productType, int $productId): int
     {
-        // Fallback IDs based on the Phase 1 Database Seeder
-        $globalBaseId   = 1;
-        $assetMajorId   = 2;
-        $notebookCatId  = 3;
-
-        if ($productType === 'consumable') {
-            // Consumables inherit directly from Global Base (simple quantity entry)
-            return $globalBaseId;
+        // 1. Check if model-specific override profile exists (Highest Priority)
+        $modelProfile = $this->resolveModel($productType, $productId);
+        if ($modelProfile) {
+            return $modelProfile->id;
         }
 
-        if ($productType === 'asset_model') {
-            // Resolve the core Snipe-IT Model's category
-            $model = DB::table('models')->where('id', $productId)->first();
-            
-            if (!$model) {
-                throw new Exception("Core Snipe-IT Asset Model [ID: {$productId}] does not exist.");
-            }
-
-            // Notebook mapping rule (Example category mapping)
-            // If the model's category matches Notebook, return NotebookCategoryProfile.
-            // In a production build, a mapping table maps category_id -> profile_id.
-            $categoryName = DB::table('categories')->where('id', $model->category_id)->value('name');
-            if (strtolower($categoryName) === 'notebook' || strtolower($categoryName) === 'laptops') {
-                return $notebookCatId;
-            }
-
-            // Fallback to Asset Major Type
-            return $assetMajorId;
+        // 2. Check if category-specific profile exists (Category Priority)
+        $categoryProfile = $this->resolveCategory($productType, $productId);
+        if ($categoryProfile) {
+            return $categoryProfile->id;
         }
 
-        // Fallback to root Global Base for Accessories/Components in Phase 1
-        return $globalBaseId;
+        // 3. Check if Major Type profile exists (Type Priority)
+        $majorTypeProfile = $this->resolveMajorType($productType);
+        if ($majorTypeProfile) {
+            return $majorTypeProfile->id;
+        }
+
+        // 4. Fallback to root Global Base profile (Lowest Priority)
+        $globalProfile = $this->resolveGlobal();
+        if ($globalProfile) {
+            return $globalProfile->id;
+        }
+
+        throw new Exception("Critical Store Engine Error: No root Global Profile found in database.");
+    }
+
+    // --- Dynamic Memoized Layer Resolvers ---
+
+    protected function resolveGlobal(): ?Profile
+    {
+        // Cache in memory; only runs database query on the first call of the request
+        return self::$resolvedCache['GLOBAL'] ??= Profile::with('capabilities')
+            ->where('layer', 'GLOBAL')
+            ->first();
+    }
+
+    protected function resolveMajorType(string $type): ?Profile
+    {
+        $profileName = match ($type) {
+            'assetmodel'  => 'Hardware Asset', // FIXED
+            'consumable'  => 'Consumable Supply',
+            'accessory'   => 'Accessory',
+            'component'   => 'Component',
+            default       => null
+        };
+
+        if (!$profileName) {
+            return null;
+        }
+
+        $cacheKey = "MAJOR_" . str_replace(' ', '_', $profileName);
+
+        return self::$resolvedCache[$cacheKey] ??= Profile::with('capabilities')
+            ->where('layer', 'MAJOR_TYPE')
+            ->where('name', $profileName)
+            ->first();
+    }
+
+    protected function resolveCategory(string $type, int $id): ?Profile
+    {
+        if ($type !== 'assetmodel') { // FIXED
+            return null;
+        }
+
+        $categoryId = DB::table('models')->where('id', $id)->value('category_id');
+        if (!$categoryId) {
+            return null;
+        }
+
+        $categoryName = DB::table('categories')->where('id', $categoryId)->value('name');
+        if (!$categoryName) {
+            return null;
+        }
+
+        $cacheKey = "CAT_" . str_replace(' ', '_', $categoryName);
+
+        return self::$resolvedCache[$cacheKey] ??= Profile::with('capabilities')
+            ->where('layer', 'CATEGORY')
+            ->where('name', $categoryName)
+            ->first();
+    }
+
+    protected function resolveModel(string $type, int $id): ?Profile
+    {
+        $profileName = "Model_{$id}";
+        $cacheKey = "MODEL_{$id}";
+
+        return self::$resolvedCache[$cacheKey] ??= Profile::with('capabilities')
+            ->where('layer', 'MODEL')
+            ->where('name', $profileName)
+            ->first();
     }
 }

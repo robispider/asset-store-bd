@@ -5,6 +5,7 @@ namespace GovStore\StoreOperations\Enums;
 use App\Models\Consumable;
 use App\Models\Accessory;
 use App\Models\Component;
+use App\Models\AssetModel; 
 use Exception;
 
 enum StockableType: string
@@ -12,7 +13,7 @@ enum StockableType: string
     case CONSUMABLE = Consumable::class;
     case ACCESSORY = Accessory::class;
     case COMPONENT = Component::class;
-
+    case ASSET_MODEL = AssetModel::class;
     /**
      * Highly defensive parser mapping all legacy, class, and morph string 
      * variations cleanly to the canonical StockableType Enum.
@@ -31,6 +32,7 @@ enum StockableType: string
             'consumable' => self::CONSUMABLE,
             'accessory'  => self::ACCESSORY,
             'component'  => self::COMPONENT,
+            'assetmodel', 'asset_model' => self::ASSET_MODEL,
             default      => throw new Exception("Unsupported stockable type: {$type}"),
         };
     }

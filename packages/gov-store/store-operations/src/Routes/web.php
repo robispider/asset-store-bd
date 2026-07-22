@@ -37,6 +37,10 @@ Route::group([
     Route::post('/documents/{type}/{id}/post', [DocumentWorkspaceController::class, 'post'])->name('storeops.documents.post');
     Route::get('/documents/{type}/{id}/print', [DocumentWorkspaceController::class, 'print'])->name('storeops.documents.print');
     
+     // 4. File Attachment Endpoints (Phase 5 - ADDED BELOW)
+    Route::post('/documents/{type}/{id}/attachments', [DocumentWorkspaceController::class, 'uploadAttachment'])->name('storeops.documents.attachments.upload');
+    Route::delete('/documents/{type}/{id}/attachments/{attachmentId}', [DocumentWorkspaceController::class, 'deleteAttachment'])->name('storeops.documents.attachments.delete');
+    
     // Unified Product Search API (Powers the Select2 Spreadsheet Grid)
     Route::get('/api/products/search', [DocumentWorkspaceController::class, 'searchProducts'])->name('storeops.api.products.search');
 

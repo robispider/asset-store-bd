@@ -9,7 +9,7 @@
 @endphp
 
 <div class="row">
-    <!-- Main Form: Wraps the workspace to allow integrated headers and grid saves -->
+    <!-- Main Form: Wraps the workspace for integrated draft saves and posting -->
     <form id="workspaceForm" action="{{ route('storeops.documents.post', ['type' => $type, 'id' => $document->id]) }}" method="POST">
         @csrf
         <input type="hidden" name="document_type" value="{{ $document->getDocumentType() }}">
@@ -17,7 +17,7 @@
         <!-- LEFT COLUMN: The Working Area -->
         <div class="col-md-8">
             
-            <!-- SECTION 1: Document Information (3-Column Legal Metadata) -->
+            <!-- SECTION 1: Document Information -->
             <div class="box box-solid">
                 <div class="box-header with-border">
                     <h3 class="box-title">Document Information</h3>
@@ -43,8 +43,7 @@
                 </div>
             </div>
 
-            <!-- SECTION 2: Received Items (The Dynamic Spreadsheet Grid) -->
-        <!-- SECTION 2: Received Items (The Spreadsheet Grid) -->
+            <!-- SECTION 2: Received Items (The Interactive Grid) -->
             <div class="box box-solid">
                 <div class="box-header with-border">
                     <h3 class="box-title">Received Items</h3>
@@ -54,15 +53,15 @@
                         <thead style="background: #f9fafb;">
                             <tr>
                                 <th style="width: 35%;">Item Name</th>
-                                <th style="width: 15%;">Current Stock</th>
+                                <th style="width: 15%; text-align: center;">Current Stock</th>
                                 <th style="width: 15%;">Quantity</th>
                                 <th style="width: 15%;">Unit Cost (৳)</th>
-                                <th style="width: 15%;">Balance After</th>
+                                <th style="width: 15%; text-align: center;">Balance After</th>
                                 @if($isDraft) <th style="width: 5%;"></th> @endif
                             </tr>
                         </thead>
                         <tbody id="gridBody">
-                            <!-- JS Dynamically injects items and metadata sub-grids here -->
+                            <!-- JS automatically inserts default search rows and metadata sub-grids here -->
                         </tbody>
                     </table>
                     @if($isDraft)
@@ -78,14 +77,50 @@
             <!-- SECTION 3: Supporting Documents -->
             <div class="box box-solid">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Supporting Documents</h3>
+                    <h3 class="box-title">Supporting Documents (Challan / Nothi / Invoice Scans)</h3>
                 </div>
                 <div class="box-body">
                     @if($isDraft)
-                        <p class="text-muted"><i class="fa fa-info-circle"></i> Attachments feature will be unlocked in Phase 5.</p>
-                    @else
-                        <p>No attachments found.</p>
+                        <div class="row" style="margin-bottom: 20px;">
+                            <div class="col-md-5">
+                                <select id="attachmentCategory" class="form-control input-sm">
+                                    <option value="Challan">Challan (চালান)</option>
+                                    <option value="Invoice">Invoice / Bill (ইনভয়েস)</option>
+                                    <option value="Committee_Report">Committee Acceptance Report</option>
+                                    <option value="Tender_WO">Work Order / Tender Copy</option>
+                                    <option value="Other">Other Supporting Document</option>
+                                </select>
+                            </div>
+                            <div class="col-md-5">
+                                <input type="file" id="attachmentFile" class="form-control input-sm">
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-sm btn-primary btn-block" id="uploadFileBtn">
+                                    <i class="fa fa-upload"></i> Upload
+                                </button>
+                            </div>
+                        </div>
                     @endif
+
+                    <ul class="list-group list-group-unbordered" id="attachmentsList">
+                        @forelse($document->attachments as $file)
+                            <li class="list-group-item attachment-item" data-id="{{ $file->id }}" style="border-bottom: 1px solid #f4f4f4; padding: 10px 0;">
+                                <i class="fa fa-file-text-o text-blue"></i> 
+                                <a href="{{ \Illuminate\Support\Facades\Storage::url($file->file_path) }}" target="_blank" style="margin-left: 5px;">
+                                    <strong>{{ $file->original_name }}</strong>
+                                </a>
+                                @if($isDraft)
+                                    <button type="button" class="btn btn-xs btn-danger pull-right delete-attachment" data-id="{{ $file->id }}">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                @endif
+                            </li>
+                        @empty
+                            <li class="list-group-item text-center text-muted" id="noAttachmentsMsg" style="border:none;">
+                                No supporting files attached yet.
+                            </li>
+                        @endforelse
+                    </ul>
                 </div>
             </div>
         </div>
@@ -93,7 +128,6 @@
         <!-- RIGHT COLUMN: Contextual Panel -->
         <div class="col-md-4">
             
-            <!-- Summary Card -->
             <div class="box {{ $isPosted ? 'box-success' : 'box-warning' }}">
                 <div class="box-header with-border">
                     <h3 class="box-title">{{ $isPosted ? 'Posted Document' : 'Draft Workspace' }}</h3>
@@ -103,24 +137,15 @@
                     
                     <ul class="list-group list-group-unbordered" style="margin-bottom: 15px;">
                         <li class="list-group-item">
-                            <b>Total Lines</b> <a class="pull-right" id="sumLines">0</a>
+                            <b>Total Lines</b> <a class="pull-right" id="sumLines">{{ $document->items->count() }}</a>
                         </li>
                         <li class="list-group-item">
-                            <b>Total Quantity</b> <a class="pull-right" id="sumQty">0</a>
+                            <b>Total Quantity</b> <a class="pull-right" id="sumQty">{{ $document->items->sum('quantity') }}</a>
                         </li>
                     </ul>
 
-                    <!-- Policy Validation Checklist (Self-Aware Sidebar) -->
                     @if($isDraft)
-                        <div class="well well-sm" style="background:#fff;">
-                            <h5><strong>Validation Checklist</strong></h5>
-                            <div class="progress progress-xxs">
-                                <div class="progress-bar progress-bar-success" id="validationProgress" style="width: 0%"></div>
-                            </div>
-                            <ul class="list-unstyled" id="checklistRequirements" style="margin-top:10px; font-size:12px;">
-                                <!-- Dynamic checkmarks inject here -->
-                            </ul>
-                        </div>
+                        @include('storeops::operations.partials.validation-checklist')
 
                         <button type="button" class="btn btn-default btn-block" id="saveDraftBtn">
                             <i class="fa fa-save"></i> Save Draft
@@ -164,6 +189,7 @@
                     </ul>
                 </div>
             </div>
+
         </div>
     </form>
 </div>
@@ -194,6 +220,6 @@
 </div>
 
 @section('moar_scripts')
-    @include('storeops::operations.partials.grid-script', ['existingItems' => $document->getLineItems(), 'isDraft' => $isDraft])
+    @include('storeops::operations.partials.grid-script', ['existingItems' => $document->items, 'isDraft' => $isDraft])
 @endsection
 @endsection

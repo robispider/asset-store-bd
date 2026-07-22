@@ -12,7 +12,7 @@ class PostingPipelineManager
 {
     /**
      * Executes the compiled materialization steps. 
-     * Safe-casts array configurations into string capability codes during execution.
+     * Runs strictly inside an atomic database transaction.
      */
     public function materialize(Document $document, int $userId): void
     {
@@ -38,21 +38,18 @@ class PostingPipelineManager
 
             // 3. Process each line item based on its compiled capabilities
             foreach ($document->items as $item) {
-                $capabilities = $profile->getPipelineCapabilities($item->product_type, $item->product_id);
+                // Fetch active capabilities for this line from the snapshot
+                $capabilities = $profile->getCapabilitiesForProduct($item->product_type, $item->product_id);
 
-                foreach ($capabilities as $cap) {
-                    // Extract code and config safely (supports both legacy strings and structured config arrays)
-                    $capCode = is_array($cap) ? ($cap['code'] ?? null) : $cap;
-                    $config  = is_array($cap) ? ($cap['config'] ?? []) : [];
-
+                foreach ($capabilities as $capCode => $config) {
                     if (!$capCode) {
                         continue;
                     }
 
-                    // Instantiates the capability handler class via our Phase 0 Registry
+                    // Instantiate the capability plugin class via Registry
                     $capability = CapabilityRegistry::make($capCode);
 
-                    // Execute step, passing the Lego configuration down
+                    // Execute step
                     $capability->execute($item, $config);
                 }
             }

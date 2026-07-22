@@ -8,7 +8,7 @@ class Profile extends Model
 {
     protected $table = 'gov_profiles';
 
-    protected $fillable = ['parent_id', 'name'];
+    protected $fillable = ['parent_id', 'name', 'layer'];
 
     public function parent()
     {
@@ -20,9 +20,12 @@ class Profile extends Model
         return $this->hasMany(self::class, 'parent_id');
     }
 
+    /**
+     * FIXED: Clean hasMany mapping directly to the composed capability records.
+     * Completely removes the obsolete belongsToMany/pivot dependencies.
+     */
     public function capabilities()
     {
-        return $this->belongsToMany(Capability::class, 'gov_profile_capabilities', 'profile_id', 'capability_id')
-                    ->withPivot('config_payload');
+        return $this->hasMany(ProfileCapability::class, 'profile_id');
     }
 }

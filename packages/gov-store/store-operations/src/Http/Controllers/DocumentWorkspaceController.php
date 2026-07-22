@@ -10,6 +10,8 @@ use GovStore\StoreOperations\Services\GoodsReceiptService;
 use GovStore\StoreOperations\Services\GoodsIssueService;
 use GovStore\StoreOperations\Services\PostingPipelineManager;
 use GovStore\StoreOperations\Services\ProductResolver;
+use GovStore\StoreOperations\Services\DocumentValidationService;
+use Illuminate\Support\Facades\Storage;
 use Exception;
 
 class DocumentWorkspaceController extends Controller
@@ -19,19 +21,69 @@ class DocumentWorkspaceController extends Controller
     protected GoodsIssueService $issueService;
     protected PostingPipelineManager $pipelineManager;
 
-    /**
-     * Unified, single constructor injecting all required MVE Services.
-     */
+   
+
+   protected DocumentValidationService $validationService;
+
+    // Inject DocumentValidationService in constructor
     public function __construct(
         ProductResolver $productResolver, 
         GoodsReceiptService $receiptService,
         GoodsIssueService $issueService,
-        PostingPipelineManager $pipelineManager
+        PostingPipelineManager $pipelineManager,
+        DocumentValidationService $validationService
     ) {
         $this->productResolver = $productResolver;
         $this->receiptService = $receiptService;
         $this->issueService = $issueService;
         $this->pipelineManager = $pipelineManager;
+        $this->validationService = $validationService;
+    }
+
+
+    public function post(Request $request, string $type, string $id)
+    {
+        $document = Document::findOrFail($id);
+
+        try {
+            // 1. Auto-save the latest grid values to the draft
+            $this->saveDraft($request, $type, $id);
+            $document->refresh();
+
+            // --- 2. FATAL DEBUGGER BYPASS IN POSTING ---
+            try {
+                // FIXED: Changed $this->validator to $this->validationService
+                $validationErrors = $this->validationService->validateDocument($document, $request->all());
+
+                if (!empty($validationErrors)) {
+                    $errorMessages = [];
+                    foreach ($validationErrors as $productName => $caps) {
+                        foreach ($caps as $capErrors) {
+                            foreach ($capErrors as $messages) {
+                                $errorMessages[] = "[{$productName}] " . implode(' ', $messages);
+                            }
+                        }
+                    }
+                    return back()->with('error', 'Validation Failed: ' . implode(' | ', $errorMessages));
+                }
+
+                // Execute the materialization pipeline (Kardex ledger and assets)
+                $this->pipelineManager->materialize($document, auth()->id());
+
+            } catch (\Throwable $e) {
+                // FORCE CRASH TO RED IGNITION SCREEN (Keep for safety until you confirm post is successful)
+                throw new \Error(
+                    "POSTING CRASH: " . $e->getMessage() . 
+                    " in " . $e->getFile() . " on line " . $e->getLine() . 
+                    " | DB Snapshot: " . json_encode($document->compiled_profile_snapshot)
+                );
+            }
+
+            return redirect()->route('storeops.documents.workspace', ['type' => $type, 'id' => $id])
+                             ->with('success', 'Document finalized successfully.');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
     }
 
     /**
@@ -78,26 +130,18 @@ public function workspace(string $type, string $id)
    /**
      * Save the Document Draft (Consolidates composed type_id keys on save)
      */
-    public function saveDraft(Request $request, string $type, string $id)
+     public function saveDraft(Request $request, string $type, string $id)
     {
-
-     // TEMPORARY DEBUG: Throw the exact payload reaching the server
-    //    throw new \Exception("Raw Form Data: " . json_encode($request->all()));
-
         $document = Document::findOrFail($id);
         $headerData = $request->only(['reference_no', 'reference_date', 'purchase_type']);
         $rawLines = [];
 
-        // Normalize raw grid lines payload
         foreach ($request->input('items', []) as $rowId => $item) {
-            
-            // Extract type and ID from the composed key (e.g. "consumable_3")
             if (isset($item['id']) && str_contains($item['id'], '_')) {
                 [$rawType, $productId] = explode('_', $item['id']);
                 $shortType = strtolower(class_basename($rawType));
             } else {
-                // Fallback for initialization / empty rows
-                $shortType = 'consumable';    
+                $shortType = 'consumable';
                 $productId = $item['id'] ?? 0;
             }
 
@@ -116,7 +160,7 @@ public function workspace(string $type, string $id)
                 'issue'   => $this->issueService->saveDraft($headerData, $rawLines, auth()->id(), $document),
             };
 
-            // 2. Persist custom metadata fields (Serials, Expiries) dynamically to EAV table
+            // 2. Persist custom metadata fields (Serials, Expiries)
             foreach ($request->input('items', []) as $rowId => $item) {
                 if (isset($item['id']) && str_contains($item['id'], '_')) {
                     [$rawType, $productId] = explode('_', $item['id']);
@@ -132,7 +176,7 @@ public function workspace(string $type, string $id)
                     ->first();
 
                 if ($dbItem && isset($item['meta'])) {
-                    $dbItem->metadata()->delete(); // Reset old draft data
+                    $dbItem->metadata()->delete();
 
                     foreach ($item['meta'] as $rowIndex => $meta) {
                         foreach ($meta as $fieldKey => $value) {
@@ -146,11 +190,28 @@ public function workspace(string $type, string $id)
                 }
             }
 
-            if ($request->ajax()) {
-                return response()->json(['status' => 'success']);
+            $document->refresh();
+
+            // --- 3. FATAL DEBUGGER BYPASS (FORCES RED DEBUG PAGE TO OPEN) ---
+            try {
+                $validation = $this->validationService->evaluateDocument($document);
+            } catch (\Throwable $e) {
+                throw new \Error(
+                    "DEBUG CRASH: " . $e->getMessage() . 
+                    " in " . $e->getFile() . " on line " . $e->getLine() . 
+                    " | DB Snapshot: " . json_encode($document->compiled_profile_snapshot)
+                );
             }
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'status'     => 'success',
+                    'validation' => $validation
+                ]);
+            }
+
             return back()->with('success', 'Draft saved.');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             if ($request->ajax()) {
                 return response()->json(['error' => $e->getMessage()], 422);
             }
@@ -197,26 +258,7 @@ public function workspace(string $type, string $id)
         ]);
     }
 
-    /**
-     * Finalize and execute the Composable Materialization Pipeline
-     */
-    public function post(Request $request, string $type, string $id)
-    {
-        $document = Document::findOrFail($id);
-
-        try {
-            // Auto-save any last minute grid/header adjustments first
-            $this->saveDraft($request, $type, $id);
-
-            // Execute the sequential transactional pipeline steps
-            $this->pipelineManager->materialize($document, auth()->id());
-
-            return redirect()->route('storeops.documents.workspace', ['type' => $type, 'id' => $id])
-                             ->with('success', 'Document finalized. Inventory ledger and asset counts have materialized successfully.');
-        } catch (Exception $e) {
-            return back()->with('error', $e->getMessage());
-        }
-    }
+    
 
     /**
      * Generate standard, high-fidelity government A4 PDF printout
@@ -250,6 +292,76 @@ public function workspace(string $type, string $id)
             return response()->json($compiled);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+      /**
+     * Handle AJAX File Upload and associate it with the Document polymorphically.
+     */
+    public function uploadAttachment(Request $request, string $type, string $id)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:pdf,png,jpg,jpeg,docx,xlsx|max:10240', // Max 10MB
+            'category' => 'required|string'
+        ]);
+
+        $document = Document::findOrFail($id);
+
+        try {
+            if ($document->status !== DocumentState::DRAFT->value) {
+                throw new Exception("Cannot attach files to a finalized document.");
+            }
+
+            $file = $request->file('file');
+            $originalName = $file->getClientOriginalName();
+            
+            // Store file securely inside storage/app/public/attachments/
+            $path = $file->store('attachments', 'public');
+
+            // Persist polymorphic entry
+            $attachment = $document->attachments()->create([
+                'file_path'     => $path,
+                'original_name' => '[' . strtoupper($request->input('category')) . '] ' . $originalName,
+                'mime_type'     => $file->getClientMimeType(),
+                'uploaded_by'   => auth()->id() ?? 1,
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'attachment' => [
+                    'id'   => $attachment->id,
+                    'name' => $attachment->original_name,
+                    'url'  => Storage::url($attachment->file_path)
+                ]
+            ]);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 422);
+        }
+    }
+
+    /**
+     * Delete physical file and database entry.
+     */
+    public function deleteAttachment(string $type, string $id, string $attachmentId)
+    {
+        $document = Document::findOrFail($id);
+
+        try {
+            if ($document->status !== DocumentState::DRAFT->value) {
+                throw new Exception("Cannot alter a finalized document.");
+            }
+
+            $attachment = $document->attachments()->findOrFail($attachmentId);
+
+            // Delete physical file
+            Storage::disk('public')->delete($attachment->file_path);
+            
+            // Delete database row
+            $attachment->delete();
+
+            return response()->json(['status' => 'success']);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 422);
         }
     }
 }

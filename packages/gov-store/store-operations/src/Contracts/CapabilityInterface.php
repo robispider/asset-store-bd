@@ -29,4 +29,6 @@ interface CapabilityInterface
      * @param array $config Configuration payload saved at the profile level.
      */
     public function execute(object $item, array $config = []): void;
+
+    public function renderUI(object $item = null, array $config = []): string;
 }

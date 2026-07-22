@@ -5,12 +5,13 @@ namespace GovStore\StoreOperations\Services;
 use GovStore\StoreOperations\Enums\StockableType;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class ProductResolver
 {
     /**
-     * Unified search mechanism across all supported stockable entities.
-     * Fixed the invalid model hasColumn() method call with standard Laravel Schema facade.
+     * Unified search mechanism across Consumables, Accessories, and Asset Models.
+     * Dynamically calculates stock levels for Asset Models using active count queries.
      */
     public function search(string $term = '', ?StockableType $type = null, int $limit = 50): Collection
     {
@@ -20,7 +21,6 @@ class ProductResolver
         foreach ($typesToSearch as $stockableType) {
             $modelClass = $stockableType->value;
             
-            // Resolve actual class path safely
             if (!class_exists($modelClass)) {
                 continue;
             }
@@ -31,13 +31,15 @@ class ProductResolver
                 $query->where(function ($q) use ($term, $modelClass) {
                     $q->where('name', 'LIKE', "%{$term}%");
                     
-                    // Instantiate a dummy model to safely read its target table name
                     $modelInstance = new $modelClass;
                     $tableName = $modelInstance->getTable();
 
-                    // Safely check if the database table contains an 'item_no' column
+                    // Safely check if the database table contains 'item_no' or 'model_number'
                     if (Schema::hasColumn($tableName, 'item_no')) {
                         $q->orWhere('item_no', 'LIKE', "%{$term}%");
+                    }
+                    if (Schema::hasColumn($tableName, 'model_number')) {
+                        $q->orWhere('model_number', 'LIKE', "%{$term}%");
                     }
                 });
             }
@@ -45,14 +47,28 @@ class ProductResolver
             $items = $query->limit($limit)->get();
 
             foreach ($items as $item) {
+                // DYNAMIC CURRENT STOCK CALCULATION:
+                // Consumables/Accessories have 'qty' column. 
+                // AssetModels must count active rows in the core 'assets' table.
+                $currentStock = 0;
+                if (isset($item->qty)) {
+                    $currentStock = (int) $item->qty;
+                } elseif (class_basename($modelClass) === 'AssetModel') {
+                    // Count actual physical assets registered in Snipe-IT for this model
+                    $currentStock = DB::table('assets')
+                        ->where('model_id', $item->id)
+                        ->whereNull('deleted_at')
+                        ->count();
+                }
+
                 $results->push([
                     'type_enum'     => $stockableType,
                     'type_raw'      => $stockableType->value,
-                    'type_label'    => class_basename($modelClass),
+                    'type_label'    => class_basename($modelClass) === 'AssetModel' ? 'Asset Model' : class_basename($modelClass),
                     'id'            => $item->id,
                     'name'          => $item->name,
-                    'item_no'       => $item->item_no ?? 'N/A',
-                    'current_stock' => (int) $item->qty,
+                    'item_no'       => $item->item_no ?? $item->model_number ?? 'N/A',
+                    'current_stock' => $currentStock,
                 ]);
             }
         }

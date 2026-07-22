@@ -12,8 +12,6 @@ $(document).ready(function() {
     function addRow(data = null) {
         let index = rowCount++;
         let disabled = isDraft ? '' : 'disabled';
-        
-        // 1. Read the flat appended current_stock attribute directly
         let currentStockVal = data ? data.current_stock : '-';
 
         let tr = `
@@ -60,11 +58,10 @@ $(document).ready(function() {
             });
             
             // Handle Product Selection
-         // Handle Product Selection
             $select.on('select2:select', function (e) {
                 let item = e.params.data;
                 
-                // FORCE APPEND to native select so jQuery serialize() can read it
+                // Force append option to native select to guarantee serialization
                 if ($select.find("option[value='" + item.id + "']").length === 0) {
                     var newOption = new Option(item.text, item.id, true, true);
                     $select.append(newOption).trigger('change');
@@ -72,17 +69,16 @@ $(document).ready(function() {
 
                 $row.find('.current-stock').text(item.current_stock);
                 
-                // Parse composed key in JS (e.g. "App\Models\Consumable_3")
                 let parts = item.id.split('_');
                 let productType = parts[0];
                 let productId = parts[1];
 
-                // Fetch dynamic metadata requirements
                 fetchProductProfile(productId, productType, $row);
             });
         }
 
-        // 2. Read the flat appended product_name attribute directly
+        
+        // Prepopulate existing data on load safely
         if (data) {
             let itemName = data.product_name || 'Unknown Product';
             let composedId = data.product_type + '_' + data.product_id;
@@ -90,9 +86,12 @@ $(document).ready(function() {
             
             $select.append(option).trigger('change');
             
-            // Query local frozen snapshot to render requirements immediately
-            let items = (compiledSnapshot && compiledSnapshot.items) ? compiledSnapshot.items : [];
-            let localItem = items.find(i => i.product_id == data.product_id && i.product_type == data.product_type);
+            // Direct Object Key Lookup (Fixes items.find is not a function error)
+            let itemKey = data.product_type + '_' + data.product_id;
+            let localItem = (compiledSnapshot && compiledSnapshot.items && compiledSnapshot.items[itemKey]) 
+                ? compiledSnapshot.items[itemKey] 
+                : null;
+
             if (localItem) {
                 renderMetadataInputs($row, localItem, data.metadata || []);
             }
@@ -185,50 +184,31 @@ $(document).ready(function() {
         });
         $('#sumLines').text(lines);
         $('#sumQty').text(totalQty);
-
-        validateDocumentChecklist();
     }
 
-    function validateDocumentChecklist() {
+    function renderServerValidationChecklist(validationData) {
         let $checklist = $('#checklistRequirements');
-        if ($checklist.length === 0) return;
-        
+        if ($checklist.length === 0 || !validationData) return;
+
         $checklist.empty();
 
-        let totalRequirements = 0;
-        let satisfiedRequirements = 0;
+        if (validationData.checklist) {
+            validationData.checklist.forEach(function(item) {
+                let iconClass = item.passed ? 'fa-check text-green' : 'fa-times text-red';
+                $checklist.append(`<li><i class="fa ${iconClass}"></i> ${item.label}</li>`);
+            });
+        }
 
-        let refNo = $('input[name="reference_no"]').val();
-        let refDate = $('input[name="reference_date"]').val();
+        $('#validationProgress').css('width', (validationData.progress || 0) + '%');
 
-        totalRequirements += 2;
-        if (refNo) satisfiedRequirements++;
-        if (refDate) satisfiedRequirements++;
-
-        $checklist.append(`<li><i class="fa ${refNo ? 'fa-check text-green' : 'fa-times text-red'}"></i> Reference Number</li>`);
-        $checklist.append(`<li><i class="fa ${refDate ? 'fa-check text-green' : 'fa-times text-red'}"></i> Reference Date</li>`);
-
-        $('.meta-input').each(function() {
-            let val = $(this).val();
-            let required = $(this).data('required') === 1;
-
-            if (required) {
-                totalRequirements++;
-                if (val) satisfiedRequirements++;
-            }
-        });
-
-        let percent = totalRequirements > 0 ? Math.round((satisfiedRequirements / totalRequirements) * 100) : 0;
-        $('#validationProgress').css('width', percent + '%');
-
-        if (percent === 100 && totalRequirements > 0) {
+        if (validationData.is_valid) {
             $('#triggerPostBtn').removeAttr('disabled');
         } else {
             $('#triggerPostBtn').attr('disabled', 'disabled');
         }
     }
 
-    // --- Dynamic Listeners ---
+    // --- Dynamic Action Listeners ---
 
     $('#addRowBtn').click(() => addRow());
 
@@ -249,36 +229,46 @@ $(document).ready(function() {
         }
     });
 
-    $('#gridBody').on('input', '.meta-input', function() {
-        validateDocumentChecklist();
-    });
-
-    $('input[name="reference_no"], input[name="reference_date"]').on('input', function() {
-        validateDocumentChecklist();
-    });
-
     // Save Draft (AJAX)
+    // Save Draft (AJAX) - Automatically updates the checklist on completion
     $('#saveDraftBtn').click(function() {
         let btn = $(this);
-        console.log('Initiating draft save via AJAX...');
         btn.html('<i class="fa fa-spinner fa-spin"></i> Saving...');
         
         $.post('{{ route("storeops.documents.draft", ["type" => $type, "id" => $document->id]) }}', $('#workspaceForm').serialize())
             .done(function(res) {
-                console.log('Draft saved successfully:', res);
                 btn.html('<i class="fa fa-check text-green"></i> Saved');
                 setTimeout(() => btn.html('<i class="fa fa-save"></i> Save Draft'), 2000);
+
+                // Render server-authoritative checklist immediately
+                if (res.validation) {
+                    renderServerValidationChecklist(res.validation);
+                }
             })
             .fail(function(xhr) {
-                console.error('Failed to save draft:', xhr.responseText);
-                alert('Error saving draft: ' + xhr.responseText);
+                // Defensive Error Extraction: Reads message, errors, or raw response
+                let errorMsg = 'An error occurred while saving.';
+                
+                if (xhr.responseJSON) {
+                    if (xhr.responseJSON.message) {
+                        errorMsg = xhr.responseJSON.message;
+                    } else if (xhr.responseJSON.error) {
+                        errorMsg = xhr.responseJSON.error;
+                    } else if (xhr.responseJSON.errors) {
+                        errorMsg = Object.values(xhr.responseJSON.errors).flat().join('\n');
+                    }
+                } else if (xhr.responseText) {
+                    errorMsg = xhr.responseText;
+                }
+
+                console.error('Save Draft Failed:', xhr);
+                alert('Error saving draft:\n' + errorMsg);
                 btn.html('<i class="fa fa-save"></i> Save Draft');
             });
     });
 
     // Trigger Posting Preview Modal
     $('#triggerPostBtn').click(function() {
-        console.log('Initiating pre-posting save & preview compile...');
         $.post('{{ route("storeops.documents.draft", ["type" => $type, "id" => $document->id]) }}', $('#workspaceForm').serialize())
             .done(function() {
                 $.get('{{ route("storeops.documents.preview", ["type" => $type, "id" => $document->id]) }}')
@@ -295,11 +285,105 @@ $(document).ready(function() {
             });
     });
 
-    // Bootstrapping: Populate existing document items on load safely
+    // File Upload Handler (Phase 5)
+    $('#uploadFileBtn').click(function() {
+        let fileInput = $('#attachmentFile')[0];
+        let category = $('#attachmentCategory').val();
+
+        if (fileInput.files.length === 0) {
+            alert('Please select a file to upload first.');
+            return;
+        }
+
+        let file = fileInput.files[0];
+        let formData = new FormData();
+        formData.append('file', file);
+        formData.append('category', category);
+        formData.append('_token', '{{ csrf_token() }}');
+
+        let btn = $(this);
+        btn.html('<i class="fa fa-spinner fa-spin"></i> Uploading...').attr('disabled', 'disabled');
+
+        $.ajax({
+            url: '{{ route("storeops.documents.attachments.upload", ["type" => $type, "id" => $document->id]) }}',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(res) {
+                btn.html('<i class="fa fa-upload"></i> Upload').removeAttr('disabled');
+                $('#attachmentFile').val('');
+                $('#noAttachmentsMsg').remove();
+
+                let li = `
+                    <li class="list-group-item attachment-item" data-id="${res.attachment.id}" style="border-bottom: 1px solid #f4f4f4; padding: 10px 0;">
+                        <i class="fa fa-file-text-o text-blue"></i> 
+                        <a href="${res.attachment.url}" target="_blank" style="margin-left: 5px;">
+                            <strong>${res.attachment.name}</strong>
+                        </a>
+                        <button type="button" class="btn btn-xs btn-danger pull-right delete-attachment" data-id="${res.attachment.id}">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </li>
+                `;
+                $('#attachmentsList').append(li);
+            },
+            error: function(xhr) {
+                alert('File upload failed: ' + (xhr.responseJSON ? xhr.responseJSON.error : 'Unknown error'));
+                btn.html('<i class="fa fa-upload"></i> Upload').removeAttr('disabled');
+            }
+        });
+    });
+
+    // File Delete Handler (Phase 5)
+    $('#attachmentsList').on('click', '.delete-attachment', function() {
+        if (!confirm('Are you sure you want to remove this supporting document?')) return;
+
+        let btn = $(this);
+        let attachmentId = btn.data('id');
+        btn.html('<i class="fa fa-spinner fa-spin"></i>').attr('disabled', 'disabled');
+
+        $.ajax({
+            url: `/gov-store/operations/documents/{{ $type }}/{{ $document->id }}/attachments/${attachmentId}`,
+            type: 'DELETE',
+            data: { _token: '{{ csrf_token() }}' },
+            success: function(res) {
+                $(`li[data-id="${attachmentId}"]`).remove();
+                if ($('.attachment-item').length === 0) {
+                    $('#attachmentsList').append(`
+                        <li class="list-group-item text-center text-muted" id="noAttachmentsMsg" style="border:none;">
+                            No supporting files attached yet.
+                        </li>
+                    `);
+                }
+            },
+            error: function(xhr) {
+                alert('Failed to remove attachment: ' + (xhr.responseJSON ? xhr.responseJSON.error : 'Unknown error'));
+                btn.html('<i class="fa fa-trash"></i>').removeAttr('disabled');
+            }
+        });
+    });
+// ISSUE 1 FIXED: Live Debounced Auto-Validation on Field Edits (600ms delay)
+    let liveValidationTimer = null;
+    $('#workspaceForm').on('input change', 'input, select', function() {
+        clearTimeout(liveValidationTimer);
+        
+        liveValidationTimer = setTimeout(function() {
+            // Silently evaluate form changes with the server
+            $.post('{{ route("storeops.documents.draft", ["type" => $type, "id" => $document->id]) }}', $('#workspaceForm').serialize())
+                .done(function(res) {
+                    if (res.validation) {
+                        renderServerValidationChecklist(res.validation);
+                    }
+                });
+        }, 600);
+    });
+
+    // Bootstrapping: Automatically bootstrap 1 default search row on clean draft load
     if (existingItems && existingItems.length > 0) {
         existingItems.forEach(item => addRow(item));
     } else if (isDraft) {
-        addRow();
+        addRow(); // Bootstraps the first row on page load!
     }
 });
 </script>

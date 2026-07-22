@@ -66,6 +66,7 @@ class StoreOperationsServiceProvider extends ServiceProvider
             'consumable' => \App\Models\Consumable::class,
             'accessory'  => \App\Models\Accessory::class,
             'component'  => \App\Models\Component::class,
+            'assetmodel'  => \App\Models\AssetModel::class,
             
             // REDIRECT LEGACY RECORDS: Automatically instantiates the generic Document class
             'GovStore\StoreOperations\Models\GoodsReceipt' => \GovStore\StoreOperations\Models\Document::class,
