@@ -11,25 +11,34 @@ class MyCatalogService
     /**
      * Retrieve the grid of operational categories adopted by the active context (company or location).
      */
-    public function getLocalGrid(string $scopeType, int $scopeId, int $perPage = 50): LengthAwarePaginator
+   public function getLocalGrid(int $companyId, int $locationId, int $perPage = 50): LengthAwarePaginator
     {
         return Category::withoutGlobalScopes()
             ->select('categories.id', 'categories.name', 'categories.category_type')
-            // Inner Join: Only categories Adopted by this specific scope
-            ->join('gov_tenant_scope_mappings as usage', function ($join) use ($scopeType, $scopeId) {
+            // Inner Join: Categories adopted by the Company OR the specific Location
+            ->join('gov_tenant_scope_mappings as usage', function ($join) use ($companyId, $locationId) {
                 $join->on('categories.id', '=', 'usage.reference_id')
                      ->where('usage.reference_type', '=', 'category')
-                     ->where('usage.scope_type', '=', $scopeType)
-                     ->where('usage.scope_id', '=', $scopeId);
+                     ->where(function ($query) use ($companyId, $locationId) {
+                         if ($companyId > 0) {
+                             $query->where(function ($sq) use ($companyId) {
+                                 $sq->where('usage.scope_type', 'company')->where('usage.scope_id', $companyId);
+                             });
+                         }
+                         if ($locationId > 0) {
+                             $query->orWhere(function ($sq) use ($locationId) {
+                                 $sq->where('usage.scope_type', 'location')->where('usage.scope_id', $locationId);
+                             });
+                         }
+                     });
             })
-            // Left join Governance metadata
             ->leftJoin('gov_category_governance as gov', 'categories.id', '=', 'gov.category_id')
             ->leftJoin('companies as origin_company', 'gov.created_by_company_id', '=', 'origin_company.id')
-            // Left join mapping to get UNSPSC code
             ->leftJoin('gov_catalog_snipe_mappings as map', 'categories.id', '=', 'map.category_id')
             ->addSelect(
                 'usage.updated_at as adopted_at',
                 'usage.is_active as is_adopted_active',
+                'usage.scope_type as active_adoption_scope', // Identifies if it was adopted via Company or Location
                 'gov.governance_type',
                 'origin_company.name as owner_name',
                 'map.code as unspsc_code'

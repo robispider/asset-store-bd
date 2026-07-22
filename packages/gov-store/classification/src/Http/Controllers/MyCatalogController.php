@@ -56,12 +56,15 @@ class MyCatalogController extends Controller
     public function index(TenantContext $tenantContext)
     {
         $accessMode = $this->checkAccess($tenantContext);
-        $scope = $this->resolveScope($tenantContext);
+        
+        $companyId = $tenantContext->companyId ?? 0;
+        $locationId = $tenantContext->locationId ?? 0;
 
-        $categories = $this->service->getLocalGrid($scope['type'], $scope['id'], 50);
+        // Fixed: Pass both companyId and locationId integers directly to the service
+        $categories = $this->service->getLocalGrid($companyId, $locationId, 50);
         
         $isReadOnly = ($accessMode === 'employee');
-        $scopeNoun = ($scope['type'] === 'company') ? 'organization' : 'office location';
+        $scopeNoun = ($companyId > 0) ? 'organization' : 'office location';
 
         return view('gov-classification::my-catalog.index', compact('categories', 'isReadOnly', 'scopeNoun'));
     }
@@ -73,6 +76,7 @@ class MyCatalogController extends Controller
 
         $scope = $this->resolveScope($tenantContext);
 
+        // Fixed: Pass the integers to match the service definition
         $details = $this->service->getLocalDetails($id, $scope['type'], $scope['id'], $tenantContext->locationId);
         if (!$details) abort(404, __('classification::texts.ctrl_exception_category_not_found'));
 

@@ -11,17 +11,29 @@ use Exception;
 
 class CategoryAdoptionController extends Controller
 {
+   /**
+     * Intelligently resolves the target boundary based on the user's operational rank.
+     */
     private function resolveScope(TenantContext $context): array
     {
-        if ($context->companyId > 0) {
-            return ['type' => 'company', 'id' => $context->companyId];
+        $user = auth()->user();
+        
+        // 1. Is the user a Company Admin for this context?
+        $isCompanyAdmin = \GovStore\Organization\Models\CompanyAdmin::where('user_id', $user->id)
+            ->where('company_id', $context->companyId)
+            ->exists();
+
+        if ($isCompanyAdmin && $context->companyId > 0) {
+            return ['type' => 'company', 'id' => $context->companyId]; // Adopts for the entire Ministry
         }
+
+        // 2. Otherwise, they are local staff (Storekeeper/Office Admin). Scope strictly to their building.
         if ($context->locationId > 0) {
             return ['type' => 'location', 'id' => $context->locationId];
         }
+
         throw new Exception(__('classification::texts.ctrl_exception_no_operational_context'));
     }
-
     public function adopt(Request $request, CategoryAdoptionService $adoptionService, TenantContext $tenantContext)
     {
         $request->validate(['category_id' => 'required|integer']);

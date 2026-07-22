@@ -1,6 +1,13 @@
 ﻿@php
     $user = auth()->user();
     $isSuperAdmin = $user->isSuperUser() || $user->hasAccess('admin');
+    
+    // Check if the current user is a Company Admin for the active context
+    $isCompanyAdmin = \GovStore\Organization\Models\CompanyAdmin::where('user_id', $user->id)
+        ->where('company_id', $tenantContext->companyId)
+        ->exists();
+
+    $isGlobal = ($governance && $governance->governance_type === 'global');
     $scopeNoun = ($activeScopeType === 'company') ? 'organization' : 'office location';
 @endphp
 
@@ -40,17 +47,17 @@
                             <div class="radio">
                                 <label style="font-weight: bold;">
                                     <input type="radio" name="governance_type" value="global" checked id="gov-global-radio">
-                                    Shared Government Standard
+                                    {{ __('classification::texts.adoption_gov_shared_standard') }}
                                 </label>
-                                <p class="text-muted" style="font-size: 12px; margin-left: 20px;">Available globally to all organizations.</p>
+                                <p class="text-muted" style="font-size: 12px; margin-left: 20px;">{{ __('classification::texts.adoption_gov_available_globally') }}</p>
                             </div>
                             
                             <div class="radio" style="margin-top: 15px;">
                                 <label style="font-weight: bold;">
                                     <input type="radio" name="governance_type" value="company" id="gov-company-radio">
-                                    Organization Standard (Private)
+                                    {{ __('classification::texts.adoption_gov_org_private') }}
                                 </label>
-                                <p class="text-muted" style="font-size: 12px; margin-left: 20px;">Assign exclusively to a specific organization.</p>
+                                <p class="text-muted" style="font-size: 12px; margin-left: 20px;">{{ __('classification::texts.adoption_gov_assign_org') }}</p>
                             </div>
 
                             <div id="company-assignment-div" style="display: none; margin-top: 10px; margin-left: 20px;">
@@ -78,70 +85,61 @@
             </div>
         </div>
 
-    @elseif(!$isAdoptedByMe)
-        <!-- STATE 2: Mapped, but NOT Adopted -->
-        <div class="box box-solid" style="margin-top: 20px; border: 1px solid #d2d6de; border-top: 3px solid #f39c12;">
+    @elseif($isGlobal)
+        <!-- STATE 2: Globally Shared Standard (Already visible, no adoption needed) -->
+        <div class="box box-solid" style="margin-top: 20px; border: 1px solid #d2d6de; border-top: 3px solid #00c0ef;">
             <div class="box-body" style="padding: 20px;">
-                <h4 style="margin-top: 0; font-weight: bold;"><i class="fas fa-link text-warning"></i> {{ __('classification::texts.adoption_mapped_category') }}</h4>
-                <!-- Example update for State 3 Header -->
-<h4 style="margin-top: 0; font-weight: bold;"><i class="fas fa-check-circle text-success"></i> ✓ {{ __('classification::texts.adoption_used_by_your', ['scopeNoun' => $scopeNoun]) }}</h4>
-                <p class="lead" style="margin-bottom: 5px; color: #333;">{{ $currentMapping->category->name }}</p>
+                <h4 style="margin-top: 0; font-weight: bold;"><i class="fas fa-globe text-aqua"></i> {{ __('classification::texts.adoption_gov_shared_standard') }}</h4>
+                <p class="lead" style="margin-bottom: 5px; color: #333;">{{ $currentMapping->category?->name ?? 'Category' }}</p>
+                <p class="text-muted" style="font-size: 13px;">This official classification is globally available. It is already visible and ready for use in your local office dropdowns.</p>
+            </div>
+        </div>
+
+    @elseif($isCompanyAdopted)
+        <!-- STATE 3: Company Standard (Already visible to local office) -->
+        <div class="box box-solid" style="margin-top: 20px; border: 1px solid #d2d6de; border-top: 3px solid #605ca8;">
+            <div class="box-body" style="padding: 20px;">
+                <h4 style="margin-top: 0; font-weight: bold;"><i class="fas fa-university text-purple"></i> Used by your Ministry / Organization</h4>
+                <p class="lead" style="margin-bottom: 5px; color: #333;">{{ $currentMapping->category?->name ?? 'Category' }}</p>
+                <p class="text-muted" style="font-size: 13px;">Your parent Ministry has adopted this classification. It is already visible and ready for use in your local office.</p>
                 
-                <table class="table table-condensed text-muted" style="margin-top: 15px; font-size: 13px;">
-                    <tr>
-                        <th style="width: 150px; border-top: none;">{{ __('classification::texts.adoption_governance_label') }}</th>
-                        <td style="border-top: none;">
-                      @if($governance && $governance->governance_type === 'global')
-                                <span class="text-green"><i class="fas fa-globe"></i> {{ __('classification::texts.governance_show_shared_gov_standard') }}</span>
-                            @elseif($governance)
-                                <span class="text-orange"><i class="fas fa-building"></i> {{ __('classification::texts.governance_show_org_managed') }}</span>
-                            @else
-                                <span class="text-muted"><i class="fas fa-server"></i> {{ __('classification::texts.adoption_native_snipeit_category') }}</span>
-                            @endif
-                        </td>
-                    </tr>
-                </table>
+                @if($isCompanyAdmin)
+                    <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+                        <button class="btn btn-default btn-abandon" data-id="{{ $currentMapping->category_id }}">
+                            <i class="fas fa-times"></i> Stop Using for Ministry
+                        </button>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+    @elseif($isLocationAdopted)
+        <!-- STATE 4: Location Standard (Adopted privately by this specific office) -->
+        <div class="box box-solid" style="margin-top: 20px; border: 1px solid #d2d6de; border-top: 3px solid #00a65a;">
+            <div class="box-body" style="padding: 20px;">
+                <h4 style="margin-top: 0; font-weight: bold;"><i class="fas fa-map-marker-alt text-success"></i> Used by your Local Office</h4>
+                <p class="lead" style="margin-bottom: 5px; color: #333;">{{ $currentMapping->category?->name ?? 'Category' }}</p>
+                <p class="text-muted" style="font-size: 13px;">This classification was adopted specifically for your local office building.</p>
 
                 <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
-                    <!-- Any authorized user can adopt it if they can see it -->
-                    <button class="btn btn-success btn-adopt" data-id="{{ $currentMapping->category_id }}">
-                        <i class="fas fa-check"></i> {{ __('classification::texts.adoption_btn_use_category') }}
+                    <button class="btn btn-default btn-abandon" data-id="{{ $currentMapping->category_id }}">
+                        <i class="fas fa-times"></i> {{ __('classification::texts.adoption_btn_stop_using') }}
                     </button>
                 </div>
             </div>
         </div>
 
     @else
-        <!-- STATE 3: Mapped AND Adopted -->
-        <div class="box box-solid" style="margin-top: 20px; border: 1px solid #d2d6de; border-top: 3px solid #00a65a;">
+        <!-- STATE 5: Mapped, but NOT Adopted Anywhere Yet -->
+        <div class="box box-solid" style="margin-top: 20px; border: 1px solid #d2d6de; border-top: 3px solid #f39c12;">
             <div class="box-body" style="padding: 20px;">
-                <h4 style="margin-top: 0; font-weight: bold;"><i class="fas fa-link text-success"></i> {{ __('classification::texts.adoption_mapped_category') }}</h4>
-                <!-- Example update for State 3 Header -->
-<h4 style="margin-top: 0; font-weight: bold;"><i class="fas fa-check-circle text-success"></i> ✓ {{ __('classification::texts.adoption_used_by_your', ['scopeNoun' => $scopeNoun]) }}</h4>
-                <p class="lead" style="margin-bottom: 5px; color: #333;">{{ $currentMapping->category->name }}</p>
-
-                <table class="table table-condensed text-muted" style="margin-top: 15px; font-size: 13px;">
-                    <tr>
-                        <th style="width: 150px; border-top: none;">{{ __('classification::texts.adoption_governance_label') }}</th>
-                        <td style="border-top: none;">
-                        @if($governance && $governance->governance_type === 'global')
-                                <span class="text-green"><i class="fas fa-globe"></i> Shared Government Standard</span>
-                            @elseif($governance)
-                                <span class="text-orange"><i class="fas fa-building"></i> Organization Standard</span>
-                            @else
-                                <span class="text-muted"><i class="fas fa-server"></i> Native Snipe-IT Category</span>
-                            @endif
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>{{ __('classification::texts.governance_show_gov_scope') }}</th>
-                        <td class="text-success"><strong>✓ {{ __('classification::texts.adoption_used_by_your', ['scopeNoun' => $scopeNoun]) }}</strong></td>
-                    </tr>
-                </table>
+                <h4 style="margin-top: 0; font-weight: bold;"><i class="fas fa-link text-warning"></i> Available for Adoption</h4>
+                <p class="lead" style="margin-bottom: 5px; color: #333;">{{ $currentMapping->category?->name ?? 'Private Category' }}</p>
+                <p class="text-muted" style="font-size: 13px;">This classification is not currently in use by your Ministry or Office.</p>
 
                 <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
-                    <button class="btn btn-default btn-abandon" data-id="{{ $currentMapping->category_id }}">
-                        <i class="fas fa-times"></i> {{ __('classification::texts.adoption_btn_stop_using') }}
+                    <button class="btn btn-success btn-adopt" data-id="{{ $currentMapping->category_id }}">
+                        <i class="fas fa-check"></i> {{ $isCompanyAdmin ? 'Adopt for Ministry' : 'Adopt for Local Office' }}
                     </button>
                 </div>
             </div>
@@ -183,7 +181,6 @@ $(document).ready(function() {
             category_type: $('#prov_category_type').val(),
         };
 
-        // Inject superadmin fields only if they exist in the DOM
         if ($('input[name="governance_type"]').length > 0) {
             payload.governance_type = $('input[name="governance_type"]:checked').val();
             payload.target_company_id = $('#prov_target_company').val();
@@ -193,8 +190,8 @@ $(document).ready(function() {
         .done(function() {
             reloadWorkspace();
         }).fail(function(xhr) {
-            alert('Provisioning failed: ' + (xhr.responseJSON?.message || 'Error'));
-            btn.html('<i class="fas fa-plus"></i> Create & Adopt').prop('disabled', false);
+            alert('{{ __('classification::texts.adoption_js_provisioning_failed') }}' + (xhr.responseJSON?.message || 'Error'));
+            btn.html('<i class="fas fa-plus"></i> {{ __('classification::texts.adoption_btn_create_adopt') }}').prop('disabled', false);
         });
     });
 
@@ -216,7 +213,7 @@ $(document).ready(function() {
             _token: '{{ csrf_token() }}', category_id: btn.data('id')
         }).done(function() { reloadWorkspace(); }).fail(function(xhr) {
             alert('Governance Blocked: ' + (xhr.responseJSON?.message || 'Error'));
-            btn.html('<i class="fas fa-times"></i> Stop Using').prop('disabled', false);
+            btn.html('<i class="fas fa-times"></i> {{ __('classification::texts.adoption_btn_stop_using') }}').prop('disabled', false);
         });
     });
 });

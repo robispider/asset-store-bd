@@ -123,8 +123,8 @@ class CatalogSearchController extends Controller
         ]);
     }
 
-    /**
-     * Show the mapping editor and governance/adoption metadata. (Optimized & Clean)
+ /**
+     * Show the mapping editor and governance/adoption metadata. (Optimized & Defensive)
      */
     public function showMapping(Request $request, $code = null)
     {
@@ -135,37 +135,36 @@ class CatalogSearchController extends Controller
             $mappings = \GovStore\Classification\Models\CatalogNode::whereHas('snipeMapping')
                 ->with(['snipeMapping'])
                 ->paginate(15);
-
             return view('gov-classification::manager.mapping', compact('mappings'));
         }
 
         $searcher = app(CatalogSearchService::class);
         $node = $searcher->findByCode($scheme, (string) $code);
 
-        if (!$node) {
-            return response()->json(['success' => false, 'message' => 'Node not found.'], 404);
-        }
+        if (!$node) return response()->json(['success' => false, 'message' => 'Node not found.'], 404);
 
-           $tenantContext = app(TenantContext::class);
+        $tenantContext = app(TenantContext::class);
         $adoptionService = app(CategoryAdoptionService::class);
         
-        $isAdoptedByMe = false;
-        $activeScopeType = 'location';
-        $activeScopeId = $tenantContext->locationId;
+        $isCompanyAdopted = false;
+        $isLocationAdopted = false;
+        $governance = null;
 
-        // If they have a parent company, operations upgrade to the company scope
+        // Reintroduced the active scope determination for dynamic UI labels
+        $activeScopeType = 'location';
         if ($tenantContext->companyId > 0) {
             $activeScopeType = 'company';
-            $activeScopeId = $tenantContext->companyId;
         }
-        
-        $governance = null;
         
         if ($node->snipeMapping) {
             $categoryId = $node->snipeMapping->category_id;
             
-            if ($activeScopeId > 0) {
-                $isAdoptedByMe = $adoptionService->isUsedBy($categoryId, $activeScopeType, $activeScopeId);
+            // Independently verify Company-level and Location-level adoptions
+            if ($tenantContext->companyId > 0) {
+                $isCompanyAdopted = $adoptionService->isUsedBy($categoryId, 'company', $tenantContext->companyId);
+            }
+            if ($tenantContext->locationId > 0) {
+                $isLocationAdopted = $adoptionService->isUsedBy($categoryId, 'location', $tenantContext->locationId);
             }
             
             $governance = \GovStore\Classification\Models\CategoryGovernance::with('originatingCompany')
@@ -173,11 +172,14 @@ class CatalogSearchController extends Controller
         }
 
         return view('gov-classification::search.mapping', [
-            'node'            => $node,
-            'currentMapping'  => $node->snipeMapping,
-            'isAdoptedByMe'   => $isAdoptedByMe,
-            'governance'      => $governance,
-            'activeScopeType' => $activeScopeType,
+            'node'              => $node,
+            'currentMapping'    => $node->snipeMapping,
+            'isCompanyAdopted'  => $isCompanyAdopted,
+            'isLocationAdopted' => $isLocationAdopted,
+            'governance'        => $governance,
+            'activeScopeType'   => $activeScopeType, // Restored variable
+            'tenantContext'     => $tenantContext,
+            'suggestedCategory' => null,
         ]);
     }
 
