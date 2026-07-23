@@ -8,24 +8,31 @@ class Profile extends Model
 {
     protected $table = 'gov_profiles';
 
-    protected $fillable = ['parent_id', 'name', 'layer'];
+    protected $fillable = [
+        'name', 'scope', 'owner_type', 'owner_id', 'status', 'version'
+    ];
 
-    public function parent()
+    /**
+     * Polymorphic owner of the policy (e.g. System, Company, Location)
+     */
+    public function owner()
     {
-        return $this->belongsTo(self::class, 'parent_id');
-    }
-
-    public function children()
-    {
-        return $this->hasMany(self::class, 'parent_id');
+        return $this->morphTo();
     }
 
     /**
-     * FIXED: Clean hasMany mapping directly to the composed capability records.
-     * Completely removes the obsolete belongsToMany/pivot dependencies.
+     * The actual business rules (plugins) assigned to this policy.
      */
     public function capabilities()
     {
         return $this->hasMany(ProfileCapability::class, 'profile_id');
+    }
+
+    /**
+     * The targets (Categories, Models, etc.) that have adopted this policy.
+     */
+    public function assignments()
+    {
+        return $this->hasMany(ProfileAssignment::class, 'profile_id');
     }
 }

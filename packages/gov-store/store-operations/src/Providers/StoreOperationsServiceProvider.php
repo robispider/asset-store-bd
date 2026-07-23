@@ -77,6 +77,11 @@ class StoreOperationsServiceProvider extends ServiceProvider
 
         // 11. Register the Kardex Workspace Tab to target entities
         $this->registerKardexTabs();
+
+
+        // 12. Register Passive Sync Observer on native Snipe-IT Category Model
+        \App\Models\Category::observe(\GovStore\StoreOperations\Observers\SnipeCategoryObserver::class);
+
     }
 
     protected function registerNavigationMenus(): void
@@ -109,6 +114,16 @@ class StoreOperationsServiceProvider extends ServiceProvider
                 'gov-store/operations/hub',
                 'gov-store/operations/documents/*'
             ],
+        ]);
+
+        $registry->register([
+            'id'              => 'storeops-admin-rules',
+            'parent'          => 'gov-store',
+            'title'           => 'Product Rules Studio',
+            'icon'            => 'fas fa-cogs text-purple',
+            'route'           => 'storeops.admin.rules.index',
+            'permission'      => 'superuser', // Admin only
+            'order'           => 90,
         ]);
     }
 

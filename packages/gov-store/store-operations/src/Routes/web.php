@@ -44,4 +44,11 @@ Route::group([
     // Unified Product Search API (Powers the Select2 Spreadsheet Grid)
     Route::get('/api/products/search', [DocumentWorkspaceController::class, 'searchProducts'])->name('storeops.api.products.search');
 
+    // =========================================================================
+    // 3. Administrative Policy Studio (Product Rules Configuration)
+    // =========================================================================
+    Route::get('/settings/product-rules', [\GovStore\StoreOperations\Http\Controllers\ProfileAdminController::class, 'index'])->name('storeops.admin.rules.index');
+    Route::get('/settings/product-rules/inspector', [\GovStore\StoreOperations\Http\Controllers\ProfileAdminController::class, 'inspector'])->name('storeops.admin.rules.inspector');
+    Route::post('/settings/product-rules/assign', [\GovStore\StoreOperations\Http\Controllers\ProfileAdminController::class, 'assignPolicy'])->name('storeops.admin.rules.assign');
+
 });

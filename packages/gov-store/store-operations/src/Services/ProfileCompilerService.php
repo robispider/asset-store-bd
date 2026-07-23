@@ -3,15 +3,14 @@
 namespace GovStore\StoreOperations\Services;
 
 use GovStore\StoreOperations\Models\Document;
-use GovStore\StoreOperations\Models\Profile;
+use GovStore\StoreOperations\Models\ProfileAssignment;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
 class ProfileCompilerService
 {
     /**
-     * In-memory request cache. Prevents duplicate database queries 
-     * when processing multiple items of the same category in a single document.
+     * In-memory request cache for lightning-fast compilation of identical items.
      */
     protected static array $resolvedCache = [];
 
@@ -31,32 +30,34 @@ class ProfileCompilerService
     }
 
     /**
-     * The 4-Layer Resolution Engine. Merges capability codes and payloads Top-Down.
+     * The Assignment Resolution Engine.
+     * Finds active policies linked to the Model, Category, or Global scope and merges them.
      */
     public function compileItem(string $productType, int $productId): array
     {
-        // 1. Resolve layers dynamically
-        $layers = [
-            $this->resolveGlobal(),
-            $this->resolveMajorType($productType),
-            $this->resolveCategory($productType, $productId),
-            $this->resolveModel($productType, $productId) // Optional
-        ];
+        // 1. Resolve the active profile ID for this product
+        $activeProfileId = $this->resolveAssignedProfileId($productType, $productId);
+
+        if (!$activeProfileId) {
+            return []; // No rules assigned
+        }
 
         $mergedCapabilities = [];
 
-        // 2. Top-down CSS-style merge
-        foreach (array_filter($layers) as $profile) {
-            foreach ($profile->capabilities as $cap) {
-                $code = $cap->capability_code;
-                $config = $cap->config_payload ?? [];
+        // 2. Fetch assigned capabilities (plugins) from the active policy
+        $capabilities = DB::table('gov_profile_capabilities')
+            ->where('profile_id', $activeProfileId)
+            ->get();
 
-                // Child redefinitions override parent configurations
-                if (isset($mergedCapabilities[$code])) {
-                    $mergedCapabilities[$code] = array_merge($mergedCapabilities[$code], $config);
-                } else {
-                    $mergedCapabilities[$code] = $config;
-                }
+        foreach ($capabilities as $cap) {
+            $code = $cap->capability_code;
+            $config = json_decode($cap->config_payload ?? '{}', true);
+
+            // Child configs overwrite parent configs for the same capability
+            if (isset($mergedCapabilities[$code])) {
+                $mergedCapabilities[$code] = array_merge($mergedCapabilities[$code], $config);
+            } else {
+                $mergedCapabilities[$code] = $config;
             }
         }
 
@@ -64,102 +65,60 @@ class ProfileCompilerService
     }
 
     /**
-     * Dynamically determines which Profile ID is the deepest entry point 
-     * for a given line item. Uses cascading logic (Model -> Category -> Major Type -> Global).
+     * Dynamically determines which Published Policy is actively assigned 
+     * to a given line item. Uses cascading logic: Model Override -> Category Default.
      */
-    protected function resolveStartingProfileId(string $productType, int $productId): int
+    protected function resolveAssignedProfileId(string $productType, int $productId): ?int
     {
-        // 1. Check if model-specific override profile exists (Highest Priority)
-        $modelProfile = $this->resolveModel($productType, $productId);
-        if ($modelProfile) {
-            return $modelProfile->id;
+        $cacheKey = "{$productType}_{$productId}";
+
+        if (isset(self::$resolvedCache[$cacheKey])) {
+            return self::$resolvedCache[$cacheKey];
         }
 
-        // 2. Check if category-specific profile exists (Category Priority)
-        $categoryProfile = $this->resolveCategory($productType, $productId);
-        if ($categoryProfile) {
-            return $categoryProfile->id;
+        $profileId = null;
+
+        if ($productType === 'assetmodel' || $productType === 'asset_model') {
+            // 1. Check for Model-Level Override Assignment
+            $profileId = $this->getActiveAssignment('App\Models\AssetModel', $productId);
+
+            if (!$profileId) {
+                // 2. Fallback to Category-Level Assignment
+                $categoryId = DB::table('models')->where('id', $productId)->value('category_id');
+                if ($categoryId) {
+                    $profileId = $this->getActiveAssignment('App\Models\Category', $categoryId);
+                }
+            }
+        } else {
+            // Consumables, Accessories, Components (Check Category Assignment)
+            $modelClass = \Illuminate\Database\Eloquent\Relations\Relation::getMorphedModel($productType);
+            if ($modelClass) {
+                $categoryId = DB::table((new $modelClass)->getTable())->where('id', $productId)->value('category_id');
+                if ($categoryId) {
+                    $profileId = $this->getActiveAssignment('App\Models\Category', $categoryId);
+                }
+            }
         }
 
-        // 3. Check if Major Type profile exists (Type Priority)
-        $majorTypeProfile = $this->resolveMajorType($productType);
-        if ($majorTypeProfile) {
-            return $majorTypeProfile->id;
-        }
-
-        // 4. Fallback to root Global Base profile (Lowest Priority)
-        $globalProfile = $this->resolveGlobal();
-        if ($globalProfile) {
-            return $globalProfile->id;
-        }
-
-        throw new Exception("Critical Store Engine Error: No root Global Profile found in database.");
+        self::$resolvedCache[$cacheKey] = $profileId;
+        return $profileId;
     }
 
-    // --- Dynamic Memoized Layer Resolvers ---
-
-    protected function resolveGlobal(): ?Profile
+    /**
+     * Helper to fetch the currently active profile assignment for a target.
+     * Enforces the 'effective_from' and 'effective_to' date constraints.
+     */
+    protected function getActiveAssignment(string $targetType, int $targetId): ?int
     {
-        // Cache in memory; only runs database query on the first call of the request
-        return self::$resolvedCache['GLOBAL'] ??= Profile::with('capabilities')
-            ->where('layer', 'GLOBAL')
-            ->first();
-    }
-
-    protected function resolveMajorType(string $type): ?Profile
-    {
-        $profileName = match ($type) {
-            'assetmodel'  => 'Hardware Asset', // FIXED
-            'consumable'  => 'Consumable Supply',
-            'accessory'   => 'Accessory',
-            'component'   => 'Component',
-            default       => null
-        };
-
-        if (!$profileName) {
-            return null;
-        }
-
-        $cacheKey = "MAJOR_" . str_replace(' ', '_', $profileName);
-
-        return self::$resolvedCache[$cacheKey] ??= Profile::with('capabilities')
-            ->where('layer', 'MAJOR_TYPE')
-            ->where('name', $profileName)
-            ->first();
-    }
-
-    protected function resolveCategory(string $type, int $id): ?Profile
-    {
-        if ($type !== 'assetmodel') { // FIXED
-            return null;
-        }
-
-        $categoryId = DB::table('models')->where('id', $id)->value('category_id');
-        if (!$categoryId) {
-            return null;
-        }
-
-        $categoryName = DB::table('categories')->where('id', $categoryId)->value('name');
-        if (!$categoryName) {
-            return null;
-        }
-
-        $cacheKey = "CAT_" . str_replace(' ', '_', $categoryName);
-
-        return self::$resolvedCache[$cacheKey] ??= Profile::with('capabilities')
-            ->where('layer', 'CATEGORY')
-            ->where('name', $categoryName)
-            ->first();
-    }
-
-    protected function resolveModel(string $type, int $id): ?Profile
-    {
-        $profileName = "Model_{$id}";
-        $cacheKey = "MODEL_{$id}";
-
-        return self::$resolvedCache[$cacheKey] ??= Profile::with('capabilities')
-            ->where('layer', 'MODEL')
-            ->where('name', $profileName)
-            ->first();
+        $now = now();
+        
+        return ProfileAssignment::where('target_type', $targetType)
+            ->where('target_id', $targetId)
+            ->where('effective_from', '<=', $now)
+            ->where(function ($query) use ($now) {
+                $query->whereNull('effective_to')
+                      ->orWhere('effective_to', '>', $now);
+            })
+            ->value('profile_id');
     }
 }

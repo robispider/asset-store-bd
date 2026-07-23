@@ -11,9 +11,6 @@ class ProfileCapability extends Model
 
     protected $fillable = ['profile_id', 'capability_code', 'config_payload'];
 
-    /**
-     * Cast JSON payload natively to array when retrieved.
-     */
     protected $casts = [
         'config_payload' => 'array'
     ];
