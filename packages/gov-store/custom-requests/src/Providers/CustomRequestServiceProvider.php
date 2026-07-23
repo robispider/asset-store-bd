@@ -36,6 +36,8 @@ class CustomRequestServiceProvider extends ServiceProvider
 
         Relation::morphMap([
             'asset'       => \App\Models\Asset::class,
+             'assetmodel'  => \App\Models\AssetModel::class,
+              'asset_model' => \App\Models\AssetModel::class,
             'accessory'   => \App\Models\Accessory::class,
             'consumable'  => \App\Models\Consumable::class,
             'license'     => \App\Models\License::class,

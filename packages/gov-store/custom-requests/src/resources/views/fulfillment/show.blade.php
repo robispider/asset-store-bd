@@ -1,235 +1,319 @@
 @extends('layouts/default')
-
-@section('title', __('requestlabels::requests.fulfillment_show_title_prefix') . $serviceRequest->request_number)
+@section('title', 'Fulfillment Workspace: ' . $serviceRequest->request_number)
 
 @section('content')
-<div class="row">
-    <!-- LEFT: progressive checkout table -->
-    <div class="col-md-8">
-        <div class="box box-primary">
-            <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-boxes"></i> {{ __('requestlabels::requests.fulfillment_show_header_log_handover') }}</h3>
-            </div>
-            <form action="{{ route('gov.requests.fulfillment.process', $serviceRequest->id) }}" method="POST">
-                @csrf
-                <div class="box-body table-responsive">
-                    <table class="table table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <th>Item Details</th>
-                                <th style="width: 100px;">Approved</th>
-                                <th style="width: 100px;">Already Issued</th>
-                                <th style="width: 100px;">Remaining</th>
-                                <th style="width: 150px;">Issue Qty Now</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($serviceRequest->items as $item)
-                                @if($item->line_approval_status !== 'approved') @continue @endif
-                                
-                                @php
-                                    $model = $item->requested;
-                                    $name = $model ? ($model->present()->name ?: ($model->name ?? $model->asset_tag)) : 'Unknown Item';
-                                    $remaining = $item->approved_qty - $item->issued_qty;
-                                @endphp
-                                <tr id="row_{{ $item->id }}">
-                                    <td>
-                                        <strong id="item_name_{{ $item->id }}">{{ $name }}</strong><br>
-                                        <small class="text-muted">{{ ucfirst($item->requested_type) }}</small>
-                                        
-                                        <!-- Substituted Product Badge Area -->
-                                        <div id="sub_badge_{{ $item->id }}" style="margin-top: 5px;"></div>
-                                        
-                                        <!-- Hidden inputs holding chosen substitution ID -->
-                                        <input type="hidden" name="substitutions[{{ $item->id }}]" id="sub_input_{{ $item->id }}" value="">
-                                    </td>
-                                    <td style="vertical-align: middle;" class="text-center"><strong>{{ $item->approved_qty }}</strong></td>
-                                    <td style="vertical-align: middle;" class="text-center text-success"><strong>{{ $item->issued_qty }}</strong></td>
-                                    <td style="vertical-align: middle;" class="text-center text-danger"><strong>{{ $remaining }}</strong></td>
-                                    <td style="vertical-align: middle;">
-                                        @if($remaining === 0)
-                                            <span class="text-success" style="font-weight: bold;"><i class="fas fa-check"></i> {{ __('requestlabels::requests.fulfillment_show_fully_issued') }}</span>
-                                        @else
-                                            <input type="number" name="issue[{{ $item->id }}]" class="form-control input-sm text-center" value="{{ $remaining }}" min="0" max="{{ $remaining }}">
-                                            
-                                            <!-- Substitute Trigger Button -->
-                                            <button type="button" class="btn btn-xs btn-default btn-block" style="margin-top: 5px;" onclick="openSubstitutionModal({{ $item->id }}, '{{ $item->requested_type }}', '{{ $name }}')">
-                                                <i class="fas fa-exchange-alt"></i> {{ __('requestlabels::requests.fulfillment_show_btn_substitute') }}
-                                            </button>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                <div class="box-footer">
-                    <a href="{{ route('gov.requests.fulfillment.index') }}" class="btn btn-default pull-left"><i class="fas fa-arrow-left"></i> {{ __('requestlabels::requests.fulfillment_show_btn_back') }}</a>
-                    <button type="submit" class="btn btn-primary pull-right" onclick="return confirm('{{ __('requestlabels::requests.fulfillment_show_confirm_handover') }}')">
-                        <i class="fas fa-clipboard-check"></i> {{ __('requestlabels::requests.fulfillment_show_btn_log_checkout') }}
-                    </button>
-                </div>
-            </form>
-        </div>
+<style>
+    .picking-card { background: #fff; border: 1px solid #d2d6de; border-radius: 4px; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .picking-card-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #f4f4f4; padding-bottom: 15px; margin-bottom: 15px; }
+    .item-icon { font-size: 28px; color: #3c8dbc; margin-right: 15px; }
+    .item-title { font-size: 18px; font-weight: bold; margin: 0; color: #333; }
+    .item-meta { font-size: 13px; color: #777; }
+    .metrics-row { display: flex; gap: 20px; margin-bottom: 20px; }
+    .metric-box { background: #f9fafb; border: 1px solid #eee; border-radius: 4px; padding: 10px 15px; text-align: center; flex: 1; }
+    .metric-value { font-size: 22px; font-weight: bold; color: #333; }
+    .metric-label { font-size: 11px; text-transform: uppercase; color: #777; }
+    .scanner-row { background: #f4f4f4; padding: 10px 15px; border-radius: 4px; margin-bottom: 10px; display: flex; align-items: center; }
+    .scanner-number { font-weight: bold; width: 30px; color: #555; }
+    .scanner-input { flex: 1; }
+</style>
 
-        <!-- FORCE CLOSURE OPTION -->
-        <div class="box box-danger">
-            <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-ban"></i> {{ __('requestlabels::requests.fulfillment_show_header_terminate') }}</h3>
+<!-- TOP PANEL: The Legal Header -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="box box-solid bg-blue" style="border-radius: 4px;">
+            <div class="box-body" style="padding: 20px;">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h3 style="margin: 0 0 10px 0; font-weight: bold;">{{ $serviceRequest->request_number }}</h3>
+                        <span class="label bg-green" style="font-size: 13px; padding: 5px 10px;">APPROVED</span>
+                    </div>
+                    <div class="col-md-4" style="border-left: 1px solid rgba(255,255,255,0.2);">
+                        <p style="margin: 0; font-size: 15px;"><strong>Requester:</strong> {{ $serviceRequest->requester->present()->fullName }}</p>
+                        <p style="margin: 5px 0 0 0; font-size: 13px; opacity: 0.9;"><strong>Purpose:</strong> {{ $serviceRequest->purpose }}</p>
+                    </div>
+                    <div class="col-md-4" style="border-left: 1px solid rgba(255,255,255,0.2);">
+                        <p style="margin: 0; font-size: 13px;"><strong>Approved By:</strong> {{ $serviceRequest->approvedBy->present()->fullName ?? 'System' }}</p>
+                        <p style="margin: 5px 0 0 0; font-size: 13px;"><strong>Date:</strong> {{ $serviceRequest->approved_at ? $serviceRequest->approved_at->format('d M Y') : 'N/A' }}</p>
+                    </div>
+                </div>
             </div>
-            <form action="{{ route('gov.requests.fulfillment.close', $serviceRequest->id) }}" method="POST">
-                @csrf
-                <div class="box-body">
-                    <p class="text-muted">{{ __('requestlabels::requests.fulfillment_show_text_stockout') }}</p>
-                    <input type="text" name="reason" class="form-control" placeholder="{{ __('requestlabels::requests.fulfillment_show_input_reason_placeholder') }}" required>
-                </div>
-                <div class="box-footer">
-                    <button type="submit" class="btn btn-danger pull-right" onclick="return confirm('{{ __('requestlabels::requests.fulfillment_show_confirm_force_close') }}')">
-                        <i class="fas fa-times-circle"></i> {{ __('requestlabels::requests.fulfillment_show_btn_force_close') }}
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
+</div>
 
-    <!-- RIGHT: Timeline Audit Log -->
-    <div class="col-md-4">
-        <div class="box box-default">
-            <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-history"></i> {{ __('requestlabels::requests.fulfillment_show_header_timeline') }}</h3>
-            </div>
-            <div class="box-body">
-                <ul class="timeline">
-                    @foreach($serviceRequest->events as $event)
-                        <li>
-                            @if($event->event_type === 'draft_created')
-                                <i class="fa fa-plus bg-blue"></i>
-                            @elseif($event->event_type === 'submitted')
-                                <i class="fa fa-paper-plane bg-yellow-active"></i>
-                            @elseif($event->event_type === 'under_review')
-                                <i class="fa fa-eye bg-purple"></i>
-                            @elseif($event->event_type === 'item_substituted')
-                                <i class="fa fa-exchange-alt bg-orange"></i>
-                            @elseif($event->event_type === 'item_issued')
-                                <i class="fa fa-truck bg-green-active"></i>
+<div class="row">
+    <!-- Main Form: Wraps the picking grid and the main fulfillment action -->
+    <form id="workspaceForm" action="{{ route('gov.requests.fulfillment.process', $serviceRequest->id) }}" method="POST">
+        @csrf
+        
+        <!-- LEFT COLUMN: The Picking Cards -->
+        <div class="col-md-8">
+            @foreach($serviceRequest->items as $item)
+                @if($item->line_approval_status !== 'approved') @continue @endif
+                
+                @php
+                    $type = strtolower(class_basename($item->requested_type));
+                    $isAssetModel = in_array($type, ['assetmodel', 'asset_model']);
+                    $remaining = $item->approved_qty - $item->issued_qty;
+                    
+                    try {
+                        $adapter = \GovStore\CustomRequests\Factories\RequestableFactory::make($item->requested_type, $item->requested_id);
+                        $name = $adapter->getDisplayName();
+                        $currentStock = $adapter->getAvailableQuantity();
+                    } catch (\Exception $e) {
+                        $name = 'Unknown Item';
+                        $currentStock = 0;
+                    }
+                @endphp
+
+                <div class="picking-card" data-line-id="{{ $item->id }}" data-type="{{ $isAssetModel ? 'asset' : 'bulk' }}" data-remaining="{{ $remaining }}">
+                    
+                    <div class="picking-card-header">
+                        <div style="display: flex; align-items: center;">
+                            <div class="item-icon">
+                                {!! $isAssetModel ? '<i class="fas fa-laptop"></i>' : '<i class="fas fa-box-open"></i>' !!}
+                            </div>
+                            <div>
+                                <h4 class="item-title" id="item_name_{{ $item->id }}">{{ $name }}</h4>
+                                <span class="item-meta">{{ $isAssetModel ? 'Asset Model' : ucfirst($type) }}</span>
+                                <div id="sub_badge_{{ $item->id }}"></div>
+                                <input type="hidden" name="substitutions[{{ $item->id }}]" id="sub_input_{{ $item->id }}" value="">
+                            </div>
+                        </div>
+                        <div>
+                            @if($remaining > 0)
+                                <button type="button" class="btn btn-sm btn-default" onclick="openSubstitutionModal({{ $item->id }}, '{{ $item->requested_type }}', '{{ $name }}')">
+                                    <i class="fas fa-exchange-alt text-orange"></i> Substitute
+                                </button>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="metrics-row">
+                        <div class="metric-box">
+                            <div class="metric-value">{{ $item->approved_qty }}</div>
+                            <div class="metric-label">Approved</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-value text-success">{{ $item->issued_qty }}</div>
+                            <div class="metric-label">Issued</div>
+                        </div>
+                        <div class="metric-box" style="background: #fdf2f2; border-color: #f2dede;">
+                            <div class="metric-value text-danger">{{ $remaining }}</div>
+                            <div class="metric-label">Remaining</div>
+                        </div>
+                    </div>
+
+                    <div style="border-top: 1px solid #f4f4f4; padding-top: 15px;">
+                        @if($remaining === 0)
+                            <div class="text-center text-success" style="font-size: 16px; font-weight: bold; padding: 10px;">
+                                <i class="fas fa-check-circle fa-2x"></i><br>Fully Issued
+                            </div>
+                        @else
+                            
+                            <!-- SCENARIO A: ASSET MODEL (The Scanner Sub-Grid) -->
+                            @if($isAssetModel)
+                                <label style="margin-bottom: 10px; color: #555;"><i class="fas fa-barcode"></i> Select Specific Physical Assets to Issue:</label>
+                                @for($i = 0; $i < $remaining; $i++)
+                                    <div class="scanner-row">
+                                        <div class="scanner-number">#{{ $i + 1 }}</div>
+                                        <div class="scanner-input">
+                                            <select name="issue[{{ $item->id }}][]" class="form-control asset-scanner-select" style="width: 100%;">
+                                                <option value="">-- Scan Barcode or Select Asset --</option>
+                                                @if(isset($availableAssets[$item->id]))
+                                                    @foreach($availableAssets[$item->id] as $asset)
+                                                        <option value="{{ $asset->id }}">
+                                                            [{{ $asset->asset_tag }}] SN: {{ $asset->serial ?: 'N/A' }} — Shelf: {{ $asset->location->name ?? 'Default' }}
+                                                        </option>
+                                                    @endforeach
+                                                @endif
+                                            </select>
+                                        </div>
+                                    </div>
+                                @endfor
+
+                            <!-- SCENARIO B: BULK ITEMS (The Big Number Input) -->
                             @else
-                                <i class="fa fa-info bg-gray"></i>
+                                <label style="margin-bottom: 10px; color: #555;">Issue Quantity Now:</label>
+                                <div class="input-group input-group-lg" style="width: 250px;">
+                                    <input type="number" name="issue[{{ $item->id }}]" class="form-control text-center bulk-issue-qty" 
+                                           min="0" max="{{ $remaining }}" value="0" style="font-weight: bold;">
+                                    <span class="input-group-addon bg-gray">/ {{ $remaining }}</span>
+                                </div>
+                                <p class="text-muted" style="margin-top: 10px; font-size: 12px;">Warehouse Stock Available: <strong>{{ $currentStock }}</strong></p>
                             @endif
 
-                            <div class="timeline-item" style="box-shadow: none; border: 1px solid #eee; background-color: #fafafa; margin-left: 45px;">
-                                <span class="time"><i class="fa fa-clock"></i> {{ $event->created_at->format('H:i') }}</span>
-                                <h3 class="timeline-header" style="font-size: 13px; font-weight: bold; border-bottom: none; padding: 5px 10px;">
-                                    {{ ucwords(str_replace('_', ' ', $event->event_type)) }}
-                                </h3>
-                                <div class="timeline-body" style="padding: 5px 10px; font-size: 12px; color: #555;">
-                                    Executed by: <strong>{{ $event->user->display_name }}</strong>
-                                    @if($event->event_type === 'item_substituted')
-                                        <p style="margin-top: 5px;">
-                                            Swapped: <strong>{{ $event->details['original'] }}</strong> <br>
-                                            With: <span class="text-orange" style="font-weight: bold;">{{ $event->details['substituted_with'] }}</span>
-                                        </p>
-                                    @endif
-                                    @if($event->event_type === 'item_issued')
-                                        <p style="margin-top: 5px;">
-                                            Issued: <strong>{{ $event->details['item'] }}</strong> (Qty: {{ $event->details['issued_qty'] }})
-                                        </p>
-                                    @endif
-                                    @if(isset($event->details['message']) && $event->event_type !== 'item_substituted')
-                                        <p style="margin-top: 5px;">{{ $event->details['message'] }}</p>
-                                    @endif
-                                </div>
-                            </div>
-                        </li>
-                    @endforeach
-                    <li><i class="fa fa-clock bg-gray"></i></li>
-                </ul>
-            </div>
+                        @endif
+                    </div>
+                </div>
+            @endforeach
         </div>
-    </div>
+
+        <!-- RIGHT COLUMN: The Action Sidebar -->
+        <div class="col-md-4">
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Fulfillment Action</h3>
+                </div>
+                <div class="box-body">
+                    
+                    <ul class="list-group list-group-unbordered" id="fulfillmentChecklist" style="margin-bottom: 20px;">
+                        <!-- JS Dynamically injects checklist state here -->
+                    </ul>
+
+                    <div class="form-group">
+                        <label class="text-muted">Handover Notes (Optional)</label>
+                        <textarea name="notes" class="form-control" rows="3" placeholder="E.g., Handed over to department peon..."></textarea>
+                    </div>
+
+                    <button type="submit" id="completeIssueBtn" class="btn btn-primary btn-lg btn-block" disabled onclick="return confirm('Complete this issue operation?')">
+                        <i class="fas fa-clipboard-check"></i> Complete Issue
+                    </button>
+                </div>
+            </div>
+            
+            </form> <!-- FIXED: CLOSED MAIN FORM HERE TO PREVENT NESTING -->
+
+            <!-- FORCE CLOSURE OPTION (Separate, distinct form) -->
+            <div class="box box-solid" style="margin-top: 20px;">
+                <div class="box-header with-border">
+                    <h3 class="box-title" style="color: #dd4b39;"><i class="fas fa-ban"></i> Terminate / Out of Stock</h3>
+                </div>
+                <div class="box-body">
+                    <button type="button" class="btn btn-danger btn-block" data-toggle="collapse" data-target="#forceClosePanel">
+                        <i class="fas fa-exclamation-triangle"></i> Cancel / Out of Stock
+                    </button>
+                    <div id="forceClosePanel" class="collapse" style="margin-top: 10px; padding: 15px; background: #fdf2f2; border: 1px solid #ebccd1; border-radius: 4px;">
+                        <form action="{{ route('gov.requests.fulfillment.close', $serviceRequest->id) }}" method="POST" id="closeForm" style="margin: 0;">
+                            @csrf
+                            <input type="text" name="reason" class="form-control input-sm" placeholder="Reason for termination..." required style="margin-bottom: 10px; border: 1px solid #dd4b39;">
+                            <button type="submit" class="btn btn-danger btn-sm btn-block" onclick="return confirm('Force close this request permanently?')">Confirm Close</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- The Timeline -->
+            @include('govstore::components.timeline-widget', ['events' => $serviceRequest->events])
+        </div>
+    
 </div>
 
 <!-- SUBSTITUTION MODAL -->
-<div class="modal fade" id="substitutionModal" tabindex="-1" role="dialog" aria-labelledby="substitutionModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="substitutionModalLabel"><i class="fas fa-exchange-alt"></i> {{ __('requestlabels::requests.fulfillment_show_modal_title') }}</h4>
-            </div>
-            <div class="modal-body">
-                <p>Select an alternative item to fulfill the request for: <strong id="modalOriginalItemName"></strong></p>
-                
-                <input type="hidden" id="modalLineItemId">
-                <input type="hidden" id="modalItemType">
+@include('govstore::components.substitution-modal')
 
-                <div class="form-group">
-                    <label for="substituteSelector">{{ __('requestlabels::requests.fulfillment_show_modal_search_label') }}</label>
-                    <select id="substituteSelector" class="form-control" style="width: 100%;"></select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">{{ __('requestlabels::requests.fulfillment_show_modal_btn_cancel') }}</button>
-                <button type="button" class="btn btn-primary" onclick="applySubstitution()">{{ __('requestlabels::requests.fulfillment_show_modal_btn_save') }}</button>
-            </div>
-        </div>
-    </div>
-</div>
 @endsection
 
 @section('moar_scripts')
 <script>
-function openSubstitutionModal(lineId, type, originalName) {
-    $('#modalLineItemId').val(lineId);
-    $('#modalItemType').val(type);
-    $('#modalOriginalItemName').text(originalName);
+$(document).ready(function() {
     
-    // Clear old Select2 choice
-    $('#substituteSelector').val(null).trigger('change');
-    
-    // Initialize standard Select2 with live Ajax search from our new route
-    $('#substituteSelector').select2({
-        dropdownParent: $('#substitutionModal'),
-        ajax: {
-            url: '{{ route("gov.requests.catalog.search") }}',
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    q: params.term,
-                    type: $('#modalItemType').val()
-                };
-            },
-            processResults: function (data) {
-                return {
-                    results: data
-                };
-            },
-            cache: true
-        },
-        minimumInputLength: 1,
-        placeholder: "Type to search alternative inventory..."
+    // 1. Initialize Asset Scanners with Select2 for fast typing/barcode scanning
+    $('.asset-scanner-select').select2();
+
+    // 2. Prevent Duplicate Asset Selection (Barcode Collision Check)
+    $('.asset-scanner-select').on('change', function() {
+        let selectedValue = $(this).val();
+        if (!selectedValue) {
+            evaluateChecklist();
+            return;
+        }
+
+        let $card = $(this).closest('.picking-card');
+        let duplicateFound = false;
+
+        $card.find('.asset-scanner-select').not(this).each(function() {
+            if ($(this).val() === selectedValue) {
+                duplicateFound = true;
+            }
+        });
+
+        if (duplicateFound) {
+            alert('WARNING: You cannot scan the exact same Asset twice for one request.');
+            $(this).val('').trigger('change');
+        } else {
+            evaluateChecklist();
+        }
     });
 
-    $('#substitutionModal').modal('show');
-}
+    // 3. Listen to Bulk Quantity Changes
+    $('.bulk-issue-qty').on('input change', function() {
+        let max = parseInt($(this).attr('max'));
+        let val = parseInt($(this).val());
+        
+        if (val > max) $(this).val(max);
+        if (val < 0 || isNaN(val)) $(this).val(0);
+        
+        evaluateChecklist();
+    });
 
-function applySubstitution() {
-    var lineId = $('#modalLineItemId').val();
-    var selectedData = $('#substituteSelector').select2('data')[0];
+    // 4. Evaluate Checklist and Unlock Submit Button
+    function evaluateChecklist() {
+        let totalLinesToPick = $('.picking-card').length;
+        let linesSatisfied = 0;
+        let $checklist = $('#fulfillmentChecklist');
+        let totalItemsSelected = 0;
 
-    if (selectedData) {
-        // Update hidden input with the selected substitute ID
-        $('#sub_input_' + lineId).val(selectedData.id);
+        if ($checklist.length === 0) return;
+        $checklist.empty();
 
-        // Draw an orange substitution badge below the name
-        $('#sub_badge_' + lineId).html(
-            '<span class="label bg-orange" style="margin-top: 5px; display: inline-block;"><i class="fas fa-exchange-alt"></i> Substitute: ' + selectedData.text + '</span>'
-        );
+        $('.picking-card').each(function() {
+            let $card = $(this);
+            let type = $card.data('type');
+            let name = $card.find('.item-title').text();
+            let remaining = parseInt($card.data('remaining'));
+            
+            let lineSatisfied = false;
 
-        $('#substitutionModal').modal('hide');
-    } else {
-        alert('Please select an item first.');
+            if (remaining === 0) {
+                lineSatisfied = true;
+                linesSatisfied++;
+                $checklist.append(`<li class="list-group-item"><i class="fas fa-check text-green"></i> ${name} (Fully Issued)</li>`);
+            } 
+            else if (type === 'asset') {
+                let assetsSelected = 0;
+                $card.find('.asset-scanner-select').each(function() {
+                    if ($(this).val()) assetsSelected++;
+                });
+
+                totalItemsSelected += assetsSelected;
+                
+                if (assetsSelected === remaining) {
+                    lineSatisfied = true;
+                    linesSatisfied++;
+                    $checklist.append(`<li class="list-group-item"><i class="fas fa-check text-green"></i> ${name} (${assetsSelected}/${remaining} Selected)</li>`);
+                } else if (assetsSelected > 0) {
+                    $checklist.append(`<li class="list-group-item"><i class="fas fa-dot-circle text-yellow"></i> ${name} (Partial: ${assetsSelected}/${remaining})</li>`);
+                } else {
+                    $checklist.append(`<li class="list-group-item"><i class="far fa-circle text-muted"></i> ${name} (Pending)</li>`);
+                }
+            } 
+            else { // Bulk (Consumable)
+                let qtyEntered = parseInt($card.find('.bulk-issue-qty').val()) || 0;
+                totalItemsSelected += qtyEntered;
+
+                if (qtyEntered === remaining) {
+                    lineSatisfied = true;
+                    linesSatisfied++;
+                    $checklist.append(`<li class="list-group-item"><i class="fas fa-check text-green"></i> ${name} (All ${qtyEntered} Ready)</li>`);
+                } else if (qtyEntered > 0) {
+                    $checklist.append(`<li class="list-group-item"><i class="fas fa-dot-circle text-yellow"></i> ${name} (Partial: ${qtyEntered})</li>`);
+                } else {
+                    $checklist.append(`<li class="list-group-item"><i class="far fa-circle text-muted"></i> ${name} (Pending)</li>`);
+                }
+            }
+        });
+
+        // Unlock Submit if ANY items are selected (Allows safe partial fulfillments)
+        if (totalItemsSelected > 0) {
+            $('#completeIssueBtn').removeAttr('disabled').removeClass('btn-default').addClass('btn-primary');
+        } else {
+            $('#completeIssueBtn').attr('disabled', 'disabled').removeClass('btn-primary').addClass('btn-default');
+        }
     }
-}
+
+    // Run once on load
+    evaluateChecklist();
+});
 </script>
 @endsection

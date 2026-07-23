@@ -3,9 +3,11 @@
 namespace GovStore\CustomRequests\Factories;
 
 use GovStore\CustomRequests\Adapters\AssetAdapter;
+use GovStore\CustomRequests\Adapters\AssetModelAdapter;
 use GovStore\CustomRequests\Adapters\AccessoryAdapter;
 use GovStore\CustomRequests\Adapters\ConsumableAdapter;
 use App\Models\Asset;
+use App\Models\AssetModel;
 use App\Models\Accessory;
 use App\Models\Consumable;
 use Exception;
@@ -13,16 +15,21 @@ use Exception;
 class RequestableFactory
 {
     /**
-     * Pass in a type (e.g., 'Consumable') and an ID, and it returns the proper Adapter ready to go!
+     * Instantiates the correct adapter for cross-context display and checkout orchestration.
      */
     public static function make(string $type, int $id)
     {
-        // Normalize the string in case it comes from a UI form or Database morph
         $type = strtolower(class_basename($type));
 
         switch ($type) {
-            case 'asset':
+            case 'asset': 
+                // Legacy: Handles requests made before the Phase 1 Template Shift
                 return new AssetAdapter(Asset::findOrFail($id));
+
+            case 'assetmodel':
+            case 'asset_model': 
+                // Modern: Handles multi-quantity Template requests
+                return new AssetModelAdapter(AssetModel::findOrFail($id));
 
             case 'accessory':
                 return new AccessoryAdapter(Accessory::findOrFail($id));

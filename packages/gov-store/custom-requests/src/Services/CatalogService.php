@@ -2,7 +2,7 @@
 
 namespace GovStore\CustomRequests\Services;
 
-use App\Models\Asset;
+use App\Models\AssetModel;
 use App\Models\Accessory;
 use App\Models\Consumable;
 use App\Models\Component;
@@ -12,31 +12,38 @@ class CatalogService
 {
     /**
      * Retrieves all items available for requesting within the user's active context.
+     * Hardware now queries AssetModels (Templates) rather than serialized Assets.
      */
     public function getAvailableItems(): array
     {
         $catalog = [];
 
-        // 1. HARDWARE ASSETS
-        $assets = Asset::with('model.category')
-            ->where('requestable', 1)
-            ->whereNull('assigned_to')
-            ->get();
+        // 1. HARDWARE ASSET MODELS (The Template Shift)
+        // Only load models that actually have unassigned, requestable physical assets in inventory
+        $models = AssetModel::with('category')->get();
 
-        foreach ($assets as $asset) {
-            $catalog[] = [
-                'id' => $asset->id,
-                'type' => 'Asset',
-                'name' => $asset->name ?: ($asset->model->name ?? 'Unknown Asset'),
-                'category' => $asset->model->category->name ?? 'Uncategorized',
-                'image_url' => $asset->getImageUrl(),
-                'available_qty' => 1,
-                'created_timestamp' => $asset->created_at ? $asset->created_at->timestamp : time(),
-                'details' => [
-                    'Asset Tag: ' . $asset->asset_tag,
-                    'Model: ' . ($asset->model->name ?? 'N/A')
-                ]
-            ];
+        foreach ($models as $model) {
+            // Dynamically calculate available quantity (unassigned, deployable assets)
+            $availableQty = \App\Models\Asset::where('model_id', $model->id)
+                ->whereNull('assigned_to')
+                ->where('requestable', 1)
+                ->count();
+
+            if ($availableQty > 0) {
+                $catalog[] = [
+                    'id' => $model->id,
+                    'type' => 'asset_model', // Polymorphic MorphMap Key
+                    'name' => $model->name,
+                    'category' => $model->category->name ?? 'Hardware',
+                    'image_url' => $model->getImageUrl(),
+                    'available_qty' => $availableQty,
+                    'created_timestamp' => $model->created_at ? $model->created_at->timestamp : time(),
+                    'details' => [
+                        'Manufacturer: ' . ($model->manufacturer->name ?? 'N/A'),
+                        'Model No: ' . ($model->model_number ?: 'N/A')
+                    ]
+                ];
+            }
         }
 
         // 2. ACCESSORIES
@@ -46,7 +53,7 @@ class CatalogService
             if ($available > 0) {
                 $catalog[] = [
                     'id' => $acc->id,
-                    'type' => 'Accessory',
+                    'type' => 'accessory',
                     'name' => $acc->name,
                     'category' => $acc->category->name ?? 'Accessory',
                     'image_url' => $acc->getImageUrl(),
@@ -67,7 +74,7 @@ class CatalogService
             if ($available > 0) {
                 $catalog[] = [
                     'id' => $con->id,
-                    'type' => 'Consumable',
+                    'type' => 'consumable',
                     'name' => $con->name,
                     'category' => $con->category->name ?? 'Consumable',
                     'image_url' => $con->getImageUrl(),
@@ -75,7 +82,7 @@ class CatalogService
                     'created_timestamp' => $con->created_at ? $con->created_at->timestamp : time(),
                     'details' => [
                         'Total Stock: ' . $con->qty,
-                        'Model/Item No: ' . ($con->item_no ?: 'N/A')
+                        'Item No: ' . ($con->item_no ?: 'N/A')
                     ]
                 ];
             }
@@ -88,7 +95,7 @@ class CatalogService
             if ($available > 0) {
                 $catalog[] = [
                     'id' => $comp->id,
-                    'type' => 'Component',
+                    'type' => 'component',
                     'name' => $comp->name,
                     'category' => $comp->category->name ?? 'Component',
                     'image_url' => $comp->getImageUrl(),
@@ -108,7 +115,7 @@ class CatalogService
             if ($available > 0) {
                 $catalog[] = [
                     'id' => $lic->id,
-                    'type' => 'License',
+                    'type' => 'license',
                     'name' => $lic->name,
                     'category' => $lic->category->name ?? 'Software License',
                     'image_url' => null, 

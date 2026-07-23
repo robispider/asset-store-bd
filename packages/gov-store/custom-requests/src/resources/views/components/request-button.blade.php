@@ -3,13 +3,11 @@
     <input type="hidden" name="item_type" value="{{ strtolower($itemType) }}">
     <input type="hidden" name="item_id" value="{{ $itemId }}">
     
-    @if(strtolower($itemType) !== 'asset')
-        <!-- Dynamic Quantity Input for Non-Asset Items (Consumables, Accessories, Licenses) -->
-        <div class="input-group input-group-sm" style="margin-bottom: 6px;">
-            <span class="input-group-addon" style="font-size: 11px; padding: 4px 8px;">Qty</span>
-            <input type="number" name="qty" class="form-control" value="1" min="1" required style="height: 28px; text-align: center;">
-        </div>
-    @endif
+    <!-- Dynamic Quantity Input for ALL Items (Models, Consumables, Accessories) -->
+    <div class="input-group input-group-sm" style="margin-bottom: 6px;">
+        <span class="input-group-addon" style="font-size: 11px; padding: 4px 8px;">Qty</span>
+        <input type="number" name="qty" class="form-control" value="1" min="1" required style="height: 28px; text-align: center;">
+    </div>
     
     <button type="submit" class="btn btn-primary btn-sm btn-block add-to-basket-btn" style="height: 28px; font-size: 12px;">
         <i class="fas fa-cart-plus"></i> {{ __('requestlabels::requests.requestbutton_btn_add_to_basket') }}

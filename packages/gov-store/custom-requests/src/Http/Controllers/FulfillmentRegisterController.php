@@ -3,11 +3,9 @@
 namespace GovStore\CustomRequests\Http\Controllers;
 
 use Illuminate\Routing\Controller;
-use Illuminate\Http\Request;
 use GovStore\CustomRequests\Models\Request as ServiceRequest;
 use GovStore\StoreOperations\Models\GoodsIssue;
 use GovStore\OfficeMembership\Models\OfficeResponsibility;
-use Exception;
 
 class FulfillmentRegisterController extends Controller
 {
@@ -16,9 +14,9 @@ class FulfillmentRegisterController extends Controller
         $user = auth()->user();
         if ($user->isSuperUser() || $user->hasAccess('admin')) return;
 
-        // Verify user has administrative or stores responsibilities
+        // Verify user has administrative or stores responsibilities (Includes office_admin)
         $hasAccess = OfficeResponsibility::where('user_id', $user->id)
-            ->whereIn('role_slug', ['storekeeper', 'primary_approver', 'final_approver'])
+            ->whereIn('role_slug', ['storekeeper', 'primary_approver', 'final_approver', 'office_admin'])
             ->exists();
 
         if (!$hasAccess) abort(403, __('requestlabels::requests.fulfillmentregistercontroller_abort_unauthorized'));
@@ -32,8 +30,9 @@ class FulfillmentRegisterController extends Controller
         $this->checkAccess();
         $user = auth()->user();
 
-        $query = ServiceRequest::with(['requester', 'approvedBy'])
-            ->whereIn('fulfillment_status', ['issued', 'partially_issued', 'closed'])
+        // Eager load items to prevent N+1 queries when calculating total lines on the index view
+        $query = ServiceRequest::with(['requester', 'approvedBy', 'items'])
+            ->whereIn('fulfillment_status', ['issued', 'partially_issued', 'closed', 'cannot_fulfill'])
             ->orderBy('closed_at', 'desc');
 
         // Non-superusers only see records for their active office locations
@@ -57,7 +56,8 @@ class FulfillmentRegisterController extends Controller
 
         $serviceRequest = ServiceRequest::with(['requester', 'items.requested', 'events.user'])->findOrFail($id);
 
-        // Fetch all generated system Goods Issue documents for this Request
+        // Fetch all generated system Goods Issue documents for this Request.
+        // This query safely ignores 'asset_model' lines (which do not generate GI documents).
         $goodsIssues = GoodsIssue::with(['items', 'creator'])
             ->where('reference_type', ServiceRequest::class)
             ->where('reference_id', $id)

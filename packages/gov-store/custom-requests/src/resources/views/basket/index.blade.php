@@ -42,24 +42,20 @@
                                 @endphp
                                 <tr>
                                     <td style="vertical-align: middle;"><strong>{{ $name }}</strong></td>
-                                    <td style="vertical-align: middle;">
+                                   <td style="vertical-align: middle;">
                                         <span class="label label-info">{{ ucfirst($item->requested_type) }}</span>
                                     </td>
                                     <td style="vertical-align: middle; text-align: center;">
-                                        @if($item->requested_type === 'asset')
-                                            <input type="text" class="form-control input-sm text-center" value="1" disabled title="{{ __('requestlabels::requests.basket_index_tooltip_asset_restricted') }}" style="width: 70px; margin: 0 auto;">
-                                        @else
-                                            <!-- Modern Auto-saving Input Field (No nested forms, fully responsive) -->
-                                            <div class="qty-wrapper" style="display: inline-flex; align-items: center; gap: 8px;">
-                                                <input type="number" 
-                                                       class="form-control input-sm text-center basket-qty-input" 
-                                                       data-item-id="{{ $item->id }}" 
-                                                       value="{{ $item->requested_qty }}" 
-                                                       min="1" 
-                                                       style="width: 70px; margin: 0 auto; border: 1px solid #ccc; border-radius: 4px;">
-                                                <span class="save-status-indicator" data-item-id="{{ $item->id }}" style="font-size: 11px; color: #555; width: 45px; text-align: left;"></span>
-                                            </div>
-                                        @endif
+                                        <!-- Modern Auto-saving Input Field unlocked for ALL items -->
+                                        <div class="qty-wrapper" style="display: inline-flex; align-items: center; gap: 8px;">
+                                            <input type="number" 
+                                                   class="form-control input-sm text-center basket-qty-input" 
+                                                   data-item-id="{{ $item->id }}" 
+                                                   value="{{ $item->requested_qty }}" 
+                                                   min="1" 
+                                                   style="width: 70px; margin: 0 auto; border: 1px solid #ccc; border-radius: 4px;">
+                                            <span class="save-status-indicator" data-item-id="{{ $item->id }}" style="font-size: 11px; color: #555; width: 45px; text-align: left;"></span>
+                                        </div>
                                     </td>
                                     <td style="vertical-align: middle;">
                                         <form action="{{ route('gov.requests.basket.remove', $item->id) }}" method="POST" style="margin: 0;">

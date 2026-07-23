@@ -9,34 +9,40 @@ use Illuminate\Support\Facades\Log;
 class ProcessItemCheckout
 {
     /**
-     * Handle the auto-checkout event.
-     * Safely reads dynamic quantities, resolving standard asset serials to 1.
+     * Handle the auto-checkout event upon approval.
+     * Safely bypasses Asset Models (which require manual storekeeper serial assignment),
+     * while auto-fulfilling bulk consumables and accessories.
      */
     public function handle(ItemApproved $event)
     {
         $request = $event->itemRequest;
+        $type = strtolower(class_basename($request->requestable_type));
 
         try {
-            // Use our Phase 2 factory to grab the right Snipe-IT adapter
+            // 1. Edge Case: Skip Asset Models entirely. 
+            // They MUST go to the Fulfillment Queue for physical serial selection.
+            if (in_array($type, ['assetmodel', 'asset_model'])) {
+                Log::info("Gov-Store: Auto-checkout skipped for Request ID {$request->id}. Asset Models require manual fulfillment.");
+                return; // Exit listener gracefully
+            }
+
+            // 2. Normal Bulk Processing
             $adapter = RequestableFactory::make($request->requestable_type, $request->requestable_id);
-            
-            // Resolve correct checkout quantity (Defaults to 1 for assets or legacy rows)
             $qty = isset($request->quantity) ? (int)$request->quantity : (isset($request->requested_qty) ? (int)$request->requested_qty : 1);
 
-            // Trigger Snipe-IT's core checkout logic with the exact approved quantity!
             $success = $adapter->checkout(
                 $request->requester, 
                 $event->adminUser, 
                 $qty, 
-                "Approved via Gov-Store workflow (Request ID: {$request->id})"
+                "Auto-Approved via Gov-Store workflow (Request ID: {$request->id})"
             );
 
             if (!$success) {
-                Log::error("Gov-Store: Failed to checkout item for Request ID {$request->id}");
+                Log::error("Gov-Store: Failed to auto-checkout item for Request ID {$request->id}");
             }
 
         } catch (\Exception $e) {
-            Log::error("Gov-Store: Error processing checkout for Request ID {$request->id} - " . $e->getMessage());
+            Log::error("Gov-Store: Error processing auto-checkout for Request ID {$request->id} - " . $e->getMessage());
         }
     }
 }
