@@ -15,7 +15,7 @@
         overflow: hidden;
     }
 
-    /* Left Pane: Explorer */
+    /* Left Pane: Sidebar Explorer */
     .studio-sidebar {
         background: #f8fafc;
         border-right: 1px solid #e2e8f0;
@@ -26,6 +26,7 @@
     .sidebar-header {
         padding: 20px;
         border-bottom: 1px solid #e2e8f0;
+        cursor: pointer;
     }
 
     .sidebar-search {
@@ -169,6 +170,15 @@
     }
     .widget-panel { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 25px; }
     .widget-title { font-weight: bold; font-size: 15px; color: #475569; text-transform: uppercase; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
+
+    /* Directory Browser Styles (Phase 2 correction additions) */
+    .dir-container { padding: 40px; }
+    .dir-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
+    .dir-card { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 20px; transition: border-color 0.15s; }
+    .dir-card:hover { border-color: #3b82f6; }
+    .dir-card-title { font-weight: bold; font-size: 15px; color: #1e293b; margin-top: 0; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+    
+    .hidden-templates { display: none; }
 </style>
 
 <div class="row">
@@ -177,7 +187,8 @@
             
             <!-- COLUMN 1: STREAMLINED QUICK ACCESS SIDEBAR -->
             <div class="studio-sidebar">
-                <div class="sidebar-header">
+                <!-- Sidebar Header: Clicking this takes you back to the home hub dashboard -->
+                <div class="sidebar-header" id="btn_back_to_hub">
                     <h4 style="margin: 0; color: #0f172a; font-weight: bold;">
                         <i class="fa fa-sliders text-blue"></i> Rule Studio
                     </h4>
@@ -194,13 +205,13 @@
                 <div class="sidebar-menu-title">Directories</div>
                 <ul class="sidebar-menu-list">
                     <li class="sidebar-menu-item">
-                        <a href="#" id="portal_categories">
+                        <a href="#" id="sidebar_categories_trigger">
                             <span><i class="fa fa-cubes"></i> Product Categories</span>
                             <span class="badge bg-blue" style="border-radius: 4px;">{{ $counts['categories'] }}</span>
                         </a>
                     </li>
                     <li class="sidebar-menu-item">
-                        <a href="#" id="portal_offices">
+                        <a href="#" id="sidebar_offices_trigger">
                             <span><i class="fa fa-building-o"></i> Offices / Locations</span>
                             <span class="badge bg-blue" style="border-radius: 4px;">{{ $counts['locations'] }}</span>
                         </a>
@@ -214,9 +225,10 @@
                 </ul>
             </div>
 
-            <!-- COLUMN 2 & 3: THE MAIN VIEWPORT (Loads either Hub or Inspector) -->
+            <!-- COLUMN 2 & 3: THE MAIN VIEWPORT (Renders Hub, Directory lists, or Inspector dynamically) -->
             <div class="studio-viewport" id="workspace_pane">
-                <div class="hub-container">
+                <!-- Landing Dashboard Wrapper -->
+                <div class="hub-container" id="hub_dashboard_wrapper">
                     
                     <!-- Massive Central Search Bar -->
                     <div class="hub-search-box">
@@ -264,7 +276,7 @@
                                     <th>Status</th>
                                     <th>Version</th>
                                     <th class="text-right">Actions</th>
-                                endforeach
+                                </tr>
                             </thead>
                             <tbody>
                                 @foreach($publishedProfiles as $profile)
@@ -322,7 +334,60 @@
                     </div>
 
                 </div>
+            </div>
 
+        </div>
+    </div>
+</div>
+
+<!-- ======================================================================= -->
+<!-- HIDDEN BROWSER TEMPLATES (Used to instantly render clean cards lists) -->
+<!-- ======================================================================= -->
+<div class="hidden-templates">
+    
+    <!-- A. PRODUCT CATEGORIES DIRECTORY LIST -->
+    <div id="portal_categories_dir">
+        <div class="dir-container">
+            <h3 style="margin-top:0; font-weight:800; color:#0f172a;"><i class="fa fa-cubes text-blue"></i> Browse Product Categories</h3>
+            <p class="text-muted">Select a category below to inspect its inherited and localized business rules.</p>
+            
+            <div class="dir-grid">
+                @foreach($tree as $group => $items)
+                    @foreach($items as $item)
+                        @if($item['type'] === 'CATEGORY')
+                            <div class="dir-card">
+                                <div class="dir-card-title"><i class="fa {{ $item['icon'] }} text-blue"></i> {{ $item['name'] }}</div>
+                                <button class="btn btn-sm btn-primary btn-block direct-inspect-btn" data-id="{{ $item['id'] }}" data-type="{{ $item['type'] }}" data-name="{{ $item['name'] }}">
+                                    <i class="fa fa-search"></i> Inspect Rules
+                                </button>
+                            </div>
+                        @endif
+                    @endforeach
+                @endforeach
+            </div>
+        </div>
+    </div>
+
+    <!-- B. OFFICES / LOCATIONS DIRECTORY LIST -->
+    <div id="portal_offices_dir">
+        <div class="dir-container">
+            <h3 style="margin-top:0; font-weight:800; color:#0f172a;"><i class="fa fa-building-o text-green"></i> Browse Scoped Offices</h3>
+            <p class="text-muted">Select a localized office below to inspect or configure localized policy overrides.</p>
+            
+            <div class="dir-grid">
+                @foreach($tree as $group => $items)
+                    @foreach($items as $item)
+                        @if($item['type'] === 'LOCATION')
+                            <div class="dir-card">
+                                <div class="dir-card-title"><i class="fa {{ $item['icon'] }} text-green"></i> {{ $item['name'] }}</div>
+                                <button class="btn btn-sm btn-success btn-block direct-inspect-btn" data-id="{{ $item['id'] }}" data-type="{{ $item['type'] }}" data-name="{{ $item['name'] }}">
+                                    <i class="fa fa-search"></i> Inspect Rules
+                                </button>
+                            </div>
+                        @endif
+                    @endforeach
+                @endforeach
+            </div>
         </div>
     </div>
 </div>
@@ -332,6 +397,9 @@
 <script>
 $(document).ready(function() {
     
+    // Cache the original Hub HTML markup so we can easily restore it
+    const hubDashboardHTML = $('#hub_dashboard_wrapper').prop('outerHTML');
+
     // --- 1. LOCAL STORAGE "RECENT TARGETS" HISTORY ENGINE ---
     function renderRecentTargets() {
         let recent = JSON.parse(localStorage.getItem('govstore_recent_targets') || '[]');
@@ -368,17 +436,17 @@ $(document).ready(function() {
     renderRecentTargets();
 
     // --- 2. AJAX TARGET INSPECTOR LOAD ENGINE ---
-    $(document).on('click', '.recent-item, .search-result-row', function(e) {
+    $(document).on('click', '.recent-item, .search-result-row, .direct-inspect-btn', function(e) {
+        e.preventDefault();
+
         let item = $(this);
         let id = item.data('id');
         let type = item.data('type');
-        let name = item.text().trim();
+        let name = item.data('name') || item.text().trim();
 
-        // Close any open search dropdowns immediately
         $('.search-results-dropdown').hide();
 
         if (type === 'POLICY') {
-            // Intelligent Routing: Redirect policies directly to the Editor Canvas!
             window.location.href = `/gov-store/operations/settings/product-rules/policies/${id}/edit`;
             return;
         }
@@ -418,7 +486,6 @@ $(document).ready(function() {
 
                     let hasResults = false;
 
-                    // A. Render Category Matches
                     if (data.categories && data.categories.length > 0) {
                         hasResults = true;
                         $dropdown.append('<div class="dropdown-section-title">Product Categories</div>');
@@ -431,7 +498,6 @@ $(document).ready(function() {
                         });
                     }
 
-                    // B. Render Location Matches
                     if (data.locations && data.locations.length > 0) {
                         hasResults = true;
                         $dropdown.append('<div class="dropdown-section-title">Offices / Locations</div>');
@@ -444,7 +510,6 @@ $(document).ready(function() {
                         });
                     }
 
-                    // C. Render Policy Matches
                     if (data.policies && data.policies.length > 0) {
                         hasResults = true;
                         $dropdown.append('<div class="dropdown-section-title">Policy Templates</div>');
@@ -463,7 +528,7 @@ $(document).ready(function() {
                         $dropdown.empty().append('<div class="text-muted" style="padding: 15px; font-size:13px; text-align:center;">No matching targets or policies found.</div>').show();
                     }
                 });
-        }, 300); // 300ms Debounce to prevent server-spamming
+        }, 300);
     }
 
     // Bind events to Sidebar Search
@@ -472,34 +537,41 @@ $(document).ready(function() {
     });
 
     // Bind events to Central Dashboard Search
-    $('#centralSearchInput').on('input', function() {
+    $(document).on('input', '#centralSearchInput', function() {
         handleSearch($(this), $('#centralDropdown'));
     });
 
-    // Close overlays if the user clicks anywhere else on the screen
     $(document).click(function(e) {
         if (!$(e.target).closest('.sidebar-search, .hub-search-wrapper').length) {
             $('.search-results-dropdown').hide();
         }
     });
 
-    // Fast-entry shortcuts from Hub cards
-    $('#card_categories, #portal_categories').click(function(e) {
-        e.preventDefault();
-        $('#centralSearchInput').val('').focus();
-        handleSearch($('#centralSearchInput'), $('#centralDropdown'));
+    // --- 4. BROWSEABLE DIRECTORY PORTALS SWAP ACTIONS (Phase 2 correction) ---
+    // Clicking these renders the flat visual list in the center instantly!
+    
+    // Back to main Hub
+    $('#btn_back_to_hub').click(function() {
+        $('.tree-target-item').removeClass('active');
+        $('#workspace_pane').html(hubDashboardHTML);
     });
 
-    $('#card_offices, #portal_offices').click(function(e) {
+    // Load Categories Directory
+    $(document).on('click', '#sidebar_categories_trigger, #card_categories', function(e) {
         e.preventDefault();
-        $('#centralSearchInput').val('').focus();
-        handleSearch($('#centralSearchInput'), $('#centralDropdown'));
+        $('.tree-target-item').removeClass('active');
+        
+        let categoriesListHTML = $('#portal_categories_dir').html();
+        $('#workspace_pane').html(categoriesListHTML);
     });
 
-    $('#portal_policies_hub').click(function(e) {
+    // Load Offices Directory
+    $(document).on('click', '#sidebar_offices_trigger, #card_offices', function(e) {
         e.preventDefault();
-        $('#centralSearchInput').val('').focus();
-        handleSearch($('#centralSearchInput'), $('#centralDropdown'));
+        $('.tree-target-item').removeClass('active');
+        
+        let officesListHTML = $('#portal_offices_dir').html();
+        $('#workspace_pane').html(officesListHTML);
     });
 
 });
