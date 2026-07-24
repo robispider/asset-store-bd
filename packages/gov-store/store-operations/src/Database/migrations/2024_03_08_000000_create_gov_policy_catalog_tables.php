@@ -9,17 +9,16 @@ return new class extends Migration
 {
     public function up()
     {
-        // 0. Drop old Phase 1 & 2 structural tables safely
+        // 1. Drop old category-bound profile tables safely
         Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('gov_profile_history');
         Schema::dropIfExists('gov_profile_capabilities');
         Schema::dropIfExists('gov_profiles');
         Schema::enableForeignKeyConstraints();
 
-        // 1. The Policy Artifacts (Agnostic of targets)
+        // 2. The Policy Catalog (GPO Goggles: Completely agnostic of categories)
         Schema::create('gov_profiles', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name'); // e.g. "National IT Laptop Standard"
             $table->string('scope')->default('GLOBAL'); // GLOBAL, COMPANY, LOCATION
             $table->string('owner_type')->nullable(); // Polymorphic owner (e.g. App\Models\Location)
             $table->unsignedInteger('owner_id')->nullable();
@@ -28,21 +27,21 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // 2. The Policy Rules (Capabilities assigned to the Profile)
+        // 3. The Capability Map (Links the GPO to its plugins)
         Schema::create('gov_profile_capabilities', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('profile_id');
-            $table->string('capability_code'); 
+            $table->string('capability_code'); // Matches CapabilityRegistry keys
             $table->json('config_payload')->nullable();
 
             $table->foreign('profile_id')->references('id')->on('gov_profiles')->onDelete('cascade');
         });
 
-        // 3. The Adoption / Assignment Matrix (Who is using the policy)
+        // 4. The GPO Assignment Table (Who is adopting the GPO Goggles)
         Schema::create('gov_profile_assignments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('profile_id');
-            $table->string('target_type'); // e.g. App\Models\Category, App\Models\AssetModel
+            $table->string('target_type'); // Polymorphic target (e.g. App\Models\Category)
             $table->unsignedInteger('target_id');
             $table->unsignedInteger('assigned_by')->nullable(); // Admin User ID
             $table->timestamp('effective_from')->useCurrent();
@@ -50,7 +49,6 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('profile_id')->references('id')->on('gov_profiles')->onDelete('cascade');
-            // Ensure a target only has one active profile assignment at a time
             $table->unique(['target_type', 'target_id', 'effective_to'], 'gov_active_profile_unique');
         });
 
@@ -61,7 +59,7 @@ return new class extends Migration
     {
         $now = now();
 
-        // A. Create Global Standard Policies
+        // A. Seed Global Policies
         $assetPolicyId = DB::table('gov_profiles')->insertGetId([
             'name' => 'System Default Asset Standard', 'scope' => 'GLOBAL', 
             'status' => 'PUBLISHED', 'version' => '1.0.0', 'created_at' => $now, 'updated_at' => $now
@@ -72,26 +70,26 @@ return new class extends Migration
             'status' => 'PUBLISHED', 'version' => '1.0.0', 'created_at' => $now, 'updated_at' => $now
         ]);
 
-        // B. Assign Capabilities to the Policies
-        // Asset Standard: requires qty, serials, and creates assets natively
+        // B. Assign Capabilities to the GPOs
+        // Assets require quantity, serials, and create physical assets on post
         DB::table('gov_profile_capabilities')->insert([
-            ['profile_id' => $assetPolicyId, 'capability_code' => 'require_quantity'],
-            ['profile_id' => $assetPolicyId, 'capability_code' => 'require_serial'],
-            ['profile_id' => $assetPolicyId, 'capability_code' => 'create_assets']
+            ['profile_id' => $assetPolicyId, 'capability_code' => 'require_quantity', 'config_payload' => null],
+            ['profile_id' => $assetPolicyId, 'capability_code' => 'require_serial', 'config_payload' => null],
+            ['profile_id' => $assetPolicyId, 'capability_code' => 'create_assets', 'config_payload' => null]
         ]);
 
-        // Consumable Standard: requires qty and posts to Kardex
+        // Consumables require quantity and post to the Kardex ledger on post
         DB::table('gov_profile_capabilities')->insert([
-            ['profile_id' => $consumablePolicyId, 'capability_code' => 'require_quantity'],
-            ['profile_id' => $consumablePolicyId, 'capability_code' => 'post_inventory']
+            ['profile_id' => $consumablePolicyId, 'capability_code' => 'require_quantity', 'config_payload' => null],
+            ['profile_id' => $consumablePolicyId, 'capability_code' => 'post_inventory', 'config_payload' => null]
         ]);
 
-        // C. Adopt Policies for Existing Snipe-IT Categories
+        // C. Adopt Policies for Existing Snipe-IT Categories Dynamically
         $categories = DB::table('categories')->get();
         $assignments = [];
 
         foreach ($categories as $category) {
-            // Determine which policy to adopt based on Snipe-IT's native category type
+            // Asset categories adopt the Asset Standard; others adopt Consumable Standard
             $policyId = ($category->category_type === 'asset') ? $assetPolicyId : $consumablePolicyId;
 
             $assignments[] = [

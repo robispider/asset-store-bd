@@ -2,8 +2,6 @@
 
 namespace GovStore\StoreOperations\DTOs;
 
-use GovStore\StoreOperations\Services\CapabilityRegistry;
-
 class CompiledProfile
 {
     protected array $snapshot = [];
@@ -15,10 +13,10 @@ class CompiledProfile
     }
 
     /**
-     * Core lookup: Returns all active capability codes and their configs for an item.
-     * GUARANTEES a clean array output under any circumstances.
+     * Gets RAW compiled capabilities (Used heavily by the new UI Simulator)
+     * Includes rules that were explicitly DISABLED by lower layers, and full traceability metadata.
      */
-    public function getCapabilitiesForProduct(string $productType, int $productId): array
+    public function getRawCapabilities(string $productType, int $productId): array
     {
         $key = "{$productType}_{$productId}";
         $caps = null;
@@ -38,7 +36,39 @@ class CompiledProfile
     }
 
     /**
+     * Core lookup: Gets ONLY active, enforced capabilities.
+     * Used natively by Validation, Presentation, & Pipeline execution.
+     * Strips the traceability metadata and returns just the config payload.
+     */
+    public function getCapabilitiesForProduct(string $productType, int $productId): array
+    {
+        $rawCaps = $this->getRawCapabilities($productType, $productId);
+        $executableCaps = [];
+
+        foreach ($rawCaps as $code => $meta) {
+            // Defensive check: Ensure meta is actually an array
+            if (!is_array($meta)) {
+                continue;
+            }
+
+            // New Engine Format (v2.0): Check if explicitly enforced
+            if (isset($meta['enforced'])) {
+                if ($meta['enforced'] === true) {
+                    $executableCaps[$code] = $meta['config'] ?? [];
+                }
+            } 
+            // Legacy Engine Format (v1.0): Pre-engine upgrade snapshots didn't have 'enforced' wrapper
+            else {
+                $executableCaps[$code] = $meta;
+            }
+        }
+
+        return $executableCaps;
+    }
+
+    /**
      * Returns presentation capabilities formatted for the Blade Workspace view.
+     * Ensures disabled capabilities do NOT render UI partials.
      */
     public function getPresentationCapabilities(string $productType, int $productId): array
     {

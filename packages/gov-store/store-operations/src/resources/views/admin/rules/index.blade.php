@@ -1,123 +1,507 @@
 @extends('layouts/default')
-@section('title', 'Product Rules Studio')
+@section('title', 'Rule Studio')
 
 @section('content')
 <style>
-    .studio-container { display: flex; background: #fff; border: 1px solid #ddd; min-height: 600px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-    .studio-left-pane { width: 320px; border-right: 1px solid #eee; background: #f9f9f9; padding: 20px 0; overflow-y: auto; }
-    .studio-right-pane { flex: 1; background: #fff; }
-    .tree-group { font-weight: bold; padding: 10px 20px; color: #555; background: #f1f1f1; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; margin-top: 10px; cursor: pointer; }
-    .tree-group:first-child { margin-top: 0; border-top: none; }
-    .tree-item { padding: 8px 30px; cursor: pointer; color: #3c8dbc; border-bottom: 1px dashed #eee; transition: background 0.1s; font-size: 14px; }
-    .tree-item:hover { background: #eef5f9; }
-    .tree-item.active { background: #3c8dbc; color: #fff; font-weight: bold; }
+    /* Rule Studio Layout Grid */
+    .studio-container {
+        display: grid;
+        grid-template-columns: 290px 1fr;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        min-height: 750px;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+
+    /* Left Pane: Explorer */
+    .studio-sidebar {
+        background: #f8fafc;
+        border-right: 1px solid #e2e8f0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sidebar-header {
+        padding: 20px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .sidebar-search {
+        padding: 15px 20px;
+        border-bottom: 1px solid #e2e8f0;
+        position: relative;
+    }
+
+    .sidebar-search input {
+        border-radius: 6px;
+        border: 1px solid #cbd5e1;
+        padding: 8px 12px;
+        font-size: 13px;
+        width: 100%;
+        background: #fff;
+        outline: none;
+    }
+
+    /* Quick Access Menu */
+    .sidebar-menu-title {
+        font-size: 11px;
+        font-weight: bold;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 15px 20px 5px 20px;
+    }
+    .sidebar-menu-list { list-style: none; padding: 0; margin: 0; }
+    .sidebar-menu-item a {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        color: #475569;
+        font-size: 13.5px;
+        text-decoration: none;
+        transition: background 0.15s;
+    }
+    .sidebar-menu-item a:hover { background: #f1f5f9; color: #1e293b; }
+    .sidebar-menu-item i { margin-right: 8px; color: #64748b; }
+
+    /* Center Pane Viewport */
+    .studio-viewport {
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+    }
+
+    /* Studio Landing Dashboard (Hub) */
+    .hub-container { padding: 40px; }
     
-    .dictionary-card { border: 1px solid #eee; padding: 15px; border-radius: 4px; margin-bottom: 15px; background: #fafafa; }
-    .dict-title { font-size: 16px; font-weight: bold; color: #333; margin: 0 0 5px 0; }
-    .dict-badge { font-size: 11px; margin-left: 10px; padding: 3px 6px; }
-    .dict-desc { color: #666; margin-top: 10px; font-size: 13px; line-height: 1.5; }
+    .hub-search-box {
+        text-align: center;
+        max-width: 700px;
+        margin: 0 auto 40px auto;
+    }
+    .hub-search-input {
+        width: 100%;
+        height: 48px;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        padding: 12px 20px 12px 45px;
+        font-size: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        outline: none;
+    }
+    .hub-search-wrapper { position: relative; }
+    .hub-search-icon { position: absolute; left: 16px; top: 14px; font-size: 18px; color: #94a3b8; }
+
+    /* Autocomplete Overlay Dropdown Styling */
+    .search-results-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #fff;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        z-index: 1000;
+        margin-top: 5px;
+        max-height: 400px;
+        overflow-y: auto;
+        display: none;
+        text-align: left;
+    }
+    .dropdown-section-title {
+        font-size: 10px;
+        font-weight: bold;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 10px 15px 5px 15px;
+        background: #f8fafc;
+        border-bottom: 1px solid #f1f5f9;
+        margin-top: 5px;
+    }
+    .dropdown-section-title:first-child { margin-top: 0; }
+    .search-result-row {
+        display: block;
+        padding: 10px 15px;
+        font-size: 13.5px;
+        color: #334155;
+        text-decoration: none !important;
+        transition: background 0.15s;
+        cursor: pointer;
+    }
+    .search-result-row:hover { background: #eff6ff; color: #1d4ed8; }
+    .search-result-row i { margin-right: 8px; width: 16px; text-align: center; color: #64748b; }
+
+    /* Cards Grid */
+    .hub-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+    .hub-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 20px;
+        text-decoration: none !important;
+        transition: transform 0.15s, box-shadow 0.15s;
+        color: #1e293b !important;
+    }
+    .hub-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+        border-color: #cbd5e1;
+    }
+    .hub-card-title { font-weight: bold; font-size: 15px; margin-bottom: 5px; }
+    .hub-card-metric { font-size: 28px; font-weight: 800; color: #3b82f6; }
+
+    /* Bottom Widgets layout */
+    .hub-widgets {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 30px;
+    }
+    .widget-panel { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 25px; }
+    .widget-title { font-weight: bold; font-size: 15px; color: #475569; text-transform: uppercase; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
 </style>
 
 <div class="row">
     <div class="col-md-12">
         <div class="studio-container">
             
-            <!-- LEFT PANE: The Category Tree -->
-            <div class="studio-left-pane">
-                <div style="padding: 0 20px 15px 20px; text-align: center; border-bottom: 1px solid #eee;">
-                    <h4 style="margin: 0; color: #333; font-weight: bold;">Product Tree</h4>
-                    <small class="text-muted">Select a category to inspect.</small>
+            <!-- COLUMN 1: STREAMLINED QUICK ACCESS SIDEBAR -->
+            <div class="studio-sidebar">
+                <div class="sidebar-header">
+                    <h4 style="margin: 0; color: #0f172a; font-weight: bold;">
+                        <i class="fa fa-sliders text-blue"></i> Rule Studio
+                    </h4>
+                    <p class="text-muted" style="font-size: 11px; margin: 4px 0 0 0; text-transform: uppercase; letter-spacing: 0.5px;">GPO Console</p>
                 </div>
-                
-                @foreach($categoryTree as $groupName => $categories)
-                    @if($categories->count() > 0)
-                        <!-- FIXED: Used fully qualified \Illuminate\Support\Str::slug -->
-                        <div class="tree-group" data-toggle="collapse" data-target="#group_{{ \Illuminate\Support\Str::slug($groupName) }}">
-                            <i class="fas fa-caret-down"></i> {{ $groupName }}
-                        </div>
-                        <div id="group_{{ \Illuminate\Support\Str::slug($groupName) }}" class="collapse in">
-                            @foreach($categories as $cat)
-                                <div class="tree-item" data-id="{{ $cat->id }}">
-                                    <i class="fas fa-box" style="opacity: 0.5; margin-right: 5px;"></i> {{ $cat->name }}
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-                @endforeach
+
+                <!-- Sidebar Autocomplete Search Container -->
+                <div class="sidebar-search">
+                    <input type="text" id="sidebarSearch" placeholder="🔍 Quick search targets..." autocomplete="off">
+                    <div class="search-results-dropdown" id="sidebarDropdown"></div>
+                </div>
+
+                <!-- Quick Entry Directory Directory -->
+                <div class="sidebar-menu-title">Directories</div>
+                <ul class="sidebar-menu-list">
+                    <li class="sidebar-menu-item">
+                        <a href="#" id="portal_categories">
+                            <span><i class="fa fa-cubes"></i> Product Categories</span>
+                            <span class="badge bg-blue" style="border-radius: 4px;">{{ $counts['categories'] }}</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="#" id="portal_offices">
+                            <span><i class="fa fa-building-o"></i> Offices / Locations</span>
+                            <span class="badge bg-blue" style="border-radius: 4px;">{{ $counts['locations'] }}</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- ⭐ Visited Targets List -->
+                <div class="sidebar-menu-title">⭐ Recently Visited</div>
+                <ul class="sidebar-menu-list" id="recent_targets_list">
+                    <!-- Javascript populates items here in real-time -->
+                </ul>
             </div>
 
-            <!-- RIGHT PANE: Tabs & Content -->
-            <div class="studio-right-pane">
-                <div class="nav-tabs-custom" style="box-shadow: none; margin-bottom: 0;">
-                    <ul class="nav nav-tabs">
-                        <li class="active"><a href="#tab_inspector" data-toggle="tab"><i class="fas fa-search"></i> Policy Inspector</a></li>
-                        <li><a href="#tab_dictionary" data-toggle="tab"><i class="fas fa-book"></i> Behaviors Dictionary</a></li>
-                    </ul>
+            <!-- COLUMN 2 & 3: THE MAIN VIEWPORT (Loads either Hub or Inspector) -->
+            <div class="studio-viewport" id="workspace_pane">
+                <div class="hub-container">
                     
-                    <div class="tab-content" style="padding: 30px;">
-                        
-                        <!-- TAB 1: Policy Inspector (AJAX Loaded) -->
-                        <div class="tab-pane active" id="tab_inspector">
-                            <div class="text-center text-muted" style="margin-top: 100px;">
-                                <i class="fas fa-mouse-pointer fa-3x" style="opacity: 0.3; margin-bottom: 15px;"></i>
-                                <h4>Select a product category from the left menu to inspect its rules.</h4>
-                            </div>
+                    <!-- Massive Central Search Bar -->
+                    <div class="hub-search-box">
+                        <h2 style="font-weight: 800; color: #0f172a; margin-bottom: 25px;">Find and Configure Business Rules</h2>
+                        <div class="hub-search-wrapper">
+                            <i class="fa fa-search hub-search-icon"></i>
+                            <input type="text" id="centralSearchInput" class="hub-search-input" placeholder="Search for Laptops, Dhaka Office, Active Policies..." autocomplete="off">
+                            <div class="search-results-dropdown" id="centralDropdown" style="border-radius: 8px;"></div>
                         </div>
-
-                        <!-- TAB 2: Behaviors Dictionary (Static Glossary) -->
-                        <div class="tab-pane" id="tab_dictionary">
-                            <h3 style="margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px;">System Behaviors Dictionary</h3>
-                            <p class="text-muted" style="margin-bottom: 25px;">This glossary explains the purpose of the business rules currently available in the platform engine.</p>
-                            
-                            @foreach($dictionary as $code => $details)
-                                <div class="dictionary-card">
-                                    <div style="display: flex; align-items: center;">
-                                        <h4 class="dict-title">{{ $details['name'] }}</h4>
-                                        <span class="label bg-blue dict-badge">{{ $details['group'] }}</span>
-                                        <span class="label bg-gray dict-badge" style="font-family: monospace;">{{ $code }}</span>
-                                    </div>
-                                    <p class="dict-desc">{{ $details['desc'] }}</p>
-                                </div>
-                            @endforeach
-                        </div>
-
                     </div>
+
+                    <!-- 1. CREATE NEW RULE SECTION (The Visual Cards Portal) -->
+                    <h4 style="font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 15px; font-size:12.5px; letter-spacing:0.5px;">Create New Business Rule</h4>
+                    <div class="hub-grid" style="margin-bottom: 40px;">
+                        <a href="{{ route('storeops.admin.rules.policies.create', 'hardware') }}" class="hub-card" style="border-left: 4px solid #3b82f6;">
+                            <div class="hub-card-title"><i class="fa fa-laptop text-blue"></i> Hardware Standard</div>
+                            <small class="text-muted" style="display: block; margin-top: 5px; line-height: 1.4;">
+                                Pre-configures unique serial number tracking and automatic individual asset registration.
+                            </small>
+                            <div style="margin-top: 15px; font-weight: bold; color: #3b82f6; font-size:13px;">Use Template ➔</div>
+                        </a>
+                        <a href="{{ route('storeops.admin.rules.policies.create', 'consumable') }}" class="hub-card" style="border-left: 4px solid #10b981;">
+                            <div class="hub-card-title"><i class="fa fa-tint text-green"></i> Consumable Standard</div>
+                            <small class="text-muted" style="display: block; margin-top: 5px; line-height: 1.4;">
+                                Pre-configures bulk quantity entries and direct ledger card posting automations.
+                            </small>
+                            <div style="margin-top: 15px; font-weight: bold; color: #10b981; font-size:13px;">Use Template ➔</div>
+                        </a>
+                        <a href="{{ route('storeops.admin.rules.policies.create', 'blank') }}" class="hub-card" style="border-left: 4px solid #64748b;">
+                            <div class="hub-card-title"><i class="fa fa-file-text-o text-muted"></i> Blank Rule Set</div>
+                            <small class="text-muted" style="display: block; margin-top: 5px; line-height: 1.4;">
+                                Start completely from scratch with all toggles set to inherit from parents.
+                            </small>
+                            <div style="margin-top: 15px; font-weight: bold; color: #64748b; font-size:13px;">Start Blank ➔</div>
+                        </a>
+                    </div>
+
+                    <!-- 2. EXISTING LAUNCHED RULES LIBRARY TABLE -->
+                    <h4 style="font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 15px; font-size:12.5px; letter-spacing:0.5px;">Existing Policy Files</h4>
+                    <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px 25px; margin-bottom: 40px;">
+                        <table class="table table-hover" style="margin-bottom: 0;">
+                            <thead>
+                                <tr style="color: #64748b; font-size:12px; text-transform: uppercase;">
+                                    <th>Policy Name</th>
+                                    <th>Status</th>
+                                    <th>Version</th>
+                                    <th class="text-right">Actions</th>
+                                endforeach
+                            </thead>
+                            <tbody>
+                                @foreach($publishedProfiles as $profile)
+                                    <tr>
+                                        <td style="vertical-align: middle;"><strong>{{ $profile->name }}</strong></td>
+                                        <td style="vertical-align: middle;">
+                                            <span class="label label-success" style="border-radius:4px;">{{ $profile->status->value }}</span>
+                                        </td>
+                                        <td style="vertical-align: middle;">v{{ $profile->version ?? '1.0' }}</td>
+                                        <td class="text-right" style="vertical-align: middle;">
+                                            <a href="{{ route('storeops.admin.rules.policies.edit', $profile->id) }}" class="btn btn-xs btn-default"><i class="fa fa-pencil"></i> Open Builder</a>
+                                            
+                                            <form action="{{ route('storeops.admin.rules.policies.duplicate', $profile->id) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                <button type="submit" class="btn btn-xs btn-default"><i class="fa fa-copy"></i> Duplicate</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Widgets Section -->
+                    <div class="hub-widgets">
+                        <div class="widget-panel">
+                            <div class="widget-title"><i class="fa fa-history"></i> Recent GPO Alignment Changes</div>
+                            <ul class="timeline timeline-inverse" style="margin-top: 10px; margin-bottom: 0;">
+                                @forelse($recentActivity as $act)
+                                    <li>
+                                        <i class="fa fa-check bg-green"></i>
+                                        <div class="timeline-item" style="box-shadow:none; background:#f8fafc; border: 1px solid #e2e8f0; border-radius: 4px;">
+                                            <span class="time"><i class="fa fa-clock-o"></i> {{ $act['date'] }}</span>
+                                            <h4 class="timeline-header" style="border:none; font-size:13.5px; padding-bottom:0;">
+                                                Policy <strong>{{ $act['policy_name'] }}</strong> assigned to <strong>{{ $act['target_name'] }}</strong>
+                                            </h4>
+                                            <div class="timeline-body" style="padding-top:2px; font-size:12px; color:#64748b;">
+                                                Modified by {{ $act['operator'] }}
+                                            </div>
+                                        </div>
+                                    </li>
+                                @empty
+                                    <li class="text-muted" style="font-size: 13px; padding-left: 15px;">No recent assignment changes recorded.</li>
+                                @endforelse
+                                <li><i class="fa fa-clock-o bg-gray"></i></li>
+                            </ul>
+                        </div>
+
+                        <div class="widget-panel">
+                            <div class="widget-title"><i class="fa fa-rocket"></i> Actions</div>
+                            <button class="btn btn-default btn-block text-left" style="margin-bottom:12px; padding: 10px 15px;" onclick="window.location.href='{{ route('storeops.admin.rules.simulator') }}'">
+                                <i class="fa fa-flask text-blue" style="margin-right: 8px;"></i> Launch Policy Simulator
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
-            </div>
 
         </div>
     </div>
-</div>
-
-<!-- INVISIBLE FORM FOR MAPPING (Passed via AJAX Partial) -->
-<div class="hidden" id="availablePoliciesData">
-    <select id="masterPolicySelect" class="form-control">
-        @foreach($publishedProfiles as $profile)
-            <option value="{{ $profile->id }}">{{ $profile->name }}</option>
-        @endforeach
-    </select>
 </div>
 @endsection
 
 @section('moar_scripts')
 <script>
 $(document).ready(function() {
-    $('.tree-item').click(function() {
-        // Highlight active item
-        $('.tree-item').removeClass('active');
-        $(this).addClass('active');
+    
+    // --- 1. LOCAL STORAGE "RECENT TARGETS" HISTORY ENGINE ---
+    function renderRecentTargets() {
+        let recent = JSON.parse(localStorage.getItem('govstore_recent_targets') || '[]');
+        let $list = $('#recent_targets_list');
+        $list.empty();
 
-        // Automatically switch to Inspector Tab if they were reading the dictionary
-        $('.nav-tabs a[href="#tab_inspector"]').tab('show');
+        if (recent.length === 0) {
+            $list.append('<li class="text-muted" style="padding: 10px 20px; font-size: 12px; font-style: italic;">No recently visited targets.</li>');
+            return;
+        }
 
-        // Fetch inspector details
-        let categoryId = $(this).data('id');
-        $('#tab_inspector').html('<div class="text-center" style="margin-top: 100px;"><i class="fas fa-spinner fa-spin fa-3x text-blue"></i><p style="margin-top: 15px; color:#888;">Analyzing product rules...</p></div>');
+        recent.forEach(function(item) {
+            let icon = item.type === 'CATEGORY' ? 'fa-laptop' : 'fa-building-o';
+            $list.append(`
+                <li class="sidebar-menu-item recent-item" data-id="${item.id}" data-type="${item.type}">
+                    <a href="#" style="padding: 8px 20px;">
+                        <span><i class="fa ${icon}"></i> ${item.name}</span>
+                    </a>
+                </li>
+            `);
+        });
+    }
 
-        $.get('{{ route("storeops.admin.rules.inspector") }}', { category_id: categoryId }, function(html) {
-            $('#tab_inspector').html(html);
+    function addRecentTarget(id, type, name) {
+        let recent = JSON.parse(localStorage.getItem('govstore_recent_targets') || '[]');
+        recent = recent.filter(item => !(item.id == id && item.type == type));
+        recent.unshift({ id: id, type: type, name: name });
+        if (recent.length > 5) recent.pop();
+
+        localStorage.setItem('govstore_recent_targets', JSON.stringify(recent));
+        renderRecentTargets();
+    }
+
+    renderRecentTargets();
+
+    // --- 2. AJAX TARGET INSPECTOR LOAD ENGINE ---
+    $(document).on('click', '.recent-item, .search-result-row', function(e) {
+        let item = $(this);
+        let id = item.data('id');
+        let type = item.data('type');
+        let name = item.text().trim();
+
+        // Close any open search dropdowns immediately
+        $('.search-results-dropdown').hide();
+
+        if (type === 'POLICY') {
+            // Intelligent Routing: Redirect policies directly to the Editor Canvas!
+            window.location.href = `/gov-store/operations/settings/product-rules/policies/${id}/edit`;
+            return;
+        }
+
+        addRecentTarget(id, type, name);
+
+        $('#workspace_pane').html(
+            '<div class="text-center" style="margin: auto; padding: 100px;">' +
+            '<i class="fa fa-spinner fa-spin fa-3x text-blue" style="margin-bottom: 15px;"></i>' +
+            '<h4 style="color:#64748b; font-weight: 600; margin: 0;">Compiling Effective Policies...</h4>' +
+            '<p class="text-muted" style="font-size: 12px; margin-top: 5px;">Evaluating GPO Inheritance Tree...</p>' +
+            '</div>'
+        );
+
+        $.get('{{ route("storeops.admin.rules.inspector") }}', { target_id: id, target_type: type }, function(html) {
+            $('#workspace_pane').html(html);
         });
     });
+
+    // --- 3. DYNAMIC SEARCH AUTOCOMPLETE OVERLAY ENGINE ---
+    let searchTimer = null;
+
+    function handleSearch($input, $dropdown) {
+        let query = $input.val().trim();
+
+        if (query.length < 2) {
+            $dropdown.empty().hide();
+            return;
+        }
+
+        clearTimeout(searchTimer);
+
+        searchTimer = setTimeout(function() {
+            $.get('{{ route("storeops.admin.rules.search_api") }}', { q: query })
+                .done(function(data) {
+                    $dropdown.empty();
+
+                    let hasResults = false;
+
+                    // A. Render Category Matches
+                    if (data.categories && data.categories.length > 0) {
+                        hasResults = true;
+                        $dropdown.append('<div class="dropdown-section-title">Product Categories</div>');
+                        data.categories.forEach(item => {
+                            $dropdown.append(`
+                                <a class="search-result-row" data-id="${item.id}" data-type="CATEGORY">
+                                    <i class="fa ${item.icon}"></i> ${item.name}
+                                </a>
+                            `);
+                        });
+                    }
+
+                    // B. Render Location Matches
+                    if (data.locations && data.locations.length > 0) {
+                        hasResults = true;
+                        $dropdown.append('<div class="dropdown-section-title">Offices / Locations</div>');
+                        data.locations.forEach(item => {
+                            $dropdown.append(`
+                                <a class="search-result-row" data-id="${item.id}" data-type="LOCATION">
+                                    <i class="fa ${item.icon}"></i> ${item.name}
+                                </a>
+                            `);
+                        });
+                    }
+
+                    // C. Render Policy Matches
+                    if (data.policies && data.policies.length > 0) {
+                        hasResults = true;
+                        $dropdown.append('<div class="dropdown-section-title">Policy Templates</div>');
+                        data.policies.forEach(item => {
+                            $dropdown.append(`
+                                <a class="search-result-row" data-id="${item.id}" data-type="POLICY">
+                                    <i class="fa ${item.icon}"></i> ${item.name}
+                                </a>
+                            `);
+                        });
+                    }
+
+                    if (hasResults) {
+                        $dropdown.show();
+                    } else {
+                        $dropdown.empty().append('<div class="text-muted" style="padding: 15px; font-size:13px; text-align:center;">No matching targets or policies found.</div>').show();
+                    }
+                });
+        }, 300); // 300ms Debounce to prevent server-spamming
+    }
+
+    // Bind events to Sidebar Search
+    $('#sidebarSearch').on('input', function() {
+        handleSearch($(this), $('#sidebarDropdown'));
+    });
+
+    // Bind events to Central Dashboard Search
+    $('#centralSearchInput').on('input', function() {
+        handleSearch($(this), $('#centralDropdown'));
+    });
+
+    // Close overlays if the user clicks anywhere else on the screen
+    $(document).click(function(e) {
+        if (!$(e.target).closest('.sidebar-search, .hub-search-wrapper').length) {
+            $('.search-results-dropdown').hide();
+        }
+    });
+
+    // Fast-entry shortcuts from Hub cards
+    $('#card_categories, #portal_categories').click(function(e) {
+        e.preventDefault();
+        $('#centralSearchInput').val('').focus();
+        handleSearch($('#centralSearchInput'), $('#centralDropdown'));
+    });
+
+    $('#card_offices, #portal_offices').click(function(e) {
+        e.preventDefault();
+        $('#centralSearchInput').val('').focus();
+        handleSearch($('#centralSearchInput'), $('#centralDropdown'));
+    });
+
+    $('#portal_policies_hub').click(function(e) {
+        e.preventDefault();
+        $('#centralSearchInput').val('').focus();
+        handleSearch($('#centralSearchInput'), $('#centralDropdown'));
+    });
+
 });
 </script>
 @endsection

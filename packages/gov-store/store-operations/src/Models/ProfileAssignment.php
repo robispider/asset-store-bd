@@ -3,18 +3,20 @@
 namespace GovStore\StoreOperations\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
+use GovStore\StoreOperations\Enums\AssignmentScope;
 
 class ProfileAssignment extends Model
 {
     protected $table = 'gov_profile_assignments';
 
     protected $fillable = [
-        'profile_id', 'target_type', 'target_id', 'assigned_by', 
-        'effective_from', 'effective_to'
+        'profile_id', 'target_type', 'target_id', 
+        'scope_level', 'scope_id', 
+        'assigned_by', 'effective_from', 'effective_to'
     ];
 
     protected $casts = [
+        'scope_level'    => AssignmentScope::class, // Auto-casts to GLOBAL/COMPANY/LOCATION/NATIVE
         'effective_from' => 'datetime',
         'effective_to'   => 'datetime',
     ];
@@ -24,16 +26,8 @@ class ProfileAssignment extends Model
         return $this->belongsTo(Profile::class, 'profile_id');
     }
 
-    /**
-     * The entity that adopted this policy (e.g. App\Models\Category)
-     */
     public function target()
     {
         return $this->morphTo();
-    }
-
-    public function assigner()
-    {
-        return $this->belongsTo(User::class, 'assigned_by');
     }
 }

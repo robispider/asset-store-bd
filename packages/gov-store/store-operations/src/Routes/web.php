@@ -51,4 +51,24 @@ Route::group([
     Route::get('/settings/product-rules/inspector', [\GovStore\StoreOperations\Http\Controllers\ProfileAdminController::class, 'inspector'])->name('storeops.admin.rules.inspector');
     Route::post('/settings/product-rules/assign', [\GovStore\StoreOperations\Http\Controllers\ProfileAdminController::class, 'assignPolicy'])->name('storeops.admin.rules.assign');
 
+
+    Route::get('/settings/product-rules/policies/{id}/edit', [\GovStore\StoreOperations\Http\Controllers\ProfileAdminController::class, 'editPolicy'])->name('storeops.admin.rules.policies.edit');
+    Route::post('/settings/product-rules/policies/{id}/draft', [\GovStore\StoreOperations\Http\Controllers\ProfileAdminController::class, 'saveDraftPolicy'])->name('storeops.admin.rules.policies.draft');
+
+    Route::get('/settings/product-rules/simulator', [\GovStore\StoreOperations\Http\Controllers\ProfileAdminController::class, 'simulator'])->name('storeops.admin.rules.simulator');
+    Route::get('/settings/product-rules/simulator/run', [\GovStore\StoreOperations\Http\Controllers\ProfileAdminController::class, 'runSimulation'])->name('storeops.admin.rules.simulator.run');
+
+    Route::get('/settings/product-rules/policies/{id}/impact', [\GovStore\StoreOperations\Http\Controllers\ProfileAdminController::class, 'getImpactAnalysis'])->name('storeops.admin.rules.policies.impact');
+    Route::post('/settings/product-rules/policies/{id}/publish', [\GovStore\StoreOperations\Http\Controllers\ProfileAdminController::class, 'publishPolicy'])->name('storeops.admin.rules.policies.publish');
+Route::post('/settings/product-rules/assign-gpo', [\GovStore\StoreOperations\Http\Controllers\ProfileAdminController::class, 'assignPolicy'])->name('storeops.admin.rules.assign');
+Route::post('/settings/product-rules/assignments/{id}/unassign', [\GovStore\StoreOperations\Http\Controllers\ProfileAdminController::class, 'unassignPolicy'])->name('storeops.admin.rules.unassign');
+
+Route::get('/settings/product-rules/search-api', [\GovStore\StoreOperations\Http\Controllers\ProfileAdminController::class, 'searchApi'])->name('storeops.admin.rules.search_api');
+
+Route::get('/settings/product-rules/policies/create/{template}', [\GovStore\StoreOperations\Http\Controllers\ProfileAdminController::class, 'createRule'])->name('storeops.admin.rules.policies.create');
+Route::post('/settings/product-rules/policies/store', [\GovStore\StoreOperations\Http\Controllers\ProfileAdminController::class, 'storeRule'])->name('storeops.admin.rules.policies.store');
+Route::get('/settings/product-rules/policies/{id}/confirmation', [\GovStore\StoreOperations\Http\Controllers\ProfileAdminController::class, 'confirmationHub'])->name('storeops.admin.rules.policies.confirmation');
+Route::post('/settings/product-rules/policies/{id}/duplicate', [\GovStore\StoreOperations\Http\Controllers\ProfileAdminController::class, 'duplicateRule'])->name('storeops.admin.rules.policies.duplicate');
+
+
 });
