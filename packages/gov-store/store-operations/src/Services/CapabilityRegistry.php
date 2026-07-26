@@ -2,7 +2,8 @@
 
 namespace GovStore\StoreOperations\Services;
 
-use GovStore\StoreOperations\Contracts\Capabilities\CapabilityInterface;
+// FIXED: Corrected namespace import path from singular to match implemented interface
+use GovStore\StoreOperations\Contracts\CapabilityInterface;
 use Exception;
 
 class CapabilityRegistry
