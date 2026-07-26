@@ -70,5 +70,7 @@ Route::post('/settings/product-rules/policies/store', [\GovStore\StoreOperations
 Route::get('/settings/product-rules/policies/{id}/confirmation', [\GovStore\StoreOperations\Http\Controllers\ProfileAdminController::class, 'confirmationHub'])->name('storeops.admin.rules.policies.confirmation');
 Route::post('/settings/product-rules/policies/{id}/duplicate', [\GovStore\StoreOperations\Http\Controllers\ProfileAdminController::class, 'duplicateRule'])->name('storeops.admin.rules.policies.duplicate');
 
+Route::get('/documents/render-meta', [\GovStore\StoreOperations\Http\Controllers\DocumentWorkspaceController::class, 'renderMeta'])->name('storeops.documents.render_meta');
+
 
 });

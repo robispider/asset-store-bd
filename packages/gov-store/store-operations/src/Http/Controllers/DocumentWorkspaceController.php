@@ -20,12 +20,11 @@ class DocumentWorkspaceController extends Controller
     protected GoodsReceiptService $receiptService;
     protected GoodsIssueService $issueService;
     protected PostingPipelineManager $pipelineManager;
+    protected DocumentValidationService $validationService;
 
-   
-
-   protected DocumentValidationService $validationService;
-
-    // Inject DocumentValidationService in constructor
+    /**
+     * Dependency Injection via Constructor.
+     */
     public function __construct(
         ProductResolver $productResolver, 
         GoodsReceiptService $receiptService,
@@ -40,7 +39,9 @@ class DocumentWorkspaceController extends Controller
         $this->validationService = $validationService;
     }
 
-
+    /**
+     * Handles the final ledger posting and materialization.
+     */
     public function post(Request $request, string $type, string $id)
     {
         $document = Document::findOrFail($id);
@@ -50,9 +51,8 @@ class DocumentWorkspaceController extends Controller
             $this->saveDraft($request, $type, $id);
             $document->refresh();
 
-            // --- 2. FATAL DEBUGGER BYPASS IN POSTING ---
+            // 2. Run validations before materializing
             try {
-                // FIXED: Changed $this->validator to $this->validationService
                 $validationErrors = $this->validationService->validateDocument($document, $request->all());
 
                 if (!empty($validationErrors)) {
@@ -67,11 +67,10 @@ class DocumentWorkspaceController extends Controller
                     return back()->with('error', 'Validation Failed: ' . implode(' | ', $errorMessages));
                 }
 
-                // Execute the materialization pipeline (Kardex ledger and assets)
+                // 3. Execute the materialization pipeline (Kardex ledger and assets)
                 $this->pipelineManager->materialize($document, auth()->id());
 
             } catch (\Throwable $e) {
-                // FORCE CRASH TO RED IGNITION SCREEN (Keep for safety until you confirm post is successful)
                 throw new \Error(
                     "POSTING CRASH: " . $e->getMessage() . 
                     " in " . $e->getFile() . " on line " . $e->getLine() . 
@@ -87,17 +86,16 @@ class DocumentWorkspaceController extends Controller
     }
 
     /**
-     * The Operational Hub (Document Listings Dashboard)
+     * Renders the Operational Hub (Document Listings Dashboard).
      */
     public function hub(Request $request)
     {
-        // Loads any document class (Receipt, Issue) uniformly
         $documents = Document::with('creator')->orderBy('created_at', 'desc')->paginate(20);
         return view('storeops::operations.hub', compact('documents'));
     }
 
     /**
-     * Instantly initialize a blank DRAFT document of a specific type (Receipt, Issue).
+     * Instantly initializes a blank DRAFT document.
      */
     public function initialize(Request $request)
     {
@@ -117,20 +115,18 @@ class DocumentWorkspaceController extends Controller
     }
 
     /**
-     * The Unified Workspace Shell (Loads both editors and view-only archives)
+     * Renders the Unified Workspace Shell for drafting or viewing archives.
      */
-public function workspace(string $type, string $id)
+    public function workspace(string $type, string $id)
     {
-        // Change items.stockable to items.product
         $document = Document::with(['items.product', 'items.metadata', 'timelines', 'creator'])->findOrFail($id);
-        
         return view('storeops::operations.workspace', compact('document', 'type'));
     }
 
-   /**
-     * Save the Document Draft (Consolidates composed type_id keys on save)
+    /**
+     * Auto-saves the document state and metadata dynamically.
      */
-     public function saveDraft(Request $request, string $type, string $id)
+    public function saveDraft(Request $request, string $type, string $id)
     {
         $document = Document::findOrFail($id);
         $headerData = $request->only(['reference_no', 'reference_date', 'purchase_type']);
@@ -180,6 +176,12 @@ public function workspace(string $type, string $id)
 
                     foreach ($item['meta'] as $rowIndex => $meta) {
                         foreach ($meta as $fieldKey => $value) {
+                            
+                            // skipping null or empty inputs to prevent database constraint crashes
+                            if ($value === null || $value === '') {
+                                continue;
+                            }
+
                             $dbItem->metadata()->create([
                                 'field_key' => $fieldKey,
                                 'value'     => $value,
@@ -192,7 +194,7 @@ public function workspace(string $type, string $id)
 
             $document->refresh();
 
-            // --- 3. FATAL DEBUGGER BYPASS (FORCES RED DEBUG PAGE TO OPEN) ---
+            // 3. Evaluate checklist requirements dynamically
             try {
                 $validation = $this->validationService->evaluateDocument($document);
             } catch (\Throwable $e) {
@@ -220,16 +222,15 @@ public function workspace(string $type, string $id)
     }
 
     /**
-     * Unified AJAX Product Search for the Spreadsheet Grid (Outputs Composed IDs)
+     * Unified AJAX Product Search for the Select2 spreadsheet grid.
      */
     public function searchProducts(Request $request)
     {
         $results = $this->productResolver->search($request->input('q', ''));
         
-        // Map to Select2 format with composed ID
         $formatted = $results->map(function ($item) {
             return [
-                'id'            => $item['type_raw'] . '_' . $item['id'], // e.g. "App\Models\Consumable_3"
+                'id'            => $item['type_raw'] . '_' . $item['id'], 
                 'text'          => $item['name'] . ' (' . $item['type_label'] . ')',
                 'current_stock' => $item['current_stock']
             ];
@@ -239,7 +240,7 @@ public function workspace(string $type, string $id)
     }
 
     /**
-     * Generate the Pre-Posting Summary (AJAX)
+     * Generates a pre-posting quantitative and financial summary layout.
      */
     public function preview(string $type, string $id)
     {
@@ -258,10 +259,8 @@ public function workspace(string $type, string $id)
         ]);
     }
 
-    
-
     /**
-     * Generate standard, high-fidelity government A4 PDF printout
+     * Generates official standard A4 printed copy of posted files.
      */
     public function print(string $type, string $id)
     {
@@ -274,19 +273,14 @@ public function workspace(string $type, string $id)
         return view('storeops::operations.print', compact('document', 'type'));
     }
 
-
     /**
-     * Dedicated endpoint to fetch compiled capabilities and requirements for a single item.
+     * Fetches raw compiled profile rules for structural debugging.
      */
     public function productProfile(string $type, int $id)
     {
         try {
             $compiler = app(\GovStore\StoreOperations\Services\ProfileCompilerService::class);
-            
-            // Normalize the polymorphic type name (handles full namespace strings seamlessly)
             $normalizedType = strtolower(class_basename($type));
-
-            // Compile the recursive capability profile
             $compiled = $compiler->compileItem($normalizedType, $id);
 
             return response()->json($compiled);
@@ -295,13 +289,13 @@ public function workspace(string $type, string $id)
         }
     }
 
-      /**
-     * Handle AJAX File Upload and associate it with the Document polymorphically.
+    /**
+     * Handles polymorphic file attachments uploader.
      */
     public function uploadAttachment(Request $request, string $type, string $id)
     {
         $request->validate([
-            'file' => 'required|file|mimes:pdf,png,jpg,jpeg,docx,xlsx|max:10240', // Max 10MB
+            'file' => 'required|file|mimes:pdf,png,jpg,jpeg,docx,xlsx|max:10240', 
             'category' => 'required|string'
         ]);
 
@@ -314,11 +308,8 @@ public function workspace(string $type, string $id)
 
             $file = $request->file('file');
             $originalName = $file->getClientOriginalName();
-            
-            // Store file securely inside storage/app/public/attachments/
             $path = $file->store('attachments', 'public');
 
-            // Persist polymorphic entry
             $attachment = $document->attachments()->create([
                 'file_path'     => $path,
                 'original_name' => '[' . strtoupper($request->input('category')) . '] ' . $originalName,
@@ -340,7 +331,7 @@ public function workspace(string $type, string $id)
     }
 
     /**
-     * Delete physical file and database entry.
+     * Securely deletes physical files and dynamic database rows.
      */
     public function deleteAttachment(string $type, string $id, string $attachmentId)
     {
@@ -352,16 +343,66 @@ public function workspace(string $type, string $id)
             }
 
             $attachment = $document->attachments()->findOrFail($attachmentId);
-
-            // Delete physical file
             Storage::disk('public')->delete($attachment->file_path);
-            
-            // Delete database row
             $attachment->delete();
 
             return response()->json(['status' => 'success']);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 422);
         }
+    }
+
+    /**
+     * Dynamic AJAX metadata rendering engine.
+     * Generates server-side HTML inputs natively from Capability Classes.
+     */
+    public function renderMeta(Request $request)
+    {
+        $productType = $request->input('product_type');
+        $productId = $request->input('product_id');
+        $quantity = (int) $request->input('quantity', 1);
+        $rowIndex = $request->input('row_index', 0);
+        $documentId = $request->input('document_id');
+
+        // 1. Resolve compiled profile
+        $compiler = app(\GovStore\StoreOperations\Services\ProfileCompilerService::class);
+        $normalizedType = strtolower(class_basename($productType));
+        $compiledRules = $compiler->compileItem($normalizedType, $productId);
+
+        // 2. Load existing metadata values if we are editing an existing draft
+        $item = null;
+        if ($documentId) {
+            $document = Document::find($documentId);
+            if ($document) {
+                $item = $document->items()
+                    ->where('product_type', $normalizedType)
+                    ->where('product_id', $productId)
+                    ->first();
+                
+                if ($item) {
+                    $item->quantity = $quantity; 
+                }
+            }
+        }
+
+        // 3. Loop through active capabilities and concatenate their pre-rendered Blade layouts
+        $html = '';
+        foreach ($compiledRules as $code => $meta) {
+            if (isset($meta['enforced']) && $meta['enforced'] === true) {
+                $capability = \GovStore\StoreOperations\Services\CapabilityRegistry::make($code);
+                
+                // Pass layout parameters down inside the config payload contextually
+                $html .= $capability->renderUI($item, [
+                    'config'    => $meta['config'] ?? [],
+                    'row_index' => $rowIndex,
+                    'quantity'  => $quantity
+                ]);
+            }
+        }
+
+        return response()->json([
+            'html' => $html,
+            'has_requirements' => !empty($html)
+        ]);
     }
 }

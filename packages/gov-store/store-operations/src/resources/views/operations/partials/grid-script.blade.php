@@ -4,10 +4,12 @@ $(document).ready(function() {
     const isDraft = {{ $isDraft ? 'true' : 'false' }};
     const mathDirection = '{{ $mathDirection }}';
     
+    // --- 1. THE BOOTSTRAPPING LOCK ---
+    // Silences auto-save triggers until the entire page is stable
+    let isBootstrapping = true; 
+
     const compiledSnapshot = @json($document->getCompiledProfileSnapshot() ?? ['items' => []]);
     const existingItems = @json($existingItems ?? []);
-
-    let documentRequirements = {};
 
     function addRow(data = null) {
         let index = rowCount++;
@@ -61,23 +63,16 @@ $(document).ready(function() {
             $select.on('select2:select', function (e) {
                 let item = e.params.data;
                 
-                // Force append option to native select to guarantee serialization
                 if ($select.find("option[value='" + item.id + "']").length === 0) {
                     var newOption = new Option(item.text, item.id, true, true);
                     $select.append(newOption).trigger('change');
                 }
 
                 $row.find('.current-stock').text(item.current_stock);
-                
-                let parts = item.id.split('_');
-                let productType = parts[0];
-                let productId = parts[1];
-
-                fetchProductProfile(productId, productType, $row);
+                renderMetadataInputs($row);
             });
         }
 
-        
         // Prepopulate existing data on load safely
         if (data) {
             let itemName = data.product_name || 'Unknown Product';
@@ -85,81 +80,49 @@ $(document).ready(function() {
             let option = new Option(itemName, composedId, true, true);
             
             $select.append(option).trigger('change');
-            
-            // Direct Object Key Lookup (Fixes items.find is not a function error)
-            let itemKey = data.product_type + '_' + data.product_id;
-            let localItem = (compiledSnapshot && compiledSnapshot.items && compiledSnapshot.items[itemKey]) 
-                ? compiledSnapshot.items[itemKey] 
-                : null;
-
-            if (localItem) {
-                renderMetadataInputs($row, localItem, data.metadata || []);
-            }
+            renderMetadataInputs($row);
         }
     }
 
-    function fetchProductProfile(productId, productType, $row) {
-        let normalizedType = productType.split('\\').pop().toLowerCase();
-
-        $.get(`/gov-store/operations/products/${normalizedType}/${productId}/profile`)
-            .done(function(res) {
-                renderMetadataInputs($row, res, []);
-            })
-            .fail(function(xhr) {
-                console.error('Failed to load product profile:', xhr.responseText);
-            });
-    }
-
-    function renderMetadataInputs($row, profile, existingMeta = []) {
+    // Server-side pre-rendering engine interface
+    function renderMetadataInputs($row) {
         let index = $row.data('index');
         let $metaRow = $(`tr[data-parent-index="${index}"]`);
         let $container = $metaRow.find('.meta-container');
         let qty = parseInt($row.find('.qty-input').val()) || 1;
         
         $container.empty();
-        existingMeta = existingMeta || [];
 
-        if (!profile || !profile.requirements || profile.requirements.length === 0) {
+        let rawVal = $row.find('.item-select').val();
+        if (!rawVal || !rawVal.includes('_')) {
             $metaRow.addClass('hidden');
             return;
         }
 
-        $metaRow.removeClass('hidden');
-        documentRequirements[index] = profile.requirements;
+        let parts = rawVal.split('_');
+        let productType = parts[0];
+        let productId = parts[1];
 
-        let table = `<table class="table table-condensed table-bordered"><thead><tr>`;
-        profile.requirements.forEach(req => {
-            table += `<th>${req.key.replace('_', ' ').toUpperCase()}</th>`;
+        // Fetch fully compiled, highly interactive server-side layout from PHP
+        $.get('{{ route("storeops.documents.render_meta") }}', {
+            product_type: productType,
+            product_id: productId,
+            quantity: qty,
+            row_index: index,
+            document_id: '{{ $document->id }}'
+        })
+        .done(function(res) {
+            if (res.has_requirements && res.html.trim() !== '') {
+                $metaRow.removeClass('hidden');
+                $container.append(res.html);
+            } else {
+                $metaRow.addClass('hidden');
+            }
+            calculateBalance($row);
+        })
+        .fail(function(xhr) {
+            console.error('Failed to load dynamic meta layout:', xhr.responseText);
         });
-        table += `</tr></thead><tbody>`;
-
-        for (let r = 0; r < qty; r++) {
-            table += `<tr>`;
-            profile.requirements.forEach(req => {
-                let value = '';
-                if (existingMeta && existingMeta.length > 0) {
-                    let matchingMeta = existingMeta.find(m => m.field_key === req.key && m.row_index === r);
-                    if (matchingMeta) value = matchingMeta.value;
-                }
-
-                let inputType = req.type === 'date' ? 'date' : 'text';
-                table += `
-                    <td>
-                        <input type="${inputType}" 
-                               name="items[${index}][meta][${r}][${req.key}]" 
-                               class="form-control meta-input" 
-                               data-key="${req.key}" 
-                               data-required="${req.rules && req.rules.includes('required') ? '1' : '0'}"
-                               value="${value}" 
-                               required style="border: 1px solid #ccc;">
-                    </td>`;
-            });
-            table += `</tr>`;
-        }
-        table += `</tbody></table>`;
-        $container.append(table);
-        
-        calculateBalance($row);
     }
 
     function calculateBalance($row) {
@@ -222,15 +185,10 @@ $(document).ready(function() {
     $('#gridBody').on('input', '.qty-input', function() {
         let $row = $(this).closest('tr');
         calculateBalance($row);
-        
-        let idx = $row.data('index');
-        if (documentRequirements[idx]) {
-            renderMetadataInputs($row, { requirements: documentRequirements[idx] }, []);
-        }
+        renderMetadataInputs($row);
     });
 
     // Save Draft (AJAX)
-    // Save Draft (AJAX) - Automatically updates the checklist on completion
     $('#saveDraftBtn').click(function() {
         let btn = $(this);
         btn.html('<i class="fa fa-spinner fa-spin"></i> Saving...');
@@ -240,13 +198,11 @@ $(document).ready(function() {
                 btn.html('<i class="fa fa-check text-green"></i> Saved');
                 setTimeout(() => btn.html('<i class="fa fa-save"></i> Save Draft'), 2000);
 
-                // Render server-authoritative checklist immediately
                 if (res.validation) {
                     renderServerValidationChecklist(res.validation);
                 }
             })
             .fail(function(xhr) {
-                // Defensive Error Extraction: Reads message, errors, or raw response
                 let errorMsg = 'An error occurred while saving.';
                 
                 if (xhr.responseJSON) {
@@ -363,13 +319,18 @@ $(document).ready(function() {
             }
         });
     });
-// ISSUE 1 FIXED: Live Debounced Auto-Validation on Field Edits (600ms delay)
+
+    // --- 2. THE DYNAMIC AUTO-SAVE LISTENER ---
+    // Listens for input changes, but ignores them if the page is currently bootstrapping
     let liveValidationTimer = null;
     $('#workspaceForm').on('input change', 'input, select', function() {
+        if (isBootstrapping) {
+            return; // Exit immediately if loading existing items!
+        }
+        
         clearTimeout(liveValidationTimer);
         
         liveValidationTimer = setTimeout(function() {
-            // Silently evaluate form changes with the server
             $.post('{{ route("storeops.documents.draft", ["type" => $type, "id" => $document->id]) }}', $('#workspaceForm').serialize())
                 .done(function(res) {
                     if (res.validation) {
@@ -379,11 +340,25 @@ $(document).ready(function() {
         }, 600);
     });
 
-    // Bootstrapping: Automatically bootstrap 1 default search row on clean draft load
+    // --- 3. PAGE INITIALIZATION ENGINE ---
+    // Safe bootstrapping sequence with explicit lock releasing
     if (existingItems && existingItems.length > 0) {
         existingItems.forEach(item => addRow(item));
     } else if (isDraft) {
-        addRow(); // Bootstraps the first row on page load!
+        addRow();
     }
+    
+    // Release the bootstrapping lock once rendering completes
+    setTimeout(function() {
+        isBootstrapping = false;
+        
+        // Run an initial silent save to populate the checklist on clean load
+        $.post('{{ route("storeops.documents.draft", ["type" => $type, "id" => $document->id]) }}', $('#workspaceForm').serialize())
+            .done(function(res) {
+                if (res.validation) {
+                    renderServerValidationChecklist(res.validation);
+                }
+            });
+    }, 1000); 
 });
 </script>
