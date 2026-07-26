@@ -60,7 +60,7 @@ class CategoryAdoptionController extends Controller
         }
     }
 
-    public function provision(Request $request, CatalogCategoryCreator $creator, TenantContext $tenantContext)
+  public function provision(Request $request, CatalogCategoryCreator $creator, TenantContext $tenantContext)
     {
         $request->validate([
             'unspsc_code'      => 'required|string',
@@ -74,22 +74,36 @@ class CategoryAdoptionController extends Controller
         $isSuperAdmin = $user->isSuperUser() || $user->hasAccess('admin');
 
         try {
-            $scope = $this->resolveScope($tenantContext);
-            $governanceType = $scope['type']; // 'company' or 'location'
-            $targetScopeType = $scope['type'];
-            $targetScopeId = $scope['id'];
+            // ১. স্কোপ ইনিশিয়ালাইজেশন ভেরিয়েবল
+            $governanceType = null;
+            $targetScopeType = null;
+            $targetScopeId = null;
 
             if ($isSuperAdmin) {
+                // ২. সুপার অ্যাডমিনের জন্য ফর্ম রিকোয়েস্ট থেকে স্কোপ ডিফাইন করা হবে
                 $governanceType = $request->input('governance_type', 'global');
+                
                 if ($governanceType === 'company') {
                     $targetScopeType = 'company';
                     $targetScopeId = $request->input('target_company_id');
-                    if (empty($targetScopeId)) throw new Exception(__('classification::texts.ctrl_exception_select_target_company'));
-                } elseif ($governanceType === 'global') {
+                    
+                    if (empty($targetScopeId)) {
+                        throw new Exception(__('classification::texts.ctrl_exception_select_target_company'));
+                    }
+                } else {
+                    // Global Standard এর জন্য কোনো নির্দিষ্ট Scope ID লাগে না
+                    $targetScopeType = 'global';
                     $targetScopeId = null;
                 }
+            } else {
+                // ৩. সাধারণ ব্যবহারকারীদের (Company Admin/Storekeeper) জন্য সেশন থেকে স্কোপ ডিফাইন করা হবে
+                $scope = $this->resolveScope($tenantContext);
+                $governanceType = $scope['type']; // 'company' or 'location'
+                $targetScopeType = $scope['type'];
+                $targetScopeId = $scope['id'];
             }
 
+            // ৪. ক্রিয়েট ও ম্যাপ এক্সিকিউট করা
             $category = $creator->provisionAndMap(
                 $request->unspsc_code,
                 $request->category_type,
