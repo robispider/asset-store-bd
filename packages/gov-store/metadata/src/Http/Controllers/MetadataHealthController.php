@@ -4,6 +4,7 @@ namespace GovStore\Metadata\Http\Controllers;
 
 use Illuminate\Routing\Controller;
 use GovStore\Metadata\Services\MetadataHealthService;
+use GovStore\Metadata\Jobs\ConvergeMetadataJob;
 
 class MetadataHealthController extends Controller
 {
@@ -16,7 +17,6 @@ class MetadataHealthController extends Controller
 
     public function show()
     {
-        // Require superuser or administrative permissions
         if (!auth()->user()->isSuperUser() && !auth()->user()->hasAccess('admin')) {
             abort(403, 'Unauthorized access.');
         }
@@ -24,5 +24,20 @@ class MetadataHealthController extends Controller
         $report = $this->healthService->generateReport();
 
         return view('govmeta::health', compact('report'));
+    }
+
+    /**
+     * Dispatches the convergence queue job and redirects back.
+     */
+    public function trigger()
+    {
+        if (!auth()->user()->isSuperUser() && !auth()->user()->hasAccess('admin')) {
+            abort(403, 'Unauthorized access.');
+        }
+
+        // Dispatch job to the queue
+        ConvergeMetadataJob::dispatch();
+
+        return redirect()->back()->with('success', 'Metadata convergence process has been successfully queued in the background.');
     }
 }

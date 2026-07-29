@@ -5,6 +5,30 @@
 @section('content')
 <div class="row">
     <div class="col-md-12">
+        <!-- Display Success Redirect Messages from Controller -->
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <h4><i class="icon fa fa-check"></i> Process Dispatched!</h4>
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if ($report->healthScore < 100)
+            <div class="callout callout-warning">
+                <h4>Schema Mismatches Detected!</h4>
+                <p>One or more active asset models are out of sync with your metadata providers. Click the button below to schedule a safe background migration to align your database models.</p>
+                
+                <!-- Trigger Form -->
+                <form action="{{ route('gov.meta.converge.trigger') }}" method="POST" style="margin-top: 10px;">
+                    @csrf
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fa fa-refresh"></i> Queue Schema Convergence
+                    </button>
+                </form>
+            </div>
+        @endif
+
         <div class="box box-default">
             <div class="box-header with-border">
                 <h2 class="box-title">System Status: 
@@ -52,7 +76,7 @@
                 </div>
 
                 @if (!empty($report->nonCompliantModelDetails))
-                <div class="row">
+                <div class="row" style="margin-top: 20px;">
                     <div class="col-md-12">
                         <h3 class="text-orange">Non-Compliant Models</h3>
                         <ul class="list-group">
