@@ -2,31 +2,8 @@
 <script nonce="{{ csrf_token() }}">
 $(document).ready(function() {
     
-    console.log("Gov-Store: Starting navbar and dropdown injection checks...");
+    console.log("Gov-Store: Starting Theme-Compliant User-Menu injection...");
 
-    // =========================================================================
-    // 1. RESTORED: USER DROP-DOWN LINK (Injects My Office Memberships safely)
-    // =========================================================================
-    if ($('.dropdown.user-menu .dropdown-menu').length) {
-        var memActive = window.location.pathname.includes('gov-store/my-memberships') ? 'style="font-weight: bold; background:#eee;"' : '';
-        var link = '<li Handy-id="gov-memberships-dropdown-item" ' + memActive + '>' +
-            '<a href="{{ route("gov.membership.index") }}">' +
-                '<i class="fas fa-id-badge fa-fw"></i> {{ __('office_membership::member.menu_my_memberships') }}' +
-            '</a>' +
-        '</li>';
-        
-        var profileLink = $('.dropdown.user-menu .dropdown-menu a[href*="profile"]').parent();
-        if (profileLink.length) {
-            profileLink.after(link);
-            console.log("Gov-Store: Successfully injected memberships link after profile.");
-        } else {
-            $('.dropdown.user-menu .dropdown-menu').append(link);
-        }
-    }
-
-    // =========================================================================
-    // 2. TOP-BAR MULTI-OFFICE CONTEXT SWITCHER (NATIVE EMBED)
-    // =========================================================================
     @php
         $user = auth()->user();
         $isAdmin = $user->isSuperUser() || $user->hasAccess('admin');
@@ -42,38 +19,60 @@ $(document).ready(function() {
 
         $currentMembershipId = session('gov_working_membership_id');
         
-        $currentWorkingName = null;
+        $currentLocId = null;
+        $currentWorkingName = 'Global Overview';
+        
         if ($currentMembershipId) {
             $activeMem = $activeMemberships->where('id', $currentMembershipId)->first();
-            $currentWorkingName = $activeMem ? $activeMem->location->name : null;
-        } elseif ($isAdmin) {
-            $currentWorkingName = null;
-        } else {
-            $currentWorkingName = \App\Models\Location::find($user->location_id)?->name;
+            if ($activeMem) {
+                $currentWorkingName = $activeMem->location->name;
+                $currentLocId = $activeMem->location_id;
+            }
+        } elseif (!$isAdmin) {
+            $currentLocId = $user->location_id;
+            $currentWorkingName = \App\Models\Location::find($currentLocId)?->name ?? 'Unknown Location';
         }
     @endphp
 
-    @if($activeLocations->count() > 0)
-        var navList = $('.navbar-custom-menu ul.nav').length ? $('.navbar-custom-menu ul.nav') : $('.navbar-custom-menu ul');
+    var $userMenuDropdown = $('.dropdown.user-menu');
+    var $userMenu = $userMenuDropdown.find('.dropdown-menu');
+
+    if ($userMenuDropdown.length) {
+
+        // =========================================================================
+        // 1. THE TRIGGER: Two-line Name & Office in the Top Navbar
+        // =========================================================================
+        var $userToggle = $userMenuDropdown.find('> a.dropdown-toggle');
+        var $hiddenXs = $userToggle.find('.hidden-xs');
         
-        if (navList.length && !$('#gov-context-switcher-item').length) {
+        if ($hiddenXs.length) {
+            var userName = $hiddenXs.text().trim() || '{{ addslashes($user->username) }}';
             
-            var activeLabel = '{{ $currentWorkingName }}' ? '{{ $currentWorkingName }}' : 'Global Overview';
-            var activeClassLabel = '{{ $currentWorkingName }}' ? 'text-yellow' : 'text-green';
+            var twoLineHtml = '<span style="display:inline-block; vertical-align:middle; text-align:left; line-height:1.2; padding-left:5px;">' +
+                              '<strong>' + userName + '</strong><br>' +
+                              '<small><i class="fas fa-map-marker-alt"></i> {{ addslashes($currentWorkingName) }}</small>' +
+                              '</span>';
+            
+            $hiddenXs.replaceWith('<span class="hidden-xs">' + twoLineHtml + '</span>');
+        }
 
-            var dropdownHtml = '<li class="dropdown" id="gov-context-switcher-item" style="border-right: 1px solid rgba(255,255,255,0.1);">' +
-                '<a href="#" class="dropdown-toggle" data-toggle="dropdown" style="color: white; font-weight: bold; padding: 15px 15px;">' +
-                    '<i class="fas fa-hotel"></i> &nbsp;Working As: <span class="' + activeClassLabel + '">' + activeLabel + '</span> &nbsp;<span class="caret"></span>' +
-                '</a>' +
-                '<ul class="dropdown-menu" style="background-color: #fff; width: 280px; padding: 5px 0;">' + // Fixed: Added missing leading single quote before <ul
-                    '<li class="header" style="padding: 8px 15px; font-size: 11px; color: #777; border-bottom: 1px solid #f4f4f4; background-color: #fafafa; font-weight: bold;">{{ __('office_membership::member.menu_choose_context') }}</li>';
+        // =========================================================================
+        // 2. BUILD THE INJECTION HTML (Using pure JS for HTML strings to prevent Blade escaping)
+        // =========================================================================
+        var injectedHtml = '';
 
+        @if($activeLocations->count() >= 1)
+            injectedHtml += '<li class="divider"></li>';
+            injectedHtml += '<li class="dropdown-header">{{ __('office_membership::member.menu_choose_context') }}</li>';
+
+            // Global Admin Option
             @if($isAdmin)
-                var isGlobalActive = !'{{ $currentWorkingName }}';
-                dropdownHtml += '<li style="border-bottom: 1px dashed #eee;">' +
-                    '<a href="#" onclick="event.preventDefault(); document.getElementById(\'switch-context-form-global\').submit();" style="padding: 10px 15px; display: block; clear: both; font-weight: bold; color: #3c8dbc; background: ' + (isGlobalActive ? '#eef7ff' : 'transparent') + '">' +
-                        '<i class="fas fa-globe" style="margin-right: 10px;"></i>' +
-                        '{{ __('office_membership::member.menu_global_overview') }} (All Offices)' +
+                var isGlobalActive = !'{{ $currentLocId }}';
+                injectedHtml += '<li>' +
+                    '<a href="#" onclick="event.preventDefault(); document.getElementById(\'switch-context-form-global\').submit();">' +
+                        '<i class="fas fa-globe ' + (isGlobalActive ? 'text-aqua' : 'text-muted') + ' fa-fw"></i> ' +
+                        '<span class="' + (isGlobalActive ? 'text-bold' : '') + '">{{ __('office_membership::member.menu_global_overview') }}</span>' +
+                        (isGlobalActive ? ' <i class="fas fa-check pull-right text-aqua"></i>' : '') +
                     '</a>' +
                     '<form id="switch-context-form-global" action="{{ route("gov.membership.switch") }}" method="POST" style="display:none;">' +
                         '<input type="hidden" name="_token" value="{{ csrf_token() }}">' +
@@ -82,36 +81,59 @@ $(document).ready(function() {
                 '</li>';
             @endif
 
+            // Office Locations Loop
             @foreach($activeLocations as $loc)
-                @php 
-                    $isCurrent = $currentMembershipId && $activeMemberships->where('id', $currentMembershipId)->first()?->location_id === $loc->id; 
-                    if (!$currentMembershipId && $isAdmin && session('gov_working_location_id') == $loc->id) {
-                        $isCurrent = true;
-                    }
-                @endphp
-                
-                dropdownHtml += '<li style="border-bottom: 1px solid #f9f9f9;">' +
-                    '<a href="#" onclick="event.preventDefault(); document.getElementById(\'switch-context-form-{{ $loc->id }}\').submit();" style="padding: 10px 15px; display: block; clear: both; font-weight: normal; line-height: 1.42857143; color: #333; white-space: nowrap; background: {{ $isCurrent ? "#f4f4f4" : "transparent" }}">' +
-                        '<i class="fas fa-map-marker-alt {{ $isCurrent ? "text-green" : "text-muted" }}" style="margin-right: 10px;"></i>' +
-                        '<strong>' + '{{ addslashes($loc->name) }}' + '</strong>' +
+                var isCurrent_{{ $loc->id }} = {{ ($currentLocId === $loc->id) ? 'true' : 'false' }};
+                injectedHtml += '<li>' +
+                    '<a href="#" onclick="event.preventDefault(); document.getElementById(\'switch-context-form-{{ $loc->id }}\').submit();">' +
+                        '<i class="fas fa-building ' + (isCurrent_{{ $loc->id }} ? 'text-aqua' : 'text-muted') + ' fa-fw"></i> ' +
+                        '<span class="' + (isCurrent_{{ $loc->id }} ? 'text-bold' : '') + '">{{ addslashes($loc->name) }}</span>' +
+                        (isCurrent_{{ $loc->id }} ? ' <i class="fas fa-check pull-right text-aqua"></i>' : '') +
                     '</a>' +
                     '<form id="switch-context-form-{{ $loc->id }}" action="{{ route("gov.membership.switch") }}" method="POST" style="display:none;">' +
                         '<input type="hidden" name="_token" value="{{ csrf_token() }}">' +
                         @if($isAdmin)
                             '<input type="hidden" name="location_id" value="{{ $loc->id }}">' +
                         @else
-                            @php $memId = $activeMemberships->where('location_id', $loc->id)->first()->id; @endphp
+                            @php $memId = $activeMemberships->where('location_id', $loc->id)->first()->id ?? 0; @endphp
                             '<input type="hidden" name="membership_id" value="{{ $memId }}">' +
                         @endif
                     '</form>' +
                 '</li>';
             @endforeach
+        @endif
 
-            dropdownHtml += '</ul></li>';
-            navList.first().prepend(dropdownHtml);
-            console.log("Gov-Store: Navbar context switcher successfully loaded.");
+        // My Memberships Link
+        if (!$('#gov-memberships-dropdown-item').length) {
+            injectedHtml += '<li class="divider"></li>' +
+                '<li id="gov-memberships-dropdown-item">' +
+                '<a href="{{ route("gov.membership.index") }}">' +
+                    '<i class="fas fa-id-badge text-aqua fa-fw"></i> {{ __('office_membership::member.menu_my_memberships') }}' +
+                '</a>' +
+            '</li>';
         }
-    @endif
+
+        // =========================================================================
+        // 3. INJECT HTML SAFELY ABOVE THE LOGOUT BUTTON
+        // =========================================================================
+        var $logoutForm = $userMenu.find('#logout-form');
+        
+        if ($logoutForm.length) {
+            var $logoutLi = $logoutForm.closest('li');
+            var $prevDivider = $logoutLi.prev('.divider');
+            
+            // Insert before the divider directly above the logout button, or just before logout button
+            if ($prevDivider.length) {
+                $(injectedHtml).insertBefore($prevDivider);
+            } else {
+                $(injectedHtml).insertBefore($logoutLi);
+            }
+        } else {
+            $userMenu.append(injectedHtml);
+        }
+        
+        console.log("Gov-Store: Theme-Compliant User-Menu injection complete.");
+    }
 });
 </script>
 @endauth
