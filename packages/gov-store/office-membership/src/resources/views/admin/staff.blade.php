@@ -113,7 +113,7 @@
                             <option value="">{{ __('office_membership::member.staff_claim_select_placeholder') }}</option>
                             @foreach($floatingUsers as $u)
                                 <!-- DEFENSIVE OPTIONAL WRAPPER -->
-                                <option value="{{ $u->id }}">{{ optional($u->present())->fullName ?? 'Unknown User' }} ({{ $u->username }})</option>
+                                <option value="{{ $u->id }}">{{ $u->display_name ?? trim($u->first_name . ' ' . $u->last_name) ?: 'Unknown User' }} ({{ $u->username }})</option>
                             @endforeach
                         </select>
                     </div>

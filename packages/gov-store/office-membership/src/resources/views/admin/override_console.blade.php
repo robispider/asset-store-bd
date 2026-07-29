@@ -15,7 +15,7 @@
                         <select name="user_id" class="form-control select2" required style="width:100%;">
                             <option value="">{{ __('office_membership::member.override_target_placeholder') }}</option>
                             @foreach(\App\Models\User::all() as $u)
-                                <option value="{{ $u->id }}">{{ optional($u->present())->fullName ?? 'Unknown' }} ({{ $u->username }})</option>
+                                <option value="{{ $u->id }}">{{ $u->display_name ?? trim($u->first_name . ' ' . $u->last_name) ?: 'Unknown' }} ({{ $u->username }})</option>
                             @endforeach
                         </select>
                     </div>
