@@ -86,7 +86,8 @@
     "gov-store/store-operations": "dev-master",
     "gov-store/classification": "dev-master",
     "gov-store/metadata":"dev-master",
-    "gov-store/user-onboarding": "dev-master"
+    "gov-store/user-onboarding": "dev-master",
+    "gov-store/tracking": "dev-master"
   },
   "suggest": {
     "ext-ldap": "*",
@@ -126,6 +127,7 @@
       "GovStore\\Classification\\": "packages/gov-store/classification/src/",
       "GovStore\\UserOnboarding\\": "packages/gov-store/user-onboarding/src/",
       "GovStore\\Metadata\\": "packages/gov-store/metadata/src/",
+      "GovStore\\tracking\\": "packages/gov-store/tracking/src/",
       "App\\": "app/",
       "Database\\Factories\\": "database/factories/",
       "Database\\Seeders\\": "database/seeders/"

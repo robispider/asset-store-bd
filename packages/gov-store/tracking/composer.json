@@ -1,0 +1,20 @@
+{
+    "name": "gov-store/tracking",
+    "description": "Operational Reference Tracking Subsystem for GovStore",
+    "type": "library",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "GovStore Team"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^12.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "GovStore\\Tracking\\": "src/"
+        }
+    }
+}
