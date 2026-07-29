@@ -87,6 +87,7 @@ class OrganizationServiceProvider extends ServiceProvider
             // Keep this scoped to office_admin only (Company admins oversee, but local admins configure their own staff)
             'permission' => 'office_admin',
             'order' => 30,
+            'strict' => true,
         ]);
 
         // 5. Government Directory

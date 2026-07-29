@@ -41,7 +41,7 @@ class MenuRegistry
                 }
 
                 // 1. Global Superuser Bypass — always allowed
-                if ($user->isSuperUser()) {
+                if ($user->isSuperUser() && !$item->strict) {
                     // Allowed — fall through to $flatList
                 } else {
                     $qualifiers = is_array($item->permission) ? $item->permission : [$item->permission];

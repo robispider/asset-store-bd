@@ -27,6 +27,7 @@ class MenuItem
         $this->permission     = $data['permission'] ?? null;
         $this->order          = $data['order'] ?? 100;
         $this->activePatterns = $data['active_patterns'] ?? [];
+         $this->strict         = $data['strict'] ?? false; 
     }
 
     /**
