@@ -6,7 +6,6 @@ use App\Models\AssetModel;
 use GovStore\Metadata\Registry\MetadataRegistry;
 use GovStore\Metadata\Models\ModelMetadataState;
 use GovStore\Metadata\Compiler\MetadataCompiler;
-use Illuminate\Support\Facades\DB;
 
 class ConvergenceEngine
 {
@@ -26,6 +25,7 @@ class ConvergenceEngine
 
     /**
      * Measures model schema alignment and performs on-the-fly reconciliation if out of sync.
+     * Evaluated sequentially without transaction wrappers to prevent DDL silent commit exceptions.
      */
     public function converge(AssetModel $assetModel): bool
     {
@@ -78,26 +78,23 @@ class ConvergenceEngine
             return false;
         }
 
-        // Single, explicit transaction boundary to prevent sub-transaction collapse
-        DB::transaction(function () use ($assetModel, $applicableProviders) {
-            $logicalSchema = $this->resolver->resolve($assetModel);
-            $fieldsetName = "Compiled Schema: " . $assetModel->name;
-            
-            // Compiles safely inside the current transaction
-            $fieldset = $this->compiler->compile($fieldsetName, $logicalSchema);
+        // Sequential execution - safe for DDL operations
+        $logicalSchema = $this->resolver->resolve($assetModel);
+        $fieldsetName = "Compiled Schema: " . $assetModel->name;
+        
+        $fieldset = $this->compiler->compile($fieldsetName, $logicalSchema);
 
-            $assetModel->fieldset_id = $fieldset->id;
-            $assetModel->saveQuietly();
+        $assetModel->fieldset_id = $fieldset->id;
+        $assetModel->saveQuietly();
 
-            ModelMetadataState::where('model_id', $assetModel->id)->delete();
-            foreach ($applicableProviders as $provider) {
-                ModelMetadataState::create([
-                    'model_id'      => $assetModel->id,
-                    'provider_name' => $provider->getName(),
-                    'version'       => $provider->getVersion(),
-                ]);
-            }
-        });
+        ModelMetadataState::where('model_id', $assetModel->id)->delete();
+        foreach ($applicableProviders as $provider) {
+            ModelMetadataState::create([
+                'model_id'      => $assetModel->id,
+                'provider_name' => $provider->getName(),
+                'version'       => $provider->getVersion(),
+            ]);
+        }
 
         return true;
     }
