@@ -29,7 +29,7 @@ class LegacyUserSynchronizationService
             'status' => 'active',
             'approved_by_user_id' => auth()->id() ?? 1,
             'approved_at' => now(),
-                'approval_note' => __('office_membership::member.sync_auto_onboarding_note')
+            'approval_note' => __('office_membership::member.sync_auto_onboarding_note')
         ]);
     }
 
@@ -41,20 +41,41 @@ class LegacyUserSynchronizationService
         $newLocationId = $user->location_id;
         $oldLocationId = $user->getOriginal('location_id');
 
-        if (!$newLocationId || $newLocationId == $oldLocationId) return;
+        // No change made, ignore.
+        if ($newLocationId == $oldLocationId) return;
 
-        // 1. Verify if the user is cleared to leave their old home office
+        // Check if the user is bound to an active home office
         $oldMembership = OfficeMembership::where('user_id', $user->id)
             ->where('location_id', $oldLocationId)
             ->where('is_home_office', true)
             ->first();
 
+        // =========================================================================
+        // SCENARIO A: Admin is trying to wipe the location to NULL natively
+        // =========================================================================
+        if (!$newLocationId) {
+            if ($oldMembership && $oldMembership->status !== 'released') {
+                // FORCE REVERT: Block unauthorized removal
+                $user->location_id = $oldLocationId;
+                $user->saveQuietly();
+
+                Log::warning("Native User location removal blocked for {$user->username}. Location ID {$oldLocationId} preserved.");
+                
+                // Fallback translation string if key doesn't exist
+                session()->flash('error', __('office_membership::member.sync_removal_blocked_flash') ?: 'Update Reverted: You cannot remove a user\'s location natively. Use the Staff Management module to process a formal release.');
+                return;
+            }
+            return; // Allowed if they genuinely had no active membership anyway
+        }
+
+        // =========================================================================
+        // SCENARIO B: Admin is trying to change the location natively (Transfer)
+        // =========================================================================
         if ($oldMembership) {
             $clearanceResults = $this->clearanceEngine->runChecks($user, $oldLocationId);
             
             if (!$this->clearanceEngine->isCleared($clearanceResults)) {
-                // BLOCK THE TRANSFER: User holds assets or roles.
-                // Revert the native location_id to prevent data corruption.
+                // FORCE REVERT: User holds assets or roles.
                 $user->location_id = $oldLocationId;
                 $user->saveQuietly();
 
@@ -70,7 +91,7 @@ class LegacyUserSynchronizationService
             ]);
         }
 
-        // 2. Grant the new Home Office membership
+        // Grant the new Home Office membership
         OfficeMembership::updateOrCreate(
             ['user_id' => $user->id, 'location_id' => $newLocationId],
             [

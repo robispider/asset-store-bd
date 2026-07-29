@@ -134,6 +134,68 @@ $(document).ready(function() {
         
         console.log("Gov-Store: Theme-Compliant User-Menu injection complete.");
     }
+
+// =========================================================================
+        // 4. ZERO-TOUCH UI LOCK: Prevent Native User Location Edits
+        // =========================================================================
+        var currentPath = window.location.pathname;
+        
+        // Run this on BOTH the Create and Edit pages
+        if (currentPath.match(/\/users\/.*edit/) || currentPath.match(/\/users\/create/)) {
+            var $locationSelect = $('select[name="location_id"]');
+            
+            if ($locationSelect.length) {
+                
+                // 1. Hide the Snipe-IT "New" (নতুন) location modal button by default
+                // Snipe-IT wraps this in a separate col-md-1 div. We find the specific modal link and hide its container.
+                var $newLocationBtn = $('a[href*="/modals/location"]');
+                if ($newLocationBtn.length) {
+                    $newLocationBtn.closest('div[class*="col-"]').hide();
+                    
+                    // Expand the dropdown's column slightly to fill the gap left by the hidden button
+                    $locationSelect.closest('div[class*="col-md-7"]').removeClass('col-md-7 col-sm-11').addClass('col-md-8 col-sm-12');
+                }
+
+                // 2. Lock logic ONLY for editing users who already have an assigned office
+                if (currentPath.match(/\/users\/.*edit/)) {
+                    var originalVal = $locationSelect.val();
+
+                    if (originalVal) {
+                        
+                        // Native Bootstrap 3 alert box (inherits current Snipe-IT theme colors)
+                        var warningHtml = '<div class="alert alert-info" style="padding: 10px; margin-bottom: 10px; font-size: 13px; line-height: 1.4;">' +
+                                          '<i class="fas fa-lock" style="margin-right: 5px;"></i> ' +
+                                          '<strong>Office Locked:</strong> This employee is already assigned to this office. ' +
+                                          'To transfer them, please go to the <strong>Staff Management</strong> menu. ' +
+                                          'This ensures they hand over their physical assets and duties before moving.' +
+                                          '</div>';
+                        
+                        // Inject directly BEFORE the select element (keeps it safely inside the Bootstrap column)
+                        if ($locationSelect.data('select2')) {
+                            $locationSelect.next('.select2-container').before(warningHtml);
+                        } else {
+                            $locationSelect.before(warningHtml);
+                        }
+
+                        // Visually disable the dropdown
+                        $locationSelect.prop('disabled', true);
+                        
+                        // Tell Select2 to update its UI state to disabled
+                        if ($.fn.select2) {
+                            $locationSelect.trigger('change.select2');
+                        }
+
+                        // Inject a hidden input so the form still securely posts the original location
+                        $locationSelect.after('<input type="hidden" name="location_id" value="' + originalVal + '">');
+                        
+                        console.log("Gov-Store: Successfully locked native location dropdown and preserved layout.");
+                    }
+                }
+            }
+        }
 });
+
+
+
 </script>
 @endauth
