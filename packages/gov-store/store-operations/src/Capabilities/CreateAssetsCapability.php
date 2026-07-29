@@ -3,19 +3,23 @@
 namespace GovStore\StoreOperations\Capabilities;
 
 use GovStore\StoreOperations\Contracts\CapabilityInterface;
+use GovStore\StoreOperations\Services\CustomFieldProvisioner;
 use App\Models\Asset;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
 class CreateAssetsCapability implements CapabilityInterface
 {
+    protected CustomFieldProvisioner $fieldProvisioner;
+
+    public function __construct(CustomFieldProvisioner $fieldProvisioner)
+    {
+        $this->fieldProvisioner = $fieldProvisioner;
+    }
+
     public function getRequirements(array $config = []): array { return []; }
     public function validate(array $data, array $config = []): array { return []; }
 
-    /**
-     * Materializes virtual document lines into physical Snipe-IT Assets.
-     * Uses an ultra-safe foreach loop to prevent any possible increment typos.
-     */
     public function execute(object $item, array $config = []): void
     {
         $document = $item->document;
@@ -25,60 +29,86 @@ class CreateAssetsCapability implements CapabilityInterface
             return;
         }
 
+        // --- READ-ONLY METADATA RESOLUTION ---
+        // Retrieve the physical columns dynamically from the Metadata Platform mappings
+        $grnColumn = $this->fieldProvisioner->getDbColumn(CustomFieldProvisioner::IDENTIFIER_GRN);
+        $allocationColumn = $this->fieldProvisioner->getDbColumn(CustomFieldProvisioner::IDENTIFIER_ALLOCATION);
+
+        // Check if the Storekeeper attached a "Special Allocation" reference to the GRN
+        $allocationRef = $document->references->where('reference_type', 'Special Allocation')->first();
+        $allocationCode = $allocationRef ? $allocationRef->reference_number : null;
+
         // Group EAV metadata entries by row_index
         $metadata = $item->metadata()->get()->groupBy('row_index');
 
-        // Loop using foreach over range() to completely avoid any $r++ syntax
         foreach (range(0, $quantity - 1) as $r) {
             $rowMeta = $metadata->get($r);
 
             $serial = null;
+            $warrantyMonths = null;
             $tag = null;
 
             if ($rowMeta) {
                 $serial = $rowMeta->where('field_key', 'serial_number')->first()?->value;
+                $warrantyMonths = $rowMeta->where('field_key', 'warranty_months')->first()?->value;
                 $tag = $rowMeta->where('field_key', 'asset_tag')->first()?->value;
             }
 
-            // Fallback: If category did not require serials, auto-generate a structured, traceable serial
             if (!$serial) {
                 $serial = 'SN-AUTO-' . $document->getDocumentNumber() . '-' . $item->product_id . '-' . $r;
             }
 
-            // Fallback: If category did not require tags, auto-generate a traceable tag
+            // FIXED: If custom asset tag is not captured in EAV, auto-generate a unique traceable tag
             if (!$tag) {
-                $tag = 'TAG-AUTO-' . $document->getDocumentNumber() . '-' . uniqid();
+                $tag = 'TAG-AUTO-' . $document->getDocumentNumber() . '-' . $item->product_id . '-' . uniqid();
             }
 
-            // 1. Programmatically instantiate using Snipe-IT's native Eloquent Model
+            // 1. INSTANTIATE NATIVE ASSET (Purely Transactional)
             $asset = new Asset();
             $asset->model_id    = $item->product_id;
             $asset->serial      = $serial;
-            $asset->asset_tag   = $tag;
-            $asset->status_id   = $config['status_id'] ?? 1; // Defaults to "Ready to Deploy"
+            $asset->asset_tag   = $tag; // FIXED: Assigned required unique asset tag
+            $asset->status_id   = $config['status_id'] ?? 1; // Default "Ready to Deploy"
             $asset->company_id  = $document->company_id;
             $asset->location_id = $document->location_id;
             
-            if (!$asset->save()) {
-                throw new Exception("Failed to instantiate native Snipe-IT asset for serial [{$serial}].");
+            // Map Warranty
+            if ($warrantyMonths) {
+                $asset->warranty_months = (int) $warrantyMonths;
             }
 
-            // 2. Link physical asset instance back to our GRN via polymorphic bridge
+            // --- 2. APPLY AUDIT TAGS TO RESOLVED COLUMNS ---
+            if ($grnColumn) {
+                $asset->{$grnColumn} = $document->getDocumentNumber();
+            }
+            if ($allocationColumn && $allocationCode) {
+                $asset->{$allocationColumn} = $allocationCode;
+            }
+
+            if (!$asset->save()) {
+                // FIXED: Extract dynamic validation errors directly from Snipe-IT model for advanced debugging
+                $errors = method_exists($asset, 'getErrors') ? $asset->getErrors()->all() : [];
+                $errorString = !empty($errors) ? ' Validation Errors: ' . implode(', ', $errors) : '';
+                
+                throw new Exception("Failed to instantiate native Snipe-IT asset for serial [{$serial}].{$errorString}");
+            }
+
+            // 3. LINK BRIDGE TABLE
             DB::table('gov_asset_registrations')->insert([
-                'intake_item_id' => $item->id, // Maps to the unique DocumentItem UUID
+                'intake_item_id' => $item->id,
                 'asset_id'       => $asset->id,
                 'asset_tag'      => $asset->asset_tag,
                 'serial_number'  => $asset->serial,
                 'created_at'     => now(),
             ]);
 
-            // 3. Trigger Snipe-IT's native checkout/action logger
+            // 4. TRIGGER NATIVE ACTION LOGGER
             $asset->logCheckout("Received under dynamic GRN: {$document->document_number}", auth()->user() ?? app(\App\Models\User::class)->first());
         }
     }
 
     public function renderUI(object $item = null, array $config = []): string
     {
-        return ''; // Execution plugins require no UI
+        return ''; 
     }
 }

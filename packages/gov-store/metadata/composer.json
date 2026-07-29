@@ -1,0 +1,19 @@
+{
+    "name": "gov-store/metadata",
+    "description": "Metadata Platform subsystem for GovStore integration",
+    "type": "library",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "GovStore Team"
+        }
+    ],
+    "require": {
+        "php": ">=8.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "GovStore\\Metadata\\": "src/"
+        }
+    }
+}

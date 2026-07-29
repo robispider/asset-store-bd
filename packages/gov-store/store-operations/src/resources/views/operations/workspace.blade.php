@@ -17,29 +17,88 @@
         <!-- LEFT COLUMN: The Working Area -->
         <div class="col-md-8">
             
-            <!-- SECTION 1: Document Information -->
+            <!-- SECTION 1: Administrative Details & References -->
             <div class="box box-solid">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Document Information</h3>
+                    <h3 class="box-title">Administrative Details & Approvals</h3>
                 </div>
-                <div class="box-body row">
-                    <div class="col-md-4 form-group">
-                        <label>Receiving Source</label>
-                        <select name="purchase_type" class="form-control" {{ $isPosted ? 'disabled' : '' }}>
-                            <option value="Purchase" {{ $document->purchase_type == 'Purchase' ? 'selected' : '' }}>Purchase</option>
-                            <option value="Transfer" {{ $document->purchase_type == 'Transfer' ? 'selected' : '' }}>Transfer</option>
-                            <option value="Donation" {{ $document->purchase_type == 'Donation' ? 'selected' : '' }}>Donation</option>
-                            <option value="Confiscated" {{ $document->purchase_type == 'Confiscated' ? 'selected' : '' }}>Confiscated / Found</option>
-                        </select>
+                <div class="box-body">
+                    
+                    <div class="row" style="margin-bottom: 15px;">
+                        <div class="col-md-12 form-group">
+                            <label style="color: #475569;">Receiving Source</label>
+                            <select name="purchase_type" class="form-control" {{ $isPosted ? 'disabled' : '' }} style="border: 1px solid #cbd5e1; max-width: 300px;">
+                                <option value="Purchase" {{ $document->purchase_type == 'Purchase' ? 'selected' : '' }}>Standard Purchase</option>
+                                <option value="Transfer" {{ $document->purchase_type == 'Transfer' ? 'selected' : '' }}>Office Transfer</option>
+                                <option value="Donation" {{ $document->purchase_type == 'Donation' ? 'selected' : '' }}>Donation / Grant</option>
+                                <option value="Confiscated" {{ $document->purchase_type == 'Confiscated' ? 'selected' : '' }}>Confiscated / Found</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="col-md-4 form-group">
-                        <label>Reference (Challan / Nothi) No</label>
-                        <input type="text" name="reference_no" class="form-control" value="{{ $document->reference_no ?? '' }}" {{ $isPosted ? 'readonly' : '' }}>
+
+                    @php
+                        // Helper to extract existing reference data for the static fields
+                        $getRef = function($type) use ($document) {
+                            return $document->references->where('reference_type', $type)->first();
+                        };
+                        $challan    = $getRef('Supplier Challan');
+                        $po         = $getRef('Purchase Order');
+                        $nothi      = $getRef('Nothi / Approval Letter');
+                        $allocation = $getRef('Special Allocation');
+                    @endphp
+
+                    <div class="row">
+                        <!-- 1. Supplier Challan -->
+                        <div class="col-md-6">
+                            <div class="form-group" style="background: #f8fafc; padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                                <label style="color: #0f172a; font-size: 13px;"><i class="fa fa-truck text-blue" style="margin-right: 5px;"></i> Supplier Challan</label>
+                                <div style="display: flex; gap: 10px; margin-top: 5px;">
+                                    <input type="hidden" name="references[0][reference_type]" value="Supplier Challan">
+                                    <input type="text" name="references[0][reference_number]" class="form-control input-sm" placeholder="Challan Number" value="{{ $challan->reference_number ?? '' }}" {{ $isPosted ? 'readonly' : '' }}>
+                                    <input type="date" name="references[0][reference_date]" class="form-control input-sm" style="max-width: 140px;" value="{{ $challan->reference_date ?? '' }}" {{ $isPosted ? 'readonly' : '' }} title="Optional Date">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Purchase Order / Tender -->
+                        <div class="col-md-6">
+                            <div class="form-group" style="background: #f8fafc; padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                                <label style="color: #0f172a; font-size: 13px;"><i class="fa fa-file-text-o text-purple" style="margin-right: 5px;"></i> Purchase Order / Tender</label>
+                                <div style="display: flex; gap: 10px; margin-top: 5px;">
+                                    <input type="hidden" name="references[1][reference_type]" value="Purchase Order">
+                                    <input type="text" name="references[1][reference_number]" class="form-control input-sm" placeholder="PO / Tender Number" value="{{ $po->reference_number ?? '' }}" {{ $isPosted ? 'readonly' : '' }}>
+                                    <input type="date" name="references[1][reference_date]" class="form-control input-sm" style="max-width: 140px;" value="{{ $po->reference_date ?? '' }}" {{ $isPosted ? 'readonly' : '' }} title="Optional Date">
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-4 form-group">
-                        <label>Reference Date</label>
-                        <input type="date" name="reference_date" class="form-control" value="{{ $document->reference_date ?? '' }}" {{ $isPosted ? 'readonly' : '' }}>
+
+                    <div class="row">
+                        <!-- 3. Nothi / Approval Letter -->
+                        <div class="col-md-6">
+                            <div class="form-group" style="background: #f8fafc; padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                                <label style="color: #0f172a; font-size: 13px;"><i class="fa fa-check-square-o text-green" style="margin-right: 5px;"></i> Nothi / Approval Letter</label>
+                                <div style="display: flex; gap: 10px; margin-top: 5px;">
+                                    <input type="hidden" name="references[2][reference_type]" value="Nothi / Approval Letter">
+                                    <input type="text" name="references[2][reference_number]" class="form-control input-sm" placeholder="Nothi Number" value="{{ $nothi->reference_number ?? '' }}" {{ $isPosted ? 'readonly' : '' }}>
+                                    <input type="date" name="references[2][reference_date]" class="form-control input-sm" style="max-width: 140px;" value="{{ $nothi->reference_date ?? '' }}" {{ $isPosted ? 'readonly' : '' }} title="Optional Date">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. Special Ministry Allocation -->
+                        <div class="col-md-6">
+                            <div class="form-group" style="background: #fdfae8; padding: 15px; border: 1px solid #fef08a; border-radius: 6px;">
+                                <label style="color: #854d0e; font-size: 13px;"><i class="fa fa-star text-yellow" style="margin-right: 5px;"></i> Special Project / Allocation Code</label>
+                                <div style="display: flex; gap: 10px; margin-top: 5px;">
+                                    <input type="hidden" name="references[3][reference_type]" value="Special Allocation">
+                                    <input type="text" name="references[3][reference_number]" class="form-control input-sm" placeholder="Tracking Code (Optional)" value="{{ $allocation->reference_number ?? '' }}" {{ $isPosted ? 'readonly' : '' }} style="border-color: #fde047;">
+                                    <input type="date" name="references[3][reference_date]" class="form-control input-sm" style="max-width: 140px; border-color: #fde047;" value="{{ $allocation->reference_date ?? '' }}" {{ $isPosted ? 'readonly' : '' }} title="Optional Date">
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </div>
 

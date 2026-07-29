@@ -16,9 +16,10 @@ class InventoryMovement extends Model
     // Only created_at is maintained for immutability
     const UPDATED_AT = null; 
 
-    protected $fillable = [
+  
+protected $fillable = [
         'stockable_type', 'stockable_id', 'movement_type', 'quantity', 'balance_after',
-        'document_type', 'document_id', 'company_id', 'location_id', 'created_by'
+        'document_type', 'document_id', 'company_id', 'location_id', 'created_by', 'notes'
     ];
 
     protected static function booted()

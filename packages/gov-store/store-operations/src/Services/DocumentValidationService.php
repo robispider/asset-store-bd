@@ -35,7 +35,6 @@ class DocumentValidationService
             foreach ($requestData['items'] ?? [] as $reqItem) {
                 $reqId = $reqItem['id'] ?? '';
                 
-                // RESOLVED UNDEFINED KEY "TYPE": Extract both type and ID from the composed key!
                 if (str_contains($reqId, '_')) {
                     [$rawType, $cleanId] = explode('_', $reqId);
                     $shortType = strtolower(class_basename($rawType));
@@ -52,7 +51,6 @@ class DocumentValidationService
 
             // Loop through the assigned plugins and validate
             foreach ($capabilities as $capCode => $config) {
-                // Defensive extraction of Code and Config
                 $realCode = is_string($capCode) ? $capCode : (is_array($config) ? ($config['code'] ?? null) : $config);
                 $realConfig = is_array($config) ? $config : [];
 
@@ -61,8 +59,6 @@ class DocumentValidationService
                 }
 
                 $capability = CapabilityRegistry::make($realCode);
-                
-                // Run plugin validation
                 $capErrors = $capability->validate($itemData, $realConfig);
 
                 if (!empty($capErrors)) {
@@ -84,18 +80,20 @@ class DocumentValidationService
         $totalRequirements = 0;
         $satisfiedRequirements = 0;
 
-        // 1. Evaluate Legal Header References
+        // --- 1. EVALUATE POLYMORPHIC REFERENCES ---
+        // We now check the polymorphic references array instead of static header columns
         $totalRequirements++;
-        $hasRefNo = !empty($document->reference_no);
-        if ($hasRefNo) $satisfiedRequirements++;
-        $checklist[] = ['label' => 'Reference (Challan) Number', 'passed' => $hasRefNo];
+        $hasChallanOrNothi = $document->references()
+            ->whereIn('reference_type', ['Supplier Challan', 'Nothi / Approval Letter', 'Purchase Order'])
+            ->exists();
+            
+        if ($hasChallanOrNothi) {
+            $satisfiedRequirements++;
+        }
+        $checklist[] = ['label' => 'Valid Administrative Reference (Challan / Nothi)', 'passed' => $hasChallanOrNothi];
 
-        $totalRequirements++;
-        $hasRefDate = !empty($document->reference_date);
-        if ($hasRefDate) $satisfiedRequirements++;
-        $checklist[] = ['label' => 'Reference Date', 'passed' => $hasRefDate];
 
-        // 2. Evaluate Item-level Quantity & Capabilities
+        // --- 2. EVALUATE ITEM-LEVEL QUANTITY & CAPABILITIES ---
         $snapshot = $document->getCompiledProfileSnapshot() ?? [];
         $profile = new CompiledProfile($snapshot);
 
@@ -114,7 +112,6 @@ class DocumentValidationService
             }
 
             foreach ($capabilities as $capCode => $config) {
-                // Extract capability string code safely
                 $realCode = is_string($capCode) ? $capCode : (is_array($config) ? ($config['code'] ?? null) : $config);
                 $realConfig = is_array($config) ? $config : [];
 
@@ -125,13 +122,16 @@ class DocumentValidationService
                 $capability = CapabilityRegistry::make($realCode);
                 $requirements = $capability->getRequirements($realConfig);
 
-                // Ensure $requirements is an array before looping
+                // FIXED: Support both simple strings and array-based requirements
                 if (!is_array($requirements) || empty($requirements)) {
                     continue;
                 }
 
-                foreach ($requirements as $reqKey) {
+                foreach ($requirements as $req) {
                     $totalRequirements++;
+                    
+                    // Requirements can be strings ('serial_number') or arrays (['key' => 'warranty_months'])
+                    $reqKey = is_array($req) ? $req['key'] : $req;
                     
                     $filledCount = $item->metadata()
                         ->where('field_key', $reqKey)
@@ -139,7 +139,10 @@ class DocumentValidationService
                         ->where('value', '!=', '')
                         ->count();
 
-                    $isSatisfied = ($filledCount >= $item->quantity && $item->quantity > 0);
+                    // If quantity is 5, we need 5 serial numbers. (Single inputs like Destination Location only require 1)
+                    $requiredInputCount = in_array($reqKey, ['serial_number', 'warranty_months']) ? $item->quantity : 1;
+                    
+                    $isSatisfied = ($filledCount >= $requiredInputCount && $item->quantity > 0);
                     if ($isSatisfied) {
                         $satisfiedRequirements++;
                     }

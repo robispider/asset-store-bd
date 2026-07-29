@@ -124,12 +124,14 @@ class DocumentWorkspaceController extends Controller
     }
 
     /**
-     * Auto-saves the document state and metadata dynamically.
+     * Save the Document Draft (Now with Polymorphic References)
      */
     public function saveDraft(Request $request, string $type, string $id)
     {
         $document = Document::findOrFail($id);
-        $headerData = $request->only(['reference_no', 'reference_date', 'purchase_type']);
+        
+        // 1. We no longer pull reference_no/date here, only purchase_type
+        $headerData = $request->only(['purchase_type']);
         $rawLines = [];
 
         foreach ($request->input('items', []) as $rowId => $item) {
@@ -150,13 +152,13 @@ class DocumentWorkspaceController extends Controller
         }
 
         try {
-            // 1. Delegate base save and compile frozen snapshot
+            // 2. Delegate base save for header and items
             match($type) {
                 'receipt' => $this->receiptService->saveDraft($headerData, $rawLines, auth()->id(), $document),
                 'issue'   => $this->issueService->saveDraft($headerData, $rawLines, auth()->id(), $document),
             };
 
-            // 2. Persist custom metadata fields (Serials, Expiries)
+            // 3. Persist custom metadata fields for line items
             foreach ($request->input('items', []) as $rowId => $item) {
                 if (isset($item['id']) && str_contains($item['id'], '_')) {
                     [$rawType, $productId] = explode('_', $item['id']);
@@ -176,8 +178,6 @@ class DocumentWorkspaceController extends Controller
 
                     foreach ($item['meta'] as $rowIndex => $meta) {
                         foreach ($meta as $fieldKey => $value) {
-                            
-                            // skipping null or empty inputs to prevent database constraint crashes
                             if ($value === null || $value === '') {
                                 continue;
                             }
@@ -192,9 +192,24 @@ class DocumentWorkspaceController extends Controller
                 }
             }
 
+            // 4. NEW: Sync Polymorphic Administrative References
+            $document->references()->delete(); // Wipe old for clean sync
+            $references = $request->input('references', []);
+            
+            foreach ($references as $ref) {
+                // Only save if a number is actually provided
+                if (!empty($ref['reference_number'])) {
+                    $document->references()->create([
+                        'reference_type'   => $ref['reference_type'] ?? 'Challan',
+                        'reference_number' => $ref['reference_number'],
+                        'reference_date'   => $ref['reference_date'] ?? null,
+                    ]);
+                }
+            }
+
             $document->refresh();
 
-            // 3. Evaluate checklist requirements dynamically
+            // 5. Evaluate checklist details
             try {
                 $validation = $this->validationService->evaluateDocument($document);
             } catch (\Throwable $e) {
@@ -222,6 +237,31 @@ class DocumentWorkspaceController extends Controller
     }
 
     /**
+     * Generate the Pre-Posting Summary (AJAX) - Updated for Polymorphic References
+     */
+    public function preview(string $type, string $id)
+    {
+        $document = Document::with(['items', 'references'])->findOrFail($id);
+        
+        $totalQty = $document->items->sum('quantity');
+        $totalValue = $document->items->sum(function($item) {
+            return $item->quantity * ($item->unit_cost ?? 0);
+        });
+
+        // Map references into a clean string (e.g., "Challan: 123, Allocation: A-456")
+        $refString = $document->references->map(function($r) {
+            return $r->reference_type . ': ' . $r->reference_number;
+        })->implode(' | ');
+
+        return response()->json([
+            'lines'       => $document->items->count(),
+            'total_qty'   => $totalQty,
+            'total_value' => number_format($totalValue, 2),
+            'reference'   => $refString ?: 'None attached',
+        ]);
+    }
+
+    /**
      * Unified AJAX Product Search for the Select2 spreadsheet grid.
      */
     public function searchProducts(Request $request)
@@ -239,25 +279,7 @@ class DocumentWorkspaceController extends Controller
         return response()->json(['results' => $formatted]);
     }
 
-    /**
-     * Generates a pre-posting quantitative and financial summary layout.
-     */
-    public function preview(string $type, string $id)
-    {
-        $document = Document::with('items')->findOrFail($id);
-        
-        $totalQty = $document->items->sum('quantity');
-        $totalValue = $document->items->sum(function($item) {
-            return $item->quantity * ($item->unit_cost ?? 0);
-        });
 
-        return response()->json([
-            'lines'       => $document->items->count(),
-            'total_qty'   => $totalQty,
-            'total_value' => number_format($totalValue, 2),
-            'reference'   => $document->reference_no ?? 'None attached',
-        ]);
-    }
 
     /**
      * Generates official standard A4 printed copy of posted files.

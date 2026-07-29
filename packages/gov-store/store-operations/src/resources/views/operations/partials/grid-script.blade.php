@@ -11,6 +11,9 @@ $(document).ready(function() {
     const compiledSnapshot = @json($document->getCompiledProfileSnapshot() ?? ['items' => []]);
     const existingItems = @json($existingItems ?? []);
 
+
+   
+
     function addRow(data = null) {
         let index = rowCount++;
         let disabled = isDraft ? '' : 'disabled';

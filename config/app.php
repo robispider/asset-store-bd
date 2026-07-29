@@ -446,6 +446,7 @@ return [
         GovStore\StoreOperations\Providers\StoreOperationsServiceProvider::class,
         GovStore\Classification\Providers\ClassificationServiceProvider::class,
         GovStore\UserOnboarding\Providers\UserOnboardingServiceProvider::class,
+        GovStore\Metadata\Providers\MetadataServiceProvider::class,
 
     ],
 

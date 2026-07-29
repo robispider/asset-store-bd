@@ -42,10 +42,12 @@ class StoreOperationsServiceProvider extends ServiceProvider
         // 5. Load Views (Case-sensitivity safe)
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'storeops');
 
+    
         // 6. Register CLI Commands
         if ($this->app->runningInConsole()) {
             $this->commands([
                 RepairLedgerBalances::class,
+                \GovStore\StoreOperations\Console\Commands\SyncGovStoreFields::class, // <-- ADD THIS LINE
             ]);
         }
 

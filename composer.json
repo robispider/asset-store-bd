@@ -85,6 +85,7 @@
     "gov-store/office-membership": "dev-master",
     "gov-store/store-operations": "dev-master",
     "gov-store/classification": "dev-master",
+    "gov-store/metadata":"dev-master",
     "gov-store/user-onboarding": "dev-master"
   },
   "suggest": {
@@ -124,6 +125,7 @@
       "GovStore\\StoreOperations\\": "packages/gov-store/store-operations/src/",
       "GovStore\\Classification\\": "packages/gov-store/classification/src/",
       "GovStore\\UserOnboarding\\": "packages/gov-store/user-onboarding/src/",
+      "GovStore\\Metadata\\": "packages/gov-store/metadata/src/",
       "App\\": "app/",
       "Database\\Factories\\": "database/factories/",
       "Database\\Seeders\\": "database/seeders/"
