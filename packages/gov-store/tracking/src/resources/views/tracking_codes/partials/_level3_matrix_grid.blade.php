@@ -1,37 +1,193 @@
-<div id="panel-level3" class="box box-solid" style="{{ (isset($trackingCode) && $trackingCode->specificity_level === '3_MATRIX') ? 'display: block;' : 'display: none;' }}">
+<!-- Isolated CSS Spreadsheet Styling -->
+<style>
+    .gs-grid-container {
+        position: relative;
+        max-height: 500px;
+        overflow: auto;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        background-color: #ffffff;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    #matrix-grid-table {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+        margin-bottom: 0;
+        font-size: 13px;
+        color: #334155;
+    }
+
+    /* --- LOCKED TOP HEADER ROW --- */
+    #matrix-grid-table thead th {
+        position: sticky;
+        top: 0;
+        background-color: #f8fafc;
+        z-index: 20;
+        border-bottom: 2px solid #cbd5e1;
+        border-right: 1px solid #e2e8f0;
+        padding: 8px 12px;
+        font-weight: 600;
+        text-align: center;
+        height: 40px;
+    }
+
+    /* --- LOCKED LEFT COLUMN (OFFICES) --- */
+    #matrix-grid-table tbody td:first-child,
+    #matrix-grid-table tfoot td:first-child {
+        position: sticky;
+        left: 0;
+        background-color: #f8fafc;
+        z-index: 15;
+        border-right: 2px solid #cbd5e1;
+        border-bottom: 1px solid #e2e8f0;
+        font-weight: 600;
+        padding: 10px 15px;
+    }
+
+    /* --- THE CORNER INTERSECT CELL (TOP-LEFT) --- */
+    #matrix-grid-table thead th:first-child {
+        position: sticky;
+        left: 0;
+        top: 0;
+        z-index: 30;
+        border-right: 2px solid #cbd5e1;
+        border-bottom: 2px solid #cbd5e1;
+        background-color: #f1f5f9;
+        text-align: left;
+    }
+
+    /* --- GENERAL SPREADSHEET CELL STYLING --- */
+    #matrix-grid-table td {
+        border-right: 1px solid #e2e8f0;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 0;
+        height: 36px;
+    }
+
+    /* --- FLAT SPREADSHEET CELL INPUTS --- */
+    .gs-cell-input {
+        width: 100%;
+        height: 36px;
+        border: none;
+        outline: none;
+        text-align: center;
+        padding: 0 8px;
+        background-color: transparent;
+        transition: all 0.15s ease-in-out;
+    }
+
+    .gs-cell-input:focus {
+        background-color: #ffffff;
+        box-shadow: inset 0 0 0 2px #3b82f6;
+        z-index: 5;
+        position: relative;
+    }
+
+    #matrix-grid-table tbody tr:hover td {
+        background-color: #f1f5f9;
+    }
+
+    /* --- FOOTER TOTALS ROW --- */
+    #matrix-grid-table tfoot tr td {
+        position: sticky;
+        bottom: 0;
+        background-color: #f8fafc;
+        z-index: 10;
+        border-top: 2px solid #cbd5e1;
+        font-weight: 700;
+        padding: 10px 12px;
+        text-align: center;
+    }
+
+    #matrix-grid-table tfoot td:first-child {
+        z-index: 25;
+    }
+
+    /* --- INLINE SPAWNER ELEMENTS --- */
+    .gs-inline-spawner {
+        background-color: #f8fafc !important;
+        cursor: pointer;
+        color: #3b82f6;
+        font-weight: 600 !important;
+        text-align: center;
+        transition: background-color 0.15s;
+    }
+
+    .gs-inline-spawner:hover {
+        background-color: #eff6ff !important;
+        color: #2563eb;
+    }
+
+    .gs-inline-select .select2-container--default .select2-selection--single {
+        border: none !important;
+        background-color: transparent !important;
+        height: 34px !important;
+    }
+</style>
+
+<div id="panel-level3" class="box box-solid" style="display: none;">
     <div class="box-header with-border">
         <h3 class="box-title text-purple"><i class="fa fa-table"></i> Exact Delivery Schedule Matrix</h3>
     </div>
     <div class="box-body">
-        <div class="alert alert-info">
-            <p><i class="fa fa-info-circle"></i> <strong>Spreadsheet Matrix Instructions:</strong></p>
-            <ol style="margin-left: 15px; padding-left: 0;">
-                <li>Click <strong>[+ Add Category Column]</strong> to select the items you are procuring.</li>
-                <li>Click <strong>[+ Add Office Row]</strong> to select the receiving warehouses.</li>
-                <li>Enter the authorized distribution quantities directly inside the spreadsheet cells.</li>
-            </ol>
+        <div class="alert alert-info" style="background-color: #faf5ff !important; border-color: #d8b4fe !important; color: #581c87 !important;">
+            <p><i class="fa fa-info-circle text-purple"></i> <strong>Interactive Spreadsheet Matrix:</strong></p>
+            <ul style="margin-left: 15px; padding-left: 0; list-style-type: square;">
+                <li>Click the <strong>[+ Category]</strong> column header to dynamically insert category targets.</li>
+                <li>Click the <strong>[+ Select Office...]</strong> row header to dynamically insert receiving warehouses.</li>
+                <li>Use standard arrow keys or Tab / Enter to navigate the grid cells exactly like Excel.</li>
+                <li>You can copy tabular data from <strong>Excel</strong> or <strong>Google Sheets</strong> and paste it directly!</li>
+            </ul>
         </div>
 
-        <div class="margin-bottom-15">
-            <button type="button" class="btn btn-primary btn-sm" id="btn-add-column"><i class="fa fa-columns"></i> + Add Category Column</button>
-            <button type="button" class="btn btn-warning btn-sm" id="btn-add-row" style="margin-left: 5px;"><i class="fa fa-building"></i> + Add Office Row</button>
+        <!-- Dynamic Spreadsheet Real-Time Status Bar -->
+        <div id="matrix-status-bar" class="margin-bottom-15" style="font-size: 14px; padding: 10px; background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px;">
+            <span id="matrix-status-text">
+                <span class="text-green"><i class="fa fa-check-circle"></i> <strong>Spreadsheet Status:</strong> Healthy (All allocations conform to planning rules)</span>
+            </span>
         </div>
 
-        <div class="table-responsive" style="margin-top: 15px; border: 1px solid #ddd; border-radius: 4px;">
-            <table class="table table-bordered table-striped" id="matrix-grid-table" style="margin-bottom: 0;">
+        <!-- The Spreadsheet Container -->
+        <div class="gs-grid-container">
+            <table class="table" id="matrix-grid-table">
                 <thead>
                     <tr id="matrix-header-row">
-                        <th width="300" style="background-color: #f4f4f4;">Participating Office (Location)</th>
-                        <th width="80" id="col-actions-header" style="background-color: #f4f4f4; text-align: right;">Action</th>
+                        <th width="320">Office / Warehouse Location</th>
+                        <!-- Dynamic category headers spawn here -->
+                        
+                        <!-- Inline Column Spawner -->
+                        <th width="150" class="gs-inline-spawner" id="btn-spawn-column" style="vertical-align: middle;">
+                            <i class="fa fa-plus"></i> Category
+                        </th>
+                        
+                        <!-- Static Row Totals Header Column -->
+                        <th width="120" id="col-row-total-header" style="background-color: #f1f5f9; font-weight: bold; border-right: 2px solid #cbd5e1;">ROW TOTAL</th>
+                        <th width="80" style="text-align: right; background-color: #f8fafc;">Action</th>
                     </tr>
                 </thead>
                 <tbody id="matrix-grid-body">
-                    <!-- Dynamic rows will spawn here -->
+                    <!-- Dynamic rows spawn here -->
                 </tbody>
                 <tfoot>
-                    <tr id="matrix-footer-row" style="background-color: #f9f9f9; font-weight: bold;">
-                        <td>TOTAL COMPONENT GOAL</td>
+                    <!-- Inline Row Spawner -->
+                    <tr id="matrix-spawner-row">
+                        <td class="gs-inline-spawner" id="btn-spawn-row" style="text-align: left;">
+                            <i class="fa fa-plus"></i> Select Office...
+                        </td>
+                        <!-- Spacer cells spawn here dynamically on column creations -->
+                        <td id="matrix-spawner-spacer"></td>
+                        <td style="background-color: #f8fafc; border-right: 2px solid #cbd5e1;"></td>
                         <td></td>
+                    </tr>
+                    
+                    <!-- Grand Totals Row -->
+                    <tr id="matrix-footer-row">
+                        <td>TOTAL ALLOCATIONS</td>
+                        <!-- Dynamic totals spawn here -->
+                        <td id="matrix-grand-total" style="background-color: #f1f5f9; font-weight: bold; border-right: 2px solid #cbd5e1;">0</td>
+                        <td style="background-color: #f8fafc;"></td>
                     </tr>
                 </tfoot>
             </table>
@@ -39,167 +195,9 @@
     </div>
 </div>
 
-<div class="modal fade" id="modal-matrix-column" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                <h4 class="modal-title">Select Category Column</h4>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>Asset Category</label>
-                    <select id="matrix-col-select" class="form-control select2" style="width: 100%;">
-                        @foreach($categories as $category)
-                            <option value="{{ $category->id }}">{{ $category->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="btn-confirm-column">Add Column</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="modal-matrix-row" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                <h4 class="modal-title">Select Office Row</h4>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>Office Location</label>
-                    <select id="matrix-row-select" class="form-control select2" style="width: 100%;">
-                        @foreach($locations as $location)
-                            <option value="{{ $location->id }}">{{ $location->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-warning" id="btn-confirm-row">Add Row</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        let activeCategories = [];
-        let rowIndex = 0;
-
-        // --- PRE-POPULATION MATRICES (Drawn dynamically on EDIT, empty on CREATE) ---
-        const savedCategories = @json(isset($trackingCode) && $trackingCode->specificity_level === '3_MATRIX' ? $trackingCode->targets->map(fn($t) => ['id' => $t->category_id, 'name' => $t->category->name, 'econ' => $t->economic_code]) : []);
-        const savedLocations = @json(isset($trackingCode) && $trackingCode->specificity_level === '3_MATRIX' ? $trackingCode->targets->flatMap->allocations->map(fn($a) => ['id' => $a->location_id, 'name' => $a->location->name])->unique('id')->values() : []);
-        const savedValues = @json($savedMatrixValues ?? []);
-
-        // Modal Controls
-        $('#btn-add-column').click(() => $('#modal-matrix-column').modal('show'));
-        $('#btn-add-row').click(() => $('#modal-matrix-row').modal('show'));
-
-        function addColumn(catId, catName, econCode = '') {
-            activeCategories.push(catId);
-            const headerHtml = `
-                <th class="matrix-cat-col" data-cat-id="${catId}" style="text-align: center; background-color: #f4f4f4;">
-                    ${catName}
-                    <input type="hidden" name="matrix_categories[]" value="${catId}">
-                    <br><small class="text-muted"><input type="text" name="matrix_economic_codes[${catId}]" class="form-control input-sm text-center" value="${econCode}" placeholder="Econ Code" style="margin-top: 5px; width: 100px; display:inline-block;"></small>
-                </th>
-            `;
-            $('#col-actions-header').before(headerHtml);
-
-            $('#matrix-grid-body tr').each(function() {
-                const rowId = $(this).data('row-index');
-                const locId = $(this).find('.matrix-row-loc-input').val();
-                const prefilledVal = (savedValues[locId] && savedValues[locId][catId]) ? savedValues[locId][catId] : 0;
-
-                const cellHtml = `
-                    <td class="text-center cell-${catId}">
-                        <input type="number" name="matrix_values[${rowId}][${catId}]" class="form-control text-center matrix-cell" data-cat-id="${catId}" value="${prefilledVal}" min="0" required style="width: 80px; display: inline-block;">
-                    </td>
-                `;
-                $(this).find('.cell-actions').before(cellHtml);
-            });
-
-            const footerHtml = `<td id="total-cat-${catId}" class="text-center text-bold" style="background-color: #f9f9f9;">0</td>`;
-            $('#matrix-footer-row').find('td:last').before(footerHtml);
-        }
-
-        function addRow(locId, locName) {
-            const tr = document.createElement('tr');
-            tr.setAttribute('data-row-index', rowIndex);
-            tr.setAttribute('class', 'matrix-row');
-
-            let cellsHtml = `
-                <td>
-                    <strong>${locName}</strong>
-                    <input type="hidden" name="matrix_locations[${rowIndex}]" class="matrix-row-loc-input" value="${locId}">
-                </td>
-            `;
-
-            activeCategories.forEach(catId => {
-                const prefilledVal = (savedValues[locId] && savedValues[locId][catId]) ? savedValues[locId][catId] : 0;
-                cellsHtml += `
-                    <td class="text-center cell-${catId}">
-                        <input type="number" name="matrix_values[${rowIndex}][${catId}]" class="form-control text-center matrix-cell" data-cat-id="${catId}" value="${prefilledVal}" min="0" required style="width: 80px; display: inline-block;">
-                    </td>
-                `;
-            });
-
-            cellsHtml += `
-                <td class="text-right cell-actions">
-                    <button type="button" class="btn btn-xs btn-danger remove-matrix-row"><i class="fa fa-trash"></i></button>
-                </td>
-            `;
-
-            tr.innerHTML = cellsHtml;
-            document.getElementById('matrix-grid-body').appendChild(tr);
-            rowIndex++;
-        }
-
-        // Trigger pre-population if values were passed from edit controller
-        if (savedCategories.length > 0) {
-            savedCategories.forEach(cat => addColumn(cat.id.toString(), cat.name, cat.econ ?? ''));
-            savedLocations.forEach(loc => addRow(loc.id.toString(), loc.name));
-            calculateTotals();
-        }
-
-        // Manual Add Controls
-        $('#btn-confirm-column').click(function() {
-            const select = document.getElementById('matrix-col-select');
-            addColumn(select.value, select.options[select.selectedIndex].text);
-            $('#modal-matrix-column').modal('hide');
-            calculateTotals();
-        });
-
-        $('#btn-confirm-row').click(function() {
-            const select = document.getElementById('matrix-row-select');
-            addRow(select.value, select.options[select.selectedIndex].text);
-            $('#modal-matrix-row').modal('hide');
-            calculateTotals();
-        });
-
-        $('#matrix-grid-body').on('click', '.remove-matrix-row', function() {
-            $(this).closest('tr').remove();
-            calculateTotals();
-        });
-
-        $('#matrix-grid-body').on('input', '.matrix-cell', () => calculateTotals());
-
-        function calculateTotals() {
-            activeCategories.forEach(catId => {
-                let colSum = 0;
-                $(`.matrix-cell[data-cat-id="${catId}"]`).each(function() {
-                    colSum += parseInt($(this).val()) || 0;
-                });
-                $(`#total-cat-${catId}`).text(colSum);
-            });
-        }
-    });
-</script>
+<!-- Include Dynamic UI Javascript Engines (Including Step 6 Validation Engine) -->
+@include('govtracking::tracking_codes.partials.scripts._matrix_spawner')
+@include('govtracking::tracking_codes.partials.scripts._matrix_keyboard')
+@include('govtracking::tracking_codes.partials.scripts._matrix_calculator')
+@include('govtracking::tracking_codes.partials.scripts._matrix_clipboard')
+@include('govtracking::tracking_codes.partials.scripts._matrix_validation')
