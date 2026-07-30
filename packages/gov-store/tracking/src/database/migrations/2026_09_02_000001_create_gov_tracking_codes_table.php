@@ -17,8 +17,12 @@ return new class extends Migration
             
             $table->string('tracking_code')->unique();
             $table->string('task_title');
+            
+            // Progressive Specificity Model: 1_BLANKET, 2_CATEGORY, 3_MATRIX
+            $table->string('specificity_level', 20)->default('2_CATEGORY'); 
+            
             $table->string('fiscal_year', 20)->nullable();
-            $table->string('status')->default('DRAFT'); // DRAFT, ACTIVE, ARCHIVED
+            $table->string('status')->default('DRAFT');
             $table->string('order_pdf_path')->nullable();
             
             $table->timestamps();

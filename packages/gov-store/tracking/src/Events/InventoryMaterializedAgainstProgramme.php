@@ -11,15 +11,17 @@ class InventoryMaterializedAgainstProgramme
 
     public string $trackingCode;
     public int $categoryId;
+    public int $locationId; // Added
     public int $quantity;
     public int $actorId;
     public string $grnReference;
-    public array $associatables; // Array of ['type' => 'ClassName', 'id' => int]
+    public array $associatables; 
     public ?string $overrideReason;
 
     public function __construct(
         string $trackingCode,
         int $categoryId,
+        int $locationId,
         int $quantity,
         int $actorId,
         string $grnReference,
@@ -28,6 +30,7 @@ class InventoryMaterializedAgainstProgramme
     ) {
         $this->trackingCode = $trackingCode;
         $this->categoryId = $categoryId;
+        $this->locationId = $locationId;
         $this->quantity = $quantity;
         $this->actorId = $actorId;
         $this->grnReference = $grnReference;

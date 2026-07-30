@@ -13,21 +13,19 @@ class AssociateInventoryToProgramme
     public function handle(InventoryMaterializedAgainstProgramme $event): void
     {
         $trackingCode = TrackingCode::where('tracking_code', $event->trackingCode)->first();
-        if (!$trackingCode) {
-            return; 
-        }
+        if (!$trackingCode) return;
 
         DB::transaction(function () use ($event, $trackingCode) {
             $now = now();
             $associationData = [];
 
             if (!empty($event->associatables)) {
-                // Serialized Hardware Path: create separate links for each individual item
                 foreach ($event->associatables as $item) {
                     $associationData[] = [
                         'tracking_code_id'  => $trackingCode->id,
                         'category_id'       => $event->categoryId,
-                        'quantity'          => 1, // Individual asset qty is 1
+                        'location_id'       => $event->locationId, // Saved directly
+                        'quantity'          => 1, 
                         'associatable_type' => $item['type'],
                         'associatable_id'   => $item['id'],
                         'status'            => 'ACTIVE',
@@ -36,13 +34,13 @@ class AssociateInventoryToProgramme
                     ];
                 }
             } else {
-                // Consumables/Bulk Items Path: create a single summarized entry mapping to the ledger event
                 $associationData[] = [
                     'tracking_code_id'  => $trackingCode->id,
                     'category_id'       => $event->categoryId,
-                    'quantity'          => $event->quantity, // Stores the bulk received amount directly
+                    'location_id'       => $event->locationId, // Saved directly
+                    'quantity'          => $event->quantity, 
                     'associatable_type' => 'GovStore\StoreOperations\Models\InventoryMovement', 
-                    'associatable_id'   => 0, // Placeholder mapping to general ledger card
+                    'associatable_id'   => 0,
                     'status'            => 'ACTIVE',
                     'created_at'        => $now,
                     'updated_at'        => $now,
@@ -51,7 +49,6 @@ class AssociateInventoryToProgramme
 
             TrackingAssociation::insertOrIgnore($associationData);
 
-            // Log activity log timeline
             TrackingTimeline::create([
                 'initiative_id' => $trackingCode->initiative_id,
                 'event_type'    => 'GRN_RECEIVED',

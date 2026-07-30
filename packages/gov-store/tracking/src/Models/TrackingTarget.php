@@ -5,6 +5,7 @@ namespace GovStore\Tracking\Models;
 use App\Models\Category;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class TrackingTarget extends Model
 {
@@ -25,5 +26,11 @@ class TrackingTarget extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'category_id');
+    }
+
+    // NEW: Link to individual office delivery matrix cells
+    public function allocations(): HasMany
+    {
+        return $this->hasMany(TrackingAllocation::class, 'target_id');
     }
 }

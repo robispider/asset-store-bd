@@ -5,6 +5,13 @@ use GovStore\Tracking\Http\Controllers\FundingTypeController;
 use GovStore\Tracking\Http\Controllers\InitiativeController;
 use GovStore\Tracking\Http\Controllers\TrackingCodeController;
 use GovStore\Tracking\Http\Controllers\TrackingRetrospectiveController;
+use GovStore\Tracking\Http\Controllers\Api\TrackingEvaluationController; // Added Import
+
+/*
+|--------------------------------------------------------------------------
+| Tracking Web Routes (Admin UI)
+|--------------------------------------------------------------------------
+*/
 
 // 1. System Configuration (Dictionaries)
 Route::resource('funding-types', FundingTypeController::class)->only(['index', 'store', 'destroy']);
@@ -20,6 +27,10 @@ Route::post('initiatives/{initiative}/tracking-codes/{trackingCode}/activate', [
 Route::post('initiatives/{initiative}/tracking-codes/{trackingCode}/archive', [TrackingCodeController::class, 'archive'])->name('initiatives.tracking-codes.archive');
 
 Route::get('tracking-codes/{trackingCode}/download', [TrackingCodeController::class, 'downloadPdf'])->name('tracking-codes.download');
+
+// Real-Time Form Uniqueness Check (Session-Authenticated Web Path)
+Route::get('tracking-codes/check-uniqueness', [TrackingEvaluationController::class, 'checkUniqueness'])
+    ->name('tracking-codes.check-uniqueness');
 
 // 4. Retrospective Tagging Console
 Route::get('initiatives/{initiative}/retrospective', [TrackingRetrospectiveController::class, 'index'])->name('initiatives.retrospective.index');
