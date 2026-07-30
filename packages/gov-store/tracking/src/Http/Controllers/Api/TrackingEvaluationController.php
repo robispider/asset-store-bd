@@ -79,15 +79,19 @@ class TrackingEvaluationController extends Controller
         if (\Illuminate\Support\Facades\Schema::hasTable('gov_tracking_associations')) {
             // Mathematical Projection: Calculate total received by counting polymorphic links to Assets
         // filtered by the exact Category ID.
+        // --- DYNAMIC TABLE NAME RESOLUTION ---
+        $assetsTable = (new \App\Models\Asset)->getTable();
+        $modelsTable = (new \App\Models\AssetModel)->getTable();
+
         $receivedQty = DB::table('gov_tracking_associations')
-            ->join('hardware', function ($join) {
-                $join->on('gov_tracking_associations.associatable_id', '=', 'hardware.id')
+            ->join($assetsTable, function ($join) use ($assetsTable) {
+                $join->on('gov_tracking_associations.associatable_id', '=', $assetsTable . '.id')
                      ->where('gov_tracking_associations.associatable_type', '=', \App\Models\Asset::class);
             })
-            ->join('models', 'hardware.model_id', '=', 'models.id')
+            ->join($modelsTable, $assetsTable . '.model_id', '=', $modelsTable . '.id')
             ->where('gov_tracking_associations.tracking_code_id', $trackingCode->id)
             ->where('gov_tracking_associations.status', 'ACTIVE')
-            ->where('models.category_id', $request->input('category_id'))
+            ->where($modelsTable . '.category_id', $request->input('category_id'))
             ->count();
         }
 

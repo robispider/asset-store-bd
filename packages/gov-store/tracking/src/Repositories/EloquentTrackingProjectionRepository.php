@@ -3,6 +3,7 @@
 namespace GovStore\Tracking\Repositories;
 
 use App\Models\Asset;
+use App\Models\AssetModel;
 use GovStore\Tracking\Models\Initiative;
 use GovStore\Tracking\Models\TrackingCode;
 use GovStore\Tracking\Models\TrackingTarget;
@@ -19,23 +20,20 @@ class EloquentTrackingProjectionRepository implements TrackingProjectionReposito
             'received'   => 0,
             'deployed'   => 0,
             'disposed'   => 0,
-            'percentage' => 0, // Added key
+            'percentage' => 0,
         ];
 
-        // Retrieve all Tracking Codes belonging to this Initiative
         $trackingCodeIds = TrackingCode::where('initiative_id', $initiative->id)->pluck('id')->toArray();
 
         if (empty($trackingCodeIds)) {
             return $summary;
         }
 
-        // 1. PLANNED (Sum of targets under all tracking codes)
         $planned = (int) TrackingTarget::whereIn('tracking_code_id', $trackingCodeIds)
             ->sum('planned_qty');
 
         $summary['planned'] = $planned;
 
-        // Extract associated core asset IDs
         $associatedAssetIds = TrackingAssociation::whereIn('tracking_code_id', $trackingCodeIds)
             ->where('associatable_type', Asset::class)
             ->where('status', 'ACTIVE')
@@ -44,7 +42,6 @@ class EloquentTrackingProjectionRepository implements TrackingProjectionReposito
 
         $received = 0;
         if (!empty($associatedAssetIds)) {
-            // 2. RECEIVED (Asset exists in inventory and is ready to deploy)
             $received = (int) Asset::whereIn('id', $associatedAssetIds)
                 ->whereHas('assetstatus', function ($query) {
                     $query->where('deployable', 1)->where('pending', 0)->where('archived', 0);
@@ -53,12 +50,10 @@ class EloquentTrackingProjectionRepository implements TrackingProjectionReposito
 
             $summary['received'] = $received;
 
-            // 3. DEPLOYED / OPERATIONAL (Asset is assigned directly to holder)
             $summary['deployed'] = (int) Asset::whereIn('id', $associatedAssetIds)
                 ->whereNotNull('assigned_to')
                 ->count();
 
-            // 4. DISPOSED (Asset has been decommissioned or archived in core)
             $summary['disposed'] = (int) Asset::whereIn('id', $associatedAssetIds)
                 ->whereHas('assetstatus', function ($query) {
                     $query->where('archived', 1);
@@ -66,10 +61,47 @@ class EloquentTrackingProjectionRepository implements TrackingProjectionReposito
                 ->count();
         }
 
-        // Calculate top-level operational percentage health
         $percentage = $planned > 0 ? round(($received / $planned) * 100) : 0;
-        $summary['percentage'] = $percentage > 100 ? 100 : $percentage; // Cap at 100% for macro indicator
+        $summary['percentage'] = $percentage > 100 ? 100 : $percentage;
 
         return $summary;
+    }
+
+    public function getTargetProgress(int $trackingCodeId, int $categoryId): array
+    {
+        $target = DB::table('gov_tracking_targets')
+            ->where('tracking_code_id', $trackingCodeId)
+            ->where('category_id', $categoryId)
+            ->first();
+
+        if (!$target) {
+            return ['planned' => 0, 'received' => 0, 'percentage' => 0, 'is_exceeded' => false];
+        }
+
+        $planned = $target->planned_qty;
+
+        // --- DYNAMIC TABLE NAME RESOLUTION ---
+        $assetsTable = (new Asset)->getTable();
+        $modelsTable = (new AssetModel)->getTable();
+
+        $received = DB::table('gov_tracking_associations')
+            ->join($assetsTable, function ($join) use ($assetsTable) {
+                $join->on('gov_tracking_associations.associatable_id', '=', $assetsTable . '.id')
+                     ->where('gov_tracking_associations.associatable_type', '=', Asset::class);
+            })
+            ->join($modelsTable, $assetsTable . '.model_id', '=', $modelsTable . '.id')
+            ->where('gov_tracking_associations.tracking_code_id', $trackingCodeId)
+            ->where('gov_tracking_associations.status', 'ACTIVE')
+            ->where($modelsTable . '.category_id', $categoryId)
+            ->count();
+
+        $percentage = $planned > 0 ? round(($received / $planned) * 100) : 0;
+
+        return [
+            'planned' => (int) $planned,
+            'received' => (int) $received,
+            'percentage' => $percentage,
+            'is_exceeded' => ($received > $planned)
+        ];
     }
 }

@@ -14,7 +14,11 @@ class CachedTrackingProjectionRepository implements TrackingProjectionRepository
     {
         $this->fallbackLiveRepo = $fallbackLiveRepo;
     }
-
+public function getTargetProgress(int $trackingCodeId, int $categoryId): array
+    {
+        // Target progress calculations are computed on-the-fly for real-time accuracy
+        return $this->fallbackLiveRepo->getTargetProgress($trackingCodeId, $categoryId);
+    }
     public function getLifecycleSummary(Initiative $initiative): array
     {
         $cache = TrackingProjectionCache::where('tracking_reference_id', $initiative->id)->first();

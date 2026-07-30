@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('tracking_code')->unique();
             $table->string('task_title');
             $table->string('fiscal_year', 20)->nullable();
+            $table->string('status')->default('DRAFT'); // DRAFT, ACTIVE, ARCHIVED
             $table->string('order_pdf_path')->nullable();
             
             $table->timestamps();

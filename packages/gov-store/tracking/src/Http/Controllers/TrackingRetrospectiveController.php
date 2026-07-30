@@ -74,17 +74,18 @@ class TrackingRetrospectiveController extends Controller
         ));
     }
 
-    public function associate(Request $request, Initiative $initiative)
+   public function associate(Request $request, Initiative $initiative)
     {
+        $assetsTable = (new Asset)->getTable();
+
         $request->validate([
             'tracking_code_id' => 'required|exists:gov_tracking_codes,id',
             'asset_ids' => 'required|array',
-            'asset_ids.*' => 'exists:hardware,id',
+            'asset_ids.*' => "exists:{$assetsTable},id", // Dynamic Table Check
         ]);
 
         $trackingCode = TrackingCode::findOrFail($request->input('tracking_code_id'));
 
-        // Ensure the selected tracking code actually belongs to this initiative umbrella
         if ($trackingCode->initiative_id !== $initiative->id) {
             abort(403, 'Invalid tracking code association.');
         }

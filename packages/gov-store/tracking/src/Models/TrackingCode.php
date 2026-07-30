@@ -11,12 +11,13 @@ class TrackingCode extends Model
 {
     protected $table = 'gov_tracking_codes';
 
-    protected $fillable = [
+   protected $fillable = [
         'initiative_id',
         'funding_type_id',
         'tracking_code',
         'task_title',
         'fiscal_year',
+        'status', // Added
         'order_pdf_path',
     ];
 

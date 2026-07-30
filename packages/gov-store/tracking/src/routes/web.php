@@ -6,12 +6,6 @@ use GovStore\Tracking\Http\Controllers\InitiativeController;
 use GovStore\Tracking\Http\Controllers\TrackingCodeController;
 use GovStore\Tracking\Http\Controllers\TrackingRetrospectiveController;
 
-/*
-|--------------------------------------------------------------------------
-| Tracking Web Routes (Admin UI)
-|--------------------------------------------------------------------------
-*/
-
 // 1. System Configuration (Dictionaries)
 Route::resource('funding-types', FundingTypeController::class)->only(['index', 'store', 'destroy']);
 
@@ -19,18 +13,14 @@ Route::resource('funding-types', FundingTypeController::class)->only(['index', '
 Route::resource('initiatives', InitiativeController::class);
 
 // 3. Tracking Codes / Tasks (Nested under an Initiative)
-Route::get('initiatives/{initiative}/tracking-codes/create', [TrackingCodeController::class, 'create'])
-    ->name('initiatives.tracking-codes.create');
-    
-Route::post('initiatives/{initiative}/tracking-codes', [TrackingCodeController::class, 'store'])
-    ->name('initiatives.tracking-codes.store');
-    
-Route::get('tracking-codes/{trackingCode}/download', [TrackingCodeController::class, 'downloadPdf'])
-    ->name('tracking-codes.download');
+Route::resource('initiatives.tracking-codes', TrackingCodeController::class)->except(['index', 'show']);
 
-// 4. Retrospective Tagging Console (Nested under an Initiative)
-Route::get('initiatives/{initiative}/retrospective', [TrackingRetrospectiveController::class, 'index'])
-    ->name('initiatives.retrospective.index');
-    
-Route::post('initiatives/{initiative}/retrospective', [TrackingRetrospectiveController::class, 'associate'])
-    ->name('initiatives.retrospective.associate');
+// State Transitions
+Route::post('initiatives/{initiative}/tracking-codes/{trackingCode}/activate', [TrackingCodeController::class, 'activate'])->name('initiatives.tracking-codes.activate');
+Route::post('initiatives/{initiative}/tracking-codes/{trackingCode}/archive', [TrackingCodeController::class, 'archive'])->name('initiatives.tracking-codes.archive');
+
+Route::get('tracking-codes/{trackingCode}/download', [TrackingCodeController::class, 'downloadPdf'])->name('tracking-codes.download');
+
+// 4. Retrospective Tagging Console
+Route::get('initiatives/{initiative}/retrospective', [TrackingRetrospectiveController::class, 'index'])->name('initiatives.retrospective.index');
+Route::post('initiatives/{initiative}/retrospective', [TrackingRetrospectiveController::class, 'associate'])->name('initiatives.retrospective.associate');

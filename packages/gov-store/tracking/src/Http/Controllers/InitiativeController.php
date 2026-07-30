@@ -56,8 +56,7 @@ class InitiativeController extends Controller
         return redirect()->route('gov.tracking.initiatives.show', $initiative->id)
                          ->with('success', 'Initiative created successfully.');
     }
-
-    public function show(Initiative $initiative)
+public function show(Initiative $initiative)
     {
         $initiative->load(['ownerCompany', 'managingOffice']);
         
@@ -66,14 +65,21 @@ class InitiativeController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
             
+        $projectionRepo = app(\GovStore\Tracking\Repositories\TrackingProjectionRepositoryInterface::class);
+        $health = $projectionRepo->getLifecycleSummary($initiative);
+        
+        // --- ADDED: Real-Time Target Progression Loop ---
+        foreach ($trackingCodes as $code) {
+            foreach ($code->targets as $target) {
+                $target->progress = $projectionRepo->getTargetProgress($code->id, $target->category_id);
+            }
+        }
+            
         $recentActivity = \GovStore\Tracking\Models\TrackingTimeline::with('actor')
             ->where('initiative_id', $initiative->id)
             ->orderBy('occurred_at', 'desc')
             ->limit(20)
             ->get();
-        
-        $projectionRepo = app(\GovStore\Tracking\Repositories\TrackingProjectionRepositoryInterface::class);
-        $health = $projectionRepo->getLifecycleSummary($initiative);
         
         return view('govtracking::initiatives.workspace', compact('initiative', 'health', 'trackingCodes', 'recentActivity'));
     }
