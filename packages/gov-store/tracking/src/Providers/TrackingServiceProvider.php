@@ -36,6 +36,7 @@ class TrackingServiceProvider extends ServiceProvider
         $this->registerObservers();
         $this->registerConsoleCommands();
         $this->registerMetadataBridge();
+        $this->registerEvents();
 
         if ($this->app->bound(MenuRegistry::class)) {
             $this->registerTrackingMenuStructure();
@@ -44,10 +45,33 @@ class TrackingServiceProvider extends ServiceProvider
 
     protected function registerRoutes(): void
     {
-        Route::middleware(['web', 'auth'])
-            ->prefix('gov-store/admin/tracking')
-            ->name('gov.tracking.')
-            ->group(__DIR__ . '/../routes/web.php');
+        $webRoutePath = __DIR__ . '/../routes/web.php';
+        $apiRoutePath = __DIR__ . '/../routes/api.php';
+
+        // Crash-proof Web Routes Loader
+        if (file_exists($webRoutePath)) {
+            Route::middleware(['web', 'auth'])
+                ->prefix('gov-store/admin/tracking')
+                ->name('gov.tracking.')
+                ->group($webRoutePath);
+        }
+
+        // Crash-proof Handshake API Routes Loader
+        if (file_exists($apiRoutePath)) {
+            Route::middleware(['api', 'auth:api'])
+                ->prefix('gov-store/api/tracking')
+                ->name('gov.tracking.api.')
+                ->group($apiRoutePath);
+        }
+    }
+
+    protected function registerEvents(): void
+    {
+        $events = $this->app['events'];
+        $events->listen(
+            \GovStore\Tracking\Events\AssetsReceivedViaGRN::class,
+            [\GovStore\Tracking\Listeners\AssociateAssetsToProgramme::class, 'handle']
+        );
     }
 
     protected function registerMiddleware(): void
@@ -81,40 +105,40 @@ class TrackingServiceProvider extends ServiceProvider
 
     protected function registerTrackingMenuStructure(): void
     {
-        $registry = $this->app->make(MenuRegistry::class);
+        $registry = $this->app->make(\GovStore\TenantScope\Navigation\MenuRegistry::class);
 
+        // 1. ROOT CATEGORY
         $registry->register([
             'id'    => 'gov-tracking-root',
-            'title' => 'Program & Reference Tracking',
+            'title' => 'Programme Tracking',
             'icon'  => 'fas fa-map-signs text-orange',
             'order' => 35,
             'permission' => ['admin', 'company_admin', 'ict_officer', 'office_admin', 'storekeeper', 'approver'],
         ]);
 
+        // 2. ACTIVE INITIATIVES (The Workspace Entry)
         $registry->register([
-            'id'         => 'gov-tracking-dashboard',
+            'id'         => 'gov-tracking-initiatives',
             'parent'     => 'gov-tracking-root',
-            'title'      => 'Operational Dashboards',
-            'icon'       => 'fas fa-tachometer-alt text-aqua',
-            'route'      => 'gov.tracking.references.index',
+            'title'      => 'Active Initiatives',
+            'icon'       => 'fas fa-folder-open text-aqua',
+            'route'      => 'gov.tracking.initiatives.index',
             'order'      => 10,
             'permission' => ['admin', 'company_admin', 'ict_officer', 'office_admin', 'storekeeper', 'approver'],
-            'active_patterns' => [
-                'gov-store/admin/tracking/references*',
-            ],
+            'active_patterns' => ['gov-store/admin/tracking/initiatives*'],
         ]);
 
-        $registry->register([
-            'id'         => 'gov-tracking-types-config',
+        // 3. SYSTEM CONFIGURATION (Dictionaries)
+         $registry->register([
+            'id'         => 'gov-tracking-config',
             'parent'     => 'gov-tracking-root',
-            'title'      => 'Configure Reference Types',
-            'icon'       => 'fas fa-sliders-h text-yellow',
-            'route'      => 'gov.tracking.types.index',
-            'order'      => 20,
-            'permission' => ['admin', 'company_admin'],
-            'active_patterns' => [
-                'gov-store/admin/tracking/types*',
-            ],
+            'title'      => 'System Configuration',
+            'icon'       => 'fas fa-cog text-yellow',
+            'route'      => 'gov.tracking.funding-types.index',
+            'order'      => 40,
+            'permission' => 'admin',
+            'strict'     => true, // Only Top-Level global Superadmins can see this
+            'active_patterns' => ['gov-store/admin/tracking/funding-types*'],
         ]);
     }
 }

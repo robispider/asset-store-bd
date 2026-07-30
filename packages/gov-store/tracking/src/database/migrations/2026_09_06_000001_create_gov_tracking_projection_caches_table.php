@@ -8,9 +8,13 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Defensively drop the existing table first to prevent migration collisions
+        Schema::dropIfExists('gov_tracking_projection_caches');
+
         Schema::create('gov_tracking_projection_caches', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('tracking_reference_id')->unique()->constrained('gov_tracking_references')->onDelete('cascade');
+            // Maps to the parent Initiative umbrella
+            $table->foreignId('tracking_reference_id')->unique()->constrained('gov_initiatives')->onDelete('cascade');
             $table->integer('planned')->default(0);
             $table->integer('ordered')->default(0);
             $table->integer('received')->default(0);

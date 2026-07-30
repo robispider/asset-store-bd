@@ -2,13 +2,12 @@
 
 namespace GovStore\Tracking\Repositories;
 
-use GovStore\Tracking\Models\TrackingReference;
+use GovStore\Tracking\Models\Initiative;
 
 interface TrackingProjectionRepositoryInterface
 {
     /**
-     * Compute and compile the lifecycle state metrics for a given tracking reference.
-     * Return structure: ['planned' => X, 'ordered' => Y, 'received' => Z, 'deployed' => W, 'disposed' => V]
+     * Compute and compile the lifecycle state metrics for a given Initiative umbrella.
      */
-    public function getLifecycleSummary(TrackingReference $reference): array;
+    public function getLifecycleSummary(Initiative $initiative): array;
 }

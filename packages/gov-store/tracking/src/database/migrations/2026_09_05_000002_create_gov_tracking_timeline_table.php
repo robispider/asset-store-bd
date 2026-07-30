@@ -8,12 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
+        Schema::dropIfExists('gov_tracking_timeline');
+
         Schema::create('gov_tracking_timeline', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('tracking_reference_id')->constrained('gov_tracking_references')->onDelete('cascade');
-            $table->string('event_type'); // REFERENCE_APPROVED, TARGET_MODIFIED, DOCUMENT_ATTACHED
+            $table->foreignId('initiative_id')->constrained('gov_initiatives')->onDelete('cascade');
+            $table->string('event_type'); 
             $table->text('description');
-            $table->unsignedInteger('actor_id')->nullable(); // references core users.id
+            $table->unsignedInteger('actor_id')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamp('occurred_at');
             $table->timestamps();

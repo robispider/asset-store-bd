@@ -11,7 +11,7 @@ class TrackingTimeline extends Model
     protected $table = 'gov_tracking_timeline';
 
     protected $fillable = [
-        'tracking_reference_id',
+        'initiative_id',
         'event_type',
         'description',
         'actor_id',
@@ -24,9 +24,9 @@ class TrackingTimeline extends Model
         'occurred_at' => 'datetime',
     ];
 
-    public function reference(): BelongsTo
+    public function initiative(): BelongsTo
     {
-        return $this->belongsTo(TrackingReference::class, 'tracking_reference_id');
+        return $this->belongsTo(Initiative::class, 'initiative_id');
     }
 
     public function actor(): BelongsTo

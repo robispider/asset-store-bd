@@ -2,7 +2,7 @@
 
 namespace GovStore\Tracking\Jobs;
 
-use GovStore\Tracking\Models\TrackingReference;
+use GovStore\Tracking\Models\Initiative;
 use GovStore\Tracking\Models\TrackingProjectionCache;
 use GovStore\Tracking\Repositories\EloquentTrackingProjectionRepository;
 use Illuminate\Bus\Queueable;
@@ -15,11 +15,11 @@ class RebuildTrackingProjectionJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected int $referenceId;
+    protected int $initiativeId;
 
-    public function __construct(int $referenceId)
+    public function __construct(int $initiativeId)
     {
-        $this->referenceId = $referenceId;
+        $this->initiativeId = $initiativeId;
     }
 
     /**
@@ -28,16 +28,16 @@ class RebuildTrackingProjectionJob implements ShouldQueue
      */
     public function handle(EloquentTrackingProjectionRepository $liveRepo): void
     {
-        $reference = TrackingReference::find($this->referenceId);
+        $initiative = Initiative::find($this->initiativeId);
         
-        if ($reference) {
-            $metrics = $liveRepo->getLifecycleSummary($reference);
+        if ($initiative) {
+            $metrics = $liveRepo->getLifecycleSummary($initiative);
 
             TrackingProjectionCache::updateOrCreate(
-                ['tracking_reference_id' => $reference->id],
+                ['tracking_reference_id' => $initiative->id],
                 [
-                    'planned' => $metrics['planned'],
-                    'ordered' => $metrics['ordered'],
+                    'planned'  => $metrics['planned'],
+                    'ordered'  => $metrics['ordered'],
                     'received' => $metrics['received'],
                     'deployed' => $metrics['deployed'],
                     'disposed' => $metrics['disposed'],

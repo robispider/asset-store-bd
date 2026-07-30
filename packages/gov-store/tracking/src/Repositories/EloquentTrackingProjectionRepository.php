@@ -3,42 +3,55 @@
 namespace GovStore\Tracking\Repositories;
 
 use App\Models\Asset;
-use GovStore\Tracking\Models\TrackingReference;
+use GovStore\Tracking\Models\Initiative;
+use GovStore\Tracking\Models\TrackingCode;
 use GovStore\Tracking\Models\TrackingTarget;
 use GovStore\Tracking\Models\TrackingAssociation;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 class EloquentTrackingProjectionRepository implements TrackingProjectionRepositoryInterface
 {
-    public function getLifecycleSummary(TrackingReference $reference): array
+    public function getLifecycleSummary(Initiative $initiative): array
     {
         $summary = [
-            'planned' => 0,
-            'ordered' => 0,
-            'received' => 0,
-            'deployed' => 0,
-            'disposed' => 0,
+            'planned'    => 0,
+            'ordered'    => 0,
+            'received'   => 0,
+            'deployed'   => 0,
+            'disposed'   => 0,
+            'percentage' => 0, // Added key
         ];
 
-        // 1. PLANNED (Set in our targeting module)
-        $summary['planned'] = (int) TrackingTarget::where('tracking_reference_id', $reference->id)
+        // Retrieve all Tracking Codes belonging to this Initiative
+        $trackingCodeIds = TrackingCode::where('initiative_id', $initiative->id)->pluck('id')->toArray();
+
+        if (empty($trackingCodeIds)) {
+            return $summary;
+        }
+
+        // 1. PLANNED (Sum of targets under all tracking codes)
+        $planned = (int) TrackingTarget::whereIn('tracking_code_id', $trackingCodeIds)
             ->sum('planned_qty');
 
-        // Extract associated core asset IDs for direct state evaluation
-        $associatedAssetIds = TrackingAssociation::where('tracking_reference_id', $reference->id)
+        $summary['planned'] = $planned;
+
+        // Extract associated core asset IDs
+        $associatedAssetIds = TrackingAssociation::whereIn('tracking_code_id', $trackingCodeIds)
             ->where('associatable_type', Asset::class)
             ->where('status', 'ACTIVE')
             ->pluck('associatable_id')
             ->toArray();
 
+        $received = 0;
         if (!empty($associatedAssetIds)) {
             // 2. RECEIVED (Asset exists in inventory and is ready to deploy)
-            $summary['received'] = (int) Asset::whereIn('id', $associatedAssetIds)
+            $received = (int) Asset::whereIn('id', $associatedAssetIds)
                 ->whereHas('assetstatus', function ($query) {
                     $query->where('deployable', 1)->where('pending', 0)->where('archived', 0);
                 })
                 ->count();
+
+            $summary['received'] = $received;
 
             // 3. DEPLOYED / OPERATIONAL (Asset is assigned directly to holder)
             $summary['deployed'] = (int) Asset::whereIn('id', $associatedAssetIds)
@@ -53,21 +66,9 @@ class EloquentTrackingProjectionRepository implements TrackingProjectionReposito
                 ->count();
         }
 
-        // 5. ORDERED / APPROVED (Check integrations against storefront custom-requests module)
-        if (Schema::hasTable('custom_service_requests') && Schema::hasTable('custom_service_request_items')) {
-            $associatedRequestIds = TrackingAssociation::where('tracking_reference_id', $reference->id)
-                ->where('associatable_type', 'GovStore\CustomRequests\Models\ServiceRequest')
-                ->where('status', 'ACTIVE')
-                ->pluck('associatable_id')
-                ->toArray();
-
-            if (!empty($associatedRequestIds)) {
-                $summary['ordered'] = (int) DB::table('custom_service_request_items')
-                    ->whereIn('service_request_id', $associatedRequestIds)
-                    ->whereNotIn('line_approval_status', ['rejected', 'cancelled'])
-                    ->sum('approved_qty');
-            }
-        }
+        // Calculate top-level operational percentage health
+        $percentage = $planned > 0 ? round(($received / $planned) * 100) : 0;
+        $summary['percentage'] = $percentage > 100 ? 100 : $percentage; // Cap at 100% for macro indicator
 
         return $summary;
     }

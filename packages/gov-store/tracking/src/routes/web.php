@@ -1,32 +1,36 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use GovStore\Tracking\Http\Controllers\TrackingTypeController;
-use GovStore\Tracking\Http\Controllers\TrackingReferenceController;
-use GovStore\Tracking\Http\Controllers\TrackingDocumentController;
-use GovStore\Tracking\Http\Controllers\TrackingTargetController;
-use GovStore\Tracking\Http\Controllers\TrackingScopeController;
-use GovStore\Tracking\Http\Controllers\TrackingDashboardController;
+use GovStore\Tracking\Http\Controllers\FundingTypeController;
+use GovStore\Tracking\Http\Controllers\InitiativeController;
+use GovStore\Tracking\Http\Controllers\TrackingCodeController;
 use GovStore\Tracking\Http\Controllers\TrackingRetrospectiveController;
 
-Route::resource('types', TrackingTypeController::class)->except(['show']);
-Route::resource('references', TrackingReferenceController::class);
+/*
+|--------------------------------------------------------------------------
+| Tracking Web Routes (Admin UI)
+|--------------------------------------------------------------------------
+*/
 
-Route::post('references/{reference}/documents', [TrackingDocumentController::class, 'store'])
-    ->name('documents.store');
-Route::get('documents/{document}/download', [TrackingDocumentController::class, 'download'])
-    ->name('documents.download');
-Route::delete('documents/{document}', [TrackingDocumentController::class, 'destroy'])
-    ->name('documents.destroy');
+// 1. System Configuration (Dictionaries)
+Route::resource('funding-types', FundingTypeController::class)->only(['index', 'store', 'destroy']);
 
-Route::resource('references.targets', TrackingTargetController::class)->only(['index', 'store', 'destroy']);
-Route::resource('references.scopes', TrackingScopeController::class)->only(['index', 'store', 'destroy']);
+// 2. The Umbrella Initiatives
+Route::resource('initiatives', InitiativeController::class);
 
-Route::get('references/{reference}/dashboard', [TrackingDashboardController::class, 'show'])
-    ->name('references.dashboard');
+// 3. Tracking Codes / Tasks (Nested under an Initiative)
+Route::get('initiatives/{initiative}/tracking-codes/create', [TrackingCodeController::class, 'create'])
+    ->name('initiatives.tracking-codes.create');
+    
+Route::post('initiatives/{initiative}/tracking-codes', [TrackingCodeController::class, 'store'])
+    ->name('initiatives.tracking-codes.store');
+    
+Route::get('tracking-codes/{trackingCode}/download', [TrackingCodeController::class, 'downloadPdf'])
+    ->name('tracking-codes.download');
 
-// Retrospective Tagging Routes
-Route::get('references/{reference}/retrospective', [TrackingRetrospectiveController::class, 'index'])
-    ->name('references.retrospective.index');
-Route::post('references/{reference}/retrospective/associate', [TrackingRetrospectiveController::class, 'associate'])
-    ->name('references.retrospective.associate');
+// 4. Retrospective Tagging Console (Nested under an Initiative)
+Route::get('initiatives/{initiative}/retrospective', [TrackingRetrospectiveController::class, 'index'])
+    ->name('initiatives.retrospective.index');
+    
+Route::post('initiatives/{initiative}/retrospective', [TrackingRetrospectiveController::class, 'associate'])
+    ->name('initiatives.retrospective.associate');

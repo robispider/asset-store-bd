@@ -2,125 +2,100 @@
 
 namespace GovStore\Tracking\Services;
 
-use App\Models\User;
 use App\Models\Location;
-use GovStore\Tracking\Models\TrackingReference;
+use GovStore\Tracking\Models\TrackingCode;
+use GovStore\Organization\Models\LocationProfile;
 
 class ScopeValidatorService
 {
     /**
-     * Verify if the user owns/belongs to the Ministry governing the reference.
+     * Evaluates if a given Tracking Code can be utilized by the requesting Location.
+     * Returns an array: ['is_valid' => bool, 'message' => string|null]
      */
-    public function validateOwnership(TrackingReference $reference, ?int $companyId): bool
+    public function validateExecutionScope(TrackingCode $trackingCode, int $locationId): array
     {
-        $ownershipScopes = $reference->scopes()->where('dimension', 'OWNERSHIP')->get();
+        $trackingCode->load(['scopes', 'initiative.ownerCompany']);
+        $initiative = $trackingCode->initiative;
 
-        if ($ownershipScopes->isEmpty()) {
-            return true; // No explicit block
-        }
-
-        foreach ($ownershipScopes as $scope) {
-            if ($scope->target_type === 'Global') {
-                return true;
-            }
-            if ($scope->target_type === 'Company' && (int)$scope->target_id === (int)$companyId) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Verify if the active operational location has rights to view or select this reference.
-     */
-    public function validateVisibility(TrackingReference $reference, ?int $locationId, ?int $companyId): bool
-    {
-        $visibilityScopes = $reference->scopes()->where('dimension', 'VISIBILITY')->get();
-
-        if ($visibilityScopes->isEmpty()) {
-            return true;
-        }
-
-        foreach ($visibilityScopes as $scope) {
-            if ($scope->target_type === 'Global') {
-                return true;
-            }
-            if ($scope->target_type === 'Company' && (int)$scope->target_id === (int)$companyId) {
-                return true;
-            }
-            if ($scope->target_type === 'Location' && (int)$scope->target_id === (int)$locationId) {
-                return true;
-            }
-            // GeoArea evaluation integration
-            if ($scope->target_type === 'GeoArea' && $locationId) {
-                $location = Location::find($locationId);
-                if ($location && $location->profile && $this->isLocationInGeoArea($location->profile->geo_area_id, $scope->target_id)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Validate whether an item belonging to this reference can physically be deployed to the destination office.
-     */
-    public function validateApplicability(TrackingReference $reference, int $destinationLocationId): bool
-    {
-        $applicabilityScopes = $reference->scopes()->where('dimension', 'APPLICABILITY')->get();
-
-        if ($applicabilityScopes->isEmpty()) {
-            return true;
-        }
-
-        $location = Location::find($destinationLocationId);
+        // Fetch location and its geographical placement
+        $location = Location::find($locationId);
         if (!$location) {
-            return false;
+            return ['is_valid' => false, 'message' => 'Invalid location ID provided.'];
         }
 
-        foreach ($applicabilityScopes as $scope) {
-            if ($scope->target_type === 'Global') {
-                return true;
-            }
-            if ($scope->target_type === 'Location' && (int)$scope->target_id === (int)$destinationLocationId) {
-                return true;
-            }
-            if ($scope->target_type === 'Company' && (int)$scope->target_id === (int)$location->company_id) {
-                return true;
-            }
-            if ($scope->target_type === 'GeoArea') {
-                if ($location->profile && $this->isLocationInGeoArea($location->profile->geo_area_id, $scope->target_id)) {
-                    return true;
-                }
+        $locationProfile = LocationProfile::where('location_id', $locationId)->first();
+        $locationGeoId = $locationProfile ? $locationProfile->geo_area_id : null;
+
+        // 1. Evaluate Geographical Scope
+        $geoPassed = $this->evaluateGeography($trackingCode, $locationGeoId);
+        if (!$geoPassed) {
+            return [
+                'is_valid' => false,
+                'message'  => 'This Tracking Code is strictly scoped to a specific geographical boundary. Your office location is outside this area.'
+            ];
+        }
+
+        // 2. Evaluate Participants (Organizational) Scope
+        $participantPassed = $this->evaluateParticipants($trackingCode, $locationId, $location->company_id, $initiative->owner_company_id);
+        if (!$participantPassed) {
+            return [
+                'is_valid' => false,
+                'message'  => "This Tracking Code is restricted to participating offices within the {$initiative->ownerCompany->name} organization."
+            ];
+        }
+
+        return ['is_valid' => true, 'message' => null];
+    }
+
+    protected function evaluateGeography(TrackingCode $trackingCode, ?int $locationGeoId): bool
+    {
+        $geoScope = $trackingCode->scopes->where('dimension', 'GEOGRAPHY')->first();
+        
+        // If no explicit scope or set to Inherit, assume Umbrella default (Valid Anywhere)
+        if (!$geoScope || $geoScope->target_type === 'Inherit') {
+            return true;
+        }
+
+        if (!$locationGeoId) {
+            return false; // Strict geo-fencing requires the office to be mapped to a GeoArea
+        }
+
+        if ($geoScope->target_type === 'GeoArea' && class_exists('GovStore\GeoAreas\Models\GeoArea')) {
+            $allowedArea = \GovStore\GeoAreas\Models\GeoArea::find($geoScope->target_id);
+            $officeArea  = \GovStore\GeoAreas\Models\GeoArea::find($locationGeoId);
+
+            if ($allowedArea && $officeArea) {
+                // Return true if the office sits anywhere INSIDE the allowed geographical tree
+                return str_starts_with($officeArea->hid, $allowedArea->hid);
             }
         }
 
         return false;
     }
 
-    /**
-     * Helper logic integrating into geo-areas package to walk down the hierarchy tree using 'hid' paths.
-     */
-    protected function isLocationInGeoArea(?int $locationGeoAreaId, int $scopeGeoAreaId): bool
+    protected function evaluateParticipants(TrackingCode $trackingCode, int $locationId, ?int $companyId, int $ownerCompanyId): bool
     {
-        if (!$locationGeoAreaId) {
-            return false;
+        $partScope = $trackingCode->scopes->where('dimension', 'PARTICIPANTS')->first();
+
+        // If no rule or set to Inherit, fallback to Umbrella Default (Only offices in the owning Ministry)
+        if (!$partScope || $partScope->target_type === 'Inherit') {
+            return $companyId === $ownerCompanyId;
         }
 
-        if ((int)$locationGeoAreaId === (int)$scopeGeoAreaId) {
+        // CrossTenant: Allow ANY organization, as long as they passed the Geography check above
+        if ($partScope->target_type === 'CrossTenant') {
             return true;
         }
 
-        if (class_exists('GovStore\GeoAreas\Models\GeoArea')) {
-            $scopeArea = \GovStore\GeoAreas\Models\GeoArea::find($scopeGeoAreaId);
-            $locationArea = \GovStore\GeoAreas\Models\GeoArea::find($locationGeoAreaId);
-
-            if ($scopeArea && $locationArea) {
-                // Hierarchical Match via materialized path
-                return str_starts_with($locationArea->hid, $scopeArea->hid);
-            }
+        // SpecificLocations: Explicitly selected warehouses only
+        if ($partScope->target_type === 'SpecificLocations') {
+            $allowedLocationIds = $trackingCode->scopes
+                ->where('dimension', 'PARTICIPANTS')
+                ->where('target_type', 'SpecificLocations')
+                ->pluck('target_id')
+                ->toArray();
+                
+            return in_array($locationId, $allowedLocationIds);
         }
 
         return false;

@@ -11,15 +11,15 @@ class TrackingAssociation extends Model
     protected $table = 'gov_tracking_associations';
 
     protected $fillable = [
-        'tracking_reference_id',
+        'tracking_code_id',
         'associatable_type',
         'associatable_id',
         'status',
     ];
 
-    public function reference(): BelongsTo
+    public function trackingCode(): BelongsTo
     {
-        return $this->belongsTo(TrackingReference::class, 'tracking_reference_id');
+        return $this->belongsTo(TrackingCode::class, 'tracking_code_id');
     }
 
     public function associatable(): MorphTo
