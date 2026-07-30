@@ -113,37 +113,95 @@
                     </span>
                     
                     <!-- Dynamic Targets / Progress -->
-                    <div style="margin-top: 15px; padding: 10px; background-color: #f4f4f4; border-radius: 4px;">
-                        <h5 style="margin-top: 0; border-bottom: 1px solid #ddd; padding-bottom: 5px;"><strong>Quantitative Targets (Economic Sub-ledgers)</strong></h5>
-                        <div class="row">
-                            @foreach($code->targets as $target)
-                                @php
-                                    $prog = $target->progress ?? ['percentage' => 0, 'is_exceeded' => false, 'received' => 0, 'planned' => $target->planned_qty];
-                                    $barColor = $prog['is_exceeded'] ? 'progress-bar-yellow' : ($prog['percentage'] >= 100 ? 'progress-bar-success' : 'progress-bar-aqua');
-                                    $textColor = $prog['is_exceeded'] ? 'text-yellow' : ($prog['percentage'] >= 100 ? 'text-green' : 'text-muted');
-                                @endphp
+                    
+                            <!-- =============================================================== -->
+                            <!-- ADAPTIVE SPECIFICITY PROGRESS PRESENTATION -->
+                            <!-- =============================================================== -->
+                            <div style="margin-top: 15px;">
                                 
-                                <div class="col-sm-6" style="margin-bottom: 10px;">
-                                    <i class="fa fa-cube text-muted"></i> <strong>{{ $target->category->name }}</strong>
-                                    @if($target->economic_code)
-                                        <span class="text-muted text-sm">(Econ: {{ $target->economic_code }})</span>
-                                    @endif
-                                    
-                                    <div class="progress progress-xs" style="margin-top: 5px; margin-bottom: 2px;">
-                                        <div class="progress-bar {{ $barColor }}" style="width: {{ $prog['percentage'] > 100 ? 100 : $prog['percentage'] }}%"></div>
+                                <!-- LEVEL 1: BLANKET CODE STATE -->
+                                @if($code->specificity_level === '1_BLANKET')
+                                    <div class="callout callout-default" style="background-color: #f4f4f4; border-color: #ddd; margin-bottom: 0;">
+                                        <p><i class="fa fa-info-circle text-blue"></i> <strong>Blanket Allocation:</strong> No item or quantity constraints are enforced. Expenditure logs and received assets are recorded purely for administrative audits.</p>
                                     </div>
-                                    
-                                    <span class="{{ $textColor }} text-sm">
-                                        <strong>Progress: {{ number_format($prog['received']) }} / {{ number_format($prog['planned']) }}</strong> 
-                                        ({{ $prog['percentage'] }}%)
-                                        @if($prog['is_exceeded'])
-                                            <i class="fa fa-warning" title="Overshoot Detected"></i>
-                                        @endif
-                                    </span>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
+                                @endif
+
+                                <!-- LEVEL 2: SHARED CATEGORY GOALS STATE -->
+                                @if($code->specificity_level === '2_CATEGORY')
+                                    <div style="padding: 15px; background-color: #f4f4f4; border-radius: 4px; border-left: 4px solid #00c0ef;">
+                                        <h5 style="margin-top: 0; border-bottom: 1px solid #ddd; padding-bottom: 5px;"><strong>Shared Category Goals (Advisory Planning)</strong></h5>
+                                        <div class="row">
+                                            @foreach($code->targets as $target)
+                                                @php
+                                                    $prog = $target->progress ?? ['percentage' => 0, 'is_exceeded' => false, 'received' => 0, 'planned' => $target->planned_qty];
+                                                    $barColor = $prog['is_exceeded'] ? 'progress-bar-yellow' : ($prog['percentage'] >= 100 ? 'progress-bar-success' : 'progress-bar-aqua');
+                                                    $textColor = $prog['is_exceeded'] ? 'text-yellow' : ($prog['percentage'] >= 100 ? 'text-green' : 'text-muted');
+                                                @endphp
+                                                
+                                                <div class="col-sm-6" style="margin-bottom: 10px;">
+                                                    <i class="fa fa-cube text-muted"></i> <strong>{{ $target->category->name }}</strong>
+                                                    @if($target->economic_code)
+                                                        <span class="text-muted text-sm">(Econ: {{ $target->economic_code }})</span>
+                                                    @endif
+                                                    
+                                                    <div class="progress progress-xs" style="margin-top: 5px; margin-bottom: 2px;">
+                                                        <div class="progress-bar {{ $barColor }}" style="width: {{ $prog['percentage'] > 100 ? 100 : $prog['percentage'] }}%"></div>
+                                                    </div>
+                                                    
+                                                    <span class="{{ $textColor }} text-sm">
+                                                        <strong>Progress: {{ number_format($prog['received']) }} / {{ number_format($prog['planned']) }}</strong> 
+                                                        ({{ $prog['percentage'] }}%)
+                                                    </span>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+
+                                <!-- LEVEL 3: EXACT DELIVERY MATRIX STATE (Collapsible Geographical Tree) -->
+                                @if($code->specificity_level === '3_MATRIX')
+                                    <div class="panel-group" id="accordion-{{ $code->id }}" style="margin-bottom: 0;">
+                                        <div class="panel panel-default" style="border: 1px solid #ddd; border-left: 4px solid #605ca8; border-radius: 4px;">
+                                            <div class="panel-heading" style="background-color: #f4f4f4;">
+                                                <h4 class="panel-title">
+                                                    <a data-toggle="collapse" data-parent="#accordion-{{ $code->id }}" href="#collapse-{{ $code->id }}" style="display: block; font-weight: bold; color: #555;">
+                                                        <i class="fa fa-map-marker text-purple"></i> View Exact Office Delivery Progress <span class="pull-right"><i class="fa fa-chevron-down"></i></span>
+                                                    </a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapse-{{ $code->id }}" class="panel-collapse collapse">
+                                                <div class="panel-body" style="padding: 15px; background-color: #ffffff;">
+                                                    @forelse($code->matrixProgress ?? [] as $locationId => $data)
+                                                        <div style="margin-bottom: 15px; border-bottom: 1px solid #f4f4f4; padding-bottom: 10px;">
+                                                            <h5 style="margin-top: 0; font-weight: bold;"><i class="fa fa-building text-muted"></i> {{ $data['location_name'] }}</h5>
+                                                            <div class="row">
+                                                                @foreach($data['items'] as $item)
+                                                                    @php
+                                                                        $barColor = $item['is_exceeded'] ? 'progress-bar-yellow' : ($item['percentage'] >= 100 ? 'progress-bar-success' : 'progress-bar-primary');
+                                                                        $textColor = $item['is_exceeded'] ? 'text-yellow' : ($item['percentage'] >= 100 ? 'text-green' : 'text-muted');
+                                                                    @endphp
+                                                                    <div class="col-sm-6" style="margin-bottom: 5px;">
+                                                                        <span class="text-sm"><strong>{{ $item['category_name'] }}</strong></span>
+                                                                        <div class="progress progress-xs" style="margin-top: 3px; margin-bottom: 2px;">
+                                                                            <div class="progress-bar {{ $barColor }}" style="width: {{ $item['percentage'] > 100 ? 100 : $item['percentage'] }}%"></div>
+                                                                        </div>
+                                                                        <span class="{{ $textColor }} text-xs">
+                                                                            <strong>Received: {{ $item['received'] }} / {{ $item['allocated'] }}</strong> ({{ $item['percentage'] }}%)
+                                                                        </span>
+                                                                    </div>
+                                                                @endforeach
+                                                            </div>
+                                                        </div>
+                                                    @empty
+                                                        <p class="text-center text-muted" style="margin-bottom: 0;">No delivery matrix cells are configured.</p>
+                                                    @endforelse
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+
+                            </div>
                     
                     <!-- CONDITIONAL ACTION WORKFLOWS -->
                     <div style="margin-top: 10px;" class="text-right">

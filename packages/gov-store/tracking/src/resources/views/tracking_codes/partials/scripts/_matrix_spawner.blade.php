@@ -1,4 +1,4 @@
-<!-- Inline Select2 Spawning Engine -->
+<!-- Inline Select2 Spawning Engine (Cropping Fixed) -->
 <script>
     (function() {
         function initMatrixSpawner() {
@@ -27,9 +27,11 @@
                     `);
 
                     var $select = $('#inline-category-select');
+                    
+                    // FIXED: Removed "dropdownParent: $spawner" to allow the dropdown 
+                    // menu to append to the body and float cleanly on top of the scroll bounds.
                     $select.select2({
                         data: availableCategories,
-                        dropdownParent: $spawner,
                         minimumResultsForSearch: 0
                     }).select2('open');
 
@@ -95,9 +97,11 @@
                     `);
 
                     var $select = $('#inline-location-select');
+                    
+                    // FIXED: Removed "dropdownParent: $spawner" to allow the dropdown 
+                    // menu to append to the body and float cleanly on top of the scroll bounds.
                     $select.select2({
                         data: availableLocations,
-                        dropdownParent: $spawner,
                         minimumResultsForSearch: 0
                     }).select2('open');
 

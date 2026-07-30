@@ -15,4 +15,9 @@ interface TrackingProjectionRepositoryInterface
      * Compute the mathematical received-progress of a single quantitative target.
      */
     public function getTargetProgress(int $trackingCodeId, int $categoryId): array;
+
+    /**
+     * Compile location-specific allocations and received progress for a Matrix-type Tracking Code.
+     */
+    public function getMatrixProgress(int $trackingCodeId): array;
 }

@@ -68,10 +68,16 @@ public function show(Initiative $initiative)
         $projectionRepo = app(\GovStore\Tracking\Repositories\TrackingProjectionRepositoryInterface::class);
         $health = $projectionRepo->getLifecycleSummary($initiative);
         
-        // --- ADDED: Real-Time Target Progression Loop ---
+        // --- UPDATED: Dynamic Specificity-Aware Calculation Router ---
         foreach ($trackingCodes as $code) {
-            foreach ($code->targets as $target) {
-                $target->progress = $projectionRepo->getTargetProgress($code->id, $target->category_id);
+            if ($code->specificity_level === '3_MATRIX') {
+                // Compile geography-grouped allocation matrices
+                $code->matrixProgress = $projectionRepo->getMatrixProgress($code->id);
+            } else {
+                // Compile standard global category summaries
+                foreach ($code->targets as $target) {
+                    $target->progress = $projectionRepo->getTargetProgress($code->id, $target->category_id);
+                }
             }
         }
             
