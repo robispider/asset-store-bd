@@ -2,8 +2,6 @@
 
 namespace GovStore\Tracking\Repositories;
 
-use App\Models\Asset;
-use App\Models\AssetModel;
 use GovStore\Tracking\Models\Initiative;
 use GovStore\Tracking\Models\TrackingCode;
 use GovStore\Tracking\Models\TrackingTarget;
@@ -24,43 +22,23 @@ class EloquentTrackingProjectionRepository implements TrackingProjectionReposito
         ];
 
         $trackingCodeIds = TrackingCode::where('initiative_id', $initiative->id)->pluck('id')->toArray();
-
         if (empty($trackingCodeIds)) {
             return $summary;
         }
 
-        $planned = (int) TrackingTarget::whereIn('tracking_code_id', $trackingCodeIds)
-            ->sum('planned_qty');
-
+        // 1. PLANNED (Sum of targets across all tasks under the Initiative)
+        $planned = (int) TrackingTarget::whereIn('tracking_code_id', $trackingCodeIds)->sum('planned_qty');
         $summary['planned'] = $planned;
 
-        $associatedAssetIds = TrackingAssociation::whereIn('tracking_code_id', $trackingCodeIds)
-            ->where('associatable_type', Asset::class)
+        // 2. RECEIVED (Sum of quantity directly from tracking association table)
+        // No external SQL joins on hardware or assets required! This is extremely fast.
+        $received = (int) TrackingAssociation::whereIn('tracking_code_id', $trackingCodeIds)
             ->where('status', 'ACTIVE')
-            ->pluck('associatable_id')
-            ->toArray();
+            ->sum('quantity');
 
-        $received = 0;
-        if (!empty($associatedAssetIds)) {
-            $received = (int) Asset::whereIn('id', $associatedAssetIds)
-                ->whereHas('assetstatus', function ($query) {
-                    $query->where('deployable', 1)->where('pending', 0)->where('archived', 0);
-                })
-                ->count();
+        $summary['received'] = $received;
 
-            $summary['received'] = $received;
-
-            $summary['deployed'] = (int) Asset::whereIn('id', $associatedAssetIds)
-                ->whereNotNull('assigned_to')
-                ->count();
-
-            $summary['disposed'] = (int) Asset::whereIn('id', $associatedAssetIds)
-                ->whereHas('assetstatus', function ($query) {
-                    $query->where('archived', 1);
-                })
-                ->count();
-        }
-
+        // Calculate top-level percentage
         $percentage = $planned > 0 ? round(($received / $planned) * 100) : 0;
         $summary['percentage'] = $percentage > 100 ? 100 : $percentage;
 
@@ -80,27 +58,18 @@ class EloquentTrackingProjectionRepository implements TrackingProjectionReposito
 
         $planned = $target->planned_qty;
 
-        // --- DYNAMIC TABLE NAME RESOLUTION ---
-        $assetsTable = (new Asset)->getTable();
-        $modelsTable = (new AssetModel)->getTable();
-
-        $received = DB::table('gov_tracking_associations')
-            ->join($assetsTable, function ($join) use ($assetsTable) {
-                $join->on('gov_tracking_associations.associatable_id', '=', $assetsTable . '.id')
-                     ->where('gov_tracking_associations.associatable_type', '=', Asset::class);
-            })
-            ->join($modelsTable, $assetsTable . '.model_id', '=', $modelsTable . '.id')
-            ->where('gov_tracking_associations.tracking_code_id', $trackingCodeId)
-            ->where('gov_tracking_associations.status', 'ACTIVE')
-            ->where($modelsTable . '.category_id', $categoryId)
-            ->count();
+        // Query our own associations table, summing quantity directly!
+        $received = (int) TrackingAssociation::where('tracking_code_id', $trackingCodeId)
+            ->where('category_id', $categoryId)
+            ->where('status', 'ACTIVE')
+            ->sum('quantity');
 
         $percentage = $planned > 0 ? round(($received / $planned) * 100) : 0;
 
         return [
-            'planned' => (int) $planned,
-            'received' => (int) $received,
-            'percentage' => $percentage,
+            'planned'     => (int) $planned,
+            'received'    => (int) $received,
+            'percentage'  => $percentage,
             'is_exceeded' => ($received > $planned)
         ];
     }

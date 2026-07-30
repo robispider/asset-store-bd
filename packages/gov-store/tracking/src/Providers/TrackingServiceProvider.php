@@ -65,15 +65,14 @@ class TrackingServiceProvider extends ServiceProvider
         }
     }
 
-    protected function registerEvents(): void
+  protected function registerEvents(): void
     {
         $events = $this->app['events'];
         $events->listen(
-            \GovStore\Tracking\Events\AssetsReceivedViaGRN::class,
-            [\GovStore\Tracking\Listeners\AssociateAssetsToProgramme::class, 'handle']
+            \GovStore\Tracking\Events\InventoryMaterializedAgainstProgramme::class,
+            [\GovStore\Tracking\Listeners\AssociateInventoryToProgramme::class, 'handle']
         );
     }
-
     protected function registerMiddleware(): void
     {
         $router = $this->app['router'];

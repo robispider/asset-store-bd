@@ -13,12 +13,20 @@ return new class extends Migration
         Schema::create('gov_tracking_associations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('tracking_code_id')->constrained('gov_tracking_codes')->onDelete('cascade');
+            
+            // Core values saved directly in the tracking package to avoid joins on external inventory tables
+            $table->unsignedInteger('category_id'); 
+            $table->integer('quantity'); 
+            
+            // Polymorphic link to the physical entity (Asset, Consumable movement, etc.)
             $table->string('associatable_type'); 
             $table->unsignedBigInteger('associatable_id');
-            $table->string('status')->default('ACTIVE');
+            
+            $table->string('status')->default('ACTIVE'); // ACTIVE, DEPRECATED
             $table->timestamps();
 
             $table->index(['associatable_type', 'associatable_id'], 'idx_assoc_polymorphic');
+            $table->index(['tracking_code_id', 'category_id', 'status'], 'idx_tracking_progress_sums');
             $table->unique(['tracking_code_id', 'associatable_type', 'associatable_id'], 'uq_code_assoc');
         });
     }

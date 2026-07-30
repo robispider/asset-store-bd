@@ -12,6 +12,8 @@ class TrackingAssociation extends Model
 
     protected $fillable = [
         'tracking_code_id',
+        'category_id',
+        'quantity',
         'associatable_type',
         'associatable_id',
         'status',

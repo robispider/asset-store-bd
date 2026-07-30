@@ -80,19 +80,13 @@ class TrackingEvaluationController extends Controller
             // Mathematical Projection: Calculate total received by counting polymorphic links to Assets
         // filtered by the exact Category ID.
         // --- DYNAMIC TABLE NAME RESOLUTION ---
-        $assetsTable = (new \App\Models\Asset)->getTable();
-        $modelsTable = (new \App\Models\AssetModel)->getTable();
-
-        $receivedQty = DB::table('gov_tracking_associations')
-            ->join($assetsTable, function ($join) use ($assetsTable) {
-                $join->on('gov_tracking_associations.associatable_id', '=', $assetsTable . '.id')
-                     ->where('gov_tracking_associations.associatable_type', '=', \App\Models\Asset::class);
-            })
-            ->join($modelsTable, $assetsTable . '.model_id', '=', $modelsTable . '.id')
-            ->where('gov_tracking_associations.tracking_code_id', $trackingCode->id)
-            ->where('gov_tracking_associations.status', 'ACTIVE')
-            ->where($modelsTable . '.category_id', $request->input('category_id'))
-            ->count();
+        // Mathematical Projection: Calculate total received by summing quantities directly
+        // from our own local associations table.
+        $receivedQty = (int) DB::table('gov_tracking_associations')
+            ->where('tracking_code_id', $trackingCode->id)
+            ->where('category_id', $request->input('category_id'))
+            ->where('status', 'ACTIVE')
+            ->sum('quantity');
         }
 
         $isExceeded = ($receivedQty >= $target->planned_qty);
