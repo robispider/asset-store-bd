@@ -13,14 +13,17 @@
                 $table.find('tbody').empty();
                 $table.find('tfoot').empty();
 
-                // 1. Header Row
+                // 1. Header Row (With Draggable Handles)
                 var headerHtml = '<tr id="matrix-header-row">';
                 headerHtml += '<th width="320">Office / Warehouse Location</th>';
                 
                 state.columns.forEach(function(col) {
                     headerHtml += `
-                        <th class="matrix-cat-header" data-col-uuid="${col.uuid}" style="text-align: center; background-color: #f8fafc;">
-                            <span class="header-name">${col.name} <i class="fa fa-caret-down text-muted"></i></span>
+                        <th class="matrix-cat-header" draggable="true" data-col-uuid="${col.uuid}" style="text-align: center; background-color: #f8fafc; cursor: grab;">
+                            <span class="header-name">
+                                <i class="fa fa-ellipsis-v text-muted" style="margin-right: 5px; cursor: move;" title="Drag to reorder column"></i>
+                                ${col.name} <i class="fa fa-caret-down text-muted"></i>
+                            </span>
                             <input type="hidden" name="matrix_categories[]" value="${col.category_id}">
                             <br>
                             <small class="text-muted">
@@ -36,13 +39,16 @@
                 headerHtml += '</tr>';
                 $table.find('thead').append(headerHtml);
 
-                // 2. Body Rows
+                // 2. Body Rows (With Draggable Handles)
                 var bodyHtml = '';
                 state.rows.forEach(function(row, rIndex) {
                     bodyHtml += `<tr data-row-index="${rIndex}" class="matrix-row-container" data-row-uuid="${row.uuid}">`;
                     bodyHtml += `
-                        <td class="matrix-loc-header" data-row-uuid="${row.uuid}">
-                            <span class="header-name"><strong>${row.name}</strong> <i class="fa fa-caret-down text-muted"></i></span>
+                        <td class="matrix-loc-header" draggable="true" data-row-uuid="${row.uuid}" style="cursor: grab;">
+                            <span class="header-name">
+                                <i class="fa fa-ellipsis-v text-muted" style="margin-right: 7px; cursor: move;" title="Drag to reorder row"></i>
+                                <strong>${row.name}</strong> <i class="fa fa-caret-down text-muted"></i>
+                            </span>
                             <input type="hidden" name="matrix_locations[${rIndex}]" value="${row.location_id}">
                         </td>
                     `;
