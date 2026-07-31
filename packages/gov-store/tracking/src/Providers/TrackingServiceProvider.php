@@ -31,6 +31,11 @@ class TrackingServiceProvider extends ServiceProvider
         // 2. Corrected view loading path to point to 'src/resources/views'
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'govtracking');
 
+
+           // 3. FIXED: Load Translations Namespace: 'govtracking'
+        // This resolves 'govtracking::general.key' beautifully across both English and Bengali!
+        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'govtracking');
+        
         $this->registerRoutes();
         $this->registerMiddleware();
         $this->registerObservers();
