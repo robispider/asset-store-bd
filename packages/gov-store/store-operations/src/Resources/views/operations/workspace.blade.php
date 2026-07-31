@@ -18,6 +18,7 @@
         <div class="col-md-8">
             
             <!-- SECTION 1: Administrative Details & References -->
+            <!-- SECTION 1: Administrative Details & References -->
             <div class="box box-solid">
                 <div class="box-header with-border">
                     <h3 class="box-title">Administrative Details & Approvals</h3>
@@ -55,7 +56,9 @@
                                 <div style="display: flex; gap: 10px; margin-top: 5px;">
                                     <input type="hidden" name="references[0][reference_type]" value="Supplier Challan">
                                     <input type="text" name="references[0][reference_number]" class="form-control input-sm" placeholder="Challan Number" value="{{ $challan->reference_number ?? '' }}" {{ $isPosted ? 'readonly' : '' }}>
-                                    <input type="date" name="references[0][reference_date]" class="form-control input-sm" style="max-width: 140px;" value="{{ $challan->reference_date ?? '' }}" {{ $isPosted ? 'readonly' : '' }} title="Optional Date">
+                                    
+                                    <!-- FIXED: Changed 'readonly' to 'disabled' to prevent calendar updates on posted documents -->
+                                    <input type="date" name="references[0][reference_date]" class="form-control input-sm" style="max-width: 140px;" value="{{ $challan->reference_date ?? '' }}" {{ $isPosted ? 'disabled' : '' }} title="Optional Date">
                                 </div>
                             </div>
                         </div>
@@ -67,7 +70,9 @@
                                 <div style="display: flex; gap: 10px; margin-top: 5px;">
                                     <input type="hidden" name="references[1][reference_type]" value="Purchase Order">
                                     <input type="text" name="references[1][reference_number]" class="form-control input-sm" placeholder="PO / Tender Number" value="{{ $po->reference_number ?? '' }}" {{ $isPosted ? 'readonly' : '' }}>
-                                    <input type="date" name="references[1][reference_date]" class="form-control input-sm" style="max-width: 140px;" value="{{ $po->reference_date ?? '' }}" {{ $isPosted ? 'readonly' : '' }} title="Optional Date">
+                                    
+                                    <!-- FIXED: Changed 'readonly' to 'disabled' -->
+                                    <input type="date" name="references[1][reference_date]" class="form-control input-sm" style="max-width: 140px;" value="{{ $po->reference_date ?? '' }}" {{ $isPosted ? 'disabled' : '' }} title="Optional Date">
                                 </div>
                             </div>
                         </div>
@@ -81,26 +86,23 @@
                                 <div style="display: flex; gap: 10px; margin-top: 5px;">
                                     <input type="hidden" name="references[2][reference_type]" value="Nothi / Approval Letter">
                                     <input type="text" name="references[2][reference_number]" class="form-control input-sm" placeholder="Nothi Number" value="{{ $nothi->reference_number ?? '' }}" {{ $isPosted ? 'readonly' : '' }}>
-                                    <input type="date" name="references[2][reference_date]" class="form-control input-sm" style="max-width: 140px;" value="{{ $nothi->reference_date ?? '' }}" {{ $isPosted ? 'readonly' : '' }} title="Optional Date">
+                                    
+                                    <!-- FIXED: Changed 'readonly' to 'disabled' -->
+                                    <input type="date" name="references[2][reference_date]" class="form-control input-sm" style="max-width: 140px;" value="{{ $nothi->reference_date ?? '' }}" {{ $isPosted ? 'disabled' : '' }} title="Optional Date">
                                 </div>
                             </div>
                         </div>
 
-
-                        <!-- 4. Special Ministry Allocation (Always visible, purely optional) -->
-                        <div class="col-md-6" id="tracking_allocation_container">
+                        <!-- 4. Special Ministry Allocation -->
+                        <div class="col-md-6">
                             <div class="form-group" style="background: #fdfae8; padding: 15px; border: 1px solid #fef08a; border-radius: 6px;">
-                                <label style="color: #854d0e; font-size: 13px;">
-                                    <i class="fa fa-star text-yellow" style="margin-right: 5px;"></i> Special Project / Tracking Code
-                                    <small style="font-weight:normal; color:#b45309; margin-left:5px;">(Optional)</small>
-                                </label>
+                                <label style="color: #854d0e; font-size: 13px;"><i class="fa fa-star text-yellow" style="margin-right: 5px;"></i> Special Project / Allocation Code</label>
                                 <div style="display: flex; gap: 10px; margin-top: 5px;">
                                     <input type="hidden" name="references[3][reference_type]" value="Special Allocation">
+                                    <input type="text" id="tracking_code_input" name="references[3][reference_number]" class="form-control input-sm" placeholder="Tracking Code (Optional)" value="{{ $allocation->reference_number ?? '' }}" {{ $isPosted ? 'readonly' : '' }} style="border-color: #fde047;">
                                     
-                                    <!-- Tracking Code Input (Takes up full width now) -->
-                                    <input type="text" id="tracking_code_input" name="references[3][reference_number]" class="form-control input-sm" placeholder="e.g. ict-adp-300" value="{{ $allocation->reference_number ?? '' }}" {{ $isPosted ? 'readonly' : '' }} style="border-color: #fde047;">
-                                    
-                                    <!-- FIXED: Removed the unnecessary date input field here -->
+                                    <!-- FIXED: Changed 'readonly' to 'disabled' -->
+                                    <input type="date" name="references[3][reference_date]" class="form-control input-sm" style="max-width: 140px; border-color: #fde047;" value="{{ $allocation->reference_date ?? '' }}" {{ $isPosted ? 'disabled' : '' }} title="Optional Date">
                                 </div>
                                 <!-- HANDSHAKE A1 FEEDBACK CONTAINER -->
                                 <div id="tracking_a1_feedback"></div>

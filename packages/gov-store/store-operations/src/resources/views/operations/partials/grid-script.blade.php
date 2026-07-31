@@ -1,12 +1,13 @@
 <script>
 $(document).ready(function() {
-   
-  // ---  GLOBAL AJAX SETUP FOR CSRF ---
+    
+    // --- GLOBAL AJAX SETUP FOR CSRF ---
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
     let rowCount = 0;
     const isDraft = {{ $isDraft ? 'true' : 'false' }};
     const mathDirection = '{{ $mathDirection }}';
@@ -17,9 +18,6 @@ $(document).ready(function() {
 
     const compiledSnapshot = @json($document->getCompiledProfileSnapshot() ?? ['items' => []]);
     const existingItems = @json($existingItems ?? []);
-
-
-   
 
     function addRow(data = null) {
         let index = rowCount++;
@@ -56,19 +54,21 @@ $(document).ready(function() {
         let $row = $(`tr[data-index="${index}"]`);
         let $select = $row.find('.item-select');
 
+        // FIXED: Initialize Select2 for both states to prevent render/styling bugs, but disable dynamically
+        $select.select2({
+            disabled: !isDraft, // Natively disables Select2 dropdown if document is posted/finalized
+            ajax: isDraft ? {
+                url: '{{ route("storeops.api.products.search") }}',
+                dataType: 'json',
+                delay: 250,
+                data: function(params) { return { q: params.term }; },
+                processResults: function(data) { return data; }
+            } : undefined,
+            placeholder: 'Search for item...',
+            minimumInputLength: isDraft ? 1 : 0
+        });
+        
         if (isDraft) {
-            $select.select2({
-                ajax: {
-                    url: '{{ route("storeops.api.products.search") }}',
-                    dataType: 'json',
-                    delay: 250,
-                    data: function(params) { return { q: params.term }; },
-                    processResults: function(data) { return data; }
-                },
-                placeholder: 'Search for item...',
-                minimumInputLength: 1
-            });
-            
             // Handle Product Selection
             $select.on('select2:select', function (e) {
                 let item = e.params.data;
@@ -83,7 +83,7 @@ $(document).ready(function() {
             });
         }
 
-        // Prepopulate existing data on load safely
+        // Prepopulate existing data safely on load
         if (data) {
             let itemName = data.product_name || 'Unknown Product';
             let composedId = data.product_type + '_' + data.product_id;
@@ -125,6 +125,11 @@ $(document).ready(function() {
             if (res.has_requirements && res.html.trim() !== '') {
                 $metaRow.removeClass('hidden');
                 $container.append(res.html);
+
+                // If document is posted, lock down all inputs inside the metadata sub-grid
+                if (!isDraft) {
+                    $container.find('input, select').attr('disabled', 'disabled');
+                }
             } else {
                 $metaRow.addClass('hidden');
             }
@@ -182,74 +187,112 @@ $(document).ready(function() {
     }
 
     // --- Dynamic Action Listeners ---
+    if (isDraft) {
+        $('#addRowBtn').click(() => addRow());
 
-    $('#addRowBtn').click(() => addRow());
+        $('#gridBody').on('click', '.remove-row', function() {
+            let idx = $(this).closest('tr').data('index');
+            $(this).closest('tr').remove();
+            $(`tr[data-parent-index="${idx}"]`).remove();
+            updateTotals();
+        });
 
-    $('#gridBody').on('click', '.remove-row', function() {
-        let idx = $(this).closest('tr').data('index');
-        $(this).closest('tr').remove();
-        $(`tr[data-parent-index="${idx}"]`).remove();
-        updateTotals();
-    });
+        $('#gridBody').on('input', '.qty-input', function() {
+            let $row = $(this).closest('tr');
+            calculateBalance($row);
+            renderMetadataInputs($row);
+        });
+    }
 
-    $('#gridBody').on('input', '.qty-input', function() {
-        let $row = $(this).closest('tr');
-        calculateBalance($row);
-        renderMetadataInputs($row);
-    });
+    // --- ADVANCED ERROR LOGGER ---
+    function logAndAlertError(xhr, context) {
+        let errorMsg = 'Unknown Error';
+        let debugInfo = '';
 
-    // Save Draft (AJAX)
-    $('#saveDraftBtn').click(function() {
-        let btn = $(this);
-        btn.html('<i class="fa fa-spinner fa-spin"></i> Saving...');
-        
-        $.post('{{ route("storeops.documents.draft", ["type" => $type, "id" => $document->id]) }}', $('#workspaceForm').serialize())
-            .done(function(res) {
-                btn.html('<i class="fa fa-check text-green"></i> Saved');
-                setTimeout(() => btn.html('<i class="fa fa-save"></i> Save Draft'), 2000);
+        if (xhr.responseJSON) {
+            if (xhr.responseJSON.errors) {
+                // Laravel Validation Error
+                errorMsg = Object.values(xhr.responseJSON.errors).flat().join('\n');
+                debugInfo = "Laravel Validation Rule Failed";
+            } else if (xhr.responseJSON.error) {
+                // Our Custom PHP Exception
+                errorMsg = xhr.responseJSON.error;
+                debugInfo = `File: ${xhr.responseJSON.file}\nLine: ${xhr.responseJSON.line}`;
+            } else if (xhr.responseJSON.message) {
+                errorMsg = xhr.responseJSON.message;
+            }
+        } else {
+            errorMsg = xhr.responseText;
+        }
 
-                if (res.validation) {
-                    renderServerValidationChecklist(res.validation);
-                }
-            })
-            .fail(function(xhr) {
-                let errorMsg = 'An error occurred while saving.';
-                
-                if (xhr.responseJSON) {
-                    if (xhr.responseJSON.message) {
-                        errorMsg = xhr.responseJSON.message;
-                    } else if (xhr.responseJSON.error) {
-                        errorMsg = xhr.responseJSON.error;
-                    } else if (xhr.responseJSON.errors) {
-                        errorMsg = Object.values(xhr.responseJSON.errors).flat().join('\n');
+        console.error(`====== ${context} FAILED ======`);
+        console.error("Message:", errorMsg);
+        if (debugInfo) console.error("Debug:", debugInfo);
+        console.error("=================================");
+
+        return errorMsg;
+    }
+
+    if (isDraft) {
+        // Save Draft (AJAX)
+        $('#saveDraftBtn').click(function() {
+            let btn = $(this);
+            btn.html('<i class="fa fa-spinner fa-spin"></i> Saving...');
+            
+            $.post('{{ route("storeops.documents.draft", ["type" => $type, "id" => $document->id]) }}', $('#workspaceForm').serialize())
+                .done(function(res) {
+                    btn.html('<i class="fa fa-check text-green"></i> Saved');
+                    setTimeout(() => btn.html('<i class="fa fa-save"></i> Save Draft'), 2000);
+
+                    if (res.validation) {
+                        renderServerValidationChecklist(res.validation);
                     }
-                } else if (xhr.responseText) {
-                    errorMsg = xhr.responseText;
-                }
+                })
+                .fail(function(xhr) {
+                    let msg = logAndAlertError(xhr, "MANUAL SAVE");
+                    alert('Error saving draft:\n' + msg);
+                    btn.html('<i class="fa fa-save"></i> Save Draft');
+                });
+        });
 
-                console.error('Save Draft Failed:', xhr);
-                alert('Error saving draft:\n' + errorMsg);
-                btn.html('<i class="fa fa-save"></i> Save Draft');
-            });
-    });
+        // Trigger Posting Preview Modal
+        $('#triggerPostBtn').click(function() {
+            $.post('{{ route("storeops.documents.draft", ["type" => $type, "id" => $document->id]) }}', $('#workspaceForm').serialize())
+                .done(function() {
+                    $.get('{{ route("storeops.documents.preview", ["type" => $type, "id" => $document->id]) }}')
+                        .done(function(data) {
+                            $('#previewLines').text(data.lines);
+                            $('#previewQty').text(data.total_qty);
+                            $('#previewValue').text(data.total_value);
+                            $('#previewRef').text(data.reference);
+                            $('#postingModal').modal('show');
+                        });
+                })
+                .fail(function(xhr) {
+                    let msg = logAndAlertError(xhr, "PRE-POST SAVE");
+                    alert('Cannot proceed to posting due to a save error:\n' + msg);
+                });
+        });
 
-    // Trigger Posting Preview Modal
-    $('#triggerPostBtn').click(function() {
-        $.post('{{ route("storeops.documents.draft", ["type" => $type, "id" => $document->id]) }}', $('#workspaceForm').serialize())
-            .done(function() {
-                $.get('{{ route("storeops.documents.preview", ["type" => $type, "id" => $document->id]) }}')
-                    .done(function(data) {
-                        $('#previewLines').text(data.lines);
-                        $('#previewQty').text(data.total_qty);
-                        $('#previewValue').text(data.total_value);
-                        $('#previewRef').text(data.reference);
-                        $('#postingModal').modal('show');
+        // Live Debounced Auto-Validation on Field Edits (600ms delay)
+        let liveValidationTimer = null;
+        $('#workspaceForm').on('input change', 'input, select', function() {
+            if (isBootstrapping) return; 
+            
+            clearTimeout(liveValidationTimer);
+            liveValidationTimer = setTimeout(function() {
+                $.post('{{ route("storeops.documents.draft", ["type" => $type, "id" => $document->id]) }}', $('#workspaceForm').serialize())
+                    .done(function(res) {
+                        if (res.validation) {
+                            renderServerValidationChecklist(res.validation);
+                        }
+                    })
+                    .fail(function(xhr) {
+                        logAndAlertError(xhr, "AUTO-SAVE");
                     });
-            })
-            .fail(function() {
-                alert('Please fill all required fields before posting.');
-            });
-    });
+            }, 600);
+        });
+    }
 
     // File Upload Handler (Phase 5)
     $('#uploadFileBtn').click(function() {
@@ -330,104 +373,35 @@ $(document).ready(function() {
         });
     });
 
-    // --- 2. THE DYNAMIC AUTO-SAVE LISTENER ---
-    // Listens for input changes, but ignores them if the page is currently bootstrapping
-   // --- ADVANCED ERROR LOGGER ---
-    function logAndAlertError(xhr, context) {
-        let errorMsg = 'Unknown Error';
-        let debugInfo = '';
-
-        if (xhr.responseJSON) {
-            if (xhr.responseJSON.errors) {
-                // Laravel Validation Error
-                errorMsg = Object.values(xhr.responseJSON.errors).flat().join('\n');
-                debugInfo = "Laravel Validation Rule Failed";
-            } else if (xhr.responseJSON.error) {
-                // Our Custom PHP Exception
-                errorMsg = xhr.responseJSON.error;
-                debugInfo = `File: ${xhr.responseJSON.file}\nLine: ${xhr.responseJSON.line}`;
-            } else if (xhr.responseJSON.message) {
-                errorMsg = xhr.responseJSON.message;
-            }
-        } else {
-            errorMsg = xhr.responseText;
-        }
-
-        console.error(`====== ${context} FAILED ======`);
-        console.error("Message:", errorMsg);
-        if (debugInfo) console.error("Debug:", debugInfo);
-        console.error("=================================");
-
-        return errorMsg;
+    // --- 3. PAGE INITIALIZATION ENGINE ---
+    if (existingItems && existingItems.length > 0) {
+        existingItems.forEach(item => addRow(item));
+    } else if (isDraft) {
+        addRow();
     }
-
-    // --- 2. THE DYNAMIC AUTO-SAVE LISTENER ---
-    let liveValidationTimer = null;
-    $('#workspaceForm').on('input change', 'input, select', function() {
-        if (isBootstrapping) return; 
-        
-        clearTimeout(liveValidationTimer);
-        liveValidationTimer = setTimeout(function() {
-            $.post('{{ route("storeops.documents.draft", ["type" => $type, "id" => $document->id]) }}', $('#workspaceForm').serialize())
-                .done(function(res) {
-                    if (res.validation) renderServerValidationChecklist(res.validation);
-                })
-                .fail(function(xhr) {
-                    logAndAlertError(xhr, "AUTO-SAVE");
-                });
-        }, 600);
-    });
-
-    // Save Draft Button
-    $('#saveDraftBtn').click(function() {
-        let btn = $(this);
-        btn.html('<i class="fa fa-spinner fa-spin"></i> Saving...');
-        
-        $.post('{{ route("storeops.documents.draft", ["type" => $type, "id" => $document->id]) }}', $('#workspaceForm').serialize())
-            .done(function(res) {
-                btn.html('<i class="fa fa-check text-green"></i> Saved');
-                setTimeout(() => btn.html('<i class="fa fa-save"></i> Save Draft'), 2000);
-                if (res.validation) renderServerValidationChecklist(res.validation);
-            })
-            .fail(function(xhr) {
-                let msg = logAndAlertError(xhr, "MANUAL SAVE");
-                alert('Error saving draft:\n' + msg);
-                btn.html('<i class="fa fa-save"></i> Save Draft');
-            });
-    });
-
-    // Trigger Posting Preview Modal
-    $('#triggerPostBtn').click(function() {
-        $.post('{{ route("storeops.documents.draft", ["type" => $type, "id" => $document->id]) }}', $('#workspaceForm').serialize())
-            .done(function() {
-                $.get('{{ route("storeops.documents.preview", ["type" => $type, "id" => $document->id]) }}')
-                    .done(function(data) {
-                        $('#previewLines').text(data.lines);
-                        $('#previewQty').text(data.total_qty);
-                        $('#previewValue').text(data.total_value);
-                        $('#previewRef').text(data.reference);
-                        $('#postingModal').modal('show');
-                    });
-            })
-            .fail(function(xhr) {
-                let msg = logAndAlertError(xhr, "PRE-POST SAVE");
-                alert('Cannot proceed to posting due to a save error:\n' + msg);
-            });
-    });
-
-    // Bootstrapping Initial Save
+    
+    // Release the bootstrapping lock once rendering completes
     setTimeout(function() {
         isBootstrapping = false;
+        
+        // FIXED: Exit early and never fire silent saves on load if the document is posted (locked)
+        if (!isDraft) {
+            return; 
+        }
+
+        // Run an initial silent save to populate the checklist on clean load
         $.post('{{ route("storeops.documents.draft", ["type" => $type, "id" => $document->id]) }}', $('#workspaceForm').serialize())
             .done(function(res) {
-                if (res.validation) renderServerValidationChecklist(res.validation);
+                if (res.validation) {
+                    renderServerValidationChecklist(res.validation);
+                }
             })
             .fail(function(xhr) {
                 logAndAlertError(xhr, "INITIAL SILENT SAVE");
             });
-    }, 1000);
+    }, 1000); 
 
-      // =========================================================================
+    // =========================================================================
     // PROGRAMME TRACKING ENGINE (HANDSHAKES A1 & A2)
     // =========================================================================
     let trackingCodeTimer = null;
@@ -524,12 +498,14 @@ $(document).ready(function() {
     }
 
     // Bind A2 Evaluation to Grid Changes
-    $('#gridBody').on('input', '.qty-input, .item-select', function() {
-        let code = $('#tracking_code_input').val().trim();
-        if (code.length >= 2 && !$('#saveDraftBtn').is(':disabled')) {
-            evaluateGridItems(code);
-        }
-    });
+    if (isDraft) {
+        $('#gridBody').on('input', '.qty-input, .item-select', function() {
+            let code = $('#tracking_code_input').val().trim();
+            if (code.length >= 2 && !$('#saveDraftBtn').is(':disabled')) {
+                evaluateGridItems(code);
+            }
+        });
+    }
 
     // Run verification on initial load if code exists
     if ($('#tracking_code_input').val().trim().length >= 2) {
