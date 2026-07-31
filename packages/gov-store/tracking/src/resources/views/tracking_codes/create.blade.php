@@ -52,6 +52,33 @@
         if (document.querySelector('input[name="participant_override"]')) {
             toggleParticipantSelect();
         }
+
+        // --- FIXED (Defensive Row-Adder): Only runs if the Level 2 panel is active ---
+        const body = document.getElementById("targets-body");
+        if (body) {
+            // Dynamically calculate the starting index to support pre-populations
+            let targetIndex = body.querySelectorAll('tr').length;
+            const firstSelect = document.querySelector('.target-category-select');
+            const optionsHtml = firstSelect ? firstSelect.innerHTML : '';
+
+            document.getElementById("add-target-row").addEventListener("click", function() {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td><select name="targets[${targetIndex}][category_id]" class="form-control target-category-select" required>${optionsHtml}</select></td>
+                    <td><input type="number" name="targets[${targetIndex}][planned_qty]" class="form-control target-qty-input" min="1" required></td>
+                    <td><input type="text" name="targets[${targetIndex}][economic_code]" class="form-control" placeholder="e.g. 4112202"></td>
+                    <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fa fa-trash"></i></button></td>
+                `;
+                body.appendChild(tr);
+                targetIndex++;
+            });
+
+            body.addEventListener("click", function(e) {
+                if(e.target.closest(".remove-row")) {
+                    e.target.closest("tr").remove();
+                }
+            });
+        }
     });
 
     function toggleSpecificityPanels() {

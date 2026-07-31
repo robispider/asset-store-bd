@@ -64,7 +64,7 @@ class PostingPipelineManager
                 }
 
                 // ========================================================================
-                // HANDSHAKE B: THE UNIFIED EVENT DISPATCHER
+                // HANDSHAKE B: THE UNIFIED EVENT DISPATCHER (Corrected Signature v3)
                 // ========================================================================
                 // Triggers synchronously if the Tracking Package is installed & code exists
                 if (!empty($trackingCode) && class_exists('\GovStore\Tracking\Events\InventoryMaterializedAgainstProgramme')) {
@@ -72,7 +72,10 @@ class PostingPipelineManager
                     // A. Resolve core category ID dynamically
                     $categoryId = $this->resolveCategoryId($item->product_type, $item->product_id);
 
-                    // B. Resolve Associatables (Polymorphic array of generated Asset IDs)
+                    // B. Resolve specific Model and Manufacturer IDs dynamically from Snipe-IT
+                    [$modelId, $manufacturerId] = $this->resolveModelAndManufacturer($item->product_type, $item->product_id);
+
+                    // C. Resolve Associatables (Polymorphic array of generated Asset IDs)
                     $associatables = [];
                     $registeredAssets = DB::table('gov_asset_registrations')
                         ->where('intake_item_id', $item->id)
@@ -86,15 +89,26 @@ class PostingPipelineManager
                         ];
                     }
 
-                    // C. Dispatch the strict event contract
+                    // D. Calculate the Total Financial Cost for budget depletion tracking
+                    $totalCost = (float) ($item->quantity * ($item->unit_cost ?? 0.0));
+
+                    // E. Safely resolve Supplier ID dynamically if it exists, or fallback to type-safe 0
+                    $supplierId = isset($document->supplier_id) ? (int) $document->supplier_id : 0;
+
+                    // F. Dispatch the event with the exact 12-argument constructor signature
                     event(new \GovStore\Tracking\Events\InventoryMaterializedAgainstProgramme(
-                        $trackingCode,
-                        $categoryId,
-                        $document->location_id,
-                        $item->quantity,
-                        $userId,
-                        $voucherNo,
-                        $associatables
+                        $trackingCode,     // Argument #1: (string)
+                        $categoryId,       // Argument #2: (int)
+                        $modelId,          // Argument #3: (int)
+                        $manufacturerId,   // Argument #4: (int)
+                        $document->location_id, // Argument #5: (int)
+                        $item->quantity,   // Argument #6: (int)
+                        $totalCost,        // Argument #7: (float)
+                        $supplierId,       // Argument #8: (int)
+                        $userId,           // Argument #9: (int - actorId)
+                        $voucherNo,        // Argument #10: (string)
+                        $associatables,    // Argument #11: (array)
+                        null               // Argument #12: (string|null)
                     ));
                 }
             }
@@ -126,5 +140,35 @@ class PostingPipelineManager
         }
         
         return 0;
+    }
+
+    /**
+     * Resiliently extracts the Model ID and Manufacturer ID dynamically from core tables.
+     */
+    protected function resolveModelAndManufacturer(string $productType, int $productId): array
+    {
+        $basename = strtolower(class_basename($productType));
+        $modelId = 0;
+        $manufacturerId = 0;
+
+        if (in_array($basename, ['assetmodel', 'asset_model'])) {
+            $modelId = $productId;
+            $manufacturerId = DB::table('models')->where('id', $productId)->value('manufacturer_id') ?? 0;
+        } else {
+            // For Consumables, Accessories, Components
+            $modelClass = Relation::getMorphedModel($productType) ?? $productType;
+            if (class_exists($modelClass)) {
+                $table = (new $modelClass)->getTable();
+                $modelId = $productId;
+                
+                try {
+                    $manufacturerId = DB::table($table)->where('id', $productId)->value('manufacturer_id') ?? 0;
+                } catch (\Exception $e) {
+                    $manufacturerId = 0;
+                }
+            }
+        }
+
+        return [$modelId, $manufacturerId];
     }
 }
