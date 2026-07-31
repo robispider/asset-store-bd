@@ -17,6 +17,7 @@ class CapabilityRegistry
         'require_warranty' => \GovStore\StoreOperations\Capabilities\RequireWarrantyCapability::class,
         'post_inventory'   => \GovStore\StoreOperations\Capabilities\PostInventoryCapability::class,
         'create_assets'    => \GovStore\StoreOperations\Capabilities\CreateAssetsCapability::class,
+        'require_programme_tracking' => \GovStore\StoreOperations\Capabilities\RequireProgrammeTrackingCapability::class,
     ];
 
     /**
@@ -48,6 +49,11 @@ class CapabilityRegistry
             'name'  => 'Create Physical Assets',
             'group' => 'Execution Automation',
             'desc'  => 'Instantiates physical, serialized assets natively inside Snipe-IT. Automatically links generated Asset Tags and Serial Numbers back to the origin Goods Receipt Document.'
+        ],
+        'require_programme_tracking' => [
+            'name'  => 'Programme Tracking Validation',
+            'group' => 'Information Requirements',
+            'desc'  => 'Validates GRN items against centralized Programme Tracking goals (e.g. ADP budgets). Blocks unauthorized locations and flags target overages.'
         ],
     ];
 

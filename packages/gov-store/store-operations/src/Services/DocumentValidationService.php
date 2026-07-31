@@ -4,21 +4,58 @@ namespace GovStore\StoreOperations\Services;
 
 use GovStore\StoreOperations\Models\Document;
 use GovStore\StoreOperations\DTOs\CompiledProfile;
+use Illuminate\Support\Facades\Http;
 use Exception;
 
 class DocumentValidationService
 {
     /**
      * Loops through all line items, resolves their assigned capabilities, 
-     * and executes their native validate() methods with complete type safety.
+     * executes native validations, and runs strict server-side Tracking Verification.
      */
     public function validateDocument(Document $document, array $requestData): array
     {
         $errors = [];
+
+        // --- 1. SERVER-SIDE TRACKING ENGINE GUARD (HANDSHAKE A1 ENFORCEMENT) ---
+        // Prevents JS bypass of scope boundaries before materialization
+        $allocationRef = $document->references()->where('reference_type', 'Special Allocation')->first();
+        $trackingCode = $allocationRef ? $allocationRef->reference_number : null;
+
+        if (!empty($trackingCode)) {
+            try {
+                // Determine the correct host dynamically for local dev vs production environments
+                $host = request()->getSchemeAndHttpHost();
+                $apiUrl = $host . '/gov-store/api/tracking/verify-code';
+
+                $response = Http::timeout(5)->get($apiUrl, [
+                    'code'        => $trackingCode,
+                    'location_id' => $document->location_id
+                ]);
+
+                if ($response->successful()) {
+                    $trackingData = $response->json();
+                    
+                    if (isset($trackingData['can_proceed']) && $trackingData['can_proceed'] === false) {
+                        $msg = $trackingData['messages'][0] ?? 'Tracking Code scope validation failed.';
+                        $errors['Administrative Reference'][] = ["BLOCKED: {$msg}"];
+                    }
+                } elseif ($response->status() !== 404) {
+                    // Ignore 404s (meaning tracking package isn't installed), 
+                    // but flag 500s or timeouts as operational risks.
+                    $errors['Administrative Reference'][] = ["WARNING: Tracking engine unreachable. Cannot verify scope."];
+                }
+            } catch (\Exception $e) {
+                // Fail open gracefully if the network loopback fails entirely
+                \Illuminate\Support\Facades\Log::warning("GovStore Tracking Handshake A1 Guard Failed: " . $e->getMessage());
+            }
+        }
+
+        // --- 2. CAPABILITY METADATA VALIDATION ---
         $snapshot = $document->getCompiledProfileSnapshot() ?? [];
 
         if (empty($snapshot)) {
-            return [];
+            return $errors;
         }
 
         $profile = new CompiledProfile($snapshot);
@@ -81,7 +118,6 @@ class DocumentValidationService
         $satisfiedRequirements = 0;
 
         // --- 1. EVALUATE POLYMORPHIC REFERENCES ---
-        // We now check the polymorphic references array instead of static header columns
         $totalRequirements++;
         $hasChallanOrNothi = $document->references()
             ->whereIn('reference_type', ['Supplier Challan', 'Nothi / Approval Letter', 'Purchase Order'])
@@ -91,7 +127,6 @@ class DocumentValidationService
             $satisfiedRequirements++;
         }
         $checklist[] = ['label' => 'Valid Administrative Reference (Challan / Nothi)', 'passed' => $hasChallanOrNothi];
-
 
         // --- 2. EVALUATE ITEM-LEVEL QUANTITY & CAPABILITIES ---
         $snapshot = $document->getCompiledProfileSnapshot() ?? [];
@@ -122,7 +157,6 @@ class DocumentValidationService
                 $capability = CapabilityRegistry::make($realCode);
                 $requirements = $capability->getRequirements($realConfig);
 
-                // FIXED: Support both simple strings and array-based requirements
                 if (!is_array($requirements) || empty($requirements)) {
                     continue;
                 }
@@ -130,7 +164,6 @@ class DocumentValidationService
                 foreach ($requirements as $req) {
                     $totalRequirements++;
                     
-                    // Requirements can be strings ('serial_number') or arrays (['key' => 'warranty_months'])
                     $reqKey = is_array($req) ? $req['key'] : $req;
                     
                     $filledCount = $item->metadata()
@@ -139,7 +172,6 @@ class DocumentValidationService
                         ->where('value', '!=', '')
                         ->count();
 
-                    // If quantity is 5, we need 5 serial numbers. (Single inputs like Destination Location only require 1)
                     $requiredInputCount = in_array($reqKey, ['serial_number', 'warranty_months']) ? $item->quantity : 1;
                     
                     $isSatisfied = ($filledCount >= $requiredInputCount && $item->quantity > 0);

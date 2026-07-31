@@ -86,15 +86,24 @@
                             </div>
                         </div>
 
-                        <!-- 4. Special Ministry Allocation -->
-                        <div class="col-md-6">
+
+                        <!-- 4. Special Ministry Allocation (Always visible, purely optional) -->
+                        <div class="col-md-6" id="tracking_allocation_container">
                             <div class="form-group" style="background: #fdfae8; padding: 15px; border: 1px solid #fef08a; border-radius: 6px;">
-                                <label style="color: #854d0e; font-size: 13px;"><i class="fa fa-star text-yellow" style="margin-right: 5px;"></i> Special Project / Allocation Code</label>
+                                <label style="color: #854d0e; font-size: 13px;">
+                                    <i class="fa fa-star text-yellow" style="margin-right: 5px;"></i> Special Project / Tracking Code
+                                    <small style="font-weight:normal; color:#b45309; margin-left:5px;">(Optional)</small>
+                                </label>
                                 <div style="display: flex; gap: 10px; margin-top: 5px;">
                                     <input type="hidden" name="references[3][reference_type]" value="Special Allocation">
-                                    <input type="text" name="references[3][reference_number]" class="form-control input-sm" placeholder="Tracking Code (Optional)" value="{{ $allocation->reference_number ?? '' }}" {{ $isPosted ? 'readonly' : '' }} style="border-color: #fde047;">
-                                    <input type="date" name="references[3][reference_date]" class="form-control input-sm" style="max-width: 140px; border-color: #fde047;" value="{{ $allocation->reference_date ?? '' }}" {{ $isPosted ? 'readonly' : '' }} title="Optional Date">
+                                    
+                                    <!-- Tracking Code Input (Takes up full width now) -->
+                                    <input type="text" id="tracking_code_input" name="references[3][reference_number]" class="form-control input-sm" placeholder="e.g. ict-adp-300" value="{{ $allocation->reference_number ?? '' }}" {{ $isPosted ? 'readonly' : '' }} style="border-color: #fde047;">
+                                    
+                                    <!-- FIXED: Removed the unnecessary date input field here -->
                                 </div>
+                                <!-- HANDSHAKE A1 FEEDBACK CONTAINER -->
+                                <div id="tracking_a1_feedback"></div>
                             </div>
                         </div>
                     </div>

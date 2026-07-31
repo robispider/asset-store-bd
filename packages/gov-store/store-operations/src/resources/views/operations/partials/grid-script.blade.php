@@ -1,5 +1,12 @@
 <script>
 $(document).ready(function() {
+   
+  // ---  GLOBAL AJAX SETUP FOR CSRF ---
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
     let rowCount = 0;
     const isDraft = {{ $isDraft ? 'true' : 'false' }};
     const mathDirection = '{{ $mathDirection }}';
@@ -325,43 +332,208 @@ $(document).ready(function() {
 
     // --- 2. THE DYNAMIC AUTO-SAVE LISTENER ---
     // Listens for input changes, but ignores them if the page is currently bootstrapping
+   // --- ADVANCED ERROR LOGGER ---
+    function logAndAlertError(xhr, context) {
+        let errorMsg = 'Unknown Error';
+        let debugInfo = '';
+
+        if (xhr.responseJSON) {
+            if (xhr.responseJSON.errors) {
+                // Laravel Validation Error
+                errorMsg = Object.values(xhr.responseJSON.errors).flat().join('\n');
+                debugInfo = "Laravel Validation Rule Failed";
+            } else if (xhr.responseJSON.error) {
+                // Our Custom PHP Exception
+                errorMsg = xhr.responseJSON.error;
+                debugInfo = `File: ${xhr.responseJSON.file}\nLine: ${xhr.responseJSON.line}`;
+            } else if (xhr.responseJSON.message) {
+                errorMsg = xhr.responseJSON.message;
+            }
+        } else {
+            errorMsg = xhr.responseText;
+        }
+
+        console.error(`====== ${context} FAILED ======`);
+        console.error("Message:", errorMsg);
+        if (debugInfo) console.error("Debug:", debugInfo);
+        console.error("=================================");
+
+        return errorMsg;
+    }
+
+    // --- 2. THE DYNAMIC AUTO-SAVE LISTENER ---
     let liveValidationTimer = null;
     $('#workspaceForm').on('input change', 'input, select', function() {
-        if (isBootstrapping) {
-            return; // Exit immediately if loading existing items!
-        }
+        if (isBootstrapping) return; 
         
         clearTimeout(liveValidationTimer);
-        
         liveValidationTimer = setTimeout(function() {
             $.post('{{ route("storeops.documents.draft", ["type" => $type, "id" => $document->id]) }}', $('#workspaceForm').serialize())
                 .done(function(res) {
-                    if (res.validation) {
-                        renderServerValidationChecklist(res.validation);
-                    }
+                    if (res.validation) renderServerValidationChecklist(res.validation);
+                })
+                .fail(function(xhr) {
+                    logAndAlertError(xhr, "AUTO-SAVE");
                 });
         }, 600);
     });
 
-    // --- 3. PAGE INITIALIZATION ENGINE ---
-    // Safe bootstrapping sequence with explicit lock releasing
-    if (existingItems && existingItems.length > 0) {
-        existingItems.forEach(item => addRow(item));
-    } else if (isDraft) {
-        addRow();
-    }
-    
-    // Release the bootstrapping lock once rendering completes
-    setTimeout(function() {
-        isBootstrapping = false;
+    // Save Draft Button
+    $('#saveDraftBtn').click(function() {
+        let btn = $(this);
+        btn.html('<i class="fa fa-spinner fa-spin"></i> Saving...');
         
-        // Run an initial silent save to populate the checklist on clean load
         $.post('{{ route("storeops.documents.draft", ["type" => $type, "id" => $document->id]) }}', $('#workspaceForm').serialize())
             .done(function(res) {
-                if (res.validation) {
-                    renderServerValidationChecklist(res.validation);
+                btn.html('<i class="fa fa-check text-green"></i> Saved');
+                setTimeout(() => btn.html('<i class="fa fa-save"></i> Save Draft'), 2000);
+                if (res.validation) renderServerValidationChecklist(res.validation);
+            })
+            .fail(function(xhr) {
+                let msg = logAndAlertError(xhr, "MANUAL SAVE");
+                alert('Error saving draft:\n' + msg);
+                btn.html('<i class="fa fa-save"></i> Save Draft');
+            });
+    });
+
+    // Trigger Posting Preview Modal
+    $('#triggerPostBtn').click(function() {
+        $.post('{{ route("storeops.documents.draft", ["type" => $type, "id" => $document->id]) }}', $('#workspaceForm').serialize())
+            .done(function() {
+                $.get('{{ route("storeops.documents.preview", ["type" => $type, "id" => $document->id]) }}')
+                    .done(function(data) {
+                        $('#previewLines').text(data.lines);
+                        $('#previewQty').text(data.total_qty);
+                        $('#previewValue').text(data.total_value);
+                        $('#previewRef').text(data.reference);
+                        $('#postingModal').modal('show');
+                    });
+            })
+            .fail(function(xhr) {
+                let msg = logAndAlertError(xhr, "PRE-POST SAVE");
+                alert('Cannot proceed to posting due to a save error:\n' + msg);
+            });
+    });
+
+    // Bootstrapping Initial Save
+    setTimeout(function() {
+        isBootstrapping = false;
+        $.post('{{ route("storeops.documents.draft", ["type" => $type, "id" => $document->id]) }}', $('#workspaceForm').serialize())
+            .done(function(res) {
+                if (res.validation) renderServerValidationChecklist(res.validation);
+            })
+            .fail(function(xhr) {
+                logAndAlertError(xhr, "INITIAL SILENT SAVE");
+            });
+    }, 1000);
+
+      // =========================================================================
+    // PROGRAMME TRACKING ENGINE (HANDSHAKES A1 & A2)
+    // =========================================================================
+    let trackingCodeTimer = null;
+    const userLocationId = '{{ $document->location_id ?? auth()->user()->location_id ?? 1 }}';
+
+    // HANDSHAKE A1: Header-Level Scope Verification
+    $('#tracking_code_input').on('input change', function() {
+        clearTimeout(trackingCodeTimer);
+        let code = $(this).val().trim();
+        let $feedback = $('#tracking_a1_feedback');
+
+        if (code.length < 2) {
+            $feedback.empty();
+            $('#saveDraftBtn, #triggerPostBtn').removeAttr('disabled');
+            $('.tracking-advisory-banner').remove(); // Clear item warnings
+            return;
+        }
+
+        trackingCodeTimer = setTimeout(function() {
+            $feedback.html('<div style="margin-top:10px; font-size: 12px; color: #854d0e;"><i class="fa fa-spinner fa-spin"></i> Verifying tracking code...</div>');
+
+            $.ajax({
+                url: '/gov-store/api/tracking/verify-code',
+                type: 'GET',
+                data: {
+                    code: code,
+                    location_id: userLocationId
+                },
+                success: function(res) {
+                    if (res.can_proceed === false) {
+                        // HARD BLOCK: Location out of scope
+                        $feedback.html(`<div style="margin-top:10px; padding: 10px; background: #fee2e2; border: 1px solid #ef4444; border-radius: 4px; color: #991b1b; font-size: 12.5px;"><i class="fa fa-ban"></i> <strong>BLOCKED:</strong> ${res.messages[0]}</div>`);
+                        $('#saveDraftBtn, #triggerPostBtn').attr('disabled', 'disabled');
+                    } else {
+                        // APPROVED: Clear to proceed
+                        $feedback.html(`<div style="margin-top:10px; padding: 10px; background: #d1fae5; border: 1px solid #10b981; border-radius: 4px; color: #065f46; font-size: 12.5px;"><i class="fa fa-check-circle"></i> <strong>VERIFIED:</strong> ${res.context.initiative}</div>`);
+                        $('#saveDraftBtn, #triggerPostBtn').removeAttr('disabled');
+                        
+                        // Trigger Line-Item Evaluations
+                        evaluateGridItems(code);
+                    }
+                },
+                error: function(xhr) {
+                    // Graceful Degradation: If 404 (not installed) or 401 (auth mismatch), fail open.
+                    if(xhr.status !== 404 && xhr.status !== 401) {
+                        $feedback.html(`<div style="margin-top:10px; padding: 10px; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 4px; color: #b45309; font-size: 12.5px;"><i class="fa fa-warning"></i> Tracking Engine unreachable. Proceed with caution.</div>`);
+                    } else {
+                        $feedback.empty();
+                    }
+                    $('#saveDraftBtn, #triggerPostBtn').removeAttr('disabled');
                 }
             });
-    }, 1000); 
+        }, 600);
+    });
+
+    // HANDSHAKE A2: Line-Item Level Evaluation (Advisory)
+    function evaluateGridItems(code) {
+        $('.item-row').each(function() {
+            let $row = $(this);
+            let rawVal = $row.find('.item-select').val();
+            let qty = parseInt($row.find('.qty-input').val()) || 0;
+            let index = $row.data('index');
+
+            if (!rawVal || !rawVal.includes('_') || qty <= 0) return;
+
+            let parts = rawVal.split('_');
+            let productType = parts[0];
+            let productId = parts[1];
+
+            $(`#tracking_warning_${index}`).remove();
+
+            $.ajax({
+                url: '/gov-store/api/tracking/evaluate',
+                type: 'GET',
+                data: {
+                    code: code,
+                    location_id: userLocationId,
+                    product_type: productType,
+                    product_id: productId,
+                    qty: qty
+                },
+                success: function(res) {
+                    if (res.messages && res.messages.length > 0) {
+                        let color = res.context.specificity_level === '3_MATRIX' ? '#f97316' : '#eab308';
+                        let bg = res.context.specificity_level === '3_MATRIX' ? '#ffedd5' : '#fef9c3';
+
+                        let banner = `<div id="tracking_warning_${index}" class="tracking-advisory-banner" style="background: ${bg}; border-left: 4px solid ${color}; padding: 8px 12px; margin-top: 8px; font-size: 12px; color: #78350f; border-radius: 0 4px 4px 0;"><i class="fa fa-warning"></i> ${res.messages[0]}</div>`;
+
+                        $row.find('.item-select').parent().append(banner);
+                    }
+                }
+            });
+        });
+    }
+
+    // Bind A2 Evaluation to Grid Changes
+    $('#gridBody').on('input', '.qty-input, .item-select', function() {
+        let code = $('#tracking_code_input').val().trim();
+        if (code.length >= 2 && !$('#saveDraftBtn').is(':disabled')) {
+            evaluateGridItems(code);
+        }
+    });
+
+    // Run verification on initial load if code exists
+    if ($('#tracking_code_input').val().trim().length >= 2) {
+        $('#tracking_code_input').trigger('change');
+    }
 });
 </script>

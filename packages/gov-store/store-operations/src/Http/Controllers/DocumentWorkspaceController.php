@@ -126,21 +126,26 @@ class DocumentWorkspaceController extends Controller
     /**
      * Save the Document Draft (Now with Polymorphic References)
      */
+    /**
+     * Save the Document Draft (Fully Atomic & Thread-Safe)
+     */
     public function saveDraft(Request $request, string $type, string $id)
     {
         $document = Document::findOrFail($id);
-        
-        // 1. We no longer pull reference_no/date here, only purchase_type
         $headerData = $request->only(['purchase_type']);
         $rawLines = [];
 
         foreach ($request->input('items', []) as $rowId => $item) {
-            if (isset($item['id']) && str_contains($item['id'], '_')) {
+            if (empty($item['id'])) {
+                continue;
+            }
+
+            if (str_contains($item['id'], '_')) {
                 [$rawType, $productId] = explode('_', $item['id']);
                 $shortType = strtolower(class_basename($rawType));
             } else {
                 $shortType = 'consumable';
-                $productId = $item['id'] ?? 0;
+                $productId = $item['id'];
             }
 
             $rawLines[] = [
@@ -152,72 +157,78 @@ class DocumentWorkspaceController extends Controller
         }
 
         try {
-            // 2. Delegate base save for header and items
-            match($type) {
-                'receipt' => $this->receiptService->saveDraft($headerData, $rawLines, auth()->id(), $document),
-                'issue'   => $this->issueService->saveDraft($headerData, $rawLines, auth()->id(), $document),
-            };
+            // ENTIRE SAVE PROCESS WRAPPED IN ATOMIC TRANSACTION TO PREVENT AJAX RACE CONDITIONS
+            \Illuminate\Support\Facades\DB::transaction(function () use ($type, $headerData, $rawLines, $request, $document) {
+                
+                // 1. Save Items (This natively wipes old items and old metadata via Cascade)
+                match($type) {
+                    'receipt' => $this->receiptService->saveDraft($headerData, $rawLines, auth()->id(), $document),
+                    'issue'   => $this->issueService->saveDraft($headerData, $rawLines, auth()->id(), $document),
+                };
 
-            // 3. Persist custom metadata fields for line items
-            foreach ($request->input('items', []) as $rowId => $item) {
-                if (isset($item['id']) && str_contains($item['id'], '_')) {
-                    [$rawType, $productId] = explode('_', $item['id']);
-                    $shortType = strtolower(class_basename($rawType));
-                } else {
-                    $shortType = 'consumable';
-                    $productId = $item['id'] ?? 0;
-                }
+                // 2. Persist custom metadata fields
+                foreach ($request->input('items', []) as $rowId => $item) {
+                    if (empty($item['id'])) {
+                        continue;
+                    }
 
-                $dbItem = $document->items()
-                    ->where('product_type', $shortType)
-                    ->where('product_id', $productId)
-                    ->first();
+                    if (str_contains($item['id'], '_')) {
+                        [$rawType, $productId] = explode('_', $item['id']);
+                        $shortType = strtolower(class_basename($rawType));
+                    } else {
+                        $shortType = 'consumable';
+                        $productId = $item['id'];
+                    }
 
-                if ($dbItem && isset($item['meta'])) {
-                    $dbItem->metadata()->delete();
+                    $dbItem = $document->items()
+                        ->where('product_type', $shortType)
+                        ->where('product_id', $productId)
+                        ->first();
 
-                    foreach ($item['meta'] as $rowIndex => $meta) {
-                        foreach ($meta as $fieldKey => $value) {
-                            if ($value === null || $value === '') {
-                                continue;
+                    if ($dbItem && isset($item['meta'])) {
+                        // Note: We DO NOT call $dbItem->metadata()->delete() here anymore.
+                        // It was automatically wiped when the item was recreated above.
+                        
+                        foreach ($item['meta'] as $rowIndex => $meta) {
+                            foreach ($meta as $fieldKey => $value) {
+                                if ($value === null || $value === '') {
+                                    continue;
+                                }
+
+                                $dbItem->metadata()->create([
+                                    'field_key' => $fieldKey,
+                                    'value'     => $value,
+                                    'row_index' => $rowIndex
+                                ]);
                             }
-
-                            $dbItem->metadata()->create([
-                                'field_key' => $fieldKey,
-                                'value'     => $value,
-                                'row_index' => $rowIndex
-                            ]);
                         }
                     }
                 }
-            }
 
-            // 4. NEW: Sync Polymorphic Administrative References
-            $document->references()->delete(); // Wipe old for clean sync
-            $references = $request->input('references', []);
-            
-            foreach ($references as $ref) {
-                // Only save if a number is actually provided
-                if (!empty($ref['reference_number'])) {
-                    $document->references()->create([
-                        'reference_type'   => $ref['reference_type'] ?? 'Challan',
-                        'reference_number' => $ref['reference_number'],
-                        'reference_date'   => $ref['reference_date'] ?? null,
-                    ]);
+                // 3. Sync Administrative References
+                $document->references()->delete(); 
+                $references = $request->input('references', []);
+                
+                foreach ($references as $ref) {
+                    if (!empty($ref['reference_number'])) {
+                        $refDate = !empty($ref['reference_date']) ? $ref['reference_date'] : null;
+
+                        $document->references()->create([
+                            'reference_type'   => $ref['reference_type'] ?? 'Challan',
+                            'reference_number' => $ref['reference_number'],
+                            'reference_date'   => $refDate,
+                        ]);
+                    }
                 }
-            }
+            }); // <-- End Transaction
 
             $document->refresh();
 
-            // 5. Evaluate checklist details
+            // Evaluate checklist details dynamically
             try {
                 $validation = $this->validationService->evaluateDocument($document);
             } catch (\Throwable $e) {
-                throw new \Error(
-                    "DEBUG CRASH: " . $e->getMessage() . 
-                    " in " . $e->getFile() . " on line " . $e->getLine() . 
-                    " | DB Snapshot: " . json_encode($document->compiled_profile_snapshot)
-                );
+                throw new \Error("DEBUG CRASH: " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine());
             }
 
             if ($request->ajax()) {
@@ -230,7 +241,12 @@ class DocumentWorkspaceController extends Controller
             return back()->with('success', 'Draft saved.');
         } catch (\Exception $e) {
             if ($request->ajax()) {
-                return response()->json(['error' => $e->getMessage()], 422);
+                return response()->json([
+                    'error' => $e->getMessage(),
+                    'file'  => $e->getFile(),
+                    'line'  => $e->getLine(),
+                    'trace' => $e->getTraceAsString()
+                ], 422);
             }
             return back()->with('error', $e->getMessage());
         }

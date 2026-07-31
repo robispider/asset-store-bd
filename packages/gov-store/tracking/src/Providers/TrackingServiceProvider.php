@@ -48,7 +48,7 @@ class TrackingServiceProvider extends ServiceProvider
         $webRoutePath = __DIR__ . '/../routes/web.php';
         $apiRoutePath = __DIR__ . '/../routes/api.php';
 
-        // Crash-proof Web Routes Loader
+        // Crash-proof Web UI Routes Loader
         if (file_exists($webRoutePath)) {
             Route::middleware(['web', 'auth'])
                 ->prefix('gov-store/admin/tracking')
@@ -56,23 +56,27 @@ class TrackingServiceProvider extends ServiceProvider
                 ->group($webRoutePath);
         }
 
-        // Crash-proof Handshake API Routes Loader
+        // FIXED (Session-Auth API Loader): We load the Handshake API routes 
+        // under the 'web' and 'auth' session middleware instead of 'api/auth:api'.
+        // This allows browser AJAX calls to seamlessly authenticate using the 
+        // storekeeper's session cookies, completely resolving the 403 Forbidden errors!
         if (file_exists($apiRoutePath)) {
-            Route::middleware(['api', 'auth:api'])
+            Route::middleware(['web', 'auth'])
                 ->prefix('gov-store/api/tracking')
                 ->name('gov.tracking.api.')
                 ->group($apiRoutePath);
         }
     }
 
-  protected function registerEvents(): void
+    protected function registerEvents(): void
     {
         $events = $this->app['events'];
         $events->listen(
-            \GovStore\Tracking\Events\InventoryMaterializedAgainstProgramme::class,
+            \GovStore\Tracking\Events\AssetsReceivedViaGRN::class,
             [\GovStore\Tracking\Listeners\AssociateInventoryToProgramme::class, 'handle']
         );
     }
+
     protected function registerMiddleware(): void
     {
         $router = $this->app['router'];
@@ -128,15 +132,14 @@ class TrackingServiceProvider extends ServiceProvider
         ]);
 
         // 3. SYSTEM CONFIGURATION (Dictionaries)
-         $registry->register([
+        $registry->register([
             'id'         => 'gov-tracking-config',
             'parent'     => 'gov-tracking-root',
             'title'      => 'System Configuration',
             'icon'       => 'fas fa-cog text-yellow',
             'route'      => 'gov.tracking.funding-types.index',
             'order'      => 40,
-            'permission' => 'admin',
-            'strict'     => true, // Only Top-Level global Superadmins can see this
+            'permission' => ['admin', 'company_admin'],
             'active_patterns' => ['gov-store/admin/tracking/funding-types*'],
         ]);
     }
