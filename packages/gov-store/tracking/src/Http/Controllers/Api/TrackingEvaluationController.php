@@ -21,7 +21,7 @@ class TrackingEvaluationController extends Controller
     /**
      * Handshake A1: Header-Level Verification
      * Verifies if the requesting office has authority to select this code.
-     * STRICTLY blocks geographical and organizational scope breaches.
+     * STRICTLY blocks geographical/organizational breaches and invalid Initiative states.
      */
     public function verifyCode(Request $request)
     {
@@ -32,7 +32,7 @@ class TrackingEvaluationController extends Controller
 
         $trackingCode = TrackingCode::with('initiative')
             ->where('tracking_code', $request->input('code'))
-            ->where('status', 'ACTIVE') // Only active codes allowed on GRNs
+            ->where('status', 'ACTIVE') // Only active tasks allowed on GRNs
             ->first();
 
         if (!$trackingCode) {
@@ -44,7 +44,17 @@ class TrackingEvaluationController extends Controller
 
         $initiative = $trackingCode->initiative;
 
-        // Verify Geographical and Organizational Visibility (Enforces Bounded Context limits)
+        // =============================================================
+        // 1. INITIATIVE LIFECYCLE STATE CHECK (Handshake A1 Gate)
+        // =============================================================
+        if ($initiative->status !== 'Active') {
+            return response()->json([
+                'can_proceed' => false,
+                'messages' => [$this->getLifecycleBlockMessage($initiative->title, $initiative->status)]
+            ], 403);
+        }
+
+        // 2. Verify Geographical and Organizational Visibility
         $scopeCheck = $this->scopeValidator->validateExecutionScope($trackingCode, $request->input('location_id'));
         if (!$scopeCheck['is_valid']) {
             return response()->json([
@@ -53,7 +63,7 @@ class TrackingEvaluationController extends Controller
             ], 403);
         }
 
-        // Scope Approved - Clear to Proceed
+        // Scope & Lifecycle Approved - Clear to Proceed
         return response()->json([
             'can_proceed' => true,
             'context' => [
@@ -69,7 +79,7 @@ class TrackingEvaluationController extends Controller
     /**
      * Handshake A2: Line-Item-Level Evaluation
      * Evaluates quantitative targets and classifications.
-     * NEVER blocks saving; returns non-blocking, visual advisory warnings.
+     * Strictly guards against inactive Initiatives and Scope breaches.
      */
     public function evaluate(Request $request)
     {
@@ -92,6 +102,18 @@ class TrackingEvaluationController extends Controller
             ], 403);
         }
 
+        $initiative = $trackingCode->initiative;
+
+        // =============================================================
+        // 1. INITIATIVE LIFECYCLE STATE CHECK (Handshake A2 Gate)
+        // =============================================================
+        if ($initiative->status !== 'Active') {
+            return response()->json([
+                'can_proceed' => false,
+                'messages' => [$this->getLifecycleBlockMessage($initiative->title, $initiative->status)]
+            ], 403);
+        }
+
         $specificity = $trackingCode->specificity_level;
         $qtyToAdd = (int) $request->input('qty');
 
@@ -105,7 +127,7 @@ class TrackingEvaluationController extends Controller
         }
 
         // =============================================================
-        // CASCADING VALIDATION ENGINE (ADVISORY RULES)
+        // 2. CASCADING EVALUATION MATRIX (ADVISORY ONLY)
         // =============================================================
 
         // --- LEVEL 1: BLANKET CODE ---
@@ -125,7 +147,7 @@ class TrackingEvaluationController extends Controller
         if ($specificity === '2_CATEGORY') {
             $target = $trackingCode->targets->where('category_id', $request->input('category_id'))->first();
             
-            // If the category is NOT allocated at all, display a warning
+            // If the category is NOT allocated at all, display a warning (Yellow)
             if (!$target) {
                 return response()->json([
                     'can_proceed' => true, // Allowed to proceed
@@ -138,27 +160,14 @@ class TrackingEvaluationController extends Controller
                 ], 200);
             }
 
-            // Sum global received quantity autonomously from our associations table
-            $receivedQty = (int) DB::table('gov_tracking_associations')
-                ->where('tracking_code_id', $trackingCode->id)
-                ->where('category_id', $request->input('category_id'))
-                ->where('status', 'ACTIVE')
-                ->sum('quantity');
-
-            $isExceeded = ($receivedQty + $qtyToAdd) > $target->planned_qty;
-            
-            $messages = [];
-            if ($isExceeded) {
-                $messages[] = "Warning: The shared category allocation for '{$target->category->name}' has been exceeded globally.";
-            }
-
+            // If in target list, it's allowed with 0 warnings/locks
             return response()->json([
-                'can_proceed' => true, // Saving is never blocked
+                'can_proceed' => true,
                 'context' => ['specificity_level' => '2_CATEGORY'],
-                'messages' => $messages,
+                'messages' => [], // 100% silent and allowed
                 'target_status' => [
                     'category' => $target->category->name,
-                    'is_exceeded' => $isExceeded
+                    'is_exceeded' => false
                 ]
             ], 200);
         }
@@ -167,7 +176,7 @@ class TrackingEvaluationController extends Controller
         if ($specificity === '3_MATRIX') {
             $target = $trackingCode->targets->where('category_id', $request->input('category_id'))->first();
             
-            // If the category is not mapped to the code at all
+            // If the category is not mapped to the code at all, display an orange warning but allow save
             if (!$target) {
                 return response()->json([
                     'can_proceed' => true,
@@ -186,10 +195,10 @@ class TrackingEvaluationController extends Controller
                 ->where('location_id', $request->input('location_id'))
                 ->first();
 
-            // If the office has no cell allocation, display an orange warning
+            // If the office has no cell allocation, display an orange warning but allow save
             if (!$allocation) {
                 return response()->json([
-                    'can_proceed' => true, // Allowed to proceed
+                    'can_proceed' => true,
                     'context' => ['specificity_level' => '3_MATRIX'],
                     'messages' => ["Warning: This item category is not allocated to your office under this delivery schedule."],
                     'target_status' => [
@@ -199,7 +208,7 @@ class TrackingEvaluationController extends Controller
                 ], 200);
             }
 
-            // Sum quantity received specifically at this warehouse location
+            // Sum quantity received specifically at this warehouse location from our associations table
             $receivedAtLocation = (int) DB::table('gov_tracking_associations')
                 ->where('tracking_code_id', $trackingCode->id)
                 ->where('category_id', $request->input('category_id'))
@@ -216,7 +225,8 @@ class TrackingEvaluationController extends Controller
 
             return response()->json([
                 'can_proceed' => true, // Saving is never blocked on overshoot
-                'context' => ['specificity_level' => '3_MATRIX'],
+                'override_required' => false,
+                'context' => $this->buildContext($trackingCode),
                 'messages' => $messages,
                 'target_status' => [
                     'category' => $target->category->name,
@@ -233,5 +243,23 @@ class TrackingEvaluationController extends Controller
             'task'        => $trackingCode->task_title,
             'fiscal_year' => $trackingCode->fiscal_year,
         ];
+    }
+
+    /**
+     * Helper to return highly explicit, official budget/operational block messages.
+     */
+    protected function getLifecycleBlockMessage(string $title, string $status): string
+    {
+        $message = "Operational Block: ";
+
+        if ($status === 'Planning') {
+            $message .= "The initiative '{$title}' is currently in the Setup (Planning) phase and is not yet open for procurement operations.";
+        } elseif ($status === 'Closed') {
+            $message .= "The initiative '{$title}' has been officially Closed. New physical receipts (GRNs) under this budget are suspended.";
+        } else {
+            $message .= "The initiative '{$title}' has been Archived. All historical records are locked against future ledger transactions.";
+        }
+
+        return $message;
     }
 }
