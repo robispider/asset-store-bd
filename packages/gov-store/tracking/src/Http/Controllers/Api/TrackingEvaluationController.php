@@ -18,6 +18,59 @@ class TrackingEvaluationController extends Controller
         $this->scopeValidator = $scopeValidator;
     }
 
+    /**
+     * Handshake A1: Header-Level Verification
+     * Verifies if the requesting office has authority to select this code.
+     * STRICTLY blocks geographical and organizational scope breaches.
+     */
+    public function verifyCode(Request $request)
+    {
+        $request->validate([
+            'code'        => 'required|string',
+            'location_id' => 'required|integer|exists:locations,id',
+        ]);
+
+        $trackingCode = TrackingCode::with('initiative')
+            ->where('tracking_code', $request->input('code'))
+            ->where('status', 'ACTIVE') // Only active codes allowed on GRNs
+            ->first();
+
+        if (!$trackingCode) {
+            return response()->json([
+                'can_proceed' => false,
+                'messages' => ['Invalid or Inactive Tracking Code. Selection blocked.']
+            ], 403);
+        }
+
+        $initiative = $trackingCode->initiative;
+
+        // Verify Geographical and Organizational Visibility (Enforces Bounded Context limits)
+        $scopeCheck = $this->scopeValidator->validateExecutionScope($trackingCode, $request->input('location_id'));
+        if (!$scopeCheck['is_valid']) {
+            return response()->json([
+                'can_proceed' => false,
+                'messages' => [$scopeCheck['message']]
+            ], 403);
+        }
+
+        // Scope Approved - Clear to Proceed
+        return response()->json([
+            'can_proceed' => true,
+            'context' => [
+                'initiative'        => $initiative->title,
+                'task'              => $trackingCode->task_title,
+                'fiscal_year'       => $trackingCode->fiscal_year,
+                'specificity_level' => $trackingCode->specificity_level,
+            ],
+            'messages' => []
+        ], 200);
+    }
+
+    /**
+     * Handshake A2: Line-Item-Level Evaluation
+     * Evaluates quantitative targets and classifications.
+     * NEVER blocks saving; returns non-blocking, visual advisory warnings.
+     */
     public function evaluate(Request $request)
     {
         $request->validate([
@@ -27,44 +80,39 @@ class TrackingEvaluationController extends Controller
             'qty'         => 'required|integer|min:1',
         ]);
 
-        $trackingCode = TrackingCode::with(['initiative', 'targets.category'])
+        $trackingCode = TrackingCode::with(['initiative', 'targets'])
             ->where('tracking_code', $request->input('code'))
-            ->where('status', 'ACTIVE') // Only active codes allowed on GRNs
+            ->where('status', 'ACTIVE')
             ->first();
 
         if (!$trackingCode) {
             return response()->json([
                 'can_proceed' => false,
-                'override_required' => false,
-                'messages' => ['Invalid or Inactive Tracking Code. This code is not authorized for operations.']
-            ], 404);
+                'messages' => ['Invalid or Inactive Tracking Code.']
+            ], 403);
         }
 
-        $initiative = $trackingCode->initiative;
         $specificity = $trackingCode->specificity_level;
         $qtyToAdd = (int) $request->input('qty');
 
-        // 1. Validate Scopes (Geography and Participants)
+        // Double check Scope on line items (Strict security guard)
         $scopeCheck = $this->scopeValidator->validateExecutionScope($trackingCode, $request->input('location_id'));
         if (!$scopeCheck['is_valid']) {
             return response()->json([
                 'can_proceed' => false,
-                'override_required' => false, // Hard block on scope breaches
-                'context' => $this->buildContext($trackingCode),
                 'messages' => [$scopeCheck['message']],
             ], 403);
         }
 
-        // =====================================================================
-        // 2. CASCADING EVALUATION MATRIX
-        // =====================================================================
-        
+        // =============================================================
+        // CASCADING VALIDATION ENGINE (ADVISORY RULES)
+        // =============================================================
+
         // --- LEVEL 1: BLANKET CODE ---
         if ($specificity === '1_BLANKET') {
             return response()->json([
                 'can_proceed' => true,
-                'override_required' => false,
-                'context' => $this->buildContext($trackingCode),
+                'context' => ['specificity_level' => '1_BLANKET'],
                 'messages' => [],
                 'target_status' => [
                     'category' => 'Any Component (Blanket Mode)',
@@ -77,15 +125,20 @@ class TrackingEvaluationController extends Controller
         if ($specificity === '2_CATEGORY') {
             $target = $trackingCode->targets->where('category_id', $request->input('category_id'))->first();
             
+            // If the category is NOT allocated at all, display a warning
             if (!$target) {
                 return response()->json([
-                    'can_proceed' => false,
-                    'override_required' => false,
-                    'messages' => ["This Tracking Code does not authorize the procurement of this item category."]
-                ], 403);
+                    'can_proceed' => true, // Allowed to proceed
+                    'context' => ['specificity_level' => '2_CATEGORY'],
+                    'messages' => ["Warning: This item category is not in the allocated planning targets."],
+                    'target_status' => [
+                        'category' => 'Unallocated Category',
+                        'is_exceeded' => true
+                    ]
+                ], 200);
             }
 
-            // Sum global received quantity
+            // Sum global received quantity autonomously from our associations table
             $receivedQty = (int) DB::table('gov_tracking_associations')
                 ->where('tracking_code_id', $trackingCode->id)
                 ->where('category_id', $request->input('category_id'))
@@ -94,17 +147,14 @@ class TrackingEvaluationController extends Controller
 
             $isExceeded = ($receivedQty + $qtyToAdd) > $target->planned_qty;
             
-            // OPERATIONAL EXCEPTION RULE: Level 2 never forces overshoot block/override.
-            // Only returns silent warnings in the messages array.
             $messages = [];
             if ($isExceeded) {
-                $messages[] = "Operational Notice: The shared category allocation for '{$target->category->name}' has been exceeded globally.";
+                $messages[] = "Warning: The shared category allocation for '{$target->category->name}' has been exceeded globally.";
             }
 
             return response()->json([
-                'can_proceed' => true, // Always allowed
-                'override_required' => false, // Never force lockouts on Level 2
-                'context' => $this->buildContext($trackingCode),
+                'can_proceed' => true, // Saving is never blocked
+                'context' => ['specificity_level' => '2_CATEGORY'],
                 'messages' => $messages,
                 'target_status' => [
                     'category' => $target->category->name,
@@ -117,29 +167,39 @@ class TrackingEvaluationController extends Controller
         if ($specificity === '3_MATRIX') {
             $target = $trackingCode->targets->where('category_id', $request->input('category_id'))->first();
             
+            // If the category is not mapped to the code at all
             if (!$target) {
                 return response()->json([
-                    'can_proceed' => false,
-                    'override_required' => false,
-                    'messages' => ["This Tracking Code does not authorize this item category."]
-                ], 403);
+                    'can_proceed' => true,
+                    'context' => ['specificity_level' => '3_MATRIX'],
+                    'messages' => ["Warning: This item category is not allocated to your office under this delivery schedule."],
+                    'target_status' => [
+                        'category' => 'Unallocated Category',
+                        'is_exceeded' => true
+                    ]
+                ], 200);
             }
 
-            // Verify if an allocation cell exists specifically for this warehouse location
+            // Check if an allocation cell exists for this specific location
             $allocation = DB::table('gov_tracking_allocations')
                 ->where('target_id', $target->id)
                 ->where('location_id', $request->input('location_id'))
                 ->first();
 
+            // If the office has no cell allocation, display an orange warning
             if (!$allocation) {
                 return response()->json([
-                    'can_proceed' => false,
-                    'override_required' => false,
-                    'messages' => ["This warehouse is not authorized to receive items under this specific delivery matrix."]
-                ], 403);
+                    'can_proceed' => true, // Allowed to proceed
+                    'context' => ['specificity_level' => '3_MATRIX'],
+                    'messages' => ["Warning: This item category is not allocated to your office under this delivery schedule."],
+                    'target_status' => [
+                        'category' => $target->category->name,
+                        'is_exceeded' => true
+                    ]
+                ], 200);
             }
 
-            // Sum quantity received *specifically* at this location
+            // Sum quantity received specifically at this warehouse location
             $receivedAtLocation = (int) DB::table('gov_tracking_associations')
                 ->where('tracking_code_id', $trackingCode->id)
                 ->where('category_id', $request->input('category_id'))
@@ -149,24 +209,14 @@ class TrackingEvaluationController extends Controller
 
             $isExceeded = ($receivedAtLocation + $qtyToAdd) > $allocation->allocated_qty;
             
-            $canProceed = true;
-            $overrideRequired = false;
             $messages = [];
-
             if ($isExceeded) {
-                if ($initiative->allow_overshoot) {
-                    $messages[] = "Location allocation exceeded (Advisory Warning).";
-                } else {
-                    $canProceed = false;
-                    $overrideRequired = true;
-                    $messages[] = "Location allocation limit of {$allocation->allocated_qty} reached. Authorized override justification required.";
-                }
+                $messages[] = "Warning: Your office has exceeded its specific delivery allocation of {$allocation->allocated_qty} units for {$target->category->name}.";
             }
 
             return response()->json([
-                'can_proceed' => $canProceed,
-                'override_required' => $overrideRequired,
-                'context' => $this->buildContext($trackingCode),
+                'can_proceed' => true, // Saving is never blocked on overshoot
+                'context' => ['specificity_level' => '3_MATRIX'],
                 'messages' => $messages,
                 'target_status' => [
                     'category' => $target->category->name,
@@ -183,18 +233,5 @@ class TrackingEvaluationController extends Controller
             'task'        => $trackingCode->task_title,
             'fiscal_year' => $trackingCode->fiscal_year,
         ];
-    }
-    public function checkUniqueness(Request $request)
-    {
-        $request->validate([
-            'code' => 'required|string|max:100'
-        ]);
-
-        // Returns true if the code does NOT exist in the database (meaning it is available)
-        $exists = TrackingCode::where('tracking_code', $request->input('code'))->exists();
-
-        return response()->json([
-            'is_unique' => !$exists
-        ], 200);
     }
 }

@@ -13,7 +13,7 @@
                 $table.find('tbody').empty();
                 $table.find('tfoot').empty();
 
-                // 1. Header Row (With Draggable Handles)
+                // 1. Header Row (thead) - Contains N + 4 columns
                 var headerHtml = '<tr id="matrix-header-row">';
                 headerHtml += '<th width="320">Office / Warehouse Location</th>';
                 
@@ -39,7 +39,7 @@
                 headerHtml += '</tr>';
                 $table.find('thead').append(headerHtml);
 
-                // 2. Body Rows (With Draggable Handles)
+                // 2. Body Rows (tbody) - Now contains N + 4 columns
                 var bodyHtml = '';
                 state.rows.forEach(function(row, rIndex) {
                     bodyHtml += `<tr data-row-index="${rIndex}" class="matrix-row-container" data-row-uuid="${row.uuid}">`;
@@ -62,6 +62,9 @@
                         `;
                     });
 
+                    // FIXED: Injected missing spacer cell to sit directly underneath the "+ Category" spawner column header
+                    bodyHtml += `<td style="background-color: #f8fafc; border-bottom: 1px solid #e2e8f0;"></td>`;
+
                     bodyHtml += `
                         <td class="row-total-cell text-center text-bold" data-row-uuid="${row.uuid}" style="background-color: #f1f5f9; font-weight: bold; border-right: 2px solid #cbd5e1; line-height: 36px;">0</td>
                         <td class="text-right cell-actions" style="background-color: #f8fafc; padding: 5px 12px; line-height: 26px;">
@@ -72,7 +75,7 @@
                 });
                 $table.find('tbody').append(bodyHtml);
 
-                // 3. Spawner Footers
+                // 3. Spawner Footers (tfoot) - Now contains N + 4 columns
                 var footerHtml = '';
                 footerHtml += '<tr id="matrix-spawner-row">';
                 footerHtml += '<td class="gs-inline-spawner" id="btn-spawn-row" style="text-align: left;"><i class="fa fa-plus"></i> Select Office...</td>';
@@ -86,7 +89,7 @@
                 footerHtml += '<td></td>';
                 footerHtml += '</tr>';
 
-                // Grand Totals Footers
+                // Grand Totals Footers - Now contains N + 4 columns
                 var grandTotal = 0;
                 footerHtml += '<tr id="matrix-footer-row">';
                 footerHtml += '<td>TOTAL ALLOCATIONS</td>';
@@ -94,6 +97,9 @@
                 state.columns.forEach(function(col) {
                     footerHtml += `<td id="total-cat-${col.category_id}" class="col-total-cell text-center text-bold" data-col-uuid="${col.uuid}" style="background-color: #f1f5f9; font-weight: bold; border-top: 2px solid #cbd5e1;">0</td>`;
                 });
+
+                // FIXED: Injected missing spacer cell to sit directly underneath the "+ Category" spawner column footer
+                footerHtml += `<td style="background-color: #f8fafc; border-top: 2px solid #cbd5e1;"></td>`;
 
                 footerHtml += `<td id="matrix-grand-total" style="background-color: #f1f5f9; font-weight: bold; border-right: 2px solid #cbd5e1;">0</td>`;
                 footerHtml += '<td style="background-color: #f8fafc;"></td>';
