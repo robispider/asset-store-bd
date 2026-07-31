@@ -5,7 +5,7 @@ use GovStore\Tracking\Http\Controllers\FundingTypeController;
 use GovStore\Tracking\Http\Controllers\InitiativeController;
 use GovStore\Tracking\Http\Controllers\TrackingCodeController;
 use GovStore\Tracking\Http\Controllers\TrackingRetrospectiveController;
-use GovStore\Tracking\Http\Controllers\Api\TrackingEvaluationController; // Added Import
+use GovStore\Tracking\Http\Controllers\Api\TrackingEvaluationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +18,10 @@ Route::resource('funding-types', FundingTypeController::class)->only(['index', '
 
 // 2. The Umbrella Initiatives
 Route::resource('initiatives', InitiativeController::class);
+
+// Dynamic Executive Progress Report Route
+Route::get('initiatives/{initiative}/report', [InitiativeController::class, 'report'])
+    ->name('initiatives.report');
 
 // 3. Tracking Codes / Tasks (Nested under an Initiative)
 Route::resource('initiatives.tracking-codes', TrackingCodeController::class)->except(['index', 'show']);

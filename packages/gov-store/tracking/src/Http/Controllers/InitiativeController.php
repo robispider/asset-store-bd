@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\Location;
 use GovStore\Tracking\Models\Initiative;
+use GovStore\Tracking\Repositories\TrackingProjectionRepositoryInterface;
 use Illuminate\Http\Request;
 
 class InitiativeController extends Controller
@@ -16,18 +17,18 @@ class InitiativeController extends Controller
         return view('govtracking::initiatives.index', compact('initiatives'));
     }
 
-   
     public function create()
     {
         $companies = Company::all();
-        $user = auth()->user();
         
-        // Explicitly bypass global scopes to ensure admins always get their locations
-        // regardless of the current TenantContext initialization state.
-        $locations = $user->isSuperUser() 
-            ? Location::withoutGlobalScopes()->get() 
-            : Location::withoutGlobalScopes()->where('company_id', $user->company_id)->get();
-            
+        $locations = Location::all();
+        $user = auth()->user();
+        if ($locations->isEmpty() && $user) {
+            $locations = $user->isSuperUser() 
+                ? Location::withoutGlobalScopes()->get() 
+                : Location::withoutGlobalScopes()->where('company_id', $user->company_id)->get();
+        }
+        
         return view('govtracking::initiatives.create', compact('companies', 'locations'));
     }
 
@@ -38,12 +39,8 @@ class InitiativeController extends Controller
             'purpose' => 'nullable|string',
             'status' => 'required|in:Planning,Active,Closed,Archived',
             'primary_funding' => 'required|in:ADP,REVENUE,OTHER',
-            
-            // Governance Rules
             'require_documents' => 'boolean',
             'allow_overshoot' => 'boolean',
-            
-            // Ownership & Management
             'owner_company_id' => 'required|exists:companies,id',
             'manager_location_id' => 'required|exists:locations,id',
         ]);
@@ -56,7 +53,8 @@ class InitiativeController extends Controller
         return redirect()->route('gov.tracking.initiatives.show', $initiative->id)
                          ->with('success', 'Initiative created successfully.');
     }
-public function show(Initiative $initiative)
+
+    public function show(Initiative $initiative)
     {
         $initiative->load(['ownerCompany', 'managingOffice']);
         
@@ -65,28 +63,61 @@ public function show(Initiative $initiative)
             ->orderBy('created_at', 'desc')
             ->get();
             
-        $projectionRepo = app(\GovStore\Tracking\Repositories\TrackingProjectionRepositoryInterface::class);
-        $health = $projectionRepo->getLifecycleSummary($initiative);
-        
-        // --- UPDATED: Dynamic Specificity-Aware Calculation Router ---
-        foreach ($trackingCodes as $code) {
-            if ($code->specificity_level === '3_MATRIX') {
-                // Compile geography-grouped allocation matrices
-                $code->matrixProgress = $projectionRepo->getMatrixProgress($code->id);
-            } else {
-                // Compile standard global category summaries
-                foreach ($code->targets as $target) {
-                    $target->progress = $projectionRepo->getTargetProgress($code->id, $target->category_id);
-                }
-            }
-        }
-            
         $recentActivity = \GovStore\Tracking\Models\TrackingTimeline::with('actor')
             ->where('initiative_id', $initiative->id)
             ->orderBy('occurred_at', 'desc')
             ->limit(20)
             ->get();
         
+        $projectionRepo = app(TrackingProjectionRepositoryInterface::class);
+        $health = $projectionRepo->getLifecycleSummary($initiative);
+        
+        foreach ($trackingCodes as $code) {
+            if ($code->specificity_level === '3_MATRIX') {
+                $code->matrixProgress = $projectionRepo->getMatrixProgress($code->id);
+            } else {
+                foreach ($code->targets as $target) {
+                    $target->progress = $projectionRepo->getTargetProgress($code->id, $target->category_id);
+                }
+            }
+        }
+        
         return view('govtracking::initiatives.workspace', compact('initiative', 'health', 'trackingCodes', 'recentActivity'));
+    }
+
+    /**
+     * NEW: Compiles all analytical, geographical, and fiscal progress indicators
+     * into a unified executive report.
+     */
+    public function report(Initiative $initiative, TrackingProjectionRepositoryInterface $projectionRepo)
+    {
+        $initiative->load(['ownerCompany', 'managingOffice']);
+
+        // 1. Compile overall macro health
+        $health = $projectionRepo->getLifecycleSummary($initiative);
+
+        // 2. Load tracking codes and resolve their micro-progress (both Category-level and Matrix-level)
+        $trackingCodes = \GovStore\Tracking\Models\TrackingCode::with(['targets.category', 'scopes', 'fundingType'])
+            ->where('initiative_id', $initiative->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        foreach ($trackingCodes as $code) {
+            if ($code->specificity_level === '3_MATRIX') {
+                $code->matrixProgress = $projectionRepo->getMatrixProgress($code->id);
+            } else {
+                foreach ($code->targets as $target) {
+                    $target->progress = $projectionRepo->getTargetProgress($code->id, $target->category_id);
+                }
+            }
+        }
+
+        // 3. Load entire chronological history for audits
+        $recentActivity = \GovStore\Tracking\Models\TrackingTimeline::with('actor')
+            ->where('initiative_id', $initiative->id)
+            ->orderBy('occurred_at', 'desc')
+            ->get();
+
+        return view('govtracking::initiatives.report', compact('initiative', 'health', 'trackingCodes', 'recentActivity'));
     }
 }

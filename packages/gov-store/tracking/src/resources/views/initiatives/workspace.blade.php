@@ -18,8 +18,8 @@
                         <h4 class="description-header text-{{ $initiative->status == 'Active' ? 'green' : 'yellow' }}">{{ strtoupper($initiative->status) }}</h4>
                     </div>
                     <div class="col-sm-3 border-right">
-                        <span class="description-text">FUNDING SOURCE</span>
-                        <h4 class="description-header">{{ $initiative->fundingType->name ?? 'N/A' }}</h4>
+                        <span class="description-text">PRIMARY SEGMENT</span>
+                        <h4 class="description-header">{{ $initiative->primary_funding }} Budget</h4>
                     </div>
                     <div class="col-sm-3 border-right">
                         <span class="description-text">OWNING ORGANIZATION</span>
@@ -48,7 +48,10 @@
         </h4>
         <a href="{{ route('gov.tracking.initiatives.tracking-codes.create', $initiative->id) }}" class="btn btn-app"><i class="fa fa-plus text-green"></i> Add Tracking Code / Task</a>
         <a href="{{ route('gov.tracking.initiatives.retrospective.index', $initiative->id) }}" class="btn btn-app"><i class="fa fa-tags text-aqua"></i> Assign Legacy Assets</a>
-        <a href="#" class="btn btn-app"><i class="fa fa-bar-chart text-purple"></i> View Progress Report</a>
+        
+        <!-- FIXED: Wired up the "View Progress Report" action to point to the dynamic report route -->
+        <a href="{{ route('gov.tracking.initiatives.report', $initiative->id) }}" class="btn btn-app"><i class="fa fa-bar-chart text-purple"></i> View Progress Report</a>
+        
         <a href="{{ route('gov.tracking.initiatives.edit', $initiative->id) }}" class="btn btn-app"><i class="fa fa-cog text-gray"></i> Edit Umbrella Rules</a>
     </div>
 </div>
@@ -57,189 +60,173 @@
 <div class="row" style="margin-top: 20px;">
     <!-- Active Tracking Codes (Tasks) -->
     <div class="col-md-8">
-        <!-- Main Workspace Body (Inside workspace.blade.php) -->
-<div class="box box-primary">
-    <div class="box-header with-border">
-        <h3 class="box-title"><i class="fa fa-list"></i> Active Tracking Codes (Tasks & Components)</h3>
-    </div>
-    <div class="box-body" style="padding: 0;">
-        @if($trackingCodes->isEmpty())
-            <div class="alert alert-default text-center text-muted" style="background-color: #f9fafb; margin: 15px; border: 1px dashed #d2d6de;">
-                <h4>No Executable Tasks Yet</h4>
-                <p>This Initiative umbrella is empty. Click "Add Tracking Code / Task" above to define execution goals.</p>
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title"><i class="fa fa-list"></i> Active Tracking Codes (Tasks & Components)</h3>
             </div>
-        @else
-    <ul class="products-list product-list-in-box">
-        @foreach($trackingCodes as $code)
-            <li class="item" style="padding: 15px;">
-                <div class="product-info" style="margin-left: 0;">
-                    <!-- Task Header -->
-                    <span class="product-title text-blue" style="font-size: 16px;">
-                        <strong>Code: {{ $code->tracking_code }}</strong> | {{ $code->task_title }}
-                        
-                        <!-- Status Badge -->
-                        @php
-                            $statusBg = $code->status == 'ACTIVE' ? 'green' : ($code->status == 'DRAFT' ? 'yellow' : 'gray');
-                        @endphp
-                        <span class="label bg-{{ $statusBg }}" style="margin-left: 10px;">{{ $code->status }}</span>
-                        
-                        <!-- Header PDF View -->
-                        @if($code->order_pdf_path)
-                            <a href="{{ route('gov.tracking.tracking-codes.download', $code->id) }}" class="label label-info pull-right" style="margin-left: 5px;"><i class="fa fa-download"></i> View PDF</a>
-                        @endif
-                    </span>
-                    
-                    <!-- Fiscal Profile -->
-                    <span class="product-description" style="margin-top: 5px; color: #555;">
-                        <i class="fa fa-bank text-muted"></i> FY: <strong>{{ $code->fiscal_year }}</strong> | 
-                        Fund Source: <strong>{{ $code->fundingType->name ?? 'N/A' }}</strong> | 
-                        
-                        <!-- Dynamic Scopes Resolution -->
-                        @php
-                            $geoScope = $code->scopes->where('dimension', 'GEOGRAPHY')->first();
-                            $partScope = $code->scopes->where('dimension', 'PARTICIPANTS')->first();
-                            
-                            $geoDisplay = ($geoScope && $geoScope->target_type === 'GeoArea' && class_exists('GovStore\GeoAreas\Models\GeoArea')) 
-                                ? \GovStore\GeoAreas\Models\GeoArea::find($geoScope->target_id)->en_name ?? 'Specific Region' 
-                                : 'Entire Bangladesh';
-                                
-                            $partDisplay = ($partScope && $partScope->target_type === 'CrossTenant') 
-                                ? '<span class="label label-warning" style="font-size:10px;"><i class="fa fa-exchange"></i> Cross-Ministry</span>' 
-                                : ($partScope && $partScope->target_type === 'SpecificLocations' 
-                                    ? '<span class="label label-primary" style="font-size:10px;"><i class="fa fa-map-marker"></i> Specific Warehouses</span>'
-                                    : '<span class="label label-default" style="font-size:10px;">Internal</span>');
-                        @endphp
-                        Coverage: <strong>{{ $geoDisplay }}</strong> {!! $partDisplay !!}
-                    </span>
-                    
-                    <!-- Dynamic Targets / Progress -->
-                    
-                            <!-- =============================================================== -->
-                            <!-- ADAPTIVE SPECIFICITY PROGRESS PRESENTATION -->
-                            <!-- =============================================================== -->
-                            <div style="margin-top: 15px;">
-                                
-                                <!-- LEVEL 1: BLANKET CODE STATE -->
-                                @if($code->specificity_level === '1_BLANKET')
-                                    <div class="callout callout-default" style="background-color: #f4f4f4; border-color: #ddd; margin-bottom: 0;">
-                                        <p><i class="fa fa-info-circle text-blue"></i> <strong>Blanket Allocation:</strong> No item or quantity constraints are enforced. Expenditure logs and received assets are recorded purely for administrative audits.</p>
-                                    </div>
-                                @endif
-
-                                <!-- LEVEL 2: SHARED CATEGORY GOALS STATE -->
-                                @if($code->specificity_level === '2_CATEGORY')
-                                    <div style="padding: 15px; background-color: #f4f4f4; border-radius: 4px; border-left: 4px solid #00c0ef;">
-                                        <h5 style="margin-top: 0; border-bottom: 1px solid #ddd; padding-bottom: 5px;"><strong>Shared Category Goals (Advisory Planning)</strong></h5>
-                                        <div class="row">
-                                            @foreach($code->targets as $target)
-                                                @php
-                                                    $prog = $target->progress ?? ['percentage' => 0, 'is_exceeded' => false, 'received' => 0, 'planned' => $target->planned_qty];
-                                                    $barColor = $prog['is_exceeded'] ? 'progress-bar-yellow' : ($prog['percentage'] >= 100 ? 'progress-bar-success' : 'progress-bar-aqua');
-                                                    $textColor = $prog['is_exceeded'] ? 'text-yellow' : ($prog['percentage'] >= 100 ? 'text-green' : 'text-muted');
-                                                @endphp
-                                                
-                                                <div class="col-sm-6" style="margin-bottom: 10px;">
-                                                    <i class="fa fa-cube text-muted"></i> <strong>{{ $target->category->name }}</strong>
-                                                    @if($target->economic_code)
-                                                        <span class="text-muted text-sm">(Econ: {{ $target->economic_code }})</span>
-                                                    @endif
-                                                    
-                                                    <div class="progress progress-xs" style="margin-top: 5px; margin-bottom: 2px;">
-                                                        <div class="progress-bar {{ $barColor }}" style="width: {{ $prog['percentage'] > 100 ? 100 : $prog['percentage'] }}%"></div>
-                                                    </div>
-                                                    
-                                                    <span class="{{ $textColor }} text-sm">
-                                                        <strong>Progress: {{ number_format($prog['received']) }} / {{ number_format($prog['planned']) }}</strong> 
-                                                        ({{ $prog['percentage'] }}%)
-                                                    </span>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                @endif
-
-                                <!-- LEVEL 3: EXACT DELIVERY MATRIX STATE (Collapsible Geographical Tree) -->
-                                @if($code->specificity_level === '3_MATRIX')
-                                    <div class="panel-group" id="accordion-{{ $code->id }}" style="margin-bottom: 0;">
-                                        <div class="panel panel-default" style="border: 1px solid #ddd; border-left: 4px solid #605ca8; border-radius: 4px;">
-                                            <div class="panel-heading" style="background-color: #f4f4f4;">
-                                                <h4 class="panel-title">
-                                                    <a data-toggle="collapse" data-parent="#accordion-{{ $code->id }}" href="#collapse-{{ $code->id }}" style="display: block; font-weight: bold; color: #555;">
-                                                        <i class="fa fa-map-marker text-purple"></i> View Exact Office Delivery Progress <span class="pull-right"><i class="fa fa-chevron-down"></i></span>
-                                                    </a>
-                                                </h4>
-                                            </div>
-                                            <div id="collapse-{{ $code->id }}" class="panel-collapse collapse">
-                                                <div class="panel-body" style="padding: 15px; background-color: #ffffff;">
-                                                    @forelse($code->matrixProgress ?? [] as $locationId => $data)
-                                                        <div style="margin-bottom: 15px; border-bottom: 1px solid #f4f4f4; padding-bottom: 10px;">
-                                                            <h5 style="margin-top: 0; font-weight: bold;"><i class="fa fa-building text-muted"></i> {{ $data['location_name'] }}</h5>
-                                                            <div class="row">
-                                                                @foreach($data['items'] as $item)
-                                                                    @php
-                                                                        $barColor = $item['is_exceeded'] ? 'progress-bar-yellow' : ($item['percentage'] >= 100 ? 'progress-bar-success' : 'progress-bar-primary');
-                                                                        $textColor = $item['is_exceeded'] ? 'text-yellow' : ($item['percentage'] >= 100 ? 'text-green' : 'text-muted');
-                                                                    @endphp
-                                                                    <div class="col-sm-6" style="margin-bottom: 5px;">
-                                                                        <span class="text-sm"><strong>{{ $item['category_name'] }}</strong></span>
-                                                                        <div class="progress progress-xs" style="margin-top: 3px; margin-bottom: 2px;">
-                                                                            <div class="progress-bar {{ $barColor }}" style="width: {{ $item['percentage'] > 100 ? 100 : $item['percentage'] }}%"></div>
-                                                                        </div>
-                                                                        <span class="{{ $textColor }} text-xs">
-                                                                            <strong>Received: {{ $item['received'] }} / {{ $item['allocated'] }}</strong> ({{ $item['percentage'] }}%)
-                                                                        </span>
-                                                                    </div>
-                                                                @endforeach
-                                                            </div>
-                                                        </div>
-                                                    @empty
-                                                        <p class="text-center text-muted" style="margin-bottom: 0;">No delivery matrix cells are configured.</p>
-                                                    @endforelse
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
-
-                            </div>
-                    
-                    <!-- CONDITIONAL ACTION WORKFLOWS -->
-                    <div style="margin-top: 10px;" class="text-right">
-                        @if($code->status === 'DRAFT')
-                            <!-- DRAFT STATE: ALLOW EDIT & DELETIONS & PROMOTIONS -->
-                            <a href="{{ route('gov.tracking.initiatives.tracking-codes.edit', [$initiative->id, $code->id]) }}" class="btn btn-xs btn-warning" style="margin-right: 5px;"><i class="fa fa-pencil"></i> Edit Properties</a>
-                            
-                            <form action="{{ route('gov.tracking.initiatives.tracking-codes.activate', [$initiative->id, $code->id]) }}" method="POST" style="display:inline-block; margin-right: 5px;">
-                                @csrf
-                                <button type="submit" class="btn btn-xs btn-success" onclick="return confirm('Turn this code ACTIVE? This will lock all targets and allow storekeepers to select it.')"><i class="fa fa-play"></i> Activate & Lock</button>
-                            </form>
-                            
-                            <form action="{{ route('gov.tracking.initiatives.tracking-codes.destroy', [$initiative->id, $code->id]) }}" method="POST" style="display:inline-block;">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-xs btn-danger" onclick="return confirm('Delete this draft code permanently?')"><i class="fa fa-trash"></i> Delete</button>
-                            </form>
-                        @elseif($code->status === 'ACTIVE')
-                            <!-- ACTIVE STATE: ONLY PERMIT ARCHIVING (IMMUTABLE LOCK ACTIVE) -->
-                            <span class="text-muted text-sm pull-left" style="margin-top: 5px;"><i class="fa fa-lock"></i> Ledger locked. Editing disabled.</span>
-                            
-                            <form action="{{ route('gov.tracking.initiatives.tracking-codes.archive', [$initiative->id, $code->id]) }}" method="POST" style="display:inline-block;">
-                                @csrf
-                                <button type="submit" class="btn btn-xs btn-default" onclick="return confirm('Archive this code? Storekeepers will no longer be able to select it in new GRNs.')"><i class="fa fa-archive"></i> Retrospective Archive</button>
-                            </form>
-                        @else
-                            <!-- ARCHIVED STATE: ABSOLUTELY IMMUTABLE -->
-                            <span class="text-muted text-sm" style="display:block; margin-top: 5px;"><i class="fa fa-archive"></i> Task archived. Historical records retained for audits.</span>
-                        @endif
+            <div class="box-body" style="padding: 0;">
+                @if($trackingCodes->isEmpty())
+                    <div class="alert alert-default text-center text-muted" style="background-color: #f9fafb; margin: 15px; border: 1px dashed #d2d6de;">
+                        <h4>No Executable Tasks Yet</h4>
+                        <p>This Initiative umbrella is empty. Click "Add Tracking Code / Task" above to define execution goals.</p>
                     </div>
-                </div>
-            </li>
-        @endforeach
-    </ul>
-@endif
-    </div>
-</div>
+                @else
+                    <ul class="products-list product-list-in-box">
+                        @foreach($trackingCodes as $code)
+                            <li class="item" style="padding: 15px;">
+                                <div class="product-info" style="margin-left: 0;">
+                                    <!-- Task Header -->
+                                    <span class="product-title text-blue" style="font-size: 16px;">
+                                        <strong>Code: {{ $code->tracking_code }}</strong> | {{ $code->task_title }}
+                                        
+                                        @php
+                                            $statusBg = $code->status == 'ACTIVE' ? 'green' : ($code->status == 'DRAFT' ? 'yellow' : 'gray');
+                                        @endphp
+                                        <span class="label bg-{{ $statusBg }}" style="margin-left: 10px;">{{ $code->status }}</span>
+                                        
+                                        @if($code->order_pdf_path)
+                                            <a href="{{ route('gov.tracking.tracking-codes.download', $code->id) }}" class="label label-info pull-right" style="margin-left: 5px;"><i class="fa fa-download"></i> View PDF</a>
+                                        @endif
+                                    </span>
+                                    
+                                    <!-- Fiscal Profile -->
+                                    <span class="product-description" style="margin-top: 5px; color: #555;">
+                                        <i class="fa fa-bank text-muted"></i> FY: <strong>{{ $code->fiscal_year }}</strong> | 
+                                        Fund: <strong>{{ $code->fundingType->name ?? 'N/A' }}</strong> | 
+                                        
+                                        @php
+                                            $geoScope = $code->scopes->where('dimension', 'GEOGRAPHY')->first();
+                                            $partScope = $code->scopes->where('dimension', 'PARTICIPANTS')->first();
+                                            
+                                            $geoDisplay = ($geoScope && $geoScope->target_type === 'GeoArea' && class_exists('GovStore\GeoAreas\Models\GeoArea')) 
+                                                ? \GovStore\GeoAreas\Models\GeoArea::find($geoScope->target_id)->en_name ?? 'Specific Region' 
+                                                : 'Entire Bangladesh';
+                                                
+                                            $partDisplay = ($partScope && $partScope->target_type === 'CrossTenant') 
+                                                ? '<span class="label label-warning" style="font-size:10px;"><i class="fa fa-exchange"></i> Cross-Ministry</span>' 
+                                                : ($partScope && $partScope->target_type === 'SpecificLocations' 
+                                                    ? '<span class="label label-primary" style="font-size:10px;"><i class="fa fa-map-marker"></i> Specific Warehouses</span>'
+                                                    : '<span class="label label-default" style="font-size:10px;">Internal</span>');
+                                        @endphp
+                                        Scope: <strong>{{ $geoDisplay }}</strong> {!! $partDisplay !!}
+                                    </span>
+                                    
+                                    <!-- Adaptive Specificity Progress Bars -->
+                                    <div style="margin-top: 15px;">
+                                        @if($code->specificity_level === '1_BLANKET')
+                                            <div class="callout callout-default" style="background-color: #f4f4f4; border-color: #ddd; margin-bottom: 0;">
+                                                <p><i class="fa fa-info-circle text-blue"></i> <strong>Blanket Allocation:</strong> No item or quantity constraints are enforced. Expenditure logs and received assets are recorded purely for administrative audits.</p>
+                                            </div>
+                                        @endif
+
+                                        @if($code->specificity_level === '2_CATEGORY')
+                                            <div style="padding: 15px; background-color: #f4f4f4; border-radius: 4px; border-left: 4px solid #00c0ef;">
+                                                <h5 style="margin-top: 0; border-bottom: 1px solid #ddd; padding-bottom: 5px;"><strong>Shared Category Goals (Advisory Planning)</strong></h5>
+                                                <div class="row">
+                                                    @foreach($code->targets as $target)
+                                                        @php
+                                                            $prog = $target->progress ?? ['percentage' => 0, 'is_exceeded' => false, 'received' => 0, 'planned' => $target->planned_qty];
+                                                            $barColor = $prog['is_exceeded'] ? 'progress-bar-yellow' : ($prog['percentage'] >= 100 ? 'progress-bar-success' : 'progress-bar-aqua');
+                                                            $textColor = $prog['is_exceeded'] ? 'text-yellow' : ($prog['percentage'] >= 100 ? 'text-green' : 'text-muted');
+                                                        @endphp
+                                                        
+                                                        <div class="col-sm-6" style="margin-bottom: 10px;">
+                                                            <i class="fa fa-cube text-muted"></i> <strong>{{ $target->category->name }}</strong>
+                                                            @if($target->economic_code)
+                                                                <span class="text-muted text-sm">(Econ: {{ $target->economic_code }})</span>
+                                                            @endif
+                                                            
+                                                            <div class="progress progress-xs" style="margin-top: 5px; margin-bottom: 2px;">
+                                                                <div class="progress-bar {{ $barColor }}" style="width: {{ $prog['percentage'] > 100 ? 100 : $prog['percentage'] }}%"></div>
+                                                            </div>
+                                                            
+                                                            <span class="{{ $textColor }} text-sm">
+                                                                <strong>Progress: {{ number_format($prog['received']) }} / {{ number_format($prog['planned']) }}</strong> 
+                                                                ({{ $prog['percentage'] }}%)
+                                                            </span>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        @if($code->specificity_level === '3_MATRIX')
+                                            <div class="panel-group" id="accordion-{{ $code->id }}" style="margin-bottom: 0;">
+                                                <div class="panel panel-default" style="border: 1px solid #ddd; border-left: 4px solid #605ca8; border-radius: 4px;">
+                                                    <div class="panel-heading" style="background-color: #f4f4f4;">
+                                                        <h4 class="panel-title">
+                                                            <a data-toggle="collapse" data-parent="#accordion-{{ $code->id }}" href="#collapse-{{ $code->id }}" style="display: block; font-weight: bold; color: #555;">
+                                                                <i class="fa fa-map-marker text-purple"></i> View Exact Office Delivery Progress <span class="pull-right"><i class="fa fa-chevron-down"></i></span>
+                                                            </a>
+                                                        </h4>
+                                                    </div>
+                                                    <div id="collapse-{{ $code->id }}" class="panel-collapse collapse">
+                                                        <div class="panel-body" style="padding: 15px; background-color: #ffffff;">
+                                                            @forelse($code->matrixProgress ?? [] as $locationId => $data)
+                                                                <div style="margin-bottom: 15px; border-bottom: 1px solid #f4f4f4; padding-bottom: 10px;">
+                                                                    <h5 style="margin-top: 0; font-weight: bold;"><i class="fa fa-building text-muted"></i> {{ $data['location_name'] }}</h5>
+                                                                    <div class="row">
+                                                                        @foreach($data['items'] as $item)
+                                                                            @php
+                                                                                $barColor = $item['is_exceeded'] ? 'progress-bar-yellow' : ($item['percentage'] >= 100 ? 'progress-bar-success' : 'progress-bar-primary');
+                                                                                $textColor = $item['is_exceeded'] ? 'text-yellow' : ($item['percentage'] >= 100 ? 'text-green' : 'text-muted');
+                                                                            @endphp
+                                                                            <div class="col-sm-6" style="margin-bottom: 5px;">
+                                                                                <span class="text-sm"><strong>{{ $item['category_name'] }}</strong></span>
+                                                                                <div class="progress progress-xs" style="margin-top: 3px; margin-bottom: 2px;">
+                                                                                    <div class="progress-bar {{ $barColor }}" style="width: {{ $item['percentage'] > 100 ? 100 : $item['percentage'] }}%"></div>
+                                                                                </div>
+                                                                                <span class="{{ $textColor }} text-xs">
+                                                                                    <strong>Received: {{ $item['received'] }} / {{ $item['allocated'] }}</strong> ({{ $item['percentage'] }}%)
+                                                                                </span>
+                                                                            </div>
+                                                                        @endforeach
+                                                                    </div>
+                                                                </div>
+                                                            @empty
+                                                                <p class="text-center text-muted" style="margin-bottom: 0;">No delivery matrix cells are configured.</p>
+                                                            @endforelse
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <!-- Action Workflows -->
+                                    <div style="margin-top: 10px;" class="text-right">
+                                        @if($code->status === 'DRAFT')
+                                            <a href="{{ route('gov.tracking.initiatives.tracking-codes.edit', [$initiative->id, $code->id]) }}" class="btn btn-xs btn-warning" style="margin-right: 5px;"><i class="fa fa-pencil"></i> Edit Properties</a>
+                                            
+                                            <form action="{{ route('gov.tracking.initiatives.tracking-codes.activate', [$initiative->id, $code->id]) }}" method="POST" style="display:inline-block; margin-right: 5px;">
+                                                @csrf
+                                                <button type="submit" class="btn btn-xs btn-success" onclick="return confirm('Turn this code ACTIVE? This will lock all targets and allow storekeepers to select it.')"><i class="fa fa-play"></i> Activate & Lock</button>
+                                            </form>
+                                            
+                                            <form action="{{ route('gov.tracking.initiatives.tracking-codes.destroy', [$initiative->id, $code->id]) }}" method="POST" style="display:inline-block;">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="btn btn-xs btn-danger" onclick="return confirm('Delete this draft code permanently?')"><i class="fa fa-trash"></i> Delete</button>
+                                            </form>
+                                        @elseif($code->status === 'ACTIVE')
+                                            <span class="text-muted text-sm pull-left" style="margin-top: 5px;"><i class="fa fa-lock"></i> Ledger locked. Editing disabled.</span>
+                                            
+                                            <form action="{{ route('gov.tracking.initiatives.tracking-codes.archive', [$initiative->id, $code->id]) }}" method="POST" style="display:inline-block;">
+                                                @csrf
+                                                <button type="submit" class="btn btn-xs btn-default" onclick="return confirm('Archive this code? Storekeepers will no longer be able to select it in new GRNs.')"><i class="fa fa-archive"></i> Retrospective Archive</button>
+                                            </form>
+                                        @else
+                                            <span class="text-muted text-sm" style="display:block; margin-top: 5px;"><i class="fa fa-archive"></i> Task archived. Historical records retained for audits.</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </div>
+        </div>
         
-        <!-- Issues / Exceptions (Phase 7) -->
+        <!-- Issues / Exceptions -->
         <div class="box box-danger">
             <div class="box-header with-border">
                 <h3 class="box-title text-red"><i class="fa fa-warning"></i> Issues Needing Attention</h3>
@@ -275,7 +262,6 @@
                 <ul class="timeline timeline-inverse" style="margin-bottom: 0;">
                     @forelse($recentActivity as $event)
                         <li>
-                            <!-- Dynamic Icon based on Event Type -->
                             @php
                                 $icon = 'fa-exchange bg-aqua';
                                 if($event->event_type === 'OVERSHOOT_OVERRIDE_LOGGED') $icon = 'fa-warning bg-yellow';
