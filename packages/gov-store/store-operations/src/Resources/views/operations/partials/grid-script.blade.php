@@ -1,19 +1,8 @@
 <script>
 $(document).ready(function() {
-    
-    // --- GLOBAL AJAX SETUP FOR CSRF ---
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-
     let rowCount = 0;
     const isDraft = {{ $isDraft ? 'true' : 'false' }};
     const mathDirection = '{{ $mathDirection }}';
-    
-    // --- 1. THE BOOTSTRAPPING LOCK ---
-    // Silences auto-save triggers until the entire page is stable
     let isBootstrapping = true; 
 
     const compiledSnapshot = @json($document->getCompiledProfileSnapshot() ?? ['items' => []]);
@@ -25,7 +14,7 @@ $(document).ready(function() {
         let currentStockVal = data ? data.current_stock : '-';
 
         let tr = `
-            <tr data-index="${index}" class="item-row">
+            <tr data-index="${index}" class="item-row" data-category-id="${data ? data.category_id : ''}">
                 <td>
                     <select name="items[${index}][id]" class="form-control item-select" required ${disabled}></select>
                 </td>
@@ -54,9 +43,8 @@ $(document).ready(function() {
         let $row = $(`tr[data-index="${index}"]`);
         let $select = $row.find('.item-select');
 
-        // FIXED: Initialize Select2 for both states to prevent render/styling bugs, but disable dynamically
         $select.select2({
-            disabled: !isDraft, // Natively disables Select2 dropdown if document is posted/finalized
+            disabled: !isDraft, 
             ajax: isDraft ? {
                 url: '{{ route("storeops.api.products.search") }}',
                 dataType: 'json',
@@ -79,6 +67,10 @@ $(document).ready(function() {
                 }
 
                 $row.find('.current-stock').text(item.current_stock);
+                
+                // Set the solved Category ID directly onto the row's dataset
+                $row.attr('data-category-id', item.category_id);
+                
                 renderMetadataInputs($row);
             });
         }
@@ -113,7 +105,6 @@ $(document).ready(function() {
         let productType = parts[0];
         let productId = parts[1];
 
-        // Fetch fully compiled, highly interactive server-side layout from PHP
         $.get('{{ route("storeops.documents.render_meta") }}', {
             product_type: productType,
             product_id: productId,
@@ -126,7 +117,6 @@ $(document).ready(function() {
                 $metaRow.removeClass('hidden');
                 $container.append(res.html);
 
-                // If document is posted, lock down all inputs inside the metadata sub-grid
                 if (!isDraft) {
                     $container.find('input, select').attr('disabled', 'disabled');
                 }
@@ -211,11 +201,9 @@ $(document).ready(function() {
 
         if (xhr.responseJSON) {
             if (xhr.responseJSON.errors) {
-                // Laravel Validation Error
                 errorMsg = Object.values(xhr.responseJSON.errors).flat().join('\n');
                 debugInfo = "Laravel Validation Rule Failed";
             } else if (xhr.responseJSON.error) {
-                // Our Custom PHP Exception
                 errorMsg = xhr.responseJSON.error;
                 debugInfo = `File: ${xhr.responseJSON.file}\nLine: ${xhr.responseJSON.line}`;
             } else if (xhr.responseJSON.message) {
@@ -283,9 +271,7 @@ $(document).ready(function() {
             liveValidationTimer = setTimeout(function() {
                 $.post('{{ route("storeops.documents.draft", ["type" => $type, "id" => $document->id]) }}', $('#workspaceForm').serialize())
                     .done(function(res) {
-                        if (res.validation) {
-                            renderServerValidationChecklist(res.validation);
-                        }
+                        if (res.validation) renderServerValidationChecklist(res.validation);
                     })
                     .fail(function(xhr) {
                         logAndAlertError(xhr, "AUTO-SAVE");
@@ -384,7 +370,6 @@ $(document).ready(function() {
     setTimeout(function() {
         isBootstrapping = false;
         
-        // FIXED: Exit early and never fire silent saves on load if the document is posted (locked)
         if (!isDraft) {
             return; 
         }
@@ -400,116 +385,5 @@ $(document).ready(function() {
                 logAndAlertError(xhr, "INITIAL SILENT SAVE");
             });
     }, 1000); 
-
-    // =========================================================================
-    // PROGRAMME TRACKING ENGINE (HANDSHAKES A1 & A2)
-    // =========================================================================
-    let trackingCodeTimer = null;
-    const userLocationId = '{{ $document->location_id ?? auth()->user()->location_id ?? 1 }}';
-
-    // HANDSHAKE A1: Header-Level Scope Verification
-    $('#tracking_code_input').on('input change', function() {
-        clearTimeout(trackingCodeTimer);
-        let code = $(this).val().trim();
-        let $feedback = $('#tracking_a1_feedback');
-
-        if (code.length < 2) {
-            $feedback.empty();
-            $('#saveDraftBtn, #triggerPostBtn').removeAttr('disabled');
-            $('.tracking-advisory-banner').remove(); // Clear item warnings
-            return;
-        }
-
-        trackingCodeTimer = setTimeout(function() {
-            $feedback.html('<div style="margin-top:10px; font-size: 12px; color: #854d0e;"><i class="fa fa-spinner fa-spin"></i> Verifying tracking code...</div>');
-
-            $.ajax({
-                url: '/gov-store/api/tracking/verify-code',
-                type: 'GET',
-                data: {
-                    code: code,
-                    location_id: userLocationId
-                },
-                success: function(res) {
-                    if (res.can_proceed === false) {
-                        // HARD BLOCK: Location out of scope
-                        $feedback.html(`<div style="margin-top:10px; padding: 10px; background: #fee2e2; border: 1px solid #ef4444; border-radius: 4px; color: #991b1b; font-size: 12.5px;"><i class="fa fa-ban"></i> <strong>BLOCKED:</strong> ${res.messages[0]}</div>`);
-                        $('#saveDraftBtn, #triggerPostBtn').attr('disabled', 'disabled');
-                    } else {
-                        // APPROVED: Clear to proceed
-                        $feedback.html(`<div style="margin-top:10px; padding: 10px; background: #d1fae5; border: 1px solid #10b981; border-radius: 4px; color: #065f46; font-size: 12.5px;"><i class="fa fa-check-circle"></i> <strong>VERIFIED:</strong> ${res.context.initiative}</div>`);
-                        $('#saveDraftBtn, #triggerPostBtn').removeAttr('disabled');
-                        
-                        // Trigger Line-Item Evaluations
-                        evaluateGridItems(code);
-                    }
-                },
-                error: function(xhr) {
-                    // Graceful Degradation: If 404 (not installed) or 401 (auth mismatch), fail open.
-                    if(xhr.status !== 404 && xhr.status !== 401) {
-                        $feedback.html(`<div style="margin-top:10px; padding: 10px; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 4px; color: #b45309; font-size: 12.5px;"><i class="fa fa-warning"></i> Tracking Engine unreachable. Proceed with caution.</div>`);
-                    } else {
-                        $feedback.empty();
-                    }
-                    $('#saveDraftBtn, #triggerPostBtn').removeAttr('disabled');
-                }
-            });
-        }, 600);
-    });
-
-    // HANDSHAKE A2: Line-Item Level Evaluation (Advisory)
-    function evaluateGridItems(code) {
-        $('.item-row').each(function() {
-            let $row = $(this);
-            let rawVal = $row.find('.item-select').val();
-            let qty = parseInt($row.find('.qty-input').val()) || 0;
-            let index = $row.data('index');
-
-            if (!rawVal || !rawVal.includes('_') || qty <= 0) return;
-
-            let parts = rawVal.split('_');
-            let productType = parts[0];
-            let productId = parts[1];
-
-            $(`#tracking_warning_${index}`).remove();
-
-            $.ajax({
-                url: '/gov-store/api/tracking/evaluate',
-                type: 'GET',
-                data: {
-                    code: code,
-                    location_id: userLocationId,
-                    product_type: productType,
-                    product_id: productId,
-                    qty: qty
-                },
-                success: function(res) {
-                    if (res.messages && res.messages.length > 0) {
-                        let color = res.context.specificity_level === '3_MATRIX' ? '#f97316' : '#eab308';
-                        let bg = res.context.specificity_level === '3_MATRIX' ? '#ffedd5' : '#fef9c3';
-
-                        let banner = `<div id="tracking_warning_${index}" class="tracking-advisory-banner" style="background: ${bg}; border-left: 4px solid ${color}; padding: 8px 12px; margin-top: 8px; font-size: 12px; color: #78350f; border-radius: 0 4px 4px 0;"><i class="fa fa-warning"></i> ${res.messages[0]}</div>`;
-
-                        $row.find('.item-select').parent().append(banner);
-                    }
-                }
-            });
-        });
-    }
-
-    // Bind A2 Evaluation to Grid Changes
-    if (isDraft) {
-        $('#gridBody').on('input', '.qty-input, .item-select', function() {
-            let code = $('#tracking_code_input').val().trim();
-            if (code.length >= 2 && !$('#saveDraftBtn').is(':disabled')) {
-                evaluateGridItems(code);
-            }
-        });
-    }
-
-    // Run verification on initial load if code exists
-    if ($('#tracking_code_input').val().trim().length >= 2) {
-        $('#tracking_code_input').trigger('change');
-    }
 });
 </script>

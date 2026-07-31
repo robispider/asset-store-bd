@@ -6,6 +6,7 @@ use GovStore\Tracking\Events\AssetsReceivedViaGRN;
 use GovStore\Tracking\Models\TrackingCode;
 use GovStore\Tracking\Models\TrackingAssociation;
 use GovStore\Tracking\Models\TrackingTimeline;
+use App\Models\Asset;
 use Illuminate\Support\Facades\DB;
 
 class AssociateAssetsToProgramme
@@ -16,28 +17,37 @@ class AssociateAssetsToProgramme
         $trackingCode = TrackingCode::where('tracking_code', $event->trackingCodeString)->first();
 
         if (!$trackingCode) {
-            return; // Gracefully ignore if the code somehow doesn't exist.
+            return; 
         }
 
         DB::transaction(function () use ($event, $trackingCode) {
-            // 2. Create the Ledger Associations
             $associationData = [];
             $now = now();
             
+            // 2. Iterate through received assets and dynamically resolve their categories and locations
             foreach ($event->assetIds as $assetId) {
-                $associationData[] = [
-                    'tracking_code_id'  => $trackingCode->id,
-                    'associatable_type' => \App\Models\Asset::class, // Morph to core Snipe-IT Asset
-                    'associatable_id'   => $assetId,
-                    'status'            => 'ACTIVE',
-                    'created_at'        => $now,
-                    'updated_at'        => $now,
-                ];
+                // Fetch the core Snipe-IT asset to read its real-time configurations
+                $asset = Asset::find($assetId);
+                
+                if ($asset) {
+                    $associationData[] = [
+                        'tracking_code_id'  => $trackingCode->id,
+                        'category_id'       => $asset->model->category_id, // Dynamically resolved
+                        'location_id'       => $asset->location_id ?? $trackingCode->initiative->manager_location_id, // Dynamically resolved
+                        'quantity'          => 1,
+                        'associatable_type' => Asset::class,
+                        'associatable_id'   => $assetId,
+                        'status'            => 'ACTIVE',
+                        'created_at'        => $now,
+                        'updated_at'        => $now,
+                    ];
+                }
             }
 
-            // Bulk insert for high-performance GRN operations (e.g., receiving 5,000 items)
-            // Using insertOrIgnore to silently handle potential duplicates
-            TrackingAssociation::insertOrIgnore($associationData);
+            if (!empty($associationData)) {
+                // Save safely using insertOrIgnore
+                TrackingAssociation::insertOrIgnore($associationData);
+            }
 
             // 3. Write to the Activity Timeline (Visible on the Workspace)
             $qty = count($event->assetIds);

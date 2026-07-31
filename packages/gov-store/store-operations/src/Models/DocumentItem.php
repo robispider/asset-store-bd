@@ -14,8 +14,8 @@ class DocumentItem extends Model
 
     protected $fillable = ['document_id', 'product_type', 'product_id', 'quantity', 'unit_cost'];
 
-    // 1. Append flat attributes
-    protected $appends = ['product_name', 'current_stock'];
+    // Added 'category_id' to the automatic JSON serializers
+    protected $appends = ['product_name', 'current_stock', 'category_id'];
 
     public function document()
     {
@@ -27,16 +27,12 @@ class DocumentItem extends Model
         return $this->hasMany(DocumentItemMeta::class, 'document_item_id');
     }
 
-    /**
-     * 2. Rename the polymorphic method to 'product' 
-     * Native Laravel: no parameters needed since it matches product_type/product_id!
-     */
     public function product()
     {
         return $this->morphTo();
     }
 
-    // --- Accessors (Defensively loads the 'product' relation) ---
+    // --- Accessors ---
 
     public function getProductNameAttribute()
     {
@@ -54,5 +50,17 @@ class DocumentItem extends Model
         }
 
         return $this->product ? (int) $this->product->qty : 0;
+    }
+
+    /**
+     * Dynamically resolves the Snipe-IT category ID for the line item.
+     */
+    public function getCategoryIdAttribute()
+    {
+        if (!$this->relationLoaded('product') && $this->product_type && $this->product_type !== '0') {
+            $this->loadMissing('product');
+        }
+
+        return $this->product ? $this->product->category_id : null;
     }
 }

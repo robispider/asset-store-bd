@@ -280,15 +280,25 @@ class DocumentWorkspaceController extends Controller
     /**
      * Unified AJAX Product Search for the Select2 spreadsheet grid.
      */
+    /**
+     * Unified AJAX Product Search (Now passing category_id for Handshake A2)
+     */
     public function searchProducts(Request $request)
     {
         $results = $this->productResolver->search($request->input('q', ''));
         
         $formatted = $results->map(function ($item) {
+            // Resolve the category_id dynamically from the matched Eloquent Class
+            $modelClass = $item['type_raw'];
+            $categoryId = \DB::table((new $modelClass)->getTable())
+                ->where('id', $item['id'])
+                ->value('category_id');
+
             return [
                 'id'            => $item['type_raw'] . '_' . $item['id'], 
                 'text'          => $item['name'] . ' (' . $item['type_label'] . ')',
-                'current_stock' => $item['current_stock']
+                'current_stock' => $item['current_stock'],
+                'category_id'   => $categoryId // Pass to frontend for dynamic GPO evaluations
             ];
         });
 

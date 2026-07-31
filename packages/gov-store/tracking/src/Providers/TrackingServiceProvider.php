@@ -68,15 +68,22 @@ class TrackingServiceProvider extends ServiceProvider
         }
     }
 
-    protected function registerEvents(): void
+  protected function registerEvents(): void
     {
         $events = $this->app['events'];
+
+        // 1. Dynamic, decoupled, polymorphic handler (The Future Standard)
         $events->listen(
-            \GovStore\Tracking\Events\AssetsReceivedViaGRN::class,
+            \GovStore\Tracking\Events\InventoryMaterializedAgainstProgramme::class,
             [\GovStore\Tracking\Listeners\AssociateInventoryToProgramme::class, 'handle']
         );
-    }
 
+        // 2. Backward-compatible assets-only handler (The Current GRN Standard)
+        $events->listen(
+            \GovStore\Tracking\Events\AssetsReceivedViaGRN::class,
+            [\GovStore\Tracking\Listeners\AssociateAssetsToProgramme::class, 'handle']
+        );
+    }
     protected function registerMiddleware(): void
     {
         $router = $this->app['router'];

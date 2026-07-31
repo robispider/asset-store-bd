@@ -291,5 +291,7 @@
 
 @section('moar_scripts')
     @include('storeops::operations.partials.grid-script', ['existingItems' => $document->items, 'isDraft' => $isDraft])
+    @include('storeops::operations.partials.tracking-handshake', ['document' => $document, 'isDraft' => $isDraft])
+
 @endsection
 @endsection
