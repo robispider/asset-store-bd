@@ -96,11 +96,12 @@ class TrackingServiceProvider extends ServiceProvider
         TrackingAssociation::observe(TrackingAssociationObserver::class);
     }
 
-    protected function registerConsoleCommands(): void
+   protected function registerConsoleCommands(): void
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
                 \GovStore\Tracking\Console\Commands\TrackingAuditCommand::class,
+                \GovStore\Tracking\Console\Commands\TrackingRebuildProjectionsCommand::class, // Added Rebuilder Command
             ]);
         }
     }

@@ -2,10 +2,12 @@
 
 namespace GovStore\Tracking\Repositories;
 
+use App\Models\Asset;
 use GovStore\Tracking\Models\Initiative;
 use GovStore\Tracking\Models\TrackingCode;
 use GovStore\Tracking\Models\TrackingTarget;
 use GovStore\Tracking\Models\TrackingAssociation;
+use GovStore\Tracking\Models\TrackingFactDelivery;
 use Illuminate\Support\Facades\DB;
 
 class EloquentTrackingProjectionRepository implements TrackingProjectionRepositoryInterface
@@ -21,7 +23,9 @@ class EloquentTrackingProjectionRepository implements TrackingProjectionReposito
             'percentage' => 0,
         ];
 
+        // Retrieve all Tracking Codes belonging to this Initiative
         $trackingCodeIds = TrackingCode::where('initiative_id', $initiative->id)->pluck('id')->toArray();
+
         if (empty($trackingCodeIds)) {
             return $summary;
         }
@@ -30,17 +34,34 @@ class EloquentTrackingProjectionRepository implements TrackingProjectionReposito
         $planned = (int) TrackingTarget::whereIn('tracking_code_id', $trackingCodeIds)->sum('planned_qty');
         $summary['planned'] = $planned;
 
-        // 2. RECEIVED (Sum of quantity directly from tracking association table)
-        // No external SQL joins on hardware or assets required! This is extremely fast.
-        $received = (int) TrackingAssociation::whereIn('tracking_code_id', $trackingCodeIds)
-            ->where('status', 'ACTIVE')
-            ->sum('quantity');
-
+        // 2. RECEIVED (Sum of received quantities directly from the pre-compiled Fact Table!)
+        // No SQL joins to core assets or hardware tables required.
+        $received = (int) TrackingFactDelivery::whereIn('tracking_code_id', $trackingCodeIds)->sum('received_qty');
         $summary['received'] = $received;
 
-        // Calculate top-level percentage
+        // 3. Overall Progress Percentage
         $percentage = $planned > 0 ? round(($received / $planned) * 100) : 0;
         $summary['percentage'] = $percentage > 100 ? 100 : $percentage;
+
+        // 4. DEPLOYED & DISPOSED (Status tracking evaluated securely using polymorphic links)
+        $associatedAssetIds = TrackingAssociation::whereIn('tracking_code_id', $trackingCodeIds)
+            ->where('associatable_type', Asset::class)
+            ->where('status', 'ACTIVE')
+            ->pluck('associatable_id')
+            ->toArray();
+
+        if (!empty($associatedAssetIds)) {
+            // Retrieve core assets securely using our dynamic table resolver
+            $summary['deployed'] = (int) Asset::whereIn('id', $associatedAssetIds)
+                ->whereNotNull('assigned_to')
+                ->count();
+
+            $summary['disposed'] = (int) Asset::whereIn('id', $associatedAssetIds)
+                ->whereHas('assetstatus', function ($query) {
+                    $query->where('archived', 1);
+                })
+                ->count();
+        }
 
         return $summary;
     }
@@ -58,11 +79,10 @@ class EloquentTrackingProjectionRepository implements TrackingProjectionReposito
 
         $planned = $target->planned_qty;
 
-        // Query our own associations table, summing quantity directly!
-        $received = (int) TrackingAssociation::where('tracking_code_id', $trackingCodeId)
+        // Query our pre-compiled Fact Table directly, summing received quantities autonomously!
+        $received = (int) TrackingFactDelivery::where('tracking_code_id', $trackingCodeId)
             ->where('category_id', $categoryId)
-            ->where('status', 'ACTIVE')
-            ->sum('quantity');
+            ->sum('received_qty');
 
         $percentage = $planned > 0 ? round(($received / $planned) * 100) : 0;
 
@@ -76,42 +96,41 @@ class EloquentTrackingProjectionRepository implements TrackingProjectionReposito
 
     public function getMatrixProgress(int $trackingCodeId): array
     {
-        $trackingCode = TrackingCode::with([
-            'targets.category',
-            'targets.allocations.location' => function($query) {
+        // Fetch pre-compiled geographic facts directly from our Delivery Cube
+        $facts = TrackingFactDelivery::with([
+            'category',
+            'location' => function($query) {
                 $query->withoutGlobalScopes(); // Defensive bypass to prevent empty lists for non-contextual admins
             }
-        ])->find($trackingCodeId);
-
-        if (!$trackingCode) return [];
+        ])->where('tracking_code_id', $trackingCodeId)->get();
 
         $progressMatrix = [];
 
-        foreach ($trackingCode->targets as $target) {
-            foreach ($target->allocations as $alloc) {
-                $locationId = $alloc->location_id;
-                $locationName = $alloc->location?->name ?? "Office Location #{$locationId}";
+        foreach ($facts as $fact) {
+            $locationId = $fact->location_id;
+            $locationName = $fact->location?->name ?? "Office Location #{$locationId}";
 
-                // Sum quantities received specifically at this location under this specific category
-                $received = (int) DB::table('gov_tracking_associations')
-                    ->where('tracking_code_id', $trackingCodeId)
-                    ->where('category_id', $target->category_id)
-                    ->where('location_id', $locationId)
-                    ->where('status', 'ACTIVE')
-                    ->sum('quantity');
+            // Find the planned target allocation cell
+            $allocation = DB::table('gov_tracking_allocations')
+                ->join('gov_tracking_targets', 'gov_tracking_allocations.target_id', '=', 'gov_tracking_targets.id')
+                ->where('gov_tracking_targets.tracking_code_id', $trackingCodeId)
+                ->where('gov_tracking_targets.category_id', $fact->category_id)
+                ->where('gov_tracking_allocations.location_id', $locationId)
+                ->first();
 
-                $percentage = $alloc->allocated_qty > 0 ? round(($received / $alloc->allocated_qty) * 100) : 0;
+            $allocatedQty = $allocation ? $allocation->allocated_qty : 0;
+            $received = $fact->received_qty;
 
-                // Group by location for structured UI rendering
-                $progressMatrix[$locationId]['location_name'] = $locationName;
-                $progressMatrix[$locationId]['items'][] = [
-                    'category_name' => $target->category->name,
-                    'allocated'     => $alloc->allocated_qty,
-                    'received'      => $received,
-                    'percentage'    => $percentage,
-                    'is_exceeded'   => ($received > $alloc->allocated_qty)
-                ];
-            }
+            $percentage = $allocatedQty > 0 ? round(($received / $allocatedQty) * 100) : 0;
+
+            $progressMatrix[$locationId]['location_name'] = $locationName;
+            $progressMatrix[$locationId]['items'][] = [
+                'category_name' => $fact->category->name,
+                'allocated'     => $allocatedQty,
+                'received'      => $received,
+                'percentage'    => $percentage,
+                'is_exceeded'   => ($received > $allocatedQty)
+            ];
         }
 
         return $progressMatrix;

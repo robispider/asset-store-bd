@@ -89,6 +89,10 @@ class InitiativeController extends Controller
      * NEW: Compiles all analytical, geographical, and fiscal progress indicators
      * into a unified executive report.
      */
+    /**
+     * Compiles all analytical, geographical, and fiscal progress indicators
+     * into a unified, high-performance executive report.
+     */
     public function report(Initiative $initiative, TrackingProjectionRepositoryInterface $projectionRepo)
     {
         $initiative->load(['ownerCompany', 'managingOffice']);
@@ -96,7 +100,7 @@ class InitiativeController extends Controller
         // 1. Compile overall macro health
         $health = $projectionRepo->getLifecycleSummary($initiative);
 
-        // 2. Load tracking codes and resolve their micro-progress (both Category-level and Matrix-level)
+        // 2. Load tracking codes and resolve their micro-progress
         $trackingCodes = \GovStore\Tracking\Models\TrackingCode::with(['targets.category', 'scopes', 'fundingType'])
             ->where('initiative_id', $initiative->id)
             ->orderBy('created_at', 'desc')
@@ -112,12 +116,19 @@ class InitiativeController extends Controller
             }
         }
 
-        // 3. Load entire chronological history for audits
-        $recentActivity = \GovStore\Tracking\Models\TrackingTimeline::with('actor')
-            ->where('initiative_id', $initiative->id)
-            ->orderBy('occurred_at', 'desc')
-            ->get();
+        // 3. NEW: Load the pre-compiled analytical facts from the Delivery Cube (Bypassing global location scopes)
+        $facts = \GovStore\Tracking\Models\TrackingFactDelivery::with([
+            'category',
+            'trackingCode',
+            'location' => function($query) {
+                $query->withoutGlobalScopes(); // Prevents empty lists for non-contextual admins
+            }
+        ])
+        ->where('initiative_id', $initiative->id)
+        ->get();
 
-        return view('govtracking::initiatives.report', compact('initiative', 'health', 'trackingCodes', 'recentActivity'));
+        // Section 4 Timeline is completely removed as requested.
+
+        return view('govtracking::initiatives.report', compact('initiative', 'health', 'trackingCodes', 'facts'));
     }
 }

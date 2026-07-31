@@ -189,8 +189,7 @@
                                 $outstanding = $summary['planned'] - $summary['received'];
                                 $outstanding = $outstanding < 0 ? 0 : $outstanding;
 
-                                // --- PURE TEXT-BASED ASCII PROGRESS BAR GENERATOR ---
-                                // Spawns beautiful [██████░░░░] style bars. Prints perfectly on any printer in the world.
+                                // PURE TEXT-BASED ASCII PROGRESS BAR GENERATOR
                                 $filledCount = round($percent / 10);
                                 $emptyCount = 10 - $filledCount;
                                 $filledCount = $filledCount > 10 ? 10 : $filledCount;
@@ -246,83 +245,66 @@
 
             <hr class="report-divider">
 
-            <!-- Section 3: Geographical Dispersion Workspace (Always Rendered fallback) -->
+            <!-- Section 3: Geographical Dispersion Workspace (The Final Star-Schema Grid) -->
             <div>
-                <h4 class="report-section-title">📍 3. GEOGRAPHICAL DISPERSION WORKSPACE (Delivery Schedule Matrix)</h4>
+                <h4 class="report-section-title">📍 3. GEOGRAPHICAL DISPERSION WORKSPACE (Actual Receipts)</h4>
                 
-                @php
-                    $hasMatrix = $trackingCodes->contains('specificity_level', '3_MATRIX');
-                @endphp
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%;">Sl.</th>
+                            <th style="width: 15%;">GeoArea (District)</th>
+                            <th style="width: 25%;">Receiving Office Location</th>
+                            <th style="width: 15%;">Economic Code</th>
+                            <th style="width: 15%;">Category</th>
+                            <th style="width: 10%;">Received Qty</th>
+                            <th style="width: 10%;">Avg Price (in GRN)</th>
+                            <th style="width: 5%;">GRN Qty</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($facts as $index => $fact)
+                            @php
+                                // Resolve District GeoArea dynamically via the Organization package links safely
+                                $geoName = 'N/A';
+                                if ($fact->location && $fact->location->profile && class_exists('GovStore\GeoAreas\Models\GeoArea')) {
+                                    $profile = $fact->location->profile;
+                                    $geoName = \GovStore\GeoAreas\Models\GeoArea::find($profile->geo_area_id)->en_name ?? 'N/A';
+                                }
 
-                @if($hasMatrix)
-                    <table class="report-table">
-                        <thead>
+                                // Resolve Economic Code dynamically from the task targets
+                                $econCode = 'N/A';
+                                $target = DB::table('gov_tracking_targets')
+                                    ->where('tracking_code_id', $fact->tracking_code_id)
+                                    ->where('category_id', $fact->category_id)
+                                    ->first();
+                                if ($target) {
+                                    $econCode = $target->economic_code ?? 'N/A';
+                                }
+
+                                // Calculate dynamic average price safely from the additive columns
+                                $avgPrice = $fact->received_qty > 0 ? ($fact->total_cost / $fact->received_qty) : 0.00;
+                            @endphp
                             <tr>
-                                <th style="width: 40%;">Office Location</th>
-                                <th style="width: 20%;">Category</th>
-                                <th style="width: 15%;">Allocated</th>
-                                <th style="width: 15%;">Received</th>
-                                <th style="width: 10%;">Status</th>
+                                <td>{{ $index + 1 }}</td>
+                                <td><strong>{{ $geoName }}</strong></td>
+                                <td>{{ $fact->location->name ?? "Office #{$fact->location_id}" }}</td>
+                                <td><code>{{ $econCode }}</code></td>
+                                <td>{{ $fact->category->name }}</td>
+                                <td><strong>{{ $fact->received_qty }} units</strong></td>
+                                <td>{{ $avgPrice > 0 ? number_format($avgPrice, 2) . ' BDT' : 'N/A' }}</td>
+                                <td><strong>{{ $fact->transaction_count }}</strong></td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($trackingCodes->where('specificity_level', '3_MATRIX') as $code)
-                                @forelse($code->matrixProgress ?? [] as $locId => $data)
-                                    @foreach($data['items'] as $index => $item)
-                                        <tr>
-                                            @if($index === 0)
-                                                <td rowspan="{{ count($data['items']) }}" style="vertical-align: top; font-weight: bold; border-bottom: 1px solid #cbd5e1 !important;">
-                                                    🏢 {{ $data['location_name'] }}
-                                                </td>
-                                            @endif
-                                            <td>{{ $item['category_name'] }}</td>
-                                            <td>{{ $item['allocated'] }}</td>
-                                            <td>{{ $item['received'] }}</td>
-                                            <td>
-                                                @if($item['percentage'] >= 100)
-                                                    <span class="text-green"><strong>[🟢 Complete]</strong></span>
-                                                @else
-                                                    <span class="text-yellow"><strong>[🟡 Pending]</strong></span>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                @empty
-                                    <!-- Skip empty lines -->
-                                @endforelse
-                            @endforeach
-                        </tbody>
-                    </table>
-                @else
-                    <!-- Clean fallback when the active tracking codes are Level 1 or 2 -->
-                    <div style="padding: 15px; border: 1px dashed #cbd5e1; border-radius: 4px; background-color: #f8fafc;">
-                        <p style="margin-bottom: 0;" class="text-muted">
-                            <i class="fa fa-info-circle text-blue"></i> <strong>General Distribution Mode:</strong> 
-                            This Initiative's active tasks are configured as Blanket or Category targets. Participating offices within geographical coverage are authorized to receive stock on demand.
-                        </p>
-                    </div>
-                @endif
+                        @empty
+                            <tr>
+                                <td colspan="8" class="text-center text-muted">No physical delivery transactions have been materialized yet.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
 
-            <hr class="report-divider">
-
-            <!-- Section 4: Audit Timeline Activity -->
-            <div>
-                <h4 class="report-section-title">🕒 4. COMPLIANCE & HISTORICAL ACTIVITY LOG</h4>
-                
-                <ul class="list-tree">
-                    @forelse($recentActivity as $event)
-                        <li style="margin-bottom: 12px; font-size: 13px;">
-                            <span class="bullet">•</span> <strong>{{ $event->occurred_at->format('Y-m-d H:i') }}</strong> - {{ $event->description }}
-                            @if($event->actor)
-                                <span class="text-muted">(by {{ $event->actor->first_name }} {{ $event->actor->last_name }})</span>
-                            @endif
-                        </li>
-                    @empty
-                        <li class="text-center text-muted">No historical transactions logged yet.</li>
-                    @endforelse
-                </ul>
-            </div>
+            <!-- Note: Section 4 Timeline is completely removed as requested -->
 
         </div>
     </div>
