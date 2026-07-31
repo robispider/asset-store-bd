@@ -8,7 +8,7 @@
             }
 
             window.jQuery(function($) {
-                $('#matrix-grid-body').on('keydown', '.matrix-cell', function(e) {
+                $('#matrix-grid-table').on('keydown', '.matrix-cell', function(e) {
                     var $current = $(this);
                     var rIndex = parseInt($current.attr('data-row'));
                     var cIndex = parseInt($current.attr('data-col'));
@@ -54,7 +54,7 @@
                     }
                 });
 
-                $('#matrix-grid-body').on('focus', '.matrix-cell', function() {
+                $('#matrix-grid-table').on('focus', '.matrix-cell', function() {
                     this.select();
                 });
             });
