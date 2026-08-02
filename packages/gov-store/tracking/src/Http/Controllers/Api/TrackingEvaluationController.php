@@ -19,6 +19,24 @@ class TrackingEvaluationController extends Controller
     }
 
     /**
+     * NEW: Real-Time Form Uniqueness Checker.
+     * Evaluates if the typed tracking code already exists in the database.
+     */
+    public function checkUniqueness(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|string|max:100'
+        ]);
+
+        // Returns true if the code does NOT exist (meaning it is available for use)
+        $exists = TrackingCode::where('tracking_code', $request->input('code'))->exists();
+
+        return response()->json([
+            'is_unique' => !$exists
+        ], 200);
+    }
+
+    /**
      * Handshake A1: Header-Level Verification
      * Verifies if the requesting office has authority to select this code.
      * STRICTLY blocks geographical/organizational breaches and invalid Initiative states.
@@ -147,7 +165,7 @@ class TrackingEvaluationController extends Controller
         if ($specificity === '2_CATEGORY') {
             $target = $trackingCode->targets->where('category_id', $request->input('category_id'))->first();
             
-            // If the category is NOT allocated at all, display a warning (Yellow)
+            // If the category is NOT allocated at all, display a warning
             if (!$target) {
                 return response()->json([
                     'can_proceed' => true, // Allowed to proceed
@@ -176,7 +194,7 @@ class TrackingEvaluationController extends Controller
         if ($specificity === '3_MATRIX') {
             $target = $trackingCode->targets->where('category_id', $request->input('category_id'))->first();
             
-            // If the category is not mapped to the code at all, display an orange warning but allow save
+            // If the category is not mapped to the code at all
             if (!$target) {
                 return response()->json([
                     'can_proceed' => true,
@@ -195,10 +213,10 @@ class TrackingEvaluationController extends Controller
                 ->where('location_id', $request->input('location_id'))
                 ->first();
 
-            // If the office has no cell allocation, display an orange warning but allow save
+            // If the office has no cell allocation, display an orange warning
             if (!$allocation) {
                 return response()->json([
-                    'can_proceed' => true,
+                    'can_proceed' => true, // Allowed to proceed
                     'context' => ['specificity_level' => '3_MATRIX'],
                     'messages' => ["Warning: This item category is not allocated to your office under this delivery schedule."],
                     'target_status' => [
