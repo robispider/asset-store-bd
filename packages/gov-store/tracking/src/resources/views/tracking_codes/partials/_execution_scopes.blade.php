@@ -36,19 +36,18 @@
 
         <hr>
 
-        <!-- FIXED (Unconditional Render): Participating Offices is now visible and configurable 
-             across all levels (Blanket, Category, and Matrix), matching your simplified scoping plan. -->
+        <!-- Participating Offices (Cleaned of obsolete triggers) -->
         <div class="form-group">
             <label>Participating Offices (Who can receive assets under this code?)</label>
             <div class="radio">
                 <label>
-                    <input type="radio" name="participant_override" value="Inherit" {{ $partVal === 'Inherit' ? 'checked' : '' }} onchange="toggleParticipantSelect()">
+                    <input type="radio" name="participant_override" value="Inherit" {{ $partVal === 'Inherit' ? 'checked' : '' }}>
                     <strong>Inherit Umbrella Scope</strong> (Only offices owned by our Ministry/Organization).
                 </label>
             </div>
             <div class="radio">
                 <label>
-                    <input type="radio" name="participant_override" value="CrossTenant" {{ $partVal === 'CrossTenant' ? 'checked' : '' }} onchange="toggleParticipantSelect()">
+                    <input type="radio" name="participant_override" value="CrossTenant" {{ $partVal === 'CrossTenant' ? 'checked' : '' }}>
                     <strong>Cross-Ministry Enabled:</strong> Allow ALL government offices in the permitted geographical coverage area.
                 </label>
             </div>
