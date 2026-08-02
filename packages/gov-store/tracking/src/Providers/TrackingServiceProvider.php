@@ -119,7 +119,7 @@ class TrackingServiceProvider extends ServiceProvider
         }
     }
 
-    protected function registerTrackingMenuStructure(): void
+   protected function registerTrackingMenuStructure(): void
     {
         $registry = $this->app->make(\GovStore\TenantScope\Navigation\MenuRegistry::class);
 
@@ -129,7 +129,7 @@ class TrackingServiceProvider extends ServiceProvider
             'title' => 'Programme Tracking',
             'icon'  => 'fas fa-map-signs text-orange',
             'order' => 35,
-            'permission' => ['admin', 'company_admin', 'ict_officer', 'office_admin', 'storekeeper', 'approver'],
+            'permission' => ['admin', 'company_admin',  'project_member'], // Added project_member
         ]);
 
         // 2. ACTIVE INITIATIVES (The Workspace Entry)
@@ -140,7 +140,7 @@ class TrackingServiceProvider extends ServiceProvider
             'icon'       => 'fas fa-folder-open text-aqua',
             'route'      => 'gov.tracking.initiatives.index',
             'order'      => 10,
-            'permission' => ['admin', 'company_admin', 'ict_officer', 'office_admin', 'storekeeper', 'approver'],
+            'permission' => ['admin', 'company_admin', 'project_member'], // Added project_member: allows assigned team members to enter and manage their workspaces
             'active_patterns' => ['gov-store/admin/tracking/initiatives*'],
         ]);
 
@@ -152,7 +152,8 @@ class TrackingServiceProvider extends ServiceProvider
             'icon'       => 'fas fa-cog text-yellow',
             'route'      => 'gov.tracking.funding-types.index',
             'order'      => 40,
-            'permission' => ['admin', 'company_admin'],
+            'permission' => 'admin',
+            'strict'     => true,
             'active_patterns' => ['gov-store/admin/tracking/funding-types*'],
         ]);
     }

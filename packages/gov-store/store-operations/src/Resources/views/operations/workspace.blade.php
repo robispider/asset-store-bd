@@ -102,7 +102,7 @@
                                     <input type="text" id="tracking_code_input" name="references[3][reference_number]" class="form-control input-sm" placeholder="Tracking Code (Optional)" value="{{ $allocation->reference_number ?? '' }}" {{ $isPosted ? 'readonly' : '' }} style="border-color: #fde047;">
                                     
                                     <!-- FIXED: Changed 'readonly' to 'disabled' -->
-                                    <input type="date" name="references[3][reference_date]" class="form-control input-sm" style="max-width: 140px; border-color: #fde047;" value="{{ $allocation->reference_date ?? '' }}" {{ $isPosted ? 'disabled' : '' }} title="Optional Date">
+                                    
                                 </div>
                                 <!-- HANDSHAKE A1 FEEDBACK CONTAINER -->
                                 <div id="tracking_a1_feedback"></div>

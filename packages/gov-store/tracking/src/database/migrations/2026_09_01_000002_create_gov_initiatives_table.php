@@ -21,13 +21,12 @@ return new class extends Migration
             $table->boolean('allow_overshoot')->default(false);
             $table->boolean('require_metadata')->default(false);
             
+            // Ownership (Company) remains, but physical Management Office is removed
             $table->unsignedInteger('owner_company_id')->nullable();
-            $table->unsignedInteger('manager_location_id')->nullable();
             
             $table->timestamps();
 
             $table->foreign('owner_company_id')->references('id')->on('companies')->onDelete('restrict');
-            $table->foreign('manager_location_id')->references('id')->on('locations')->onDelete('restrict');
         });
     }
 

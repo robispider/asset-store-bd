@@ -119,6 +119,7 @@
                                             </div>
                                         @endif
 
+                                        <!-- LEVEL 2: SHARED CATEGORY GOALS STATE -->
                                         @if($code->specificity_level === '2_CATEGORY')
                                             <div style="padding: 15px; background-color: #f4f4f4; border-radius: 4px; border-left: 4px solid #00c0ef;">
                                                 <h5 style="margin-top: 0; border-bottom: 1px solid #ddd; padding-bottom: 5px;"><strong>Shared Category Goals (Advisory Planning)</strong></h5>
@@ -128,10 +129,13 @@
                                                             $prog = $target->progress ?? ['percentage' => 0, 'is_exceeded' => false, 'received' => 0, 'planned' => $target->planned_qty];
                                                             $barColor = $prog['is_exceeded'] ? 'progress-bar-yellow' : ($prog['percentage'] >= 100 ? 'progress-bar-success' : 'progress-bar-aqua');
                                                             $textColor = $prog['is_exceeded'] ? 'text-yellow' : ($prog['percentage'] >= 100 ? 'text-green' : 'text-muted');
+                                                            
+                                                            // DEFENSIVE FALLBACK: Safeguard against soft-deleted categories
+                                                            $categoryName = $target->category->name ?? 'Unknown Category (ID: '.$target->category_id.')';
                                                         @endphp
                                                         
                                                         <div class="col-sm-6" style="margin-bottom: 10px;">
-                                                            <i class="fa fa-cube text-muted"></i> <strong>{{ $target->category->name }}</strong>
+                                                            <i class="fa fa-cube text-muted"></i> <strong>{{ $categoryName }}</strong>
                                                             @if($target->economic_code)
                                                                 <span class="text-muted text-sm">(Econ: {{ $target->economic_code }})</span>
                                                             @endif
@@ -238,20 +242,64 @@
     </div>
 
     <!-- Right Column: Governance & Activity -->
+    <!-- Right Column: Governance & Activity -->
+    <!-- Right Column: Governance & Activity -->
     <div class="col-md-4">
-        <!-- Governance & Rules -->
-        <div class="box box-solid bg-gray-light">
-            <div class="box-header with-border">
-                <h3 class="box-title"><i class="fa fa-shield"></i> Governance & Rules</h3>
+        
+        <!-- =============================================================== -->
+        <!-- OPERATION UNIT & READINESS GATE -->
+        <!-- =============================================================== -->
+        @php
+            $headCount = $initiative->operationUnits()->where('designation', 'HEAD')->count();
+            $officerCount = $initiative->operationUnits()->where('designation', 'OFFICER')->count(); // FIXED: Changed $this to $initiative
+            $isReady = ($headCount === 1 && $officerCount >= 1);
+        @endphp
+
+        @if($initiative->status === 'Planning' && !$isReady)
+            <div class="box box-solid" style="border: 2px solid #dd4b39;">
+                <div class="box-header with-border" style="background-color: #f2dede; color: #a94442;">
+                    <h3 class="box-title"><i class="fa fa-shield"></i> Operation Unit Required</h3>
+                </div>
+                <div class="box-body">
+                    <p><strong>Readiness Check: Cannot Activate</strong></p>
+                    <p class="text-sm text-muted">To transition this project to ACTIVE execution, you must resolve the following assignments:</p>
+                    <ul class="list-unstyled text-danger" style="margin-bottom: 15px;">
+                        @if($headCount === 0)
+                            <li><i class="fa fa-times"></i> Missing Operation Head (1 Required)</li>
+                        @endif
+                        @if($officerCount === 0)
+                            <li><i class="fa fa-times"></i> Missing Operation Officer (Min 1 Required)</li>
+                        @endif
+                    </ul>
+                    <a href="{{ route('gov.tracking.initiatives.operation-unit.index', $initiative->id) }}" class="btn btn-danger btn-block"><i class="fa fa-users"></i> Manage Operation Unit Team</a>
+                </div>
             </div>
-            <div class="box-body">
-                <ul class="list-unstyled" style="line-height: 2.5;">
-                    <li><strong>Who manages this initiative?</strong><br> ➔ <span class="text-blue">{{ $initiative->managingOffice->name ?? 'N/A' }}</span></li>
-                    <li><strong>Do tracking codes require PDFs?</strong><br> ➔ {!! $initiative->require_documents ? '<span class="label label-success">Yes</span>' : '<span class="label label-default">No</span>' !!}</li>
-                    <li><strong>Is target overshoot allowed?</strong><br> ➔ {!! $initiative->allow_overshoot ? '<span class="label label-warning">Yes (Inform Only)</span>' : '<span class="label label-danger">No (Requires Override)</span>' !!}</li>
-                </ul>
+        @else
+            <!-- Healthy Governance Box -->
+            <div class="box box-solid bg-gray-light">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-shield"></i> Governance & Rules</h3>
+                    <a href="{{ route('gov.tracking.initiatives.operation-unit.index', $initiative->id) }}" class="pull-right text-muted" title="View Management Team"><i class="fa fa-users"></i></a>
+                </div>
+                <div class="box-body">
+                    <ul class="list-unstyled" style="line-height: 2.5;">
+                        <li>
+                            <strong>Operation Head:</strong><br> 
+                            ➔ <span class="text-blue">
+                                @if($headCount === 1)
+                                    {{ $initiative->operationUnits->where('designation', 'HEAD')->first()->user->first_name ?? 'N/A' }} 
+                                    {{ $initiative->operationUnits->where('designation', 'HEAD')->first()->user->last_name ?? '' }}
+                                @else
+                                    <span class="text-red">Not Assigned</span>
+                                @endif
+                            </span>
+                        </li>
+                        <li><strong>Do tracking codes require PDFs?</strong><br> ➔ {!! $initiative->require_documents ? '<span class="label label-success">Yes</span>' : '<span class="label label-default">No</span>' !!}</li>
+                        <li><strong>Is target overshoot allowed?</strong><br> ➔ {!! $initiative->allow_overshoot ? '<span class="label label-warning">Yes (Inform Only)</span>' : '<span class="label label-danger">No (Requires Override)</span>' !!}</li>
+                    </ul>
+                </div>
             </div>
-        </div>
+        @endif
 
         <!-- Recent Activity Feed -->
         <div class="box box-default">

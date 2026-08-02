@@ -54,9 +54,9 @@
                 </div>
             </div>
 
-            <!-- Section 2: Ownership & Admin -->
+            <!-- Section 2: Ownership -->
             <div class="box box-solid">
-                <div class="box-header with-border"><h3 class="box-title text-orange">2. Ownership & Administration</h3></div>
+                <div class="box-header with-border"><h3 class="box-title text-orange">2. Ownership</h3></div>
                 <div class="box-body">
                     <div class="form-group">
                         <label>Which organization legally owns this initiative?</label>
@@ -70,14 +70,6 @@
                             <input type="text" class="form-control" value="{{ $initiative->ownerCompany->name ?? 'Unknown' }}" disabled>
                             <input type="hidden" name="owner_company_id" value="{{ $initiative->owner_company_id }}">
                         @endif
-                    </div>
-                    <div class="form-group">
-                        <label>Which office manages and maintains this initiative's execution?</label>
-                        <select name="manager_location_id" class="form-control select2" required {{ $initiative->status == 'Archived' ? 'disabled' : '' }}>
-                            @foreach($locations as $location)
-                                <option value="{{ $location->id }}" {{ $initiative->manager_location_id == $location->id ? 'selected' : '' }}>{{ $location->name }}</option>
-                            @endforeach
-                        </select>
                     </div>
                 </div>
             </div>
@@ -107,7 +99,6 @@
                 <!-- State-aware action footer -->
                 <div class="box-footer text-right">
                     @if($initiative->status === 'Planning')
-                        <!-- Delete is strictly only visible during Setup/Planning phase -->
                         <button type="button" class="btn btn-danger pull-left" onclick="confirmDelete()"><i class="fa fa-trash"></i> Delete Initiative</button>
                     @endif
                     

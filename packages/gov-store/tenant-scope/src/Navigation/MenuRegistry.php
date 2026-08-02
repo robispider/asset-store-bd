@@ -27,6 +27,9 @@ class MenuRegistry
     /**
      * Compiles the sorted, permission-filtered hierarchical tree.
      */
+   /**
+     * Compiles the sorted, permission-filtered hierarchical tree.
+     */
     public function tree(): array
     {
         $context  = app(TenantContext::class);
@@ -42,7 +45,7 @@ class MenuRegistry
 
                 // 1. Global Superuser Bypass — always allowed
                 if ($user->isSuperUser() && !$item->strict) {
-                    // Allowed — fall through to $flatList
+                    $hasAccess = true;
                 } else {
                     $qualifiers = is_array($item->permission) ? $item->permission : [$item->permission];
                     $locationId = $context->locationId;
@@ -69,7 +72,7 @@ class MenuRegistry
                             $hasAccess = \GovStore\Organization\Models\CompanyAdmin::where('user_id', $user->id)
                                 ->exists();
                         }
-                        // 6. Contextual Role-Slug Verification
+                        // 6. Contextual Office Role-Slug Verification
                         elseif (in_array($perm, ['storekeeper', 'approver'])) {
                             $roleSlugs = ($perm === 'approver')
                                 ? ['primary_approver', 'final_approver']
@@ -80,7 +83,20 @@ class MenuRegistry
                                 ->whereIn('role_slug', $roleSlugs)
                                 ->exists();
                         } 
-                        // 7. Standard Capability/Permission Verification
+                        // FIXED: 7. Project-Level Operation Unit Verification (Decoupled DB check)
+                        elseif (in_array($perm, ['project_head', 'project_officer', 'project_member'])) {
+                            $designations = [];
+                            if ($perm === 'project_head') $designations = ['HEAD'];
+                            if ($perm === 'project_officer') $designations = ['OFFICER'];
+                            if ($perm === 'project_member') $designations = ['HEAD', 'OFFICER', 'SUPPORT'];
+
+                            // Query raw database table directly to avoid importing models across packages
+                            $hasAccess = \Illuminate\Support\Facades\DB::table('gov_tracking_operation_units')
+                                ->where('user_id', $user->id)
+                                ->whereIn('designation', $designations)
+                                ->exists();
+                        }
+                        // 8. Standard Capability/Permission Verification
                         else {
                             $hasAccess = $context->effectivePermissions
                                 && $context->effectivePermissions->has($perm);
@@ -90,10 +106,10 @@ class MenuRegistry
                             break; // Short-circuit
                         }
                     }
+                }
 
-                    if (!$hasAccess) {
-                        continue;
-                    }
+                if (!$hasAccess) {
+                    continue;
                 }
             }
 

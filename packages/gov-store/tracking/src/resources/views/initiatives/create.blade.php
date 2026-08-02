@@ -39,9 +39,9 @@
                 </div>
             </div>
 
-            <!-- Section 2: Natural Language Ownership & Admin -->
+            <!-- Section 2: Natural Language Ownership & Accountability -->
             <div class="box box-solid">
-                <div class="box-header with-border"><h3 class="box-title text-orange">2. Ownership & Administration</h3></div>
+                <div class="box-header with-border"><h3 class="box-title text-orange">2. Ownership & Accountability</h3></div>
                 <div class="box-body">
                     <div class="form-group">
                         <label>Which organization legally owns this initiative?</label>
@@ -52,14 +52,10 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label>Which office manages and maintains this initiative's execution?</label>
-                        <select id="manager_location_id" name="manager_location_id" class="form-control select2" required>
-                            <option value="">-- Select Project Management Office --</option>
-                            @foreach($locations as $location)
-                                <option value="{{ $location->id }}" data-company-id="{{ $location->company_id }}">{{ $location->name }}</option>
-                            @endforeach
-                        </select>
+                    
+                    <div class="callout callout-warning" style="margin-bottom: 0; background-color: #fcf8e3 !important; border-color: #faf2cc !important; color: #8a6d3b !important;">
+                        <h4><i class="fa fa-users"></i> Operation Unit Required</h4>
+                        <p class="text-sm">You must designate an Operation Head and at least one Operation Officer inside the workspace immediately after launching before this Initiative can be activated.</p>
                     </div>
                 </div>
             </div>
@@ -94,50 +90,4 @@
         </form>
     </div>
 </div>
-@stop
-
-@section('moar_scripts')
-<script>
-    $(function() {
-        var $companySelect = $('#owner_company_id');
-        var $locationSelect = $('#manager_location_id');
-        
-        // Save the original options in an array to avoid jQuery clone/data cache issues
-        var allLocations = [];
-        $locationSelect.find('option').each(function() {
-            allLocations.push({
-                value: $(this).val(),
-                text: $(this).text(),
-                companyId: $(this).data('company-id')
-            });
-        });
-        
-        function filterLocations() {
-            var selectedCompanyId = $companySelect.val();
-            
-            // Clear current options
-            $locationSelect.empty();
-            
-            // Re-append valid options
-            $.each(allLocations, function(i, loc) {
-                // Keep the default empty option OR options that match the selected company
-                if (loc.value === "" || loc.companyId == selectedCompanyId) {
-                    var $opt = $('<option></option>').attr('value', loc.value).text(loc.text);
-                    $locationSelect.append($opt);
-                }
-            });
-            
-            // Trigger change so Select2 updates its UI
-            $locationSelect.trigger('change');
-        }
-        
-        // Run on initial load
-        filterLocations();
-        
-        // Run on change
-        $companySelect.on('change', function() {
-            filterLocations();
-        });
-    });
-</script>
 @stop

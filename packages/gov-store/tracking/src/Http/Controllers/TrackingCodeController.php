@@ -404,23 +404,29 @@ class TrackingCodeController extends Controller
         return \Illuminate\Support\Facades\Storage::disk('local')->download($trackingCode->order_pdf_path, $trackingCode->tracking_code . '_Order.pdf');
     }
 
-    protected function authorizeManagement(Initiative $initiative)
+    /**
+     * Protect routes with the formalized GovStore Operation Unit permissions.
+     */
+   /**
+     * Protect routes with the formalized GovStore Operation Unit permissions.
+     */
+    protected function authorizeManagement(Initiative $initiative, array $allowedDesignations = ['HEAD', 'OFFICER'])
     {
         $user = auth()->user();
         if (!$user) abort(403);
 
-        if ($user->isSuperUser()) return; // Global Superuser Bypass
+        if ($user->isSuperUser()) return; 
 
-        $isCompanyAdmin = $user->company_id === $initiative->owner_company_id;
+        $isCompanyAdmin = $user->company_id === $initiative->owner_company_id && 
+            \GovStore\Organization\Models\CompanyAdmin::where('user_id', $user->id)->exists();
         
-        $isLocalPMOAdmin = DB::table('gov_office_responsibilities')
+        $isOperationUnitManager = \GovStore\Tracking\Models\OperationUnit::where('initiative_id', $initiative->id)
             ->where('user_id', $user->id)
-            ->where('location_id', $initiative->manager_location_id)
-            ->whereIn('role_slug', ['office_admin', 'storekeeper'])
+            ->whereIn('designation', $allowedDesignations)
             ->exists();
 
-        if (!$isCompanyAdmin && !$isLocalPMOAdmin) {
-            abort(403, 'Unauthorized. Only members of the Initiative Management Team or Ministry Admins can execute configurations.');
+        if (!$isCompanyAdmin && !$isOperationUnitManager) {
+            abort(403, 'Unauthorized. Only designated Operation Heads, Officers, or Ministry Admins can modify execution configurations.');
         }
     }
 }
