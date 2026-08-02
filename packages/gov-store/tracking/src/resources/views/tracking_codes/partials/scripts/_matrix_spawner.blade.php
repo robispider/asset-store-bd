@@ -8,16 +8,23 @@
             }
 
             window.jQuery(function($) {
+                // Only serialize the Categories, as Locations are now searched via dynamic AJAX
                 const availableCategories = @json($categories->map(fn($c) => ['id' => $c->id, 'text' => $c->name]));
-                const availableLocations = @json($locations->map(fn($l) => ['id' => $l->id, 'text' => $l->name]));
 
-                // Column Spawner Trigger
+                // =============================================================
+                // 1. STATE-DRIVEN COLUMN (CATEGORY) SPAWNER
+                // =============================================================
                 $('#matrix-grid-table').on('click', '#btn-spawn-column', function() {
                     var $spawner = $(this);
-                    if ($spawner.hasClass('gs-inline-select')) return;
+                    if ($spawner.hasClass('gs-inline-select')) return; // Already open
 
+                    // Compile active category IDs directly from the central state
                     var activeCategoryIds = window.GovStoreMatrix.state.columns.map(col => parseInt(col.category_id));
-                    var filteredCategories = availableCategories.filter(cat => !activeCategoryIds.includes(parseInt(cat.id)));
+
+                    // Filter out already active categories dynamically
+                    var filteredCategories = availableCategories.filter(function(cat) {
+                        return !activeCategoryIds.includes(parseInt(cat.id));
+                    });
 
                     if (filteredCategories.length === 0) {
                         alert('All available item categories have already been added to the planning matrix.');
@@ -37,26 +44,31 @@
                     }).select2('open');
 
                     $select.on('select2:select', function(e) {
-                        window.GovStoreMatrix.actions.addColumn(e.params.data.id, e.params.data.text);
+                        var catId = e.params.data.id;
+                        var catName = e.params.data.text;
+
+                        // Mutates state directly. No manual HTML string appending.
+                        window.GovStoreMatrix.actions.addColumn(catId, catName);
+                        resetColumnSpawner($spawner);
                     });
 
                     $select.on('select2:close', function() {
-                        setTimeout(() => $spawner.removeClass('gs-inline-select').html('<i class="fa fa-plus"></i> Category'), 100);
+                        setTimeout(function() {
+                            resetColumnSpawner($spawner);
+                        }, 100);
                     });
                 });
 
-                // Row Spawner Trigger
+                function resetColumnSpawner($spawner) {
+                    $spawner.removeClass('gs-inline-select').html('<i class="fa fa-plus"></i> Category');
+                }
+
+                // =============================================================
+                // 2. STATE-DRIVEN ROW (LOCATION) SPAWNER (AJAX ONLY)
+                // =============================================================
                 $('#matrix-grid-table').on('click', '#btn-spawn-row', function() {
                     var $spawner = $(this);
-                    if ($spawner.hasClass('gs-inline-select')) return;
-
-                    var activeLocationIds = window.GovStoreMatrix.state.rows.map(row => parseInt(row.location_id));
-                    var filteredLocations = availableLocations.filter(loc => !activeLocationIds.includes(parseInt(loc.id)));
-
-                    if (filteredLocations.length === 0) {
-                        alert('All available participating offices have already been added to the planning matrix.');
-                        return;
-                    }
+                    if ($spawner.hasClass('gs-inline-select')) return; // Already open
 
                     $spawner.addClass('gs-inline-select').html(`
                         <select id="inline-location-select" style="width: 100%;">
@@ -66,18 +78,55 @@
 
                     var $select = $('#inline-location-select');
                     $select.select2({
-                        data: filteredLocations,
-                        minimumResultsForSearch: 0
+                        placeholder: 'Search Offices...',
+                        minimumInputLength: 2,
+                        dropdownParent: $('body'),
+                        ajax: {
+                            url: "{{ route('gov.tracking.api.search-offices') }}",
+                            dataType: 'json',
+                            delay: 250,
+                            data: function (params) {
+                                var geoOverride = $('input[name="geo_override"]:checked').val() || 'Inherit';
+                                var geoAreaId = $('select[name="geo_area_id"]').val() || '';
+                                var participantOverride = $('input[name="participant_override"]:checked').val() || 'Inherit';
+
+                                return {
+                                    q: params.term,
+                                    initiative_id: "{{ $initiative->id }}",
+                                    geo_override: geoOverride,
+                                    geo_area_id: geoAreaId,
+                                    participant_override: participantOverride
+                                };
+                            },
+                            processResults: function (data) {
+                                var activeLocationIds = window.GovStoreMatrix.state.rows.map(r => parseInt(r.location_id));
+                                var filteredResults = data.results.filter(function(loc) {
+                                    return !activeLocationIds.includes(parseInt(loc.id));
+                                });
+                                return { results: filteredResults };
+                            }
+                        }
                     }).select2('open');
 
                     $select.on('select2:select', function(e) {
-                        window.GovStoreMatrix.actions.addRow(e.params.data.id, e.params.data.text);
+                        var locId = e.params.data.id;
+                        var locName = e.params.data.text;
+
+                        // Mutates state directly. No manual HTML string appending.
+                        window.GovStoreMatrix.actions.addRow(locId, locName);
+                        resetRowSpawner($spawner);
                     });
 
                     $select.on('select2:close', function() {
-                        setTimeout(() => $spawner.removeClass('gs-inline-select').html('<i class="fa fa-plus"></i> Select Office...'), 100);
+                        setTimeout(function() {
+                            resetRowSpawner($spawner);
+                        }, 100);
                     });
                 });
+
+                function resetRowSpawner($spawner) {
+                    $spawner.removeClass('gs-inline-select').html('<i class="fa fa-plus"></i> Select Office...');
+                }
             });
         }
 

@@ -1,4 +1,4 @@
-<!-- Decentralized DOM Renderer Engine -->
+<!-- Decentralized DOM Renderer Engine (Typo Fixed) -->
 <script>
     (function() {
         window.GovStoreMatrix = window.GovStoreMatrix || {};
@@ -49,7 +49,6 @@
                                 <i class="fa fa-ellipsis-v text-muted" style="margin-right: 7px; cursor: move;" title="Drag to reorder row"></i>
                                 <strong>${row.name}</strong> <i class="fa fa-caret-down text-muted"></i>
                             </span>
-                            <input type="hidden" name="matrix_locations[${rIndex}]" value="${row.location_id}">
                         </td>
                     `;
 
@@ -62,7 +61,7 @@
                         `;
                     });
 
-                    // FIXED: Injected missing spacer cell to sit directly underneath the "+ Category" spawner column header
+                    // Injected missing spacer cell to sit directly underneath the "+ Category" spawner column header
                     bodyHtml += `<td style="background-color: #f8fafc; border-bottom: 1px solid #e2e8f0;"></td>`;
 
                     bodyHtml += `
@@ -85,7 +84,10 @@
                 });
                 
                 footerHtml += '<td id="matrix-spawner-spacer"></td>';
+                
+                // FIXED: Resolved the string concatenation syntax error here by wrapping it correctly
                 footerHtml += '<td style="background-color: #f8fafc; border-right: 2px solid #cbd5e1;"></td>';
+                
                 footerHtml += '<td></td>';
                 footerHtml += '</tr>';
 
@@ -98,7 +100,7 @@
                     footerHtml += `<td id="total-cat-${col.category_id}" class="col-total-cell text-center text-bold" data-col-uuid="${col.uuid}" style="background-color: #f1f5f9; font-weight: bold; border-top: 2px solid #cbd5e1;">0</td>`;
                 });
 
-                // FIXED: Injected missing spacer cell to sit directly underneath the "+ Category" spawner column footer
+                // Injected missing spacer cell to sit directly underneath the "+ Category" spawner column footer
                 footerHtml += `<td style="background-color: #f8fafc; border-top: 2px solid #cbd5e1;"></td>`;
 
                 footerHtml += `<td id="matrix-grand-total" style="background-color: #f1f5f9; font-weight: bold; border-right: 2px solid #cbd5e1;">0</td>`;

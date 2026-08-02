@@ -1,27 +1,8 @@
-<!-- HTML Overlays for Context Menus -->
-<div id="col-context-menu" class="gs-context-menu">
-    <ul>
-        <li id="menu-opt-col-change"><i class="fa fa-pencil"></i> Change Category</li>
-        <li id="menu-opt-col-left"><i class="fa fa-arrow-left"></i> Move Column Left</li>
-        <li id="menu-opt-col-right"><i class="fa fa-arrow-right"></i> Move Column Right</li>
-        <li id="menu-opt-col-delete" class="text-red" style="border-top: 1px solid #e2e8f0; margin-top: 5px; padding-top: 8px;"><i class="fa fa-trash"></i> Delete Column</li>
-    </ul>
-</div>
-
-<div id="row-context-menu" class="gs-context-menu">
-    <ul>
-        <li id="menu-opt-row-change"><i class="fa fa-pencil"></i> Change Office</li>
-        <li id="menu-opt-row-up"><i class="fa fa-arrow-up"></i> Move Row Up</li>
-        <li id="menu-opt-row-down"><i class="fa fa-arrow-down"></i> Move Row Down</li>
-        <li id="menu-opt-row-delete" class="text-red" style="border-top: 1px solid #e2e8f0; margin-top: 5px; padding-top: 8px;"><i class="fa fa-trash"></i> Delete Row</li>
-    </ul>
-</div>
-
 <!-- Spreadsheet Context Menus Engine -->
 <script>
     (function() {
         function initMatrixMenusEngine() {
-            if (typeof window.jQuery === 'undefined') {
+            if (typeof window.jQuery === 'undefined' || typeof window.jQuery.fn.select2 === 'undefined') {
                 setTimeout(initMatrixMenusEngine, 50);
                 return;
             }
@@ -33,10 +14,9 @@
                 var activeColUuid = null;
                 var activeRowUuid = null;
 
+                // FIXED: Only load categories. Locations are handled exclusively via AJAX.
                 const availableCategories = @json($categories->map(fn($c) => ['id' => $c->id, 'text' => $c->name]));
-                const availableLocations = @json($locations->map(fn($l) => ['id' => $l->id, 'text' => $l->name]));
 
-                // Close menus on clicking outside, scrolling, or changing specificity
                 $(document).on('click scroll', function(e) {
                     if (!$(e.target).closest('.gs-context-menu, .header-name').length) {
                         $('.gs-context-menu').hide();
@@ -160,15 +140,39 @@
                             </select>
                         `);
 
-                        var activeLocationIds = window.GovStoreMatrix.state.rows.map(r => parseInt(r.location_id));
-                        var filteredLocations = availableLocations.filter(loc => {
-                            return parseInt(loc.id) === row.location_id || !activeLocationIds.includes(parseInt(loc.id));
-                        });
-
                         var $select = $('#inline-location-change-select');
                         $select.select2({
-                            data: filteredLocations,
-                            minimumResultsForSearch: 0
+                            placeholder: 'Search Offices...',
+                            minimumInputLength: 2,
+                            dropdownParent: $('body'),
+                            ajax: {
+                                url: "{{ route('gov.tracking.api.search-offices') }}",
+                                dataType: 'json',
+                                delay: 250,
+                                data: function (params) {
+                                    var geoOverride = $('input[name="geo_override"]:checked').val() || 'Inherit';
+                                    var geoAreaId = $('select[name="geo_area_id"]').val() || '';
+                                    var participantOverride = $('input[name="participant_override"]:checked').val() || 'Inherit';
+
+                                    return {
+                                        q: params.term,
+                                        initiative_id: "{{ $initiative->id }}",
+                                        geo_override: geoOverride,
+                                        geo_area_id: geoAreaId,
+                                        participant_override: participantOverride
+                                    };
+                                },
+                                processResults: function (data) {
+                                    var activeLocationIds = window.GovStoreMatrix.state.rows.map(r => parseInt(r.location_id));
+                                    
+                                    // Prevent duplicate selections: filter out active rows, but keep the current row's location
+                                    var filteredResults = data.results.filter(function(loc) {
+                                        return parseInt(loc.id) === row.location_id || !activeLocationIds.includes(parseInt(loc.id));
+                                    });
+
+                                    return { results: filteredResults };
+                                }
+                            }
                         }).select2('open');
 
                         $select.on('select2:select', function(e) {
