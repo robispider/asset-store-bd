@@ -9,12 +9,20 @@ use GovStore\GeoAreas\Models\GeoArea;
 use GovStore\Tracking\Models\Initiative;
 use GovStore\Tracking\Models\TrackingCode;
 use GovStore\Tracking\Models\FundingType;
+use GovStore\Tracking\Services\TrackingAuthorizationService; // Added
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class TrackingCodeController extends Controller
 {
+    protected TrackingAuthorizationService $authService;
+
+    public function __construct(TrackingAuthorizationService $authService)
+    {
+        $this->authService = $authService;
+    }
+
     public function create(Initiative $initiative)
     {
         $categories = Category::all();
@@ -35,6 +43,9 @@ class TrackingCodeController extends Controller
 
     public function store(Request $request, Initiative $initiative)
     {
+        // GATED (Centralized): HEAD or OFFICER can add tracking codes
+        $this->authService->authorize($initiative, ['HEAD', 'OFFICER']);
+
         $rules = [
             'tracking_code'     => 'required|string|unique:gov_tracking_codes,tracking_code|max:100',
             'task_title'        => 'required|string|max:255',
@@ -183,13 +194,8 @@ class TrackingCodeController extends Controller
 
     public function edit(Initiative $initiative, TrackingCode $trackingCode)
     {
-        $this->authorizeManagement($initiative);
-
-        // ENFORCE IMMUTABILITY
-        if ($trackingCode->status !== 'DRAFT') {
-            return redirect()->route('gov.tracking.initiatives.show', $initiative->id)
-                             ->with('error', 'Immutable Error: This Tracking Code has been activated or archived and can no longer be edited.');
-        }
+        // GATED (Centralized): HEAD or OFFICER can edit targets
+        $this->authService->authorize($initiative, ['HEAD', 'OFFICER']);
 
         $categories = Category::all();
         $fundingTypes = FundingType::where('primary_type', $initiative->primary_funding)->get();
@@ -202,17 +208,15 @@ class TrackingCodeController extends Controller
 
         $geoAreas = class_exists(GeoArea::class) ? GeoArea::all() : collect();
 
-        // Resolve active values for pre-population
         $activeGeo = $trackingCode->scopes->where('dimension', 'GEOGRAPHY')->first();
         $activePart = $trackingCode->scopes->where('dimension', 'PARTICIPANTS')->first();
         $activeLocationIds = $trackingCode->scopes->where('dimension', 'PARTICIPANTS')->where('target_type', 'SpecificLocations')->pluck('target_id')->toArray();
 
-        // Compile saved matrix cells for automatic front-end spreadsheet pre-population
+        // Compile saved matrix cells
         $savedMatrixValues = [];
         $trackingCode->load('targets.allocations.location');
         foreach ($trackingCode->targets as $target) {
             foreach ($target->allocations as $alloc) {
-                // Map values as [location_id][category_id] = allocated_qty
                 $savedMatrixValues[$alloc->location_id][$target->category_id] = $alloc->allocated_qty;
             }
         }
@@ -224,11 +228,8 @@ class TrackingCodeController extends Controller
 
     public function update(Request $request, Initiative $initiative, TrackingCode $trackingCode)
     {
-        $this->authorizeManagement($initiative);
-
-        if ($trackingCode->status !== 'DRAFT') {
-            abort(403, 'Immutable Error: Active and Archived codes cannot be modified.');
-        }
+        // GATED (Centralized): HEAD or OFFICER can update targets
+        $this->authService->authorize($initiative, ['HEAD', 'OFFICER']);
 
         $specificity = $trackingCode->specificity_level;
 
@@ -238,7 +239,6 @@ class TrackingCodeController extends Controller
             'funding_type_id' => 'required|exists:gov_funding_types,id',
         ];
 
-        // Apply conditional validation mappings in update flow
         if ($specificity === '2_CATEGORY') {
             $rules['targets']                 = 'required|array|min:1';
             $rules['targets.*.category_id']   = 'required|exists:categories,id';
@@ -274,7 +274,6 @@ class TrackingCodeController extends Controller
                 'funding_type_id' => $request->input('funding_type_id'),
             ]);
 
-            // Flush old targets & allocations cleanly inside transaction
             $trackingCode->targets()->delete();
             $trackingCode->scopes()->delete();
 
@@ -358,7 +357,8 @@ class TrackingCodeController extends Controller
 
     public function destroy(Initiative $initiative, TrackingCode $trackingCode)
     {
-        $this->authorizeManagement($initiative);
+        // GATED (Centralized): HEAD or OFFICER can delete targets
+        $this->authService->authorize($initiative, ['HEAD', 'OFFICER']);
 
         if ($trackingCode->status !== 'DRAFT') {
             return redirect()->back()->with('error', 'Cannot delete active or archived tracking codes.');
@@ -371,7 +371,8 @@ class TrackingCodeController extends Controller
 
     public function activate(Initiative $initiative, TrackingCode $trackingCode)
     {
-        $this->authorizeManagement($initiative);
+        // GATED (Centralized): Only HEAD (Operation Head) can activate
+        $this->authService->authorize($initiative, ['HEAD']);
 
         if ($trackingCode->status !== 'DRAFT') {
             abort(403, 'Invalid State Transition.');
@@ -384,7 +385,8 @@ class TrackingCodeController extends Controller
 
     public function archive(Initiative $initiative, TrackingCode $trackingCode)
     {
-        $this->authorizeManagement($initiative);
+        // GATED (Centralized): Only HEAD (Operation Head) can archive
+        $this->authService->authorize($initiative, ['HEAD']);
 
         if ($trackingCode->status !== 'ACTIVE') {
             abort(403, 'Invalid State Transition.');
@@ -402,31 +404,5 @@ class TrackingCodeController extends Controller
         }
 
         return \Illuminate\Support\Facades\Storage::disk('local')->download($trackingCode->order_pdf_path, $trackingCode->tracking_code . '_Order.pdf');
-    }
-
-    /**
-     * Protect routes with the formalized GovStore Operation Unit permissions.
-     */
-   /**
-     * Protect routes with the formalized GovStore Operation Unit permissions.
-     */
-    protected function authorizeManagement(Initiative $initiative, array $allowedDesignations = ['HEAD', 'OFFICER'])
-    {
-        $user = auth()->user();
-        if (!$user) abort(403);
-
-        if ($user->isSuperUser()) return; 
-
-        $isCompanyAdmin = $user->company_id === $initiative->owner_company_id && 
-            \GovStore\Organization\Models\CompanyAdmin::where('user_id', $user->id)->exists();
-        
-        $isOperationUnitManager = \GovStore\Tracking\Models\OperationUnit::where('initiative_id', $initiative->id)
-            ->where('user_id', $user->id)
-            ->whereIn('designation', $allowedDesignations)
-            ->exists();
-
-        if (!$isCompanyAdmin && !$isOperationUnitManager) {
-            abort(403, 'Unauthorized. Only designated Operation Heads, Officers, or Ministry Admins can modify execution configurations.');
-        }
     }
 }

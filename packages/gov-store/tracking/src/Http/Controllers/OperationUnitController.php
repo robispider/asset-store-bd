@@ -6,12 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use GovStore\Tracking\Models\Initiative;
 use GovStore\Tracking\Models\OperationUnit;
+use GovStore\Tracking\Services\TrackingAuthorizationService; // Added
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
 
 class OperationUnitController extends Controller
 {
+    protected TrackingAuthorizationService $authService;
+
+    public function __construct(TrackingAuthorizationService $authService)
+    {
+        $this->authService = $authService;
+    }
+
     public function index(Initiative $initiative)
     {
         $initiative->load(['operationUnits.user']);
@@ -23,16 +31,6 @@ class OperationUnitController extends Controller
         return view('govtracking::operation_unit.index', compact('initiative', 'head', 'officers', 'support'));
     }
 
-  /**
-     * AJAX Endpoint: Search the core Snipe-IT users directory for Select2.
-     * Bypasses narrow location-scopes but strictly confines searches to the 
-     * project's legally Owning Organization (Company/Ministry).
-     */
-   /**
-     * AJAX Endpoint: Search the core Snipe-IT users directory for Select2.
-     * Joins the 'company_user' pivot table to find assigned Ministry employees
-     * when the host platform has FMCS company scoping switched off.
-     */
     public function searchUsers(Request $request)
     {
         $request->validate([
@@ -41,16 +39,13 @@ class OperationUnitController extends Controller
         ]);
 
         $term = $request->input('q');
-        
-        // Resolve the active Initiative
         $initiative = Initiative::findOrFail($request->input('initiative_id'));
 
-        // Query joining the pivot table to find company mappings correctly
         $users = DB::table('users')
-            ->join('company_user', 'users.id', '=', 'company_user.user_id') // Join the FMCS pivot table
+            ->join('company_user', 'users.id', '=', 'company_user.user_id')
             ->select('users.id', 'users.first_name', 'users.last_name', 'users.username', 'users.employee_num')
-            ->where('company_user.company_id', $initiative->owner_company_id) // Filter by pivot's Ministry ID
-            ->whereNull('users.deleted_at') // Exclude soft-deleted users
+            ->where('company_user.company_id', $initiative->owner_company_id)
+            ->whereNull('users.deleted_at')
             ->where(function($query) use ($term) {
                 $query->where('users.first_name', 'LIKE', "%{$term}%")
                       ->orWhere('users.last_name', 'LIKE', "%{$term}%")
@@ -72,11 +67,12 @@ class OperationUnitController extends Controller
 
     public function store(Request $request, Initiative $initiative)
     {
-        $this->authorizeManagement($initiative); // Secure the route
+        // GATED (Centralized): Only Project Director (HEAD) or Ministry Admin can manage team roster
+        $this->authService->authorize($initiative, ['HEAD']);
 
         $request->validate([
             'user_id' => 'required|exists:users,id',
-            'designation' => 'required|in:HEAD,OFFICER,SUPPORT',
+            'designation' => 'required|in:HEAD,OFFICER,SUPPORT,MONITOR',
         ]);
 
         $designation = $request->input('designation');
@@ -116,7 +112,8 @@ class OperationUnitController extends Controller
 
     public function destroy(Initiative $initiative, OperationUnit $unit)
     {
-        $this->authorizeManagement($initiative); // Secure the route
+        // GATED (Centralized): Only Project Director (HEAD) or Ministry Admin can manage team roster
+        $this->authService->authorize($initiative, ['HEAD']);
 
         if ($unit->initiative_id !== $initiative->id) {
             abort(403, 'Invalid Operation Unit association.');
@@ -125,31 +122,5 @@ class OperationUnitController extends Controller
         $unit->delete();
 
         return redirect()->back()->with('success', 'Staff member designation removed.');
-    }
-
-    /**
-     * Protect routes with the formalized GovStore Operation Unit permissions.
-     */
- /**
-     * Protect routes with the formalized GovStore Operation Unit permissions.
-     */
-    protected function authorizeManagement(Initiative $initiative, array $allowedDesignations = ['HEAD'])
-    {
-        $user = auth()->user();
-        if (!$user) abort(403);
-
-        if ($user->isSuperUser()) return; 
-
-        $isCompanyAdmin = $user->company_id === $initiative->owner_company_id && 
-            \GovStore\Organization\Models\CompanyAdmin::where('user_id', $user->id)->exists();
-        
-        $isOperationUnitManager = \GovStore\Tracking\Models\OperationUnit::where('initiative_id', $initiative->id)
-            ->where('user_id', $user->id)
-            ->whereIn('designation', $allowedDesignations)
-            ->exists();
-
-        if (!$isCompanyAdmin && !$isOperationUnitManager) {
-            abort(403, 'Unauthorized. Only designated Project Directors (Operation Heads) or Ministry Admins can edit team committee assignments.');
-        }
     }
 }

@@ -10,7 +10,6 @@ class OperationUnit extends Model
 {
     protected $table = 'gov_tracking_operation_units';
 
-    // Declaring explicit role constants for programmatic security gates
     const DESIGNATION_HEAD = 'HEAD';
     const DESIGNATION_OFFICER = 'OFFICER';
     const DESIGNATION_SUPPORT = 'SUPPORT';
@@ -19,7 +18,7 @@ class OperationUnit extends Model
     protected $fillable = [
         'initiative_id',
         'user_id',
-        'designation', // HEAD, OFFICER, SUPPORT, MONITOR
+        'designation',
     ];
 
     public function initiative(): BelongsTo
@@ -27,8 +26,10 @@ class OperationUnit extends Model
         return $this->belongsTo(Initiative::class, 'initiative_id');
     }
 
+    // FIXED: Bypasses the narrow location-scoping blockades on the user's relationship
+    // to ensure the designated team roster remains visible across all locations.
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id')->withoutGlobalScopes();
     }
 }

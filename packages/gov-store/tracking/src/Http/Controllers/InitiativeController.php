@@ -6,12 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Models\Company;
 use GovStore\Tracking\Models\Initiative;
 use GovStore\Tracking\Repositories\TrackingProjectionRepositoryInterface;
+use GovStore\Tracking\Services\TrackingAuthorizationService; // Added
+use GovStore\Organization\Models\CompanyAdmin; // Added
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\DB;
 
 class InitiativeController extends Controller
 {
+    protected TrackingAuthorizationService $authService;
+
+    public function __construct(TrackingAuthorizationService $authService)
+    {
+        $this->authService = $authService;
+    }
+
     public function index()
     {
         $initiatives = Initiative::with('ownerCompany')->get();
@@ -23,18 +31,13 @@ class InitiativeController extends Controller
         $user = auth()->user();
 
         if ($user->isSuperUser()) {
-            // Superadmins bypass scopes and see all companies globally
             $companies = Company::withoutGlobalScopes()->get();
         } else {
-            // FIXED (FMCS Off Scoping Fallback): Resolve the admin's company ID 
-            // dynamically from the 'company_user' pivot table, bypassing the NULL column on 
-            // the core users table, and strictly locking the list to their own Ministry only!
-            $resolvedCompanyId = DB::table('company_user')
-                ->where('user_id', $user->id)
-                ->value('company_id');
+            // FIXED: Dynamically resolve the admin's company ID from your native CompanyAdmin model
+            $companyId = CompanyAdmin::where('user_id', $user->id)->value('company_id');
 
             $companies = Company::withoutGlobalScopes()
-                ->where('id', $resolvedCompanyId)
+                ->where('id', $companyId)
                 ->get();
         }
             
@@ -68,7 +71,7 @@ class InitiativeController extends Controller
         
         $trackingCodes = \GovStore\Tracking\Models\TrackingCode::with([
             'targets.category' => function($query) {
-                $query->withTrashed(); // Safe fallback for soft-deleted categories
+                $query->withTrashed(); 
             }, 
             'scopes', 
             'fundingType'
@@ -135,21 +138,18 @@ class InitiativeController extends Controller
 
     public function edit(Initiative $initiative)
     {
-        // Enforce: Only the Project Director (HEAD) or Ministry Admin can edit Initiative settings
-        $this->authorizeManagement($initiative, ['HEAD']);
+        // GATED (Centralized): Only HEAD (Operation Head) or Company Admin can edit
+        $this->authService->authorize($initiative, ['HEAD']);
 
         $user = auth()->user();
 
         if ($user->isSuperUser()) {
             $companies = Company::withoutGlobalScopes()->get();
         } else {
-            // FIXED: Dynamically resolve the admin's company ID during edits
-            $resolvedCompanyId = DB::table('company_user')
-                ->where('user_id', $user->id)
-                ->value('company_id');
+            $companyId = CompanyAdmin::where('user_id', $user->id)->value('company_id');
 
             $companies = Company::withoutGlobalScopes()
-                ->where('id', $resolvedCompanyId)
+                ->where('id', $companyId)
                 ->get();
         }
 
@@ -158,8 +158,8 @@ class InitiativeController extends Controller
 
     public function update(Request $request, Initiative $initiative)
     {
-        // Enforce: Only the Project Director (HEAD) or Ministry Admin can update Initiative settings
-        $this->authorizeManagement($initiative, ['HEAD']);
+        // GATED (Centralized): Only HEAD (Operation Head) or Company Admin can update
+        $this->authService->authorize($initiative, ['HEAD']);
 
         $rules = [
             'title'             => 'required|string|max:255',
@@ -207,8 +207,8 @@ class InitiativeController extends Controller
 
     public function destroy(Initiative $initiative)
     {
-        // Enforce: Only the Project Director (HEAD) or Ministry Admin can delete Initiatives
-        $this->authorizeManagement($initiative, ['HEAD']);
+        // GATED (Centralized): Only HEAD (Operation Head) or Company Admin can delete
+        $this->authService->authorize($initiative, ['HEAD']);
 
         if ($initiative->status !== 'Planning') {
             return redirect()->back()->with('error', 'Cannot delete active, closed, or archived initiatives. You must archive it instead.');
@@ -218,28 +218,5 @@ class InitiativeController extends Controller
 
         return redirect()->route('gov.tracking.initiatives.index')
                          ->with('success', 'Initiative has been deleted.');
-    }
-
-    /**
-     * Protect routes with the formalized GovStore Operation Unit permissions.
-     */
-    protected function authorizeManagement(Initiative $initiative, array $allowedDesignations = ['HEAD'])
-    {
-        $user = auth()->user();
-        if (!$user) abort(403);
-
-        if ($user->isSuperUser()) return; 
-
-        $isCompanyAdmin = $user->company_id === $initiative->owner_company_id && 
-            \GovStore\Organization\Models\CompanyAdmin::where('user_id', $user->id)->exists();
-        
-        $isOperationUnitManager = \GovStore\Tracking\Models\OperationUnit::where('initiative_id', $initiative->id)
-            ->where('user_id', $user->id)
-            ->whereIn('designation', $allowedDesignations)
-            ->exists();
-
-        if (!$isCompanyAdmin && !$isOperationUnitManager) {
-            abort(403, 'Unauthorized. Only authorized members of the Initiative Management Team or Ministry Admins can execute these configurations.');
-        }
     }
 }
