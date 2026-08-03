@@ -14,8 +14,15 @@ class ScopeValidatorService
      */
     public function validateExecutionScope(TrackingCode $trackingCode, int $locationId): array
     {
-        $trackingCode->load(['scopes', 'initiative.ownerCompany']);
+        // Only load scopes. Do NOT reload 'initiative' here, because the controller 
+        // has already safely loaded it using withoutGlobalScopes() to prevent tenant lockouts.
+        $trackingCode->load(['scopes']);
+        
         $initiative = $trackingCode->initiative;
+
+        if (!$initiative) {
+            return ['is_valid' => false, 'message' => 'Unauthorized. Initiative context is missing or inaccessible.'];
+        }
 
         // Fetch location and its geographical placement
         $location = Location::find($locationId);
@@ -38,9 +45,12 @@ class ScopeValidatorService
         // 2. Evaluate Participants (Organizational) Scope
         $participantPassed = $this->evaluateParticipants($trackingCode, $locationId, $location->company_id, $initiative->owner_company_id);
         if (!$participantPassed) {
+            // Safely fetch the owning company name without triggering Eloquent relationship locks
+            $companyName = \App\Models\Company::withoutGlobalScopes()->where('id', $initiative->owner_company_id)->value('name') ?? 'the owning Ministry';
+            
             return [
                 'is_valid' => false,
-                'message'  => "This Tracking Code is restricted to participating offices within the {$initiative->ownerCompany->name} organization."
+                'message'  => "This Tracking Code is restricted to participating offices within {$companyName}."
             ];
         }
 
