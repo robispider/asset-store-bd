@@ -71,10 +71,11 @@ class InitiativeController extends Controller
                          ->with('success', 'Initiative created successfully. Please assign an Operation Unit team.');
     }
 
-    public function show(Initiative $initiative)
+   public function show(Initiative $initiative)
     {
         $initiative->load(['ownerCompany', 'operationUnits.user']);
         
+        // 1. Load the active Tracking Codes (Tasks) and their specific goals
         $trackingCodes = \GovStore\Tracking\Models\TrackingCode::with([
             'targets.category' => function($query) {
                 $query->withTrashed(); 
@@ -86,12 +87,14 @@ class InitiativeController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
             
+        // 2. Load Recent Activity Timeline
         $recentActivity = \GovStore\Tracking\Models\TrackingTimeline::with('actor')
             ->where('initiative_id', $initiative->id)
             ->orderBy('occurred_at', 'desc')
             ->limit(20)
             ->get();
         
+        // 3. Compile Progress Percentages for the Active Tasks
         $projectionRepo = app(TrackingProjectionRepositoryInterface::class);
         $health = $projectionRepo->getLifecycleSummary($initiative);
         
@@ -104,8 +107,31 @@ class InitiativeController extends Controller
                 }
             }
         }
+
+        // =====================================================================
+        // 4. NEW: COMPILE THE PROGRAMME SNAPSHOT (The OLAP Cube Aggregator)
+        // =====================================================================
+        // Runs ultra-fast aggregate queries directly on our pre-compiled Fact Table
         
-        return view('govtracking::initiatives.workspace', compact('initiative', 'health', 'trackingCodes', 'recentActivity'));
+        $factQuery = \GovStore\Tracking\Models\TrackingFactDelivery::where('initiative_id', $initiative->id);
+
+        $snapshot = [
+            // Additive Financial & Physical Facts
+            'total_received_qty' => (int) $factQuery->sum('received_qty'),
+            'total_cost'         => (float) $factQuery->sum('total_cost'),
+            'total_shipments'    => (int) $factQuery->sum('transaction_count'),
+
+            // Distinct Operational Dimensions
+            'distinct_locations'     => (int) $factQuery->distinct('location_id')->count('location_id'),
+            'distinct_geo_areas'     => (int) $factQuery->distinct('geo_area_id')->count('geo_area_id'),
+            'distinct_categories'    => (int) $factQuery->distinct('category_id')->count('category_id'),
+            'distinct_manufacturers' => (int) $factQuery->distinct('manufacturer_id')->count('manufacturer_id'),
+            'distinct_suppliers'     => (int) $factQuery->distinct('supplier_id')->count('supplier_id'),
+        ];
+        
+        return view('govtracking::initiatives.workspace', compact(
+            'initiative', 'health', 'trackingCodes', 'recentActivity', 'snapshot'
+        ));
     }
 
     public function report(Initiative $initiative, TrackingProjectionRepositoryInterface $projectionRepo)
