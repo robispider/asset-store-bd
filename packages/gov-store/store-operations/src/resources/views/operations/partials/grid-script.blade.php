@@ -58,6 +58,7 @@ $(document).ready(function() {
         
         if (isDraft) {
             // Handle Product Selection
+            // Handle Product Selection
             $select.on('select2:select', function (e) {
                 let item = e.params.data;
                 
@@ -67,11 +68,14 @@ $(document).ready(function() {
                 }
 
                 $row.find('.current-stock').text(item.current_stock);
-                
-                // Set the solved Category ID directly onto the row's dataset
                 $row.attr('data-category-id', item.category_id);
-                
                 renderMetadataInputs($row);
+
+                // FIXED: Explicitly trigger tracking evaluation the millisecond a product is selected
+                let code = $('#tracking_code_input').val().trim();
+                if (code.length >= 2 && typeof evaluateGridItems === 'function') {
+                    evaluateGridItems(code);
+                }
             });
         }
 

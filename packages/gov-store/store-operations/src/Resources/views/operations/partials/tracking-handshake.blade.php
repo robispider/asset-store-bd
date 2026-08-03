@@ -1,7 +1,6 @@
 <script>
 $(document).ready(function() {
     
-    // Global AJAX setup to ensure CSRF is passed automatically on standard Web requests
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -54,15 +53,13 @@ $(document).ready(function() {
                             $('#saveDraftBtn, #triggerPostBtn').attr('disabled', 'disabled');
                         }
                     } else {
-                        // FIXED: Added defensive checks to prevent "Cannot read properties of undefined (reading 'initiative')"
                         let initiativeName = (res.context && res.context.initiative) ? res.context.initiative : 'Project Validated';
                         
                         $feedback.html(`<div style="margin-top:10px; padding: 10px; background: #d1fae5; border: 1px solid #10b981; border-radius: 4px; color: #065f46; font-size: 12.5px;"><i class="fa fa-check-circle"></i> <strong>VERIFIED:</strong> ${initiativeName}</div>`);
                         if (isDraft) {
-                            $('#saveDraftBtn, #triggerPostBtn').removeAttr('disabled');
+                            $(':button[id="saveDraftBtn"], :button[id="triggerPostBtn"]').removeAttr('disabled');
                         }
                         
-                        // Trigger Line-Item Evaluations
                         evaluateGridItems(code);
                     }
                 },
@@ -79,8 +76,9 @@ $(document).ready(function() {
                             $('#saveDraftBtn, #triggerPostBtn').attr('disabled', 'disabled');
                         }
                     } else {
+                        // FIXED: Silent fail on 404/401, friendly messaging on network timeouts
                         if(xhr.status !== 404 && xhr.status !== 401) {
-                            $feedback.html(`<div style="margin-top:10px; padding: 10px; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 4px; color: #b45309; font-size: 12.5px;"><i class="fa fa-warning"></i> Tracking Engine unreachable. Proceed with caution.</div>`);
+                            $feedback.html(`<div style="margin-top:10px; padding: 10px; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 4px; color: #b45309; font-size: 12.5px;"><i class="fa fa-info-circle"></i> Could not verify project details at this moment. Proceeding with regular receipt.</div>`);
                         } else {
                             $feedback.empty();
                         }
@@ -94,7 +92,7 @@ $(document).ready(function() {
     });
 
     // --- HANDSHAKE A2: Line-Item Level Evaluation (Advisory) ---
-    function evaluateGridItems(code) {
+    window.evaluateGridItems = function(code) {
         $('.item-row').each(function() {
             let $row = $(this);
             let categoryId = $row.attr('data-category-id'); 
@@ -102,8 +100,6 @@ $(document).ready(function() {
             let index = $row.data('index');
 
             if (!categoryId || qty <= 0) return;
-
-            $(`#tracking_warning_${index}`).remove();
 
             console.log(`====== [A2 REQUEST: EVALUATE LINE ${index}] ======`);
             console.log("Code:", code);
@@ -126,8 +122,10 @@ $(document).ready(function() {
                     console.log("Payload:", res);
                     console.log("=====================================================");
 
+                    // FIXED: Always clear old warning banners immediately when a response arrives to prevent duplication
+                    $(`#tracking_warning_${index}`).remove();
+
                     if (res.messages && res.messages.length > 0) {
-                        // FIXED: Added defensive checks to prevent "specificity_level" property reading crashes
                         let isMatrix = (res.context && res.context.specificity_level === '3_MATRIX');
                         let color = isMatrix ? '#f97316' : '#eab308';
                         let bg = isMatrix ? '#ffedd5' : '#fef9c3';
@@ -143,6 +141,9 @@ $(document).ready(function() {
                     console.error("Payload:", xhr.responseJSON || xhr.responseText);
                     console.error("====================================================");
 
+                    // Always clear old warnings on error too
+                    $(`#tracking_warning_${index}`).remove();
+
                     if (xhr.status === 403 && xhr.responseJSON) {
                         let warnMsg = (xhr.responseJSON.messages && xhr.responseJSON.messages.length > 0) ? xhr.responseJSON.messages[0] : 'Evaluation failed.';
                         let banner = `<div id="tracking_warning_${index}" class="tracking-advisory-banner" style="background: #fee2e2; border-left: 4px solid #ef4444; padding: 8px 12px; margin-top: 8px; font-size: 12px; color: #991b1b; border-radius: 0 4px 4px 0;"><i class="fa fa-ban"></i> <strong>BLOCKED:</strong> ${warnMsg}</div>`;
@@ -153,9 +154,9 @@ $(document).ready(function() {
         });
     }
 
-    // Bind A2 Evaluation to Grid Changes (Only if document is editable draft)
+    // Bind A2 Evaluation to Grid Changes
     if (isDraft) {
-        $('#gridBody').on('input change select2:select', '.qty-input, .item-select', function() {
+        $('#gridBody').on('input change', '.qty-input, .item-select', function() {
             let code = $('#tracking_code_input').val().trim();
             if (code.length >= 2 && !$('#saveDraftBtn').is(':disabled')) {
                 evaluateGridItems(code);
@@ -163,7 +164,6 @@ $(document).ready(function() {
         });
     }
 
-    // Run verification on initial load if code exists
     if ($('#tracking_code_input').val().trim().length >= 2) {
         $('#tracking_code_input').trigger('change');
     }
