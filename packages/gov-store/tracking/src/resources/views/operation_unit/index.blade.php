@@ -57,7 +57,6 @@
         </div>
 
         <!-- 1. OPERATION HEAD -->
-        <!-- 1. OPERATION HEAD -->
         <div class="team-card team-card-head">
             <div class="team-header">
                 <h4 class="team-title"><i class="fa fa-star text-yellow"></i> Operation Head (Project Director / Lead)</h4>
@@ -68,7 +67,6 @@
                     <div class="staff-row bg-warning" style="border-left: 3px solid #f39c12; background-color: #fcf8e3; border-radius: 3px;">
                         <div>
                             @php
-                                // Defensive Fallback
                                 $headName = $head->user ? "{$head->user->first_name} {$head->user->last_name}" : "Unknown User (ID: {$head->user_id})";
                             @endphp
                             <span style="font-size: 15px; font-weight: bold; color: #8a6d3b;">{{ $headName }}</span><br>
@@ -103,7 +101,6 @@
             <div class="team-body">
                 @forelse($officers as $officer)
                     @php
-                        // Defensive Fallback
                         $officerName = $officer->user ? "{$officer->user->first_name} {$officer->user->last_name}" : "Unknown User (ID: {$officer->user_id})";
                     @endphp
                     <div class="staff-row">
@@ -143,85 +140,12 @@
             <div class="team-body">
                 @forelse($support as $staff)
                     @php
-                        // Defensive Fallback
                         $staffName = $staff->user ? "{$staff->user->first_name} {$staff->user->last_name}" : "Unknown User (ID: {$staff->user_id})";
                     @endphp
                     <div class="staff-row">
                         <div>
                             <span style="font-size: 15px; font-weight: bold; color: #333;">{{ $staffName }}</span><br>
                             <small class="text-muted">Username: {{ $staff->user->username ?? 'N/A' }} | EMP No: {{ $staff->user->employee_num ?? 'N/A' }}</small>
-                        </div>
-                        <form action="{{ route('gov.tracking.initiatives.operation-unit.destroy', [$initiative->id, $staff->id]) }}" method="POST">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="btn btn-xs btn-danger" title="Remove Support Staff"><i class="fa fa-times"></i></button>
-                        </form>
-                    </div>
-                @empty
-                    <p class="text-muted text-center" style="padding: 15px; margin: 0; font-style: italic;">No support staff designated.</p>
-                @endforelse
-
-                <hr style="margin: 15px 0; border-top: 1px solid #e2e8f0;">
-                <form action="{{ route('gov.tracking.initiatives.operation-unit.store', $initiative->id) }}" method="POST" class="form-inline">
-                    @csrf
-                    <input type="hidden" name="designation" value="SUPPORT">
-                    <div class="form-group" style="width: 75%;">
-                        <select name="user_id" class="form-control user-search-select" style="width: 100%;" required>
-                            <option value="">Search Staff Directory...</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-success pull-right"><i class="fa fa-plus"></i> Assign Support</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- 2. OPERATION OFFICERS -->
-        <div class="team-card team-card-officer">
-            <div class="team-header">
-                <h4 class="team-title"><i class="fa fa-user-tie text-aqua"></i> Operation Officers (Planners & Approvers)</h4>
-                <p class="text-muted text-sm" style="margin-top: 5px; margin-bottom: 0;">Authorized to define exact delivery matrices and manage execution tracking codes.</p>
-            </div>
-            <div class="team-body">
-                @forelse($officers as $officer)
-                    <div class="staff-row">
-                        <div>
-                            <span style="font-size: 15px; font-weight: bold; color: #333;">{{ $officer->user->first_name }} {{ $officer->user->last_name }}</span><br>
-                            <small class="text-muted">Username: {{ $officer->user->username }} | EMP No: {{ $officer->user->employee_num ?? 'N/A' }}</small>
-                        </div>
-                        <form action="{{ route('gov.tracking.initiatives.operation-unit.destroy', [$initiative->id, $officer->id]) }}" method="POST">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="btn btn-xs btn-danger" title="Remove Officer"><i class="fa fa-times"></i></button>
-                        </form>
-                    </div>
-                @empty
-                    <p class="text-muted text-center" style="padding: 15px; margin: 0; font-style: italic;">No Operation Officers designated yet.</p>
-                @endforelse
-
-                <hr style="margin: 15px 0; border-top: 1px solid #e2e8f0;">
-                <form action="{{ route('gov.tracking.initiatives.operation-unit.store', $initiative->id) }}" method="POST" class="form-inline">
-                    @csrf
-                    <input type="hidden" name="designation" value="OFFICER">
-                    <div class="form-group" style="width: 75%;">
-                        <select name="user_id" class="form-control user-search-select" style="width: 100%;" required>
-                            <option value="">Search Staff Directory...</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-info pull-right"><i class="fa fa-plus"></i> Assign Officer</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- 3. SUPPORT STAFF -->
-        <div class="team-card team-card-support">
-            <div class="team-header">
-                <h4 class="team-title"><i class="fa fa-users text-green"></i> Support Staff (Document Handlers)</h4>
-                <p class="text-muted text-sm" style="margin-top: 5px; margin-bottom: 0;">Optional. Authorized to upload official documents and execute retrospective tagging.</p>
-            </div>
-            <div class="team-body">
-                @forelse($support as $staff)
-                    <div class="staff-row">
-                        <div>
-                            <span style="font-size: 15px; font-weight: bold; color: #333;">{{ $staff->user->first_name }} {{ $staff->user->last_name }}</span><br>
-                            <small class="text-muted">Username: {{ $staff->user->username }} | EMP No: {{ $staff->user->employee_num ?? 'N/A' }}</small>
                         </div>
                         <form action="{{ route('gov.tracking.initiatives.operation-unit.destroy', [$initiative->id, $staff->id]) }}" method="POST">
                             @csrf @method('DELETE')
@@ -254,7 +178,6 @@
         if (typeof window.jQuery === 'undefined') return;
 
         window.jQuery(function($) {
-            // Initialize AJAX Select2 on all staff search dropdowns
             $('.user-search-select').select2({
                 placeholder: 'Search Staff Directory...',
                 minimumInputLength: 2,
@@ -265,7 +188,7 @@
                     data: function (params) {
                         return { 
                             q: params.term,
-                            initiative_id: "{{ $initiative->id }}" // FIXED: Passed the active initiative id to scope the search
+                            initiative_id: "{{ $initiative->id }}"
                         };
                     },
                     processResults: function (data) {
