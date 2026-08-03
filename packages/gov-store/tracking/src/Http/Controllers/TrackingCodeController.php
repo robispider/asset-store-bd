@@ -28,6 +28,11 @@ class TrackingCodeController extends Controller
      * Secure Read-Only Task Component Viewer
      * Enforces identical lifecycle and scope validations as the GRN verify-code handshake.
      */
+    /**
+     * Secure Read-Only Task Component Viewer
+     * Enforces geographical and organizational scope checks, resolves operational 
+     * head contacts, and compiles target allocations for storekeeper verification.
+     */
     public function viewTaskComponent(TrackingCode $trackingCode)
     {
         $user = auth()->user();
@@ -41,10 +46,10 @@ class TrackingCodeController extends Controller
             abort(403, 'Operational Block: Your user account is not currently assigned to any operating office or location.');
         }
 
-        // 2. Eager load parent initiative without global scopes
+        // 2. Eager load parent initiative along with owning organization and contact rosters
         $trackingCode->load([
             'initiative' => function($query) {
-                $query->withoutGlobalScopes();
+                $query->withoutGlobalScopes()->with(['ownerCompany', 'operationUnits.user']);
             }
         ]);
 
@@ -78,7 +83,7 @@ class TrackingCodeController extends Controller
             abort(403, $scopeCheck['message']);
         }
 
-        // 6. Eager load targets and dynamic classifications
+        // 6. Eager load targets and structural scope parameters
         $trackingCode->load([
             'targets.category' => function($query) {
                 $query->withTrashed();
@@ -87,11 +92,12 @@ class TrackingCodeController extends Controller
             'scopes'
         ]);
 
-        $projectionRepo = app(\GovStore\Tracking\Repositories\TrackingProjectionRepositoryInterface::class);
+        // 7. Extract specific administrative support contact cards
+        $operationHead = $initiative->operationUnits->where('designation', 'HEAD')->first();
+        $operationOfficer = $initiative->operationUnits->where('designation', 'OFFICER')->first();
 
-        // 7. Compile target metrics based on the task's delivery strategy
+        // 8. Compile target allocations for display
         if ($trackingCode->specificity_level === '3_MATRIX') {
-            // Compile precise targets configured for the storekeeper's specific office
             foreach ($trackingCode->targets as $target) {
                 $allocation = DB::table('gov_tracking_allocations')
                     ->where('target_id', $target->id)
@@ -100,32 +106,16 @@ class TrackingCodeController extends Controller
 
                 if ($allocation) {
                     $target->allocated_qty = (int) $allocation->allocated_qty;
-                    $target->received_qty = (int) DB::table('gov_tracking_associations')
-                        ->where('tracking_code_id', $trackingCode->id)
-                        ->where('category_id', $target->category_id)
-                        ->where('location_id', $locationId)
-                        ->where('status', 'ACTIVE')
-                        ->sum('quantity');
-                    $target->remaining_qty = max(0, $target->allocated_qty - $target->received_qty);
                 } else {
                     $target->allocated_qty = 0;
-                    $target->received_qty = 0;
-                    $target->remaining_qty = 0;
                 }
-            }
-        } else {
-            // Compile totals for level 2 category targets
-            foreach ($trackingCode->targets as $target) {
-                $progress = $projectionRepo->getTargetProgress($trackingCode->id, $target->category_id);
-                $target->received_qty = (int) ($progress['received'] ?? 0);
-                $target->remaining_qty = max(0, $target->planned_qty - $target->received_qty);
             }
         }
 
         $locationName = Location::withoutGlobalScopes()->where('id', $locationId)->value('name') ?? 'Your Assigned Office';
 
         return view('govtracking::tracking_codes.view_task_component', compact(
-            'initiative', 'trackingCode', 'locationId', 'locationName'
+            'initiative', 'trackingCode', 'locationId', 'locationName', 'operationHead', 'operationOfficer'
         ));
     }
 
