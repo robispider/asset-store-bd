@@ -4,7 +4,7 @@
 @endphp
 
 <div class="box box-solid">
-    <div class="box-header with-border"><h3 class="box-title text-purple">4. Execution Scope & Governance</h3></div>
+    <div class="box-header with-border"><h3 class="box-title text-purple">2. Where can this task operate?</h3></div>
     <div class="box-body">
         
         <!-- Geographical Coverage (Enforced across all levels) -->
@@ -23,7 +23,7 @@
                 </label>
             </div>
             <div id="geo-select-group" style="{{ $geoVal === 'GeoArea' ? 'display: block;' : 'display: none;' }} margin-left: 20px; margin-top: 10px;">
-                <select name="geo_area_id" class="form-control select2" style="width: 50%;">
+                <select name="geo_area_id" id="geo_area_id" class="form-control select2" style="width: 50%;">
                     <option value="">-- Select Division / District / Upazila --</option>
                     @if(isset($geoAreas))
                         @foreach($geoAreas as $area)
@@ -36,7 +36,7 @@
 
         <hr>
 
-        <!-- Participating Offices (Cleaned of obsolete triggers) -->
+        <!-- Participating Offices -->
         <div class="form-group">
             <label>Participating Offices (Who can receive assets under this code?)</label>
             <div class="radio">

@@ -1,5 +1,5 @@
 <div class="box box-solid">
-    <div class="box-header with-border"><h3 class="box-title text-aqua">1. Task Identity</h3></div>
+    <div class="box-header with-border"><h3 class="box-title text-aqua">1. What are you creating?</h3></div>
     <div class="box-body">
         <div class="row">
             <div class="col-md-4 form-group has-feedback" id="tracking-code-group">
@@ -22,10 +22,10 @@
         
         @if(!isset($trackingCode))
             <div class="form-group">
-                <label>Official Government Order / Memo (PDF)</label>
+                <label>Official Government Order / Memo (PDF Scan)</label>
                 <input type="file" name="order_pdf" class="form-control" accept="application/pdf" {{ $initiative->require_documents ? 'required' : '' }}>
                 @if($initiative->require_documents)
-                    <p class="help-block text-red"><i class="fa fa-exclamation-circle"></i> Official document upload is strictly required for this Initiative.</p>
+                    <p class="help-block text-red"><i class="fa fa-exclamation-circle"></i> Official document upload is required for this Initiative.</p>
                 @endif
             </div>
         @endif
@@ -37,13 +37,11 @@
 <script>
     (function() {
         function initUniquenessChecker() {
-            // If jQuery is not loaded yet, wait 50ms and check again
             if (typeof window.jQuery === 'undefined') {
                 setTimeout(initUniquenessChecker, 50);
                 return;
             }
 
-            // jQuery is loaded, execute safely mapping $
             window.jQuery(function($) {
                 var $input = $('#tracking_code_input');
                 var $group = $('#tracking-code-group');
@@ -102,7 +100,6 @@
             });
         }
 
-        // Initialize polling
         initUniquenessChecker();
     })();
 </script>
