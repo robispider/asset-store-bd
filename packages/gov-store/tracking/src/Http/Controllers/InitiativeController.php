@@ -20,9 +20,15 @@ class InitiativeController extends Controller
         $this->authService = $authService;
     }
 
-    public function index()
+  public function index()
     {
-        $initiatives = Initiative::with('ownerCompany')->get();
+        // Add high-performance subqueries to count relations without N+1 bottlenecks
+        $initiatives = Initiative::with('ownerCompany')
+            ->withCount('trackingCodes')
+            ->withCount('operationUnits')
+            ->orderBy('updated_at', 'desc') // Ensure most recently active projects sit at the top
+            ->get();
+            
         return view('govtracking::initiatives.index', compact('initiatives'));
     }
 
