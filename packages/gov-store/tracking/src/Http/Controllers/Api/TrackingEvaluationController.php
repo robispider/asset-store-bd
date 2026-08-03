@@ -8,6 +8,7 @@ use GovStore\Tracking\Models\TrackingCode;
 use GovStore\Tracking\Services\ScopeValidatorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class TrackingEvaluationController extends Controller
 {
@@ -81,6 +82,14 @@ class TrackingEvaluationController extends Controller
             ], 403);
         }
 
+        // 3. Dynamic Handshake URL Resolution
+        $pdfDownloadUrl = null;
+        if ($trackingCode->order_pdf_path && Storage::disk('local')->exists($trackingCode->order_pdf_path)) {
+            $pdfDownloadUrl = route('gov.tracking.tracking-codes.download', $trackingCode->id);
+        }
+
+        $visualViewerUrl = route('gov.tracking.tracking-codes.view-task', $trackingCode->id);
+
         return response()->json([
             'can_proceed' => true,
             'context' => [
@@ -88,6 +97,8 @@ class TrackingEvaluationController extends Controller
                 'task'              => $trackingCode->task_title,
                 'fiscal_year'       => $trackingCode->fiscal_year,
                 'specificity_level' => $trackingCode->specificity_level,
+                'pdf_download_url'  => $pdfDownloadUrl,
+                'visual_viewer_url' => $visualViewerUrl,
             ],
             'messages' => []
         ], 200);

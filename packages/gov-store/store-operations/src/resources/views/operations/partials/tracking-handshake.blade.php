@@ -1,6 +1,7 @@
 <script>
 $(document).ready(function() {
     
+    // Global AJAX setup to ensure CSRF is passed automatically on standard Web requests
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -27,7 +28,7 @@ $(document).ready(function() {
         }
 
         trackingCodeTimer = setTimeout(function() {
-            $feedback.html('<div style="margin-top:10px; font-size: 12px; color: #854d0e;"><i class="fa fa-spinner fa-spin"></i> Verifying tracking code...</div>');
+            $feedback.html('<div style="margin-top:8px; font-size: 12px; color: #854d0e;"><i class="fa fa-spinner fa-spin"></i> Verifying tracking code...</div>');
 
             console.log("====== [A1 REQUEST: VERIFY CODE] ======");
             console.log("Code:", code);
@@ -48,18 +49,38 @@ $(document).ready(function() {
 
                     if (res.can_proceed === false) {
                         let errorMsg = (res.messages && res.messages.length > 0) ? res.messages[0] : 'Scope validation failed.';
-                        $feedback.html(`<div style="margin-top:10px; padding: 10px; background: #fee2e2; border: 1px solid #ef4444; border-radius: 4px; color: #991b1b; font-size: 12.5px;"><i class="fa fa-ban"></i> <strong>BLOCKED:</strong> ${errorMsg}</div>`);
+                        
+                        // Human-Centered Single-line Blocked Message
+                        $feedback.html(`<div style="margin-top:8px; font-size: 12.5px; color: #991b1b; display: flex; align-items: center; gap: 6px;"><i class="fa fa-ban text-red"></i> <strong>BLOCKED:</strong> ${errorMsg}</div>`);
                         if (isDraft) {
                             $('#saveDraftBtn, #triggerPostBtn').attr('disabled', 'disabled');
                         }
                     } else {
+                        // APPROVED: Clear to proceed
                         let initiativeName = (res.context && res.context.initiative) ? res.context.initiative : 'Project Validated';
+                        let taskName       = (res.context && res.context.task) ? res.context.task : '';
                         
-                        $feedback.html(`<div style="margin-top:10px; padding: 10px; background: #d1fae5; border: 1px solid #10b981; border-radius: 4px; color: #065f46; font-size: 12.5px;"><i class="fa fa-check-circle"></i> <strong>VERIFIED:</strong> ${initiativeName}</div>`);
+                        let pdfUrl         = (res.context && res.context.pdf_download_url) ? res.context.pdf_download_url : null;
+                        let viewerUrl      = (res.context && res.context.visual_viewer_url) ? res.context.visual_viewer_url : null;
+
+                        // REDESIGNED: Single-line, elegant metadata row to prevent card height mismatches!
+                        let feedbackHtml = `
+                            <div style="margin-top: 8px; font-size: 12.5px; color: #047857; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; line-height: 1.4;">
+                                <span><i class="fa fa-check text-green"></i> <strong>${taskName ? taskName : initiativeName}</strong> ${taskName ? `(${initiativeName})` : ''}</span>
+                                ${pdfUrl || viewerUrl ? `<span style="color: #cbd5e1;">|</span>` : ''}
+                                ${pdfUrl ? `<a href="${pdfUrl}" target="_blank" style="color: #059669; font-weight: bold; text-decoration: underline;"><i class="fa fa-file-pdf-o"></i> Memo</a>` : ''}
+                                ${pdfUrl && viewerUrl ? `<span style="color: #cbd5e1;">|</span>` : ''}
+                                ${viewerUrl ? `<a href="${viewerUrl}" target="_blank" style="color: #047857; font-weight: bold; text-decoration: underline;"><i class="fa fa-external-link"></i> Allocations</a>` : ''}
+                            </div>
+                        `;
+
+                        $feedback.html(feedbackHtml);
+
                         if (isDraft) {
                             $(':button[id="saveDraftBtn"], :button[id="triggerPostBtn"]').removeAttr('disabled');
                         }
                         
+                        // Trigger Line-Item Evaluations
                         evaluateGridItems(code);
                     }
                 },
@@ -71,14 +92,14 @@ $(document).ready(function() {
 
                     if (xhr.status === 403 && xhr.responseJSON) {
                         let blockMsg = (xhr.responseJSON.messages && xhr.responseJSON.messages.length > 0) ? xhr.responseJSON.messages[0] : 'Scope authorization failed.';
-                        $feedback.html(`<div style="margin-top:10px; padding: 10px; background: #fee2e2; border: 1px solid #ef4444; border-radius: 4px; color: #991b1b; font-size: 12.5px;"><i class="fa fa-ban"></i> <strong>BLOCKED:</strong> ${blockMsg}</div>`);
+                        $feedback.html(`<div style="margin-top:8px; font-size: 12.5px; color: #991b1b; display: flex; align-items: center; gap: 6px;"><i class="fa fa-ban text-red"></i> <strong>BLOCKED:</strong> ${blockMsg}</div>`);
                         if (isDraft) {
                             $('#saveDraftBtn, #triggerPostBtn').attr('disabled', 'disabled');
                         }
                     } else {
-                        // FIXED: Silent fail on 404/401, friendly messaging on network timeouts
+                        // Silent fail on 404/401, friendly messaging on network timeouts
                         if(xhr.status !== 404 && xhr.status !== 401) {
-                            $feedback.html(`<div style="margin-top:10px; padding: 10px; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 4px; color: #b45309; font-size: 12.5px;"><i class="fa fa-info-circle"></i> Could not verify project details at this moment. Proceeding with regular receipt.</div>`);
+                            $feedback.html(`<div style="margin-top:8px; font-size: 12.5px; color: #b45309; display: flex; align-items: center; gap: 6px;"><i class="fa fa-info-circle"></i> Could not verify project details at this moment. Proceeding with regular receipt.</div>`);
                         } else {
                             $feedback.empty();
                         }
@@ -122,7 +143,7 @@ $(document).ready(function() {
                     console.log("Payload:", res);
                     console.log("=====================================================");
 
-                    // FIXED: Always clear old warning banners immediately when a response arrives to prevent duplication
+                    // Always clear old warning banners immediately when a response arrives to prevent duplication
                     $(`#tracking_warning_${index}`).remove();
 
                     if (res.messages && res.messages.length > 0) {
@@ -154,9 +175,9 @@ $(document).ready(function() {
         });
     }
 
-    // Bind A2 Evaluation to Grid Changes
+    // Bind A2 Evaluation to Grid Changes (Only if document is editable draft)
     if (isDraft) {
-        $('#gridBody').on('input change', '.qty-input, .item-select', function() {
+        $('#gridBody').on('input change select2:select', '.qty-input, .item-select', function() {
             let code = $('#tracking_code_input').val().trim();
             if (code.length >= 2 && !$('#saveDraftBtn').is(':disabled')) {
                 evaluateGridItems(code);
@@ -164,6 +185,7 @@ $(document).ready(function() {
         });
     }
 
+    // Run verification on initial load if code exists
     if ($('#tracking_code_input').val().trim().length >= 2) {
         $('#tracking_code_input').trigger('change');
     }

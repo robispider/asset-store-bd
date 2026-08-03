@@ -48,3 +48,7 @@ Route::post('initiatives/{initiative}/tracking-codes/{trackingCode}/archive', [T
 // =========================================================================
 Route::get('initiatives/{initiative}/retrospective', [TrackingRetrospectiveController::class, 'index'])->name('initiatives.retrospective.index');
 Route::post('initiatives/{initiative}/retrospective', [TrackingRetrospectiveController::class, 'associate'])->name('initiatives.retrospective.associate');
+
+Route::get('tracking-codes/{trackingCode}/view-task', [TrackingCodeController::class, 'viewTaskComponent'])
+    ->name('tracking-codes.view-task');
+    

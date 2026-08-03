@@ -12,7 +12,7 @@ use GovStore\Tracking\Models\FundingType;
 use GovStore\Tracking\Services\TrackingAuthorizationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log; // FIXED: Imported the central Log facade
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class TrackingCodeController extends Controller
@@ -24,6 +24,111 @@ class TrackingCodeController extends Controller
         $this->authService = $authService;
     }
 
+    /**
+     * Secure Read-Only Task Component Viewer
+     * Enforces identical lifecycle and scope validations as the GRN verify-code handshake.
+     */
+    public function viewTaskComponent(TrackingCode $trackingCode)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            abort(403, 'Unauthenticated.');
+        }
+
+        // 1. Resolve user's operating location ID
+        $locationId = $user->location_id;
+        if (!$locationId) {
+            abort(403, 'Operational Block: Your user account is not currently assigned to any operating office or location.');
+        }
+
+        // 2. Eager load parent initiative without global scopes
+        $trackingCode->load([
+            'initiative' => function($query) {
+                $query->withoutGlobalScopes();
+            }
+        ]);
+
+        $initiative = $trackingCode->initiative;
+        if (!$initiative) {
+            abort(403, 'Unauthorized. Parent initiative is missing or inaccessible.');
+        }
+
+        // 3. Verify task lifecycle state
+        if ($trackingCode->status !== 'ACTIVE') {
+            abort(403, 'Inactive Task: This tracking code component is not currently in an ACTIVE operational state.');
+        }
+
+        // 4. Verify parent initiative lifecycle state
+        if ($initiative->status !== 'Active') {
+            $statusMsg = '';
+            if ($initiative->status === 'Planning') {
+                $statusMsg = "The initiative '{$initiative->title}' is currently in the Setup (Planning) phase and is not yet open for procurement operations.";
+            } elseif ($initiative->status === 'Closed') {
+                $statusMsg = "The initiative '{$initiative->title}' has been officially Closed. New physical receipts (GRNs) under this budget are suspended.";
+            } else {
+                $statusMsg = "The initiative '{$initiative->title}' has been Archived. All historical records are locked against future ledger transactions.";
+            }
+            abort(403, "Operational Block: {$statusMsg}");
+        }
+
+        // 5. Verify Geographical and Organizational Visibility Scopes
+        $scopeValidator = app(\GovStore\Tracking\Services\ScopeValidatorService::class);
+        $scopeCheck = $scopeValidator->validateExecutionScope($trackingCode, $locationId);
+        if (!$scopeCheck['is_valid']) {
+            abort(403, $scopeCheck['message']);
+        }
+
+        // 6. Eager load targets and dynamic classifications
+        $trackingCode->load([
+            'targets.category' => function($query) {
+                $query->withTrashed();
+            },
+            'fundingType',
+            'scopes'
+        ]);
+
+        $projectionRepo = app(\GovStore\Tracking\Repositories\TrackingProjectionRepositoryInterface::class);
+
+        // 7. Compile target metrics based on the task's delivery strategy
+        if ($trackingCode->specificity_level === '3_MATRIX') {
+            // Compile precise targets configured for the storekeeper's specific office
+            foreach ($trackingCode->targets as $target) {
+                $allocation = DB::table('gov_tracking_allocations')
+                    ->where('target_id', $target->id)
+                    ->where('location_id', $locationId)
+                    ->first();
+
+                if ($allocation) {
+                    $target->allocated_qty = (int) $allocation->allocated_qty;
+                    $target->received_qty = (int) DB::table('gov_tracking_associations')
+                        ->where('tracking_code_id', $trackingCode->id)
+                        ->where('category_id', $target->category_id)
+                        ->where('location_id', $locationId)
+                        ->where('status', 'ACTIVE')
+                        ->sum('quantity');
+                    $target->remaining_qty = max(0, $target->allocated_qty - $target->received_qty);
+                } else {
+                    $target->allocated_qty = 0;
+                    $target->received_qty = 0;
+                    $target->remaining_qty = 0;
+                }
+            }
+        } else {
+            // Compile totals for level 2 category targets
+            foreach ($trackingCode->targets as $target) {
+                $progress = $projectionRepo->getTargetProgress($trackingCode->id, $target->category_id);
+                $target->received_qty = (int) ($progress['received'] ?? 0);
+                $target->remaining_qty = max(0, $target->planned_qty - $target->received_qty);
+            }
+        }
+
+        $locationName = Location::withoutGlobalScopes()->where('id', $locationId)->value('name') ?? 'Your Assigned Office';
+
+        return view('govtracking::tracking_codes.view_task_component', compact(
+            'initiative', 'trackingCode', 'locationId', 'locationName'
+        ));
+    }
+
     public function create(Initiative $initiative)
     {
         $categories = Category::all();
@@ -33,7 +138,7 @@ class TrackingCodeController extends Controller
         return view('govtracking::tracking_codes.create', compact('initiative', 'categories', 'fundingTypes', 'geoAreas'));
     }
 
-   public function edit(Initiative $initiative, TrackingCode $trackingCode)
+    public function edit(Initiative $initiative, TrackingCode $trackingCode)
     {
         $this->authService->authorize($initiative, ['HEAD', 'OFFICER']);
 
@@ -44,15 +149,12 @@ class TrackingCodeController extends Controller
         $activeGeo = $trackingCode->scopes->where('dimension', 'GEOGRAPHY')->first();
         $activePart = $trackingCode->scopes->where('dimension', 'PARTICIPANTS')->first();
 
-        // FIXED (TenantScope Bypass): We eager load the location relation with withoutGlobalScopes()
-        // to prevent localized tenant scopes from returning nulls on different branch office rows!
         $trackingCode->load([
             'targets.allocations.location' => function($query) {
                 $query->withoutGlobalScopes();
             }
         ]);
 
-        // Compile saved matrix cells for automatic front-end spreadsheet pre-population
         $savedMatrixValues = [];
         foreach ($trackingCode->targets as $target) {
             foreach ($target->allocations as $alloc) {
@@ -65,11 +167,6 @@ class TrackingCodeController extends Controller
         ));
     }
 
-    /**
-     * Dynamic, dual-axis office search.
-     * Combines both Geographical Coverage and Organizational visibility rules.
-     * Fully safe-guarded: catches all errors and logs them securely.
-     */
     public function searchOffices(Request $request)
     {
         try {
@@ -84,20 +181,16 @@ class TrackingCodeController extends Controller
             $term = $request->input('q');
             $initiative = Initiative::findOrFail($request->input('initiative_id'));
 
-            // Start with a clean query bypassing local user TenantScope blockades
             $query = Location::withoutGlobalScopes();
 
-            // 1. FILTER DIMENSION A: Participants (Organizational)
             if ($request->input('participant_override') === 'Inherit') {
                 $query->where('company_id', $initiative->owner_company_id);
             }
 
-            // 2. FILTER DIMENSION B: Geographical (Spatial)
             if ($request->input('geo_override') === 'GeoArea' && $request->filled('geo_area_id')) {
                 $geoArea = GeoArea::find($request->input('geo_area_id'));
                 
                 if ($geoArea) {
-                    // Resolve database tables dynamically to bypass table prefix constraints
                     $profileTable = (new \GovStore\Organization\Models\LocationProfile)->getTable();
                     $geoTable = (new \GovStore\GeoAreas\Models\GeoArea)->getTable();
 
@@ -110,7 +203,6 @@ class TrackingCodeController extends Controller
                 }
             }
 
-            // 3. APPLY LIVE SEARCH TERM
             if (!empty($term)) {
                 $query->where('name', 'LIKE', "%{$term}%");
             }
@@ -127,13 +219,11 @@ class TrackingCodeController extends Controller
             return response()->json(['results' => $results]);
 
         } catch (\Exception $e) {
-            // Log to laravel.log automatically (Now unblocked by the import)
             Log::error('GovStore: searchOffices API Failure: ' . $e->getMessage(), [
                 'exception' => $e,
                 'request'   => $request->all()
             ]);
 
-            // Return the exception message to your browser's Developer Tools Response panel
             return response()->json(['error' => 'Internal Server Error. ' . $e->getMessage()], 500);
         }
     }
@@ -229,7 +319,6 @@ class TrackingCodeController extends Controller
                 }
             }
 
-            // Save Geographical Scope
             $geoOverride = $request->input('geo_override');
             $trackingCode->scopes()->create([
                 'dimension'   => 'GEOGRAPHY',
@@ -237,7 +326,6 @@ class TrackingCodeController extends Controller
                 'target_id'   => $geoOverride === 'GeoArea' ? $request->input('geo_area_id') : null,
             ]);
 
-            // Save Participants Scope
             $participantOverride = $request->input('participant_override');
             $trackingCode->scopes()->create([
                 'dimension'   => 'PARTICIPANTS',
@@ -322,7 +410,6 @@ class TrackingCodeController extends Controller
                 }
             }
 
-            // Sync Scopes
             $geoOverride = $request->input('geo_override');
             $trackingCode->scopes()->create([
                 'dimension'   => 'GEOGRAPHY',
