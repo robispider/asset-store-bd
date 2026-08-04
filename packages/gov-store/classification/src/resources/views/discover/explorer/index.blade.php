@@ -1,6 +1,10 @@
 @extends('layouts/default')
 @section('title', 'Catalog Explorer')
 
+@php
+    $canManageCollections = auth()->user() && (auth()->user()->isSuperUser() || auth()->user()->hasAccess('admin'));
+@endphp
+
 @section('content')
 <div class="row">
     <div class="col-md-12">
@@ -21,12 +25,18 @@
                 </h3>
             </div>
 
-            <!-- Action Bar (Appears when checkboxes are selected) -->
+            <!-- Bulk Action Bar -->
             <div id="bulk-action-bar" class="box-body" style="background-color: #fffaeb; border-bottom: 1px solid #f4ecd8; display: none; padding: 10px 15px;">
-                <strong id="selected-count" class="text-orange" style="font-size: 16px; margin-right: 15px;">0 Items Selected</strong>
-                <button type="button" class="btn btn-warning btn-sm" onclick="executeExplorerBulkAdoption()">
+                <strong id="selected-count" class="text-orange" style="font-size: 15px; margin-right: 15px;">0 Items Selected</strong>
+                <button type="button" class="btn btn-warning btn-sm" onclick="executeExplorerBulkAdoption()" style="margin-right: 5px;">
                     <i class="fas fa-rocket"></i> Bulk Adopt Selected
                 </button>
+                
+                @if($canManageCollections)
+                    <button type="button" class="btn btn-purple btn-sm" onclick="executeExplorerBulkAddToCollection()">
+                        <i class="fas fa-boxes"></i> Add Selected to Collection
+                    </button>
+                @endif
             </div>
 
             <!-- Main Explorer Table -->
@@ -38,22 +48,22 @@
                                 <input type="checkbox" id="select-all">
                             </th>
                             <th style="width: 50px;"></th> <!-- Icon -->
-                            <th>Code</th>
+                            <th style="width: 150px;">Code</th>
                             <th>Title</th>
-                            <th class="text-center">Status</th>
+                            <th class="text-center" style="width: 150px;">Status</th>
+                            <th class="text-center" style="width: 80px;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <!-- Go Up (If not at root) -->
                         @if($parentCode && count($breadcrumbs) > 0)
                             @php
-                                // Get the parent of the current node to go up one level
                                 $upCode = count($breadcrumbs) > 1 ? $breadcrumbs[count($breadcrumbs)-2]->code : null;
                             @endphp
                             <tr>
                                 <td></td>
                                 <td class="text-center"><i class="fas fa-level-up-alt text-muted"></i></td>
-                                <td colspan="3">
+                                <td colspan="4">
                                     <a href="{{ route('gov.catalog.discover.explorer', ['parent' => $upCode]) }}" class="text-muted" style="font-style: italic;">... Go up one level</a>
                                 </td>
                             </tr>
@@ -63,7 +73,7 @@
                         @foreach($nodes as $node)
                             <tr>
                                 <td class="text-center" style="vertical-align: middle;">
-                                    @if(!$node->is_folder && !$node->is_adopted)
+                                    @if(!$node->is_adopted)
                                         <input type="checkbox" class="node-checkbox" value="{{ $node->code }}">
                                     @endif
                                 </td>
@@ -77,19 +87,68 @@
                                 <td style="vertical-align: middle;"><code>{{ $node->code }}</code></td>
                                 <td style="vertical-align: middle;">
                                     @if($node->is_folder)
-                                        <a href="{{ route('gov.catalog.discover.explorer', ['parent' => $node->code]) }}" style="font-weight: bold; font-size: 15px;">{{ $node->title_en }}</a>
+                                        <a href="{{ route('gov.catalog.discover.explorer', ['parent' => $node->code]) }}" style="font-weight: bold; font-size: 14px;">{{ $node->title_en }}</a>
                                     @else
                                         <span style="font-weight: normal; font-size: 14px;">{{ $node->title_en }}</span>
                                     @endif
                                 </td>
                                 <td class="text-center" style="vertical-align: middle;">
                                     @if($node->is_folder)
-                                        <span class="label label-default" style="font-weight: normal;">Folder</span>
+                                        <span class="label label-default" style="font-weight: normal; background-color: #f39c12 !important;">Folder</span>
                                     @elseif($node->is_adopted)
                                         <span class="label label-success"><i class="fas fa-check"></i> Adopted</span>
                                     @else
                                         <span class="label label-default" style="background-color: #ddd; color: #777;">Not Adopted</span>
                                     @endif
+                                </td>
+                                <td class="text-center" style="vertical-align: middle;">
+                                    <!-- Context Action Menu (⋮ Dropdown) -->
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false" style="padding: 2px 8px;">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                            @if($node->is_folder)
+                                                <li>
+                                                    <a href="{{ route('gov.catalog.discover.explorer', ['parent' => $node->code]) }}">
+                                                        <i class="fas fa-folder-open text-yellow"></i> Browse
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" onclick="event.preventDefault(); triggerBulkAdoption(['{{ $node->code }}'])">
+                                                        <i class="fas fa-rocket text-green"></i> Adopt All Commodities
+                                                    </a>
+                                                </li>
+                                                @if($canManageCollections)
+                                                    <li>
+                                                        <a href="#" onclick="event.preventDefault(); triggerAddToCollection(['{{ $node->code }}'])">
+                                                            <i class="fas fa-boxes text-purple"></i> Add All to Collection
+                                                        </a>
+                                                    </li>
+                                                @endif
+                                            @else
+                                                <li>
+                                                    <a href="{{ route('gov.catalog.mapping.show', $node->code) }}">
+                                                        <i class="fas fa-eye text-blue"></i> View Metadata
+                                                    </a>
+                                                </li>
+                                                @if(!$node->is_adopted)
+                                                    <li>
+                                                        <a href="#" onclick="event.preventDefault(); triggerBulkAdoption(['{{ $node->code }}'])">
+                                                            <i class="fas fa-rocket text-green"></i> Adopt Category
+                                                        </a>
+                                                    </li>
+                                                @endif
+                                                @if($canManageCollections)
+                                                    <li>
+                                                        <a href="#" onclick="event.preventDefault(); triggerAddToCollection(['{{ $node->code }}'])">
+                                                            <i class="fas fa-boxes text-purple"></i> Add to Collection
+                                                        </a>
+                                                    </li>
+                                                @endif
+                                            @endif
+                                        </ul>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
@@ -103,47 +162,60 @@
     </div>
 </div>
 
-<!-- Include the Phase 2 Bulk Adoption Modal -->
+<!-- Include Phase 2 & Phase 3 Reusable Modals -->
 @include('gov-classification::adopt.partials.bulk-preview')
+@include('gov-classification::discover.partials.collection-modal')
 
 @endsection
 
 @section('moar_scripts')
 @parent
 <script>
-$(document).ready(function() {
+document.addEventListener("DOMContentLoaded", function() {
     // Select All Checkbox
-    $('#select-all').on('change', function() {
-        $('.node-checkbox').prop('checked', $(this).prop('checked'));
+    jQuery('#select-all').on('change', function() {
+        jQuery('.node-checkbox').prop('checked', jQuery(this).prop('checked'));
         updateActionBar();
     });
 
     // Individual Checkboxes
-    $('.node-checkbox').on('change', function() {
+    jQuery('.node-checkbox').on('change', function() {
         updateActionBar();
     });
 
     function updateActionBar() {
-        let count = $('.node-checkbox:checked').length;
+        let count = jQuery('.node-checkbox:checked').length;
         if (count > 0) {
-            $('#selected-count').text(count + (count === 1 ? ' Item Selected' : ' Items Selected'));
-            $('#bulk-action-bar').slideDown('fast');
+            jQuery('#selected-count').text(count + (count === 1 ? ' Item Selected' : ' Items Selected'));
+            jQuery('#bulk-action-bar').slideDown('fast');
         } else {
-            $('#bulk-action-bar').slideUp('fast');
-            $('#select-all').prop('checked', false);
+            jQuery('#bulk-action-bar').slideUp('fast');
+            jQuery('#select-all').prop('checked', false);
         }
     }
 });
 
-// Trigger Phase 2 Modal
+// Trigger Bulk Adoption Engine (Recursive)
 function executeExplorerBulkAdoption() {
     let codes = [];
-    $('.node-checkbox:checked').each(function() {
-        codes.push($(this).val());
+    jQuery('.node-checkbox:checked').each(function() {
+        codes.push(jQuery(this).val());
     });
     
     if (codes.length > 0) {
         triggerBulkAdoption(codes); // From bulk-preview.blade.php
+    }
+}
+
+// Trigger Bulk Collection Association (Recursive)
+function executeExplorerBulkAddToCollection() {
+    let codes = [];
+    jQuery('.node-checkbox:checked').each(function() {
+        codes.push(jQuery(this).val());
+    });
+    
+    if (codes.length > 0) {
+        triggerAddToCollection(codes); // From collection-modal.blade.php
     }
 }
 </script>

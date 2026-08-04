@@ -103,4 +103,9 @@ Route::group([
 
     // Universal Search API Endpoint
     Route::get('/search/universal/ajax', [CatalogSearchController::class, 'searchUniversalAjax'])->name('gov.catalog.search.universal.ajax');
+
+    // Collection Membership API Endpoints
+    Route::get('/discover/collections-api/list', [\GovStore\Classification\Http\Controllers\CollectionDiscoveryController::class, 'listActive'])->name('gov.catalog.discover.collections.api.list');
+    Route::post('/discover/collections-api/add-nodes', [\GovStore\Classification\Http\Controllers\CollectionDiscoveryController::class, 'addNodes'])->name('gov.catalog.discover.collections.api.add-nodes');
+    
 });

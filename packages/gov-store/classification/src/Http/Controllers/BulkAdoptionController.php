@@ -17,17 +17,13 @@ class BulkAdoptionController extends Controller
         $this->service = $service;
     }
 
-    /**
-     * Resolves the target boundary (Ministry vs Local Office).
-     */
     private function resolveScope(TenantContext $context): array
     {
-        $user = auth()->user();
-        $isCompanyAdmin = \GovStore\Organization\Models\CompanyAdmin::where('user_id', $user->id)
-            ->where('company_id', $context->companyId)
-            ->exists();
+        if ($context->isGlobal) {
+            return ['type' => 'global', 'id' => null];
+        }
 
-        if ($isCompanyAdmin && $context->companyId > 0) {
+        if ($context->isCompanyAdmin && $context->companyId > 0) {
             return ['type' => 'company', 'id' => $context->companyId];
         }
 
@@ -44,7 +40,13 @@ class BulkAdoptionController extends Controller
 
         try {
             $scope = $this->resolveScope($tenantContext);
-            $summary = $this->service->preview($request->codes, $scope['type'], $scope['id']);
+            $summary = $this->service->preview(
+                $request->codes, 
+                $scope['type'], 
+                $scope['id'],
+                $tenantContext->companyId,
+                $tenantContext->locationId
+            );
             
             return response()->json([
                 'success' => true,
@@ -58,11 +60,21 @@ class BulkAdoptionController extends Controller
 
     public function execute(Request $request, TenantContext $tenantContext)
     {
-        $request->validate(['codes' => 'required|array|min:1']);
+        // Validate structured item inputs (code + category type)
+        $request->validate([
+            'items' => 'required|array|min:1',
+            'items.*.code' => 'required|string',
+            'items.*.category_type' => 'required|string|in:asset,consumable,accessory,component,license',
+        ]);
 
         try {
             $scope = $this->resolveScope($tenantContext);
-            $result = $this->service->execute($request->codes, $scope['type'], $scope['id'], auth()->id());
+            $result = $this->service->execute(
+                $request->items, 
+                $scope['type'], 
+                $scope['id'], 
+                auth()->id()
+            );
             
             return response()->json($result);
         } catch (Exception $e) {

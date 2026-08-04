@@ -11,35 +11,37 @@ use Exception;
 
 class CategoryAdoptionController extends Controller
 {
-   /**
-     * Intelligently resolves the target boundary based on the user's operational rank.
+    /**
+     * Resolves the target boundary using pre-computed TenantContext singleton states.
      */
     private function resolveScope(TenantContext $context): array
     {
-        $user = auth()->user();
-        
-        // 1. Is the user a Company Admin for this context?
-        $isCompanyAdmin = \GovStore\Organization\Models\CompanyAdmin::where('user_id', $user->id)
-            ->where('company_id', $context->companyId)
-            ->exists();
-
-        if ($isCompanyAdmin && $context->companyId > 0) {
-            return ['type' => 'company', 'id' => $context->companyId]; // Adopts for the entire Ministry
+        // 1. Global Superadmin Bypass
+        if ($context->isGlobal) {
+            return ['type' => 'global', 'id' => null];
         }
 
-        // 2. Otherwise, they are local staff (Storekeeper/Office Admin). Scope strictly to their building.
+        // 2. Company Admin (Ministry-wide scope)
+        if ($context->isCompanyAdmin && $context->companyId > 0) {
+            return ['type' => 'company', 'id' => $context->companyId];
+        }
+
+        // 3. Local Office Staff (Location-wide scope)
         if ($context->locationId > 0) {
             return ['type' => 'location', 'id' => $context->locationId];
         }
 
         throw new Exception(__('classification::texts.ctrl_exception_no_operational_context'));
     }
+
     public function adopt(Request $request, CategoryAdoptionService $adoptionService, TenantContext $tenantContext)
     {
         $request->validate(['category_id' => 'required|integer']);
 
         try {
             $scope = $this->resolveScope($tenantContext);
+            
+            // Cannot manually adopt if already globally shared
             $adoptionService->useCategory($request->category_id, $scope['type'], $scope['id']);
             return response()->json(['success' => true]);
         } catch (Exception $e) {
@@ -60,7 +62,7 @@ class CategoryAdoptionController extends Controller
         }
     }
 
-  public function provision(Request $request, CatalogCategoryCreator $creator, TenantContext $tenantContext)
+    public function provision(Request $request, CatalogCategoryCreator $creator, TenantContext $tenantContext)
     {
         $request->validate([
             'unspsc_code'      => 'required|string',
@@ -71,40 +73,28 @@ class CategoryAdoptionController extends Controller
         ]);
 
         $user = auth()->user();
-        $isSuperAdmin = $user->isSuperUser() || $user->hasAccess('admin');
 
         try {
-            // ১. স্কোপ ইনিশিয়ালাইজেশন ভেরিয়েবল
-            $governanceType = null;
-            $targetScopeType = null;
-            $targetScopeId = null;
+            $scope = $this->resolveScope($tenantContext);
+            $governanceType = $scope['type']; 
+            $targetScopeType = $scope['type'];
+            $targetScopeId = $scope['id'];
 
-            if ($isSuperAdmin) {
-                // ২. সুপার অ্যাডমিনের জন্য ফর্ম রিকোয়েস্ট থেকে স্কোপ ডিফাইন করা হবে
+            // Superadmins can manually override standard scopes via payload inputs
+            if ($tenantContext->isGlobal) {
                 $governanceType = $request->input('governance_type', 'global');
-                
                 if ($governanceType === 'company') {
                     $targetScopeType = 'company';
                     $targetScopeId = $request->input('target_company_id');
-                    
                     if (empty($targetScopeId)) {
                         throw new Exception(__('classification::texts.ctrl_exception_select_target_company'));
                     }
-                } else {
-                    // Global Standard এর জন্য কোনো নির্দিষ্ট Scope ID লাগে না
-                    $targetScopeType = 'global';
+                } elseif ($governanceType === 'global') {
                     $targetScopeId = null;
                 }
-            } else {
-                // ৩. সাধারণ ব্যবহারকারীদের (Company Admin/Storekeeper) জন্য সেশন থেকে স্কোপ ডিফাইন করা হবে
-                $scope = $this->resolveScope($tenantContext);
-                $governanceType = $scope['type']; // 'company' or 'location'
-                $targetScopeType = $scope['type'];
-                $targetScopeId = $scope['id'];
             }
 
-            // ৪. ক্রিয়েট ও ম্যাপ এক্সিকিউট করা
-            $category = $creator->provisionAndMap(
+            $creator->provisionAndMap(
                 $request->unspsc_code,
                 $request->category_type,
                 $governanceType,

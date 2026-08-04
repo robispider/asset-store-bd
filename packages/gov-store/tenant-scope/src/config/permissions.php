@@ -35,6 +35,7 @@ return [
             // Custom Business Policy Keys
             'inventory.adjust',
             
+            
             // --- NATIVE SNIPE-IT ASSETS ---
             'assets.view',
             'assets.create',

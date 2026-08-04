@@ -96,10 +96,13 @@ class MenuRegistry
                                 ->whereIn('designation', $designations)
                                 ->exists();
                         }
-                        // 8. Standard Capability/Permission Verification
+                        
+                       // 8. Standard Capability/Permission Verification
                         else {
-                            $hasAccess = $context->effectivePermissions
-                                && $context->effectivePermissions->has($perm);
+                            // Utilize the new helper created in the updated context
+                            $hasAccess = method_exists($context, 'hasPermission') 
+                                ? $context->hasPermission($perm) 
+                                : ($context->effectivePermissions && $context->effectivePermissions->has($perm));
                         }
 
                         if ($hasAccess) {

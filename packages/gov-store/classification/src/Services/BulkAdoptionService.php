@@ -17,23 +17,46 @@ class BulkAdoptionService
         $this->adoption = $adoption;
     }
 
-    /**
-     * Analyzes an array of UNSPSC codes and categorizes what action will be taken for a specific scope.
-     */
-    public function preview(array $codes, string $scopeType, int $scopeId): array
+    protected function expandFolders(array $codes): array
     {
-        $nodes = CatalogNode::whereIn('code', $codes)->with('snipeMapping')->get();
+        $nodes = CatalogNode::whereIn('code', $codes)->get();
+        $expandedCodes = [];
+
+        foreach ($nodes as $node) {
+            if ($node->level === 4) {
+                $expandedCodes[] = $node->code;
+            } else {
+                $childCodes = CatalogNode::where('hid', 'LIKE', $node->hid . '%')
+                    ->where('level', 4)
+                    ->pluck('code')
+                    ->toArray();
+                
+                $expandedCodes = array_merge($expandedCodes, $childCodes);
+            }
+        }
+
+        return array_unique($expandedCodes);
+    }
+
+    /**
+     * Preview mapping with pre-existing category types populated.
+     */
+    public function preview(array $codes, string $scopeType, ?int $scopeId, ?int $companyId = null, ?int $locationId = null): array
+    {
+        $flatCodes = $this->expandFolders($codes);
+        $nodes = CatalogNode::whereIn('code', $flatCodes)->with(['snipeMapping.category'])->get();
         
         $summary = [
-            'new'      => [], // Needs native Snipe-IT category creation & adoption
-            'link'     => [], // Category exists, just needs adoption linkage
-            'skipped'  => [], // Already adopted by this scope
+            'new'      => [], 
+            'link'     => [], 
+            'skipped'  => [], 
         ];
 
         foreach ($nodes as $node) {
             $item = [
-                'code'  => $node->code,
-                'title' => $node->title_en,
+                'code'          => $node->code,
+                'title'         => $node->title_en,
+                'category_type' => 'consumable', // Default type for new categories
             ];
 
             if (!$node->snipeMapping) {
@@ -43,53 +66,93 @@ class BulkAdoptionService
 
             $categoryId = $node->snipeMapping->category_id;
             
-            // Check if it's already adopted by this specific scope
-            $isAdopted = DB::table('gov_tenant_scope_mappings')
-                ->where('reference_type', 'category')
-                ->where('reference_id', $categoryId)
-                ->where('scope_type', $scopeType)
-                ->where('scope_id', $scopeId)
-                ->where('is_active', true)
+            // Populate the pre-existing category type so the UI dropdown can display it accurately
+            if ($node->snipeMapping->category) {
+                $item['category_type'] = $node->snipeMapping->category->category_type;
+            }
+
+            // Tier 1 Check
+            $isGlobal = DB::table('gov_category_governance')
+                ->where('category_id', $categoryId)
+                ->where('governance_type', 'global')
                 ->exists();
 
-            if ($isAdopted) {
+            if ($isGlobal) {
                 $summary['skipped'][] = $item;
-            } else {
-                $summary['link'][] = $item;
+                continue;
             }
+
+            // Tier 2 Check
+            if ($companyId > 0) {
+                $isCompanyAdopted = DB::table('gov_tenant_scope_mappings')
+                    ->where('reference_type', 'category')
+                    ->where('reference_id', $categoryId)
+                    ->where('scope_type', 'company')
+                    ->where('scope_id', $companyId)
+                    ->where('is_active', true)
+                    ->exists();
+
+                if ($isCompanyAdopted) {
+                    $summary['skipped'][] = $item;
+                    continue;
+                }
+            }
+
+            // Tier 3 Check
+            if ($locationId > 0) {
+                $isLocationAdopted = DB::table('gov_tenant_scope_mappings')
+                    ->where('reference_type', 'category')
+                    ->where('reference_id', $categoryId)
+                    ->where('scope_type', 'location')
+                    ->where('scope_id', $locationId)
+                    ->where('is_active', true)
+                    ->exists();
+
+                if ($isLocationAdopted) {
+                    $summary['skipped'][] = $item;
+                    continue;
+                }
+            }
+
+            $summary['link'][] = $item;
         }
 
         return $summary;
     }
 
     /**
-     * Executes the bulk adoption securely within a database transaction.
+     * Executes bulk adoptions using custom types chosen by the user.
      */
-    public function execute(array $codes, string $scopeType, int $scopeId, int $userId): array
+    public function execute(array $items, string $scopeType, ?int $scopeId, int $userId): array
     {
-        $preview = $this->preview($codes, $scopeType, $scopeId);
         $executed = 0;
+        $skipped = 0;
 
-        DB::transaction(function () use ($preview, $scopeType, $scopeId, $userId, &$executed) {
-            
-            // 1. Process 'New' items (Create native category + map + adopt)
-            foreach ($preview['new'] as $item) {
-                $this->creator->provisionAndMap(
-                    $item['code'],
-                    'consumable', // Defaulting bulk to consumable (can be configured later)
-                    $scopeType,   // Governance matches the scope
-                    $scopeType,
-                    $scopeId,
-                    $userId,
-                    $item['title']
-                );
-                $executed++;
-            }
+        DB::transaction(function () use ($items, $scopeType, $scopeId, $userId, &$executed, &$skipped) {
+            foreach ($items as $item) {
+                $code = $item['code'];
+                $selectedType = $item['category_type'];
 
-            // 2. Process 'Link' items (Native category exists, just adopt it)
-            foreach ($preview['link'] as $item) {
-                $node = CatalogNode::with('snipeMapping')->where('code', $item['code'])->first();
-                if ($node && $node->snipeMapping) {
+                $node = CatalogNode::where('code', $code)->with('snipeMapping')->first();
+                if (!$node) {
+                    $skipped++;
+                    continue;
+                }
+
+                if (!$node->snipeMapping) {
+                    // Create the category natively with the specific user-selected type
+                    $this->creator->provisionAndMap(
+                        $code,
+                        $selectedType, 
+                        $scopeType,   
+                        $scopeType,
+                        $scopeId,
+                        $userId,
+                        $node->title_en
+                    );
+                    $executed++;
+                } else {
+                    // Link standard adoption (Use existing category_id)
                     $this->adoption->useCategory($node->snipeMapping->category_id, $scopeType, $scopeId);
                     $executed++;
                 }
@@ -99,7 +162,7 @@ class BulkAdoptionService
         return [
             'success' => true,
             'processed_count' => $executed,
-            'skipped_count' => count($preview['skipped'])
+            'skipped_count' => $skipped
         ];
     }
 }

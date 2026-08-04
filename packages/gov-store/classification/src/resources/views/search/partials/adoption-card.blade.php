@@ -1,18 +1,40 @@
 ﻿@php
     $user = auth()->user();
-    $isSuperAdmin = $user->isSuperUser() || $user->hasAccess('admin');
+    $isSuperAdmin = $tenantContext->isGlobal;
+    $isCompanyAdmin = $tenantContext->isCompanyAdmin;
     
-    // Check if the current user is a Company Admin for the active context
-    $isCompanyAdmin = \GovStore\Organization\Models\CompanyAdmin::where('user_id', $user->id)
-        ->where('company_id', $tenantContext->companyId)
-        ->exists();
+    // Check if the current user is an Admin or SuperUser
+    $canManageCollections = $user && ($user->isSuperUser() || $user->hasAccess('admin'));
 
     $isGlobal = ($governance && $governance->governance_type === 'global');
     $scopeNoun = ($activeScopeType === 'company') ? 'organization' : 'office location';
 @endphp
 
 <div id="adoption-card-container">
-    @if(!$currentMapping)
+    @if($node->level < 4)
+        <!-- ==============================================
+             FOLDER ACTION WORKSPACE (Segments, Families, Classes)
+             ============================================== -->
+        <div class="box box-solid" style="margin-top: 20px; border: 1px solid #d2d6de; border-top: 3px solid #f39c12;">
+            <div class="box-body" style="padding: 20px;">
+                <h4 style="margin-top: 0; font-weight: bold;"><i class="fas fa-folder-open text-warning"></i> Folder Actions</h4>
+                <p class="text-muted" style="font-size: 13px;">This reference code is a <strong>Level {{ $node->level }} Folder</strong>. You can perform recursive operations on all descendant commodities under this branch.</p>
+                
+                <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+                    <button class="btn btn-warning btn-block" onclick="triggerBulkAdoption(['{{ $node->code }}'])" style="margin-bottom: 10px; text-align: left; padding: 10px 15px; font-weight: bold;">
+                        <i class="fas fa-rocket"></i> Adopt All Descendant Commodities
+                    </button>
+                    
+                    @if($canManageCollections)
+                        <button class="btn btn-purple btn-block" onclick="triggerAddToCollection(['{{ $node->code }}'])" style="text-align: left; padding: 10px 15px; font-weight: bold; color: #fff;">
+                            <i class="fas fa-boxes"></i> Add All Commodities to Collection
+                        </button>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+    @elseif(!$currentMapping)
         <!-- STATE 1: No Category Exists -->
         <div class="box box-solid" style="margin-top: 20px; border: 1px solid #d2d6de; border-top: 3px solid #dd4b39;">
             <div class="box-body" style="padding: 20px;">
@@ -86,35 +108,49 @@
         </div>
 
     @elseif($isGlobal)
-        <!-- STATE 2: Globally Shared Standard (Already visible, no adoption needed) -->
+        <!-- STATE 2: Globally Shared Standard -->
         <div class="box box-solid" style="margin-top: 20px; border: 1px solid #d2d6de; border-top: 3px solid #00c0ef;">
             <div class="box-body" style="padding: 20px;">
                 <h4 style="margin-top: 0; font-weight: bold;"><i class="fas fa-globe text-aqua"></i> {{ __('classification::texts.adoption_gov_shared_standard') }}</h4>
                 <p class="lead" style="margin-bottom: 5px; color: #333;">{{ $currentMapping->category?->name ?? 'Category' }}</p>
                 <p class="text-muted" style="font-size: 13px;">This official classification is globally available. It is already visible and ready for use in your local office dropdowns.</p>
-            </div>
-        </div>
-
-    @elseif($isCompanyAdopted)
-        <!-- STATE 3: Company Standard (Already visible to local office) -->
-        <div class="box box-solid" style="margin-top: 20px; border: 1px solid #d2d6de; border-top: 3px solid #605ca8;">
-            <div class="box-body" style="padding: 20px;">
-                <h4 style="margin-top: 0; font-weight: bold;"><i class="fas fa-university text-purple"></i> Used by your Ministry / Organization</h4>
-                <p class="lead" style="margin-bottom: 5px; color: #333;">{{ $currentMapping->category?->name ?? 'Category' }}</p>
-                <p class="text-muted" style="font-size: 13px;">Your parent Ministry has adopted this classification. It is already visible and ready for use in your local office.</p>
                 
-                @if($isCompanyAdmin)
-                    <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
-                        <button class="btn btn-default btn-abandon" data-id="{{ $currentMapping->category_id }}">
-                            <i class="fas fa-times"></i> Stop Using for Ministry
+                @if($canManageCollections)
+                    <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
+                        <button type="button" class="btn btn-purple btn-block" onclick="triggerAddToCollection(['{{ $node->code }}'])">
+                            <i class="fas fa-boxes"></i> Add to Collection
                         </button>
                     </div>
                 @endif
             </div>
         </div>
 
+    @elseif($isCompanyAdopted)
+        <!-- STATE 3: Company Standard -->
+        <div class="box box-solid" style="margin-top: 20px; border: 1px solid #d2d6de; border-top: 3px solid #605ca8;">
+            <div class="box-body" style="padding: 20px;">
+                <h4 style="margin-top: 0; font-weight: bold;"><i class="fas fa-university text-purple"></i> Used by your Ministry / Organization</h4>
+                <p class="lead" style="margin-bottom: 5px; color: #333;">{{ $currentMapping->category?->name ?? 'Category' }}</p>
+                <p class="text-muted" style="font-size: 13px;">Your parent Ministry has adopted this classification. It is already visible and ready for use in your local office.</p>
+                
+                <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+                    @if($isCompanyAdmin)
+                        <button class="btn btn-default btn-abandon btn-block" data-id="{{ $currentMapping->category_id }}" style="margin-bottom: 10px;">
+                            <i class="fas fa-times"></i> Stop Using for Ministry
+                        </button>
+                    @endif
+                    
+                    @if($canManageCollections)
+                        <button type="button" class="btn btn-purple btn-block" onclick="triggerAddToCollection(['{{ $node->code }}'])">
+                            <i class="fas fa-boxes"></i> Add to Collection
+                        </button>
+                    @endif
+                </div>
+            </div>
+        </div>
+
     @elseif($isLocationAdopted)
-        <!-- STATE 4: Location Standard (Adopted privately by this specific office) -->
+        <!-- STATE 4: Location Standard -->
         <div class="box box-solid" style="margin-top: 20px; border: 1px solid #d2d6de; border-top: 3px solid #00a65a;">
             <div class="box-body" style="padding: 20px;">
                 <h4 style="margin-top: 0; font-weight: bold;"><i class="fas fa-map-marker-alt text-success"></i> Used by your Local Office</h4>
@@ -122,9 +158,15 @@
                 <p class="text-muted" style="font-size: 13px;">This classification was adopted specifically for your local office building.</p>
 
                 <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
-                    <button class="btn btn-default btn-abandon" data-id="{{ $currentMapping->category_id }}">
+                    <button class="btn btn-default btn-abandon btn-block" data-id="{{ $currentMapping->category_id }}" style="margin-bottom: 10px;">
                         <i class="fas fa-times"></i> {{ __('classification::texts.adoption_btn_stop_using') }}
                     </button>
+                    
+                    @if($canManageCollections)
+                        <button type="button" class="btn btn-purple btn-block" onclick="triggerAddToCollection(['{{ $node->code }}'])">
+                            <i class="fas fa-boxes"></i> Add to Collection
+                        </button>
+                    @endif
                 </div>
             </div>
         </div>
@@ -138,9 +180,15 @@
                 <p class="text-muted" style="font-size: 13px;">This classification is not currently in use by your Ministry or Office.</p>
 
                 <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
-                    <button class="btn btn-success btn-adopt" data-id="{{ $currentMapping->category_id }}">
+                    <button class="btn btn-success btn-adopt btn-block" data-id="{{ $currentMapping->category_id }}" style="margin-bottom: 10px;">
                         <i class="fas fa-check"></i> {{ $isCompanyAdmin ? 'Adopt for Ministry' : 'Adopt for Local Office' }}
                     </button>
+                    
+                    @if($canManageCollections)
+                        <button type="button" class="btn btn-purple btn-block" onclick="triggerAddToCollection(['{{ $node->code }}'])">
+                            <i class="fas fa-boxes"></i> Add to Collection
+                        </button>
+                    @endif
                 </div>
             </div>
         </div>
@@ -148,7 +196,7 @@
 </div>
 
 <script>
-$(document).ready(function() {
+document.addEventListener("DOMContentLoaded", function() {
     function reloadWorkspace() {
         if (typeof loadWorkspaceDetails === 'function') {
             loadWorkspaceDetails('{{ $node->code }}');
@@ -158,35 +206,35 @@ $(document).ready(function() {
     }
 
     // Toggle Superadmin Company Assignment Dropdown
-    $('input[name="governance_type"]').on('change', function() {
-        if ($(this).val() === 'company') {
-            $('#company-assignment-div').slideDown(200);
-            $('#prov_target_company').prop('required', true);
+    jQuery(document).on('change', 'input[name="governance_type"]', function() {
+        if (jQuery(this).val() === 'company') {
+            jQuery('#company-assignment-div').slideDown(200);
+            jQuery('#prov_target_company').prop('required', true);
         } else {
-            $('#company-assignment-div').slideUp(200);
-            $('#prov_target_company').prop('required', false).val('').trigger('change');
+            jQuery('#company-assignment-div').slideUp(200);
+            jQuery('#prov_target_company').prop('required', false).val('').trigger('change');
         }
     });
 
     // Provision Action
-    $('#provision-category-form').on('submit', function(e) {
+    jQuery('#provision-category-form').on('submit', function(e) {
         e.preventDefault();
-        const btn = $('#btn-provision');
+        const btn = jQuery('#btn-provision');
         btn.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
         
         const payload = {
             _token: '{{ csrf_token() }}',
-            unspsc_code: $('#prov_unspsc_code').val(),
-            custom_name: $('#prov_custom_name').val(),
-            category_type: $('#prov_category_type').val(),
+            unspsc_code: jQuery('#prov_unspsc_code').val(),
+            custom_name: jQuery('#prov_custom_name').val(),
+            category_type: jQuery('#prov_category_type').val(),
         };
 
-        if ($('input[name="governance_type"]').length > 0) {
-            payload.governance_type = $('input[name="governance_type"]:checked').val();
-            payload.target_company_id = $('#prov_target_company').val();
+        if (jQuery('input[name="governance_type"]').length > 0) {
+            payload.governance_type = jQuery('input[name="governance_type"]:checked').val();
+            payload.target_company_id = jQuery('#prov_target_company').val();
         }
 
-        $.post('{{ route("gov.catalog.adoption.provision") }}', payload)
+        jQuery.post('{{ route("gov.catalog.adoption.provision") }}', payload)
         .done(function() {
             reloadWorkspace();
         }).fail(function(xhr) {
@@ -196,20 +244,20 @@ $(document).ready(function() {
     });
 
     // Adopt Action
-    $('.btn-adopt').on('click', function() {
-        const btn = $(this);
+    jQuery('.btn-adopt').on('click', function() {
+        const btn = jQuery(this);
         btn.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
-        $.post('{{ route("gov.catalog.adoption.adopt") }}', {
+        jQuery.post('{{ route("gov.catalog.adoption.adopt") }}', {
             _token: '{{ csrf_token() }}', category_id: btn.data('id')
         }).done(function() { reloadWorkspace(); });
     });
 
     // Abandon Action
-    $('.btn-abandon').on('click', function() {
+    jQuery('.btn-abandon').on('click', function() {
         if(!confirm('{{ __('classification::texts.adoption_js_confirm_remove') }}')) return;
-        const btn = $(this);
+        const btn = jQuery(this);
         btn.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
-        $.post('{{ route("gov.catalog.adoption.abandon") }}', {
+        jQuery.post('{{ route("gov.catalog.adoption.abandon") }}', {
             _token: '{{ csrf_token() }}', category_id: btn.data('id')
         }).done(function() { reloadWorkspace(); }).fail(function(xhr) {
             alert('Governance Blocked: ' + (xhr.responseJSON?.message || 'Error'));

@@ -69,8 +69,6 @@
             <i class="fas fa-link text-blue"></i> {{ __('classification::texts.mapping_drawer_title') }}
         </h3>
 
-       
-
         <!-- Manual Autocomplete Form -->
         <form id="mapping-submission-form">
             <div class="form-group" style="margin-bottom: 25px;">
@@ -89,18 +87,22 @@
     </div>
 </div>
 
+<!-- Include Phase 2 & Phase 3 Reusable Modals -->
+@include('gov-classification::adopt.partials.bulk-preview')
+@include('gov-classification::discover.partials.collection-modal')
+
 <script>
-$(document).ready(function() {
-    const drawer = $('#mapping-drawer');
-    const categorySelect = $('#snipe-category-select');
+document.addEventListener("DOMContentLoaded", function() {
+    const drawer = jQuery('#mapping-drawer');
+    const categorySelect = jQuery('#snipe-category-select');
 
     // Drawer Slide Open
-    $('#btn-trigger-mapping').on('click', function() {
+    jQuery('#btn-trigger-mapping').on('click', function() {
         drawer.css('right', '0');
         
         // Initialize Snipe-IT's global Select2 library dynamically
         categorySelect.select2({
-            dropdownParent: $('#mapping-drawer'),
+            dropdownParent: jQuery('#mapping-drawer'),
             ajax: {
                 url: '{{ route("gov.catalog.snipe-categories.ajax") }}',
                 dataType: 'json',
@@ -117,14 +119,12 @@ $(document).ready(function() {
     });
 
     // Drawer Slide Close
-    $('#btn-close-drawer').on('click', function() {
+    jQuery('#btn-close-drawer').on('click', function() {
         drawer.css('right', '-105%');
     });
 
-  
-
     // Form Submission Handler
-    $('#mapping-submission-form').on('submit', function(e) {
+    jQuery('#mapping-submission-form').on('submit', function(e) {
         e.preventDefault();
         const selectedId = categorySelect.val();
         const selectedName = categorySelect.find('option:selected').text();
@@ -135,9 +135,9 @@ $(document).ready(function() {
 
     // Save Linkage via AJAX
     function saveMapping(categoryId, categoryName) {
-        $('#btn-save-mapping').html('{{ __('classification::texts.mapping_drawer_saving') }}').prop('disabled', true);
+        jQuery('#btn-save-mapping').html('{{ __('classification::texts.mapping_drawer_saving') }}').prop('disabled', true);
 
-        $.ajax({
+        jQuery.ajax({
             url: '{{ route("gov.catalog.mapping.save") }}',
             type: 'POST',
             data: {
@@ -146,26 +146,15 @@ $(document).ready(function() {
                 category_id: categoryId
             },
             success: function(response) {
-                // Instantly update the parent Details Column status box
-                $('#status-card-box').removeClass('box-warning').addClass('box-success');
-                $('#status-title-text').html('<i class="fas fa-check-circle text-success"></i> {{ __('classification::texts.mapping_drawer_success_title') }}');
-                $('#status-desc-text').html('This node is mapped to Snipe-IT Category: <strong class="text-green">' + categoryName + '</strong>');
-                $('#btn-trigger-mapping').removeClass('btn-warning').addClass('btn-default').html('<i class="fas fa-link"></i> {{ __('classification::texts.mapping_drawer_change_link') }}');
-
                 // Close Drawer smoothly
                 drawer.css('right', '-105%');
-                
-                // Update the corresponding Left Results Card mapping label inline
-                $(`.catalog-result-item[data-code="{{ $node->code }}"] .far.fa-circle`)
-                    .removeClass('far fa-circle')
-                    .addClass('fas fa-check-circle text-success')
-                    .parent().html('<span class="text-success"><i class="fas fa-check-circle"></i> Mapped</span>');
+                window.location.reload();
             },
             error: function(xhr) {
                 alert('{{ __('classification::texts.mapping_drawer_error_prefix') }}' + (xhr.responseJSON?.message || '{{ __('classification::texts.mapping_drawer_error_failed_save') }}'));
             },
             complete: function() {
-                $('#btn-save-mapping').html('{{ __('classification::texts.mapping_drawer_btn_save') }}').prop('disabled', false);
+                jQuery('#btn-save-mapping').html('{{ __('classification::texts.mapping_drawer_btn_save') }}').prop('disabled', false);
             }
         });
     }
