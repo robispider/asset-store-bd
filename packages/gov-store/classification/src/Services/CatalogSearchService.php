@@ -3,11 +3,13 @@
 namespace GovStore\Classification\Services;
 
 use GovStore\Classification\Models\CatalogNode;
+use GovStore\Classification\Models\CatalogCollection;
+use App\Models\Category;
 use Illuminate\Support\Collection;
 
 class CatalogSearchService
 {
- /**
+    /**
      * Staged search utilizing SQL Case Relevance Scoring.
      */
     public function search(string $query, string $scheme = 'UNSPSC', int $limit = 30): Collection
@@ -65,6 +67,69 @@ class CatalogSearchService
     }
 
     /**
+     * Universal Search: Returns results grouped by Collections, Master Catalog, and Local Inventory.
+     */
+    public function searchUniversal(string $query, int $locationId): array
+    {
+        $queryStr = trim($query);
+        if (strlen($queryStr) < 2) {
+            return [
+                'collections' => collect(),
+                'catalog'     => collect(),
+                'local'       => collect()
+            ];
+        }
+
+        $queryLike = '%' . $queryStr . '%';
+
+        // 1. Search Collections
+        $collections = CatalogCollection::where('name', 'LIKE', $queryLike)
+            ->orWhere('description', 'LIKE', $queryLike)
+            ->where('is_active', true)
+            ->limit(5)
+            ->get(['id', 'name', 'icon'])
+            ->map(function ($c) {
+                return [
+                    'type' => 'collection', 
+                    'id' => $c->id, 
+                    'text' => $c->name, 
+                    'icon' => $c->icon
+                ];
+            });
+
+        // 2. Search Master Catalog (UNSPSC) - Reusing existing CQRS scoring logic
+        $catalogNodes = $this->search($queryStr, 'UNSPSC', 10)->map(function ($n) {
+            return [
+                'type' => 'catalog', 
+                'code' => $n->code, 
+                'text' => $n->title_en, 
+                'level' => $n->level, 
+                'hid' => $n->hid
+            ];
+        });
+
+        // 3. Search Local Adopted Inventory (Tenant Scoped!)
+        // Implicitly applies TenantScope global isolation filters natively
+        $localCategories = Category::where('name', 'LIKE', $queryLike)
+            ->limit(5)
+            ->get(['id', 'name', 'category_type']) 
+            ->map(function ($cat) {
+                return [
+                    'type' => 'local', 
+                    'id' => $cat->id, 
+                    'text' => $cat->name, 
+                    'cat_type' => $cat->category_type
+                ];
+            });
+
+        return [
+            'collections' => $collections,
+            'catalog'     => $catalogNodes,
+            'local'       => $localCategories
+        ];
+    }
+
+    /**
      * Browse child items of a given parent node.
      */
     public function browse(?string $parentCode, string $scheme = 'UNSPSC'): Collection
@@ -111,7 +176,6 @@ class CatalogSearchService
             ->first();
     }
 
-    
     /**
      * Get all top-level (root/segment) nodes for a scheme.
      * 
@@ -127,8 +191,6 @@ class CatalogSearchService
             ->get();
     }
 
-   
-
     /**
      * Get the full tree depth for a given node.
      * 
@@ -139,6 +201,7 @@ class CatalogSearchService
     {
         return $node->level;
     }
+
     /**
      * Resolve the ancestor breadcrumb trail using the materialized hid path.
      * Replaces the previous `ancestors` method.

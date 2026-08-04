@@ -6,7 +6,6 @@ use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use GovStore\Classification\Services\CatalogSearchService;
 use GovStore\Classification\Services\CategoryAdoptionService;
-use GovStore\Classification\Models\CategoryGovernance;
 use GovStore\TenantScope\Contexts\TenantContext;
 
 class CatalogSearchController extends Controller
@@ -27,7 +26,7 @@ class CatalogSearchController extends Controller
     }
 
     /**
-     * AJAX: Search nodes, now including the hid for breadcrumb rendering.
+     * AJAX: Search master nodes (Used by Collection Builder & Explorer).
      */
     public function searchAjax(Request $request, CatalogSearchService $searcher)
     {
@@ -50,6 +49,17 @@ class CatalogSearchController extends Controller
                 ];
             }),
         ]);
+    }
+
+    /**
+     * AJAX: Universal Search Endpoint (Used by the global search bar in operations).
+     */
+    public function searchUniversalAjax(Request $request, CatalogSearchService $searcher, TenantContext $context)
+    {
+        $query = $request->input('q', '');
+        $results = $searcher->searchUniversal($query, $context->locationId ?? 0);
+        
+        return response()->json(['results' => $results]);
     }
 
     /**
@@ -123,8 +133,8 @@ class CatalogSearchController extends Controller
         ]);
     }
 
- /**
-     * Show the mapping editor and governance/adoption metadata. (Optimized & Defensive)
+    /**
+     * Show the mapping editor and governance/adoption metadata.
      */
     public function showMapping(Request $request, $code = null)
     {
@@ -150,7 +160,6 @@ class CatalogSearchController extends Controller
         $isLocationAdopted = false;
         $governance = null;
 
-        // Reintroduced the active scope determination for dynamic UI labels
         $activeScopeType = 'location';
         if ($tenantContext->companyId > 0) {
             $activeScopeType = 'company';
@@ -159,7 +168,6 @@ class CatalogSearchController extends Controller
         if ($node->snipeMapping) {
             $categoryId = $node->snipeMapping->category_id;
             
-            // Independently verify Company-level and Location-level adoptions
             if ($tenantContext->companyId > 0) {
                 $isCompanyAdopted = $adoptionService->isUsedBy($categoryId, 'company', $tenantContext->companyId);
             }
@@ -177,7 +185,7 @@ class CatalogSearchController extends Controller
             'isCompanyAdopted'  => $isCompanyAdopted,
             'isLocationAdopted' => $isLocationAdopted,
             'governance'        => $governance,
-            'activeScopeType'   => $activeScopeType, // Restored variable
+            'activeScopeType'   => $activeScopeType,
             'tenantContext'     => $tenantContext,
             'suggestedCategory' => null,
         ]);

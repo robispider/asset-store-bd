@@ -11,22 +11,21 @@ class MyCatalogService
     /**
      * Retrieve the grid of operational categories adopted by the active context (company or location).
      */
-   public function getLocalGrid(int $companyId, int $locationId, int $perPage = 50): LengthAwarePaginator
+  public function getLocalGrid(int $companyId, int $locationId, string $tab = 'all', int $perPage = 50): LengthAwarePaginator
     {
-        return Category::withoutGlobalScopes()
+        $query = Category::withoutGlobalScopes()
             ->select('categories.id', 'categories.name', 'categories.category_type')
-            // Inner Join: Categories adopted by the Company OR the specific Location
             ->join('gov_tenant_scope_mappings as usage', function ($join) use ($companyId, $locationId) {
                 $join->on('categories.id', '=', 'usage.reference_id')
                      ->where('usage.reference_type', '=', 'category')
-                     ->where(function ($query) use ($companyId, $locationId) {
+                     ->where(function ($q) use ($companyId, $locationId) {
                          if ($companyId > 0) {
-                             $query->where(function ($sq) use ($companyId) {
+                             $q->where(function ($sq) use ($companyId) {
                                  $sq->where('usage.scope_type', 'company')->where('usage.scope_id', $companyId);
                              });
                          }
                          if ($locationId > 0) {
-                             $query->orWhere(function ($sq) use ($locationId) {
+                             $q->orWhere(function ($sq) use ($locationId) {
                                  $sq->where('usage.scope_type', 'location')->where('usage.scope_id', $locationId);
                              });
                          }
@@ -38,15 +37,39 @@ class MyCatalogService
             ->addSelect(
                 'usage.updated_at as adopted_at',
                 'usage.is_active as is_adopted_active',
-                'usage.scope_type as active_adoption_scope', // Identifies if it was adopted via Company or Location
+                'usage.scope_type as active_adoption_scope',
                 'gov.governance_type',
                 'origin_company.name as owner_name',
                 'map.code as unspsc_code'
-            )
-            ->orderBy('categories.name', 'asc')
-            ->paginate($perPage);
-    }
+            );
 
+        // Apply Tab Filters
+        if ($tab === 'archived') {
+            $query->where('usage.is_active', false);
+        } else {
+            $query->where('usage.is_active', true);
+            
+            if ($tab === 'global') {
+                $query->where('gov.governance_type', 'global');
+            } elseif ($tab === 'company') {
+                $query->where('gov.governance_type', 'company');
+            } elseif ($tab === 'location') {
+                $query->where('usage.scope_type', 'location')->whereNull('gov.governance_type');
+            } elseif ($tab === 'unused') {
+                // The Heavy Lifter: Find categories where physical inventory count for this location is exactly 0
+                $query->whereRaw("
+                    (SELECT COUNT(*) FROM assets 
+                     INNER JOIN models ON assets.model_id = models.id 
+                     WHERE models.category_id = categories.id AND assets.location_id = ? AND assets.deleted_at IS NULL) +
+                    (SELECT COUNT(*) FROM consumables WHERE category_id = categories.id AND location_id = ? AND deleted_at IS NULL) +
+                    (SELECT COUNT(*) FROM components WHERE category_id = categories.id AND location_id = ? AND deleted_at IS NULL) +
+                    (SELECT COUNT(*) FROM accessories WHERE category_id = categories.id AND location_id = ? AND deleted_at IS NULL) = 0
+                ", [$locationId, $locationId, $locationId, $locationId]);
+            }
+        }
+
+        return $query->orderBy('categories.name', 'asc')->paginate($perPage);
+    }
     /**
      * Get detailed analytics for a single category scoped specifically to the active context.
      */

@@ -131,28 +131,69 @@ function bootstrapCatalogExplorer() {
     });
 
     // Execute AJAX Search
-    function executeSearch(query) {
-        resultsContainer.html(`
-            <div class="text-center" style="padding: 80px 20px;">
-                <i class="fas fa-spinner fa-spin fa-3x text-blue" style="margin-bottom: 15px;"></i>
-                <p class="text-muted">{{ __('classification::texts.search_searching_catalog_records') }}</p>
-            </div>
-        `);
-
-        // Save search keyword in LocalStorage list
-        saveRecentSearch(query);
+   function executeSearch(query) {
+        resultsContainer.html(`<div class="text-center" style="padding: 40px;"><i class="fas fa-spinner fa-spin fa-2x text-blue"></i></div>`);
 
         $.ajax({
-            url: '{{ route("gov.catalog.search.ajax") }}',
-            data: { 
-                q: query, 
-                scheme: 'UNSPSC',
-                unmapped: $('#filter-unmapped').is(':checked') ? 'true' : 'false',
-                commodities: $('#filter-commodities').is(':checked') ? 'true' : 'false'
-            },
-            success: function(response) {
-                renderResultsList(response.results, query);
+            url: '{{ route("gov.catalog.search.universal.ajax") }}', // NEW ROUTE
+            data: { q: query },
+            success: function(res) {
+                renderUniversalResults(res.results, query);
             }
+        });
+    }
+
+    function renderUniversalResults(data, query) {
+        if (data.collections.length === 0 && data.catalog.length === 0 && data.local.length === 0) {
+            resultsContainer.html(`<div class="text-center text-muted" style="padding: 40px;">No matches found.</div>`);
+            return;
+        }
+
+        let html = '';
+
+        // Render Collections Group
+        if (data.collections.length > 0) {
+            html += `<h5 style="margin-top:0; font-weight:bold; color:#3c8dbc; border-bottom:1px solid #eee; padding-bottom:5px;">📚 Collections</h5><div class="list-group">`;
+            data.collections.forEach(item => {
+                html += `<a href="/gov-store/operations/catalog/discover/collections/${item.id}" class="list-group-item" style="border-left: 3px solid #3c8dbc;">
+                            <i class="${item.icon} text-muted" style="margin-right:10px;"></i> <strong>${highlightMatchText(item.text, query)}</strong>
+                         </a>`;
+            });
+            html += `</div>`;
+        }
+
+        // Render Master Catalog Group
+        if (data.catalog.length > 0) {
+            html += `<h5 style="margin-top:15px; font-weight:bold; color:#f39c12; border-bottom:1px solid #eee; padding-bottom:5px;">🌐 Official Catalog (UNSPSC)</h5><div class="list-group">`;
+            data.catalog.forEach(item => {
+                html += `<a href="#" class="list-group-item catalog-result-item" data-code="${item.code}" style="border-left: 3px solid #f39c12;">
+                            <small class="text-muted pull-right">${item.code}</small>
+                            <strong>${highlightMatchText(item.text, query)}</strong>
+                         </a>`;
+            });
+            html += `</div>`;
+        }
+
+        // Render Local Inventory Group
+        if (data.local.length > 0) {
+            html += `<h5 style="margin-top:15px; font-weight:bold; color:#00a65a; border-bottom:1px solid #eee; padding-bottom:5px;">🏢 Existing Office Inventory</h5><div class="list-group">`;
+            data.local.forEach(item => {
+                html += `<a href="/gov-store/operations/catalog/my-catalog/${item.id}" class="list-group-item" style="border-left: 3px solid #00a65a;">
+                            <span class="label label-default pull-right">${item.cat_type}</span>
+                            <strong>${highlightMatchText(item.text, query)}</strong>
+                         </a>`;
+            });
+            html += `</div>`;
+        }
+
+        resultsContainer.html(html);
+
+        // Bind clicks for the Master Catalog items to load the right pane
+        $('.catalog-result-item').on('click', function(e) {
+            e.preventDefault();
+            $('.list-group-item').removeClass('active');
+            $(this).addClass('active');
+            loadWorkspaceDetails($(this).data('code')); // Your existing function
         });
     }
 
