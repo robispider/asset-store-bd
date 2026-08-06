@@ -59,26 +59,26 @@ public function index(Request $request, TenantContext $tenantContext)
         
         $companyId = $tenantContext->companyId ?? 0;
         $locationId = $tenantContext->locationId ?? 0;
-        
 
-        // Capture the active tab (default to 'all')
-        $activeTab = $request->input('tab', 'all');
+        $activeTab = $request->input('tab', 'active');
 
+        // Fetch Grid Data
+        $categories = $this->service->getLocalGrid($companyId, $locationId, $activeTab, 50);
         
-
-          $categories = $this->service->getLocalGrid($companyId, $locationId, $activeTab, 50);
-        
-        // If the user has absolutely 0 categories, show Quick Start
-        if ($activeTab === 'all' && $categories->total() === 0 && $request->input('page', 1) == 1) {
+        if ($activeTab === 'active' && $categories->total() === 0 && $request->input('page', 1) == 1) {
             return view('gov-classification::discover.quickstart');
         }
-        
 
+        // Fetch Summary Metrics (Run lightweight counts to power the dashboard cards)
+        $metrics = [
+            'total_active' => $this->service->getLocalGrid($companyId, $locationId, 'active', 1)->total(),
+            'needs_cleanup' => $this->service->getLocalGrid($companyId, $locationId, 'cleanup', 1)->total(),
+            'archived' => $this->service->getLocalGrid($companyId, $locationId, 'archived', 1)->total(),
+        ];
         
         $isReadOnly = ($accessMode === 'employee');
-        $scopeNoun = ($companyId > 0) ? 'organization' : 'office location';
 
-        return view('gov-classification::my-catalog.index', compact('categories', 'isReadOnly', 'scopeNoun', 'activeTab'));
+        return view('gov-classification::my-catalog.index', compact('categories', 'isReadOnly', 'activeTab', 'metrics'));
     }
 
     public function show($id, TenantContext $tenantContext)
