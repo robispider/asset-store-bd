@@ -3,454 +3,313 @@
 namespace GovStore\StoreOperations\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use GovStore\StoreOperations\Models\Document;
-use GovStore\StoreOperations\Enums\DocumentState;
+use GovStore\StoreOperations\Policies\DocumentPolicy;
+use GovStore\StoreOperations\Services\CapabilityRegistry;
+use GovStore\StoreOperations\Services\DocumentValidationService;
 use GovStore\StoreOperations\Services\GoodsReceiptService;
-use GovStore\StoreOperations\Services\GoodsIssueService;
 use GovStore\StoreOperations\Services\PostingPipelineManager;
 use GovStore\StoreOperations\Services\ProductResolver;
-use GovStore\StoreOperations\Services\DocumentValidationService;
+use GovStore\StoreOperations\Services\ProfileCompilerService;
+use GovStore\TenantScope\Contexts\TenantContext;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Exception;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class DocumentWorkspaceController extends Controller
 {
-    protected ProductResolver $productResolver;
-    protected GoodsReceiptService $receiptService;
-    protected GoodsIssueService $issueService;
-    protected PostingPipelineManager $pipelineManager;
-    protected DocumentValidationService $validationService;
-
-    /**
-     * Dependency Injection via Constructor.
-     */
     public function __construct(
-        ProductResolver $productResolver, 
-        GoodsReceiptService $receiptService,
-        GoodsIssueService $issueService,
-        PostingPipelineManager $pipelineManager,
-        DocumentValidationService $validationService
-    ) {
-        $this->productResolver = $productResolver;
-        $this->receiptService = $receiptService;
-        $this->issueService = $issueService;
-        $this->pipelineManager = $pipelineManager;
-        $this->validationService = $validationService;
+        protected ProductResolver $productResolver,
+        protected GoodsReceiptService $receiptService,
+        protected PostingPipelineManager $pipelineManager,
+        protected DocumentValidationService $validationService,
+        protected DocumentPolicy $policy,
+    ) {}
+
+    private function document(string $type, string $id, string $action = 'view', bool $lock = false): Document
+    {
+        $query = Document::whereKey($id);
+        if ($lock) {
+            $query->lockForUpdate();
+        }
+        $document = $query->firstOrFail();
+        $this->policy->check($document, $type, $action);
+
+        return $document;
     }
 
-    /**
-     * Handles the final ledger posting and materialization.
-     */
     public function post(Request $request, string $type, string $id)
     {
-        $document = Document::findOrFail($id);
-
+        $this->document($type, $id, 'post');
         try {
-            // 1. Auto-save the latest grid values to the draft
-            $this->saveDraft($request, $type, $id);
-            $document->refresh();
-
-            // 2. Run validations before materializing
-            try {
-                $validationErrors = $this->validationService->validateDocument($document, $request->all());
-
-                if (!empty($validationErrors)) {
-                    $errorMessages = [];
-                    foreach ($validationErrors as $productName => $caps) {
-                        foreach ($caps as $capErrors) {
-                            foreach ($capErrors as $messages) {
-                                $errorMessages[] = "[{$productName}] " . implode(' ', $messages);
-                            }
-                        }
-                    }
-                    return back()->with('error', 'Validation Failed: ' . implode(' | ', $errorMessages));
+            DB::transaction(function () use ($request, $type, $id) {
+                $document = $this->document($type, $id, 'post', true);
+                if ($document->status === 'DRAFT') {
+                    $this->persistDraft($request, $document);
                 }
-
-                // 3. Execute the materialization pipeline (Kardex ledger and assets)
+                $document->refresh();
+                $completion = $this->validationService->evaluateDocument($document);
+                if (! $document->items()->exists() || ! $completion['is_valid']) {
+                    $messages = collect($completion['checklist'])->where('passed', false)->pluck('label')->all();
+                    throw ValidationException::withMessages(['items' => $messages ?: [__('tenantops::access.validation_failed')]]);
+                }
+                $errors = $this->validationService->validateDocument($document, $request->all());
+                if ($errors) {
+                    throw ValidationException::withMessages(['items' => collect($errors)->flatten()->all()]);
+                }
                 $this->pipelineManager->materialize($document, auth()->id());
+            });
 
-            } catch (\Throwable $e) {
-                throw new \Error(
-                    "POSTING CRASH: " . $e->getMessage() . 
-                    " in " . $e->getFile() . " on line " . $e->getLine() . 
-                    " | DB Snapshot: " . json_encode($document->compiled_profile_snapshot)
-                );
-            }
-
-            return redirect()->route('storeops.documents.workspace', ['type' => $type, 'id' => $id])
-                             ->with('success', 'Document finalized successfully.');
-        } catch (\Exception $e) {
-            return back()->with('error', $e->getMessage());
+            return redirect()->route('storeops.documents.workspace', compact('type', 'id'))->with('success', __('tenantops::access.post'));
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (HttpExceptionInterface $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            return $this->failure($request, $e);
         }
     }
 
-    /**
-     * Renders the Operational Hub (Document Listings Dashboard).
-     */
     public function hub(Request $request)
     {
-        $documents = Document::with('creator')->orderBy('created_at', 'desc')->paginate(20);
+        $documents = Document::with('creator')->orderByDesc('created_at')->paginate(20);
+
         return view('storeops::operations.hub', compact('documents'));
     }
 
-    /**
-     * Instantly initializes a blank DRAFT document.
-     */
     public function initialize(Request $request)
     {
-        $type = $request->input('document_type', 'receipt');
-
+        $data = $request->validate(['document_type' => 'required|in:receipt,issue']);
+        abort_unless(app(TenantContext::class)->locationId, 422);
         try {
-            $draft = match($type) {
-                'receipt' => $this->receiptService->saveDraft([], [], auth()->id()),
-                'issue'   => $this->issueService->saveDraft([], [], auth()->id()),
-                default   => abort(400, "Unsupported document type.")
-            };
+            $draft = $this->receiptService->saveDraft([], [], auth()->id(), null, $data['document_type']);
 
-            return redirect()->route('storeops.documents.workspace', ['type' => $type, 'id' => $draft->id]);
-        } catch (Exception $e) {
-            return back()->with('error', $e->getMessage());
+            return redirect()->route('storeops.documents.workspace', ['type' => $draft->type, 'id' => $draft->id]);
+        } catch (\Throwable $e) {
+            return $this->failure($request, $e);
         }
     }
 
-    /**
-     * Renders the Unified Workspace Shell for drafting or viewing archives.
-     */
     public function workspace(string $type, string $id)
     {
-        $document = Document::with(['items.product', 'items.metadata', 'timelines', 'creator'])->findOrFail($id);
+        $document = $this->document($type, $id)->load(['items.product', 'items.metadata', 'timelines', 'creator']);
+
         return view('storeops::operations.workspace', compact('document', 'type'));
     }
 
-    /**
-     * Save the Document Draft (Now with Polymorphic References)
-     */
-    /**
-     * Save the Document Draft (Fully Atomic & Thread-Safe)
-     */
     public function saveDraft(Request $request, string $type, string $id)
     {
-        $document = Document::findOrFail($id);
-        $headerData = $request->only(['purchase_type']);
-        $rawLines = [];
+        $this->document($type, $id, 'draft');
+        try {
+            $document = DB::transaction(function () use ($request, $type, $id) {
+                $document = $this->document($type, $id, 'draft', true);
+                $this->persistDraft($request, $document);
 
-        foreach ($request->input('items', []) as $rowId => $item) {
+                return $document->refresh();
+            });
+            $validation = $this->validationService->evaluateDocument($document);
+
+            return $request->ajax() || $request->expectsJson()
+                ? response()->json(['status' => 'success', 'validation' => $validation])
+                : back()->with('success', __('tenantops::access.save'));
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (HttpExceptionInterface $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            return $this->failure($request, $e);
+        }
+    }
+
+    private function persistDraft(Request $request, Document $document): void
+    {
+        $request->validate(['items' => 'nullable|array', 'items.*.qty' => 'required|numeric|min:0',
+            'items.*.unit_cost' => 'nullable|numeric|min:0', 'references' => 'nullable|array']);
+        $rawLines = [];
+        foreach ($request->input('items', []) as $item) {
             if (empty($item['id'])) {
                 continue;
             }
-
-            if (str_contains($item['id'], '_')) {
-                [$rawType, $productId] = explode('_', $item['id']);
-                $shortType = strtolower(class_basename($rawType));
-            } else {
-                $shortType = 'consumable';
-                $productId = $item['id'];
-            }
-
-            $rawLines[] = [
-                'type'      => $shortType,
-                'id'        => $productId,
-                'qty'       => $item['qty'] ?? 0,
-                'unit_cost' => $item['unit_cost'] ?? 0.0,
-            ];
+            [$shortType, $productId] = $this->productId($item['id']);
+            $rawLines[] = ['type' => $shortType, 'id' => $productId, 'qty' => $item['qty'], 'unit_cost' => $item['unit_cost'] ?? 0];
         }
-
-        try {
-            // ENTIRE SAVE PROCESS WRAPPED IN ATOMIC TRANSACTION TO PREVENT AJAX RACE CONDITIONS
-            \Illuminate\Support\Facades\DB::transaction(function () use ($type, $headerData, $rawLines, $request, $document) {
-                
-                // 1. Save Items (This natively wipes old items and old metadata via Cascade)
-                match($type) {
-                    'receipt' => $this->receiptService->saveDraft($headerData, $rawLines, auth()->id(), $document),
-                    'issue'   => $this->issueService->saveDraft($headerData, $rawLines, auth()->id(), $document),
-                };
-
-                // 2. Persist custom metadata fields
-                foreach ($request->input('items', []) as $rowId => $item) {
-                    if (empty($item['id'])) {
-                        continue;
-                    }
-
-                    if (str_contains($item['id'], '_')) {
-                        [$rawType, $productId] = explode('_', $item['id']);
-                        $shortType = strtolower(class_basename($rawType));
-                    } else {
-                        $shortType = 'consumable';
-                        $productId = $item['id'];
-                    }
-
-                    $dbItem = $document->items()
-                        ->where('product_type', $shortType)
-                        ->where('product_id', $productId)
-                        ->first();
-
-                    if ($dbItem && isset($item['meta'])) {
-                        // Note: We DO NOT call $dbItem->metadata()->delete() here anymore.
-                        // It was automatically wiped when the item was recreated above.
-                        
-                        foreach ($item['meta'] as $rowIndex => $meta) {
-                            foreach ($meta as $fieldKey => $value) {
-                                if ($value === null || $value === '') {
-                                    continue;
-                                }
-
-                                $dbItem->metadata()->create([
-                                    'field_key' => $fieldKey,
-                                    'value'     => $value,
-                                    'row_index' => $rowIndex
-                                ]);
-                            }
-                        }
-                    }
-                }
-
-                // 3. Sync Administrative References
-                $document->references()->delete(); 
-                $references = $request->input('references', []);
-                
-                foreach ($references as $ref) {
-                    if (!empty($ref['reference_number'])) {
-                        $refDate = !empty($ref['reference_date']) ? $ref['reference_date'] : null;
-
-                        $document->references()->create([
-                            'reference_type'   => $ref['reference_type'] ?? 'Challan',
-                            'reference_number' => $ref['reference_number'],
-                            'reference_date'   => $refDate,
-                        ]);
-                    }
-                }
-            }); // <-- End Transaction
-
-            $document->refresh();
-
-            // Evaluate checklist details dynamically
-            try {
-                $validation = $this->validationService->evaluateDocument($document);
-            } catch (\Throwable $e) {
-                throw new \Error("DEBUG CRASH: " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine());
+        $this->receiptService->saveDraft($request->only('purchase_type'), $rawLines, auth()->id(), $document, $document->type);
+        foreach ($request->input('items', []) as $item) {
+            if (empty($item['id'])) {
+                continue;
             }
-
-            if ($request->ajax()) {
-                return response()->json([
-                    'status'     => 'success',
-                    'validation' => $validation
+            [$shortType, $productId] = $this->productId($item['id']);
+            $dbItem = $document->items()->where('product_type', $shortType)->where('product_id', $productId)->first();
+            if (! $dbItem) {
+                continue;
+            }
+            foreach ($item['meta'] ?? [] as $rowIndex => $meta) {
+                foreach ($meta as $fieldKey => $value) {
+                    if ($value !== null && $value !== '') {
+                        $dbItem->metadata()->create(['field_key' => $fieldKey, 'value' => $value, 'row_index' => $rowIndex]);
+                    }
+                }
+            }
+        }
+        $document->references()->delete();
+        foreach ($request->input('references', []) as $ref) {
+            if (! empty($ref['reference_number'])) {
+                $document->references()->create([
+                    'reference_type' => $ref['reference_type'] ?? 'Challan', 'reference_number' => $ref['reference_number'], 'reference_date' => ($ref['reference_date'] ?? null) ?: null,
                 ]);
             }
-
-            return back()->with('success', 'Draft saved.');
-        } catch (\Exception $e) {
-            if ($request->ajax()) {
-                return response()->json([
-                    'error' => $e->getMessage(),
-                    'file'  => $e->getFile(),
-                    'line'  => $e->getLine(),
-                    'trace' => $e->getTraceAsString()
-                ], 422);
-            }
-            return back()->with('error', $e->getMessage());
         }
     }
 
-    /**
-     * Generate the Pre-Posting Summary (AJAX) - Updated for Polymorphic References
-     */
+    private function productId(string $id): array
+    {
+        if (! str_contains($id, '_')) {
+            return ['consumable', $id];
+        }
+        [$rawType, $productId] = explode('_', $id, 2);
+
+        return [strtolower(class_basename($rawType)), $productId];
+    }
+
     public function preview(string $type, string $id)
     {
-        $document = Document::with(['items', 'references'])->findOrFail($id);
-        
-        $totalQty = $document->items->sum('quantity');
-        $totalValue = $document->items->sum(function($item) {
-            return $item->quantity * ($item->unit_cost ?? 0);
-        });
-
-        // Map references into a clean string (e.g., "Challan: 123, Allocation: A-456")
-        $refString = $document->references->map(function($r) {
-            return $r->reference_type . ': ' . $r->reference_number;
-        })->implode(' | ');
+        $document = $this->document($type, $id)->load(['items.product', 'references']);
 
         return response()->json([
-            'lines'       => $document->items->count(),
-            'total_qty'   => $totalQty,
-            'total_value' => number_format($totalValue, 2),
-            'reference'   => $refString ?: 'None attached',
+            'lines' => $document->items->count(), 'total_qty' => $document->items->sum('quantity'),
+            'total_value' => number_format($document->items->sum(fn ($item) => $item->quantity * ($item->unit_cost ?? 0)), 2),
+            'reference' => $document->references->map(fn ($r) => $r->reference_type.': '.$r->reference_number)->implode(' | '),
+            'items' => $document->items->map(fn ($item) => ['name' => $item->product?->name ?? $item->product_id, 'quantity' => $item->quantity])->all(),
         ]);
     }
 
-    /**
-     * Unified AJAX Product Search for the Select2 spreadsheet grid.
-     */
-    /**
-     * Unified AJAX Product Search (Now passing category_id for Handshake A2)
-     */
-    public function searchProducts(Request $request)
+    public function takeover(Request $request, string $type, string $id)
     {
-        $results = $this->productResolver->search($request->input('q', ''));
-        
-        $formatted = $results->map(function ($item) {
-            // Resolve the category_id dynamically from the matched Eloquent Class
-            $modelClass = $item['type_raw'];
-            $categoryId = \DB::table((new $modelClass)->getTable())
-                ->where('id', $item['id'])
-                ->value('category_id');
-
-            return [
-                'id'            => $item['type_raw'] . '_' . $item['id'], 
-                'text'          => $item['name'] . ' (' . $item['type_label'] . ')',
-                'current_stock' => $item['current_stock'],
-                'category_id'   => $categoryId // Pass to frontend for dynamic GPO evaluations
-            ];
+        DB::transaction(function () use ($type, $id) {
+            $document = $this->document($type, $id, 'takeover', true);
+            $document->update(['managed_by' => auth()->id()]);
+            $document->timelines()->create(['state' => 'DRAFT', 'user_id' => auth()->id(), 'notes' => __('tenantops::access.takeover_done')]);
         });
 
-        return response()->json(['results' => $formatted]);
+        return back()->with('success', __('tenantops::access.takeover_done'));
     }
 
-
-
-    /**
-     * Generates official standard A4 printed copy of posted files.
-     */
     public function print(string $type, string $id)
     {
-        $document = Document::with(['items.stockable', 'timelines', 'creator'])->findOrFail($id);
-        
-        if ($document->status !== DocumentState::POSTED->value) {
-            abort(403, 'Only finalized/posted documents can be printed officially.');
-        }
+        $document = $this->document($type, $id)->load(['items.stockable', 'timelines', 'creator']);
 
         return view('storeops::operations.print', compact('document', 'type'));
     }
 
-    /**
-     * Fetches raw compiled profile rules for structural debugging.
-     */
-    public function productProfile(string $type, int $id)
+    public function searchProducts(Request $request)
+    {
+        $results = $this->productResolver->search($request->input('q', ''))->map(function ($item) {
+            $modelClass = $item['type_raw'];
+
+            return ['id' => $item['type_raw'].'_'.$item['id'], 'text' => $item['name'].' ('.$item['type_label'].')',
+                'current_stock' => $item['current_stock'], 'category_id' => DB::table((new $modelClass)->getTable())->where('id', $item['id'])->value('category_id')];
+        });
+
+        return response()->json(['results' => $results]);
+    }
+
+    public function productProfile(Request $request, string $type, int $id)
     {
         try {
-            $compiler = app(\GovStore\StoreOperations\Services\ProfileCompilerService::class);
-            $normalizedType = strtolower(class_basename($type));
-            $compiled = $compiler->compileItem($normalizedType, $id);
-
-            return response()->json($compiled);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(app(ProfileCompilerService::class)->compileItem(strtolower(class_basename($type)), $id));
+        } catch (\Throwable $e) {
+            return $this->failure($request, $e);
         }
     }
 
-    /**
-     * Handles polymorphic file attachments uploader.
-     */
     public function uploadAttachment(Request $request, string $type, string $id)
     {
-        $request->validate([
-            'file' => 'required|file|mimes:pdf,png,jpg,jpeg,docx,xlsx|max:10240', 
-            'category' => 'required|string'
-        ]);
-
-        $document = Document::findOrFail($id);
-
+        $request->validate(['file' => 'required|file|mimes:pdf,png,jpg,jpeg,docx,xlsx|max:10240', 'category' => 'required|string|max:100']);
+        $this->document($type, $id, 'draft');
+        $path = null;
         try {
-            if ($document->status !== DocumentState::DRAFT->value) {
-                throw new Exception("Cannot attach files to a finalized document.");
+            $attachment = DB::transaction(function () use ($request, $type, $id, &$path) {
+                $document = $this->document($type, $id, 'draft', true);
+                $file = $request->file('file');
+                $path = $file->store('app/gov-store/attachments', 'local');
+
+                return $document->attachments()->create(['file_path' => $path, 'disk' => 'local',
+                    'original_name' => '['.strtoupper($request->input('category')).'] '.$file->getClientOriginalName(),
+                    'mime_type' => $file->getMimeType(), 'uploaded_by' => auth()->id()]);
+            });
+
+            return response()->json(['status' => 'success', 'attachment' => ['id' => $attachment->id, 'name' => $attachment->original_name,
+                'url' => route('storeops.documents.attachments.download', ['type' => $type, 'id' => $id, 'attachmentId' => $attachment->id])]]);
+        } catch (HttpExceptionInterface $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            if ($path) {
+                Storage::disk('local')->delete($path);
             }
 
-            $file = $request->file('file');
-            $originalName = $file->getClientOriginalName();
-            $path = $file->store('attachments', 'public');
-
-            $attachment = $document->attachments()->create([
-                'file_path'     => $path,
-                'original_name' => '[' . strtoupper($request->input('category')) . '] ' . $originalName,
-                'mime_type'     => $file->getClientMimeType(),
-                'uploaded_by'   => auth()->id() ?? 1,
-            ]);
-
-            return response()->json([
-                'status' => 'success',
-                'attachment' => [
-                    'id'   => $attachment->id,
-                    'name' => $attachment->original_name,
-                    'url'  => Storage::url($attachment->file_path)
-                ]
-            ]);
-        } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 422);
+            return $this->failure($request, $e);
         }
     }
 
-    /**
-     * Securely deletes physical files and dynamic database rows.
-     */
-    public function deleteAttachment(string $type, string $id, string $attachmentId)
+    public function downloadAttachment(string $type, string $id, string $attachmentId)
     {
-        $document = Document::findOrFail($id);
+        $attachment = $this->document($type, $id)->attachments()->findOrFail($attachmentId);
 
-        try {
-            if ($document->status !== DocumentState::DRAFT->value) {
-                throw new Exception("Cannot alter a finalized document.");
-            }
-
-            $attachment = $document->attachments()->findOrFail($attachmentId);
-            Storage::disk('public')->delete($attachment->file_path);
-            $attachment->delete();
-
-            return response()->json(['status' => 'success']);
-        } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 422);
-        }
+        return Storage::disk($attachment->disk)->download($attachment->file_path, $attachment->original_name);
     }
 
-    /**
-     * Dynamic AJAX metadata rendering engine.
-     * Generates server-side HTML inputs natively from Capability Classes.
-     */
+    public function deleteAttachment(Request $request, string $type, string $id, string $attachmentId)
+    {
+        $this->document($type, $id, 'draft');
+        DB::transaction(function () use ($type, $id, $attachmentId) {
+            $attachment = $this->document($type, $id, 'draft', true)->attachments()->findOrFail($attachmentId);
+            $disk = $attachment->disk;
+            $path = $attachment->file_path;
+            $attachment->delete();
+            DB::afterCommit(fn () => Storage::disk($disk)->delete($path));
+        });
+
+        return response()->json(['status' => 'success']);
+    }
+
     public function renderMeta(Request $request)
     {
-        $productType = $request->input('product_type');
-        $productId = $request->input('product_id');
-        $quantity = (int) $request->input('quantity', 1);
-        $rowIndex = $request->input('row_index', 0);
-        $documentId = $request->input('document_id');
-
-        // 1. Resolve compiled profile
-        $compiler = app(\GovStore\StoreOperations\Services\ProfileCompilerService::class);
-        $normalizedType = strtolower(class_basename($productType));
-        $compiledRules = $compiler->compileItem($normalizedType, $productId);
-
-        // 2. Load existing metadata values if we are editing an existing draft
         $item = null;
-        if ($documentId) {
-            $document = Document::find($documentId);
-            if ($document) {
-                $item = $document->items()
-                    ->where('product_type', $normalizedType)
-                    ->where('product_id', $productId)
-                    ->first();
-                
-                if ($item) {
-                    $item->quantity = $quantity; 
+        $normalizedType = strtolower(class_basename($request->input('product_type')));
+        if ($id = $request->input('document_id')) {
+            $document = Document::findOrFail($id);
+            $this->policy->check($document, $document->type);
+            $item = $document->items()->where('product_type', $normalizedType)->where('product_id', $request->input('product_id'))->first();
+            if ($item) {
+                $item->quantity = (int) $request->input('quantity', 1);
+            }
+        }
+        try {
+            $compiled = app(ProfileCompilerService::class)->compileItem($normalizedType, $request->input('product_id'));
+            $html = '';
+            foreach ($compiled as $code => $meta) {
+                if (($meta['enforced'] ?? false) === true) {
+                    $html .= CapabilityRegistry::make($code)->renderUI($item,
+                        ['config' => $meta['config'] ?? [], 'row_index' => $request->input('row_index', 0), 'quantity' => (int) $request->input('quantity', 1)]);
                 }
             }
-        }
 
-        // 3. Loop through active capabilities and concatenate their pre-rendered Blade layouts
-        $html = '';
-        foreach ($compiledRules as $code => $meta) {
-            if (isset($meta['enforced']) && $meta['enforced'] === true) {
-                $capability = \GovStore\StoreOperations\Services\CapabilityRegistry::make($code);
-                
-                // Pass layout parameters down inside the config payload contextually
-                $html .= $capability->renderUI($item, [
-                    'config'    => $meta['config'] ?? [],
-                    'row_index' => $rowIndex,
-                    'quantity'  => $quantity
-                ]);
-            }
+            return response()->json(['html' => $html, 'has_requirements' => $html !== '']);
+        } catch (\Throwable $e) {
+            return $this->failure($request, $e);
         }
+    }
 
-        return response()->json([
-            'html' => $html,
-            'has_requirements' => !empty($html)
-        ]);
+    private function failure(Request $request, \Throwable $e)
+    {
+        $reference = (string) Str::uuid();
+        Log::error('Store document operation failed', ['reference_id' => $reference, 'actor' => auth()->id(), 'exception' => $e]);
+        $message = __('tenantops::access.failed', ['reference' => $reference]);
+
+        return $request->ajax() || $request->expectsJson() ? response()->json(['error' => $message, 'reference_id' => $reference], 500) : back()->with('error', $message);
     }
 }

@@ -2,12 +2,12 @@
 
 namespace GovStore\Classification\Http\Controllers;
 
-use Illuminate\Routing\Controller;
-use Illuminate\Http\Request;
 use GovStore\Classification\Models\CatalogCollection;
-use GovStore\Classification\Models\CatalogCollectionNode;
 use GovStore\Classification\Services\CollectionMembershipService;
 use GovStore\TenantScope\Contexts\TenantContext;
+use GovStore\TenantScope\Services\ActionFailure;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 
 class CollectionDiscoveryController extends Controller
@@ -51,13 +51,13 @@ class CollectionDiscoveryController extends Controller
                 }
             }
 
-            if (!$pivot->is_adopted) {
+            if (! $pivot->is_adopted) {
                 $unadoptedCodes[] = $pivot->code;
             }
         }
 
-        $progress = $collection->nodes->count() > 0 
-            ? round(($adoptedCount / $collection->nodes->count()) * 100) 
+        $progress = $collection->nodes->count() > 0
+            ? round(($adoptedCount / $collection->nodes->count()) * 100)
             : 0;
 
         return view('gov-classification::discover.collections.show', compact('collection', 'adoptedCount', 'progress', 'unadoptedCodes'));
@@ -74,7 +74,7 @@ class CollectionDiscoveryController extends Controller
 
         return response()->json([
             'success' => true,
-            'collections' => $collections
+            'collections' => $collections,
         ]);
     }
 
@@ -84,18 +84,18 @@ class CollectionDiscoveryController extends Controller
     public function addNodes(Request $request, CollectionMembershipService $membershipService)
     {
         $user = auth()->user();
-        
+
         // Strictly block non-admin users from modifying collection memberships
-        if (!$user || (!$user->isSuperUser() && !$user->hasAccess('admin'))) {
+        if (! $user || (! $user->isSuperUser() && ! $user->hasAccess('admin'))) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized. Only system administrators can modify standard collections.'
+                'message' => 'Unauthorized. Only system administrators can modify standard collections.',
             ], 403);
         }
 
         $request->validate([
             'collection_id' => 'required|integer|exists:gov_catalog_collections,id',
-            'codes'         => 'required|array|min:1'
+            'codes' => 'required|array|min:1',
         ]);
 
         try {
@@ -108,7 +108,7 @@ class CollectionDiscoveryController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to add items: ' . $e->getMessage()
+                'message' => app(ActionFailure::class)->message($e),
             ], 500);
         }
     }

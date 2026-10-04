@@ -2,14 +2,15 @@
 
 namespace GovStore\StoreOperations\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
 
 class DocumentItem extends Model
 {
     use HasUuids;
 
     protected $table = 'gov_document_items';
+
     public $timestamps = false;
 
     protected $fillable = ['document_id', 'product_type', 'product_id', 'quantity', 'unit_cost'];
@@ -32,11 +33,16 @@ class DocumentItem extends Model
         return $this->morphTo();
     }
 
+    public function stockable()
+    {
+        return $this->morphTo('product', 'product_type', 'product_id');
+    }
+
     // --- Accessors ---
 
     public function getProductNameAttribute()
     {
-        if (!$this->relationLoaded('product') && $this->product_type && $this->product_type !== '0') {
+        if (! $this->relationLoaded('product') && $this->product_type && $this->product_type !== '0') {
             $this->loadMissing('product');
         }
 
@@ -45,7 +51,7 @@ class DocumentItem extends Model
 
     public function getCurrentStockAttribute()
     {
-        if (!$this->relationLoaded('product') && $this->product_type && $this->product_type !== '0') {
+        if (! $this->relationLoaded('product') && $this->product_type && $this->product_type !== '0') {
             $this->loadMissing('product');
         }
 
@@ -57,7 +63,7 @@ class DocumentItem extends Model
      */
     public function getCategoryIdAttribute()
     {
-        if (!$this->relationLoaded('product') && $this->product_type && $this->product_type !== '0') {
+        if (! $this->relationLoaded('product') && $this->product_type && $this->product_type !== '0') {
             $this->loadMissing('product');
         }
 

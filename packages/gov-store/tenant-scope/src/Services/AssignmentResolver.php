@@ -3,10 +3,10 @@
 namespace GovStore\TenantScope\Services;
 
 use GovStore\OfficeMembership\Models\OfficeResponsibility;
-use GovStore\Organization\Models\LocationProfile;
+use GovStore\Organization\Models\CompanyAdmin;
 use GovStore\Organization\Models\IctJurisdiction;
-use GovStore\Organization\Models\CompanyAdmin; // NEW IMPORT
-use Illuminate\Support\Facades\Cache;
+use GovStore\Organization\Models\LocationProfile; // NEW IMPORT
+use Illuminate\Support\Facades\DB;
 
 class AssignmentResolver
 {
@@ -18,7 +18,8 @@ class AssignmentResolver
     {
         $cacheKey = "gov_user_role_{$userId}_loc_{$locationId}";
 
-        return Cache::remember($cacheKey, 60, function () use ($userId, $locationId) {
+        // Resolve fresh so revocation and temporary cover take effect on the next request.
+        return (function () use ($userId, $locationId) {
 
             // 1. Check for Organizational Overseer (Company Admin) - Highest Priority
             $isCompanyAdmin = CompanyAdmin::where('user_id', $userId)->exists();
@@ -50,10 +51,15 @@ class AssignmentResolver
                 if ($responsibility) {
                     return $responsibility->role_slug; // Returns 'storekeeper', 'primary_approver', etc.
                 }
+                $temporary = DB::table('gov_access_grants')->where('location_id', $locationId)
+                    ->where('user_id', $userId)->where('expires_at', '>', now())->value('role_slug');
+                if ($temporary) {
+                    return $temporary;
+                }
             }
 
             // 5. Fallback Default
             return 'employee';
-        });
+        })();
     }
 }

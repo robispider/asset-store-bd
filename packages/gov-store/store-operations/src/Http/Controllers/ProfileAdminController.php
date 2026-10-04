@@ -3,17 +3,20 @@
 namespace GovStore\StoreOperations\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use GovStore\StoreOperations\Models\Profile;
-use GovStore\StoreOperations\Models\ProfileAssignment;
-use GovStore\StoreOperations\Services\ProfileCompilerService;
-use GovStore\StoreOperations\Services\CapabilityRegistry;
 use App\Models\Category;
 use App\Models\Location;
+use GovStore\StoreOperations\Enums\AssignmentScope;
+use GovStore\StoreOperations\Enums\DocumentState;
+use GovStore\StoreOperations\Enums\PolicyStatus;
+use GovStore\StoreOperations\Models\Profile;
+use GovStore\StoreOperations\Models\ProfileAssignment;
+use GovStore\StoreOperations\Services\CapabilityRegistry;
+use GovStore\StoreOperations\Services\ProfileCompilerService;
+use Illuminate\Http\Request;
 
 class ProfileAdminController extends Controller
 {
-     /**
+    /**
      * Renders the primary Target Assignment Matrix.
      */
     public function index()
@@ -21,8 +24,8 @@ class ProfileAdminController extends Controller
         // 1. Gather database counts for the Quick Access metrics
         $counts = [
             'categories' => Category::count(),
-            'locations'  => Location::count(),
-            'policies'   => Profile::where('status', 'PUBLISHED')->count(),
+            'locations' => Location::count(),
+            'policies' => Profile::where('status', 'PUBLISHED')->count(),
         ];
 
         // 2. Fetch the latest GPO assignments to show as an Activity Feed on the Hub
@@ -30,26 +33,27 @@ class ProfileAdminController extends Controller
             ->orderBy('created_at', 'desc')
             ->limit(4)
             ->get()
-            ->map(function($assign) {
+            ->map(function ($assign) {
                 // Safely resolve the target name
                 $targetName = $assign->target ? ($assign->target->name ?? 'Unknown Target') : 'System';
+
                 return [
                     'policy_name' => $assign->profile->name,
                     'target_name' => $targetName,
-                    'operator'    => 'System Admin',
-                    'date'        => $assign->created_at->diffForHumans(),
+                    'operator' => 'System Admin',
+                    'date' => $assign->created_at->diffForHumans(),
                 ];
             });
 
         // 3. Keep the simple tree elements for sidebar directories
         $tree = [
-            'Locations (Offices)' => Location::orderBy('name')->limit(15)->get()->map(function($loc) {
+            'Locations (Offices)' => Location::orderBy('name')->limit(15)->get()->map(function ($loc) {
                 return ['id' => $loc->id, 'type' => 'LOCATION', 'name' => $loc->name, 'icon' => 'fa-building'];
             })->toArray(),
-            'Hardware Categories' => Category::where('category_type', 'asset')->orderBy('name')->get()->map(function($cat) {
+            'Hardware Categories' => Category::where('category_type', 'asset')->orderBy('name')->get()->map(function ($cat) {
                 return ['id' => $cat->id, 'type' => 'CATEGORY', 'name' => $cat->name, 'icon' => 'fa-laptop'];
             })->toArray(),
-            'Consumable Categories' => Category::where('category_type', 'consumable')->orderBy('name')->get()->map(function($cat) {
+            'Consumable Categories' => Category::where('category_type', 'consumable')->orderBy('name')->get()->map(function ($cat) {
                 return ['id' => $cat->id, 'type' => 'CATEGORY', 'name' => $cat->name, 'icon' => 'fa-tint'];
             })->toArray(),
         ];
@@ -59,7 +63,6 @@ class ProfileAdminController extends Controller
         return view('storeops::admin.rules.index', compact('tree', 'publishedProfiles', 'counts', 'recentActivity'));
     }
 
-
     /**
      * AJAX Endpoint: Renders the "Effective Rules" and Active Assignments.
      */
@@ -68,33 +71,33 @@ class ProfileAdminController extends Controller
         $targetId = $request->input('target_id');
         $targetType = $request->input('target_type'); // GLOBAL, LOCATION, CATEGORY
 
-        $targetName = "System Global Baseline";
-        $productClass = 'App\Models\Category'; 
+        $targetName = 'System Global Baseline';
+        $productClass = 'App\Models\Category';
         $productId = 0;
 
         if ($targetType === 'CATEGORY') {
             $cat = Category::findOrFail($targetId);
-            $targetName = "Category: " . $cat->name;
+            $targetName = 'Category: '.$cat->name;
             $productClass = 'App\Models\Category';
             $productId = $cat->id;
         } elseif ($targetType === 'LOCATION') {
             $loc = Location::findOrFail($targetId);
-            $targetName = "Location: " . $loc->name;
-            $productId = 0; 
+            $targetName = 'Location: '.$loc->name;
+            $productId = 0;
         }
 
         $dbTargetType = $targetType === 'CATEGORY' ? 'App\Models\Category' : ($targetType === 'LOCATION' ? 'App\Models\Location' : 'System');
-        
+
         $assignments = ProfileAssignment::with('profile')
             ->where('target_type', $dbTargetType)
-            ->when($targetId !== 'global', fn($q) => $q->where('target_id', $targetId))
+            ->when($targetId !== 'global', fn ($q) => $q->where('target_id', $targetId))
             ->where(function ($query) {
                 $query->whereNull('effective_to')->orWhere('effective_to', '>', now());
             })
             ->get();
 
         $rawCompiledRules = $compiler->compileItem($productClass, $productId);
-        
+
         $dictionary = CapabilityRegistry::getDictionary();
         $effectiveRules = [];
 
@@ -103,7 +106,7 @@ class ProfileAdminController extends Controller
             $effectiveRules[$group][$code] = [
                 'name' => $dictInfo['name'],
                 'desc' => $dictInfo['desc'],
-                'state' => $rawCompiledRules[$code] ?? ['behavior' => 'INHERIT', 'enforced' => false, 'source_policy' => 'None']
+                'state' => $rawCompiledRules[$code] ?? ['behavior' => 'INHERIT', 'enforced' => false, 'source_policy' => 'None'],
             ];
         }
 
@@ -122,8 +125,8 @@ class ProfileAdminController extends Controller
     {
         $request->validate([
             'target_type' => 'required|string',
-            'target_id'   => 'required', // Can be numeric or string 'global'
-            'profile_id'  => 'required|integer'
+            'target_id' => 'required', // Can be numeric or string 'global'
+            'profile_id' => 'required|integer',
         ]);
 
         $now = now();
@@ -136,19 +139,19 @@ class ProfileAdminController extends Controller
             ->update(['effective_to' => $now]);
 
         // 2. Create the new GPO alignment
-        $scopeLevel = match($request->target_type) {
-            'App\Models\Location' => \GovStore\StoreOperations\Enums\AssignmentScope::LOCATION->value,
-            'System'              => \GovStore\StoreOperations\Enums\AssignmentScope::GLOBAL->value,
-            default               => \GovStore\StoreOperations\Enums\AssignmentScope::NATIVE->value,
+        $scopeLevel = match ($request->target_type) {
+            'App\Models\Location' => AssignmentScope::LOCATION->value,
+            'System' => AssignmentScope::GLOBAL->value,
+            default => AssignmentScope::NATIVE->value,
         };
 
         ProfileAssignment::create([
-            'profile_id'     => $request->profile_id,
-            'target_type'    => $request->target_type,
-            'target_id'      => $targetId,
-            'scope_level'    => $scopeLevel,
-            'scope_id'       => $request->target_type === 'App\Models\Location' ? $targetId : null,
-            'assigned_by'    => auth()->id() ?? 1,
+            'profile_id' => $request->profile_id,
+            'target_type' => $request->target_type,
+            'target_id' => $targetId,
+            'scope_level' => $scopeLevel,
+            'scope_id' => $request->target_type === 'App\Models\Location' ? $targetId : null,
+            'assigned_by' => auth()->id() ?? 1,
             'effective_from' => $now,
         ]);
 
@@ -172,7 +175,7 @@ class ProfileAdminController extends Controller
     public function editPolicy($id)
     {
         $policy = Profile::with('capabilities')->findOrFail($id);
-        
+
         $dictionary = CapabilityRegistry::getDictionary();
         $groupedRules = [];
         foreach ($dictionary as $code => $dictInfo) {
@@ -189,24 +192,25 @@ class ProfileAdminController extends Controller
      */
     public function saveDraftPolicy(Request $request, $id)
     {
-        $policy = Profile::findOrFail($id);
-        
-        $policy->update(['status' => \GovStore\StoreOperations\Enums\PolicyStatus::DRAFT->value]);
+        $policy = Profile::whereKey($id)->lockForUpdate()->firstOrFail();
+
+        abort_unless($policy->status === PolicyStatus::DRAFT, 409);
+        $policy->update(['status' => PolicyStatus::DRAFT->value]);
         $policy->capabilities()->delete();
 
         $capabilities = $request->input('rules', []);
-        
+
         foreach ($capabilities as $code => $data) {
             $behavior = $data['behavior'] ?? 'INHERIT';
-            
+
             if ($behavior === 'INHERIT') {
-                continue; 
+                continue;
             }
 
             $policy->capabilities()->create([
                 'capability_code' => $code,
-                'behavior'        => $behavior,
-                'config_payload'  => isset($data['config']) ? $data['config'] : null,
+                'behavior' => $behavior,
+                'config_payload' => isset($data['config']) ? $data['config'] : null,
             ]);
         }
 
@@ -218,9 +222,9 @@ class ProfileAdminController extends Controller
      */
     public function simulator()
     {
-        $locations = \App\Models\Location::orderBy('name')->get();
-        $categories = \App\Models\Category::orderBy('name')->get();
-        
+        $locations = Location::orderBy('name')->get();
+        $categories = Category::orderBy('name')->get();
+
         return view('storeops::admin.rules.simulator', compact('locations', 'categories'));
     }
 
@@ -232,27 +236,27 @@ class ProfileAdminController extends Controller
         $locationId = $request->input('location_id');
         $categoryId = $request->input('category_id');
 
-        $location = \App\Models\Location::find($locationId);
-        $category = \App\Models\Category::find($categoryId);
+        $location = Location::find($locationId);
+        $category = Category::find($categoryId);
 
-        // NOTE: In a production environment, you would briefly swap the TenantContext location 
+        // NOTE: In a production environment, you would briefly swap the TenantContext location
         // to $locationId before calling compileItem, then swap it back, to simulate another office.
         $rawCompiledRules = $compiler->compileItem('App\Models\Category', $categoryId);
-        
+
         $dictionary = CapabilityRegistry::getDictionary();
         $simulatedUI = [];
         $automations = [];
 
         foreach ($dictionary as $code => $dictInfo) {
             $meta = $rawCompiledRules[$code] ?? ['behavior' => 'INHERIT', 'enforced' => false];
-            
+
             if (isset($meta['enforced']) && $meta['enforced'] === true) {
                 $payload = [
-                    'name'   => $dictInfo['name'],
+                    'name' => $dictInfo['name'],
                     'config' => $meta['config'] ?? [],
                     'source' => $meta['source_policy'] ?? 'Unknown Policy',
-                    'layer'  => $meta['layer'] ?? 'Unknown Layer',
-                    'group'  => $dictInfo['group'] ?? 'General'
+                    'layer' => $meta['layer'] ?? 'Unknown Layer',
+                    'group' => $dictInfo['group'] ?? 'General',
                 ];
 
                 // FIXED: Check if the dictionary group contains "Automation" instead of looking for "type"
@@ -292,31 +296,31 @@ class ProfileAdminController extends Controller
 
         $affectedDraftsCount = \DB::table('gov_documents')
             ->join('gov_document_items', 'gov_documents.id', '=', 'gov_document_items.document_id')
-            ->where('gov_documents.status', \GovStore\StoreOperations\Enums\DocumentState::DRAFT->value)
+            ->where('gov_documents.status', DocumentState::DRAFT->value)
             ->where(function ($query) use ($assignedCategoryIds, $affectedModelIds) {
                 $query->where(function ($q) use ($affectedModelIds) {
                     $q->whereIn('gov_document_items.product_type', ['assetmodel', 'asset_model'])
-                      ->whereIn('gov_document_items.product_id', $affectedModelIds);
+                        ->whereIn('gov_document_items.product_id', $affectedModelIds);
                 })
-                ->orWhere(function ($q) use ($assignedCategoryIds) {
-                    $q->whereIn('gov_document_items.product_type', ['consumable', 'accessory', 'component'])
-                      ->whereIn('gov_document_items.product_id', function ($sub) use ($assignedCategoryIds) {
-                          $sub->select('id')->from('consumables')->whereIn('category_id', $assignedCategoryIds)
-                              ->union(
-                                  $sub->newQuery()->select('id')->from('accessories')->whereIn('category_id', $assignedCategoryIds)
-                              )->union(
-                                  $sub->newQuery()->select('id')->from('components')->whereIn('category_id', $assignedCategoryIds)
-                              );
-                      });
-                });
+                    ->orWhere(function ($q) use ($assignedCategoryIds) {
+                        $q->whereIn('gov_document_items.product_type', ['consumable', 'accessory', 'component'])
+                            ->whereIn('gov_document_items.product_id', function ($sub) use ($assignedCategoryIds) {
+                                $sub->select('id')->from('consumables')->whereIn('category_id', $assignedCategoryIds)
+                                    ->union(
+                                        $sub->newQuery()->select('id')->from('accessories')->whereIn('category_id', $assignedCategoryIds)
+                                    )->union(
+                                        $sub->newQuery()->select('id')->from('components')->whereIn('category_id', $assignedCategoryIds)
+                                    );
+                            });
+                    });
             })
             ->distinct()
             ->count('gov_documents.id');
 
         return response()->json([
             'categories_affected' => $categoryCount,
-            'drafts_affected'     => $affectedDraftsCount,
-            'risk_level'          => $affectedDraftsCount > 5 ? 'HIGH' : ($affectedDraftsCount > 0 ? 'MEDIUM' : 'LOW'),
+            'drafts_affected' => $affectedDraftsCount,
+            'risk_level' => $affectedDraftsCount > 5 ? 'HIGH' : ($affectedDraftsCount > 0 ? 'MEDIUM' : 'LOW'),
         ]);
     }
 
@@ -327,24 +331,27 @@ class ProfileAdminController extends Controller
     {
         $draftPolicy = Profile::findOrFail($id);
 
-        if ($draftPolicy->status !== \GovStore\StoreOperations\Enums\PolicyStatus::DRAFT) {
+        if ($draftPolicy->status !== PolicyStatus::DRAFT) {
             return back()->with('error', 'Only draft policies can be published.');
         }
 
         \DB::transaction(function () use ($draftPolicy) {
+            $draftPolicy = Profile::whereKey($draftPolicy->id)->lockForUpdate()->firstOrFail();
+            abort_unless($draftPolicy->status === PolicyStatus::DRAFT, 409);
             Profile::where('name', $draftPolicy->name)
                 ->where('id', '!=', $draftPolicy->id)
-                ->where('status', \GovStore\StoreOperations\Enums\PolicyStatus::PUBLISHED->value)
+                ->where('status', PolicyStatus::PUBLISHED->value)
                 ->update([
-                    'status' => \GovStore\StoreOperations\Enums\PolicyStatus::ARCHIVED->value
+                    'status' => PolicyStatus::ARCHIVED->value,
                 ]);
 
             $currentVersion = (float) ($draftPolicy->version ?? 1.0);
             $newVersion = number_format($currentVersion + 1.0, 1);
 
             $draftPolicy->update([
-                'status'  => \GovStore\StoreOperations\Enums\PolicyStatus::PUBLISHED->value,
-                'version' => $newVersion
+                'status' => PolicyStatus::PUBLISHED->value,
+                'published_by' => auth()->id(), 'published_at' => now(), 'publish_reason' => request('change_reason'),
+                'version' => $newVersion,
             ]);
         });
 
@@ -362,66 +369,68 @@ class ProfileAdminController extends Controller
         if (empty($query) || strlen($query) < 2) {
             return response()->json([
                 'categories' => [],
-                'locations'  => [],
-                'policies'   => []
+                'locations' => [],
+                'policies' => [],
             ]);
         }
 
         // 1. Search Category targets
-        $categories = \App\Models\Category::where('name', 'LIKE', "%{$query}%")
+        $categories = Category::where('name', 'LIKE', "%{$query}%")
             ->limit(5)
             ->get(['id', 'name', 'category_type'])
-            ->map(function($cat) {
+            ->map(function ($cat) {
                 $icon = $cat->category_type === 'asset' ? 'fa-laptop' : 'fa-tint';
+
                 return [
-                    'id'   => $cat->id,
+                    'id' => $cat->id,
                     'type' => 'CATEGORY',
-                    'name' => $cat->name . ' (' . ucfirst($cat->category_type) . ')',
-                    'icon' => $icon
+                    'name' => $cat->name.' ('.ucfirst($cat->category_type).')',
+                    'icon' => $icon,
                 ];
             });
 
         // 2. Search Location targets
-        $locations = \App\Models\Location::where('name', 'LIKE', "%{$query}%")
+        $locations = Location::where('name', 'LIKE', "%{$query}%")
             ->limit(5)
             ->get(['id', 'name'])
-            ->map(fn($loc) => [
-                'id'   => $loc->id,
+            ->map(fn ($loc) => [
+                'id' => $loc->id,
                 'type' => 'LOCATION',
                 'name' => $loc->name,
-                'icon' => 'fa-building-o'
+                'icon' => 'fa-building-o',
             ]);
 
         // 3. Search Published Policies
         $policies = Profile::where('name', 'LIKE', "%{$query}%")
-            ->where('status', \GovStore\StoreOperations\Enums\PolicyStatus::PUBLISHED->value)
+            ->where('status', PolicyStatus::PUBLISHED->value)
             ->limit(5)
             ->get(['id', 'name', 'version'])
-            ->map(fn($pol) => [
-                'id'   => $pol->id,
+            ->map(fn ($pol) => [
+                'id' => $pol->id,
                 'type' => 'POLICY',
-                'name' => $pol->name . ' (v' . ($pol->version ?? '1.0') . ')',
-                'icon' => 'fa-shield'
+                'name' => $pol->name.' (v'.($pol->version ?? '1.0').')',
+                'icon' => 'fa-shield',
             ]);
 
         return response()->json([
             'categories' => $categories,
-            'locations'  => $locations,
-            'policies'   => $policies
+            'locations' => $locations,
+            'policies' => $policies,
         ]);
     }
+
     /**
      * Renders the 3-Step Guided Policy Creation Wizard.
      */
     public function createRule($template)
     {
         $template = strtolower($template);
-        if (!in_array($template, ['hardware', 'consumable', 'blank'])) {
+        if (! in_array($template, ['hardware', 'consumable', 'blank'])) {
             abort(404, 'Template not found.');
         }
 
         // Define what rules will be visually previewed in Step 3 based on template type
-        $previewRules = match($template) {
+        $previewRules = match ($template) {
             'hardware' => [
                 'Require Quantity Enforcements' => '🟢 Enabled (Standard Baseline)',
                 'Require Unique Serial Numbers' => '🟢 Enabled (Standard Baseline)',
@@ -433,7 +442,7 @@ class ProfileAdminController extends Controller
                 'Write Quantities directly to Stock Ledger' => '🟢 Enabled (Standard Baseline)',
             ],
             'blank' => [
-                'All capabilities will be set to: Not Configured (Inherit)' => '⚪ Inherited'
+                'All capabilities will be set to: Not Configured (Inherit)' => '⚪ Inherited',
             ]
         };
 
@@ -446,23 +455,23 @@ class ProfileAdminController extends Controller
     public function storeRule(Request $request)
     {
         $request->validate([
-            'name'        => 'required|string|max:100|unique:gov_profiles,name',
+            'name' => 'required|string|max:100|unique:gov_profiles,name',
             'description' => 'nullable|string|max:250',
-            'template'    => 'required|string'
+            'template' => 'required|string',
         ]);
 
         $policy = \DB::transaction(function () use ($request) {
             // 1. Create the new GPO Policy Document in Draft state
             $policy = Profile::create([
-                'name'    => $request->name,
-                'status'  => \GovStore\StoreOperations\Enums\PolicyStatus::DRAFT->value,
+                'name' => $request->name,
+                'status' => PolicyStatus::DRAFT->value,
                 'version' => '1.0',
-                'scope'   => 'GLOBAL', // Separated from deployment: scope is assigned later
+                'scope' => 'GLOBAL', // Separated from deployment: scope is assigned later
             ]);
 
             // 2. Clone baseline capabilities dynamically based on chosen template
             $templateType = strtolower($request->template);
-            
+
             if ($templateType === 'hardware') {
                 $policy->capabilities()->createMany([
                     ['capability_code' => 'require_quantity', 'behavior' => 'ENFORCE'],
@@ -489,6 +498,7 @@ class ProfileAdminController extends Controller
     public function confirmationHub($id)
     {
         $policy = Profile::with('capabilities')->findOrFail($id);
+
         return view('storeops::admin.rules.confirmation', compact('policy'));
     }
 
@@ -501,20 +511,20 @@ class ProfileAdminController extends Controller
 
         $copy = \DB::transaction(function () use ($original) {
             // 1. Clone the parent document, appending "Copy"
-            $copyName = $original->name . ' - Copy';
-            
+            $copyName = $original->name.' - Copy';
+
             // Handle unique constraint edge cases dynamically
-            $count = Profile::where('name', 'LIKE', $copyName . '%')->count();
+            $count = Profile::where('name', 'LIKE', $copyName.'%')->count();
             if ($count > 0) {
-                $copyName .= ' (' . ($count + 1) . ')';
+                $copyName .= ' ('.($count + 1).')';
             }
 
             $copy = Profile::create([
-                'name'        => $copyName,
-                'status'      => \GovStore\StoreOperations\Enums\PolicyStatus::DRAFT->value,
-                'version'     => '1.0',
-                'scope'       => $original->scope,
-                'company_id'  => $original->company_id,
+                'name' => $copyName,
+                'status' => PolicyStatus::DRAFT->value,
+                'version' => '1.0',
+                'scope' => $original->scope,
+                'company_id' => $original->company_id,
                 'location_id' => $original->location_id,
             ]);
 
@@ -522,8 +532,8 @@ class ProfileAdminController extends Controller
             foreach ($original->capabilities as $cap) {
                 $copy->capabilities()->create([
                     'capability_code' => $cap->capability_code,
-                    'behavior'        => $cap->behavior,
-                    'config_payload'  => $cap->config_payload,
+                    'behavior' => $cap->behavior,
+                    'config_payload' => $cap->config_payload,
                 ]);
             }
 

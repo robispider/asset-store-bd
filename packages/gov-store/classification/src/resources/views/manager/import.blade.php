@@ -48,12 +48,8 @@
                         
                         <div class="row">
                             <div class="col-md-12 text-right">
-                                <!-- Direct Import posts STRAIGHT to the execute route, skipping validate entirely -->
-                                <button type="submit" formaction="{{ route('gov.catalog.import.execute') }}" class="btn btn-default" onclick="this.innerHTML='<i class=\'fas fa-spinner fa-spin\'></i> Importing...';">
-                                    {{ __('classification::texts.import_btn_direct_import_skip_review') }}
-                                </button>
                                 <!-- Analyze & Review posts to the validate route -->
-                                <button type="submit" formaction="{{ route('gov.catalog.import.validate') }}" class="btn btn-primary" style="margin-left: 10px;" onclick="this.innerHTML='\u003ci class=\\'fas fa-spinner fa-spin\\'\u003e\u003c/i\u003e Analyzing...';">
+                                <button type="submit" formaction="{{ route('gov.catalog.import.validate') }}" class="btn btn-primary" style="margin-left: 10px;">
                                     {{ __('classification::texts.import_btn_analyze_review') }} <i class="fas fa-arrow-right"></i>
                                 </button>
                             </div>
@@ -63,59 +59,7 @@
 
                 <hr style="border-top: 2px dashed #ddd; margin: 30px 0;">
 
-                <!-- OPTION B: Upload Custom Dataset -->
-                <div class="well" style="background-color: #fcfcfc; border-left: 4px solid #d2d6de;">
-                    <form id="catalog-upload-form" method="POST" enctype="multipart/form-data">
-                        {{ csrf_field() }}
-                        <input type="hidden" name="source" value="upload">
-                        
-                        <h4>{{ __('classification::texts.import_option_b_title') }}</h4>
-                        <p class="text-muted" style="margin-bottom: 20px;">{{ __('classification::texts.import_option_b_desc') }}</p>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>{{ __('classification::texts.import_label_target_scheme') }}</label>
-                                    <input type="text" name="scheme" class="form-control" placeholder="{{ __('classification::texts.import_placeholder_target_scheme') }}" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>{{ __('classification::texts.import_label_version_tag') }}</label>
-                                    <input type="text" name="version" class="form-control" placeholder="{{ __('classification::texts.import_placeholder_version_tag') }}" required>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row" style="margin-top: 10px;">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>{{ __('classification::texts.import_label_official_dataset') }}</label>
-                                    <input type="file" name="metadata_file" id="metadata_file" class="form-control" accept=".csv" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>{{ __('classification::texts.import_label_hierarchy_validation') }}</label>
-                                    <input type="file" name="tree_file" class="form-control" accept=".csv">
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="row" style="margin-top: 15px;">
-                            <div class="col-md-12 text-right">
-                                <!-- Direct Import posts STRAIGHT to the execute route -->
-                                <button type="submit" formaction="{{ route('gov.catalog.import.execute') }}" class="btn btn-default" onclick="this.innerHTML='<i class=\'fas fa-spinner fa-spin\'></i> Importing...';">
-                                    Direct Import (Skip Review)
-                                </button>
-                                <!-- Analyze & Review posts to the validate route -->
-                                <button type="submit" formaction="{{ route('gov.catalog.import.validate') }}" id="btn-next" class="btn btn-primary" style="margin-left: 10px;">
-                                    Analyze & Review <i class="fas fa-arrow-right"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+                <p class="text-muted">{{ __('tenantops::access.bundle_only') }}</p>
             </div>
         </div>
 
@@ -180,10 +124,9 @@
                     <input type="hidden" name="source" value="{{ $source }}">
                     <input type="hidden" name="scheme" value="{{ $scheme }}">
                     <input type="hidden" name="version" value="{{ $version }}">
-                    <input type="hidden" name="metaPath" value="{{ $metaPath }}">
-                    <input type="hidden" name="treePath" value="{{ $treePath }}">
+                    <input type="hidden" name="catalog_review_token" value="{{ $reviewToken }}">
                     
-                    <button type="submit" class="btn btn-primary btn-block btn-lg" onclick="this.innerHTML='<i class=\'fas fa-spinner fa-spin\'></i> Importing...';">
+                    <button type="submit" class="btn btn-primary btn-block btn-lg">
                         {{ __('classification::texts.import_btn_update_catalog') }}
                     </button>
                     <a href="{{ route('gov.catalog.import') }}" class="btn btn-default btn-block btn-lg" style="margin-top: 10px;">{{ __('classification::texts.import_btn_cancel') }}</a>

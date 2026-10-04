@@ -2,10 +2,10 @@
 
 namespace GovStore\Classification\Http\Controllers;
 
-use Illuminate\Routing\Controller;
-use Illuminate\Http\Request;
-use GovStore\TenantScope\Contexts\TenantContext;
 use App\Models\Location;
+use GovStore\TenantScope\Contexts\TenantContext;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 
 class OfficeCopyController extends Controller
@@ -15,13 +15,13 @@ class OfficeCopyController extends Controller
         // Fetch offices within the same Ministry (Company) that actually have adopted categories
         $sourceOffices = Location::withoutGlobalScopes()
             ->select('locations.id', 'locations.name')
-            ->where('locations.company_id', $context->companyId)
+            ->where('locations.company_id', $context->companyId ?? 0)
             ->where('locations.id', '!=', $context->locationId) // Exclude self
             ->whereIn('locations.id', function ($query) {
                 $query->select('scope_id')
-                      ->from('gov_tenant_scope_mappings')
-                      ->where('scope_type', 'location')
-                      ->where('reference_type', 'category');
+                    ->from('gov_tenant_scope_mappings')
+                    ->where('scope_type', 'location')
+                    ->where('reference_type', 'category');
             })
             ->orderBy('locations.name')
             ->get();
@@ -36,6 +36,11 @@ class OfficeCopyController extends Controller
     public function fetchSourceCodes(Request $request)
     {
         $request->validate(['source_location_id' => 'required|integer']);
+
+        $context = app(TenantContext::class);
+        abort_unless($context->companyId && Location::withoutGlobalScopes()
+            ->where('company_id', $context->companyId)->whereNull('deleted_at')
+            ->where('id', $request->source_location_id)->exists(), 404);
 
         $codes = DB::table('gov_tenant_scope_mappings as map')
             ->join('gov_catalog_snipe_mappings as snipe', 'map.reference_id', '=', 'snipe.category_id')

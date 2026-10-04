@@ -2,34 +2,28 @@
 
 namespace GovStore\CustomRequests\Http\Controllers;
 
-use Illuminate\Routing\Controller;
-use Illuminate\Http\Request;
+use App\Models\Category;
+use GovStore\CustomRequests\Models\ApprovalPolicy;
 use GovStore\CustomRequests\Models\Request as ServiceRequest;
 use GovStore\CustomRequests\Models\RequestEvent;
 use GovStore\CustomRequests\Services\ApprovalService;
-use App\Models\Category;
-use GovStore\CustomRequests\Models\ApprovalPolicy;
-use GovStore\OfficeMembership\Models\OfficeResponsibility; // IMPORT PIVOT
+use GovStore\TenantScope\Contexts\TenantContext;
+use GovStore\TenantScope\Services\ActionFailure;
+use GovStore\TenantScope\Services\GovAccess;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 
 class GovApprovalController extends Controller
 {
     private function checkApproverAccess()
     {
-        $user = auth()->user();
-        if ($user->isSuperUser() || $user->hasAccess('admin')) return;
-
-        // MATRIX LOOKUP
-        $isApprover = OfficeResponsibility::where('user_id', $user->id)
-            ->whereIn('role_slug', ['primary_approver', 'final_approver'])
-            ->exists();
-
-        if (!$isApprover) abort(403, __('requestlabels::requests.govapprovalcontroller_abort_unauthorized'));
+        abort_unless(app(GovAccess::class)->permitsRequest(auth()->user(), 'requests.approve'), 403);
     }
 
     private function checkSystemAdminAccess()
     {
         $user = auth()->user();
-        if (!$user->isSuperUser() && !$user->hasAccess('admin')) {
+        if (! $user->isSuperUser() && ! $user->hasAccess('admin')) {
             abort(403, __('requestlabels::requests.govapprovalcontroller_abort_admin_required'));
         }
     }
@@ -42,14 +36,12 @@ class GovApprovalController extends Controller
         $pendingQuery = ServiceRequest::with(['requester', 'items'])->whereIn('approval_status', ['submitted', 'under_review', 'pending_primary', 'pending_final']);
         $processedQuery = ServiceRequest::with(['requester'])->whereNotIn('approval_status', ['draft', 'submitted', 'under_review', 'pending_primary', 'pending_final']);
 
-        if (!$user->isSuperUser()) {
-            // SHARED QUEUE: Fetch all locations where this user is an approver
-            $myLocationIds = OfficeResponsibility::where('user_id', $user->id)
-                ->whereIn('role_slug', ['primary_approver', 'final_approver'])
-                ->pluck('location_id');
+        if (! $user->isSuperUser()) {
+            // Use the working office, including responsibilities granted as cover.
+            $myLocationIds = [app(TenantContext::class)->locationId];
 
             $pendingQuery->whereIn('delivery_location_id', $myLocationIds);
-            $processedQuery->where('approved_by', $user->id); // Keep history to what they personally processed
+            $processedQuery->whereIn('delivery_location_id', $myLocationIds)->where('approved_by', $user->id);
         }
 
         $pendingRequests = $pendingQuery->orderBy('created_at', 'desc')->get();
@@ -62,6 +54,7 @@ class GovApprovalController extends Controller
     {
         $this->checkApproverAccess();
         $serviceRequest = ServiceRequest::with(['requester', 'items.requested', 'events.user'])->findOrFail($id);
+        abort_unless(auth()->user()->isSuperUser() || (int) $serviceRequest->delivery_location_id === app(TenantContext::class)->locationId, 404);
 
         if ($serviceRequest->approval_status === 'submitted') {
             $serviceRequest->update(['approval_status' => 'under_review']);
@@ -75,11 +68,13 @@ class GovApprovalController extends Controller
     {
         $this->checkApproverAccess();
         $serviceRequest = ServiceRequest::findOrFail($id);
+        abort_unless(auth()->user()->isSuperUser() || (int) $serviceRequest->delivery_location_id === app(TenantContext::class)->locationId, 404);
         try {
             $service->processDecision($serviceRequest, auth()->user(), $request->input('items', []));
+
             return redirect()->route('gov.requests.admin.index')->with('success', __('requestlabels::requests.govapprovalcontroller_flash_processed', ['number' => $serviceRequest->request_number]));
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', __('requestlabels::requests.govapprovalcontroller_flash_workflow_error', ['message' => $e->getMessage()]));
+            return redirect()->back()->with('error', __('requestlabels::requests.govapprovalcontroller_flash_workflow_error', ['message' => app(ActionFailure::class)->message($e)]));
         }
     }
 
@@ -90,6 +85,7 @@ class GovApprovalController extends Controller
         $this->checkSystemAdminAccess();
         $categories = Category::orderBy('name')->get();
         $policies = ApprovalPolicy::where('target_type', 'category')->get()->keyBy('target_id');
+
         return view('govstore::admin.policies', compact('categories', 'policies'));
     }
 
@@ -98,6 +94,7 @@ class GovApprovalController extends Controller
         $this->checkSystemAdminAccess();
         $request->validate(['category_id' => 'required|integer', 'policy_name' => 'required|string']);
         ApprovalPolicy::updateOrCreate(['target_type' => 'category', 'target_id' => $request->category_id], ['policy_name' => $request->policy_name]);
+
         return redirect()->back()->with('success', __('requestlabels::requests.govapprovalcontroller_flash_policy_updated'));
     }
 }

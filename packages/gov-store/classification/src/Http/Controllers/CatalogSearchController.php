@@ -2,11 +2,16 @@
 
 namespace GovStore\Classification\Http\Controllers;
 
-use Illuminate\Routing\Controller;
-use Illuminate\Http\Request;
+use App\Models\Category;
+use GovStore\Classification\Models\CatalogNode;
+use GovStore\Classification\Models\CategoryGovernance;
 use GovStore\Classification\Services\CatalogSearchService;
 use GovStore\Classification\Services\CategoryAdoptionService;
 use GovStore\TenantScope\Contexts\TenantContext;
+use GovStore\TenantScope\Services\ActionFailure;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 
 class CatalogSearchController extends Controller
 {
@@ -38,13 +43,13 @@ class CatalogSearchController extends Controller
         return response()->json([
             'results' => $results->map(function ($node) {
                 return [
-                    'id'          => $node->id,
-                    'code'        => $node->code,
-                    'text'        => $node->title_en,
-                    'level'       => $node->level,
-                    'scheme'      => $node->scheme,
-                    'version'     => $node->version,
-                    'hid'         => $node->hid,
+                    'id' => $node->id,
+                    'code' => $node->code,
+                    'text' => $node->title_en,
+                    'level' => $node->level,
+                    'scheme' => $node->scheme,
+                    'version' => $node->version,
+                    'hid' => $node->hid,
                     'has_mapping' => (bool) $node->snipeMapping,
                 ];
             }),
@@ -58,7 +63,7 @@ class CatalogSearchController extends Controller
     {
         $query = $request->input('q', '');
         $results = $searcher->searchUniversal($query, $context->locationId ?? 0);
-        
+
         return response()->json(['results' => $results]);
     }
 
@@ -72,13 +77,13 @@ class CatalogSearchController extends Controller
 
         $node = $searcher->findByCode($scheme, $code);
 
-        if (!$node) {
+        if (! $node) {
             return response()->json([], 404);
         }
 
         return response()->json([
             'ancestors' => $searcher->getAncestorsByHid($node->hid),
-            'siblings'  => $searcher->getSiblings($node),
+            'siblings' => $searcher->getSiblings($node),
         ]);
     }
 
@@ -95,12 +100,12 @@ class CatalogSearchController extends Controller
         return response()->json([
             'results' => $nodes->map(function ($node) use ($searcher) {
                 return [
-                    'id'         => $node->id,
-                    'code'       => $node->code,
-                    'text'       => "[{$node->code}] {$node->title_en}",
-                    'children'   => $searcher->hasChildren($node),
-                    'level'      => $node->level,
-                    'scheme'     => $node->scheme,
+                    'id' => $node->id,
+                    'code' => $node->code,
+                    'text' => "[{$node->code}] {$node->title_en}",
+                    'children' => $searcher->hasChildren($node),
+                    'level' => $node->level,
+                    'scheme' => $node->scheme,
                 ];
             }),
         ]);
@@ -116,7 +121,7 @@ class CatalogSearchController extends Controller
 
         $node = $searcher->findByCode($scheme, $code);
 
-        if (!$node) {
+        if (! $node) {
             return response()->json(['ancestors' => collect()]);
         }
 
@@ -125,7 +130,7 @@ class CatalogSearchController extends Controller
         return response()->json([
             'ancestors' => $ancestors->map(function ($ancestor) {
                 return [
-                    'id'   => $ancestor->id,
+                    'id' => $ancestor->id,
                     'code' => $ancestor->code,
                     'text' => "[{$ancestor->code}] {$ancestor->title_en}",
                 ];
@@ -142,20 +147,23 @@ class CatalogSearchController extends Controller
         $scheme = $request->input('scheme', 'UNSPSC');
 
         if (empty($code)) {
-            $mappings = \GovStore\Classification\Models\CatalogNode::whereHas('snipeMapping')
+            $mappings = CatalogNode::whereHas('snipeMapping')
                 ->with(['snipeMapping'])
                 ->paginate(15);
+
             return view('gov-classification::manager.mapping', compact('mappings'));
         }
 
         $searcher = app(CatalogSearchService::class);
         $node = $searcher->findByCode($scheme, (string) $code);
 
-        if (!$node) return response()->json(['success' => false, 'message' => 'Node not found.'], 404);
+        if (! $node) {
+            return response()->json(['success' => false, 'message' => 'Node not found.'], 404);
+        }
 
         $tenantContext = app(TenantContext::class);
         $adoptionService = app(CategoryAdoptionService::class);
-        
+
         $isCompanyAdopted = false;
         $isLocationAdopted = false;
         $governance = null;
@@ -164,29 +172,29 @@ class CatalogSearchController extends Controller
         if ($tenantContext->companyId > 0) {
             $activeScopeType = 'company';
         }
-        
+
         if ($node->snipeMapping) {
             $categoryId = $node->snipeMapping->category_id;
-            
+
             if ($tenantContext->companyId > 0) {
                 $isCompanyAdopted = $adoptionService->isUsedBy($categoryId, 'company', $tenantContext->companyId);
             }
             if ($tenantContext->locationId > 0) {
                 $isLocationAdopted = $adoptionService->isUsedBy($categoryId, 'location', $tenantContext->locationId);
             }
-            
-            $governance = \GovStore\Classification\Models\CategoryGovernance::with('originatingCompany')
+
+            $governance = CategoryGovernance::with('originatingCompany')
                 ->where('category_id', $categoryId)->first();
         }
 
         return view('gov-classification::search.mapping', [
-            'node'              => $node,
-            'currentMapping'    => $node->snipeMapping,
-            'isCompanyAdopted'  => $isCompanyAdopted,
+            'node' => $node,
+            'currentMapping' => $node->snipeMapping,
+            'isCompanyAdopted' => $isCompanyAdopted,
             'isLocationAdopted' => $isLocationAdopted,
-            'governance'        => $governance,
-            'activeScopeType'   => $activeScopeType,
-            'tenantContext'     => $tenantContext,
+            'governance' => $governance,
+            'activeScopeType' => $activeScopeType,
+            'tenantContext' => $tenantContext,
             'suggestedCategory' => null,
         ]);
     }
@@ -197,18 +205,18 @@ class CatalogSearchController extends Controller
     public function searchSnipeCategories(Request $request)
     {
         $query = $request->input('q');
-        
-        $categories = \App\Models\Category::where('name', 'LIKE', "%{$query}%")
+
+        $categories = Category::where('name', 'LIKE', "%{$query}%")
             ->limit(10)
             ->get(['id', 'name']);
 
         return response()->json([
             'results' => $categories->map(function ($cat) {
                 return [
-                    'id'   => $cat->id,
-                    'text' => $cat->name
+                    'id' => $cat->id,
+                    'text' => $cat->name,
                 ];
-            })
+            }),
         ]);
     }
 
@@ -218,8 +226,8 @@ class CatalogSearchController extends Controller
     public function saveMapping(Request $request)
     {
         $request->validate([
-            'code'        => 'required|string',
-            'category_id' => 'required|integer'
+            'code' => 'required|string',
+            'category_id' => 'required|integer',
         ]);
 
         try {
@@ -227,25 +235,25 @@ class CatalogSearchController extends Controller
             $categoryId = $request->input('category_id');
 
             // Secure idempotent upsert using DB builder
-            \Illuminate\Support\Facades\DB::table('gov_catalog_snipe_mappings')->updateOrInsert(
+            DB::table('gov_catalog_snipe_mappings')->updateOrInsert(
                 ['code' => $code],
                 [
                     'category_id' => $categoryId,
-                    'updated_at'  => now()
+                    'updated_at' => now(),
                 ]
             );
 
-            $category = \App\Models\Category::find($categoryId);
+            $category = Category::find($categoryId);
 
             return response()->json([
-                'success'       => true,
-                'category_name' => $category ? $category->name : 'Unresolved'
+                'success' => true,
+                'category_name' => $category ? $category->name : 'Unresolved',
             ]);
 
         } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to save mapping: ' . $e->getMessage()
+                'message' => app(ActionFailure::class)->message($e),
             ], 500);
         }
     }

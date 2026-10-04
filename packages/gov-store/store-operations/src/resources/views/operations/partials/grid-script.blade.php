@@ -250,13 +250,19 @@ $(document).ready(function() {
         // Trigger Posting Preview Modal
         $('#triggerPostBtn').click(function() {
             $.post('{{ route("storeops.documents.draft", ["type" => $type, "id" => $document->id]) }}', $('#workspaceForm').serialize())
-                .done(function() {
+                .done(function(res) {
+                    if (res.validation && !res.validation.is_valid) {
+                        renderServerValidationChecklist(res.validation);
+                        return;
+                    }
                     $.get('{{ route("storeops.documents.preview", ["type" => $type, "id" => $document->id]) }}')
                         .done(function(data) {
                             $('#previewLines').text(data.lines);
                             $('#previewQty').text(data.total_qty);
                             $('#previewValue').text(data.total_value);
                             $('#previewRef').text(data.reference);
+                            $('#previewItems').empty();
+                            (data.items || []).forEach(function(item) { $('<li>').text(item.name + ': ' + item.quantity).appendTo('#previewItems'); });
                             $('#postingModal').modal('show');
                         });
                 })

@@ -2,12 +2,13 @@
 
 namespace GovStore\Classification\Http\Controllers;
 
-use Illuminate\Routing\Controller;
-use Illuminate\Http\Request;
-use GovStore\Classification\Services\CategoryAdoptionService;
-use GovStore\Classification\Services\CatalogCategoryCreator;
-use GovStore\TenantScope\Contexts\TenantContext;
 use Exception;
+use GovStore\Classification\Services\CatalogCategoryCreator;
+use GovStore\Classification\Services\CategoryAdoptionService;
+use GovStore\TenantScope\Contexts\TenantContext;
+use GovStore\TenantScope\Services\ActionFailure;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 
 class CategoryAdoptionController extends Controller
 {
@@ -40,12 +41,13 @@ class CategoryAdoptionController extends Controller
 
         try {
             $scope = $this->resolveScope($tenantContext);
-            
+
             // Cannot manually adopt if already globally shared
             $adoptionService->useCategory($request->category_id, $scope['type'], $scope['id']);
+
             return response()->json(['success' => true]);
         } catch (Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+            return response()->json(['success' => false, 'message' => app(ActionFailure::class)->message($e)], 500);
         }
     }
 
@@ -56,27 +58,28 @@ class CategoryAdoptionController extends Controller
         try {
             $scope = $this->resolveScope($tenantContext);
             $adoptionService->stopUsingCategory($request->category_id, $scope['type'], $scope['id']);
+
             return response()->json(['success' => true]);
         } catch (Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 422); 
+            return response()->json(['success' => false, 'message' => app(ActionFailure::class)->message($e)], 422);
         }
     }
 
     public function provision(Request $request, CatalogCategoryCreator $creator, TenantContext $tenantContext)
     {
         $request->validate([
-            'unspsc_code'      => 'required|string',
-            'category_type'    => 'required|string|in:asset,consumable,accessory,license,component',
-            'custom_name'      => 'nullable|string|max:255',
-            'governance_type'  => 'nullable|string|in:global,company,location',
-            'target_company_id'=> 'nullable|integer'
+            'unspsc_code' => 'required|string',
+            'category_type' => 'required|string|in:asset,consumable,accessory,license,component',
+            'custom_name' => 'nullable|string|max:255',
+            'governance_type' => 'nullable|string|in:global,company,location',
+            'target_company_id' => 'nullable|integer',
         ]);
 
         $user = auth()->user();
 
         try {
             $scope = $this->resolveScope($tenantContext);
-            $governanceType = $scope['type']; 
+            $governanceType = $scope['type'];
             $targetScopeType = $scope['type'];
             $targetScopeId = $scope['id'];
 
@@ -106,7 +109,7 @@ class CategoryAdoptionController extends Controller
 
             return response()->json(['success' => true]);
         } catch (Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+            return response()->json(['success' => false, 'message' => app(ActionFailure::class)->message($e)], 500);
         }
     }
 }

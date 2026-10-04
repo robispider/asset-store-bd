@@ -11,7 +11,7 @@
                     <form action="{{ route('storeops.documents.initialize') }}" method="POST" style="display:inline;">
                         @csrf
                         <input type="hidden" name="document_type" value="receipt">
-                        <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i> New Goods Receipt</button>
+                        <x-gov-action ability="storeops.documents.draft" type="submit" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i> New Goods Receipt</x-gov-action>
                     </form>
                 </div>
             </div>
@@ -40,7 +40,7 @@
                                     @foreach($documents as $doc)
                                     <tr>
                                         <td>
-                                            <a href="{{ route('storeops.documents.workspace', ['type' => 'receipt', 'id' => $doc->id]) }}">
+                                            <a href="{{ route('storeops.documents.workspace', ['type' => $doc->type, 'id' => $doc->id]) }}">
                                                 <strong>{{ $doc->getDocumentNumber() }}</strong>
                                             </a>
                                         </td>

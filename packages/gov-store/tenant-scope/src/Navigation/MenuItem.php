@@ -7,27 +7,37 @@ use Illuminate\Support\Facades\Route;
 class MenuItem
 {
     public string $id;
+
     public ?string $parent;
+
     public string $title;
+
     public string $icon;
+
     public ?string $route;
+
     /** @var string|array|null Single qualifier string or array of qualifier strings */
     public string|array|null $permission;
+
     public int $order;
+
     public array $activePatterns;
+
     public array $children = [];
+
+    public bool $strict = false;
 
     public function __construct(array $data)
     {
-        $this->id             = $data['id'];
-        $this->parent         = $data['parent'] ?? null;
-        $this->title          = $data['title'];
-        $this->icon           = $data['icon'] ?? 'fa fa-circle-o';
-        $this->route          = $data['route'] ?? null;
-        $this->permission     = $data['permission'] ?? null;
-        $this->order          = $data['order'] ?? 100;
+        $this->id = $data['id'];
+        $this->parent = $data['parent'] ?? null;
+        $this->title = $data['title'];
+        $this->icon = $data['icon'] ?? 'fa fa-circle-o';
+        $this->route = $data['route'] ?? null;
+        $this->permission = $data['permission'] ?? null;
+        $this->order = $data['order'] ?? 100;
         $this->activePatterns = $data['active_patterns'] ?? [];
-        $this->strict         = $data['strict'] ?? false; 
+        $this->strict = $data['strict'] ?? false;
     }
 
     /**

@@ -2,22 +2,26 @@
 
 namespace GovStore\StoreOperations\Services;
 
-use GovStore\StoreOperations\Models\Document;
+use Exception;
 use GovStore\StoreOperations\Enums\DocumentState;
+use GovStore\StoreOperations\Models\Document;
 use GovStore\TenantScope\Contexts\TenantContext;
 use Illuminate\Support\Facades\DB;
-use Exception;
 
 class GoodsReceiptService
 {
     protected DocumentNumberService $numberService;
+
     protected TenantContext $tenantContext;
+
     protected ProfileCompilerService $compiler;
+
     protected DocumentLineItemManager $lineItemManager;
+
     protected PostingPipelineManager $pipelineManager;
 
     public function __construct(
-        DocumentNumberService $numberService, 
+        DocumentNumberService $numberService,
         TenantContext $tenantContext,
         ProfileCompilerService $compiler,
         DocumentLineItemManager $lineItemManager,
@@ -33,23 +37,34 @@ class GoodsReceiptService
     /**
      * Saves document details, normalizes columns, and saves the Compiled Profile Snapshot.
      */
-    public function saveDraft(array $headerData, array $rawLines, int $userId, ?Document $document = null): Document
+    public function saveDraft(array $headerData, array $rawLines, int $userId, ?Document $document = null, string $type = 'receipt'): Document
     {
-        return DB::transaction(function () use ($headerData, $rawLines, $userId, $document) {
-            
+        return DB::transaction(function () use ($headerData, $rawLines, $userId, $document, $type) {
+            if (! in_array($type, ['receipt', 'issue'], true)) {
+                throw new \InvalidArgumentException('Unsupported document type.');
+            }
+            if ($document) {
+                $document = Document::whereKey($document->id)->lockForUpdate()->firstOrFail();
+                if ($document->type !== $type) {
+                    throw new \InvalidArgumentException('Document type mismatch.');
+                }
+            }
+
             if ($document && $document->status !== DocumentState::DRAFT->value) {
-                throw new Exception("This document is locked and can no longer be edited.");
+                throw new Exception('This document is locked and can no longer be edited.');
             }
 
             // 1. Create or Update Header
-            if (!$document) {
-                $headerData['document_number'] = $this->numberService->generate('GR', 'gov_documents', 'document_number');
-                $headerData['type'] = 'receipt';
+            if (! $document) {
+                $headerData['document_number'] = $this->numberService->generate($type === 'receipt' ? 'GR' : 'GI', 'gov_documents', 'document_number');
+                $headerData['type'] = $type;
                 $headerData['status'] = DocumentState::DRAFT->value;
                 $headerData['company_id'] = $this->tenantContext->companyId;
                 $headerData['location_id'] = $this->tenantContext->locationId;
                 $headerData['created_by'] = $userId;
-                
+                $headerData['drafted_by'] = $userId;
+                $headerData['managed_by'] = $userId;
+
                 $document = Document::create($headerData);
                 $document->transitionTo(DocumentState::DRAFT, $userId, 'Document workspace initialized.');
             } else {
@@ -57,10 +72,10 @@ class GoodsReceiptService
             }
 
             // 2. Process and normalize lines
-            $processedLines = $this->lineItemManager->processLines($rawLines, 'IN');
+            $processedLines = $this->lineItemManager->processLines($rawLines, $type === 'receipt' ? 'IN' : 'OUT');
 
             $document->items()->delete();
-            if (!empty($processedLines)) {
+            if (! empty($processedLines)) {
                 $document->items()->createMany($processedLines);
             }
 
@@ -70,7 +85,7 @@ class GoodsReceiptService
             // 3. Compile and save the frozen snapshot
             $snapshot = $this->compiler->compileDocument($document);
             $document->update([
-                'compiled_profile_snapshot' => $snapshot
+                'compiled_profile_snapshot' => $snapshot,
             ]);
 
             return $document;
