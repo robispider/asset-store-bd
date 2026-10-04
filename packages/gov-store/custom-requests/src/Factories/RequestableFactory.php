@@ -2,15 +2,15 @@
 
 namespace GovStore\CustomRequests\Factories;
 
-use GovStore\CustomRequests\Adapters\AssetAdapter;
-use GovStore\CustomRequests\Adapters\AssetModelAdapter;
-use GovStore\CustomRequests\Adapters\AccessoryAdapter;
-use GovStore\CustomRequests\Adapters\ConsumableAdapter;
+use App\Models\Accessory;
 use App\Models\Asset;
 use App\Models\AssetModel;
-use App\Models\Accessory;
 use App\Models\Consumable;
 use Exception;
+use GovStore\CustomRequests\Adapters\AccessoryAdapter;
+use GovStore\CustomRequests\Adapters\AssetAdapter;
+use GovStore\CustomRequests\Adapters\AssetModelAdapter;
+use GovStore\CustomRequests\Adapters\ConsumableAdapter;
 
 class RequestableFactory
 {
@@ -22,12 +22,12 @@ class RequestableFactory
         $type = strtolower(class_basename($type));
 
         switch ($type) {
-            case 'asset': 
+            case 'asset':
                 // Legacy: Handles requests made before the Phase 1 Template Shift
                 return new AssetAdapter(Asset::findOrFail($id));
 
             case 'assetmodel':
-            case 'asset_model': 
+            case 'asset_model':
                 // Modern: Handles multi-quantity Template requests
                 return new AssetModelAdapter(AssetModel::findOrFail($id));
 

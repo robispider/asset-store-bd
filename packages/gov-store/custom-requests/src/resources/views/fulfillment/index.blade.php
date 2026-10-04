@@ -3,6 +3,7 @@
 @section('title', __('requestlabels::requests.fulfillment_title'))
 
 @section('content')
+@include('govstore::components.notices')
 <div class="row">
     <div class="col-md-12">
         <div class="box box-primary">
@@ -13,22 +14,22 @@
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>Request #</th>
-                            <th>Requested By</th>
-                            <th>Purpose / Location</th>
-                            <th>Approval Date</th>
-                            <th>Fulfillment Status</th>
-                            <th>Action</th>
+                            <th>{{ __('requestlabels::requests.request_number') }}</th>
+                            <th>{{ __('requestlabels::requests.requester') }}</th>
+                            <th>{{ __('requestlabels::requests.purpose_location') }}</th>
+                            <th>{{ __('requestlabels::requests.approval_date') }}</th>
+                            <th>{{ __('requestlabels::requests.fulfillment_status') }}</th>
+                            <th>{{ __('requestlabels::requests.action') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($activeRequests as $req)
                             <tr>
                                 <td><strong style="color: #3c8dbc;">{{ $req->request_number }}</strong></td>
-                                <td>{{ $req->requester->present()->fullName ?? 'Unknown User' }}</td>
+                                <td>{{ $req->requester->present()->fullName ?? __('requestlabels::requests.unknown_user') }}</td>
                                 <td>
                                     {{ $req->purpose }}<br>
-                                    <small class="text-muted"><i class="fas fa-map-marker-alt"></i> {{ $req->delivery_location_id ? \App\Models\Location::find($req->delivery_location_id)?->name : 'Main Office' }}</small>
+                                    <small class="text-muted"><i class="fas fa-map-marker-alt"></i> {{ $req->delivery_location_id ? \App\Models\Location::find($req->delivery_location_id)?->name : __('requestlabels::requests.working_office') }}</small>
                                 </td>
                                 <td>{{ $req->approved_at ? $req->approved_at->format('Y-m-d H:i') : '-' }}</td>
                                 <td>
@@ -37,7 +38,7 @@
                                 @elseif($req->fulfillment_status === 'partially_issued')
                                     <span class="label bg-purple">{{ __('requestlabels::requests.fulfillment_status_partially_dispatched') }}</span>
                                     @else
-                                        <span class="label label-info">{{ ucfirst($req->fulfillment_status) }}</span>
+                                        <span class="label label-info">{{ __('requestlabels::requests.event_'.$req->fulfillment_status) }}</span>
                                     @endif
                                 </td>
                                 <td>

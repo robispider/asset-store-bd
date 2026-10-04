@@ -38,7 +38,7 @@ return [
         'storeops_documents_post' => 'Post office receipts and issues permanently', 'storeops_rules_view' => 'View national product rules',
         'storeops_rules_publish' => 'Change national product rules', 'catalog_master_manage' => 'Manage national catalog, mappings and collections',
         'catalog_view' => 'Browse the catalog', 'catalog_office_adopt' => 'Adopt categories for your office or assigned company',
-        'requests_submit' => 'Request items and manage your basket', 'requests_approve' => 'Review office requests',
+        'requests_submit' => 'Request items and manage your basket', 'requests_approve_primary' => 'Give a primary request decision', 'requests_approve_final' => 'Give a final request decision', 'requests_approve' => 'Review office requests',
         'requests_fulfill' => 'Fulfill office requests', 'requests_configure' => 'Configure office requests',
         'access_view' => 'View and request access', 'access_manage' => 'Review office access requests',
         'access_matrix' => 'View the permission matrix', 'access_audit' => 'View individual audit events', 'access_shadow' => 'View aggregate rollout events',

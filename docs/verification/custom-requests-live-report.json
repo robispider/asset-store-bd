@@ -1,0 +1,141 @@
+{
+    "date": "2026-10-04T14:28:52+00:00",
+    "database": "snipeit",
+    "office": 160,
+    "access_mode": "shadow",
+    "checks": {
+        "catalog renders": {
+            "actual": 200,
+            "expected": 200
+        },
+        "fractional basket quantity rejected": {
+            "actual": 422,
+            "expected": 422
+        },
+        "add consumables": {
+            "actual": 200,
+            "expected": 200
+        },
+        "add accessories": {
+            "actual": 200,
+            "expected": 200
+        },
+        "submit with no delivery": {
+            "actual": 200,
+            "expected": 200
+        },
+        "request office": {
+            "actual": 160,
+            "expected": 160
+        },
+        "initial state": {
+            "actual": "pending_primary",
+            "expected": "pending_primary"
+        },
+        "approval page renders": {
+            "actual": 200,
+            "expected": 200
+        },
+        "primary approval": {
+            "actual": 200,
+            "expected": 200
+        },
+        "approved state": {
+            "actual": "approved",
+            "expected": "approved"
+        },
+        "foreign office denial": {
+            "actual": 404,
+            "expected": 404
+        },
+        "fulfillment page renders": {
+            "actual": 200,
+            "expected": 200
+        },
+        "issue session 1": {
+            "actual": 200,
+            "expected": 200
+        },
+        "issue state 1": {
+            "actual": "partially_issued",
+            "expected": "partially_issued"
+        },
+        "issue session 2": {
+            "actual": 200,
+            "expected": 200
+        },
+        "issue state 2": {
+            "actual": "issued",
+            "expected": "issued"
+        },
+        "one stock deduction consumables": {
+            "actual": 95,
+            "expected": 95
+        },
+        "no checkout duplication consumables": {
+            "actual": 0,
+            "expected": 0
+        },
+        "one stock deduction accessories": {
+            "actual": 98,
+            "expected": 98
+        },
+        "no checkout duplication accessories": {
+            "actual": 0,
+            "expected": 0
+        },
+        "receipt acknowledgement": {
+            "actual": 200,
+            "expected": 200
+        },
+        "return request": {
+            "actual": 200,
+            "expected": 200
+        },
+        "return receipt drafting": {
+            "actual": 200,
+            "expected": 200
+        },
+        "return remains draft": {
+            "actual": "DRAFT",
+            "expected": "DRAFT"
+        },
+        "receipt did not change stock": {
+            "actual": 95,
+            "expected": 95
+        }
+    },
+    "actors": {
+        "employee": 1768,
+        "primary": 1624,
+        "storekeeper": 1576
+    },
+    "request_id": 1091,
+    "request_number": "SR-2026-000287",
+    "stock": [
+        {
+            "table": "consumables",
+            "id": 1602,
+            "qty": 3,
+            "pivot": "consumables_users",
+            "key": "consumable_id",
+            "before": 98,
+            "checkouts_before": 0,
+            "after": 95,
+            "checkouts_after": 0
+        },
+        {
+            "table": "accessories",
+            "id": 1065,
+            "qty": 2,
+            "pivot": "accessories_checkout",
+            "key": "accessory_id",
+            "before": 100,
+            "checkouts_before": 0,
+            "after": 98,
+            "checkouts_after": 0
+        }
+    ],
+    "return_receipt_id": "01a10751-b56e-7361-a218-359f1c22a06f",
+    "passed": true
+}

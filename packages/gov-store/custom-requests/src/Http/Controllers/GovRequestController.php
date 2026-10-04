@@ -3,14 +3,15 @@
 namespace GovStore\CustomRequests\Http\Controllers;
 
 use App\Models\Accessory;
-use App\Models\Asset;
+use App\Models\AssetModel;
 use App\Models\Consumable;
 use GovStore\CustomRequests\Services\CatalogService;
-use GovStore\CustomRequests\Services\RequestService;
-use GovStore\TenantScope\Services\ActionFailure;
+use GovStore\CustomRequests\Services\RequesterService;
+use GovStore\CustomRequests\Services\RequestInventory;
+use GovStore\CustomRequests\Services\RequestReturnService;
+use GovStore\TenantScope\Contexts\TenantContext;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Log;
 
 class GovRequestController extends Controller
 {
@@ -30,16 +31,12 @@ class GovRequestController extends Controller
     {
         $userId = auth()->id();
 
-        // =========================================================================
-        // REFACTORED: Wrap the raw array output in a Laravel Collection
-        // This prevents the "Call to a member function count() on array" error in Blade
-        // =========================================================================
-        $catalogItems = collect($catalogService->getAvailableItems());
+        $catalogItems = $catalogService->paginate(request()->validate(['q' => 'nullable|string|max:200', 'type' => 'nullable|in:asset_model,accessory,consumable', 'category_id' => 'nullable|integer|min:1', 'page' => 'nullable|integer|min:1']));
 
         // 2. Fetch the user's request counts using the correct 'approval_status' column
         // (Drafts are excluded; we count submitted, approved/in-progress, and rejected)
         $pendingCount = \GovStore\CustomRequests\Models\Request::where('requested_by', $userId)
-            ->whereIn('approval_status', ['submitted', 'under_review'])
+            ->whereIn('approval_status', ['pending_primary', 'pending_final'])
             ->count();
 
         $approvedCount = \GovStore\CustomRequests\Models\Request::where('requested_by', $userId)
@@ -53,32 +50,23 @@ class GovRequestController extends Controller
         return view('govstore::catalog.index', compact('catalogItems', 'pendingCount', 'approvedCount', 'rejectedCount'));
     }
 
-    public function store(Request $request, RequestService $service)
+    public function withdraw($id, RequesterService $service)
     {
-        // Validate incoming form data
-        $request->validate([
-            'item_type' => 'required|string', // e.g. 'Consumable', 'Asset', 'Accessory'
-            'item_id' => 'required|integer',
-            'notes' => 'nullable|string',
-        ]);
+        $service->transition((int) $id, auth()->user(), 'withdraw');
 
-        // Convert the simple string (e.g., 'Consumable') into the full Snipe-IT Model class path
-        $modelClass = 'App\\Models\\'.ucfirst(strtolower($request->item_type));
+        return redirect()->back()->with('success', __('requestlabels::requests.request_withdrawn'));
+    }
 
-        try {
-            $service->submitRequest($modelClass, $request->item_id, auth()->user(), $request->notes);
+    public function receive($id, RequesterService $service)
+    {
+        $service->transition((int) $id, auth()->user(), 'receive');
 
-            // Redirect back to the item page with a Snipe-IT success banner
-            return redirect()->back()->with('success', __('requestlabels::requests.govrequestcontroller_flash_request_submitted'));
-        } catch (\Exception $e) {
-            Log::error(__('requestlabels::requests.govrequestcontroller_log_submit_error', ['message' => app(ActionFailure::class)->message($e)]));
-
-            return redirect()->back()->with('error', app(ActionFailure::class)->message($e));
-        }
+        return redirect()->back()->with('success', __('requestlabels::requests.receipt_recorded'));
     }
 
     public function search(Request $request)
     {
+        $request->validate(['q' => 'nullable|string|max:200', 'type' => 'required|in:asset_model,consumable,accessory']);
         $term = $request->input('q', '');
         $type = strtolower($request->input('type', ''));
 
@@ -87,32 +75,38 @@ class GovRequestController extends Controller
         }
 
         $results = [];
+        $office = app(TenantContext::class)->locationId;
+        abort_unless($office, 422);
+        $inventory = app(RequestInventory::class);
 
         // Query Snipe-IT's core tables directly with optimized limits
         if ($type === 'consumable') {
-            $items = Consumable::where('name', 'like', "%{$term}%")->limit(15)->get();
+            $items = $inventory->scopeCompany(Consumable::where('location_id', $office))->where('name', 'like', "%{$term}%")->limit(15)->get();
             foreach ($items as $item) {
-                $results[] = ['id' => $item->id, 'text' => $item->name.' (Stock: '.$item->numRemaining().')'];
+                $results[] = ['id' => $item->id, 'text' => $item->name.' ('.__('requestlabels::requests.stock_available').': '.app(RequestInventory::class)->available('consumable', $item, $office).')'];
             }
         } elseif ($type === 'accessory') {
-            $items = Accessory::where('name', 'like', "%{$term}%")->limit(15)->get();
+            $items = $inventory->scopeCompany(Accessory::where('location_id', $office))->where('name', 'like', "%{$term}%")->limit(15)->get();
             foreach ($items as $item) {
-                $results[] = ['id' => $item->id, 'text' => $item->name.' (Stock: '.$item->numRemaining().')'];
+                $results[] = ['id' => $item->id, 'text' => $item->name.' ('.__('requestlabels::requests.stock_available').': '.app(RequestInventory::class)->available('accessory', $item, $office).')'];
             }
-        } elseif ($type === 'asset') {
-            $items = Asset::where('requestable', 1)
-                ->whereNull('assigned_to')
-                ->where(function ($q) use ($term) {
-                    $q->where('asset_tag', 'like', "%{$term}%")
-                        ->orWhere('name', 'like', "%{$term}%");
-                })
-                ->limit(15)
-                ->get();
+        } elseif ($type === 'asset_model') {
+            $items = AssetModel::where('name', 'like', "%{$term}%")
+                ->whereHas('assets', fn ($q) => $inventory->scopeCompany($q, 'assets.company_id')->where('location_id', $office)->whereNull('assigned_to')->where('requestable', 1)
+                    ->whereHas('status', fn ($q) => $q->where('deployable', 1)->where('archived', 0)))->limit(15)->get();
             foreach ($items as $item) {
-                $results[] = ['id' => $item->id, 'text' => ($item->present()->name() ?: $item->asset_tag)];
+                $results[] = ['id' => $item->id, 'text' => $item->name];
             }
         }
 
         return response()->json($results);
+    }
+
+    public function requestReturn(Request $request, $id, RequestReturnService $service)
+    {
+        $request->validate(['reason' => 'required|string|min:5|max:2000']);
+        $service->requestReturn((int) $id, auth()->user(), $request->input('reason'));
+
+        return redirect()->back()->with('success', __('requestlabels::requests.event_return_requested'));
     }
 }

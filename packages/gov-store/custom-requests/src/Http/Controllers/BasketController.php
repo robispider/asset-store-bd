@@ -3,11 +3,14 @@
 namespace GovStore\CustomRequests\Http\Controllers;
 
 use App\Models\Location;
-use Exception;
 use GovStore\CustomRequests\Services\BasketService;
+use GovStore\TenantScope\Contexts\TenantContext;
 use GovStore\TenantScope\Services\ActionFailure;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class BasketController extends Controller
 {
@@ -15,7 +18,7 @@ class BasketController extends Controller
     {
         $basket = $service->getOrCreateDraftBasket(auth()->id());
         $basket->load(['items.requested']);
-        $locations = Location::orderBy('name')->get();
+        $locations = Location::whereIn('id', app(TenantContext::class)->allowedLocationIds ?? [app(TenantContext::class)->locationId])->orderBy('name')->get();
 
         return view('govstore::basket.index', compact('basket', 'locations'));
     }
@@ -25,7 +28,7 @@ class BasketController extends Controller
         $request->validate([
             'item_type' => 'required|string',
             'item_id' => 'required|integer',
-            'qty' => 'nullable|integer|min:1', // Added validation
+            'qty' => 'nullable|integer|min:1|max:10000', // Added validation
         ]);
 
         try {
@@ -46,7 +49,10 @@ class BasketController extends Controller
             }
 
             return redirect()->back()->with('success', __('requestlabels::requests.basketcontroller_flash_item_added'));
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
+            if ($e instanceof ValidationException || $e instanceof HttpExceptionInterface || $e instanceof ModelNotFoundException) {
+                throw $e;
+            }
             if ($request->ajax()) {
                 return response()->json(['success' => false, 'message' => app(ActionFailure::class)->message($e)], 400);
             }
@@ -61,6 +67,7 @@ class BasketController extends Controller
      */
     public function updateQty(Request $request, BasketService $service)
     {
+        $request->validate(['item_id' => 'required|integer|min:1', 'qty' => 'required|integer|min:1|max:10000']);
         try {
             $service->updateItemQty(auth()->id(), $request->item_id, (int) $request->qty);
 
@@ -69,7 +76,10 @@ class BasketController extends Controller
             }
 
             return redirect()->back()->with('success', __('requestlabels::requests.basketcontroller_flash_qty_updated'));
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
+            if ($e instanceof ValidationException || $e instanceof HttpExceptionInterface || $e instanceof ModelNotFoundException) {
+                throw $e;
+            }
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json(['success' => false, 'message' => app(ActionFailure::class)->message($e)], 400);
             }
@@ -88,11 +98,12 @@ class BasketController extends Controller
     public function submit(Request $request, BasketService $service)
     {
         $request->validate([
-            'request_type' => 'required|string',
+            'request_type' => 'required|in:new_employee,replacement,project,office_setup,repair,emergency,other',
             'purpose' => 'required|string|max:255',
             'justification' => 'required|string',
             'required_by_date' => 'nullable|date',
-            'delivery_location_id' => 'nullable|integer',
+            'delivery_location_id' => 'nullable|integer|exists:locations,id',
+            'cost_center' => 'nullable|string|max:50',
         ]);
 
         try {
@@ -104,7 +115,11 @@ class BasketController extends Controller
 
             return redirect()->route('gov.requests.user.index')
                 ->with('success', __('requestlabels::requests.basketcontroller_flash_request_submitted', ['numbers' => $numbers]));
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
+            if ($e instanceof ValidationException || $e instanceof HttpExceptionInterface || $e instanceof ModelNotFoundException) {
+                throw $e;
+            }
+
             return redirect()->back()->with('error', app(ActionFailure::class)->message($e));
         }
     }

@@ -2,6 +2,8 @@
 
 Verified on the local nonproduction application, 4 October 2026 (Asia/Dhaka).
 
+This is historical evidence from the seeding task. Accounts, datasets and package behavior have changed since these checks. For current actor discovery and live/database testing of any feature, use [Local live testing and database guide](../testing/local-live-testing.md) and recheck the database before using old examples.
+
 ## Data and item types
 
 Direct read-only database inspection found two ready government datasets plus the preserved original inventory:

@@ -2632,5 +2632,8 @@
             </script>
         @endif
 
-        </body>
+        @auth
+    @include('govstore::hooks.basket-widget', ['draftCount' => $govBasketCount ?? 0])
+@endauth
+</body>
 </html>

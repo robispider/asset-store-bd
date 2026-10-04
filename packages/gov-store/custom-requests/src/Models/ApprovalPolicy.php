@@ -12,6 +12,8 @@ class ApprovalPolicy extends Model
         'target_type',
         'target_id',
         'policy_name',
+        'threshold_qty',
+        'threshold_value',
     ];
 
     /**

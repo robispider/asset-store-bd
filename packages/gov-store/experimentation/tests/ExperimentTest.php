@@ -102,10 +102,10 @@ class ExperimentTest extends TestCase
         $this->assertTrue(Hash::check($run->password, $employee->password));
         $this->assertTrue(Auth::guard()->validate(['username' => $employee->username, 'password' => $run->password, 'activated' => 1]));
         app(ActorContext::class)->run($employee, Location::withoutGlobalScopes()->findOrFail($employee->location_id), function () use ($run, $employee) {
-            $catalog = collect(app(CatalogService::class)->getAvailableItems());
+            $catalog = app(CatalogService::class)->paginate([], 100)->getCollection();
             $this->assertSame(12, $catalog->where('type', 'consumable')->count());
             $this->assertSame(8, $catalog->where('type', 'accessory')->count());
-            $this->assertSame(4, $catalog->where('type', 'component')->count());
+            $this->assertSame(0, $catalog->where('type', 'component')->count());
             $this->assertTrue($catalog->contains(fn ($item) => str_contains($item->name, 'Office Chairs')));
             $this->assertTrue($catalog->contains(fn ($item) => str_contains($item->name, 'Desktop Computers')));
             $this->assertFalse(Asset::whereIn('id', app(RecordRegistry::class)->ids($run, 'assets'))->where('location_id', '!=', $employee->location_id)->exists());
@@ -115,7 +115,7 @@ class ExperimentTest extends TestCase
         foreach (app(RecordRegistry::class)->ids($run, 'locations') as $officeId) {
             $this->assertTrue(DB::table('custom_service_requests')->join('custom_service_request_items', 'custom_service_request_items.request_id', '=', 'custom_service_requests.id')
                 ->join('models', 'models.id', '=', 'custom_service_request_items.requested_id')->where('custom_service_request_items.requested_type', 'asset_model')
-                ->where('custom_service_requests.delivery_location_id', $officeId)->where('models.name', 'like', '%Office Chairs%')->exists());
+                ->where('custom_service_requests.office_id', $officeId)->where('models.name', 'like', '%Office Chairs%')->exists());
         }
         $basket = DraftBasket::where('user_id', $employee->id)->first();
         if ($basket) {

@@ -104,3 +104,5 @@ php -d xdebug.mode=off -d memory_limit=512M vendor/phpunit/phpunit/phpunit packa
 The test boot guard accepts only the exact database in the marker with the `govstore_experiment_test_YYYYMMDDHHMMSS` pattern. It avoids root refresh migrations and destructive seeders. Full reset and encrypted backup tests run in that separate database. Remove only the explicitly created test database and marker after testing; do not clean other databases by wildcard.
 
 Detailed implementation, package coverage, profiles and validation: `docs/plans/super-admin-experiment-data-plan.md`.
+
+For agents testing any package or feature against the local app and database, read `docs/testing/local-live-testing.md`. It includes current actor discovery, scope checks, isolated test setup and cleanup; recheck its dated fixture examples before using them.

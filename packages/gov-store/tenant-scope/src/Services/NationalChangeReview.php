@@ -3,6 +3,7 @@
 namespace GovStore\TenantScope\Services;
 
 use GovStore\Classification\Models\CatalogCollection;
+use GovStore\CustomRequests\Models\ApprovalPolicy;
 use GovStore\StoreOperations\Models\Profile;
 use GovStore\StoreOperations\Models\ProfileAssignment;
 use Illuminate\Http\Request;
@@ -95,6 +96,10 @@ class NationalChangeReview
             }
 
             return $profile ?? [];
+        }
+        if ($request->routeIs('gov.requests.admin.policies.store')) {
+            return ApprovalPolicy::where('target_type', $request->input('target_type', 'category'))
+                ->where('target_id', $request->input('target_id', $request->input('category_id')))->get()->toArray();
         }
         if ($request->routeIs('gov.catalog.mapping.save')) {
             return (array) DB::table('gov_catalog_snipe_mappings')->where('code', $request->input('code'))->first();

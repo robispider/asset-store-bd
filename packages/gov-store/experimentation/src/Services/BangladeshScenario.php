@@ -636,7 +636,7 @@ class BangladeshScenario
                     $basket = app(BasketService::class);
                     $basket->addItem($employee->id, $requestedType, $requestedId, 2);
 
-                    return $basket->submitBasket($employee->id, ['request_type' => 'equipment', 'purpose' => 'দাপ্তরিক কাজে সরঞ্জাম ব্যবহার', 'justification' => 'পরীক্ষামূলক সরকারি দপ্তরের কাজ', 'delivery_location_id' => $office->id])[0];
+                    return $basket->submitBasket($employee->id, ['request_type' => 'other', 'purpose' => 'দাপ্তরিক কাজে সরঞ্জাম ব্যবহার', 'justification' => 'পরীক্ষামূলক সরকারি দপ্তরের কাজ', 'delivery_location_id' => $office->id])[0];
                 });
                 if ($i % 8 > 1 && $request->approval_status !== 'approved') {
                     $request = $this->contexts->run($members[2], $office, fn () => app(ApprovalService::class)->processDecision($request->fresh(), $members[2], $request->items->mapWithKeys(fn ($line) => [$line->id => ['status' => $i % 8 === 7 ? 'rejected' : 'approved', 'qty' => 2, 'notes' => 'পরীক্ষামূলক সিদ্ধান্ত']])->all()), 'primary_approver');

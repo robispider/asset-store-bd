@@ -24,4 +24,4 @@ jobs:
           DB_CONNECTION: sqlite
           DB_DATABASE: ':memory:'
           LOG_CHANNEL: stderr
-        run: php vendor/bin/phpunit tests/Feature/GovStore/G1AuthorizationTest.php
+        run: php vendor/bin/phpunit tests/Feature/GovStore

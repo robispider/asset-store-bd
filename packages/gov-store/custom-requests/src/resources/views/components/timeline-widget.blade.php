@@ -25,24 +25,27 @@
                     <div class="timeline-item" style="box-shadow: none; border: 1px solid #eee; background-color: #fafafa; margin-left: 45px;">
                         <span class="time"><i class="far fa-clock"></i> {{ $event->created_at->format('H:i') }}</span>
                         <h3 class="timeline-header" style="font-size: 13px; font-weight: bold; border-bottom: none; padding: 5px 10px;">
-                            {{ ucwords(str_replace('_', ' ', $event->event_type)) }}
+                            {{ __('requestlabels::requests.event_'.$event->event_type) }}
                         </h3>
                         <div class="timeline-body" style="padding: 5px 10px; font-size: 12px; color: #555;">
-                            Executed by: <strong>{{ $event->user->display_name ?? 'System' }}</strong>
+                            {{ __('requestlabels::requests.executed_by') }}: <strong>{{ $event->user->display_name ?? __('requestlabels::requests.system') }}</strong>
                             
                             @if($event->event_type === 'item_substituted' && isset($event->details['original']))
                                 <p style="margin-top: 5px; margin-bottom: 0;">
-                                    Swapped: <strong>{{ $event->details['original'] }}</strong> <br>
-                                    With: <span class="text-orange" style="font-weight: bold;">{{ $event->details['substituted_with'] ?? '' }}</span>
+                                    {{ __('requestlabels::requests.substituted_original') }}: <strong>{{ $event->details['original'] }}</strong> <br>
+                                    {{ __('requestlabels::requests.substituted_with') }}: <span class="text-orange" style="font-weight: bold;">{{ $event->details['substituted_with'] ?? '' }}</span>
                                 </p>
                             @endif
                             
                             @if($event->event_type === 'item_issued' && isset($event->details['item']))
                                 <p style="margin-top: 5px; margin-bottom: 0;">
-                                    Issued: <strong>{{ $event->details['item'] }}</strong> (Qty: {{ $event->details['issued_qty'] ?? 0 }})
+                                    {{ __('requestlabels::requests.issued_label') }}: <strong>{{ $event->details['item'] }}</strong> ({{ __('requestlabels::requests.quantity') }}: {{ $event->details['issued_qty'] ?? 0 }})
                                 </p>
                             @endif
                             
+                            @if(!empty($event->details['notes']) || !empty($event->details['reason']))
+                                <p>{{ $event->details['notes'] ?? $event->details['reason'] }}</p>
+                            @endif
                             @if(isset($event->details['message']))
                                 <p style="margin-top: 5px; margin-bottom: 0;">{{ $event->details['message'] }}</p>
                             @endif
@@ -53,7 +56,7 @@
                 <li>
                     <i class="fa fa-clock bg-gray"></i>
                     <div class="timeline-item" style="box-shadow: none; margin-left: 45px; background: transparent;">
-                        <div class="timeline-body text-muted">No timeline events recorded yet.</div>
+                        <div class="timeline-body text-muted">{{ __('requestlabels::requests.no_events') }}</div>
                     </div>
                 </li>
             @endforelse

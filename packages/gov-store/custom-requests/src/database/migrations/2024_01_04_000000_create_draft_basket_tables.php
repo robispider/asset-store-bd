@@ -8,10 +8,7 @@ return new class extends Migration
 {
     public function up()
     {
-        // 1. Drop child and parent tables if they exist as partial failures to ensure a clean state
-        Schema::dropIfExists('draft_basket_items');
-        Schema::dropIfExists('draft_baskets');
-
+        // Additive baseline: never reset an existing basket.
         // 2. Parent table (Uses standard 32-bit increments to match rest of your schema)
         Schema::create('draft_baskets', function (Blueprint $table) {
             $table->increments('id');

@@ -5,12 +5,19 @@ namespace GovStore\CustomRequests\DTOs;
 class CatalogItem
 {
     public string $type;
+
     public int $id;
+
     public string $name;
+
     public string $category;
+
     public int $available_qty;
+
     public string $image_url;
+
     public int $created_timestamp; // For sorting by Date
+
     public array $details;         // For the bullet points in List View
 
     public function __construct(

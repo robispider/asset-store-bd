@@ -449,10 +449,10 @@ class G1AuthorizationTest extends TestCase
     {
         Schema::create('custom_service_requests', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('delivery_location_id');
+            $table->integer('office_id');
             $table->timestamp('deleted_at')->nullable();
         });
-        DB::table('custom_service_requests')->insert(['id' => 1, 'delivery_location_id' => 11]);
+        DB::table('custom_service_requests')->insert(['id' => 1, 'office_id' => 11]);
         $this->actor('primary_approver');
         $request = Request::create('/gov-requests/admin/1/process', 'POST');
         $approval = Mockery::mock(ApprovalService::class);

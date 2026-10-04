@@ -10,16 +10,13 @@ use Illuminate\Support\Facades\Route;
 // We wrap our routes in the standard web and auth middleware so only logged-in Snipe-IT users can access them.
 Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'gov-requests'], function () {
 
-    // User Route: Submitting a request for an item
-    Route::post('/submit', [GovRequestController::class, 'store'])->middleware('gov.can:requests.submit')->name('gov.requests.store');
-
-    // Admin Routes: Viewing and processing requests
-    Route::get('/admin', [GovApprovalController::class, 'index'])->middleware('gov.can:requests.approve')->name('gov.requests.admin.index');
-
     // NEW: User Route: Browse all requestable items (The Catalog)
     Route::get('/catalog', [GovRequestController::class, 'catalog'])->middleware('gov.can:requests.submit')->name('gov.requests.catalog');
     // NEW: User Route: View my own requests
     Route::get('/my-requests', [GovRequestController::class, 'index'])->middleware('gov.can:requests.submit')->name('gov.requests.user.index');
+    Route::post('/my-requests/{id}/withdraw', [GovRequestController::class, 'withdraw'])->middleware('gov.can:requests.submit')->name('gov.requests.withdraw');
+    Route::post('/my-requests/{id}/receive', [GovRequestController::class, 'receive'])->middleware('gov.can:requests.submit')->name('gov.requests.receive');
+    Route::post('/my-requests/{id}/return', [GovRequestController::class, 'requestReturn'])->middleware('gov.can:requests.submit')->name('gov.requests.return');
     // Basket Routes
     Route::get('/basket', [BasketController::class, 'index'])->middleware('gov.can:requests.submit')->name('gov.requests.basket.index');
     Route::post('/basket/add', [BasketController::class, 'add'])->middleware('gov.can:requests.submit')->name('gov.requests.basket.add');
@@ -50,5 +47,6 @@ Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'gov-requests'], func
     // Fulfillment Register (Completed service requests and their ledger documents)
     Route::get('/fulfillment-register', [FulfillmentRegisterController::class, 'index'])->middleware('gov.can:storeops.documents.view')->name('gov.requests.fulfillment_register.index');
     Route::get('/fulfillment-register/{id}', [FulfillmentRegisterController::class, 'show'])->middleware('gov.can:storeops.documents.view')->name('gov.requests.fulfillment_register.show');
+    Route::post('/fulfillment-register/{id}/return', [FulfillmentRegisterController::class, 'draftReturn'])->middleware('gov.can:storeops.documents.draft')->name('gov.requests.fulfillment_register.return');
 
 });

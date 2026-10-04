@@ -28,7 +28,7 @@ class RecordRegistry
         'gov_document_attachments', 'gov_document_timelines', 'gov_inventory_movements', 'gov_asset_registrations',
         'gov_goods_receipts', 'gov_goods_receipt_items', 'gov_goods_issues', 'gov_goods_issue_items',
         'gov_stock_adjustments', 'gov_stock_adjustment_items', 'custom_service_requests',
-        'custom_service_request_items', 'custom_service_request_events', 'custom_item_requests', 'gov_approval_policies',
+        'custom_service_request_items', 'custom_service_request_events', 'custom_request_notices', 'custom_item_requests', 'gov_approval_policies',
         'draft_baskets', 'draft_basket_items', 'gov_funding_types', 'gov_initiatives',
         'gov_tracking_operation_units', 'gov_tracking_codes', 'gov_tracking_targets', 'gov_tracking_allocations',
         'gov_tracking_scopes', 'gov_tracking_associations', 'gov_tracking_timeline', 'gov_tracking_fact_deliveries',

@@ -1,0 +1,169 @@
+{
+    "office_id": 160,
+    "unresolved_office_count": 286,
+    "completed_but_partial": [],
+    "self_approved": [],
+    "legacy_consumable_checkout_rows": 0,
+    "stock": [
+        {
+            "type": "accessory",
+            "id": 1065,
+            "ledger_balance": -2,
+            "snipe_remaining": 98,
+            "difference": 100,
+            "baseline_missing": false
+        },
+        {
+            "type": "accessory",
+            "id": 1109,
+            "ledger_balance": null,
+            "snipe_remaining": 100,
+            "difference": null,
+            "baseline_missing": true
+        },
+        {
+            "type": "accessory",
+            "id": 1153,
+            "ledger_balance": null,
+            "snipe_remaining": 100,
+            "difference": null,
+            "baseline_missing": true
+        },
+        {
+            "type": "accessory",
+            "id": 1197,
+            "ledger_balance": null,
+            "snipe_remaining": 100,
+            "difference": null,
+            "baseline_missing": true
+        },
+        {
+            "type": "accessory",
+            "id": 1241,
+            "ledger_balance": null,
+            "snipe_remaining": 100,
+            "difference": null,
+            "baseline_missing": true
+        },
+        {
+            "type": "accessory",
+            "id": 1285,
+            "ledger_balance": null,
+            "snipe_remaining": 100,
+            "difference": null,
+            "baseline_missing": true
+        },
+        {
+            "type": "accessory",
+            "id": 1329,
+            "ledger_balance": null,
+            "snipe_remaining": 100,
+            "difference": null,
+            "baseline_missing": true
+        },
+        {
+            "type": "accessory",
+            "id": 1373,
+            "ledger_balance": null,
+            "snipe_remaining": 100,
+            "difference": null,
+            "baseline_missing": true
+        },
+        {
+            "type": "consumable",
+            "id": 1602,
+            "ledger_balance": -3,
+            "snipe_remaining": 95,
+            "difference": 98,
+            "baseline_missing": false
+        },
+        {
+            "type": "consumable",
+            "id": 1646,
+            "ledger_balance": null,
+            "snipe_remaining": 100,
+            "difference": null,
+            "baseline_missing": true
+        },
+        {
+            "type": "consumable",
+            "id": 1690,
+            "ledger_balance": null,
+            "snipe_remaining": 100,
+            "difference": null,
+            "baseline_missing": true
+        },
+        {
+            "type": "consumable",
+            "id": 1734,
+            "ledger_balance": null,
+            "snipe_remaining": 100,
+            "difference": null,
+            "baseline_missing": true
+        },
+        {
+            "type": "consumable",
+            "id": 1778,
+            "ledger_balance": null,
+            "snipe_remaining": 100,
+            "difference": null,
+            "baseline_missing": true
+        },
+        {
+            "type": "consumable",
+            "id": 1822,
+            "ledger_balance": null,
+            "snipe_remaining": 100,
+            "difference": null,
+            "baseline_missing": true
+        },
+        {
+            "type": "consumable",
+            "id": 1866,
+            "ledger_balance": null,
+            "snipe_remaining": 100,
+            "difference": null,
+            "baseline_missing": true
+        },
+        {
+            "type": "consumable",
+            "id": 1910,
+            "ledger_balance": null,
+            "snipe_remaining": 100,
+            "difference": null,
+            "baseline_missing": true
+        },
+        {
+            "type": "consumable",
+            "id": 1954,
+            "ledger_balance": null,
+            "snipe_remaining": 100,
+            "difference": null,
+            "baseline_missing": true
+        },
+        {
+            "type": "consumable",
+            "id": 1998,
+            "ledger_balance": null,
+            "snipe_remaining": 100,
+            "difference": null,
+            "baseline_missing": true
+        },
+        {
+            "type": "consumable",
+            "id": 2042,
+            "ledger_balance": null,
+            "snipe_remaining": 100,
+            "difference": null,
+            "baseline_missing": true
+        },
+        {
+            "type": "consumable",
+            "id": 2086,
+            "ledger_balance": null,
+            "snipe_remaining": 100,
+            "difference": null,
+            "baseline_missing": true
+        }
+    ]
+}

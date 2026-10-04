@@ -4,6 +4,8 @@ Oct 4, 2026 · @zahid
 
 Related: [gov-store Gap Assessment](gov-store-gap-assessment.md) (gap G1) · [Package-wise Gap Analysis](gov-store-package-gap-analysis.md)
 
+Future agents: read the [security rules and lessons](../security/govstore-agent-security.md), also required by the repository's [AGENTS.md](../../AGENTS.md), before changing these protections.
+
 ## Execution review — 4 October 2026
 
 The original document is a design proposal, not a record of completed protection. Review of the current routes, controllers, services and role assignment code confirmed that the central authorization service, middleware, document policy and access UI had not been implemented.

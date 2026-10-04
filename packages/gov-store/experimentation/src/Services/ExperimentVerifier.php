@@ -108,7 +108,7 @@ class ExperimentVerifier
         }
         foreach (DB::table('custom_service_requests')->whereIn('id', $this->records->ids($run, 'custom_service_requests'))->get() as $request) {
             $requester = $users->firstWhere('id', $request->requested_by);
-            if (! $requester || (int) $requester->location_id !== (int) $request->delivery_location_id) {
+            if (! $requester || (int) $requester->location_id !== (int) $request->office_id) {
                 $checks['requests'] = false;
             }
         }

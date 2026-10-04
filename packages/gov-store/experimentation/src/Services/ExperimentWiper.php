@@ -18,11 +18,12 @@ class ExperimentWiper
         'cache', 'cache_locks', 'sessions', 'jobs', 'job_batches', 'failed_jobs', 'password_resets', 'password_reset_tokens',
         'oauth_clients', 'oauth_personal_access_clients', 'oauth_scopes', 'telescope_entries', 'telescope_entries_tags', 'telescope_monitoring',
         'gov_experiment_runs', 'gov_experiment_records', 'gov_experiment_actions', 'gov_experiment_jobs', 'gov_experiment_failed_jobs',
+        'custom_request_sequences', // Global counters must survive fixture cleanup to prevent number reuse.
     ];
 
     private const COLUMNS = [
         'company_id' => 'companies', 'owner_company_id' => 'companies', 'created_by_company_id' => 'companies',
-        'location_id' => 'locations', 'rtd_location_id' => 'locations', 'delivery_location_id' => 'locations',
+        'location_id' => 'locations', 'rtd_location_id' => 'locations', 'delivery_location_id' => 'locations', 'office_id' => 'locations', 'primary_decided_by' => 'users', 'decided_by' => 'users',
         'user_id' => 'users', 'created_by' => 'users', 'created_by_user_id' => 'users', 'performed_by' => 'users',
         'office_admin_id' => 'users', 'requested_by' => 'users', 'approved_by' => 'users', 'assigned_by' => 'users',
         'approved_by_user_id' => 'users', 'outgoing_user_id' => 'users', 'incoming_user_id' => 'users', 'creator_user_id' => 'users',
@@ -44,7 +45,7 @@ class ExperimentWiper
         'gov_stock_adjustment_items' => ['stock_adjustment_id'], 'license_seats' => ['license_id'],
         'gov_profile_capabilities' => ['profile_id'], 'gov_profile_assignments' => ['profile_id'],
         'gov_model_metadata_states' => ['model_id'], 'custom_field_custom_fieldset' => ['custom_fieldset_id'],
-        'custom_service_request_items' => ['request_id'], 'custom_service_request_events' => ['request_id'],
+        'custom_service_request_items' => ['request_id'], 'custom_service_request_events' => ['request_id'], 'custom_request_notices' => ['request_id'],
         'draft_basket_items' => ['basket_id'], 'gov_catalog_collection_nodes' => ['collection_id'],
         'gov_tracking_codes' => ['initiative_id'], 'gov_tracking_operation_units' => ['initiative_id'],
         'gov_tracking_targets' => ['tracking_code_id'], 'gov_tracking_allocations' => ['target_id'],

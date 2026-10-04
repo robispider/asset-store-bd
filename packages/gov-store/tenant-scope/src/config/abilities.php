@@ -12,6 +12,8 @@ return [
     'catalog.office.adopt' => ['roles' => ['office_admin', 'storekeeper', 'company_admin']],
     'requests.submit' => ['roles' => ['authenticated']],
     'requests.approve' => ['roles' => ['primary_approver', 'final_approver']],
+    'requests.approve.primary' => ['roles' => ['primary_approver']],
+    'requests.approve.final' => ['roles' => ['final_approver']],
     'requests.fulfill' => ['roles' => ['storekeeper']],
     'requests.configure' => ['roles' => ['superuser'], 'national' => true],
     'access.view' => ['roles' => ['authenticated'], 'enforce' => true],

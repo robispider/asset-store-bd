@@ -3,6 +3,8 @@
 Date: 4 October 2026 (Asia/Dhaka)
 Status: implemented in the dedicated `experimentation` package; runtime verification is recorded below.
 
+Recorded counts and limitations below are dated task evidence. For future live UI/database testing of any package or feature, read [Local live testing and database guide](../testing/local-live-testing.md) and verify the current implementation/data.
+
 ## 1. Scope and outcome
 
 Provide a super administrator with a usable Bangladesh government experiment dataset, a dataset wipe, and a separately enabled installation reset. Follow the installed packages' services, observers, scopes and schema. All application changes belong to the new package, its configuration, namespace registration and provider registration.
