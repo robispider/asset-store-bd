@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Replace one member — committee redesign mockup</title>
+<!--
+  STATIC DESIGN MOCKUP — not production code.
+  Screen: 08-replace-member · Replace one member
+  Spec: ../../UX-REDESIGN.md (§4 screen table, §5 workflows, §6 wording)
+  Implement in Blade with AdminLTE 2 / Bootstrap 3 classes; move every Bangla string
+  into resources/lang/{bn-BD,en-US}/committee.php. Names, numbers and dates are sample data.
+  Source artboard: ../source/Replace.dc.html
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+html,body{height:100%}
+body{margin:0}
+a{color:#1F5F8B}a:hover{color:#163F5E}
+</style>
+</head>
+<body>
+<div style="font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif; color: #17201D; background: #5C6763; min-height: 100%; display: flex; flex-direction: column;">
+
+  <header style="background: #1B4A67; color: #D5E1E9; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 32px;">
+    <div style="font-size: 20px; font-weight: 600;">স্টোর ক্লাউড</div>
+    <div style="font-size: 15px;">উপজেলা স্বাস্থ্য কমপ্লেক্স, শ্রীপুর</div>
+  </header>
+
+  <div style="flex: 1; display: flex; justify-content: center; padding: 40px 24px;">
+    <section role="dialog" aria-modal="true" aria-labelledby="rt" style="width: 100%; max-width: 860px; background: #FFFFFF; border-radius: 14px; padding: 30px 34px; display: flex; flex-direction: column; gap: 24px; box-sizing: border-box;">
+      <div style="display: flex; justify-content: space-between; gap: 12px; align-items: flex-start;">
+        <div>
+          <h2 id="rt" style="margin: 0; font-size: 26px; font-weight: 700;">সদস্য বদলান</h2>
+          <p style="margin: 2px 0 0; font-size: 15px; color: #4F5B57;">কারিগরি পরিদর্শন কমিটি · উপজেলা স্বাস্থ্য কমপ্লেক্স, শ্রীপুর</p>
+        </div>
+        <a href="02-committee.html" style="font-size: 15px; min-height: 44px; display: inline-flex; align-items: center;">বাতিল</a>
+      </div>
+
+      <section aria-labelledby="s1" style="display: flex; flex-direction: column; gap: 12px;">
+        <h3 id="s1" style="margin: 0; font-size: 18px; font-weight: 600;">১. কে যাচ্ছেন?</h3>
+        <div style="display: flex; gap: 14px; align-items: center; background: #F6F8F7; border-radius: 10px; padding: 14px 16px;">
+          <div aria-hidden="true" style="width: 44px; height: 44px; border-radius: 50%; background: #D4E3EE; color: #163F5E; display: flex; align-items: center; justify-content: center; font-weight: 700; flex: none;">রই</div>
+          <div style="flex: 1;"><div style="font-size: 17px; font-weight: 600;">মো. রফিকুল ইসলাম <span style="font-weight: 400; color: #4F5B57;">· সদস্য সচিব</span></div><div style="font-size: 14px; color: #4F5B57;">১৪ সেপ্টেম্বর উপজেলা স্বাস্থ্য কমপ্লেক্স, কাপাসিয়ায় বদলি হয়েছেন</div></div>
+        </div>
+        <fieldset style="border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px;">
+          <legend style="font-size: 15px; font-weight: 600; padding: 0; margin-bottom: 8px;">কেন যাচ্ছেন?</legend>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <label style="display: inline-flex; align-items: center; gap: 8px; border: 2px solid #1F5F8B; background: #EEF5FA; border-radius: 999px; padding: 8px 16px; font-size: 15px; font-weight: 600; min-height: 40px; box-sizing: border-box;"><input type="radio" name="why" checked="checked">বদলি</label>
+            <label style="display: inline-flex; align-items: center; gap: 8px; border: 1px solid #B7C2BC; border-radius: 999px; padding: 9px 16px; font-size: 15px; min-height: 40px; box-sizing: border-box;"><input type="radio" name="why">অবসর</label>
+            <label style="display: inline-flex; align-items: center; gap: 8px; border: 1px solid #B7C2BC; border-radius: 999px; padding: 9px 16px; font-size: 15px; min-height: 40px; box-sizing: border-box;"><input type="radio" name="why">পদোন্নতি</label>
+            <label style="display: inline-flex; align-items: center; gap: 8px; border: 1px solid #B7C2BC; border-radius: 999px; padding: 9px 16px; font-size: 15px; min-height: 40px; box-sizing: border-box;"><input type="radio" name="why">অব্যাহতি</label>
+            <label style="display: inline-flex; align-items: center; gap: 8px; border: 1px solid #B7C2BC; border-radius: 999px; padding: 9px 16px; font-size: 15px; min-height: 40px; box-sizing: border-box;"><input type="radio" name="why">মৃত্যু</label>
+          </div>
+        </fieldset>
+        <p style="margin: 0; font-size: 15px; color: #4F5B57;">শেষ দিন: <strong style="color: #17201D;">১৪ সেপ্টেম্বর ২০২৬</strong> — এই দপ্তরে তাঁর সদস্যপদ যেদিন শেষ হয়েছে · <a href="#">বদলান</a></p>
+      </section>
+
+      <section aria-labelledby="s2" style="display: flex; flex-direction: column; gap: 12px; padding-top: 20px; border-top: 1px solid #EEF1EF;">
+        <h3 id="s2" style="margin: 0; font-size: 18px; font-weight: 600;">২. কে আসছেন?</h3>
+        <div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: center; border: 2px solid #1D6B43; border-radius: 10px; padding: 14px 16px;">
+          <div aria-hidden="true" style="width: 44px; height: 44px; border-radius: 50%; background: #D4E3EE; color: #163F5E; display: flex; align-items: center; justify-content: center; font-weight: 700; flex: none;">শস</div>
+          <div style="flex: 999 1 260px;"><div style="font-size: 17px; font-weight: 600;">প্রকৌ. শারমিন সুলতানা</div><div style="font-size: 14px; color: #4F5B57;">সহকারী প্রকৌশলী · এই দপ্তর · একই ভূমিকা: সদস্য সচিব</div></div>
+          <a href="06-add-person.html" style="font-size: 15px;">অন্য কাউকে বাছুন</a>
+        </div>
+        <p style="margin: 0; font-size: 15px; color: #4F5B57;">দায়িত্ব শুরু: <strong style="color: #17201D;">০৪ অক্টোবর ২০২৬</strong> — আদেশের তারিখ থেকে</p>
+      </section>
+
+      <section aria-labelledby="s3" style="display: flex; flex-direction: column; gap: 10px; padding-top: 20px; border-top: 1px solid #EEF1EF;">
+        <h3 id="s3" style="margin: 0; font-size: 18px; font-weight: 600;">৩. কোন আদেশে?</h3>
+        <label style="display: flex; gap: 10px; align-items: flex-start; border: 2px solid #1F5F8B; background: #EEF5FA; border-radius: 10px; padding: 12px 14px; font-size: 15px;"><input type="radio" name="ord" checked="checked" style="width: 20px; height: 20px; margin-top: 2px;"><span><strong>স্মারক ৪৫.১২…২৬-২১২, ০৪ অক্টোবর ২০২৬</strong><span style="display: block; color: #4F5B57;">আজ রেকর্ড করা সদস্য পরিবর্তনের আদেশ</span></span></label>
+        <label style="display: flex; gap: 10px; align-items: center; border: 1px solid #C9D2CD; border-radius: 10px; padding: 13px 15px; font-size: 15px;"><input type="radio" name="ord" style="width: 20px; height: 20px;">নতুন আদেশ রেকর্ড করুন</label>
+      </section>
+
+      <section aria-labelledby="after" style="background: #E4F3EA; border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; gap: 10px;">
+        <h3 id="after" style="margin: 0; display: flex; align-items: center; gap: 8px; font-size: 18px; font-weight: 600; color: #1D6B43;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>এরপর কমিটি আবার কাজের জন্য প্রস্তুত হবে</h3>
+        <div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 6px 16px; font-size: 15px; color: #17201D;">
+          <span style="color: #4F5B57;">সভাপতি</span><span>মো. আনিসুর রহমান — অপরিবর্তিত</span>
+          <span style="color: #4F5B57;">সদস্য সচিব</span><span><s style="color: #4F5B57;">মো. রফিকুল ইসলাম</s> → <strong>প্রকৌ. শারমিন সুলতানা</strong></span>
+          <span style="color: #4F5B57;">সদস্য</span><span>ডা. নুসরাত জাহান — অপরিবর্তিত</span>
+        </div>
+        <p style="margin: 0; font-size: 14px; color: #1F4A33;">১৫ সেপ্টেম্বর থেকে ০৩ অক্টোবর পর্যন্ত আসনটি খালি ছিল — ইতিহাসে তা-ই দেখাবে।</p>
+      </section>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end;">
+        <a href="02-committee.html" style="display: inline-flex; align-items: center; font-size: 16px; padding: 0 16px; height: 48px;">বাতিল</a>
+        <button type="button" style="font-family: inherit; background: #1F5F8B; color: #FFFFFF; border: 0; font-size: 17px; font-weight: 600; padding: 0 24px; height: 48px; border-radius: 8px;">বদল নিশ্চিত করুন</button>
+      </div>
+    </section>
+  </div>
+</div>
+</body>
+</html>

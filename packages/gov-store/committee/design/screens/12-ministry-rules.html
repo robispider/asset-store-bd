@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Committee rules in plain sentences (ministry admin) — committee redesign mockup</title>
+<!--
+  STATIC DESIGN MOCKUP — not production code.
+  Screen: 12-ministry-rules · Committee rules in plain sentences (ministry admin)
+  Spec: ../../UX-REDESIGN.md (§4 screen table, §5 workflows, §6 wording)
+  Implement in Blade with AdminLTE 2 / Bootstrap 3 classes; move every Bangla string
+  into resources/lang/{bn-BD,en-US}/committee.php. Names, numbers and dates are sample data.
+  Source artboard: ../source/Rules.dc.html
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+html,body{height:100%}
+body{margin:0}
+a{color:#1F5F8B}a:hover{color:#163F5E}
+</style>
+</head>
+<body>
+<div style="font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif; color: #17201D; background: #F3F5F4; min-height: 100%;">
+
+  <header style="background: #276A93; color: #FFFFFF; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 32px;">
+    <div style="font-size: 20px; font-weight: 600;">স্টোর ক্লাউড</div>
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; font-size: 15px;"><span>স্বাস্থ্য সেবা বিভাগ</span><span>ফারহানা ইয়াসমিন · মন্ত্রণালয় প্রশাসক</span></div>
+  </header>
+
+  <main style="max-width: 1200px; margin: 0 auto; padding: 24px 32px 56px; display: flex; flex-direction: column; gap: 20px;">
+    <a href="#" style="font-size: 15px;">← সব কমিটির ধরন</a>
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; align-items: flex-end;">
+      <div>
+        <h1 style="margin: 0; font-size: 30px; font-weight: 700;">বার্ষিক মজুদ যাচাই কমিটির নিয়ম</h1>
+        <p style="margin: 4px 0 0; font-size: 16px; color: #4F5B57;">স্বাস্থ্য সেবা বিভাগের সব দপ্তরে এই নিয়ম প্রযোজ্য। দপ্তরের কমিটি নিবন্ধকরা এই কথাগুলোই দেখবেন।</p>
+      </div>
+      <span style="display: inline-flex; align-items: center; gap: 6px; background: #FFF1D9; color: #8A4B00; font-size: 15px; font-weight: 600; padding: 6px 12px; border-radius: 999px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>পরিবর্তন সংরক্ষিত হয়নি</span>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start;">
+      <section aria-label="নিয়ম" style="flex: 999 1 620px; min-width: 0; background: #FFFFFF; border: 1px solid #D9DFDB; border-radius: 12px; padding: 26px 28px; display: flex; flex-direction: column; gap: 22px; font-size: 18px; line-height: 2.2;">
+
+        <p style="margin: 0;">এই কমিটিতে
+          <label style="position: absolute; left: -9999px;" for="mn">সর্বনিম্ন সদস্য</label><input id="mn" type="text" value="৩" style="font-family: inherit; font-size: 18px; width: 56px; height: 40px; text-align: center; border: 1px solid #B7C2BC; border-radius: 8px;">
+          থেকে
+          <label style="position: absolute; left: -9999px;" for="mx">সর্বোচ্চ সদস্য</label><input id="mx" type="text" value="৫" style="font-family: inherit; font-size: 18px; width: 56px; height: 40px; text-align: center; border: 1px solid #B7C2BC; border-radius: 8px;">
+          জন সদস্য থাকবেন।</p>
+
+        <p style="margin: 0;">একজন
+          <select aria-label="প্রধানের ভূমিকা" style="font-family: inherit; font-size: 18px; height: 42px; border: 1px solid #B7C2BC; border-radius: 8px; padding: 0 8px;"><option>সভাপতি বা আহ্বায়ক</option></select>
+          থাকবেন, আর সদস্য সচিব
+          <select aria-label="সদস্য সচিব" style="font-family: inherit; font-size: 18px; height: 42px; border: 1px solid #B7C2BC; border-radius: 8px; padding: 0 8px;"><option>অবশ্যই থাকবেন</option></select>।</p>
+
+        <p style="margin: 0;">অন্তত
+          <input aria-label="বহিঃস্থ সদস্য সংখ্যা" type="text" value="১" style="font-family: inherit; font-size: 18px; width: 56px; height: 40px; text-align: center; border: 1px solid #B7C2BC; border-radius: 8px;">
+          জন সদস্য
+          <select aria-label="কতটা বাইরের" style="font-family: inherit; font-size: 18px; height: 42px; border: 1px solid #B7C2BC; border-radius: 8px; padding: 0 8px;"><option>অন্য দপ্তরের</option></select>
+          হবেন।</p>
+
+        <div style="display: flex; flex-direction: column; gap: 8px; background: #F6F8F7; border-radius: 10px; padding: 14px 16px; line-height: 2;">
+          <p style="margin: 0;">যাঁর দায়িত্ব
+            <select aria-label="দপ্তরের দায়িত্ব" style="font-family: inherit; font-size: 18px; height: 42px; border: 1px solid #B7C2BC; border-radius: 8px; padding: 0 8px;"><option>স্টোরকিপার</option></select>,
+            তিনি এই কমিটিতে
+            <select aria-label="অনুমতি" style="font-family: inherit; font-size: 18px; height: 42px; border: 1px solid #B7C2BC; border-radius: 8px; padding: 0 8px;"><option>থাকতে পারবেন না</option></select>।</p>
+          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 15px; line-height: 1.5;"><span style="font-weight: 600;">কারণ — নিবন্ধকরা ঠিক এই কথাটি দেখবেন</span><textarea rows="2" style="font-family: inherit; font-size: 16px; padding: 10px 12px; border: 1px solid #B7C2BC; border-radius: 8px; resize: vertical;">মজুদ যাচাই কমিটি স্টোরের হিসাব পরীক্ষা করে, তাই যিনি স্টোর চালান তিনি নিজেই যাচাই করতে পারেন না।</textarea></label>
+          <a href="#" style="font-size: 15px; line-height: 1.5;">+ আরেকটি দায়িত্বের নিয়ম</a>
+        </div>
+
+        <p style="margin: 0;">মেয়াদ সাধারণত
+          <select aria-label="মেয়াদের ধরন" style="font-family: inherit; font-size: 18px; height: 42px; border: 1px solid #B7C2BC; border-radius: 8px; padding: 0 8px;"><option>এক অর্থবছর</option></select>,
+          সর্বোচ্চ
+          <input aria-label="সর্বোচ্চ মেয়াদ মাস" type="text" value="১২" style="font-family: inherit; font-size: 18px; width: 56px; height: 40px; text-align: center; border: 1px solid #B7C2BC; border-radius: 8px;">
+          মাস।</p>
+
+        <p style="margin: 0;">স্টোর বিভাগ এই কমিটি ব্যবহার করবে <strong>বার্ষিক মজুদ যাচাই</strong>-এর জন্য।</p>
+      </section>
+
+      <aside style="flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 18px;">
+        <section aria-labelledby="eff" style="background: #FFFFFF; border: 1px solid #D9DFDB; border-radius: 12px; padding: 20px 22px; display: flex; flex-direction: column; gap: 10px;">
+          <h2 id="eff" style="margin: 0; font-size: 19px; font-weight: 600;">এই পরিবর্তনের প্রভাব</h2>
+          <p style="margin: 0; font-size: 15px; line-height: 1.7;">বিভাগের এই ধরনের কার্যকর কমিটির মধ্যে কয়েকটি নতুন নিয়ম মানবে না। সেগুলো <strong>বন্ধ হবে না</strong>; পরের পুনর্গঠনের সময় নতুন নিয়ম প্রযোজ্য হবে, আর কমিটি ডেস্কে নোট দেখাবে।</p>
+          <a href="#" style="font-size: 15px;">কোন কোন দপ্তর, দেখুন</a>
+        </section>
+
+        <section aria-labelledby="sv" style="background: #FFFFFF; border: 1px solid #D9DFDB; border-radius: 12px; padding: 20px 22px; display: flex; flex-direction: column; gap: 10px;">
+          <h2 id="sv" style="margin: 0; font-size: 19px; font-weight: 600;">সংরক্ষণ</h2>
+          <label style="display: flex; flex-direction: column; gap: 6px; font-size: 15px; font-weight: 600;">কেন বদলাচ্ছেন?<textarea rows="3" style="font-family: inherit; font-size: 15px; padding: 10px 12px; border: 1px solid #B7C2BC; border-radius: 8px; font-weight: 400; resize: vertical;">[পরিবর্তনের কারণ, যেমন নতুন পরিপত্রের নম্বর]</textarea></label>
+          <button type="button" style="font-family: inherit; background: #1F5F8B; color: #FFFFFF; border: 0; font-size: 17px; font-weight: 600; height: 48px; border-radius: 8px;">নিয়ম সংরক্ষণ করুন</button>
+          <p style="margin: 0; font-size: 14px; color: #4F5B57; line-height: 1.6;">জাতীয় নিয়ম বদলাতে আলাদা পর্যালোচনা লাগে; এই পাতা শুধু আপনার বিভাগের নিয়ম বদলায়।</p>
+        </section>
+      </aside>
+    </div>
+  </main>
+</div>
+</body>
+</html>

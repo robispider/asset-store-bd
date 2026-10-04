@@ -1,0 +1,29 @@
+{
+  "v": 3,
+  "createdOnFiles": {"v": 1, "at": "2026-10-04T19:25:00Z"},
+  "title": "Committee Desk — human-centred redesign",
+  "launch": {"view": "canvas"},
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {"x": 0, "y": 0, "w": 1280, "h": 1480, "expand": "fill", "title": "1A · Committee desk (registrar home)"},
+    "Committee.dc.html": {"x": 1360, "y": 0, "w": 1280, "h": 1480, "expand": "fill", "title": "1B · A committee's page"},
+    "History.dc.html": {"x": 2720, "y": 0, "w": 1280, "h": 1300, "expand": "fill", "title": "1C · History in plain sentences"},
+    "Order.dc.html": {"x": 0, "y": 1880, "w": 1280, "h": 1080, "expand": "fill", "title": "2A · A new office order arrives"},
+    "Form.dc.html": {"x": 1360, "y": 1880, "w": 1280, "h": 1240, "expand": "fill", "title": "2B · Who sits on it (rules explain themselves)"},
+    "AddPerson.dc.html": {"x": 2720, "y": 1880, "w": 1280, "h": 1240, "expand": "fill", "title": "2C · Add a person from another office"},
+    "Confirm.dc.html": {"x": 4080, "y": 1880, "w": 1280, "h": 1320, "expand": "fill", "title": "2D · Check against the paper, then confirm"},
+    "Replace.dc.html": {"x": 0, "y": 3600, "w": 1280, "h": 1240, "expand": "fill", "title": "3A · Replace one member"},
+    "Transfer.dc.html": {"x": 1360, "y": 3600, "w": 1280, "h": 1200, "expand": "fill", "title": "3B · Someone was transferred"},
+    "Dissolve.dc.html": {"x": 2720, "y": 3600, "w": 1280, "h": 1060, "expand": "fill", "title": "3C · Dissolve, knowing the impact"},
+    "Mine.dc.html": {"x": 0, "y": 5240, "w": 390, "h": 1320, "title": "4A · My committees (member, phone)"},
+    "Rules.dc.html": {"x": 470, "y": 5240, "w": 1280, "h": 1240, "expand": "fill", "title": "4B · Committee rules in plain sentences (ministry admin)"}
+  },
+  "order": ["Main.dc.html", "Committee.dc.html", "History.dc.html", "Order.dc.html", "Form.dc.html", "AddPerson.dc.html", "Confirm.dc.html", "Replace.dc.html", "Transfer.dc.html", "Dissolve.dc.html", "Mine.dc.html", "Rules.dc.html"],
+  "notes": {
+    "row1": {"x": 0, "y": -300, "text": "1 · Every day: what needs me, and is my office covered?", "kind": "title1", "maxW": 4000},
+    "row2": {"x": 0, "y": 1580, "text": "2 · An office order arrives: start from the paper", "kind": "title1", "maxW": 5360},
+    "row3": {"x": 0, "y": 3300, "text": "3 · People change: replace, transfer, dissolve", "kind": "title1", "maxW": 4000},
+    "row4": {"x": 0, "y": 4940, "text": "4 · Members and ministry admins", "kind": "title1", "maxW": 1750}
+  },
+  "designSystems": []
+}

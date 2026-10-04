@@ -1023,6 +1023,8 @@ So `৫৬.০৪.০০০০.০১০.১৬.০০১.২৫-১২৩` and 
 
 ## 13. UI and UX workspaces
 
+> **Superseded (5 October 2026).** The screens and workflows in this section are replaced by the human-centred, operation-first redesign in [UX-REDESIGN.md](UX-REDESIGN.md). The rules below on language, accessibility and AdminLTE still apply.
+
 ### 13.1 Design rules
 
 - AdminLTE 2 / Bootstrap 3 classes only, shared Blade components, scripts bundled through Mix, no inline styles (store-operations gap 20).

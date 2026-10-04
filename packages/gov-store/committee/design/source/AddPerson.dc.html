@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<title>Add a person</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1F5F8B}a:hover{color:#163F5E}
+</style>
+</helmet>
+<div style="font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif; color: #17201D; background: #F3F5F4; min-height: 100%; position: relative; display: flex; flex-direction: column;">
+
+  <header style="background: #276A93; color: #FFFFFF; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 32px;">
+    <div style="font-size: 20px; font-weight: 600;">স্টোর ক্লাউড</div>
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; font-size: 15px;"><span>উপজেলা স্বাস্থ্য কমপ্লেক্স, শ্রীপুর</span><span>আব্দুল মান্নান · কমিটি নিবন্ধক</span></div>
+  </header>
+
+  <div style="flex: 1; display: flex; flex-wrap: wrap; background: #5C6763;">
+    <div aria-hidden="true" style="flex: 999 1 420px; padding: 32px; color: #E7ECE9; font-size: 18px;">
+      <div style="opacity: 0.55;">
+        <div style="font-size: 28px; font-weight: 700;">বার্ষিক মজুদ যাচাই কমিটি</div>
+        <div style="margin-top: 24px; background: #737E7A; height: 76px; border-radius: 12px;"></div>
+        <div style="margin-top: 12px; background: #737E7A; height: 76px; border-radius: 12px;"></div>
+        <div style="margin-top: 12px; background: #737E7A; height: 76px; border-radius: 12px;"></div>
+      </div>
+    </div>
+
+    <section role="dialog" aria-modal="true" aria-labelledby="addt" style="flex: 1 1 560px; max-width: 620px; background: #FFFFFF; padding: 28px 30px; display: flex; flex-direction: column; gap: 18px; box-sizing: border-box;">
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+        <h2 id="addt" style="margin: 0; font-size: 24px; font-weight: 700;">কাকে যোগ করবেন?</h2>
+        <a href="Form.dc.html" aria-label="বন্ধ করুন" style="font-size: 15px; min-height: 44px; display: inline-flex; align-items: center;">বন্ধ করুন</a>
+      </div>
+
+      <div role="tablist" aria-label="ব্যক্তি কোথা থেকে" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;">
+        <button type="button" role="tab" aria-selected="false" style="font-family: inherit; text-align: left; background: #FFFFFF; border: 1px solid #C9D2CD; border-radius: 10px; padding: 12px; min-height: 72px; color: #17201D;"><span style="display: block; font-size: 16px; font-weight: 600;">এই দপ্তর থেকে</span><span style="display: block; font-size: 13px; color: #4F5B57;">নাম লিখে খুঁজুন</span></button>
+        <button type="button" role="tab" aria-selected="true" style="font-family: inherit; text-align: left; background: #EEF5FA; border: 2px solid #1F5F8B; border-radius: 10px; padding: 11px; min-height: 72px; color: #17201D;"><span style="display: block; font-size: 16px; font-weight: 600;">অন্য দপ্তর থেকে</span><span style="display: block; font-size: 13px; color: #4F5B57;">তাঁর যাচাই কোড দিয়ে</span></button>
+        <button type="button" role="tab" aria-selected="false" style="font-family: inherit; text-align: left; background: #FFFFFF; border: 1px solid #C9D2CD; border-radius: 10px; padding: 12px; min-height: 72px; color: #17201D;"><span style="display: block; font-size: 16px; font-weight: 600;">NIAR-এ নেই</span><span style="display: block; font-size: 13px; color: #4F5B57;">নাম ও পদবি লিখে</span></button>
+      </div>
+
+      <div role="tabpanel" style="display: flex; flex-direction: column; gap: 16px;">
+        <div style="background: #F6F8F7; border-radius: 10px; padding: 14px 16px; font-size: 15px; line-height: 1.7;">
+          <strong>কোড কীভাবে পাবেন:</strong> যাঁকে যোগ করবেন, তাঁকে NIAR-এ <em style="font-style: normal; font-weight: 600;">আমার সদস্যপদ</em> পাতা থেকে “যাচাই কোড তৈরি” করে আপনাকে ফোনে বা চিঠিতে জানাতে বলুন। কোডটি অল্প সময়ের জন্য বৈধ থাকে।
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label for="code" style="font-size: 15px; font-weight: 600;">যাচাই কোড</label>
+          <div style="display: flex; gap: 8px;">
+            <input id="code" type="text" value="K7Q2M9XD" style="font-family: inherit; font-size: 20px; letter-spacing: 3px; height: 48px; padding: 0 14px; border: 1px solid #B7C2BC; border-radius: 8px; box-sizing: border-box; flex: 1; min-width: 0;">
+            <button type="button" style="font-family: inherit; background: #1F5F8B; color: #FFFFFF; border: 0; font-size: 16px; font-weight: 600; padding: 0 20px; height: 48px; border-radius: 8px;">খুঁজুন</button>
+          </div>
+        </div>
+
+        <div style="border: 2px solid #1D6B43; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 14px;">
+          <div style="font-size: 15px; font-weight: 600; color: #1D6B43;">ইনি কি সঠিক ব্যক্তি?</div>
+          <div style="display: flex; gap: 14px; align-items: center;">
+            <div aria-hidden="true" style="width: 52px; height: 52px; border-radius: 50%; background: #EFE3CF; color: #5C3B00; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; flex: none;">জহ</div>
+            <div>
+              <div style="font-size: 19px; font-weight: 600;">মো. জাহিদ হাসান</div>
+              <div style="font-size: 15px; color: #4F5B57;">উপজেলা হিসাবরক্ষণ কর্মকর্তা</div>
+              <div style="font-size: 15px; color: #4F5B57;">উপজেলা হিসাবরক্ষণ অফিস, শ্রীপুর · অর্থ বিভাগ</div>
+            </div>
+          </div>
+          <p style="margin: 0; display: flex; gap: 8px; font-size: 14px; line-height: 1.6; background: #F7EEDF; color: #5C3B00; border-radius: 8px; padding: 10px 12px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 2px;"><path d="M4 21V5l8-3 8 3v16"></path><path d="M9 21v-5h6v5"></path></svg><span>ইনি অন্য দপ্তরের, তাই “অন্য দপ্তরের সদস্য” হিসেবে গণ্য হবেন। এতে এই দপ্তরে তাঁর কোনো সদস্যপদ বা অন্য অনুমতি তৈরি হবে না।</span></p>
+
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 15px; font-weight: 600;">কমিটিতে ভূমিকা<select style="font-family: inherit; font-size: 16px; height: 44px; border: 1px solid #B7C2BC; border-radius: 8px; padding: 0 10px; font-weight: 400;"><option>সদস্য</option></select></label>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 15px; font-weight: 600;">আদেশে ক্রম<select style="font-family: inherit; font-size: 16px; height: 44px; border: 1px solid #B7C2BC; border-radius: 8px; padding: 0 10px; font-weight: 400;"><option>৩ নম্বর (কামাল হোসেনের স্থলে)</option></select></label>
+          </div>
+          <label style="display: flex; gap: 10px; align-items: flex-start; font-size: 15px; line-height: 1.6;"><input type="checkbox" checked="checked" style="width: 20px; height: 20px; margin-top: 3px;"><span>আদেশে পদের নামে নিযুক্ত (পদাধিকারবলে) — “উপজেলা হিসাবরক্ষণ কর্মকর্তা”<span style="display: block; font-size: 13px; color: #4F5B57;">ইনি বদলি হলে নতুন কর্মকর্তাকে বসানোর কথা আপনাকে মনে করিয়ে দেওয়া হবে</span></span></label>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+            <a href="Form.dc.html" style="display: inline-flex; align-items: center; background: #1F5F8B; color: #FFFFFF; text-decoration: none; font-size: 16px; font-weight: 600; padding: 0 22px; height: 46px; border-radius: 8px;">হ্যাঁ, যোগ করুন</a>
+            <button type="button" style="font-family: inherit; background: #FFFFFF; color: #1F5F8B; border: 1px solid #B7C2BC; font-size: 16px; padding: 0 18px; height: 46px; border-radius: 8px;">না, অন্য কোড দেব</button>
+          </div>
+        </div>
+
+        <p style="margin: 0; font-size: 14px; color: #4F5B57; line-height: 1.6;">অন্য দপ্তরের কর্মীদের তালিকা কেউ দেখতে পারেন না — শুধু সঠিক কোড দিলেই একজনকে পাওয়া যায়।</p>
+      </div>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1240}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

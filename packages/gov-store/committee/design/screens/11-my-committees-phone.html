@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My committees (member, phone 390px) — committee redesign mockup</title>
+<!--
+  STATIC DESIGN MOCKUP — not production code.
+  Screen: 11-my-committees-phone · My committees (member, phone 390px)
+  Spec: ../../UX-REDESIGN.md (§4 screen table, §5 workflows, §6 wording)
+  Implement in Blade with AdminLTE 2 / Bootstrap 3 classes; move every Bangla string
+  into resources/lang/{bn-BD,en-US}/committee.php. Names, numbers and dates are sample data.
+  Source artboard: ../source/Mine.dc.html
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+html,body{height:100%}
+body{margin:0}
+a{color:#1F5F8B}a:hover{color:#163F5E}
+</style>
+</head>
+<body>
+<div style="width: 390px; min-height: 1320px; box-sizing: border-box; font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif; color: #17201D; background: #F3F5F4; display: flex; flex-direction: column;">
+
+  <header style="background: #276A93; color: #FFFFFF; display: flex; align-items: center; justify-content: space-between; padding: 14px 18px;">
+    <div style="font-size: 18px; font-weight: 600;">স্টোর ক্লাউড</div>
+    <div style="font-size: 14px;">শারমিন সুলতানা</div>
+  </header>
+
+  <main style="padding: 20px 16px 32px; display: flex; flex-direction: column; gap: 16px;">
+    <div>
+      <h1 style="margin: 0; font-size: 26px; font-weight: 700;">আমার কমিটি</h1>
+      <p style="margin: 2px 0 0; font-size: 15px; color: #4F5B57;">আপনি এখন ৩টি কমিটিতে আছেন</p>
+    </div>
+
+    <section aria-labelledby="new" style="background: #EEF5FA; border: 1px solid #A9C6DA; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 6px;">
+      <h2 id="new" style="margin: 0; font-size: 17px; font-weight: 600;">নতুন দায়িত্ব</h2>
+      <p style="margin: 0; font-size: 15px; line-height: 1.6;">০৪ অক্টোবর থেকে আপনি কারিগরি পরিদর্শন কমিটির সদস্য সচিব।</p>
+      <a href="#" style="font-size: 15px; font-weight: 600;">নিয়োগের আদেশ দেখুন</a>
+    </section>
+
+    <article style="background: #FFFFFF; border: 1px solid #D9DFDB; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px;">
+      <div style="display: flex; justify-content: space-between; gap: 8px; align-items: flex-start;">
+        <h2 style="margin: 0; font-size: 18px; font-weight: 600;">কারিগরি পরিদর্শন কমিটি</h2>
+        <span style="flex: none; background: #E6F0F7; color: #163F5E; font-size: 13px; font-weight: 600; padding: 2px 8px; border-radius: 999px;">নতুন</span>
+      </div>
+      <div style="font-size: 15px;"><strong>আপনার ভূমিকা:</strong> সদস্য সচিব</div>
+      <div style="font-size: 14px; color: #4F5B57;">উপজেলা স্বাস্থ্য কমপ্লেক্স, শ্রীপুর · ৩০ জুন ২০২৭ পর্যন্ত</div>
+      <div style="display: flex; align-items: center; gap: 6px; font-size: 14px; color: #1D6B43; font-weight: 600;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>কাজের জন্য প্রস্তুত</div>
+      <details style="font-size: 15px;"><summary style="cursor: pointer; color: #1F5F8B; min-height: 32px;">অন্য সদস্যরা</summary><div style="line-height: 1.8; padding-top: 4px;">সভাপতি — মো. আনিসুর রহমান<br>সদস্য — ডা. নুসরাত জাহান</div></details>
+    </article>
+
+    <article style="background: #FFFFFF; border: 1px solid #D9DFDB; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px;">
+      <h2 style="margin: 0; font-size: 18px; font-weight: 600;">পণ্য গ্রহণ ও পরিদর্শন কমিটি</h2>
+      <div style="font-size: 15px;"><strong>আপনার ভূমিকা:</strong> সদস্য সচিব</div>
+      <div style="font-size: 14px; color: #4F5B57;">উপজেলা স্বাস্থ্য কমপ্লেক্স, শ্রীপুর · ৩০ জুন ২০২৭ পর্যন্ত</div>
+      <div style="display: flex; align-items: center; gap: 6px; font-size: 14px; color: #1D6B43; font-weight: 600;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>কাজের জন্য প্রস্তুত</div>
+      <details style="font-size: 15px;"><summary style="cursor: pointer; color: #1F5F8B; min-height: 32px;">অন্য সদস্যরা</summary></details>
+    </article>
+
+    <article style="background: #FFFFFF; border: 1px solid #D9DFDB; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px;">
+      <h2 style="margin: 0; font-size: 18px; font-weight: 600;">জেলা কারিগরি কমিটি</h2>
+      <div style="font-size: 15px;"><strong>আপনার ভূমিকা:</strong> সদস্য</div>
+      <div style="font-size: 14px; color: #4F5B57;">সিভিল সার্জন কার্যালয়, গাজীপুর · পরবর্তী আদেশ না দেওয়া পর্যন্ত</div>
+      <span style="align-self: flex-start; display: inline-flex; gap: 6px; align-items: center; font-size: 13px; color: #5C3B00; background: #F7EEDF; padding: 2px 8px; border-radius: 6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21V5l8-3 8 3v16"></path></svg>অন্য দপ্তরের কমিটি</span>
+      <div style="display: flex; align-items: center; gap: 6px; font-size: 14px; color: #1D6B43; font-weight: 600;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>কাজের জন্য প্রস্তুত</div>
+    </article>
+
+    <details style="background: #FFFFFF; border: 1px solid #D9DFDB; border-radius: 12px; padding: 14px 16px; font-size: 16px;"><summary style="cursor: pointer; font-weight: 600; min-height: 32px;">আগের কমিটি (২টি)</summary></details>
+
+    <p style="margin: 0; font-size: 14px; color: #4F5B57; line-height: 1.6;">এখানে শুধু আপনার নিজের কমিটির তথ্য দেখা যায়। কোনো তথ্য ভুল মনে হলে সংশ্লিষ্ট দপ্তরের কমিটি নিবন্ধককে জানান।</p>
+  </main>
+</div>
+</body>
+</html>
