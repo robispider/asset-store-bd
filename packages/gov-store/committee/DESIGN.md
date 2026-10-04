@@ -3,14 +3,23 @@
 | | |
 |---|---|
 | **Package** | `packages/gov-store/committee` · namespace `GovStore\Committee` |
-| **Status** | Design. No code exists yet. Closes gap **G7** ([gap assessment](../../../docs/gap-analysis/gov-store-gap-assessment.md)). |
+| **Status** | Inventory/asset registry implemented and locally verified. See [README](README.md) and [verification record](../../../docs/verification/committee-implementation-2026-10-05.md) for delivered scope and remaining rollout work. G7 is not declared closed. |
 | **Brief** | [`plan.md`](plan.md) in this folder (unchanged). The brief's constraints are kept in full; see [Appendix A](#appendix-a--brief-traceability). |
-| **Date** | 4 October 2026 |
+| **Date** | Design: 4 October 2026. NIAR scope correction and implementation: 5 October 2026. |
 | **Reads with** | [G1 analysis](../../../docs/gap-analysis/g1-unprotected-actions-analysis.md), [store-operations gap analysis](../../../docs/gap-analysis/store-operations-package-gap-analysis.md), [security rules](../../../docs/security/govstore-agent-security.md) |
 
 ---
 
 ## 0. Summary
+
+**Current NIAR scope.** NIAR means Inventory and Asset Register. This release
+serves receipt and inspection of goods, technical inspection of assets, stock
+verification, survey/condemnation and disposal. Tender opening (`TOC`), tender
+evaluation (`TEC`) and tender technical sub-committees (`TSC`) are excluded.
+They are neither seeded nor accepted by the type catalogue. Wider extension
+examples elsewhere in this design are future sketches, not shipped operations.
+Consumer inspection workflows in §15 belong to store-operations and remain a
+separate integration phase.
 
 The committee package is an **official register of government committees**. It answers one question for every other GovStore package:
 
@@ -83,14 +92,15 @@ The design follows how committees actually work in Bangladesh government offices
 
 1. The competent authority (head of office, approving authority, or ministry) issues an **office order** (অফিস আদেশ) carrying a **memo number** (স্মারক নং) and **nothi number**, usually from D-Nothi, dated in both the Gregorian and Bangla calendars.
 2. The order names the committee, its purpose, its **members by designation** (often *ex officio*), the **convener or chairperson** (আহ্বায়ক / সভাপতি) and **member-secretary** (সদস্য সচিব), and sometimes **co-opted** members (কো-অপ্ট সদস্য).
-3. The term is a fixed period, a fiscal year (1 July – 30 June), a single matter (one tender), or "until further order" (পরবর্তী আদেশ না দেওয়া পর্যন্ত).
+3. The term is a fixed period, a fiscal year (1 July – 30 June), a single matter (one stock verification or asset survey), or "until further order" (পরবর্তী আদেশ না দেওয়া পর্যন্ত).
 4. Changes come as further orders: **amendment** (সংশোধন), **reconstitution** (পুনর্গঠন), **extension** (মেয়াদ বৃদ্ধি), **dissolution** (বিলুপ্তি).
 
 ### 2.2 Rules that the composition policy must be able to express
 
-Public procurement rules set the strictest pattern. Under the Public Procurement Rules 2008 (since replaced by the Public Procurement Rules 2025), the approving authority forms the evaluation committee before the tender deadline. The committee must include external members nominated by designation, who must not come from the same procuring entity, ministry or agency. One member may be designated member-secretary, every member signs an individual declaration of impartiality, a meeting is valid only with the minimum members set in the schedule, and a technical sub-committee may be appointed.
-
-The package therefore expresses these as **configurable policy**, not hard-coded law:
+Inventory and asset committees follow their competent authority's office orders
+and reviewed ministry policy. The package expresses the following as
+**configurable policy**, without claiming that an illustrative seed establishes
+the applicable legal composition:
 
 - minimum and maximum strength, and exact presiding and secretary seats;
 - minimum external members and *how far outside* they must be (another office, another ministry);
@@ -99,7 +109,7 @@ The package therefore expresses these as **configurable policy**, not hard-coded
 - the quorum figure (exposed to consumers, never counted here, because attendance is excluded);
 - office duties that conflict with membership (for example, the store custodian on the committee inspecting their own receipts).
 
-> **Verification needed before seeding.** The seeded figures in §12.2 are illustrative. A procurement specialist must confirm them against the current PPR 2025 schedules and the relevant ministry's instructions before they ship. They are data, so correcting them needs no code change.
+> **Review before activation.** The figures in §12.2 are illustrative. Templates are seeded inactive. The responsible inventory/asset authority must review the applicable office orders and ministry instructions before enabling a template. They are data, so correcting them needs no code change.
 
 ### 2.3 Common committee types (seed catalogue)
 
@@ -110,11 +120,6 @@ The package therefore expresses these as **configurable policy**, not hard-coded
 | `SVC` | Stock Verification Committee | মজুদ যাচাই কমিটি | Annual physical verification of stores | Single matter or FY |
 | `BOS` | Board of Survey / Condemnation Committee | বোর্ড অব সার্ভে / অকেজো ঘোষণা কমিটি | Declare items unserviceable | Single matter |
 | `DSP` | Disposal Committee | নিষ্পত্তি কমিটি | Dispose of condemned items | Single matter |
-| `TOC` | Tender Opening Committee | দরপত্র উন্মুক্তকরণ কমিটি | Open tenders | Single matter or FY |
-| `TEC` | Tender Evaluation Committee | দরপত্র মূল্যায়ন কমিটি | Evaluate tenders | Single matter |
-| `TSC` | Technical Sub-Committee | কারিগরি উপ-কমিটি | Support a TEC | Single matter |
-| `IAC` | Internal Audit Committee | অভ্যন্তরীণ নিরীক্ষা কমিটি | Internal audit | Fiscal year |
-| `PMC` | Project Monitoring Committee | প্রকল্প তদারকি কমিটি | Monitor an initiative | Initiative period |
 
 ### 2.4 Seat roles (seed)
 
@@ -338,8 +343,6 @@ A **purpose** is the consumer's vocabulary: `storeops.receipt.inspection`. A **b
 | `storeops.stock.verification` (store-operations) | `SVC` | — |
 | `storeops.disposal.survey` (store-operations, future) | `BOS` | — |
 | `tracking.initiative.monitoring` (tracking) | `PMC` | — |
-| `procurement.tender.opening` (future) | `TOC` | — |
-| `procurement.tender.evaluation` (future) | `TEC` | — |
 
 > **Note.** Rules such as "ICT goods above Tk 5 lakh need the technical committee" depend on document content (category, value). The committee package does not see document content, so that decision stays with the consumer, which asks for a more specific purpose (`…inspection.technical`). This keeps business thresholds in the package that owns the document.
 
@@ -428,11 +431,11 @@ The owning office column is named `owner_location_id`, not `location_id`. This i
 | `derived_from_type_id` | int null → self | Ministry type based on a national template |
 | `name_en`, `name_bn` | string(150) | |
 | `description_en`, `description_bn` | text null | |
-| `category` | string(30) | `procurement`, `inventory`, `audit`, `disposal`, `project`, `other` |
+| `category` | string(30) | `inventory`, `audit`, `disposal`, `other` (inventory/asset operations only) |
 | `default_term_basis` | string(30) | `TermBasis` |
 | `default_term_months` | smallint null | For `FIXED` |
 | `allowed_scope_types` | json | e.g. `["office","store"]` |
-| `allow_concurrent` | boolean | `true` for TEC (one per tender); `false` for GRIC (one per office) |
+| `allow_concurrent` | boolean | Normally `false` for GRIC (one per office); configurable for distinct concurrent asset matters |
 | `composition_policy` | json | §12.2, validated against a schema on save |
 | `policy_version` | int | Bumped on every policy change |
 | `is_active` | boolean | Inactive types cannot be used for new committees |
@@ -695,7 +698,7 @@ resolveAll(string $purpose, ScopeRef $scope, DateTimeInterface $asOf): Committee
 |---|---|
 | `status` | `FOUND`, `NOT_FOUND`, `INOPERABLE`, `AMBIGUOUS`, `CONFLICT` |
 | `committee` | `?CommitteeView` when exactly one was found |
-| `candidates` | `CommitteeView[]` for `AMBIGUOUS` (concurrent types such as TEC) |
+| `candidates` | `CommitteeView[]` for `AMBIGUOUS` (concurrent committees for distinct asset matters) |
 | `resolvedVia` | `EXACT` or `ANCESTOR:{scope type}` |
 | `reasons` | Codes with bilingual messages, e.g. `NO_BINDING`, `NO_COVERAGE`, `EXPIRED_ON:2026-06-30`, `PRESIDING_VACANT` |
 | `nearestHint` | Optional: "The last GRIC for this office expired on 30 Jun 2026" so the consumer can show something useful |
@@ -989,8 +992,7 @@ Illustrative seeds (to be confirmed, §2.2):
 | TIC | 3–5 | 1 | ≤ 1 | ≥ 1 outside office | No | `storekeeper` (WARN) |
 | SVC | 3–5 | 1 | ≤ 1 | ≥ 1 outside office | No | `storekeeper` (BLOCK) |
 | BOS | 3–5 | 1 | 1 | ≥ 1 outside office | No | `storekeeper` (BLOCK) |
-| TEC | 5–7 | 1 | ≤ 1 | ≥ 2 outside ministry | Yes | — |
-| TOC | 3 | 1 | ≤ 1 | 0 | No | — |
+| DSP | 3–5 | 1 | ≤ 1 | 0 | No | `storekeeper` (BLOCK) |
 
 **Finding severities**
 
@@ -1239,7 +1241,7 @@ Status vocabulary follows [`user_stories.md`](../../../user_stories.md). All sto
 - *My committees* shows current and past seats, role, office, term and health; nothing else about those offices is exposed.
 
 **US-CM-17 — File my declaration of impartiality.**
-*As* a TEC member, *I want* to upload my signed declaration, *so that* the committee is not flagged.
+*As* an asset committee member whose reviewed policy requires a declaration, *I want* to upload my signed declaration, *so that* the committee is not flagged.
 - Only the tenure holder (or the registrar on their behalf, with reason) can file it; the file is private and served through an authorized route.
 
 **US-CM-18 — Reconstruct a committee as of a past date for audit.**
@@ -1253,7 +1255,7 @@ Status vocabulary follows [`user_stories.md`](../../../user_stories.md). All sto
 ### 14.5 Epic D — Configure types and purposes
 
 **US-CM-20 — Define a national committee template.**
-*As* Tanvir Ahmed (superuser), *I want* to set the national TEC policy (strength 5–7, at least 2 external members from outside the ministry, declarations required), *so that* every ministry starts from a compliant template.
+*As* Tanvir Ahmed (superuser), *I want* to review an exact national inventory committee policy change, *so that* each ministry starts from a reviewed template.
 - Saving requires a reason and shows the number of active committees that would not comply; existing committees keep their activated policy version.
 
 **US-CM-21 — Add a ministry-specific committee type.**
@@ -1688,7 +1690,7 @@ sequenceDiagram
 
 | Phase | Work | Done when | Estimate |
 |---|---|---|---|
-| 0. Decisions | Settle §20; procurement specialist confirms seed policies; add abilities and `committee_registrar` duty | Decisions recorded in this file | 2 days |
+| 0. Decisions | Settle §20; inventory/asset authority reviews seed policies; add abilities and `committee_registrar` duty | Decisions recorded in this file | 2 days |
 | 1. Registry core | Migrations, models, repositories, `CommitteeService`, seats and tenures, orders and private files, `CompositionValidator`, resolver, queries, snapshots, ledger, number sequence | Unit, feature and architecture tests green; resolver as-of matrix passes | 9–11 days |
 | 2. Workspaces | Dashboard, registry, constitution workspace, details, history, search, My committees, print, type studio, bindings | Pages in both languages; pa11y AA on dashboard, constitution workspace and dialogs | 8–10 days |
 | 3. Change management | Replace, Transfer workbench, reconstitution, extension, suspension, dissolution with impact, health sweep, expiry, clearance rule | Concurrency and history tests green | 6–8 days |
@@ -1737,7 +1739,7 @@ UX writing and usability testing: about 3 additional days across phases 2–5.
 | D-7 | Introduce the `committee_registrar` duty? | Yes, falling back to office admin |
 | D-8 | Should the clearance rule advise or block? | Advise |
 | D-9 | Do policy changes apply to existing committees immediately? | No; flag them and apply at reconstitution |
-| D-10 | Seed policies against PPR 2025 schedules | Confirm with a procurement specialist before release |
+| D-10 | Seed policies for NIAR operations | Inactive illustrative templates; inventory/asset authority reviews applicable orders and instructions before enabling |
 | D-11 | Retention period for order and declaration files | Follow the office's records-retention schedule; never delete while the committee's history is referenced |
 | D-12 | Identify outside members with office-membership's existing verification code, or a separate committee code? | Reuse the existing code (read-only), so officers learn one mechanism |
 

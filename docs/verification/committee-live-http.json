@@ -1,0 +1,175 @@
+{
+    "date": "2026-10-05",
+    "database": "snipeit",
+    "mode": "shadow",
+    "actors": {
+        "office_admin": 1528,
+        "storekeeper": 1576,
+        "outside_member_other_office": 1529
+    },
+    "committee_id": "01a10834-3bb8-7167-8526-e6b9268ea83c",
+    "committee_number": "CM-160-2627-0001",
+    "final_status": "DISSOLVED",
+    "http_checks": [
+        {
+            "method": "POST",
+            "path": "\/gov-store\/committees\/drafts",
+            "status": 200,
+            "expected": 200
+        },
+        {
+            "method": "POST",
+            "path": "\/gov-store\/committees\/01a10834-3bb8-7167-8526-e6b9268ea83c\/orders",
+            "status": 200,
+            "expected": 200
+        },
+        {
+            "method": "POST",
+            "path": "\/gov-store\/committees\/01a10834-3bb8-7167-8526-e6b9268ea83c\/activate",
+            "status": 422,
+            "expected": 422
+        },
+        {
+            "method": "GET",
+            "path": "\/gov-store\/committees\/01a10834-3bb8-7167-8526-e6b9268ea83c",
+            "status": 404,
+            "expected": 404
+        },
+        {
+            "method": "GET",
+            "path": "\/gov-store\/committees\/api\/01a10834-3bb8-7167-8526-e6b9268ea83c\/roster",
+            "status": 404,
+            "expected": 404
+        },
+        {
+            "method": "POST",
+            "path": "\/gov-store\/committees\/01a10834-3bb8-7167-8526-e6b9268ea83c\/activate",
+            "status": 404,
+            "expected": 404
+        },
+        {
+            "method": "GET",
+            "path": "\/gov-store\/committees\/orders\/2\/file",
+            "status": 404,
+            "expected": 404
+        },
+        {
+            "method": "POST",
+            "path": "\/gov-store\/committees\/api\/people\/by-code",
+            "status": 200,
+            "expected": 200
+        },
+        {
+            "method": "POST",
+            "path": "\/gov-store\/committees\/01a10834-3bb8-7167-8526-e6b9268ea83c\/seats",
+            "status": 200,
+            "expected": 200
+        },
+        {
+            "method": "POST",
+            "path": "\/gov-store\/committees\/01a10834-3bb8-7167-8526-e6b9268ea83c\/seats\/2\/appoint",
+            "status": 200,
+            "expected": 200
+        },
+        {
+            "method": "POST",
+            "path": "\/gov-store\/committees\/01a10834-3bb8-7167-8526-e6b9268ea83c\/seats",
+            "status": 200,
+            "expected": 200
+        },
+        {
+            "method": "POST",
+            "path": "\/gov-store\/committees\/01a10834-3bb8-7167-8526-e6b9268ea83c\/seats\/3\/appoint",
+            "status": 200,
+            "expected": 200
+        },
+        {
+            "method": "POST",
+            "path": "\/gov-store\/committees\/01a10834-3bb8-7167-8526-e6b9268ea83c\/seats",
+            "status": 200,
+            "expected": 200
+        },
+        {
+            "method": "POST",
+            "path": "\/gov-store\/committees\/01a10834-3bb8-7167-8526-e6b9268ea83c\/seats\/4\/appoint",
+            "status": 200,
+            "expected": 200
+        },
+        {
+            "method": "POST",
+            "path": "\/gov-store\/committees\/01a10834-3bb8-7167-8526-e6b9268ea83c\/scopes",
+            "status": 200,
+            "expected": 200
+        },
+        {
+            "method": "POST",
+            "path": "\/gov-store\/committees\/01a10834-3bb8-7167-8526-e6b9268ea83c\/activate",
+            "status": 200,
+            "expected": 200
+        },
+        {
+            "method": "POST",
+            "path": "\/gov-store\/committees\/01a10834-3bb8-7167-8526-e6b9268ea83c\/activate",
+            "status": 409,
+            "expected": 409
+        },
+        {
+            "method": "GET",
+            "path": "\/gov-store\/committees\/api\/01a10834-3bb8-7167-8526-e6b9268ea83c\/roster",
+            "status": 200,
+            "expected": 200
+        },
+        {
+            "method": "GET",
+            "path": "\/gov-store\/committees\/mine",
+            "status": 200,
+            "expected": 200
+        },
+        {
+            "method": "GET",
+            "path": "\/gov-store\/committees\/api\/01a10834-3bb8-7167-8526-e6b9268ea83c\/roster",
+            "status": 404,
+            "expected": 404
+        },
+        {
+            "method": "POST",
+            "path": "\/gov-store\/committees\/01a10834-3bb8-7167-8526-e6b9268ea83c\/draft",
+            "status": 405,
+            "expected": 405
+        },
+        {
+            "method": "POST",
+            "path": "\/gov-store\/committees\/admin\/types",
+            "status": 403,
+            "expected": 403
+        },
+        {
+            "method": "GET",
+            "path": "\/gov-store\/committees\/api\/search?q=LOCAL-HTTP-20261005-1",
+            "status": 200,
+            "expected": 200
+        },
+        {
+            "method": "POST",
+            "path": "\/gov-store\/committees\/01a10834-3bb8-7167-8526-e6b9268ea83c\/orders",
+            "status": 200,
+            "expected": 200
+        },
+        {
+            "method": "POST",
+            "path": "\/gov-store\/committees\/01a10834-3bb8-7167-8526-e6b9268ea83c\/dissolve",
+            "status": 422,
+            "expected": 422
+        },
+        {
+            "method": "POST",
+            "path": "\/gov-store\/committees\/01a10834-3bb8-7167-8526-e6b9268ea83c\/dissolve",
+            "status": 200,
+            "expected": 200
+        }
+    ],
+    "membership_count_unchanged": true,
+    "private_file_hash_matches": true,
+    "snapshot_verified": true,
+    "ledger_breaks": []
+}

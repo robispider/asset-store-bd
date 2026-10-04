@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\DB;
 class AccessController extends Controller
 {
     public const REQUESTABLE = [
+        'committee.manage' => 'committee_registrar',
+        'committee.activate' => 'committee_registrar',
         'storeops.documents.view' => 'primary_approver',
         'storeops.documents.draft' => 'storekeeper',
         'storeops.documents.post' => 'storekeeper',

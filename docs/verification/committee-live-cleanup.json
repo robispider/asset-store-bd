@@ -1,0 +1,28 @@
+{
+    "date": "2026-10-05",
+    "database": "snipeit",
+    "access_mode": "shadow",
+    "committees_retained": 8,
+    "visible_dissolved": 4,
+    "drafts_soft_deleted": 4,
+    "active_committees": 0,
+    "active_slots": 0,
+    "test_types_disabled": 4,
+    "illustrative_templates_inactive": 5,
+    "private_orders_retained": 12,
+    "external_test_members_retained": 3,
+    "private_hashes_match": true,
+    "ledger_chains": {
+        "027ed350-dcf7-4394-8f70-1cfa9efe1a62": [],
+        "1322b685-0e99-41d2-8718-4a83a87ada44": [],
+        "2e2c0723-df75-4206-b3ed-703ba63ecb8b": [],
+        "45dba73a-519a-4276-943e-7942d3164eee": [],
+        "4d67d5e4-8108-4688-b384-f7357d55c1c3": [],
+        "8f751510-15d7-4d1b-99e4-faf0154bd3a9": [],
+        "ed19a64f-6b92-4701-9faa-38473f36009e": [],
+        "f77d006a-a996-4d0c-b778-fa7b864ed9b3": []
+    },
+    "native_committee_audits": 64,
+    "unexpired_fixture_codes": 0,
+    "office_memberships": 465
+}

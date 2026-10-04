@@ -15,7 +15,7 @@ class RoleAssignmentService
     /** Office-admin review grants a responsibility without transferring another person's role. */
     public function grantOfficeAccess(int $locationId, string $role, int $userId, int $actorId, ?string $expiresAt, int $requestId): void
     {
-        if (! in_array($role, ['storekeeper', 'primary_approver', 'final_approver'], true)) {
+        if (! in_array($role, ['storekeeper', 'primary_approver', 'final_approver', 'committee_registrar'], true)) {
             throw new \InvalidArgumentException('Unsupported office responsibility.');
         }
         DB::transaction(function () use ($locationId, $role, $userId, $actorId, $expiresAt, $requestId) {
@@ -72,7 +72,7 @@ class RoleAssignmentService
                 $profile = LocationProfile::where('location_id', $locId)->firstOrFail();
                 $profile->update(['office_admin_id' => $userId]);
             } else {
-                if (! in_array($roleType, ['storekeeper', 'primary_approver', 'final_approver'], true)) {
+                if (! in_array($roleType, ['storekeeper', 'primary_approver', 'final_approver', 'committee_registrar'], true)) {
                     throw new \InvalidArgumentException('Unsupported office responsibility.');
                 }
                 OfficeResponsibility::where('location_id', $locId)

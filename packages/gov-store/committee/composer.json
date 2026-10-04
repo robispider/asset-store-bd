@@ -1,0 +1,25 @@
+{
+  "name": "gov-store/committee",
+  "description": "Effective-dated official committee registry",
+  "type": "library",
+  "license": "AGPL-3.0-or-later",
+  "require": {
+    "php": "^8.2",
+    "gov-store/tenant-scope": "dev-master",
+    "gov-store/office-membership": "dev-master",
+    "gov-store/organization": "dev-master"
+  },
+  "autoload": {
+    "psr-4": {
+      "GovStore\\Committee\\": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "GovStore\\Committee\\Providers\\CommitteeServiceProvider"
+      ]
+    }
+  }
+}
+

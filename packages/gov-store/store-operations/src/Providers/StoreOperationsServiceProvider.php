@@ -39,6 +39,7 @@ class StoreOperationsServiceProvider extends ServiceProvider
 
     public function boot()
     {
+        \GovStore\StoreOperations\Integrations\Committee\StoreOpsCommitteeRegistrations::register();
         // 0. Load Translations
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'storeops');
 

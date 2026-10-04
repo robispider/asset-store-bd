@@ -1,6 +1,8 @@
 const mix = require("laravel-mix");
 const fs = require("node:fs");
 
+mix.js("./resources/assets/js/committee.js", "./public/js/dist/committee.js").version();
+
 // This generates a file called app.css, which we use
 // later on to build all.css
 mix

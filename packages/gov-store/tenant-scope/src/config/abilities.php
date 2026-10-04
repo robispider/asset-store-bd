@@ -2,6 +2,16 @@
 
 // Only explicitly named abilities are registered; Snipe-IT's gates stay intact.
 return [
+    'committee.view' => ['roles' => ['office_admin', 'committee_registrar', 'storekeeper', 'primary_approver', 'final_approver', 'company_admin', 'ict_officer']],
+    'committee.self' => ['roles' => ['authenticated'], 'enforce' => true],
+    'committee.declare' => ['roles' => ['authenticated'], 'enforce' => true],
+    'committee.manage' => ['roles' => ['office_admin', 'committee_registrar']],
+    'committee.activate' => ['roles' => ['office_admin', 'committee_registrar']],
+    'committee.types.view' => ['roles' => ['company_admin', 'office_admin']],
+    'committee.types.manage' => ['roles' => ['company_admin'], 'enforce' => true],
+    'committee.purposes.view' => ['roles' => ['company_admin', 'office_admin']],
+    'committee.purposes.manage' => ['roles' => ['company_admin'], 'enforce' => true],
+    'committee.audit' => ['roles' => ['superuser'], 'national' => true],
     'storeops.documents.view' => ['roles' => ['storekeeper', 'primary_approver', 'final_approver', 'office_admin']],
     'storeops.documents.draft' => ['roles' => ['storekeeper']],
     'storeops.documents.post' => ['roles' => ['storekeeper']],
