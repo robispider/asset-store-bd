@@ -381,6 +381,7 @@ return [
     */
 
     'providers' => [
+        GovStore\Experimentation\Providers\ExperimentationServiceProvider::class,
 
         /*
          * Laravel Framework Service Providers...
