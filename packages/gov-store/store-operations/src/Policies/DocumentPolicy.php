@@ -11,7 +11,7 @@ class DocumentPolicy
     public function check(Document $document, string $type, string $action = 'view'): void
     {
         $context = app(TenantContext::class);
-        abort_unless(in_array($type, ['receipt', 'issue'], true) && $document->type === $type, 404);
+        abort_unless(in_array($type, ['receipt', 'issue', 'adjustment'], true) && $document->type === $type, 404);
         abort_unless($context->locationId && (int) $document->location_id === $context->locationId
             && (! $context->companyId || (int) $document->company_id === $context->companyId), 404);
         $ability = 'storeops.documents.'.($action === 'takeover' ? 'draft' : $action);

@@ -7,6 +7,7 @@
     $isReadOnly = !$isDraft;
     $isPosted = $document->getStatus() === 'POSTED';
     $mathDirection = $document->getDocumentType() === 'receipt' ? '+' : '-';
+    $lineSectionTitle = match ($document->getDocumentType()) { 'issue' => 'Issued Items', 'adjustment' => 'Adjusted Items', default => 'Received Items' };
 @endphp
 
 @if($isReadOnly)
@@ -30,6 +31,43 @@
                 </div>
                 <div class="box-body">
                     
+                    @if($document->type === 'adjustment')
+                    <div class="row" style="margin-bottom: 15px;">
+                        <div class="col-md-6 form-group">
+                            <label>Reason</label>
+                            <select name="adjustment_reason" class="form-control" {{ $isReadOnly ? 'disabled' : '' }}>
+                                @foreach(['PHYSICAL_COUNT' => 'Physical count', 'DAMAGE' => 'Damage', 'LOSS' => 'Loss', 'EXPIRED' => 'Expired', 'CORRECTION' => 'Correction'] as $key => $label)
+                                    <option value="{{ $key }}" @selected($document->adjustment_reason === $key)>{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Source document</label>
+                            <select name="source_document_id" class="form-control" {{ $isReadOnly ? 'disabled' : '' }}>
+                                <option value="">Select a posted document</option>
+                                @foreach($adjustmentSources as $source)
+                                    <option value="{{ $source->id }}" @selected($document->source_document_id === $source->id)>{{ $source->document_number }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    @elseif($document->type === 'issue')
+                    <div class="row" style="margin-bottom: 15px;">
+                        <div class="col-md-6 form-group">
+                            <label>Issue to office member</label>
+                            <select name="issued_to_user_id" class="form-control" {{ $isReadOnly ? 'disabled' : '' }}>
+                                <option value="">Select an active office member</option>
+                                @foreach($officeRecipients as $recipient)
+                                    <option value="{{ $recipient->id }}" @selected((int) $document->issued_to_user_id === (int) $recipient->id)>{{ trim($recipient->first_name.' '.$recipient->last_name) ?: $recipient->username }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Or department</label>
+                            <input type="text" name="issue_department" value="{{ $document->issue_department }}" class="form-control" maxlength="150" {{ $isReadOnly ? 'readonly' : '' }}>
+                        </div>
+                    </div>
+                    @else
                     <div class="row" style="margin-bottom: 15px;">
                         <div class="col-md-12 form-group">
                             <label style="color: #475569;">Receiving Source</label>
@@ -41,7 +79,9 @@
                             </select>
                         </div>
                     </div>
+                    @endif
 
+                    @if($document->type === 'receipt')
                     @php
                         // Helper to extract existing reference data for the static fields
                         $getRef = function($type) use ($document) {
@@ -114,6 +154,7 @@
                             </div>
                         </div>
                     </div>
+                    @endif
 
                 </div>
             </div>
@@ -121,7 +162,7 @@
             <!-- SECTION 2: Received Items (The Interactive Grid) -->
             <div class="box box-solid">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Received Items</h3>
+                    <h3 class="box-title">{{ $lineSectionTitle }}</h3>
                 </div>
                 <div class="box-body table-responsive no-padding">
                     <table class="table table-bordered" id="itemsGrid">
@@ -224,6 +265,7 @@
 
                         <x-gov-action ability="storeops.documents.draft" class="btn btn-default btn-block" id="saveDraftBtn">{{ __('tenantops::access.save') }}</x-gov-action>
                         <x-gov-action ability="storeops.documents.post" class="btn btn-primary btn-block" id="triggerPostBtn" disabled>{{ __('tenantops::access.post') }}</x-gov-action>
+                        <button type="button" class="btn btn-danger btn-block" data-toggle="modal" data-target="#voidDraftModal">Void draft</button>
                     @else
                         <x-gov-action ability="storeops.documents.draft" :locked="$document->status !== 'DRAFT'" class="btn btn-default btn-block">{{ __('tenantops::access.save') }}</x-gov-action>
                         <x-gov-action ability="storeops.documents.post" :locked="!in_array($document->status, ['DRAFT', 'READY'])" class="btn btn-primary btn-block" id="triggerPostBtn">{{ __('tenantops::access.post') }}</x-gov-action>
@@ -273,6 +315,17 @@
 </div>
 
 <form id="takeoverForm" method="post" action="{{ route('storeops.documents.takeover', ['type' => $type, 'id' => $document->id]) }}">@csrf</form>
+@if($isDraft)
+<div class="modal fade" id="voidDraftModal" tabindex="-1" role="dialog" aria-labelledby="voidDraftTitle">
+    <div class="modal-dialog" role="document"><div class="modal-content">
+        <form method="POST" action="{{ route('storeops.documents.void', ['type' => $type, 'id' => $document->id]) }}">@csrf
+            <div class="modal-header"><h4 class="modal-title" id="voidDraftTitle">Void this draft</h4></div>
+            <div class="modal-body"><label for="voidReason">Reason</label><textarea id="voidReason" name="reason" class="form-control" minlength="5" maxlength="500" required></textarea></div>
+            <div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button><button type="submit" class="btn btn-danger">Void draft</button></div>
+        </form>
+    </div></div>
+</div>
+@endif
 <!-- POSTING PREVIEW MODAL -->
 <div class="modal fade" id="postingModal" tabindex="-1" role="dialog" aria-labelledby="postingModalTitle" aria-describedby="postingWarning">
   <div class="modal-dialog" role="document">

@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -83,7 +84,7 @@ class DocumentWorkspaceController extends Controller
 
     public function initialize(Request $request)
     {
-        $data = $request->validate(['document_type' => 'required|in:receipt,issue']);
+        $data = $request->validate(['document_type' => 'required|in:receipt,issue,adjustment']);
         abort_unless(app(TenantContext::class)->locationId, 422);
         try {
             $draft = $this->receiptService->saveDraft([], [], auth()->id(), null, $data['document_type']);
@@ -97,8 +98,22 @@ class DocumentWorkspaceController extends Controller
     public function workspace(string $type, string $id)
     {
         $document = $this->document($type, $id)->load(['items.product', 'items.metadata', 'timelines', 'creator']);
+        $officeRecipients = collect();
+        if ($document->type === 'issue' && Schema::hasTable('gov_office_memberships')) {
+            $officeRecipients = DB::table('gov_office_memberships as membership')
+                ->join('users', 'users.id', '=', 'membership.user_id')
+                ->where('membership.location_id', $document->location_id)
+                ->where('membership.status', 'active')
+                ->whereNull('users.deleted_at')
+                ->orderBy('users.last_name')->orderBy('users.first_name')
+                ->get(['users.id', 'users.first_name', 'users.last_name', 'users.username']);
+        }
+        $adjustmentSources = $document->type === 'adjustment'
+            ? Document::whereIn('type', ['receipt', 'issue', 'adjustment'])->where('status', 'POSTED')
+                ->orderByDesc('posted_at')->get(['id', 'document_number'])
+            : collect();
 
-        return view('storeops::operations.workspace', compact('document', 'type'));
+        return view('storeops::operations.workspace', compact('document', 'type', 'officeRecipients', 'adjustmentSources'));
     }
 
     public function saveDraft(Request $request, string $type, string $id)
@@ -128,7 +143,35 @@ class DocumentWorkspaceController extends Controller
     private function persistDraft(Request $request, Document $document): void
     {
         $request->validate(['items' => 'nullable|array', 'items.*.qty' => 'required|numeric|min:0',
-            'items.*.unit_cost' => 'nullable|numeric|min:0', 'references' => 'nullable|array']);
+            'items.*.unit_cost' => 'nullable|numeric|min:0', 'references' => 'nullable|array',
+            'issued_to_user_id' => 'nullable|integer|exists:users,id', 'issue_department' => 'nullable|string|max:150']);
+        if ($document->type === 'adjustment') {
+            $request->validate([
+                'adjustment_reason' => 'required|in:PHYSICAL_COUNT,DAMAGE,LOSS,EXPIRED,CORRECTION',
+                'source_document_id' => 'required|uuid|exists:gov_documents,id',
+            ]);
+            $source = Document::whereKey($request->input('source_document_id'))->firstOrFail();
+            abort_unless(in_array($source->type, ['receipt', 'issue', 'adjustment'], true) && $source->status === 'POSTED'
+                && (int) $source->location_id === (int) $document->location_id
+                && (int) $source->company_id === (int) $document->company_id, 404);
+        }
+        if ($document->type === 'issue') {
+            if ($request->filled('issued_to_user_id')) {
+                abort_unless(Schema::hasTable('gov_office_memberships')
+                    && DB::table('gov_office_memberships')->where('user_id', $request->input('issued_to_user_id'))
+                        ->where('location_id', $document->location_id)->where('status', 'active')->exists()
+                    && DB::table('users')->where('id', $request->input('issued_to_user_id'))->whereNull('deleted_at')->exists(),
+                    422, __('storeops::storeops.issue_recipient_invalid'));
+            }
+            abort_unless($request->filled('issued_to_user_id') || $request->filled('issue_department'), 422,
+                __('storeops::storeops.issue_recipient_required'));
+        }
+        if ($document->type === 'adjustment') {
+            foreach ($request->input('items', []) as $item) {
+                abort_unless(in_array(data_get($item, 'meta.0.adjustment_direction'), ['IN', 'OUT'], true), 422,
+                    __('storeops::storeops.adjustment_direction_required'));
+            }
+        }
         $rawLines = [];
         foreach ($request->input('items', []) as $item) {
             if (empty($item['id'])) {
@@ -137,7 +180,8 @@ class DocumentWorkspaceController extends Controller
             [$shortType, $productId] = $this->productId($item['id']);
             $rawLines[] = ['type' => $shortType, 'id' => $productId, 'qty' => $item['qty'], 'unit_cost' => $item['unit_cost'] ?? 0];
         }
-        $this->receiptService->saveDraft($request->only('purchase_type'), $rawLines, auth()->id(), $document, $document->type);
+        $this->receiptService->saveDraft($request->only('purchase_type', 'source_document_id', 'adjustment_reason', 'issued_to_user_id', 'issue_department'),
+            $rawLines, auth()->id(), $document, $document->type);
         foreach ($request->input('items', []) as $item) {
             if (empty($item['id'])) {
                 continue;
@@ -211,7 +255,7 @@ class DocumentWorkspaceController extends Controller
             $modelClass = $item['type_raw'];
 
             return ['id' => $item['type_raw'].'_'.$item['id'], 'text' => $item['name'].' ('.$item['type_label'].')',
-                'current_stock' => $item['current_stock'], 'category_id' => DB::table((new $modelClass)->getTable())->where('id', $item['id'])->value('category_id')];
+                'current_stock' => $item['current_stock'], 'category_id' => $item['category_id']];
         });
 
         return response()->json(['results' => $results]);
@@ -297,11 +341,28 @@ class DocumentWorkspaceController extends Controller
                         ['config' => $meta['config'] ?? [], 'row_index' => $request->input('row_index', 0), 'quantity' => (int) $request->input('quantity', 1)]);
                 }
             }
+            if (isset($document) && $document->type === 'adjustment') {
+                $html .= view('storeops::capabilities.adjustment_direction', [
+                    'item' => $item,
+                    'config' => ['row_index' => $request->input('row_index', 0)],
+                ])->render();
+            }
 
             return response()->json(['html' => $html, 'has_requirements' => $html !== '']);
         } catch (\Throwable $e) {
             return $this->failure($request, $e);
         }
+    }
+
+    public function voidDraft(Request $request, string $type, string $id)
+    {
+        $request->validate(['reason' => 'required|string|min:5|max:500']);
+        DB::transaction(function () use ($type, $id, $request) {
+            $document = $this->document($type, $id, 'draft', true);
+            $document->transitionTo(\GovStore\StoreOperations\Enums\DocumentState::CANCELLED, (int) auth()->id(), $request->input('reason'));
+        });
+
+        return redirect()->route('storeops.hub')->with('success', __('storeops::storeops.draft_voided'));
     }
 
     private function failure(Request $request, \Throwable $e)

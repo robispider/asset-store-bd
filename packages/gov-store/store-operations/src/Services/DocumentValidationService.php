@@ -3,10 +3,11 @@
 namespace GovStore\StoreOperations\Services;
 
 use Exception;
+use GovStore\StoreOperations\Contracts\TrackingCodeVerifier;
 use GovStore\StoreOperations\DTOs\CompiledProfile;
 use GovStore\StoreOperations\Models\Document;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class DocumentValidationService
 {
@@ -25,30 +26,14 @@ class DocumentValidationService
 
         if (! empty($trackingCode)) {
             try {
-                // Determine the correct host dynamically for local dev vs production environments
-                $host = request()->getSchemeAndHttpHost();
-                $apiUrl = $host.'/gov-store/api/tracking/verify-code';
-
-                $response = Http::timeout(5)->get($apiUrl, [
-                    'code' => $trackingCode,
-                    'location_id' => $document->location_id,
-                ]);
-
-                if ($response->successful()) {
-                    $trackingData = $response->json();
-
-                    if (isset($trackingData['can_proceed']) && $trackingData['can_proceed'] === false) {
-                        $msg = $trackingData['messages'][0] ?? 'Tracking Code scope validation failed.';
-                        $errors['Administrative Reference'][] = ["BLOCKED: {$msg}"];
-                    }
-                } elseif ($response->status() !== 404) {
-                    // Ignore 404s (meaning tracking package isn't installed),
-                    // but flag 500s or timeouts as operational risks.
-                    $errors['Administrative Reference'][] = ['WARNING: Tracking engine unreachable. Cannot verify scope.'];
+                $reason = app(TrackingCodeVerifier::class)->failureReason($trackingCode, (int) $document->location_id);
+                if ($reason !== null) {
+                    $errors['Administrative Reference'][] = ["BLOCKED: {$reason}"];
                 }
-            } catch (Exception $e) {
-                // Fail open gracefully if the network loopback fails entirely
-                Log::warning('GovStore Tracking Handshake A1 Guard Failed: '.$e->getMessage());
+            } catch (\Throwable $e) {
+                $reference = (string) Str::uuid();
+                Log::warning('GovStore tracking verification failed', ['reference_id' => $reference, 'exception' => $e]);
+                $errors['Administrative Reference'][] = [__('storeops::storeops.tracking_verification_failed', ['reference' => $reference])];
             }
         }
 
@@ -121,16 +106,24 @@ class DocumentValidationService
         $totalRequirements = 0;
         $satisfiedRequirements = 0;
 
-        // --- 1. EVALUATE POLYMORPHIC REFERENCES ---
-        $totalRequirements++;
-        $hasChallanOrNothi = $document->references()
-            ->whereIn('reference_type', ['Supplier Challan', 'Nothi / Approval Letter', 'Purchase Order'])
-            ->exists();
-
-        if ($hasChallanOrNothi) {
-            $satisfiedRequirements++;
+        // --- 1. EVALUATE DOCUMENT-SPECIFIC HEADER REQUIREMENTS ---
+        if ($document->type === 'adjustment') {
+            foreach ([
+                ['Adjustment reason', filled($document->adjustment_reason)],
+                ['Source document', filled($document->source_document_id)],
+            ] as [$label, $passed]) {
+                $totalRequirements++;
+                $satisfiedRequirements += $passed ? 1 : 0;
+                $checklist[] = ['label' => $label, 'passed' => $passed];
+            }
+        } else {
+            $totalRequirements++;
+            $hasChallanOrNothi = $document->type === 'issue'
+                ? (filled($document->issued_to_user_id) || filled($document->issue_department))
+                : $document->references()->whereIn('reference_type', ['Supplier Challan', 'Nothi / Approval Letter', 'Purchase Order'])->exists();
+            $satisfiedRequirements += $hasChallanOrNothi ? 1 : 0;
+            $checklist[] = ['label' => $document->type === 'issue' ? 'Issue recipient' : 'Valid Administrative Reference (Challan / Nothi)', 'passed' => $hasChallanOrNothi];
         }
-        $checklist[] = ['label' => 'Valid Administrative Reference (Challan / Nothi)', 'passed' => $hasChallanOrNothi];
 
         // --- 2. EVALUATE ITEM-LEVEL QUANTITY & CAPABILITIES ---
         $snapshot = $document->getCompiledProfileSnapshot() ?? [];
@@ -145,6 +138,13 @@ class DocumentValidationService
                 $satisfiedRequirements++;
             }
             $checklist[] = ['label' => "{$item->product_name}: Valid Quantity (> 0)", 'passed' => $hasValidQty];
+
+            if ($document->type === 'adjustment') {
+                $totalRequirements++;
+                $hasDirection = in_array($item->metadata()->where('field_key', 'adjustment_direction')->value('value'), ['IN', 'OUT'], true);
+                $satisfiedRequirements += $hasDirection ? 1 : 0;
+                $checklist[] = ['label' => "{$item->product_name}: Adjustment direction", 'passed' => $hasDirection];
+            }
 
             $capabilities = $profile->getCapabilitiesForProduct($item->product_type, $item->product_id);
 

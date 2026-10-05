@@ -40,7 +40,7 @@ class GoodsReceiptService
     public function saveDraft(array $headerData, array $rawLines, int $userId, ?Document $document = null, string $type = 'receipt'): Document
     {
         return DB::transaction(function () use ($headerData, $rawLines, $userId, $document, $type) {
-            if (! in_array($type, ['receipt', 'issue'], true)) {
+            if (! in_array($type, ['receipt', 'issue', 'adjustment'], true)) {
                 throw new \InvalidArgumentException('Unsupported document type.');
             }
             if ($document) {
@@ -56,7 +56,8 @@ class GoodsReceiptService
 
             // 1. Create or Update Header
             if (! $document) {
-                $headerData['document_number'] = $this->numberService->generate($type === 'receipt' ? 'GR' : 'GI', 'gov_documents', 'document_number');
+                $prefix = match ($type) { 'receipt' => 'GR', 'issue' => 'GI', 'adjustment' => 'ADJ' };
+                $headerData['document_number'] = $this->numberService->generate($prefix, 'gov_documents', 'document_number');
                 $headerData['type'] = $type;
                 $headerData['status'] = DocumentState::DRAFT->value;
                 $headerData['company_id'] = $this->tenantContext->companyId;
@@ -72,7 +73,7 @@ class GoodsReceiptService
             }
 
             // 2. Process and normalize lines
-            $processedLines = $this->lineItemManager->processLines($rawLines, $type === 'receipt' ? 'IN' : 'OUT');
+            $processedLines = $this->lineItemManager->processLines($rawLines, $type === 'receipt' ? 'IN' : ($type === 'issue' ? 'OUT' : 'ADJUSTMENT'));
 
             $document->items()->delete();
             if (! empty($processedLines)) {

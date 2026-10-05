@@ -8,15 +8,18 @@ use App\Models\Category;
 use App\Models\Component;
 use App\Models\Consumable;
 use GovStore\StoreOperations\Console\Commands\ProtectDocumentAttachments;
+use GovStore\StoreOperations\Console\Commands\OpenStoreLedger;
 use GovStore\StoreOperations\Console\Commands\RepairLedgerBalances;
 use GovStore\StoreOperations\Console\Commands\SyncGovStoreFields;
 use GovStore\StoreOperations\Contracts\StockIssuingServiceInterface;
+use GovStore\StoreOperations\Contracts\TrackingCodeVerifier;
 use GovStore\StoreOperations\Events\InventoryMovementCreated;
 use GovStore\StoreOperations\Listeners\UpdateSnipeQuantity;
 use GovStore\StoreOperations\Listeners\WriteNativeAuditLogs;
 use GovStore\StoreOperations\Models\Document;
 use GovStore\StoreOperations\Observers\SnipeCategoryObserver;
 use GovStore\StoreOperations\Services\SystemGoodsIssueService;
+use GovStore\StoreOperations\Services\NullTrackingCodeVerifier;
 use GovStore\StoreOperations\UI\Tab;
 use GovStore\StoreOperations\UI\TabRegistry;
 use GovStore\TenantScope\Navigation\MenuRegistry;
@@ -35,10 +38,15 @@ class StoreOperationsServiceProvider extends ServiceProvider
 
         // 2. Register Stock Issuing Service Interface Binding
         $this->app->singleton(StockIssuingServiceInterface::class, SystemGoodsIssueService::class);
+        $this->app->singleton(TrackingCodeVerifier::class, NullTrackingCodeVerifier::class);
+        if (class_exists(\GovStore\Tracking\Services\ScopeValidatorService::class)) {
+            $this->app->singleton(TrackingCodeVerifier::class, \GovStore\StoreOperations\Integrations\Tracking\TrackingCodeVerifierAdapter::class);
+        }
     }
 
     public function boot()
     {
+        $this->app['router']->pushMiddlewareToGroup('web', \GovStore\StoreOperations\Http\Middleware\InjectStoreOperationsUi::class);
         \GovStore\StoreOperations\Integrations\Committee\StoreOpsCommitteeRegistrations::register();
         // 0. Load Translations
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'storeops');
@@ -56,6 +64,7 @@ class StoreOperationsServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 ProtectDocumentAttachments::class,
+                OpenStoreLedger::class,
                 RepairLedgerBalances::class,
                 SyncGovStoreFields::class, // <-- ADD THIS LINE
             ]);

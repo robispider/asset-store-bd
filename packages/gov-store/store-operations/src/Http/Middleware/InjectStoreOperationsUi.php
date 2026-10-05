@@ -26,11 +26,7 @@ class InjectStoreOperationsUi
             $content = $response->getContent();
 
             if (str_contains($content, '</body>')) {
-                // 1. Sidebar menu injection
-                $viewHtml = view('storeops::hooks.menu-injection')->render();
-                $content = str_replace('</body>', $viewHtml . '</body>', $content);
-
-                // 2. Tab Registry injection
+                // The central menu registry owns navigation; inject only registered item tabs.
                 $tabScript = $this->compileRegistryScript();
                 if ($tabScript) {
                     $content = str_replace('</body>', $tabScript . '</body>', $content);

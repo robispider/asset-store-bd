@@ -18,6 +18,7 @@ class CapabilityRegistry
         'post_inventory'   => \GovStore\StoreOperations\Capabilities\PostInventoryCapability::class,
         'create_assets'    => \GovStore\StoreOperations\Capabilities\CreateAssetsCapability::class,
         'require_programme_tracking' => \GovStore\StoreOperations\Capabilities\RequireProgrammeTrackingCapability::class,
+        'adjust_inventory' => \GovStore\StoreOperations\Capabilities\AdjustInventoryCapability::class,
     ];
 
     /**

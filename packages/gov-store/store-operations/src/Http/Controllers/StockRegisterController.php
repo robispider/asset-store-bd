@@ -23,9 +23,9 @@ class StockRegisterController extends Controller
      */
     public function index()
     {
-        $consumables = Consumable::with('category')->get();
-        $accessories = Accessory::with('category')->get();
-        $components  = Component::with('category')->get();
+        $consumables = Consumable::with('category')->orderBy('name')->paginate(50, ['*'], 'consumables_page');
+        $accessories = Accessory::with('category')->orderBy('name')->paginate(50, ['*'], 'accessories_page');
+        $components  = Component::with('category')->orderBy('name')->paginate(50, ['*'], 'components_page');
 
         return view('storeops::register.index', compact('consumables', 'accessories', 'components'));
     }

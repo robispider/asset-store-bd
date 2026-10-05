@@ -16,6 +16,13 @@ class UpdateSnipeQuantity
     {
         $movement = $event->movement;
 
+        if ($movement->document && $movement->document->type === 'opening') {
+            return;
+        }
+        if (strtolower(class_basename($movement->stockable_type)) === 'assetmodel') {
+            return;
+        }
+
         try {
             $adapter = StockableFactory::make($movement->stockable_type, $movement->stockable_id);
 

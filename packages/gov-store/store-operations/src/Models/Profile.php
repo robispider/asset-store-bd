@@ -12,6 +12,7 @@ class Profile extends Model
     protected $fillable = [
         'name', 'scope', 'owner_type', 'owner_id',
         'status', 'version', 'company_id', 'location_id', 'published_by', 'published_at', 'publish_reason',
+        'lineage_id',
     ];
 
     protected $casts = [

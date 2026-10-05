@@ -6,6 +6,7 @@ use Exception;
 use GovStore\StoreOperations\DTOs\CompiledProfile;
 use GovStore\StoreOperations\Enums\DocumentState;
 use GovStore\StoreOperations\Models\Document;
+use GovStore\StoreOperations\Enums\StockableType;
 use GovStore\Tracking\Events\InventoryMaterializedAgainstProgramme;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\DB;
@@ -22,6 +23,19 @@ class PostingPipelineManager
             $document = Document::whereKey($document->id)->lockForUpdate()->firstOrFail();
             if (! in_array($document->status, ['DRAFT', 'READY'], true)) {
                 throw new Exception('This document has already been posted to the ledger.');
+            }
+
+            if ($document->type === 'adjustment') {
+                if (! in_array($document->adjustment_reason, ['PHYSICAL_COUNT', 'DAMAGE', 'LOSS', 'EXPIRED', 'CORRECTION'], true)) {
+                    throw new Exception('An adjustment requires a valid reason.');
+                }
+                $source = Document::withoutGlobalScopes()->whereKey($document->source_document_id)->lockForUpdate()->first();
+                if (! $source || ! in_array($source->type, ['receipt', 'issue', 'adjustment'], true)
+                    || $source->status !== 'POSTED' || $source->id === $document->id
+                    || (int) $source->location_id !== (int) $document->location_id
+                    || (int) $source->company_id !== (int) $document->company_id) {
+                    throw new Exception('Adjustment source must be a posted document from the same office and company.');
+                }
             }
 
             if ($document->items()->count() === 0) {
@@ -52,6 +66,11 @@ class PostingPipelineManager
                 foreach ($document->items as $item) {
 
                     $capabilities = $profile->getCapabilitiesForProduct($item->product_type, $item->product_id);
+                    $stockableType = StockableType::fromString($item->product_type);
+                    if (in_array($document->type, ['issue', 'adjustment'], true) && $stockableType === StockableType::ASSET_MODEL) {
+                        throw new Exception('Serialized hardware cannot be adjusted as model-level stock; select stockable non-serialized items.');
+                    }
+                    $assetCreationConfigured = false;
 
                     foreach ($capabilities as $capCode => $config) {
                         if (! $capCode) {
@@ -66,9 +85,42 @@ class PostingPipelineManager
                             continue;
                         }
 
+                        if (in_array($realCode, ['post_inventory', 'adjust_inventory'], true)) {
+                            continue;
+                        }
+                        if ($realCode === 'create_assets') {
+                            $assetCreationConfigured = true;
+                            if ($document->type !== 'receipt') {
+                                continue;
+                            }
+                        }
+
                         $capability = CapabilityRegistry::make($realCode);
                         $capability->execute($item, $realConfig);
                     }
+
+                    if ($stockableType === StockableType::ASSET_MODEL && ! $assetCreationConfigured) {
+                        throw new Exception('Serialized asset receipts require the asset creation rule.');
+                    }
+
+                    $direction = match ($document->type) {
+                        'receipt' => 'IN',
+                        'issue' => 'OUT',
+                        'adjustment' => $item->metadata()->where('field_key', 'adjustment_direction')->value('value'),
+                        default => throw new Exception('Unsupported document type for stock posting.'),
+                    };
+                    if (! in_array($direction, ['IN', 'OUT'], true)) {
+                        throw new Exception('Every adjustment line must have a valid direction.');
+                    }
+                    $movementNotes = $document->type === 'adjustment'
+                        ? 'Adjustment '.$document->adjustment_reason.'; source '.$document->source_document_id
+                        : null;
+                    app(LedgerPostingService::class)->postMovement(
+                        $item->product_type, (int) $item->product_id,
+                        $direction, (int) $item->quantity,
+                        $document, $document->company_id ? (int) $document->company_id : null,
+                        (int) $document->location_id, $userId, $movementNotes
+                    );
 
                     // ========================================================================
                     // HANDSHAKE B: THE UNIFIED EVENT DISPATCHER (Corrected Signature v3)

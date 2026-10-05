@@ -24,6 +24,7 @@ class Document extends Model implements StoreDocumentInterface
         'document_number', 'type', 'status', 'compiled_profile_snapshot',
         'company_id', 'location_id', 'created_by', 'reference_no', 'reference_date', 'purchase_type',
         'drafted_by', 'posted_by', 'posted_at', 'managed_by',
+        'source_document_id', 'adjustment_reason', 'issued_to_user_id', 'issue_department',
     ];
 
     protected $casts = [

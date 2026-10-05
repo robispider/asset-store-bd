@@ -13,6 +13,7 @@ use GovStore\StoreOperations\Models\ProfileAssignment;
 use GovStore\StoreOperations\Services\CapabilityRegistry;
 use GovStore\StoreOperations\Services\ProfileCompilerService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ProfileAdminController extends Controller
 {
@@ -123,14 +124,28 @@ class ProfileAdminController extends Controller
      */
     public function assignPolicy(Request $request)
     {
-        $request->validate([
-            'target_type' => 'required|string',
-            'target_id' => 'required', // Can be numeric or string 'global'
-            'profile_id' => 'required|integer',
+        $targets = [
+            'System' => null,
+            'Tenant' => 'companies',
+            'App\\Models\\Location' => 'locations',
+            'App\\Models\\Category' => 'categories',
+            'App\\Models\\AssetModel' => 'models',
+        ];
+        $data = $request->validate([
+            'target_type' => ['required', 'string', Rule::in(array_keys($targets))],
+            'target_id' => ['required', 'regex:/^(global|[1-9][0-9]*)$/'],
+            'profile_id' => ['required', 'integer', 'exists:gov_profiles,id'],
         ]);
+        abort_if($data['target_type'] === 'System' && $data['target_id'] !== 'global', 422);
+        abort_if($data['target_type'] !== 'System' && $data['target_id'] === 'global', 422);
+        if ($targets[$data['target_type']]) {
+            $request->validate(['target_id' => ['required', 'integer', Rule::exists($targets[$data['target_type']], 'id')]]);
+        }
+        $profile = Profile::whereKey($data['profile_id'])->lockForUpdate()->firstOrFail();
+        abort_unless($profile->status === PolicyStatus::PUBLISHED, 422);
 
         $now = now();
-        $targetId = $request->target_id === 'global' ? 1 : (int) $request->target_id;
+        $targetId = $data['target_id'] === 'global' ? 1 : (int) $data['target_id'];
 
         // 1. Soft-expire any currently active assignment for this exact target node
         ProfileAssignment::where('target_type', $request->target_type)
@@ -140,6 +155,7 @@ class ProfileAdminController extends Controller
 
         // 2. Create the new GPO alignment
         $scopeLevel = match ($request->target_type) {
+            'Tenant' => AssignmentScope::COMPANY->value,
             'App\Models\Location' => AssignmentScope::LOCATION->value,
             'System' => AssignmentScope::GLOBAL->value,
             default => AssignmentScope::NATIVE->value,
@@ -150,10 +166,11 @@ class ProfileAdminController extends Controller
             'target_type' => $request->target_type,
             'target_id' => $targetId,
             'scope_level' => $scopeLevel,
-            'scope_id' => $request->target_type === 'App\Models\Location' ? $targetId : null,
+            'scope_id' => in_array($request->target_type, ['Tenant', 'App\Models\Location'], true) ? $targetId : null,
             'assigned_by' => auth()->id() ?? 1,
             'effective_from' => $now,
         ]);
+        ProfileCompilerService::clearResolvedCache();
 
         return redirect()->back()->with('success', 'Policy successfully assigned.');
     }
@@ -165,6 +182,7 @@ class ProfileAdminController extends Controller
     {
         $assignment = ProfileAssignment::findOrFail($id);
         $assignment->update(['effective_to' => now()]);
+        ProfileCompilerService::clearResolvedCache();
 
         return redirect()->back()->with('success', 'Policy successfully unassigned.');
     }
@@ -338,7 +356,7 @@ class ProfileAdminController extends Controller
         \DB::transaction(function () use ($draftPolicy) {
             $draftPolicy = Profile::whereKey($draftPolicy->id)->lockForUpdate()->firstOrFail();
             abort_unless($draftPolicy->status === PolicyStatus::DRAFT, 409);
-            Profile::where('name', $draftPolicy->name)
+            Profile::where('lineage_id', $draftPolicy->lineage_id)
                 ->where('id', '!=', $draftPolicy->id)
                 ->where('status', PolicyStatus::PUBLISHED->value)
                 ->update([
@@ -353,7 +371,11 @@ class ProfileAdminController extends Controller
                 'published_by' => auth()->id(), 'published_at' => now(), 'publish_reason' => request('change_reason'),
                 'version' => $newVersion,
             ]);
+            ProfileAssignment::whereIn('profile_id', Profile::where('lineage_id', $draftPolicy->lineage_id)
+                ->where('id', '!=', $draftPolicy->id)->select('id'))
+                ->whereNull('effective_to')->update(['profile_id' => $draftPolicy->id]);
         });
+        ProfileCompilerService::clearResolvedCache();
 
         return redirect()->route('storeops.admin.rules.index')
             ->with('success', "Policy [{$draftPolicy->name}] promoted successfully.");
@@ -464,6 +486,7 @@ class ProfileAdminController extends Controller
             // 1. Create the new GPO Policy Document in Draft state
             $policy = Profile::create([
                 'name' => $request->name,
+                'lineage_id' => (string) \Illuminate\Support\Str::uuid(),
                 'status' => PolicyStatus::DRAFT->value,
                 'version' => '1.0',
                 'scope' => 'GLOBAL', // Separated from deployment: scope is assigned later
@@ -521,6 +544,7 @@ class ProfileAdminController extends Controller
 
             $copy = Profile::create([
                 'name' => $copyName,
+                'lineage_id' => $original->lineage_id,
                 'status' => PolicyStatus::DRAFT->value,
                 'version' => '1.0',
                 'scope' => $original->scope,

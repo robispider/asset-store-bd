@@ -90,6 +90,12 @@ class CustomRequestsWorkflowTest extends TestCase
                 } $t->timestamps();
             });
         }
+        Schema::create('gov_office_memberships', function (Blueprint $t) {
+            $t->increments('id');
+            $t->integer('user_id');
+            $t->integer('location_id');
+            $t->string('status');
+        });
         (require base_path('packages/gov-store/tenant-scope/src/database/migrations/2026_10_04_000001_create_gov_access_tables.php'))->up();
         foreach (['categories', 'models', 'components', 'licenses', 'accessories', 'consumables'] as $table) {
             Schema::create($table, function (Blueprint $t) {
@@ -152,9 +158,66 @@ class CustomRequestsWorkflowTest extends TestCase
         Schema::create('gov_documents', function (Blueprint $t) {
             $t->uuid('id')->primary();
             $t->string('document_number')->nullable();
+            $t->string('type')->nullable();
             $t->string('status')->default('DRAFT');
+            $t->text('compiled_profile_snapshot')->nullable();
             $t->integer('location_id')->default(10);
             $t->integer('company_id')->default(20);
+            $t->integer('created_by')->nullable();
+            $t->integer('drafted_by')->nullable();
+            $t->integer('posted_by')->nullable();
+            $t->integer('managed_by')->nullable();
+            $t->integer('issued_to_user_id')->nullable();
+            $t->string('issue_department')->nullable();
+            $t->timestamp('posted_at')->nullable();
+            $t->timestamps();
+        });
+        Schema::create('gov_document_items', function (Blueprint $t) {
+            $t->uuid('id')->primary();
+            $t->uuid('document_id');
+            $t->string('product_type');
+            $t->integer('product_id');
+            $t->integer('quantity');
+            $t->decimal('unit_cost', 15, 2)->nullable();
+            $t->timestamps();
+        });
+        Schema::create('gov_document_item_meta', function (Blueprint $t) {
+            $t->increments('id');
+            $t->uuid('document_item_id');
+            $t->string('field_key');
+            $t->text('value');
+            $t->integer('row_index')->default(0);
+        });
+        Schema::create('gov_document_references', function (Blueprint $t) {
+            $t->increments('id');
+            $t->string('document_type');
+            $t->uuid('document_id');
+            $t->string('reference_type');
+            $t->string('reference_number');
+            $t->date('reference_date')->nullable();
+            $t->timestamps();
+        });
+        Schema::create('gov_document_timelines', function (Blueprint $t) {
+            $t->increments('id');
+            $t->string('document_type');
+            $t->uuid('document_id');
+            $t->string('state');
+            $t->integer('user_id');
+            $t->text('notes')->nullable();
+            $t->timestamp('created_at')->nullable();
+        });
+        Schema::create('gov_store_document_sequences', function (Blueprint $t) {
+            $t->string('prefix', 8);
+            $t->integer('sequence_year');
+            $t->integer('last_number')->default(0);
+            $t->primary(['prefix', 'sequence_year']);
+        });
+        Schema::create('gov_store_ledger_openings', function (Blueprint $t) {
+            $t->integer('location_id')->primary();
+            $t->uuid('document_id')->unique();
+            $t->timestamp('opened_at');
+            $t->integer('opened_by');
+            $t->timestamps();
         });
         Schema::create('gov_goods_issues', function (Blueprint $t) {
             $t->uuid('id')->primary();
@@ -188,6 +251,7 @@ class CustomRequestsWorkflowTest extends TestCase
             $t->integer('company_id');
             $t->integer('location_id');
             $t->integer('created_by');
+            $t->text('notes')->nullable();
             $t->timestamp('created_at')->nullable();
         });
         foreach (['2024_01_02_000000_create_service_requests_tables.php' => 'CreateServiceRequestsTables',
@@ -205,6 +269,11 @@ class CustomRequestsWorkflowTest extends TestCase
         app()->instance(TenantContext::class, $context);
         DB::table('locations')->insert([['id' => 10, 'name' => 'Working office'], ['id' => 11, 'name' => 'Other office']]);
         DB::table('users')->insert(['id' => 1, 'first_name' => 'Requester', 'location_id' => 11]);
+        DB::table('gov_office_memberships')->insert(['user_id' => 1, 'location_id' => 10, 'status' => 'active']);
+        DB::table('gov_store_ledger_openings')->insert([
+            'location_id' => 10, 'document_id' => (string) Str::uuid(), 'opened_at' => now(), 'opened_by' => 1,
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
         DB::table('categories')->insert(['id' => 1, 'name' => 'Supplies']);
         DB::table('consumables')->insert(['id' => 1, 'name' => 'Paper', 'category_id' => 1, 'purchase_cost' => 10]);
         DB::table('accessories')->insert(['id' => 1, 'name' => 'Keyboard', 'category_id' => 1, 'purchase_cost' => 10]);
@@ -477,9 +546,9 @@ class CustomRequestsWorkflowTest extends TestCase
 
     public function test_real_goods_issue_projects_stock_once_for_consumables_and_accessories(): void
     {
-        foreach ([Consumable::class, Accessory::class] as $type) {
+        foreach (['consumable' => Consumable::class, 'accessory' => Accessory::class] as $morphType => $type) {
             DB::table('gov_inventory_movements')->insert(['id' => (string) Str::uuid(),
-                'stockable_type' => $type, 'stockable_id' => 1, 'movement_type' => 'IN', 'quantity' => 20, 'balance_after' => 20,
+                'stockable_type' => $morphType, 'stockable_id' => 1, 'movement_type' => 'IN', 'quantity' => 20, 'balance_after' => 20,
                 'document_type' => 'baseline', 'document_id' => 'baseline', 'company_id' => 20, 'location_id' => 10, 'created_by' => 1,
                 'created_at' => now()->subDay()]);
         }
@@ -493,6 +562,10 @@ class CustomRequestsWorkflowTest extends TestCase
         $this->assertSame(2, DB::table('gov_goods_issue_items')->count());
         $this->assertSame(2, DB::table('gov_inventory_movements')->where('movement_type', 'OUT')->count());
         $this->assertSame(2, DB::table('action_logs')->where('note', 'like', 'GovStore Stores Handshake:%')->where('created_by', $actor->id)->count());
+        $document = Document::withoutGlobalScopes()->where('type', 'issue')->firstOrFail();
+        $this->assertSame(1, (int) $document->issued_to_user_id);
+        $this->assertSame(2, DB::table('gov_inventory_movements')->where('document_id', $document->id)->where('stockable_type', 'consumable')->count()
+            + DB::table('gov_inventory_movements')->where('document_id', $document->id)->where('stockable_type', 'accessory')->count());
         $this->assertSame('issued', $request->fresh()->fulfillment_status);
     }
 
@@ -616,6 +689,11 @@ class CustomRequestsWorkflowTest extends TestCase
 
     public function test_native_required_metadata_failure_explains_the_error_and_rolls_back_the_issue(): void
     {
+        DB::table('gov_inventory_movements')->insert(['id' => (string) Str::uuid(), 'stockable_type' => 'consumable',
+            'stockable_id' => 1, 'movement_type' => 'IN', 'quantity' => 20, 'balance_after' => 20,
+            'document_type' => 'opening', 'document_id' => 'baseline-opening', 'company_id' => 20, 'location_id' => 10,
+            'created_by' => 1, 'created_at' => now()->subDay()]);
+        $movementCountBefore = DB::table('gov_inventory_movements')->count();
         Schema::create('settings', function (Blueprint $t) {
             $t->increments('id');
             $t->boolean('full_multiple_companies_support')->default(0);
@@ -667,12 +745,13 @@ class CustomRequestsWorkflowTest extends TestCase
         $this->assertSame(0, $request->items()->sum('issued_qty'));
         $this->assertSame(2, $request->items()->sum('reserved_qty'));
         $this->assertSame(0, DB::table('gov_goods_issues')->count());
-        $this->assertSame(0, DB::table('gov_inventory_movements')->count());
+        $this->assertSame($movementCountBefore, DB::table('gov_inventory_movements')->count());
         Event::assertNotDispatched(CheckoutableCheckedOut::class);
         DB::table('assets')->where('id', 1)->update(['_snipeit_grn_4' => 'GR-VERIFIED']);
         app(FulfillmentService::class)->issueItems($request, $actor, $payload);
         $this->assertSame('issued', $request->fresh()->fulfillment_status);
         $this->assertSame(19, Consumable::find(1)->qty);
+        $this->assertSame($movementCountBefore + 1, DB::table('gov_inventory_movements')->count());
         $this->assertSame(0, $request->items()->sum('reserved_qty'));
         Event::assertDispatched(CheckoutableCheckedOut::class);
     }

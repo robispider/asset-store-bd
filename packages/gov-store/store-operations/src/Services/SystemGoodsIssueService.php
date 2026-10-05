@@ -3,121 +3,88 @@
 namespace GovStore\StoreOperations\Services;
 
 use GovStore\StoreOperations\Contracts\StockIssuingServiceInterface;
-use GovStore\StoreOperations\Models\GoodsIssue;
-use GovStore\StoreOperations\Models\GoodsIssueItem;
-use GovStore\StoreOperations\Models\InventoryMovement;
-use GovStore\StoreOperations\Events\InventoryMovementCreated;
-use GovStore\StoreOperations\Factories\StockableFactory;
 use GovStore\StoreOperations\Enums\StockableType;
+use GovStore\StoreOperations\Models\{Document, GoodsIssue, InventoryMovement};
 use GovStore\TenantScope\Contexts\TenantContext;
 use Illuminate\Support\Facades\DB;
-use Exception;
+use Illuminate\Support\Str;
 
 class SystemGoodsIssueService implements StockIssuingServiceInterface
 {
-    protected DocumentNumberService $numberService;
-    protected TenantContext $tenantContext;
-
-    public function __construct(DocumentNumberService $numberService, TenantContext $tenantContext)
-    {
-        $this->numberService = $numberService;
-        $this->tenantContext = $tenantContext;
-    }
+    public function __construct(
+        private DocumentNumberService $numberService,
+        private TenantContext $tenantContext,
+        private LedgerPostingService $ledger
+    ) {}
 
     public function issueSystemStock(array $items, int $issuedToUserId, $referenceDocument): array
     {
-        $validLedgerItems = [];
-        $processedLines = [];
-
-        // 1. Classification & Validation Phase
-        foreach ($items as $item) {
-            try {
-                // Attempt to classify as a counter-based item. If it fails (e.g., Asset), it's ignored by the ledger.
-                $canonicalType = StockableType::fromString($item['type']);
-                
-                $adapter = StockableFactory::make($canonicalType, $item['id']);
-                $currentQty = $adapter->getCurrentQuantity();
-
-                if ($currentQty < $item['qty']) {
-                    throw new Exception(
-                        __('storeops::storeops.insufficient_stock', [
-                            'item' => $adapter->getDisplayName(),
-                            'available' => $currentQty,
-                            'requested' => $item['qty'],
-                        ])
-                    );
-                }
-
-                $validLedgerItems[] = [
-                    'enum_type' => $canonicalType,
-                    'raw_type'  => $canonicalType->value, // App\Models\Consumable
-                    'id'        => $item['id'],
-                    'qty'       => $item['qty'],
-                    'line_id'   => $item['line_id'],
-                ];
-            } catch (Exception $e) {
-                // Ignore non-stockable items (Assets, Licenses) - they are handled by their native Snipe-IT workflow
-                if (!str_contains($e->getMessage(), 'Unsupported stockable type')) {
-                    throw $e;
-                }
-            }
+        if (! $this->tenantContext->locationId || (int) $referenceDocument->office_id !== $this->tenantContext->locationId) {
+            abort(404);
         }
 
-        if (empty($validLedgerItems)) {
-            return []; // Nothing to process for the ledger
+        $locationId = $this->tenantContext->locationId;
+        $companyId = $this->tenantContext->companyId;
+        $actorId = auth()->id() ?? throw new \RuntimeException('An authenticated storekeeper is required.');
+        if (! DB::table('gov_office_memberships')->where('user_id', $issuedToUserId)->where('location_id', $locationId)
+            ->where('status', 'active')->exists()
+            || ! DB::table('users')->where('id', $issuedToUserId)->whereNull('deleted_at')->exists()) {
+            abort(404);
         }
 
-        // 2. Transaction Phase
-        return DB::transaction(function () use ($validLedgerItems, $issuedToUserId, $referenceDocument, &$processedLines) {
-            
-            $issueNo = $this->numberService->generate('GI', 'gov_goods_issues', 'issue_no');
-            
-            $goodsIssue = GoodsIssue::create([
-                'issue_no' => $issueNo,
-                'issue_type' => 'SYSTEM_FULFILLMENT',
-                'issued_to_id' => $issuedToUserId,
-                'reference_type' => get_class($referenceDocument),
-                'reference_id' => $referenceDocument->id,
-                'status' => 'SUBMITTED',
-                'company_id' => $this->tenantContext->companyId,
-                'location_id' => $this->tenantContext->locationId,
-                'created_by' => auth()->id() ?? 1,
+        return DB::transaction(function () use ($items, $issuedToUserId, $referenceDocument, $locationId, $companyId, $actorId) {
+            $issueNo = $this->numberService->generate('GI', 'gov_documents', 'document_number');
+            $document = Document::withoutGlobalScopes()->create([
+                'document_number' => $issueNo, 'type' => 'issue', 'status' => 'POSTED',
+                'compiled_profile_snapshot' => ['source' => 'custom_request'],
+                'company_id' => $companyId, 'location_id' => $locationId, 'created_by' => $actorId,
+                'drafted_by' => $actorId, 'posted_by' => $actorId, 'posted_at' => now(), 'managed_by' => $actorId,
+                'issued_to_user_id' => $issuedToUserId,
+            ]);
+            $document->timelines()->create(['state' => 'POSTED', 'user_id' => $actorId, 'notes' => 'Fulfilled custom request '.(string) $referenceDocument->request_number]);
+            $document->references()->create([
+                'reference_type' => 'Custom Request', 'reference_number' => (string) $referenceDocument->request_number,
             ]);
 
-            foreach ($validLedgerItems as $item) {
-                GoodsIssueItem::create([
-                    'goods_issue_id' => $goodsIssue->id,
-                    'stockable_type' => $item['raw_type'],
-                    'stockable_id' => $item['id'],
-                    'quantity' => $item['qty'],
+            // Keep the legacy issue header/items as a read-compatible projection while
+            // making the generic document and ledger the authoritative stock record.
+            $legacyIssue = GoodsIssue::withoutGlobalScopes()->create([
+                'issue_no' => $issueNo, 'issue_type' => 'SYSTEM_FULFILLMENT', 'issued_to_id' => $issuedToUserId,
+                'reference_type' => get_class($referenceDocument), 'reference_id' => $referenceDocument->id,
+                'status' => 'SUBMITTED', 'company_id' => $companyId, 'location_id' => $locationId, 'created_by' => $actorId,
+            ]);
+
+            $processed = [];
+            foreach ($items as $item) {
+                $type = StockableType::fromString((string) $item['type']);
+                if ($type === StockableType::ASSET_MODEL) {
+                    throw new \InvalidArgumentException('Serialized assets use their native checkout workflow.');
+                }
+                $quantity = (int) $item['qty'];
+                if ($quantity < 1) {
+                    throw new \InvalidArgumentException('Issued quantity must be positive.');
+                }
+                $productId = (int) $item['id'];
+                $morphType = $type->value;
+                $document->items()->create([
+                    'product_type' => $morphType, 'product_id' => $productId,
+                    'quantity' => $quantity, 'unit_cost' => null,
                 ]);
-
-                // Reliable balance calculation
-                $latestBalance = InventoryMovement::where('stockable_type', $item['raw_type'])
-                    ->where('stockable_id', $item['id'])
-                    ->orderBy('created_at', 'desc')
-                    ->value('balance_after') ?? 0;
-
-                $movement = InventoryMovement::create([
-                    'stockable_type' => $item['raw_type'],
-                    'stockable_id'   => $item['id'],
-                    'movement_type'  => 'OUT',
-                    'quantity'       => $item['qty'],
-                    'balance_after'  => $latestBalance - $item['qty'],
-                    'document_type'  => get_class($goodsIssue),
-                    'document_id'    => $goodsIssue->id,
-                    'company_id'     => $this->tenantContext->companyId,
-                    'location_id'    => $this->tenantContext->locationId,
-                    'created_by'     => auth()->id() ?? 1,
+                $legacyIssue->items()->create([
+                    'stockable_type' => $morphType, 'stockable_id' => $productId, 'quantity' => $quantity,
                 ]);
+                $this->ledger->postMovement($morphType, $productId, 'OUT', $quantity, $document,
+                    $companyId, $locationId, $actorId, 'Custom request '.$referenceDocument->request_number);
 
-                event(new InventoryMovementCreated($movement));
-
-                // Map the request line ID to the generated Goods Issue number for logging
-                $processedLines[$item['line_id']] = $issueNo;
+                $lineId = $item['line_id'];
+                $processed[$lineId] = $issueNo;
             }
 
-            return $processedLines;
-        });
+            if (! $items) {
+                throw new \InvalidArgumentException('A system goods issue requires at least one stock line.');
+            }
+
+            return $processed;
+        }, 3);
     }
 }

@@ -6,9 +6,12 @@ use GovStore\StoreOperations\Enums\StockableType;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use GovStore\TenantScope\Contexts\TenantContext;
 
 class ProductResolver
 {
+    private static array $columnsByTable = [];
+
     /**
      * Unified search mechanism across Consumables, Accessories, and Asset Models.
      * Dynamically calculates stock levels for Asset Models using active count queries.
@@ -34,17 +37,29 @@ class ProductResolver
                     $modelInstance = new $modelClass;
                     $tableName = $modelInstance->getTable();
 
-                    // Safely check if the database table contains 'item_no' or 'model_number'
-                    if (Schema::hasColumn($tableName, 'item_no')) {
+                    $columns = self::$columnsByTable[$tableName] ??= Schema::getColumnListing($tableName);
+                    if (in_array('item_no', $columns, true)) {
                         $q->orWhere('item_no', 'LIKE', "%{$term}%");
                     }
-                    if (Schema::hasColumn($tableName, 'model_number')) {
+                    if (in_array('model_number', $columns, true)) {
                         $q->orWhere('model_number', 'LIKE', "%{$term}%");
                     }
                 });
             }
 
             $items = $query->limit($limit)->get();
+
+            $assetCounts = [];
+            if ($stockableType === StockableType::ASSET_MODEL && $items->isNotEmpty()) {
+                $officeId = app(TenantContext::class)->locationId;
+                $assetCounts = DB::table('assets')->join('status_labels', 'status_labels.id', '=', 'assets.status_id')
+                    ->whereIn('assets.model_id', $items->pluck('id'))
+                    ->where('assets.location_id', $officeId)->whereNull('assets.deleted_at')
+                    ->whereNull('assets.assigned_to')->where('status_labels.deployable', 1)
+                    ->where('status_labels.archived', 0)
+                    ->selectRaw('assets.model_id, COUNT(*) as stock_count')->groupBy('assets.model_id')
+                    ->pluck('stock_count', 'assets.model_id')->all();
+            }
 
             foreach ($items as $item) {
                 // DYNAMIC CURRENT STOCK CALCULATION:
@@ -54,11 +69,7 @@ class ProductResolver
                 if (isset($item->qty)) {
                     $currentStock = (int) $item->qty;
                 } elseif (class_basename($modelClass) === 'AssetModel') {
-                    // Count actual physical assets registered in Snipe-IT for this model
-                    $currentStock = DB::table('assets')
-                        ->where('model_id', $item->id)
-                        ->whereNull('deleted_at')
-                        ->count();
+                    $currentStock = (int) ($assetCounts[$item->id] ?? 0);
                 }
 
                 $results->push([
@@ -69,6 +80,7 @@ class ProductResolver
                     'name'          => $item->name,
                     'item_no'       => $item->item_no ?? $item->model_number ?? 'N/A',
                     'current_stock' => $currentStock,
+                    'category_id'   => $item->category_id ?? null,
                 ]);
             }
         }

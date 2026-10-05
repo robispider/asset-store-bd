@@ -35,6 +35,7 @@ Route::group([
 
     // AJAX / Form Processing Endpoints
     Route::post('/documents/{type}/{id}/draft', [DocumentWorkspaceController::class, 'saveDraft'])->middleware('gov.can:storeops.documents.draft')->name('storeops.documents.draft');
+    Route::post('/documents/{type}/{id}/void', [DocumentWorkspaceController::class, 'voidDraft'])->middleware('gov.can:storeops.documents.draft')->name('storeops.documents.void');
     Route::get('/documents/{type}/{id}/preview', [DocumentWorkspaceController::class, 'preview'])->middleware('gov.can:storeops.documents.view')->name('storeops.documents.preview');
     Route::post('/documents/{type}/{id}/post', [DocumentWorkspaceController::class, 'post'])->middleware('gov.can:storeops.documents.post')->name('storeops.documents.post');
     Route::get('/documents/{type}/{id}/print', [DocumentWorkspaceController::class, 'print'])->middleware('gov.can:storeops.documents.view')->name('storeops.documents.print');

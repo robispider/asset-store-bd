@@ -13,6 +13,8 @@
                         <input type="hidden" name="document_type" value="receipt">
                         <x-gov-action ability="storeops.documents.draft" type="submit" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i> New Goods Receipt</x-gov-action>
                     </form>
+                    <form action="{{ route('storeops.documents.initialize') }}" method="POST" style="display:inline;">@csrf<input type="hidden" name="document_type" value="issue"><x-gov-action ability="storeops.documents.draft" type="submit" class="btn btn-sm btn-warning"><i class="fa fa-share"></i> New Issue</x-gov-action></form>
+                    <form action="{{ route('storeops.documents.initialize') }}" method="POST" style="display:inline;">@csrf<input type="hidden" name="document_type" value="adjustment"><x-gov-action ability="storeops.documents.draft" type="submit" class="btn btn-sm btn-default"><i class="fa fa-sliders"></i> New Adjustment</x-gov-action></form>
                 </div>
             </div>
             <div class="box-body">

@@ -2,6 +2,15 @@
 
 return [
 
+    'tracking_verifier_unavailable' => 'প্রোগ্রাম ট্র্যাকিং যাচাইকারী চালু নেই। এই রেফারেন্স যাচাই করা যাবে না।',
+    'tracking_code_invalid' => 'প্রোগ্রাম ট্র্যাকিং কোডটি ভুল অথবা নিষ্ক্রিয়।',
+    'tracking_initiative_inactive' => 'প্রোগ্রাম উদ্যোগটি পাওয়া যায়নি অথবা নিষ্ক্রিয়।',
+    'tracking_verification_failed' => 'প্রোগ্রাম রেফারেন্স যাচাই করা যায়নি। রেফারেন্স: :reference',
+    'issue_recipient_required' => 'ইস্যু সংরক্ষণের আগে সক্রিয় অফিস সদস্য নির্বাচন করুন অথবা বিভাগ লিখুন।',
+    'issue_recipient_invalid' => 'নির্বাচিত প্রাপক এই অফিসের সক্রিয় সদস্য নন।',
+    'adjustment_direction_required' => 'প্রতিটি সমন্বয় লাইনের জন্য IN অথবা OUT নির্বাচন করুন।',
+    'draft_voided' => 'খসড়াটি বাতিল করা হয়েছে।',
+
     // ── Goods Issue (Outbound) Views ──────────────────────────────
     'issue_goods_title' => 'পণ্য প্রদান',
     'create_goods_issue' => 'পণ্য প্রদান (আউটবাউন্ড) তৈরি করুন',
