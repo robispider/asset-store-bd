@@ -1,5 +1,6 @@
 <?php
 return [
+    'ux'=>require __DIR__.'/ux.php',
     'title'=>'কমিটি',
     'dashboard'=>'কমিটি ড্যাশবোর্ড',
     'registry'=>'কমিটি নিবন্ধন',
@@ -188,9 +189,9 @@ return [
         'DISSOLVED'=>'বিলুপ্ত',
         'EXPIRED'=>'মেয়াদোত্তীর্ণ',
         'SUPERSEDED'=>'পুনর্গঠিত',
-        'OPERABLE'=>'কার্যক্ষম',
-        'AT_RISK'=>'ঝুঁকিপূর্ণ',
-        'INOPERABLE'=>'অকার্যকর',
+        'OPERABLE'=>'কাজের জন্য প্রস্তুত',
+        'AT_RISK'=>'মনোযোগ প্রয়োজন',
+        'INOPERABLE'=>'কাজ করতে পারবে না',
         'CONSTITUTION'=>'গঠন',
         'AMENDMENT'=>'সংশোধন',
         'RECONSTITUTION'=>'পুনর্গঠন',

@@ -15,7 +15,7 @@ class ImpactAnalyzer
         $result = [];
         foreach ($c->scopes as $scope) {
             foreach ($bindings as $binding) {
-                if ($purpose = $this->purposes->get($binding->purpose_code)) { $result[] = ['purpose'=>$purpose->labelBn,'scope'=>$scope->scope_label_snapshot,'effective_to'=>$scope->effective_to]; }
+                if ($purpose = $this->purposes->get($binding->purpose_code)) { $result[] = ['purpose'=>\GovStore\Committee\Support\CommitteeDisplay::text($purpose->labelBn,$purpose->labelEn),'scope'=>$scope->scope_label_snapshot,'effective_to'=>$scope->effective_to]; }
             }
         }
         return $result;

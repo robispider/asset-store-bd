@@ -1,5 +1,6 @@
 <?php
 return [
+    'ux'=>require __DIR__.'/ux.php',
     'title'=>'Committees',
     'dashboard'=>'Committee dashboard',
     'registry'=>'Committee registry',
@@ -188,9 +189,9 @@ return [
         'DISSOLVED'=>'Dissolved',
         'EXPIRED'=>'Expired',
         'SUPERSEDED'=>'Superseded',
-        'OPERABLE'=>'Operable',
-        'AT_RISK'=>'At risk',
-        'INOPERABLE'=>'Inoperable',
+        'OPERABLE'=>'Ready to work',
+        'AT_RISK'=>'Needs attention',
+        'INOPERABLE'=>'Cannot act',
         'CONSTITUTION'=>'Constitution',
         'AMENDMENT'=>'Amendment',
         'RECONSTITUTION'=>'Reconstitution',

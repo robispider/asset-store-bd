@@ -14,6 +14,7 @@ Route::group(['prefix'=>'gov-store/committees','middleware'=>['web','auth',Initi
     Route::get('admin/purposes',[C::class,'page'])->defaults('page','purposes')->middleware('gov.can:committee.purposes.view')->name('committee.purposes')->breadcrumbs(fn ($trail) => $trail->push(__('committee::committee.purposes'),route('committee.purposes')));
     Route::get('mine',[C::class,'mine'])->middleware('gov.can:committee.self')->name('committee.mine')->breadcrumbs(fn ($trail) => $trail->push(__('committee::committee.mine'),route('committee.mine')));
     Route::get('mine/tenures/{tenure}/declaration/file',[C::class,'ownDeclarationFile'])->middleware('gov.can:committee.self')->name('committee.own-declaration.file');
+    Route::get('mine/tenures/{tenure}/order/file',[C::class,'ownOrderFile'])->middleware('gov.can:committee.self')->name('committee.own-order.file');
     Route::get('api/registry',[C::class,'registry'])->middleware('gov.can:committee.view')->name('committee.api.registry');
     Route::get('api/search',[C::class,'registry'])->middleware('gov.can:committee.view')->name('committee.api.search');
     Route::get('api/people',[C::class,'people'])->middleware('gov.can:committee.manage')->name('committee.api.people');
@@ -21,6 +22,12 @@ Route::group(['prefix'=>'gov-store/committees','middleware'=>['web','auth',Initi
     Route::post('api/people/by-code',[C::class,'byCode'])->middleware(['gov.can:committee.manage','throttle:10,1'])->name('committee.api.by-code');
     Route::get('api/scopes/{type}',[C::class,'scopeSearch'])->middleware('gov.can:committee.manage')->name('committee.api.scopes');
     Route::get('api/coverage',[C::class,'coverageApi'])->middleware('gov.can:committee.view')->name('committee.api.coverage');
+    Route::get('api/desk',[C::class,'deskApi'])->middleware('gov.can:committee.view')->name('committee.api.desk');
+    Route::post('order-intake',[C::class,'saveIntake'])->middleware('gov.can:committee.manage')->name('committee.intake.save');
+    Route::delete('order-intake',[C::class,'discardIntake'])->middleware('gov.can:committee.manage')->name('committee.intake.discard');
+    Route::post('admin/types/impact',[C::class,'ruleImpact'])->middleware('gov.can:committee.types.manage')->name('committee.types.impact');
+    Route::post('{committee}/reminders/dismiss',[C::class,'dismissReminder'])->middleware('gov.can:committee.manage')->name('committee.reminder.dismiss');
+    Route::post('{committee}/preview',[C::class,'preview'])->middleware('gov.can:committee.manage')->name('committee.preview');
     Route::get('orders/{order}/file',[C::class,'file'])->middleware('gov.can:committee.view')->name('committee.order.file');
     Route::get('tenures/{tenure}/declaration/file',[C::class,'declarationFile'])->middleware('gov.can:committee.view')->name('committee.declaration.file');
     Route::post('drafts',[C::class,'command'])->defaults('command','create')->middleware('gov.can:committee.manage')->name('committee.command.create');
@@ -34,6 +41,7 @@ Route::group(['prefix'=>'gov-store/committees','middleware'=>['web','auth',Initi
     Route::put('{committee}/draft',[C::class,'command'])->defaults('command','update')->middleware('gov.can:committee.manage')->name('committee.command.update');
     Route::delete('{committee}/draft',[C::class,'command'])->defaults('command','discard')->middleware('gov.can:committee.manage')->name('committee.command.discard');
     Route::post('{committee}/seats',[C::class,'command'])->defaults('command','seat')->middleware('gov.can:committee.manage')->name('committee.command.seat');
+    Route::put('{committee}/seats/{seat}',[C::class,'command'])->defaults('command','updateSeat')->middleware('gov.can:committee.manage')->name('committee.command.seat.update');
     Route::delete('{committee}/seats/{seat}',[C::class,'command'])->defaults('command','removeSeat')->middleware('gov.can:committee.manage')->name('committee.command.removeSeat');
     Route::post('{committee}/seats/{seat}/appoint',[C::class,'command'])->defaults('command','appoint')->middleware('gov.can:committee.manage')->name('committee.command.appoint');
     Route::post('{committee}/seats/{seat}/replace',[C::class,'command'])->defaults('command','replace')->middleware('gov.can:committee.manage')->name('committee.command.replace');

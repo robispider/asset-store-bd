@@ -27,6 +27,18 @@ class CommitteeMembershipService
             $this->ledger->append($c,'SeatRemoved',['seat_id'=>$seatId]);
         });
     }
+    public function updateDraftSeat(string $id, int $seatId, array $input): CommitteeSeat
+    {
+        return $this->committees->mutate($id,'committee.manage',['DRAFT'],function ($c) use ($seatId,$input) {
+            $data = Validator::make($input,['seat_role_code'=>'required|string','seat_no'=>'required|integer|min:1|max:100'])->validate();
+            abort_unless(SeatRole::where('code',$data['seat_role_code'])->where('is_active',true)->exists(),422);
+            $seat = $c->seats()->findOrFail($seatId);
+            $other = $c->seats()->where('seat_no',$data['seat_no'])->whereKeyNot($seatId)->first();
+            if ($other) { $previous = $seat->seat_no; $seat->update(['seat_no'=>101]); $other->update(['seat_no'=>$previous]); }
+            $seat->update($data);
+            $this->ledger->append($c,'DraftUpdated',['seat_id'=>$seat->id]); return $seat;
+        });
+    }
     public function appoint(string $id, int $seatId, array $input): CommitteeTenure
     {
         unset($input['_correcting_tenure_id']);
@@ -78,13 +90,16 @@ class CommitteeMembershipService
             $this->releaseLocked($c,$tenureId,$input); $this->afterChange($c,$input);
         });
     }
-    private function releaseLocked(Committee $c, int $tenureId, array $input): CommitteeTenure
+    private function releaseLocked(Committee $c, int $tenureId, array $input, ?string $transitionDate = null): CommitteeTenure
     {
         $t = $c->tenures()->findOrFail($tenureId);
         abort_unless($t->status === 'ACTIVE' && ! $t->release_order_id,409);
+        abort_if($c->tenures()->where('corrects_tenure_id',$t->id)->exists(),409);
         Validator::make($input,['to_date'=>'required|date_format:Y-m-d|after_or_equal:'.$t->from_date,'release_reason'=>'required|in:TRANSFER,RETIREMENT,PROMOTION,RESIGNATION,REMOVAL,DEATH,TERM_END,RECONSTITUTION','reason'=>'required|string|min:5|max:1000'])->validate();
         abort_if($c->effective_to && $input['to_date'] > $c->effective_to,422);
-        $order = $this->committees->order($c,(int)($input['order_id'] ?? 0),['AMENDMENT','RECONSTITUTION'],$input['to_date']);
+        // A replacement starts on the order's effective date; the previous holder ends the day before.
+        // Only internal cutover commands supply that date. A direct release still checks its own last day.
+        $order = $this->committees->order($c,(int)($input['order_id'] ?? 0),['AMENDMENT','RECONSTITUTION'],$transitionDate ?? $input['to_date']);
         $t->update(['to_date'=>$input['to_date'],'status'=>'ENDED','release_order_id'=>$order->id,'release_reason'=>$input['release_reason'],'release_note'=>$input['reason']]);
         $this->ledger->append($c,'MemberReleased',['tenure_id'=>$t->id,'date'=>$t->to_date,'reason'=>$t->release_reason],$order->id,$input['reason']); return $t;
     }
@@ -93,11 +108,24 @@ class CommitteeMembershipService
         unset($input['_correcting_tenure_id']);
         return $this->committees->mutate($id,'committee.manage',['ACTIVE'],function ($c) use ($seatId,$input) {
             Validator::make($input,['from_date'=>'required|date_format:Y-m-d'])->validate();
-            $t = $c->tenures()->where('seat_id',$seatId)->where('from_date','<',$input['from_date'])->where(fn ($q) => $q->whereNull('to_date')->orWhere('to_date','>=',$input['from_date']))->firstOrFail();
-            $outgoing = $this->releaseLocked($c,$t->id,['to_date'=>CarbonImmutable::parse($input['from_date'])->subDay()->toDateString()] + $input);
+            $corrected=$c->tenures()->pluck('corrects_tenure_id')->filter()->all();
+            $t = $c->tenures()->whereNotIn('id',$corrected)->where('status','ACTIVE')->where('seat_id',$seatId)->where('from_date','<',$input['from_date'])->where(fn ($q) => $q->whereNull('to_date')->orWhere('to_date','>=',$input['from_date']))->firstOrFail();
+            $outgoing = $this->releaseLocked($c,$t->id,['to_date'=>CarbonImmutable::parse($input['from_date'])->subDay()->toDateString()] + $input,$input['from_date']);
             $incoming = $this->appointLocked($c,$seatId,$input); $outgoing->update(['succeeded_by_tenure_id'=>$incoming->id]);
             $this->afterChange($c,$input);
             $this->ledger->append($c,'MemberReplaced',['outgoing'=>$outgoing->id,'incoming'=>$incoming->id,'date'=>$input['from_date']],(int)$input['order_id'],$input['reason'] ?? null); return $incoming;
+        });
+    }
+    public function vacateForTransfer(string $id, int $seatId, int $userId, array $input): void
+    {
+        $this->committees->mutate($id,'committee.manage',['ACTIVE'],function ($c) use ($seatId,$userId,$input) {
+            Validator::make($input,['from_date'=>'required|date_format:Y-m-d'])->validate();
+            abort_if($c->effective_to && $input['from_date'] > $c->effective_to,422);
+            $corrected=$c->tenures()->pluck('corrects_tenure_id')->filter()->all();
+            $t=$c->tenures()->whereNotIn('id',$corrected)->where('seat_id',$seatId)->where('user_id',$userId)->where('status','ACTIVE')->where('from_date','<',$input['from_date'])
+                ->where(fn ($q)=>$q->whereNull('to_date')->orWhere('to_date','>=',$input['from_date']))->firstOrFail();
+            $this->releaseLocked($c,$t->id,['to_date'=>CarbonImmutable::parse($input['from_date'])->subDay()->toDateString()] + $input,$input['from_date']);
+            $this->afterChange($c,$input);
         });
     }
     public function changeDraftHolder(string $id, int $seatId, array $input): CommitteeTenure

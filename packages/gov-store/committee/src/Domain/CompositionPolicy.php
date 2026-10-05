@@ -18,6 +18,8 @@ final class CompositionPolicy
             'quorum.min_present'=>'nullable|integer|min:1|lte:strength.max', 'nomination'=>'required|in:BY_POST,BY_NAME,BY_POST_OR_NAME',
             'max_term_months'=>'nullable|integer|min:1|max:120', 'incompatible_duties'=>'present|array',
             'incompatible_duties.*.duty'=>'required|string', 'incompatible_duties.*.severity'=>'required|in:WARN,BLOCK',
+            '*.reason_bn'=>'nullable|string|max:1000','*.reason_en'=>'nullable|string|max:1000',
+            'incompatible_duties.*.reason_bn'=>'nullable|string|max:1000','incompatible_duties.*.reason_en'=>'nullable|string|max:1000',
         ])->validate();
         foreach (['strength'=>['min','max'],'presiding'=>['exactly'],'secretary'=>['min','max'],'external'=>['min'],'technical_expert'=>['min'],'quorum'=>['min_present']] as $group=>$keys) {
             foreach ($keys as $key) { if (isset($data[$group][$key])) { $data[$group][$key] = (int)$data[$group][$key]; } }

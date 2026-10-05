@@ -12,7 +12,7 @@ class TransferMembersService
         Validator::make($input,[
             'user_id'=>'required|integer','changes'=>'required|array|min:1|max:20',
             'changes.*.committee_id'=>'required|uuid','changes.*.seat_id'=>'required|integer','changes.*.order_id'=>'required|integer',
-            'changes.*.from_date'=>'required|date_format:Y-m-d','changes.*.user_id'=>'required|integer','reason'=>'required|string|min:5|max:1000',
+            'changes.*.from_date'=>'required|date_format:Y-m-d','changes.*.user_id'=>'nullable|integer','changes.*.leave_vacant'=>'sometimes|boolean','reason'=>'required|string|min:5|max:1000',
         ])->validate();
         return DB::transaction(function () use ($input) {
             $changes = collect($input['changes']);
@@ -29,13 +29,21 @@ class TransferMembersService
             foreach ($changes as $change) {
                 $c = \GovStore\Committee\Models\Committee::whereKey($change['committee_id'])->lockForUpdate()->firstOrFail();
                 app(\GovStore\Committee\Policies\CommitteePolicy::class)->check($c,'committee.manage',true,['ACTIVE']);
-                $outgoing = $c->tenures()->where('seat_id',$change['seat_id'])->where('user_id',$input['user_id'])->where('status','ACTIVE')
+                $corrected=$c->tenures()->pluck('corrects_tenure_id')->filter()->all();
+                $outgoing = $c->tenures()->whereNotIn('id',$corrected)->where('seat_id',$change['seat_id'])->where('user_id',$input['user_id'])->where('status','ACTIVE')
                     ->where('from_date','<',$change['from_date'])->where(fn ($q) => $q->whereNull('to_date')->orWhere('to_date','>=',$change['from_date']))->firstOrFail();
                 $order = $c->orders()->findOrFail($change['order_id']);
                 abort_unless($order->kind === 'AMENDMENT',422);
                 if ($memo !== null) { abort_unless($memo === $order->memo_no_normalized,422); } $memo = $order->memo_no_normalized;
-                $t = $this->members->replace($c->id,$change['seat_id'],$change + ['release_reason'=>'TRANSFER','reason'=>$input['reason'],'acknowledgement'=>$input['acknowledgement'] ?? '','acknowledged'=>$input['acknowledged'] ?? []]);
-                $results[] = $t->id;
+                $change += ['release_reason'=>'TRANSFER','reason'=>$input['reason'],'acknowledgement'=>$input['acknowledgement'] ?? '','acknowledged'=>$input['acknowledged'] ?? []];
+                if (! empty($change['leave_vacant'])) {
+                    abort_if(! empty($change['user_id']),422);
+                    $this->members->vacateForTransfer($c->id,$change['seat_id'],(int)$input['user_id'],$change);
+                    $results[] = $outgoing->id;
+                } else {
+                    abort_unless(! empty($change['user_id']),422);
+                    $t = $this->members->replace($c->id,$change['seat_id'],$change); $results[] = $t->id;
+                }
             }
             return ['saved'=>true,'tenure_ids'=>$results];
         });

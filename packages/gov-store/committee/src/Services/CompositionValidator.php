@@ -12,8 +12,10 @@ class CompositionValidator
     {
         $policy = $committee->policy_snapshot ?? $committee->type->composition_policy;
         $issues = [];
-        $add = function ($code,$severity = 'BLOCK') use (&$issues) {
-            $issues[] = ['code'=>$code,'severity'=>$severity,'message_en'=>__('committee::committee.issues.'.$code,[], 'en-US'),'message_bn'=>__('committee::committee.issues.'.$code,[], 'bn-BD')];
+        $add = function ($code,$severity = 'BLOCK',?array $rule = null) use (&$issues,$policy) {
+            $group = match ($code) { 'BELOW_MIN_STRENGTH','ABOVE_MAX_STRENGTH','ODD_STRENGTH_REQUIRED'=>'strength','PRESIDING_VACANT'=>'presiding','SECRETARY_VACANT','TOO_MANY_SECRETARIES'=>'secretary','EXTERNAL_SHORTFALL'=>'external','TECHNICAL_EXPERT_SHORTFALL'=>'technical_expert',default=>null };
+            $rule ??= $policy[$group] ?? [];
+            $issues[] = ['code'=>$code,'severity'=>$severity,'message_en'=>__('committee::committee.issues.'.$code,[], 'en-US'),'message_bn'=>__('committee::committee.issues.'.$code,[], 'bn-BD'),'reason_bn'=>$rule['reason_bn'] ?? null,'reason_en'=>$rule['reason_en'] ?? null];
         };
         // Corrections invalidate the original and replace it with their own dated tenure.
         $all = CommitteeTenure::where('committee_id',$committee->id)->get();
@@ -62,7 +64,7 @@ class CompositionValidator
             if (($policy['declaration_required'] ?? false) && $tenure->declaration_status !== 'FILED') { $add('DECLARATION_PENDING','WARN'); }
             foreach ($policy['incompatible_duties'] ?? [] as $duty) {
                 if ($userId && DB::table('gov_office_responsibilities')->where('user_id',$userId)->where('location_id',$committee->owner_location_id)->where('role_slug',$duty['duty'])->exists()) {
-                    $add('INCOMPATIBLE_DUTY',$duty['severity']);
+                    $add('INCOMPATIBLE_DUTY',$duty['severity'],$duty);
                 }
             }
         }

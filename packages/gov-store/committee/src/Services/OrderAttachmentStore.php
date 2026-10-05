@@ -27,4 +27,12 @@ class OrderAttachmentStore
         abort_unless(hash_equals($hash,hash('sha256',$disk->get($path))),409);
         return $disk->download($path,basename($path),['X-Content-Type-Options'=>'nosniff','Cache-Control'=>'private, no-store']);
     }
+    public function uploaded(array $attachment): UploadedFile
+    {
+        $path=$attachment['attachment_path']; $disk=Storage::disk('committee_private');
+        abort_unless(str_starts_with($path,'orders/') && !str_contains($path,'..') && $disk->exists($path),404);
+        abort_unless(hash_equals($attachment['attachment_sha256'],hash('sha256',$disk->get($path))),409);
+        return new UploadedFile($disk->path($path),basename($path),$attachment['attachment_mime'],null,true);
+    }
+    public function remove(array $attachment): void { Storage::disk('committee_private')->delete($attachment['attachment_path']); }
 }

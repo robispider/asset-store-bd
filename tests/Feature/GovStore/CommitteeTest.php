@@ -45,6 +45,8 @@ class CommitteeTest extends TestCase
         Schema::create('locations',function (Blueprint $t) { $t->increments('id'); $t->integer('company_id'); $t->integer('parent_id')->nullable(); $t->string('name'); $t->softDeletes(); });
         Schema::create('users',function (Blueprint $t) { $t->increments('id'); foreach (['first_name','last_name','display_name','jobtitle'] as $column) { $t->string($column)->nullable(); } $t->boolean('activated')->default(true); $t->integer('location_id')->nullable(); $t->softDeletes(); });
         Schema::create('gov_employee_verification_tokens',function (Blueprint $t) { $t->increments('id'); $t->integer('user_id'); $t->string('token'); $t->timestamp('expires_at'); $t->timestamp('used_at')->nullable(); });
+        Schema::create('draft_baskets',function (Blueprint $t) { $t->increments('id'); $t->integer('user_id'); $t->string('status'); $t->timestamp('expires_at')->nullable(); });
+        Schema::create('draft_basket_items',function (Blueprint $t) { $t->increments('id'); $t->integer('basket_id'); $t->softDeletes(); });
         Schema::create('action_logs',function (Blueprint $t) {
             $t->increments('id'); $t->string('item_type'); $t->integer('item_id'); $t->integer('company_id'); $t->integer('created_by')->nullable();
             $t->string('action_type'); $t->text('note'); $t->text('log_meta')->nullable(); $t->string('action_source')->nullable(); $t->string('remote_ip')->nullable(); $t->text('user_agent')->nullable(); $t->timestamp('action_date')->nullable(); $t->timestamps();
@@ -276,6 +278,222 @@ class CommitteeTest extends TestCase
         }
         $en=require base_path('packages/gov-store/committee/src/resources/lang/en-US/committee.php'); $bn=require base_path('packages/gov-store/committee/src/resources/lang/bn-BD/committee.php');
         $this->assertSame(array_keys($en),array_keys($bn)); $this->assertSame(array_keys($en['issues']),array_keys($bn['issues']));
+    }
+    private function uiRequest(string $uri, string $method = 'GET', array $data = []): Request
+    {
+        $request = Request::create($uri,$method,$data);
+        $route = Route::getRoutes()->match($request); $route->bind($request);
+        $request->setRouteResolver(fn () => $route); app()->instance('request',$request);
+        return $request;
+    }
+    public function test_order_first_flow_rolls_back_draft_order_and_coverage_together(): void
+    {
+        $controller = app(\GovStore\Committee\Http\Controllers\CommitteeController::class);
+        $data = ['order_flow'=>1,'committee_type_id'=>CommitteeType::where('code','GRIC')->value('id'),'name_en'=>'Order first committee','name_bn'=>'আদেশ থেকে গঠিত কমিটি','term_basis'=>'FIXED','effective_from'=>'2026-10-01','effective_to'=>'2027-06-30',
+            'memo_no'=>'৫৬.০৪.০০০০-৯৯','issued_on'=>'2026-10-02','issuing_authority_name'=>'Fixture authority','issuing_authority_designation_en'=>'Office head'];
+        $request = $this->uiRequest('/gov-store/committees/drafts','POST',$data);
+        $request->files->set('file',UploadedFile::fake()->createWithContent('order.pdf',"%PDF-1.4\nSigned fixture"));
+        $this->assertHttpStatus(422,fn () => $controller->command($request));
+        $this->assertSame(0,Committee::count()); $this->assertSame(0,CommitteeOrder::count());
+        $this->assertCount(0,Storage::disk('committee_private')->allFiles());
+        $data['issued_on']='2026-10-01'; $request = $this->uiRequest('/gov-store/committees/drafts','POST',$data);
+        $request->files->set('file',UploadedFile::fake()->createWithContent('order.pdf',"%PDF-1.4\nSigned fixture"));
+        $result = $controller->command($request)->getData(true); $c = Committee::findOrFail($result['id']);
+        $this->assertSame('DRAFT',$c->status); $this->assertSame(1,$c->orders()->count()); $this->assertSame('10',$c->scopes()->first()->scope_id);
+        $this->assertStringContainsString('step=3',$result['url']);
+    }
+    public function test_draft_role_and_order_updates_reject_foreign_and_active_seats(): void
+    {
+        [$c] = $this->composed(); $service = app(CommitteeMembershipService::class); $seats = $c->seats()->orderBy('seat_no')->get();
+        $service->updateDraftSeat($c->id,$seats[0]->id,['seat_role_code'=>'chairperson','seat_no'=>2]);
+        $this->assertSame(2,$seats[0]->fresh()->seat_no); $this->assertSame(1,$seats[1]->fresh()->seat_no);
+        $other = $this->draft();
+        try { $service->updateDraftSeat($other->id,$seats[0]->id,['seat_role_code'=>'member','seat_no'=>1]); $this->fail('Foreign role accepted'); }
+        catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) { $this->assertTrue(true); }
+        $active = $this->active();
+        $this->assertHttpStatus(409,fn () => $service->updateDraftSeat($active->id,$active->seats()->first()->id,['seat_role_code'=>'member','seat_no'=>1]));
+    }
+    public function test_unfinished_order_is_private_conflict_checked_and_retained_after_failed_final_save(): void
+    {
+        $intake=app(\GovStore\Committee\Services\OrderIntake::class);
+        $fields=['memo_no'=>'LOCAL TEST intake','issued_on'=>'2026-10-01','issuing_authority_name'=>'Test authority','issuing_authority_designation_en'=>'Head','intake_revision'=>0,'intake_location_id'=>10,'intake_company_id'=>20];
+        $saved=$intake->save($fields,UploadedFile::fake()->createWithContent('order.pdf',"%PDF-1.4\nSigned fixture"));
+        $this->assertTrue($saved['has_file']); $this->assertSame(1,$saved['revision']); $this->assertStringNotContainsString('attachment_path',json_encode($saved));
+        $this->assertHttpStatus(409,fn ()=>$intake->save($fields,null));
+        $this->actor(2); $this->assertHttpStatus(403,fn ()=>$intake->current());
+        $this->actor(5); $context=app(TenantContext::class); $context->locationId=11; $context->allowedLocationIds=[11];
+        $this->assertSame(0,$intake->current()['revision']);
+        $this->assertHttpStatus(404,fn ()=>$intake->save($fields,null));
+        $this->actor(1); $context->locationId=10; $context->allowedLocationIds=[10];
+        $controller=app(\GovStore\Committee\Http\Controllers\CommitteeController::class);
+        $data=$fields+['order_flow'=>1,'committee_type_id'=>CommitteeType::where('code','GRIC')->value('id'),'name_bn'=>'পরীক্ষার কমিটি','name_en'=>'Intake test committee','term_basis'=>'FIXED','effective_from'=>'2026-09-30','effective_to'=>'2027-06-30']; $data['intake_revision']=1;
+        $this->assertHttpStatus(422,fn ()=>$controller->command($this->uiRequest('/gov-store/committees/drafts','POST',$data)));
+        $this->assertSame(0,Committee::count()); $this->assertSame(1,$intake->current()['revision']); $this->assertCount(1,Storage::disk('committee_private')->allFiles());
+        $data['effective_from']='2026-10-01'; $result=$controller->command($this->uiRequest('/gov-store/committees/drafts','POST',$data))->getData(true);
+        $this->assertSame(0,$intake->current()['revision']); $this->assertCount(1,Storage::disk('committee_private')->allFiles());
+        $this->assertSame(200,$controller->file(Request::create('/'),Committee::findOrFail($result['id'])->orders()->first()->id)->getStatusCode());
+        $this->assertHttpStatus(409,fn ()=>$controller->command($this->uiRequest('/gov-store/committees/drafts','POST',$data)));
+        $this->assertSame(1,Committee::count());
+    }
+    public function test_transfer_order_and_all_changes_roll_back_together_and_can_leave_a_role_vacant(): void
+    {
+        $c=$this->active(); $seat=$c->seats()->where('seat_role_code','member')->first();
+        $before=[CommitteeOrder::count(),CommitteeTenure::count(),LedgerEntry::count(),DB::table('action_logs')->count(),Storage::disk('committee_private')->allFiles()];
+        $data=['order_flow'=>1,'user_id'=>3,'memo_no'=>'LOCAL TEST transfer','issued_on'=>'2026-10-04','issuing_authority_name'=>'Test head','issuing_authority_designation_en'=>'Head','reason'=>'Local test transfer',
+            'changes'=>[['committee_id'=>$c->id,'seat_id'=>$seat->id,'from_date'=>'2026-10-04','user_id'=>4]]];
+        $controller=app(\GovStore\Committee\Http\Controllers\CommitteeController::class);
+        $data['changes'][]=['committee_id'=>$c->id,'seat_id'=>99999,'from_date'=>'2026-10-04','user_id'=>4];
+        $request=$this->uiRequest('/gov-store/committees/transfers/apply','POST',$data);$request->files->set('file',UploadedFile::fake()->createWithContent('order.pdf',"%PDF-1.4\nSigned fixture"));
+        try { $controller->command($request); $this->fail('Invalid batch committed'); } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) { $this->assertTrue(true); }
+        $this->assertSame($before,[CommitteeOrder::count(),CommitteeTenure::count(),LedgerEntry::count(),DB::table('action_logs')->count(),Storage::disk('committee_private')->allFiles()]);
+        array_pop($data['changes']); $data['changes'][0]['user_id']=null; $data['changes'][0]['leave_vacant']=1; $data['acknowledgement']='INOPERABLE';
+        $data['acknowledged']=array_keys(__('committee::committee.issues',[],'en-US'));
+        $request=$this->uiRequest('/gov-store/committees/transfers/apply','POST',$data);$request->files->set('file',UploadedFile::fake()->createWithContent('order.pdf',"%PDF-1.4\nSigned fixture"));
+        $this->assertTrue($controller->command($request)->getData(true)['saved']);
+        $this->assertSame('2026-10-03',$c->tenures()->where('user_id',3)->first()->to_date);$this->assertSame(2,$c->orders()->count());
+        $this->assertSame([],app(CommitteeLedger::class)->verifyChain($c->lineage_id));
+    }
+    public function test_replacement_checks_order_against_cutover_but_direct_release_cannot_borrow_that_date(): void
+    {
+        $c=$this->active();$order=$this->order($c,'AMENDMENT','2026-10-04');$members=app(CommitteeMembershipService::class);$outgoing=$c->tenures()->where('user_id',3)->first();
+        $input=['order_id'=>$order->id,'user_id'=>4,'from_date'=>'2026-10-04','to_date'=>'2026-10-03','release_reason'=>'TRANSFER','reason'=>'Local test replacement'];
+        $this->assertHttpStatus(422,fn ()=>$members->release($c->id,$outgoing->id,$input+['_authority_date'=>'2026-10-04']));
+        $this->assertSame('ACTIVE',$outgoing->fresh()->status);
+        unset($input['to_date']);
+        $incoming=$members->replace($c->id,$outgoing->seat_id,$input);
+        $this->assertSame('2026-10-04',$incoming->from_date);$this->assertSame('2026-10-03',$outgoing->fresh()->to_date);
+        $this->assertSame([],app(CommitteeLedger::class)->verifyChain($c->lineage_id));
+    }
+    public function test_replacement_after_a_correction_ends_the_current_holder_and_keeps_original_evidence(): void
+    {
+        $c=$this->active();$members=app(CommitteeMembershipService::class);$old=$c->tenures()->where('user_id',3)->first();$original=$old->toArray();
+        $correction=$this->order($c,'CORRIGENDUM','2026-10-01');
+        $current=$members->correctTenure($c->id,$old->id,['user_id'=>4,'from_date'=>'2026-10-01','order_id'=>$correction->id,'reason'=>'Local fixture correction']);
+        $amendment=$this->order($c,'AMENDMENT','2026-10-04');
+        $input=['user_id'=>3,'from_date'=>'2026-10-04','order_id'=>$amendment->id,'release_reason'=>'TRANSFER','reason'=>'Local fixture replacement'];
+        $this->assertHttpStatus(409,fn ()=>$members->release($c->id,$old->id,['to_date'=>'2026-10-04']+$input));
+        $incoming=$members->replace($c->id,$old->seat_id,$input);
+        $this->assertSame($original,$old->fresh()->toArray());$this->assertSame('2026-10-03',$current->fresh()->to_date);$this->assertSame(3,$incoming->user_id);
+    }
+    public function test_transfer_search_includes_departed_officers_and_foreign_office_notice_is_minimal(): void
+    {
+        $c=$this->active(); $context=app(TenantContext::class); $context->locationId=11; $context->allowedLocationIds=[11]; $this->actor(5);
+        $other=$this->draft(['name_en'=>'Other office committee']);$order=$this->order($other);$members=app(CommitteeMembershipService::class);
+        $seat=$members->addSeat($other->id,['seat_no'=>1,'seat_role_code'=>'member','holder_kind'=>'PERSON']);
+        DB::table('gov_employee_verification_tokens')->insert(['user_id'=>3,'token'=>'local-test-code','expires_at'=>now()->addMinute()]);
+        $members->appoint($other->id,$seat->id,['user_id'=>3,'verification_code'=>'local-test-code','from_date'=>'2026-10-01','order_id'=>$order->id]);
+        $other->update(['status'=>'ACTIVE']);
+        $context->locationId=10; $context->allowedLocationIds=[10];$this->actor(1);
+        DB::table('gov_office_memberships')->where('user_id',3)->update(['status'=>'inactive']);
+        DB::table('users')->where('id',3)->update(['activated'=>false]);
+        $controller=app(\GovStore\Committee\Http\Controllers\CommitteeController::class);
+        $this->assertContains(3,array_column($controller->people(Request::create('/','GET',['transfers'=>1]))->getData(true)['people'],'id'));
+        $data=$controller->transferSeats(Request::create('/','GET',['user_id'=>3]))->getData(true);
+        $this->assertSame(['committee_name','name','office'],array_keys($data['other_seats'][0]));
+        $this->assertSame('Office B',$data['other_seats'][0]['office']);
+        $this->assertHttpStatus(404,fn ()=>$controller->transferSeats(Request::create('/','GET',['user_id'=>6])));
+    }
+    public function test_rule_impact_does_not_change_frozen_policy_or_projection(): void
+    {
+        $c=$this->active(); $snapshot=$c->fresh()->toArray(); $this->actor(1,true);
+        $proposed=$c->policy_snapshot; $proposed['strength']['min']=5;
+        $request=$this->uiRequest('/gov-store/committees/admin/types/impact','POST',['type_id'=>$c->committee_type_id,'composition_policy'=>$proposed]);
+        $data=app(\GovStore\Committee\Http\Controllers\CommitteeController::class)->ruleImpact($request)->getData(true);
+        $this->assertSame(1,$data['count']);$this->assertSame($snapshot,$c->fresh()->toArray());
+        $this->actor(2); $this->assertHttpStatus(403,fn ()=>app(\GovStore\Committee\Http\Controllers\CommitteeController::class)->ruleImpact($request));
+    }
+    public function test_order_first_reconstitution_copies_eligible_people_and_preserves_linked_history(): void
+    {
+        $old=$this->active();$controller=app(\GovStore\Committee\Http\Controllers\CommitteeController::class);
+        $data=['order_flow'=>1,'name_en'=>$old->name_en,'name_bn'=>$old->name_bn,'term_basis'=>'FIXED','effective_from'=>'2026-10-05','effective_to'=>'2027-06-30',
+            'memo_no'=>'LOCAL TEST new term','issued_on'=>'2026-10-04','issuing_authority_name'=>'Test head','issuing_authority_designation_en'=>'Head'];
+        $request=$this->uiRequest('/gov-store/committees/'.$old->id.'/reconstitute','POST',$data);$request->files->set('file',UploadedFile::fake()->createWithContent('order.pdf',"%PDF-1.4\nSigned fixture"));
+        $result=$controller->command($request)->getData(true);$new=Committee::findOrFail($result['id']);
+        $this->assertSame([1,2,3],$new->tenures()->orderBy('user_id')->pluck('user_id')->all());$this->assertSame('ACTIVE',$old->fresh()->status);
+        $page=$controller->page($this->uiRequest('/gov-store/committees/'.$new->id.'?step=4'));
+        $this->assertCount(3,$page->getData()['reconstitutionDiff']['kept']);$this->assertCount(0,$page->getData()['reconstitutionDiff']['added']);
+        $order=$new->orders()->first();app(CommitteeService::class)->activate($new->id,['order_id'=>$order->id]);
+        $this->assertSame('2026-10-04',$old->fresh()->ended_on);$this->assertSame('SUPERSEDED',$old->fresh()->status);
+        $event=LedgerEntry::where('committee_id',$old->id)->where('event_type','CommitteeReconstituted')->firstOrFail();
+        $this->assertSame($order->id,app(\GovStore\Committee\Http\Transformers\CommitteeTransformer::class)->history($event)['order']['id']);
+        $this->assertSame([],app(CommitteeLedger::class)->verifyChain($old->lineage_id));
+    }
+    public function test_viewer_can_read_a_draft_without_receiving_editor_controls(): void
+    {
+        $c=$this->draft();DB::table('gov_office_responsibilities')->insert(['user_id'=>2,'location_id'=>10,'role_slug'=>'storekeeper']);$this->actor(2);
+        $page=app(\GovStore\Committee\Http\Controllers\CommitteeController::class)->page($this->uiRequest('/gov-store/committees/'.$c->id));
+        $this->assertSame('committee::show',$page->name());
+        $this->assertHttpStatus(403,fn ()=>app(\GovStore\Committee\Http\Controllers\CommitteeController::class)->page($this->uiRequest('/gov-store/committees/'.$c->id.'?action=replace')));
+        $this->assertSame(route('committee.mine'),app(\GovStore\Committee\Http\Controllers\CommitteeController::class)->page($this->uiRequest('/gov-store/committees'))->getTargetUrl());
+    }
+    public function test_personal_screen_uses_term_dates_even_before_expiry_job_and_action_pages_check_state(): void
+    {
+        $c=$this->active();$controller=app(\GovStore\Committee\Http\Controllers\CommitteeController::class);
+        $c->update(['effective_to'=>'2026-10-04']);$this->actor(3);
+        $this->assertCount(0,$controller->mine($this->uiRequest('/gov-store/committees/mine'))->getData()['current']);
+        $this->actor(1);$this->assertHttpStatus(409,fn ()=>$controller->page($this->uiRequest('/gov-store/committees/'.$c->id.'?action=resume')));
+        $this->assertHttpStatus(422,fn ()=>$controller->page($this->uiRequest('/gov-store/committees/new?action=replace')));
+    }
+    public function test_member_preview_uses_real_rules_but_commits_no_records_or_events(): void
+    {
+        $c = $this->active(); $order = $this->order($c,'AMENDMENT','2026-10-03'); $seat = $c->seats()->where('seat_role_code','member')->first();
+        $before = [CommitteeTenure::count(),LedgerEntry::count(),DB::table('action_logs')->count()];
+        $request = $this->uiRequest('/gov-store/committees/'.$c->id.'/preview','POST',['operation'=>'replace','seat_id'=>$seat->id,'user_id'=>4,'from_date'=>'2026-10-04','order_id'=>$order->id,'release_reason'=>'TRANSFER']);
+        $controller = app(\GovStore\Committee\Http\Controllers\CommitteeController::class);
+        $result = $controller->preview($request,$c->id)->getData(true);
+        $this->assertContains(4,array_column(array_filter(array_column($result['view']['seats'],'holder')),'userId'));
+        $this->assertSame($before,[CommitteeTenure::count(),LedgerEntry::count(),DB::table('action_logs')->count()]);
+        $this->assertSame([],app(CommitteeLedger::class)->verifyChain($c->lineage_id));
+        app(TenantContext::class)->locationId=11; app(TenantContext::class)->allowedLocationIds=[11]; $this->actor(5);
+        $this->assertHttpStatus(404,fn () => $controller->preview($request,$c->id));
+    }
+    public function test_own_order_download_checks_appointment_owner_even_without_view_ability(): void
+    {
+        $c = $this->active(); $own = $c->tenures()->where('user_id',3)->first(); $foreign = $c->tenures()->where('user_id',2)->first();
+        $this->actor(3); $controller = app(\GovStore\Committee\Http\Controllers\CommitteeController::class);
+        $this->assertSame(200,$controller->ownOrderFile(Request::create('/'),$own->id)->getStatusCode());
+        $this->assertHttpStatus(404,fn () => $controller->ownOrderFile(Request::create('/'),$foreign->id));
+    }
+    public function test_expiry_reminder_dismissal_is_personal_and_bound_to_the_exact_term(): void
+    {
+        $c = $this->active(); $c->update(['effective_to'=>'2026-10-15']);
+        $controller = app(\GovStore\Committee\Http\Controllers\CommitteeController::class);
+        $before = LedgerEntry::count(); $controller->dismissReminder(Request::create('/'),$c->id);
+        $this->assertSame($before,LedgerEntry::count()); $this->assertSame('2026-10-15',$c->fresh()->effective_to);
+        $desk = app(\GovStore\Committee\Services\CommitteeDesk::class)->build();
+        $this->assertNotContains($c->id,array_column($desk['attention'],'dismiss'));
+        $c->update(['effective_to'=>'2026-10-20']); $desk = app(\GovStore\Committee\Services\CommitteeDesk::class)->build();
+        $this->assertContains($c->id,array_column($desk['attention'],'dismiss'));
+        $this->actor(2); $this->assertHttpStatus(403,fn () => $controller->dismissReminder(Request::create('/'),$c->id));
+    }
+    public function test_redesign_translations_and_placeholders_match_recursively(): void
+    {
+        $en=\Illuminate\Support\Arr::dot(require base_path('packages/gov-store/committee/src/resources/lang/en-US/ux.php'));
+        $bn=\Illuminate\Support\Arr::dot(require base_path('packages/gov-store/committee/src/resources/lang/bn-BD/ux.php'));
+        $this->assertSame(array_keys($en),array_keys($bn));
+        foreach ($en as $key=>$text) {
+            preg_match_all('/:[a-z_]+/',$text,$a); preg_match_all('/:[a-z_]+/',$bn[$key],$b); sort($a[0]); sort($b[0]);
+            $this->assertSame($a[0],$b[0],$key);
+        }
+    }
+    public function test_redesigned_screens_render_in_both_locales(): void
+    {
+        $temporary = sys_get_temp_dir().'/committee-layout-'.bin2hex(random_bytes(6)); mkdir($temporary.'/layouts',0777,true);
+        file_put_contents($temporary.'/layouts/default.blade.php',"@stack('css') @yield('content') @yield('moar_scripts')");
+        app('view')->getFinder()->prependLocation($temporary);
+        $active=$this->active(); [$draft]=$this->composed(); $this->actor(1,true);
+        $controller=app(\GovStore\Committee\Http\Controllers\CommitteeController::class);
+        try {
+            foreach (['bn-BD','en-US'] as $locale) {
+                app()->setLocale($locale);
+                foreach (['','/registry','/new','/transfers','/admin/types','/admin/types?type=new','/admin/purposes','/'.$active->id,'/'.$active->id.'/history','/'.$active->id.'/print','/'.$active->id.'?action=replace','/'.$active->id.'?action=release','/'.$active->id.'?action=correct','/'.$active->id.'?action=dissolve','/'.$active->id.'?action=scope','/'.$active->id.'?action=suspend','/'.$active->id.'?action=extend','/'.$active->id.'/reconstitute','/'.$draft->id.'?step=1','/'.$draft->id.'?step=2','/'.$draft->id.'?step=3','/'.$draft->id.'?step=4','/'.$draft->id.'/print'] as $path) {
+                    $request=$this->uiRequest('/gov-store/committees'.$path); $html=$controller->page($request)->render();
+                    $this->assertStringContainsString('committee-workspace',$html,$path); $this->assertStringNotContainsString('committee::committee.ux.',$html,$path);
+                }
+                $html=$controller->mine($this->uiRequest('/gov-store/committees/mine'))->render();
+                $this->assertStringContainsString(__('committee::committee.ux.your_role'),$html);
+            }
+        } finally { unlink($temporary.'/layouts/default.blade.php'); rmdir($temporary.'/layouts'); rmdir($temporary); }
     }
     public function test_draft_holder_changes_and_corrigenda_preserve_original_evidence(): void
     {
