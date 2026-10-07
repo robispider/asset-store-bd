@@ -1,0 +1,527 @@
+/*
+ * Layer 2 — selector overrides for colours Snipe-IT / AdminLTE hard-code.
+ * `!important` inside a cascade layer beats `!important` outside any layer, so these rules
+ * reliably beat the core layout's unlayered !important rules without specificity wars.
+ * Every value is a --gs-* token. Snipe-IT Classic (data-skin="default") is excluded.
+ * Rule for theme authors: if a theme needs to change something forced here, add a token here.
+ */
+@layer gs-adapter {
+    [data-skin]:not([data-skin="default"]) {
+
+        /* ---------- base ---------- */
+        & body,
+        &:is(body),
+        & .content-wrapper,
+        & .right-side {
+            background-color: var(--gs-color-bg) !important;
+            color: var(--gs-color-text) !important;
+        }
+        & body,
+        & .content-wrapper,
+        & .main-sidebar,
+        & .main-header,
+        & .gs-shell {
+            font-family: var(--gs-font-sans) !important;
+            font-size: var(--gs-font-size-base) !important;
+            line-height: var(--gs-font-line-height-base) !important;
+        }
+        /* Generic element rules never touch UI-kit markup (.gs-*), which styles itself. */
+        & :is(h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .box-title, .modal-title):not([class*="gs-"]) {
+            font-weight: var(--gs-font-heading-weight) !important;
+            color: var(--gs-color-text) !important;
+        }
+        & p:not([class*="gs-"]) { color: inherit !important; }
+        /* Explicit Bengali fragments only; Latin stacks already fall back to the Bengali face. */
+        & [lang="bn"] { font-family: var(--gs-font-bengali) !important; }
+        & code, & kbd, & pre, & samp, & .font-mono { font-family: var(--gs-font-mono) !important; }
+        & :focus-visible {
+            outline: 2px solid var(--gs-color-focus-ring) !important;
+            outline-offset: 2px !important;
+        }
+        & a:not([class*="gs-"]) { color: var(--gs-color-link) !important; }
+        & a:not([class*="gs-"]):is(:hover, :focus) { color: var(--gs-color-link-hover) !important; }
+        & ::selection { background: var(--gs-color-primary-subtle) !important; color: var(--gs-color-text) !important; }
+
+        /* ---------- header / navbar ---------- */
+        & .main-header .navbar,
+        & .main-header .logo,
+        & .main-header .navbar-nav,
+        & .main-header .navbar-nav > li,
+        & .main-header .navbar-nav > li > a:link,
+        & .main-header .navbar-nav > li > a:visited,
+        & .main-header .navbar-nav .open > a:link,
+        & .main-header .navbar-nav .open > a:visited {
+            background-color: var(--gs-shell-header-bg, var(--gs-header-bg)) !important;
+            color: var(--gs-shell-header-fg, var(--gs-header-fg)) !important;
+        }
+        & .main-header .navbar-nav > li > a:hover,
+        & .main-header .navbar-nav > li > a:focus,
+        & .main-header .navbar .nav > .active > a,
+        & .main-header .navbar-nav .open > a:hover,
+        & .main-header .navbar-nav .open > a:focus {
+            background-color: var(--gs-shell-header-hover) !important;
+            color: var(--gs-shell-header-fg, var(--gs-header-fg)) !important;
+        }
+        & .main-header .navbar-brand,
+        & .main-header .sidebar-toggle,
+        & .main-header .sidebar-toggle.btn,
+        & .main-header .sidebar-toggle.btn:hover,
+        & .main-header .navbar-custom-menu .fa,
+        & .main-header .navbar-custom-menu .fas,
+        & .main-header .navbar-custom-menu .far {
+            color: var(--gs-shell-header-fg, var(--gs-header-fg)) !important;
+        }
+        & .main-header .navbar-form input,
+        & .main-header #tagSearch {
+            background-color: var(--gs-shell-header-input-bg) !important;
+            color: var(--gs-shell-header-fg, var(--gs-header-fg)) !important;
+            border-color: transparent !important;
+        }
+        & .main-header #tagSearch::placeholder { color: var(--gs-shell-header-fg-muted, var(--gs-header-fg-muted)) !important; }
+
+        /* ---------- dropdown menus (header and general) ---------- */
+        & .dropdown-menu,
+        & .dropdown-menu > li,
+        & .navbar-nav > .user-menu > .dropdown-menu > .user-body,
+        & .navbar-nav > .notifications-menu > .dropdown-menu > li .menu,
+        & .navbar-nav > .tasks-menu > .dropdown-menu > li .menu,
+        & .navbar-nav > .tasks-menu > .dropdown-menu > li.header,
+        & .navbar-nav > .notifications-menu > .dropdown-menu > li.header,
+        & .task_menu {
+            background-color: var(--gs-color-surface-raised) !important;
+            border-color: var(--gs-color-border) !important;
+            color: var(--gs-color-text) !important;
+            box-shadow: var(--gs-shadow-2) !important;
+        }
+        & .dropdown-menu > li > a,
+        & .dropdown-menu > li > a:link,
+        & .dropdown-menu > li > a:visited,
+        & .dropdown-menu > .active > a:link,
+        & .dropdown-menu > .active > a:visited,
+        & .navbar-nav > .tasks-menu > .dropdown-menu > li .menu > li > a,
+        & .navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a {
+            background-color: transparent !important;
+            color: var(--gs-color-text) !important;
+            border-bottom-color: var(--gs-color-border) !important;
+        }
+        & .dropdown-menu > li > a:hover,
+        & .dropdown-menu > li > a:focus,
+        & .dropdown-menu > li:hover,
+        & .dropdown-menu > .active > a:hover,
+        & .dropdown-menu > .active > a:focus,
+        & .navbar-nav > .tasks-menu > .dropdown-menu > li .menu > li:hover > a {
+            background-color: var(--gs-color-primary-subtle) !important;
+            color: var(--gs-color-text) !important;
+        }
+        & .dropdown-menu > .divider { background-color: var(--gs-color-border) !important; }
+
+        /* ---------- sidebar ---------- */
+        & .main-sidebar,
+        & .left-side,
+        & .sidebar-menu > li > .treeview-menu,
+        & .treeview-menu > li {
+            background-color: var(--gs-shell-sidebar-bg, var(--gs-sidebar-bg)) !important;
+        }
+        & .main-sidebar { border-right: var(--gs-shell-sidebar-rule, 0) !important; }
+        & .sidebar-menu > li > a:link,
+        & .sidebar-menu > li > a:visited,
+        & .treeview-menu > li > a {
+            color: var(--gs-shell-sidebar-fg, var(--gs-sidebar-fg)) !important;
+            border-left-color: transparent !important;
+        }
+        & .sidebar-menu > li.header {
+            color: var(--gs-shell-sidebar-section-fg, var(--gs-sidebar-section-fg)) !important;
+            background: transparent !important;
+        }
+        & .sidebar-menu > li:hover,
+        & .sidebar-menu > li:hover > a,
+        & .treeview-menu > li > a:hover,
+        & .treeview-menu > li:hover {
+            background-color: var(--gs-shell-sidebar-hover) !important;
+            color: var(--gs-shell-sidebar-active-fg, var(--gs-sidebar-active-fg)) !important;
+        }
+        & .sidebar-menu > li.active > a,
+        & .treeview-menu > li.active > a {
+            background-color: var(--gs-shell-sidebar-active-bg, var(--gs-sidebar-active-bg)) !important;
+            color: var(--gs-shell-sidebar-active-fg, var(--gs-sidebar-active-fg)) !important;
+            border-left: 3px solid var(--gs-sidebar-active-marker) !important;
+        }
+        & .sidebar-menu > li > a > .fa,
+        & .sidebar-menu > li > a > .fas,
+        & .sidebar-menu > li > a > .far,
+        & .sidebar-menu > li > a > i { color: inherit !important; }
+
+        /* ---------- content header & breadcrumbs ---------- */
+        & .content-header > h1,
+        & .content-header > h1 small { color: var(--gs-color-text) !important; font-family: var(--gs-font-display) !important; }
+        & .content-header > .breadcrumb,
+        & .breadcrumb { background: transparent !important; color: var(--gs-color-text-muted) !important; }
+        & .breadcrumb > li + li::before,
+        & .breadcrumb > .active { color: var(--gs-color-text-muted) !important; }
+
+        /* ---------- boxes, panels, wells ---------- */
+        & .box,
+        & .box-footer,
+        & .panel,
+        & .panel-body,
+        & .panel-footer,
+        & .well,
+        & .tab-content,
+        & .nav-tabs-custom,
+        & .list-group-item,
+        & .bootstrap-table.fullscreen,
+        & .info-box {
+            background-color: var(--gs-color-surface) !important;
+            color: var(--gs-color-text) !important;
+            border-color: var(--gs-color-border) !important;
+        }
+        & .box {
+            border-radius: var(--gs-radius-md) !important;
+            box-shadow: var(--gs-surface-shadow, var(--gs-shadow-1)) !important;
+            border: var(--gs-border-width) solid var(--gs-color-border) !important;
+            border-top: 3px solid var(--gs-box-accent, var(--gs-color-border-strong)) !important;
+        }
+        & .box.box-primary, & .box.box-theme { --gs-box-accent: var(--gs-color-primary); }
+        & .box.box-success { --gs-box-accent: var(--gs-color-success); }
+        & .box.box-warning { --gs-box-accent: var(--gs-color-warning); }
+        & .box.box-danger { --gs-box-accent: var(--gs-color-danger); }
+        & .box.box-info { --gs-box-accent: var(--gs-color-info); }
+        & .box-header.with-border,
+        & .panel-heading,
+        & .panel-default > .panel-heading {
+            border-bottom: var(--gs-border-width) solid var(--gs-color-border) !important;
+            background-color: var(--gs-panel-head-bg, var(--gs-color-surface)) !important;
+            color: var(--gs-color-text) !important;
+        }
+        & .box-footer { border-top: var(--gs-border-width) solid var(--gs-color-border) !important; }
+        & .box-header .box-tools .btn-box-tool { color: var(--gs-color-text-muted) !important; }
+
+        /* ---------- tables (bootstrap & bootstrap-table) ---------- */
+        & .table > thead > tr > th,
+        & .table > thead > tr > td,
+        & th:not(.gs-table th),
+        & .fix-sticky table thead,
+        & .bootstrap-table .fixed-table-container thead th {
+            background-color: var(--gs-table-head-bg) !important;
+            color: var(--gs-table-head-fg) !important;
+        }
+        & .table > tbody > tr > td,
+        & .table > tbody > tr > th,
+        & .table > tfoot > tr > td,
+        & .table > tfoot > tr > th {
+            color: var(--gs-color-text) !important;
+            border-top: var(--gs-border-width) solid var(--gs-table-border) !important;
+            border-bottom-color: var(--gs-table-border) !important;
+        }
+        & .table-striped > tbody > tr:nth-of-type(odd),
+        & .row-new-striped > .row:nth-of-type(even) {
+            background-color: var(--gs-table-stripe, var(--gs-table-row-alt)) !important;
+            border-top: var(--gs-border-width) solid var(--gs-table-border) !important;
+            color: var(--gs-color-text) !important;
+        }
+        & .table-striped > tbody > tr:nth-of-type(even) {
+            background-color: var(--gs-color-surface) !important;
+            border-top: var(--gs-border-width) solid var(--gs-table-border) !important;
+            color: var(--gs-color-text) !important;
+        }
+        & .table-hover > tbody > tr:hover,
+        & .table-hover > tbody > tr:hover > td,
+        & .bootstrap-table .fixed-table-container .table tbody tr:hover td {
+            background-color: var(--gs-table-row-hover) !important;
+        }
+        & .bootstrap-table .fixed-table-container .table tbody tr.selected td {
+            background-color: var(--gs-table-row-selected) !important;
+        }
+        & tr.success > td { background-color: var(--gs-color-success) !important; color: var(--gs-color-on-success) !important; }
+        & tr.danger > td { background-color: var(--gs-color-danger) !important; color: var(--gs-color-on-danger) !important; }
+        & tr.warning > td { background-color: var(--gs-color-warning-subtle) !important; }
+        & .table-bordered,
+        & .table-bordered > thead > tr > th,
+        & .table-bordered > tbody > tr > td,
+        & .table-bordered > tbody > tr > th,
+        & .table-bordered > tfoot > tr > td {
+            border-color: var(--gs-table-border) !important;
+        }
+        & .bootstrap-table .fixed-table-container,
+        & .fixed-table-loading,
+        & .bootstrap-table .fixed-table-toolbar .columns .dropdown-menu {
+            background-color: var(--gs-color-surface) !important;
+            border-color: var(--gs-table-border) !important;
+            color: var(--gs-color-text) !important;
+        }
+        & .bootstrap-table .fixed-table-toolbar li.dropdown-item-marker label { color: var(--gs-color-text) !important; }
+        & .bootstrap-table .fixed-table-toolbar li.dropdown-item-marker label:hover { background-color: var(--gs-color-primary-subtle) !important; color: var(--gs-color-text) !important; }
+
+        /* ---------- pagination ---------- */
+        & .pagination > li > a,
+        & .pagination > li > span {
+            background-color: var(--gs-color-surface) !important;
+            border-color: var(--gs-color-border) !important;
+            color: var(--gs-color-link) !important;
+        }
+        & .pagination > li > a:hover,
+        & .pagination > li > a:focus {
+            background-color: var(--gs-color-primary-subtle) !important;
+            color: var(--gs-color-link-hover) !important;
+        }
+        & .pagination > .active > a,
+        & .pagination > .active > a:hover,
+        & .pagination > li > .active > a,
+        & .page-item.active,
+        & .page-next a {
+            background-color: var(--gs-color-primary) !important;
+            border-color: var(--gs-color-primary) !important;
+            color: var(--gs-color-on-primary) !important;
+        }
+
+        /* ---------- forms ---------- */
+        & input[type="date"], & input[type="number"], & input[type="text"], & input[type="url"],
+        & input[type="email"], & input[type="password"], & input[type="tel"], & input[type="search"],
+        & select, & textarea, & .form-control,
+        & .select2-selection, & .select2-selection--single, & .select2-selection--multiple,
+        & .select2-search__field, & .select2-selection__rendered {
+            background-color: var(--gs-color-surface) !important;
+            color: var(--gs-color-text) !important;
+            border-color: var(--gs-color-border-strong) !important;
+            border-radius: var(--gs-radius-sm) !important;
+        }
+        & .form-control, & .select2-container .select2-selection--single { min-height: var(--gs-size-control-h) !important; }
+        & input:focus, & select:focus, & textarea:focus, & .form-control:focus,
+        & .select2-container--focus .select2-selection {
+            border-color: var(--gs-color-focus-ring) !important;
+            box-shadow: 0 0 0 3px var(--gs-color-primary-subtle) !important;
+        }
+        & input:required, & select:required, & textarea:required {
+            border-right: 4px solid var(--gs-color-warning) !important;
+        }
+        & input:disabled, & input[readonly], & textarea[readonly], & textarea:disabled, & select:disabled,
+        & .select2-container--disabled .select2-selection {
+            background-color: var(--gs-color-surface-sunken) !important;
+            color: var(--gs-color-text-muted) !important;
+        }
+        & ::placeholder { color: var(--gs-color-text-subtle) !important; opacity: 1 !important; }
+        & :is(label, .control-label):not([class*="gs-"]) { color: var(--gs-color-text) !important; }
+        & .help-block, & .form-text { color: var(--gs-color-text-muted) !important; }
+        & .has-error .form-control, & .has-error .select2-selection { border-color: var(--gs-color-danger) !important; }
+        & .has-error, & .has-error .help-block, & .alert-msg, & .has-error .control-label { color: var(--gs-color-danger) !important; }
+        & .input-group-addon {
+            background-color: var(--gs-color-surface-sunken) !important;
+            color: var(--gs-color-text-muted) !important;
+            border-color: var(--gs-color-border-strong) !important;
+        }
+        & input[type="radio"]::before,
+        & input[type="checkbox"]::before { box-shadow: inset 1em 1em var(--gs-color-primary) !important; }
+        & [data-theme="dark"] select[multiple],
+        &[data-theme="dark"] select[multiple],
+        &[data-theme="dark"] select[multiple] option {
+            background-color: var(--gs-color-surface) !important;
+            color: var(--gs-color-text) !important;
+        }
+        & legend { color: var(--gs-color-text) !important; border-bottom-color: var(--gs-color-border) !important; }
+
+        /* ---------- select2 dropdown ---------- */
+        & .select2-dropdown,
+        & .select2-results__option,
+        & .select2-results__option[aria-selected=false] {
+            background-color: var(--gs-color-surface-raised) !important;
+            color: var(--gs-color-text) !important;
+            border-color: var(--gs-color-border) !important;
+        }
+        & .select2-results__option--highlighted[aria-selected],
+        & .select2-results__option--highlighted[aria-selected=false],
+        & .select2-results__option--highlighted[aria-selected=true] {
+            background-color: var(--gs-color-primary-subtle) !important;
+            color: var(--gs-color-text) !important;
+        }
+        & .select2-results__option[aria-selected=true] {
+            background-color: var(--gs-color-primary) !important;
+            color: var(--gs-color-on-primary) !important;
+        }
+        & .select2-selection__choice,
+        & .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: var(--gs-color-primary-subtle) !important;
+            border-color: var(--gs-color-primary) !important;
+            color: var(--gs-color-text) !important;
+        }
+        & .select2-selection__choice__remove { color: var(--gs-color-text-muted) !important; }
+
+        /* ---------- datepicker ---------- */
+        & .datepicker.dropdown-menu,
+        & .datepicker.dropdown-menu th, & .datepicker.dropdown-menu td,
+        & .datepicker.datepicker-inline th, & .datepicker.datepicker-inline td {
+            background-color: var(--gs-color-surface-raised) !important;
+            color: var(--gs-color-text) !important;
+            border-color: transparent !important;
+        }
+        & .datepicker.dropdown-menu th:hover, & .datepicker.dropdown-menu td:hover,
+        & .datepicker table tr td span:hover, & .datepicker table tr td span.focused {
+            background-color: var(--gs-color-primary-subtle) !important;
+            color: var(--gs-color-text) !important;
+        }
+        & .datepicker table tr td.active, & .datepicker table tr td.active:hover,
+        & .datepicker table tr td span.active {
+            background: var(--gs-color-primary) !important;
+            color: var(--gs-color-on-primary) !important;
+        }
+        & .datepicker table tr td.old, & .datepicker table tr td.new { color: var(--gs-color-text-subtle) !important; }
+
+        /* ---------- buttons ---------- */
+        & .btn { border-radius: var(--gs-radius-sm) !important; font-family: inherit !important; }
+        & .btn-primary, & .btn-theme, & .btn-primary:focus, & .btn-theme:focus {
+            background-color: var(--gs-color-primary) !important;
+            border: var(--gs-border-width) solid var(--gs-color-primary-active) !important;
+            color: var(--gs-color-on-primary) !important;
+        }
+        & .btn-primary:hover, & .btn-theme:hover, & .btn-theme.active, & .btn-primary.active {
+            background-color: var(--gs-color-primary-hover) !important;
+            color: var(--gs-color-on-primary) !important;
+        }
+        & .btn-success, & .btn-success:hover, & .btn-success:focus {
+            background-color: var(--gs-color-success) !important; border-color: var(--gs-color-success) !important; color: var(--gs-color-on-success) !important;
+        }
+        & .btn-warning, & .btn-warning:hover, & .btn-warning:focus {
+            background-color: var(--gs-color-warning) !important; border-color: var(--gs-color-warning) !important; color: var(--gs-color-on-warning) !important;
+        }
+        & .btn-danger, & .btn-danger:hover, & .btn-danger:focus {
+            background-color: var(--gs-color-danger) !important; border-color: var(--gs-color-danger) !important; color: var(--gs-color-on-danger) !important;
+        }
+        & .btn-info, & .btn-info:hover, & .btn-info:focus {
+            background-color: var(--gs-color-info) !important; border-color: var(--gs-color-info) !important; color: var(--gs-color-on-info) !important;
+        }
+        & .btn-default, & .btn-default:hover, & .btn-default:focus, & .btn-tableButton {
+            background-color: var(--gs-color-surface) !important;
+            border-color: var(--gs-color-border-strong) !important;
+            color: var(--gs-color-text) !important;
+        }
+        & .btn-default:hover, & .btn-tableButton:hover { background-color: var(--gs-color-surface-sunken) !important; }
+        & .btn-selected, & .btn-selected a, & .btn-selected:hover, & .btn-selected:focus,
+        & .btn-tableButton.active, & .open > .dropdown-toggle.btn-tableButton {
+            background-color: var(--gs-color-primary-subtle) !important;
+            border-color: var(--gs-color-primary) !important;
+            color: var(--gs-color-text) !important;
+        }
+        & .btn-link { color: var(--gs-color-link) !important; }
+
+        /* ---------- labels & badges ---------- */
+        & .label { border-radius: var(--gs-radius-sm) !important; }
+        & .label-default, & .label-default:hover { background-color: var(--gs-color-surface-sunken) !important; color: var(--gs-color-text) !important; }
+        & .label-primary { background-color: var(--gs-color-primary) !important; color: var(--gs-color-on-primary) !important; }
+        & .label-success { background-color: var(--gs-color-success) !important; color: var(--gs-color-on-success) !important; }
+        & .label-warning { background-color: var(--gs-color-warning) !important; color: var(--gs-color-on-warning) !important; }
+        & .label-danger { background-color: var(--gs-color-danger) !important; color: var(--gs-color-on-danger) !important; }
+        & .label-info { background-color: var(--gs-color-info) !important; color: var(--gs-color-on-info) !important; }
+        & .badge { background-color: var(--gs-color-text-muted) !important; color: var(--gs-color-surface) !important; }
+        & .label-light { background-color: var(--gs-color-surface-sunken) !important; color: var(--gs-color-text) !important; }
+        & a.label-light, & a.label-light:hover { color: var(--gs-color-link) !important; }
+
+        /* ---------- text helpers ---------- */
+        & .text-primary { color: var(--gs-color-primary) !important; }
+        & .text-success { color: var(--gs-color-success) !important; }
+        & .text-warning { color: var(--gs-color-warning) !important; }
+        & .text-danger { color: var(--gs-color-danger) !important; }
+        & .text-info { color: var(--gs-color-info) !important; }
+        & .text-muted { color: var(--gs-color-text-muted) !important; }
+        & .text-dark-gray a:link, & .text-dark-gray a:visited { color: var(--gs-color-link) !important; }
+
+        /* ---------- alerts & callouts ---------- */
+        & .alert { border-radius: var(--gs-radius-md) !important; border-width: var(--gs-border-width) !important; }
+        & .alert a { color: inherit !important; text-decoration: underline !important; }
+        & .alert-success { background-color: var(--gs-color-success-subtle) !important; border-color: var(--gs-color-success) !important; color: var(--gs-color-text) !important; }
+        & .alert-warning { background-color: var(--gs-color-warning-subtle) !important; border-color: var(--gs-color-warning) !important; color: var(--gs-color-text) !important; }
+        & .alert-danger, & .alert-error { background-color: var(--gs-color-danger-subtle) !important; border-color: var(--gs-color-danger) !important; color: var(--gs-color-text) !important; }
+        & .alert-info { background-color: var(--gs-color-info-subtle) !important; border-color: var(--gs-color-info) !important; color: var(--gs-color-text) !important; }
+        & .alert .close { color: var(--gs-color-text) !important; }
+        & .callout { border-left-width: 4px !important; color: var(--gs-color-text) !important; border-radius: var(--gs-radius-sm) !important; }
+        & .callout.callout-legend { background-color: var(--gs-color-surface-sunken) !important; border-left-color: var(--gs-color-border-strong) !important; }
+        & .callout.callout-info { background-color: var(--gs-color-info-subtle) !important; border-left-color: var(--gs-color-info) !important; }
+        & .callout.callout-success { background-color: var(--gs-color-success-subtle) !important; border-left-color: var(--gs-color-success) !important; }
+        & .callout.callout-warning { background-color: var(--gs-color-warning-subtle) !important; border-left-color: var(--gs-color-warning) !important; }
+        & .callout.callout-danger { background-color: var(--gs-color-danger-subtle) !important; border-left-color: var(--gs-color-danger) !important; }
+        & .callout h4, & .callout p, & .callout-legend h4 a, & p.callout-subtext { color: var(--gs-color-text) !important; }
+
+        /* ---------- tabs ---------- */
+        & .nav-tabs-custom > .nav-tabs { border-bottom: var(--gs-border-width) solid var(--gs-color-border) !important; }
+        & .nav-tabs-custom > .nav-tabs > li,
+        & .nav-tabs-custom > .nav-tabs > li > a { background: transparent !important; color: var(--gs-color-text-muted) !important; border-color: transparent !important; }
+        & .nav-tabs-custom > .nav-tabs > li.active,
+        & .nav-tabs-custom > .nav-tabs > li.active > a,
+        & .nav-tabs-custom > .nav-tabs > li.active > a:link,
+        & .nav-tabs-custom > .nav-tabs > li.active > a:hover {
+            background-color: var(--gs-color-surface) !important;
+            color: var(--gs-color-text) !important;
+            border-top: 0 !important;
+            border-bottom: 2px solid var(--gs-color-primary) !important;
+        }
+        & .nav-tabs > li > a:hover { background-color: var(--gs-color-surface-sunken) !important; }
+        & .nav-pills > li.active > a { background-color: var(--gs-color-primary) !important; color: var(--gs-color-on-primary) !important; }
+
+        /* ---------- modals, popovers, tooltips ---------- */
+        & .modal-content,
+        & .modal-header,
+        & .modal-footer {
+            background-color: var(--gs-color-surface-raised) !important;
+            color: var(--gs-color-text) !important;
+            border-color: var(--gs-color-border) !important;
+        }
+        & .modal-content { border-radius: var(--gs-radius-lg) !important; box-shadow: var(--gs-shadow-2) !important; }
+        & .modal-backdrop.in { background-color: var(--gs-color-overlay) !important; opacity: 1 !important; }
+        & .modal-danger .modal-header { background-color: var(--gs-color-danger) !important; color: var(--gs-color-on-danger) !important; }
+        & .modal-danger .modal-header h2, & .modal-danger .modal-header h4 { color: var(--gs-color-on-danger) !important; }
+        & .popover, & .popover-content, & .popover-title,
+        & .popover.help-popover, & .popover.help-popover .popover-content, & .popover.help-popover .popover-title {
+            background-color: var(--gs-color-surface-raised) !important;
+            color: var(--gs-color-text) !important;
+            border-color: var(--gs-color-border) !important;
+        }
+        & .popover.right .arrow, & .popover.right .arrow::after { border-right-color: var(--gs-color-surface-raised) !important; }
+        & .tooltip-inner { background-color: var(--gs-color-text) !important; color: var(--gs-color-text-inverse) !important; }
+
+        /* ---------- dashboard info / small boxes ---------- */
+        & .info-box { border-radius: var(--gs-radius-md) !important; box-shadow: var(--gs-surface-shadow, var(--gs-shadow-1)) !important; }
+        & .info-box-text, & .info-box-number { color: var(--gs-color-text) !important; }
+        & .small-box { border-radius: var(--gs-radius-md) !important; }
+        & .small-box h3, & .small-box p, & .small-box .small-box-footer, & .small-box .icon { color: var(--gs-small-box-fg, var(--gs-color-on-primary)) !important; }
+        & .bg-teal, & .small-box.bg-teal { background-color: var(--gs-chart-5) !important; }
+        & .bg-aqua, & .small-box.bg-aqua, & .bg-blue { background-color: var(--gs-color-info) !important; --gs-small-box-fg: var(--gs-color-on-info); }
+        & .bg-green, & .small-box.bg-green { background-color: var(--gs-color-success) !important; --gs-small-box-fg: var(--gs-color-on-success); }
+        & .bg-yellow, & .bg-orange, & .small-box.bg-yellow, & .small-box.bg-orange { background-color: var(--gs-color-warning) !important; --gs-small-box-fg: var(--gs-color-on-warning); }
+        & .bg-red, & .small-box.bg-red { background-color: var(--gs-color-danger) !important; --gs-small-box-fg: var(--gs-color-on-danger); }
+        & .bg-maroon, & .bg-purple, & .small-box.bg-maroon, & .small-box.bg-purple { background-color: var(--gs-color-primary) !important; --gs-small-box-fg: var(--gs-color-on-primary); }
+
+        /* ---------- footer ---------- */
+        & footer.main-footer {
+            background-color: var(--gs-footer-bg) !important;
+            color: var(--gs-footer-fg) !important;
+            border-top: var(--gs-border-width) solid var(--gs-color-border) !important;
+        }
+        & .footer-links a, & footer.main-footer a { color: var(--gs-color-link) !important; }
+
+        /* ---------- login (layouts/basic) ---------- */
+        &:is(body.login-page), & body.login-page { background-color: var(--gs-color-bg) !important; }
+        & .login-box-body,
+        & .login-page .box {
+            background-color: var(--gs-color-surface) !important;
+            color: var(--gs-color-text) !important;
+            border-radius: var(--gs-radius-lg) !important;
+            box-shadow: var(--gs-shadow-2) !important;
+        }
+
+        /* ---------- misc ---------- */
+        & hr { border-top-color: var(--gs-color-border) !important; }
+        & .progress { background-color: var(--gs-color-surface-sunken) !important; }
+        & .progress-bar { background-color: var(--gs-color-primary) !important; }
+        & .chart-responsive { color: var(--gs-color-text) !important; }
+        & .table-display dt, & .table-display dd, & .main-panel-content { border-top-color: var(--gs-color-border) !important; }
+    }
+
+    /* Print: never a dark page, whatever the screen mode. */
+    @media print {
+        [data-skin]:not([data-skin="default"]) body,
+        [data-skin]:not([data-skin="default"]) .content-wrapper,
+        [data-skin]:not([data-skin="default"]) .box {
+            background: var(--gs-color-surface) !important;
+            color: var(--gs-color-text) !important;
+            box-shadow: none !important;
+        }
+    }
+}

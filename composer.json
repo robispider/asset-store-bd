@@ -87,7 +87,8 @@
     "gov-store/classification": "dev-master",
     "gov-store/metadata":"dev-master",
     "gov-store/user-onboarding": "dev-master",
-    "gov-store/tracking": "dev-master"
+    "gov-store/tracking": "dev-master",
+    "gov-store/theming": "dev-master"
   },
   "suggest": {
     "ext-ldap": "*",

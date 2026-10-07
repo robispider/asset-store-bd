@@ -1,0 +1,25 @@
+{
+    "key": "institutional-green",
+    "version": "1.0.0",
+    "status": "published",
+    "extends": "default",
+    "label": { "en-US": "Institutional Green", "bn-BD": "প্রাতিষ্ঠানিক সবুজ" },
+    "description": {
+        "en-US": "National government ERP look for daily operational work.",
+        "bn-BD": "দৈনন্দিন কাজের জন্য জাতীয় সরকারি ইআরপি চেহারা।"
+    },
+    "authors": ["UI/UX Team"],
+    "fonts": { "sans": "noto-sans", "bengali": "noto-sans-bengali", "mono": "ibm-plex-mono" },
+    "variants": {
+        "header": "brand",
+        "sidebar": "dark",
+        "nav_icons": "shown",
+        "density": "compact",
+        "table": "grid",
+        "surfaces": "card",
+        "radius": "md",
+        "type": "sans",
+        "status_style": "tinted"
+    },
+    "swatches": ["#14532D", "#15803D", "#B42318", "#F7F9F8", "#1F2937"]
+}

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0f36bb900316de66839bbfb0110edc24",
+    "content-hash": "f8a398c8624ecc7a1c0aac4a86b4d64e",
     "packages": [
         {
             "name": "alek13/slack",
@@ -1867,7 +1867,16 @@
             "dist": {
                 "type": "path",
                 "url": "./packages/gov-store/custom-requests",
-                "reference": "6862112bd58c80b0ed6fd1b27c2d4ac82eca648e"
+                "reference": "0b2344bce29a23c863b3a7642a6445a3d504b747"
+            },
+            "require": {
+                "gov-store/office-membership": "dev-master",
+                "gov-store/store-operations": "dev-master",
+                "gov-store/tenant-scope": "dev-master",
+                "illuminate/database": "^12.0",
+                "illuminate/support": "^12.0",
+                "illuminate/validation": "^12.0",
+                "php": "^8.2"
             },
             "type": "library",
             "extra": {
@@ -2084,6 +2093,43 @@
                 }
             ],
             "description": "Government Shared Tenant Scoping and Catalog Isolation Library for Bangladesh",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "gov-store/theming",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "./packages/gov-store/theming",
+                "reference": "66bd39de3672040643cf889b8412654bc4109333"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "GovStore\\Theming\\ThemingServiceProvider"
+                    ],
+                    "aliases": {
+                        "GsTheme": "GovStore\\Theming\\Facades\\GsTheme"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "GovStore\\Theming\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "DoICT"
+                }
+            ],
+            "description": "File-based light/dark themes, layout variants and UI kit for the National Asset Register, attached to Snipe-IT layouts at Blade compile time",
             "transport-options": {
                 "relative": true
             }
@@ -17237,6 +17283,7 @@
         "gov-store/organization": 20,
         "gov-store/store-operations": 20,
         "gov-store/tenant-scope": 20,
+        "gov-store/theming": 20,
         "gov-store/tracking": 20,
         "gov-store/user-onboarding": 20
     },

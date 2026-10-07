@@ -1,0 +1,145 @@
+{
+    "seed": {
+        "$type": "color",
+        "primary": { "$value": "#2A6A93" },
+        "accent": { "$value": "#00804A" },
+        "neutral": { "$value": "#222D32" },
+        "danger": { "$value": "#B42318" }
+    },
+    "color": {
+        "$type": "color",
+        "bg": { "$value": "#ECF0F5" },
+        "surface": { "$value": "#FFFFFF" },
+        "surface-raised": { "$value": "{color.surface}" },
+        "surface-sunken": { "$value": "{color.bg}", "$extensions": { "gs.derive": { "mix": { "with": "{color.surface}", "amount": 0.5 } } } },
+        "border": { "$value": "#D2D6DE" },
+        "border-strong": { "$value": "#7D8794" },
+        "overlay": { "$value": "rgba(0, 0, 0, 0.5)" },
+
+        "text": { "$value": "#333333" },
+        "text-muted": { "$value": "#5F6B76" },
+        "text-subtle": { "$value": "#7D8794" },
+        "text-inverse": { "$value": "#FFFFFF" },
+        "link": { "$value": "{color.primary}" },
+        "link-hover": { "$value": "{color.link}", "$extensions": { "gs.derive": { "l": -0.08 } } },
+        "focus-ring": { "$value": "{color.primary}" },
+
+        "primary": { "$value": "{seed.primary}" },
+        "primary-hover": { "$value": "{color.primary}", "$extensions": { "gs.derive": { "l": -0.06 } } },
+        "primary-active": { "$value": "{color.primary}", "$extensions": { "gs.derive": { "l": -0.1 } } },
+        "primary-subtle": { "$value": "{color.primary}", "$extensions": { "gs.derive": { "mix": { "with": "{color.surface}", "amount": 0.88 } } } },
+        "on-primary": { "$value": "#FFFFFF" },
+        "accent": { "$value": "{seed.accent}" },
+        "on-accent": { "$value": "#FFFFFF" },
+
+        "success": { "$value": "#067647" },
+        "success-subtle": { "$value": "{color.success}", "$extensions": { "gs.derive": { "mix": { "with": "{color.surface}", "amount": 0.88 } } } },
+        "on-success": { "$value": "#FFFFFF" },
+        "warning": { "$value": "#B54708" },
+        "warning-subtle": { "$value": "{color.warning}", "$extensions": { "gs.derive": { "mix": { "with": "{color.surface}", "amount": 0.86 } } } },
+        "on-warning": { "$value": "#FFFFFF" },
+        "danger": { "$value": "{seed.danger}" },
+        "danger-subtle": { "$value": "{color.danger}", "$extensions": { "gs.derive": { "mix": { "with": "{color.surface}", "amount": 0.88 } } } },
+        "on-danger": { "$value": "#FFFFFF" },
+        "info": { "$value": "#175CD3" },
+        "info-subtle": { "$value": "{color.info}", "$extensions": { "gs.derive": { "mix": { "with": "{color.surface}", "amount": 0.88 } } } },
+        "on-info": { "$value": "#FFFFFF" },
+
+        "status-deployed": { "$value": "#175CD3" },
+        "status-ready": { "$value": "#067647" },
+        "status-pending": { "$value": "#B54708" },
+        "status-undeployable": { "$value": "#B42318" },
+        "status-archived": { "$value": "#475467" },
+
+        "doc-draft": { "$value": "#475467" },
+        "doc-ready": { "$value": "#175CD3" },
+        "doc-posted": { "$value": "#067647" },
+        "doc-cancelled": { "$value": "#912018" },
+        "doc-approved": { "$value": "#067647" },
+        "doc-rejected": { "$value": "#B42318" }
+    },
+    "header": {
+        "$type": "color",
+        "bg": { "$value": "{color.primary}" },
+        "fg": { "$value": "{color.on-primary}" },
+        "fg-muted": { "$value": "{header.fg}", "$extensions": { "gs.derive": { "alpha": 0.8 } } }
+    },
+    "sidebar": {
+        "$type": "color",
+        "bg": { "$value": "{seed.neutral}" },
+        "fg": { "$value": "#B8C7CE" },
+        "fg-muted": { "$value": "{sidebar.fg}", "$extensions": { "gs.derive": { "mix": { "with": "{sidebar.bg}", "amount": 0.3 } } } },
+        "section-fg": { "$value": "{sidebar.fg}", "$extensions": { "gs.derive": { "mix": { "with": "{sidebar.bg}", "amount": 0.45 } } } },
+        "active-bg": { "$value": "{sidebar.bg}", "$extensions": { "gs.derive": { "l": -0.03 } } },
+        "active-fg": { "$value": "#FFFFFF" },
+        "active-marker": { "$value": "{color.primary}" }
+    },
+    "footer": {
+        "$type": "color",
+        "bg": { "$value": "{color.surface}" },
+        "fg": { "$value": "{color.text-muted}" }
+    },
+    "table": {
+        "$type": "color",
+        "head-bg": { "$value": "{color.surface}" },
+        "head-fg": { "$value": "{color.text}" },
+        "row-alt": { "$value": "{color.bg}", "$extensions": { "gs.derive": { "mix": { "with": "{color.surface}", "amount": 0.55 } } } },
+        "row-hover": { "$value": "{color.primary}", "$extensions": { "gs.derive": { "mix": { "with": "{color.surface}", "amount": 0.93 } } } },
+        "row-selected": { "$value": "{color.primary}", "$extensions": { "gs.derive": { "mix": { "with": "{color.surface}", "amount": 0.82 } } } },
+        "border": { "$value": "{color.border}" },
+        "total-rule": { "$value": "{color.text}" }
+    },
+    "chart": {
+        "$type": "color",
+        "1": { "$value": "{color.primary}" },
+        "2": { "$value": "{color.accent}" },
+        "3": { "$value": "#B54708" },
+        "4": { "$value": "#7A5AF8" },
+        "5": { "$value": "#0E9384" },
+        "6": { "$value": "#C11574" },
+        "7": { "$value": "#475467" },
+        "8": { "$value": "#CA8504" },
+        "9": { "$value": "#1570EF" },
+        "10": { "$value": "#B42318" },
+        "grid": { "$value": "rgba(0, 0, 0, 0.08)" },
+        "label": { "$value": "{color.text-muted}" }
+    },
+    "font": {
+        "sans": { "$type": "fontFamily", "$value": "{fonts.system-sans}" },
+        "display": { "$type": "fontFamily", "$value": "{font.sans}" },
+        "mono": { "$type": "fontFamily", "$value": "{fonts.system-mono}" },
+        "bengali": { "$type": "fontFamily", "$value": "{fonts.noto-sans-bengali}" },
+        "size-base": { "$type": "dimension", "$value": "14px" },
+        "size-sm": { "$type": "dimension", "$value": "12px" },
+        "line-height-base": { "$type": "number", "$value": "1.42857" },
+        "heading-weight": { "$type": "fontWeight", "$value": "500" }
+    },
+    "radius": {
+        "$type": "dimension",
+        "sm": { "$value": "2px" },
+        "md": { "$value": "3px" },
+        "lg": { "$value": "6px" }
+    },
+    "border": {
+        "width": { "$type": "dimension", "$value": "1px" }
+    },
+    "size": {
+        "$type": "dimension",
+        "row-h": { "$value": "38px" },
+        "control-h": { "$value": "34px" }
+    },
+    "space": {
+        "$type": "dimension",
+        "1": { "$value": "4px" },
+        "2": { "$value": "8px" },
+        "3": { "$value": "12px" },
+        "4": { "$value": "16px" },
+        "5": { "$value": "24px" },
+        "6": { "$value": "32px" }
+    },
+    "shadow": {
+        "$type": "shadow",
+        "1": { "$value": "0 1px 1px rgba(0, 0, 0, 0.1)" },
+        "2": { "$value": "0 6px 16px rgba(0, 0, 0, 0.16)" }
+    }
+}

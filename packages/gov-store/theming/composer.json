@@ -1,0 +1,27 @@
+{
+    "name": "gov-store/theming",
+    "description": "File-based light/dark themes, layout variants and UI kit for the National Asset Register, attached to Snipe-IT layouts at Blade compile time",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "DoICT"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "GovStore\\Theming\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "GovStore\\Theming\\ThemingServiceProvider"
+            ],
+            "aliases": {
+                "GsTheme": "GovStore\\Theming\\Facades\\GsTheme"
+            }
+        }
+    }
+}
