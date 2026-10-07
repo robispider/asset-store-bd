@@ -35,7 +35,7 @@
       "id": "committee.registry",
       "title": "Committee desk and registry for the working office",
       "journeys": [{"id": "committee.desk-registry-observation", "kind": "seeded-readonly", "status": "verified-live"}],
-      "missing": ["bn-BD labels", "registry pagination beyond 20 rows", "status/type filters", "desk attention and coverage rows", "print roster and history pages"]
+      "missing": ["bn-BD labels", "registry pagination beyond 20 rows", "status/type filters", "desk attention and coverage rows"]
     },
     {
       "id": "committee.authorization",
@@ -54,6 +54,24 @@
       "missing": ["member with a current appointment", "past committees", "declaration upload", "own order file download"]
     },
     {
+      "id": "committee.history",
+      "title": "Committee history and roster as of a selected date",
+      "journeys": [{"id": "committee.record-history-print-observation", "kind": "seeded-readonly", "status": "verified-live"}],
+      "missing": ["date changes and history filter interactions"]
+    },
+    {
+      "id": "committee.print",
+      "title": "Printable committee roster",
+      "journeys": [{"id": "committee.record-history-print-observation", "kind": "seeded-readonly", "status": "verified-live"}],
+      "missing": ["browser print dialog / paper output verification"]
+    },
+    {
+      "id": "committee.transfers",
+      "title": "Review all committee roles for a transferred person",
+      "journeys": [{"id": "committee.record-history-print-observation", "kind": "seeded-readonly", "status": "verified-live"}],
+      "missing": ["person lookup and atomic multi-committee transfer submission"]
+    },
+    {
       "id": "committee.catalogue",
       "title": "Committee types and rules (company administrator)",
       "journeys": [{"id": "committee.rules-catalogue-observation", "kind": "seeded-readonly", "status": "blocked-no-actor"}],
@@ -63,9 +81,16 @@
     {
       "id": "committee.lifecycle",
       "title": "Constitute, appoint, activate, replace, extend, suspend, dissolve",
-      "journeys": [],
+      "journeys": [{"id": "committee.order-readiness-guard", "kind": "seeded-readonly", "status": "verified-live"}],
       "status": "missing",
-      "notes": "No committee type is active in the seeded catalogue (all five national templates are inactive), and the order wizard needs a signed file upload. A write journey needs a disposable ministry type created through the Rules screen by a company administrator first."
+      "notes": "Live inspection on 7 October 2026 showed the order wizard stating that no ministry committee rules are active. The order-readiness guard covers this message and required-file validation. No active type is available to complete constitution or amendment flows. A write journey also needs an authorized company catalogue actor, a synthetic signed-file fixture, and a cleanup/retention policy. Do not create a committee type or assign roles just to make this suite pass."
+    },
+    {
+      "id": "committee.order-intake",
+      "title": "Capture and retain a signed committee order before forming a committee",
+      "journeys": [{"id": "committee.order-readiness-guard", "kind": "seeded-readonly", "status": "verified-live"}],
+      "status": "partial",
+      "missing": ["upload and save a synthetic signed order", "resume and discard saved intake through the supported screen"]
     },
     {"id": "auth.context", "title": "Authentication and working-context selection", "journeys": [], "status": "partial", "notes": "Login and header context are exercised inside other journeys via flow auth.login only."},
     {"id": "storeops.documents", "title": "Stock documents", "journeys": [], "status": "missing"},

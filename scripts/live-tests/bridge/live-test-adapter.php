@@ -126,6 +126,9 @@ try {
                 'runs' => $hash('gov_experiment_runs', ['id', 'status', 'password', 'updated_at', 'wiped_at']),
                 'memberships' => $hash('gov_office_memberships', ['id', 'user_id', 'location_id', 'status']),
                 'responsibilities' => $hash('gov_office_responsibilities', ['id', 'user_id', 'location_id', 'role_slug']),
+                'committees' => $hash('gov_committees', ['id', 'lineage_id', 'status', 'lock_version', 'updated_at', 'deleted_at']),
+                'committeeOrders' => $hash('gov_committee_orders', ['id', 'committee_id', 'kind', 'memo_no', 'recorded_at']),
+                'committeeLedger' => $hash('gov_committee_ledger', ['id', 'lineage_id', 'committee_id', 'event_type', 'hash']),
             ]);
 
         case 'preflight':
@@ -526,6 +529,37 @@ try {
                         'searchMatches' => $latest ? 1 : 0,
                         'foreignId' => $foreign->id,
                         'foreignNumber' => $foreign->committee_number,
+                    ]);
+
+                case 'committee.record':
+                    // Pick a real committee visible in the selected office so browser journeys
+                    // can verify its detail, history and print views without fixed IDs.
+                    $officeId = (int) ($args['officeId'] ?? 0);
+                    $companyId = (int) ($args['companyId'] ?? 0);
+                    $visible = fn ($q) => $q->where('c.owner_company_id', $companyId)->where(function ($w) use ($officeId) {
+                        $w->where('c.owner_location_id', $officeId)->orWhereExists(function ($s) use ($officeId) {
+                            $s->select(DB::raw(1))->from('gov_committee_scopes')
+                                ->whereColumn('gov_committee_scopes.committee_id', 'c.id')
+                                ->where('scope_type', 'office')->where('scope_id', (string) $officeId);
+                        });
+                    });
+                    $record = $visible(DB::table('gov_committees as c')->whereNull('c.deleted_at'))
+                        ->select('c.id', 'c.committee_number', 'c.name_en', 'c.status', 'c.lineage_id')
+                        ->selectSub(DB::table('gov_committee_seats as s')->selectRaw('count(*)')->whereColumn('s.committee_id', 'c.id'), 'seat_count')
+                        ->selectSub(DB::table('gov_committee_orders as o')->selectRaw('count(*)')->whereColumn('o.committee_id', 'c.id'), 'order_count')
+                        ->selectSub(DB::table('gov_committee_ledger as l')->selectRaw('count(*)')->whereColumn('l.lineage_id', 'c.lineage_id'), 'history_count')
+                        ->orderByDesc('order_count')->orderByDesc('history_count')->orderByDesc('c.created_at')->first();
+                    if (! $record) {
+                        jsonError('No committee is visible in this office for a detail journey', 'observation.not-found');
+                    }
+                    jsonResponse([
+                        'id' => $record->id,
+                        'number' => $record->committee_number,
+                        'name' => $record->name_en,
+                        'status' => $record->status,
+                        'seatCount' => (int) $record->seat_count,
+                        'orderCount' => (int) $record->order_count,
+                        'historyCount' => (int) $record->history_count,
                     ]);
 
                 case 'committee.catalog':

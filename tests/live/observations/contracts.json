@@ -146,6 +146,22 @@
         "foreignNumber"
       ]
     },
+    "committee.record": {
+      "description": "A visible office committee selected for independent detail, history and print checks",
+      "parameters": {
+        "officeId": "integer",
+        "companyId": "integer"
+      },
+      "outputFields": [
+        "id",
+        "number",
+        "name",
+        "status",
+        "seatCount",
+        "orderCount",
+        "historyCount"
+      ]
+    },
     "committee.catalog": {
       "description": "Read-only count of committee types visible to a company (national plus the company's own)",
       "parameters": {

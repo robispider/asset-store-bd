@@ -46,6 +46,18 @@ const pair = await bridge.resolveContext({
 assert.notEqual(pair.actors.a.id, pair.actors.b.id, 'actors must be distinct users');
 
 await bridge.observe('request.progress', { id: resolved.actors.employee.id });
+const committeeContext = await bridge.resolveContext({
+  office: { requirements: { operational: true } },
+  actors: { registrar: { capabilities: { allOf: ['committee.manage', 'committee.view'], noneOf: ['committee.types.manage'] } } },
+  records: {}
+});
+const committeeRecord = await bridge.observe('committee.record', {
+  officeId: committeeContext.office.id,
+  companyId: committeeContext.office.company_id
+});
+assert(committeeRecord.id && committeeRecord.number, 'a visible committee record must resolve for its office');
+assert(committeeRecord.seatCount >= 0 && committeeRecord.orderCount >= 0 && committeeRecord.historyCount >= 0,
+  'committee record projection must expose numeric, read-only detail counts');
 await bridge.preflight();
 
 const after = await bridge.fingerprint();
