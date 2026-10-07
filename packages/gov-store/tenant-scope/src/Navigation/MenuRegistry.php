@@ -28,6 +28,9 @@ class MenuRegistry
     public function tree(): array
     {
         $access = app(GovAccess::class);
+        // One live snapshot per render, discarded afterwards. No session cache
+        // may delay assignment changes, revocation or temporary-cover expiry.
+        $roles = $access->roles(auth()->user());
         $flatList = [];
         foreach ($this->items as $definition) {
             $item = clone $definition;
@@ -41,7 +44,7 @@ class MenuRegistry
                     }
                 }
             }
-            if ($permission && ! $access->qualifier(auth()->user(), $permission, $item->strict)) {
+            if ($permission && ! $access->qualifier(auth()->user(), $permission, $item->strict, $roles)) {
                 continue;
             }
             $flatList[$item->id] = $item;

@@ -2,10 +2,8 @@
 
 namespace GovStore\TenantScope\Services;
 
-use GovStore\OfficeMembership\Models\OfficeResponsibility;
-use GovStore\Organization\Models\CompanyAdmin;
-use GovStore\Organization\Models\IctJurisdiction;
-use GovStore\Organization\Models\LocationProfile;
+use GovStore\TenantScope\Contracts\MembershipContextResolver;
+use GovStore\TenantScope\Contracts\OrganizationContextResolver;
 use GovStore\TenantScope\Contexts\TenantContext;
 use Illuminate\Support\Facades\DB;
 
@@ -22,19 +20,18 @@ class GovAccess
         if ($user->isSuperUser()) {
             $roles[] = 'superuser';
         }
-        if ($this->context->companyId && CompanyAdmin::where('user_id', $user->id)
-            ->where('company_id', $this->context->companyId)->exists()) {
+        $organization = app(OrganizationContextResolver::class);
+        if ($this->context->companyId && $organization->isCompanyAdministrator((int) $user->id, $this->context->companyId)) {
             $roles[] = 'company_admin';
         }
-        if (IctJurisdiction::where('user_id', $user->id)->exists()) {
+        if ($organization->hasJurisdiction((int) $user->id)) {
             $roles[] = 'ict_officer';
         }
         if ($this->context->locationId) {
-            if (LocationProfile::where('location_id', $this->context->locationId)->where('office_admin_id', $user->id)->exists()) {
+            if ($organization->isOfficeAdministrator((int) $user->id, $this->context->locationId)) {
                 $roles[] = 'office_admin';
             }
-            $roles = array_merge($roles, OfficeResponsibility::where('location_id', $this->context->locationId)
-                ->where('user_id', $user->id)->pluck('role_slug')->all());
+            $roles = array_merge($roles, app(MembershipContextResolver::class)->responsibilityRoles((int) $user->id, $this->context->locationId));
             $roles = array_merge($roles, DB::table('gov_access_grants')
                 ->where('location_id', $this->context->locationId)->where('user_id', $user->id)
                 ->where('expires_at', '>', now())->pluck('role_slug')->all());
@@ -43,14 +40,14 @@ class GovAccess
         return array_values(array_unique($roles));
     }
 
-    public function decide($user, string $ability): AccessDecision
+    public function decide($user, string $ability, ?array $resolvedRoles = null): AccessDecision
     {
         // Config keys contain periods, so use the whole array rather than dotted lookup.
         $definition = config('govstore-abilities', [])[$ability] ?? null;
         if (! $definition || ! $user) {
             return new AccessDecision(false, $ability, 'unknown_ability');
         }
-        $roles = $this->roles($user);
+        $roles = $resolvedRoles ?? $this->roles($user);
         $allowed = in_array('superuser', $roles) || (bool) array_intersect($roles, $definition['roles']);
 
         return new AccessDecision($allowed, $ability, $allowed ? 'allowed' : 'role_required', $roles);
@@ -70,7 +67,7 @@ class GovAccess
             && isset(config('govstore-abilities', [])[$ability]));
     }
 
-    public function qualifier($user, string|array $qualifiers, bool $strict = false): bool
+    public function qualifier($user, string|array $qualifiers, bool $strict = false, ?array $resolvedRoles = null): bool
     {
         if (! $user) {
             return false;
@@ -80,7 +77,7 @@ class GovAccess
         }
         foreach ((array) $qualifiers as $qualifier) {
             if (isset(config('govstore-abilities', [])[$qualifier])) {
-                if ($this->decide($user, $qualifier)->allowed) {
+                if ($this->decide($user, $qualifier, $resolvedRoles)->allowed) {
                     return true;
                 }
 
@@ -92,11 +89,11 @@ class GovAccess
             if ($qualifier === 'superuser' && $user->isSuperUser()) {
                 return true;
             }
-            if ($qualifier === 'approver' && array_intersect($this->roles($user), ['primary_approver', 'final_approver'])) {
+            if ($qualifier === 'approver' && array_intersect($resolvedRoles ?? $this->roles($user), ['primary_approver', 'final_approver'])) {
                 return true;
             }
             if (in_array($qualifier, ['office_admin', 'ict_officer', 'company_admin', 'storekeeper'])) {
-                if (in_array($qualifier, $this->roles($user))) {
+                if (in_array($qualifier, $resolvedRoles ?? $this->roles($user))) {
                     return true;
                 }
 
@@ -127,11 +124,11 @@ class GovAccess
             return [];
         }
         $roles = config('govstore-abilities', [])[$ability]['roles'] ?? [];
-        $ids = OfficeResponsibility::where('location_id', $this->context->locationId)->whereIn('role_slug', $roles)->pluck('user_id');
+        $ids = collect(app(MembershipContextResolver::class)->responsibilityUserIds($this->context->locationId, $roles));
         $ids = $ids->merge(DB::table('gov_access_grants')->where('location_id', $this->context->locationId)
             ->whereIn('role_slug', $roles)->where('expires_at', '>', now())->pluck('user_id'));
         // Office admins can help with role requests even when they cannot perform the action.
-        $ids = $ids->merge(LocationProfile::where('location_id', $this->context->locationId)->pluck('office_admin_id'));
+        $ids = $ids->merge(app(OrganizationContextResolver::class)->officeAdministratorIds($this->context->locationId));
 
         return DB::table('users')->whereIn('id', $ids->filter()->unique())->where('id', '!=', auth()->id())->whereNull('deleted_at')
             ->get(['id', 'first_name', 'last_name'])->map(fn ($user) => ['name' => trim($user->first_name.' '.$user->last_name)])->all();

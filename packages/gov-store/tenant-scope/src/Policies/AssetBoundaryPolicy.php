@@ -26,16 +26,20 @@ class AssetBoundaryPolicy
 
     public function canMutate(Model $model, TenantContext $context): bool
     {
-        // 1. Check Company Ownership
-        if ($model->company_id && $model->company_id !== $context->companyId) {
+        if ($context->isGlobal || ! $context->locationId || ! $context->companyId) {
             return false;
         }
-
-        // 2. Check Location Ownership
-        if ($model->location_id && $model->location_id !== $context->locationId) {
-            return false;
+        $schema = app(\GovStore\TenantScope\Services\SchemaKnowledge::class);
+        foreach (['company_id' => $context->companyId, 'location_id' => $context->locationId] as $column => $id) {
+            if (! $schema->hasColumn($model, $column)) {
+                continue;
+            }
+            // Check persisted ownership as well as submitted values: rehoming a
+            // foreign row into the current office is still a foreign mutation.
+            if ((int) $model->{$column} !== $id || ($model->exists && (int) $model->getRawOriginal($column) !== $id)) {
+                return false;
+            }
         }
-
         return true;
     }
 }

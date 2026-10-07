@@ -16,7 +16,6 @@ use App\Models\Supplier;
 use App\Models\User;
 use GovStore\TenantScope\Contexts\TenantContext;
 use GovStore\TenantScope\Http\Middleware\InitializeTenantContext;
-use GovStore\TenantScope\Http\Middleware\InjectTenantScopeUi;
 use GovStore\TenantScope\Http\Middleware\RequireGovAbility;
 use GovStore\TenantScope\Navigation\MenuRegistry;
 use GovStore\TenantScope\Observers\TenantMutationObserver;
@@ -33,6 +32,9 @@ class TenantScopeServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__.'/../config/abilities.php', 'govstore-abilities');
+        $this->mergeConfigFrom(__DIR__.'/../config/execution.php', 'govstore-execution');
+        $this->app->singleton(\GovStore\TenantScope\Services\SchemaKnowledge::class);
+        $this->app->singleton(\GovStore\TenantScope\Services\TenantWorkerLifecycle::class);
         // Register the Central Navigation Registry as a shared singleton across all packages
         $this->app->singleton(MenuRegistry::class, function () {
             return new MenuRegistry;
@@ -50,6 +52,25 @@ class TenantScopeServiceProvider extends ServiceProvider
 
     public function boot()
     {
+        \Illuminate\Support\Facades\Bus::pipeThrough([\GovStore\TenantScope\Http\Middleware\ExecuteTenantJob::class]);
+        $lifecycle = $this->app->make(\GovStore\TenantScope\Services\TenantWorkerLifecycle::class);
+        $this->app['events']->listen(\Illuminate\Queue\Events\JobProcessing::class,
+            fn ($event) => $lifecycle->begin(str_starts_with($event->job->resolveName(), 'GovStore\\')));
+        foreach ([\Illuminate\Queue\Events\JobProcessed::class, \Illuminate\Queue\Events\JobExceptionOccurred::class] as $event) {
+            $this->app['events']->listen($event, fn () => $lifecycle->finish());
+        }
+        $this->app['events']->listen(\Illuminate\Console\Events\CommandStarting::class, function ($event) use ($lifecycle) {
+            app(\GovStore\TenantScope\Services\SchemaKnowledge::class)->clear();
+            if (preg_match('/^(govstore:|gov-store:|gov-requests:|committee:)/', $event->command ?? '')
+                && ! in_array($event->command, config('govstore-execution.global_commands', []), true)) {
+                app(TenantContext::class)->reset();
+                auth()->forgetUser();
+                app(TenantContext::class)->isActive = true;
+                throw new \Illuminate\Auth\Access\AuthorizationException('Declare the GovStore command execution boundary before running it.');
+            }
+            $lifecycle->begin(false, true);
+        });
+        $this->app['events']->listen(\Illuminate\Console\Events\CommandFinished::class, fn () => $lifecycle->finish());
         $this->app['router']->aliasMiddleware('gov.can', RequireGovAbility::class);
         foreach (array_keys(config('govstore-abilities', [])) as $ability) {
             Gate::define($ability, fn ($user) => app(GovAccess::class)->decide($user, $ability)->toGateResponse());
@@ -69,7 +90,6 @@ class TenantScopeServiceProvider extends ServiceProvider
         ], 'config');
 
         $router = $this->app['router'];
-        $router->pushMiddlewareToGroup('web', InjectTenantScopeUi::class);
         $router->pushMiddlewareToGroup('web', InitializeTenantContext::class);
         $router->pushMiddlewareToGroup('api', InitializeTenantContext::class);
 
@@ -150,7 +170,7 @@ class TenantScopeServiceProvider extends ServiceProvider
             'id' => 'gov-tenantscope-root',
             'title' => __('tenantops::ops.menu_multitenant_admin'),
             'icon' => 'fas fa-user-shield text-red',
-            'permission' => 'admin',
+            'permission' => 'tenant.scope.view',
             'order' => 60,
             'active_patterns' => ['gov-store/admin/scope*'],
         ]);
@@ -162,7 +182,7 @@ class TenantScopeServiceProvider extends ServiceProvider
             'title' => __('tenantops::ops.menu_scoping_dashboard'),
             'icon' => 'fas fa-tachometer-alt text-aqua',
             'route' => 'gov.scope.dashboard',
-            'permission' => 'admin',
+            'permission' => 'tenant.scope.view',
             'order' => 10,
         ]);
 
@@ -173,7 +193,7 @@ class TenantScopeServiceProvider extends ServiceProvider
             'title' => __('tenantops::ops.menu_policy_configurator'),
             'icon' => 'fas fa-sliders-h text-orange',
             'route' => 'gov.scope.config',
-            'permission' => 'admin',
+            'permission' => 'tenant.scope.view',
             'order' => 20,
         ]);
 
@@ -184,7 +204,7 @@ class TenantScopeServiceProvider extends ServiceProvider
             'title' => __('tenantops::ops.menu_boundary_explorer'),
             'icon' => 'fas fa-search-plus text-green',
             'route' => 'gov.scope.mappings',
-            'permission' => 'admin',
+            'permission' => 'tenant.scope.view',
             'order' => 30,
         ]);
     }

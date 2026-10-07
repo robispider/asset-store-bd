@@ -25,6 +25,13 @@ class TenantContext
 
     public array $configs = [];
 
+    public function reset(): void
+    {
+        foreach (get_object_vars(new self) as $property => $value) {
+            $this->$property = $value;
+        }
+    }
+
     /**
      * Safely retrieves the cached configuration for a specific reference type.
      */

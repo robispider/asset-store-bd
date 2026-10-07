@@ -3,18 +3,15 @@
 namespace GovStore\TenantScope\Services;
 
 use GovStore\TenantScope\Contexts\TenantContext;
-use GovStore\GeoAreas\Services\GeoAreaService;
+use GovStore\TenantScope\Contracts\OrganizationContextResolver;
 use App\Models\User;
 
 class BoundaryResolver
 {
     protected TenantContext $context;
-    protected GeoAreaService $geoService;
-
-    public function __construct(TenantContext $context, GeoAreaService $geoService)
+    public function __construct(TenantContext $context)
     {
         $this->context = $context;
-        $this->geoService = $geoService;
     }
 
     /**
@@ -24,7 +21,7 @@ class BoundaryResolver
     public function resolveStrategy(User $user, ?string $referenceType = null): string
     {
         // 1. Superadmins bypass strict local scopes unless acting in an office context
-        if ($user->isSuperUser() && !$this->context->isActive) {
+        if ($user->isSuperUser() && $this->context->isGlobal) {
             return 'global';
         }
 
@@ -37,7 +34,7 @@ class BoundaryResolver
         }
 
         // 3. ICT Officers operate on a geographic boundary strategy
-        $isIctOfficer = \GovStore\Organization\Models\IctJurisdiction::where('user_id', $user->id)->exists();
+        $isIctOfficer = app(OrganizationContextResolver::class)->jurisdictionLocations((int) $user->id) !== null;
         if ($isIctOfficer) {
             return 'jurisdiction';
         }

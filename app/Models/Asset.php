@@ -32,6 +32,7 @@ use Watson\Validating\ValidatingTrait;
  */
 class Asset extends Depreciable
 {
+    use \GovStore\TenantScope\Concerns\UsesOfficeInventoryBuilder;
     protected $presenter = AssetPresenter::class;
 
     // protected $with = ['model', 'adminuser', 'location', 'company'];

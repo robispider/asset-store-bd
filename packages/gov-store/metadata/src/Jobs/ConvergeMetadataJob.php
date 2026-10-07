@@ -10,7 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use App\Models\AssetModel;
 use GovStore\Metadata\Services\ConvergenceEngine;
 
-class ConvergeMetadataJob implements ShouldQueue
+class ConvergeMetadataJob implements ShouldQueue, \GovStore\TenantScope\Contracts\GlobalTenantMaintenance
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 

@@ -25,7 +25,10 @@ class OpenStoreLedger extends Command
         }
 
         try {
-            $result = DB::transaction(function () use ($location, $locationId, $actorId, $numbers, $ledger) {
+            $result = app(\GovStore\TenantScope\Services\TenantExecution::class)->run([
+                'actor_id' => $actorId, 'scope_type' => 'location', 'scope_id' => $locationId,
+                'ability' => 'storeops.documents.post',
+            ], fn () => DB::transaction(function () use ($location, $locationId, $actorId, $numbers, $ledger) {
                 if (DB::table('gov_store_ledger_openings')->where('location_id', $locationId)->lockForUpdate()->exists()) {
                     throw new \RuntimeException('This office already has an opening record.');
                 }
@@ -83,7 +86,7 @@ class OpenStoreLedger extends Command
                 ]);
 
                 return [$document->document_number, $count];
-            }, 3);
+            }, 3));
         } catch (\Throwable $exception) {
             report($exception);
             $this->error('Ledger cut-over failed; its database transaction was rolled back. Check the restricted application log.');

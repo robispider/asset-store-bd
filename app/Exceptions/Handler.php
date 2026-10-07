@@ -81,6 +81,19 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $e)
     {
+        if ($e instanceof \GovStore\TenantScope\Exceptions\TenantBoundaryException) {
+            if (app()->bound('debugbar')) {
+                app('debugbar')->disable();
+            }
+            $reference = (string) Str::uuid();
+            Log::warning('GovStore tenant boundary denied', ['reference_id' => $reference,
+                'reason' => $e->getReasonCode(), 'user_id' => $request->user()?->id]);
+            $message = __('tenantops::access.failed', ['reference' => $reference]);
+
+            return $request->ajax() || $request->expectsJson()
+                ? response()->json(['error' => $message, 'reference_id' => $reference], $e->getStatusCode())
+                : response()->view('govscope::access.failure', compact('message', 'reference'), $e->getStatusCode());
+        }
         // GovStore declares real HTTP failures; preserve Snipe-IT's legacy API contract elsewhere.
         $govAbility = collect($request->route()?->gatherMiddleware() ?? [])
             ->first(fn ($middleware) => is_string($middleware) && str_starts_with($middleware, 'gov.can:'));

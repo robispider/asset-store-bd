@@ -4,166 +4,100 @@ namespace GovStore\TenantScope\Http\Middleware;
 
 use App\Models\Location;
 use Closure;
-use GovStore\OfficeMembership\Models\OfficeMembership;
-use GovStore\Organization\Models\CompanyAdmin;
-use GovStore\Organization\Models\IctJurisdiction;
-use GovStore\Organization\Models\LocationProfile;
 use GovStore\TenantScope\Contexts\TenantContext;
+use GovStore\TenantScope\Contracts\MembershipContextResolver;
+use GovStore\TenantScope\Contracts\OrganizationContextResolver;
 use GovStore\TenantScope\Services\AssignmentResolver;
 use GovStore\TenantScope\Services\CapabilityProfileResolver;
 use GovStore\TenantScope\Services\SnipePermissionAdapter;
 
 class InitializeTenantContext
 {
-    protected AssignmentResolver $assignmentResolver;
-
-    protected CapabilityProfileResolver $capabilityResolver;
-
-    protected SnipePermissionAdapter $permissionAdapter;
-
     public function __construct(
-        AssignmentResolver $assignmentResolver,
-        CapabilityProfileResolver $capabilityResolver,
-        SnipePermissionAdapter $permissionAdapter
-    ) {
-        $this->assignmentResolver = $assignmentResolver;
-        $this->capabilityResolver = $capabilityResolver;
-        $this->permissionAdapter = $permissionAdapter;
-    }
+        protected AssignmentResolver $assignmentResolver,
+        protected CapabilityProfileResolver $capabilityResolver,
+        protected SnipePermissionAdapter $permissionAdapter
+    ) {}
 
     public function handle($request, Closure $next)
     {
-        // Controllers can resolve services before route middleware runs. Reset the
-        // shared object in place so those services receive the current office.
         $context = app(TenantContext::class);
-        foreach (get_object_vars(new TenantContext) as $property => $value) {
-            $context->$property = $value;
-        }
-
-        // 1. Guest bypass
+        $context->reset();
         if (! auth()->check()) {
             return $next($request);
         }
-
         $user = auth()->user();
-
-        // 2. Superadmin / Global Bypass
-        // Note: Superadmins shouldn't be locked into a Company Admin constraint.
+        $context->isActive = true;
         if ($user->isSuperUser()) {
-            $context->isActive = true;
             $context->isGlobal = true;
             $selection = session('gov_working_membership_id');
             if (is_string($selection) && preg_match('/^ADMIN_MOCK_(\d+)$/', $selection, $matches)) {
-                $office = Location::withoutGlobalScopes()->find($matches[1]);
+                $office = Location::withoutGlobalScopes()->whereNull('deleted_at')->find($matches[1]);
                 if ($office) {
-                    $context->locationId = $office->id;
-                    $context->companyId = $office->company_id;
+                    $context->locationId = (int) $office->id;
+                    $context->companyId = $office->company_id ? (int) $office->company_id : null;
+                    $context->allowedLocationIds = [$context->locationId];
+                    $context->allowedCompanyIds = $context->companyId ? [$context->companyId] : [];
                     $context->isGlobal = false;
+                } else {
+                    // A stale explicit selection must not silently become global.
+                    $context->isGlobal = false;
+                    $context->allowedLocationIds = [];
+                    $context->allowedCompanyIds = [];
                 }
+            } elseif ($selection !== null) {
+                $membership = app(MembershipContextResolver::class)->workingMembership((int) $user->id, $selection);
+                $context->isGlobal = false;
+                $context->locationId = $membership['location_id'] ?? null;
+                $context->companyId = $membership['company_id'] ?? null;
+                $context->membershipId = $membership['id'] ?? null;
+                $context->allowedLocationIds = $context->locationId ? [$context->locationId] : [];
+                $context->allowedCompanyIds = $context->companyId ? [$context->companyId] : [];
             }
 
             return $next($request);
         }
 
-        $context->isActive = true;
-        $context->isGlobal = false;
-
-        // NEW 3. Resolve Company Admin Operations
-        $companyAdmin = CompanyAdmin::where('user_id', $user->id)->first();
-        if ($companyAdmin) {
-            $context->isCompanyAdmin = true;
-            $context->companyId = $companyAdmin->company_id; // Restrict context to Admin's company
-        }
-
-        // 4. Resolve Active Working Context (For Local Offices)
-        $workingLocId = null;
-        if ($membershipId = session('gov_working_membership_id')) {
-            $membership = OfficeMembership::with('location')->where('user_id', $user->id)->where('status', 'active')->find($membershipId);
-            if ($membership) {
-                $context->membershipId = $membership->id;
-                $context->locationId = $membership->location_id;
-
-                // Only inherit the location's company if the user is NOT restricted as a Company Admin
-                if (! $context->isCompanyAdmin) {
-                    $context->companyId = $membership->location->company_id ?? null;
-                }
-                $workingLocId = $membership->location_id;
+        $organization = app(OrganizationContextResolver::class);
+        $memberships = app(MembershipContextResolver::class);
+        $adminCompany = $organization->companyForAdministrator((int) $user->id);
+        $context->isCompanyAdmin = $adminCompany !== null;
+        $context->companyId = $adminCompany;
+        $selection = session('gov_working_membership_id');
+        $membership = $memberships->workingMembership((int) $user->id, $selection);
+        if ($membership && (! $adminCompany || $membership['company_id'] === $adminCompany)) {
+            $context->membershipId = $membership['id'];
+            $context->locationId = $membership['location_id'];
+            $context->companyId = $adminCompany ?? $membership['company_id'];
+            $context->isHomeOffice = $membership['is_home_office'];
+        } elseif ($selection === null && ! $memberships->hasMemberships((int) $user->id)) {
+            // Native fallback is only for actors who have never had memberships.
+            $office = $user->location_id ? Location::withoutGlobalScopes()->whereNull('deleted_at')->find($user->location_id) : null;
+            if ($office && (! $adminCompany || (int) $office->company_id === $adminCompany)) {
+                $context->locationId = (int) $office->id;
+                $context->companyId = $adminCompany ?? ($office->company_id ? (int) $office->company_id : null);
             }
         }
 
-        // Fallback for native/new users
-        if (! $workingLocId) {
-            $context->locationId = $user->location_id;
-            if (! $context->isCompanyAdmin) {
-                $context->companyId = $user->company_id;
-            }
-            $workingLocId = $user->location_id;
-        }
-
-        // 5. Pre-Compute Hierarchy (Allowed Locations & Companies)
         if ($context->isCompanyAdmin) {
-
-            // Company Admin: Gets all locations strictly within their assigned Company.
-            $context->allowedLocationIds = Location::withoutGlobalScopes()
-                ->where('company_id', $context->companyId)
-                ->pluck('id')->toArray();
-
-            $context->allowedCompanyIds = [$context->companyId];
-
-        } elseif ($user->hasAccess('admin') && $user->company_id) {
-
-            // Legacy Native Snipe-IT Company Admin setup
-            $context->allowedLocationIds = Location::withoutGlobalScopes()
-                ->where('company_id', $user->company_id)
-                ->pluck('id')->toArray();
-
+            $context->allowedLocationIds = Location::withoutGlobalScopes()->whereNull('deleted_at')->where('company_id', $adminCompany)->pluck('id')->all();
+            $context->allowedCompanyIds = [$adminCompany];
+        } elseif (($locations = $organization->jurisdictionLocations((int) $user->id)) !== null) {
+            $context->allowedLocationIds = $locations;
             $context->allowedCompanyIds = null;
-
-        } elseif ($jurisdiction = IctJurisdiction::with('geoArea')->where('user_id', $user->id)->first()) {
-
-            // ICT Officer: Gets all locations within their Geographic Tree. Sees ALL Companies.
-            if ($jurisdiction->geoArea) {
-                $context->allowedLocationIds = LocationProfile::withoutGlobalScopes()
-                    ->whereIn('geo_area_id', function ($q) use ($jurisdiction) {
-                        $q->select('GeoAreaId')->from('gov_geo_areas')
-                            ->where('hid', 'like', $jurisdiction->geoArea->hid.'%');
-                    })->pluck('location_id')->toArray();
-            } else {
-                $context->allowedLocationIds = [];
-            }
-
-            $context->allowedCompanyIds = null;
-
         } else {
-            // Standard Employee/Storekeeper/Approver: Only sees their active working context
-            $context->allowedLocationIds = $workingLocId ? [$workingLocId] : [];
-
+            $context->allowedLocationIds = $context->locationId ? [$context->locationId] : [];
             $context->allowedCompanyIds = $context->companyId ? [$context->companyId] : [];
         }
 
-        // 6. RESOLVE RESPONSIBILITY & ADAPT BASE PERMISSIONS
-        $roleSlug = $this->assignmentResolver->resolveActiveRole($user->id, $context->locationId);
-        $permissionSet = $this->capabilityResolver->resolveSchema($roleSlug);
-
-        $context->effectivePermissions = $permissionSet;
-
-        // Apply base permissions (ex: Storekeeper or Approver capabilities)
-        $this->permissionAdapter->adaptAndInject($user, $permissionSet);
-
-        // NEW 7. LAYER COMPANY ADMIN PERMISSIONS
-        // If they are a company admin, append 'company_operations' onto their profile
+        $role = $this->assignmentResolver->resolveActiveRole((int) $user->id, $context->locationId);
+        $context->effectivePermissions = $this->capabilityResolver->resolveSchema($role);
         if ($context->isCompanyAdmin) {
-            $companyAdminPerms = $this->capabilityResolver->resolveSchema('company_admin');
-            $context->companyAdminPermissions = $companyAdminPerms;
-
-            // Merge into active set if internal merge method exists
-            if ($context->effectivePermissions && method_exists($context->effectivePermissions, 'merge')) {
-                $context->effectivePermissions->merge($companyAdminPerms);
-            }
-
-            // Layer the additional `company_operations` permission arrays into the User object
-            $this->permissionAdapter->adaptAndInject($user, $companyAdminPerms);
+            $context->companyAdminPermissions = $this->capabilityResolver->resolveSchema('company_admin');
+            $context->effectivePermissions->merge($context->companyAdminPermissions);
         }
+        // Inject the union once; a second injection would overwrite the local role.
+        $this->permissionAdapter->adaptAndInject($user, $context->effectivePermissions);
 
         return $next($request);
     }

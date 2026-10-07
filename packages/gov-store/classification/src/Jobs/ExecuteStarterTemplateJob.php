@@ -9,7 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use GovStore\Classification\Services\BulkAdoptionService;
 
-class ExecuteStarterTemplateJob implements ShouldQueue
+class ExecuteStarterTemplateJob implements ShouldQueue, \GovStore\TenantScope\Contracts\TenantScopedExecution
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -38,5 +38,11 @@ class ExecuteStarterTemplateJob implements ShouldQueue
             $this->scopeId, 
             $this->userId
         );
+    }
+
+    public function tenantExecution(): array
+    {
+        return ['actor_id' => $this->userId, 'scope_type' => $this->scopeType,
+            'scope_id' => $this->scopeId, 'ability' => 'catalog.office.adopt'];
     }
 }

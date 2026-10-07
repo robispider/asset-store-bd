@@ -34,6 +34,8 @@ return [
     'notifications' => 'হালনাগাদ', 'notification_request' => 'অফিসের অনুমতির একটি আবেদন পর্যালোচনার অপেক্ষায় আছে।',
     'notification_review' => 'অফিসের অনুমতির আপনার আবেদন পর্যালোচনা করা হয়েছে।', 'filter' => 'ফিল্টার', 'all' => 'সব',
     'abilities' => [
+        'tenant_scope_view' => 'জাতীয় টেন্যান্ট সীমানা দেখুন',
+        'tenant_scope_manage' => 'জাতীয় টেন্যান্ট সীমানা পরিবর্তন করুন',
         'committee_view' => 'কমিটি দেখুন',
         'committee_self' => 'আমার কমিটি',
         'committee_declare' => 'নিজের ঘোষণা জমা দিন',

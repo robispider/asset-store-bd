@@ -74,6 +74,9 @@ class TenantScope implements Scope
                     ->where('reference_type', $referenceSingular)
                     ->where('is_active', 1) 
                     ->where(function ($q) use ($context) {
+                        if (! $context->companyId && ! $context->locationId) {
+                            $q->whereRaw('1 = 0');
+                        }
                         if ($context->companyId > 0) {
                             $q->where('scope_type', 'company')->where('scope_id', $context->companyId);
                         }

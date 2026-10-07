@@ -11,7 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class RebuildTrackingProjectionJob implements ShouldQueue
+class RebuildTrackingProjectionJob implements ShouldQueue, \GovStore\TenantScope\Contracts\GlobalTenantMaintenance
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 

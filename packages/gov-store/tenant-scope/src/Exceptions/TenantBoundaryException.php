@@ -3,8 +3,9 @@
 namespace GovStore\TenantScope\Exceptions;
 
 use Exception;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
-class TenantBoundaryException extends Exception
+class TenantBoundaryException extends Exception implements HttpExceptionInterface
 {
     protected string $reasonCode;
 
@@ -20,5 +21,15 @@ class TenantBoundaryException extends Exception
     public function getReasonCode(): string
     {
         return $this->reasonCode;
+    }
+
+    public function getStatusCode(): int
+    {
+        return in_array($this->getCode(), [403, 404, 409, 422], true) ? $this->getCode() : 403;
+    }
+
+    public function getHeaders(): array
+    {
+        return [];
     }
 }

@@ -78,6 +78,8 @@ class OfficeMembershipServiceProvider extends ServiceProvider
 
     public function register()
     {
+        $this->app->bind(\GovStore\TenantScope\Contracts\MembershipContextResolver::class,
+            \GovStore\OfficeMembership\Services\TenantMembershipResolver::class);
         // Bind the decoupled membership service helper
         $this->app->singleton(OfficeMembershipService::class, function ($app) {
             return new OfficeMembershipService;

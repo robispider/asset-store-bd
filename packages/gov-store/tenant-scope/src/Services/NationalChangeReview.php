@@ -83,6 +83,17 @@ class NationalChangeReview
 
     private function currentConfiguration(Request $request): array
     {
+        if ($request->routeIs('gov.scope.save-strategy')) {
+            return \GovStore\TenantScope\Models\TenantScopeConfig::orderBy('reference_type')->get()->toArray();
+        }
+        if ($request->routeIs('gov.scope.mappings.*')) {
+            if ($request->routeIs('gov.scope.mappings.destroy')) {
+                return \GovStore\TenantScope\Models\TenantScopeMapping::find($request->route('id'))?->toArray() ?? [];
+            }
+
+            return \GovStore\TenantScope\Models\TenantScopeMapping::where('reference_type', $request->input('reference_type'))
+                ->where('reference_id', $request->input('reference_id'))->orderBy('id')->get()->toArray();
+        }
         if ($request->routeIs('storeops.admin.rules.*')) {
             if ($request->routeIs('storeops.admin.rules.unassign')) {
                 return ProfileAssignment::with('profile')->find($request->route('id'))?->toArray() ?? [];

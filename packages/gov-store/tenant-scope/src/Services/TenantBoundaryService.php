@@ -9,7 +9,7 @@ use GovStore\TenantScope\Policies\AssetBoundaryPolicy;
 use GovStore\TenantScope\Policies\CategoryBoundaryPolicy;
 use GovStore\TenantScope\Validators\BusinessRuleValidator;
 use GovStore\TenantScope\Validators\ResponsibilityRegistry;
-use GovStore\OfficeMembership\Models\OfficeResponsibility;
+use GovStore\TenantScope\Contracts\MembershipContextResolver;
 use Illuminate\Support\Facades\Log;
 
 class TenantBoundaryService
@@ -22,19 +22,30 @@ class TenantBoundaryService
         
         $context = app(TenantContext::class);
 
-        // Bypass verification if context is inactive OR Global
-        if (!$context->isActive || $context->isGlobal) {
+        if (!$context->isActive) {
             return; 
         }
 
         // 1. Enforce Primary Ownership Verification (Core Scoping)
         $policy = $this->resolvePolicy($model);
+        if ($context->isGlobal && ! ($policy instanceof AssetBoundaryPolicy)) {
+            return; // National reference administration retains its narrower guards.
+        }
         if ($policy) {
             
             // Force/inject correct ownership values if creating a new transactional record
             if ($action === 'create' && isset($policy->tenantColumns)) {
-                if (in_array('company_id', $policy->tenantColumns)) $model->company_id = $context->companyId;
-                if (in_array('location_id', $policy->tenantColumns)) $model->location_id = $context->locationId;
+                if ($context->isGlobal || ! $context->locationId || ! $context->companyId) {
+                    throw new TenantBoundaryException(__('tenantops::ops.exception_out_of_bounds'), 'OUT_OF_BOUNDS', 403);
+                }
+                foreach (['company_id' => $context->companyId, 'location_id' => $context->locationId] as $column => $id) {
+                    if (app(SchemaKnowledge::class)->hasColumn($model, $column)) {
+                        if ($model->{$column} !== null && (int) $model->{$column} !== $id) {
+                            throw new TenantBoundaryException(__('tenantops::ops.exception_out_of_bounds'), 'OUT_OF_BOUNDS', 403);
+                        }
+                        $model->{$column} = $id;
+                    }
+                }
             }
 
             // Verify modification rights
@@ -78,11 +89,8 @@ class TenantBoundaryService
                 return;
             }
 
-            $responsibility = OfficeResponsibility::where('location_id', $context->locationId)
-                ->where('user_id', $user->id)
-                ->first();
-
-            $canCheckout = $responsibility && ResponsibilityRegistry::can($responsibility->role_slug, 'checkout_assets');
+            $roles = app(MembershipContextResolver::class)->responsibilityRoles((int) $user->id, $context->locationId);
+            $canCheckout = collect($roles)->contains(fn ($role) => ResponsibilityRegistry::can($role, 'checkout_assets'));
 
             if (!$canCheckout) {
                 $this->logViolation($asset, 'checkout');

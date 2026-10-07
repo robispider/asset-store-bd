@@ -1479,6 +1479,7 @@
                                             </li>
                                         @endcan
                                         
+                                        @includeIf('govscope::hooks.my-access')
                                         <li class="divider"></li>
                                         <li>
                                             <a href="{{ route('logout.get') }}"
@@ -1945,8 +1946,7 @@
                                 </a>
                             </li>
                         @endcan
-
-
+                        @includeIf('govscope::hooks.sidebar')
                     </ul>
                 </section>
                 <!-- /.sidebar -->
@@ -2035,6 +2035,7 @@
 
                 <section class="content" id="main" tabindex="-1" style="padding-top: 0px;">
 
+                    @includeIf('govscope::hooks.rollout')
                     <!-- Notifications -->
                     <div class="row">
                         @if (config('app.lock_passwords'))
@@ -2178,6 +2179,7 @@
         <script src="{{ url('js/select2/i18n/'.Helper::mapBackToLegacyLocale(app()->getLocale()).'.js') }}"></script>
 
         {{-- Page level javascript --}}
+        @includeIf('govscope::hooks.unified-menu')
         @stack('js')
 
         @section('moar_scripts')

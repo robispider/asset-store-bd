@@ -2,6 +2,8 @@
 
 // Only explicitly named abilities are registered; Snipe-IT's gates stay intact.
 return [
+    'tenant.scope.view' => ['roles' => ['superuser'], 'national' => true],
+    'tenant.scope.manage' => ['roles' => ['superuser'], 'national' => true],
     'committee.view' => ['roles' => ['office_admin', 'committee_registrar', 'storekeeper', 'primary_approver', 'final_approver', 'company_admin', 'ict_officer']],
     'committee.self' => ['roles' => ['authenticated'], 'enforce' => true],
     'committee.declare' => ['roles' => ['authenticated'], 'enforce' => true],

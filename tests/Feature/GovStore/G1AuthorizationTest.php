@@ -110,7 +110,7 @@ class G1AuthorizationTest extends TestCase
     {
         $count = 0;
         foreach (Route::getRoutes() as $route) {
-            if (! preg_match('#^(gov-store/operations(?:/|$)|gov-store/committees(?:/|$)|gov-store/access(?:/|$)|gov-requests(?:/|$)|admin/catalog(?:/|$))#', $route->uri())) {
+            if (! preg_match('#^(gov-store/operations(?:/|$)|gov-store/admin/scope(?:/|$)|gov-store/committees(?:/|$)|gov-store/access(?:/|$)|gov-requests(?:/|$)|admin/catalog(?:/|$))#', $route->uri())) {
                 continue;
             }
             $abilities = array_values(array_filter($route->gatherMiddleware(), fn ($m) => str_starts_with($m, 'gov.can:')));
@@ -168,7 +168,7 @@ class G1AuthorizationTest extends TestCase
         $user = $this->actor();
         $checked = 0;
         foreach (Route::getRoutes() as $route) {
-            if (! preg_match('#^(gov-store/operations(?:/|$)|admin/catalog(?:/|$))#', $route->uri()) || ! array_intersect($route->methods(), ['POST', 'DELETE', 'PUT', 'PATCH'])) {
+            if (! preg_match('#^(gov-store/operations(?:/|$)|gov-store/admin/scope(?:/|$)|admin/catalog(?:/|$))#', $route->uri()) || ! array_intersect($route->methods(), ['POST', 'DELETE', 'PUT', 'PATCH'])) {
                 continue;
             }
             $middleware = collect($route->gatherMiddleware())->first(fn ($m) => str_starts_with($m, 'gov.can:'));
@@ -314,6 +314,20 @@ class G1AuthorizationTest extends TestCase
 
     public function test_office_initialization_preserves_service_references_and_clears_global_flags(): void
     {
+        Schema::create('gov_office_memberships', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('user_id');
+            $table->integer('location_id');
+            $table->boolean('is_home_office')->default(false);
+            $table->string('status');
+            $table->timestamps();
+        });
+        Schema::create('locations', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('company_id');
+            $table->timestamp('deleted_at')->nullable();
+        });
+        DB::table('locations')->insert(['id' => 10, 'company_id' => 20]);
         $user = $this->actor();
         $user->location_id = 10;
         $user->company_id = 20;

@@ -39,12 +39,17 @@ class ProvisionStarterCatalog
                 return;
             }
 
+            if (! isset($event->userId) || ! filter_var($event->userId, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]])) {
+                Log::warning('Starter catalog requires an explicit initiating actor.');
+                return;
+            }
+
             // 3. Dispatch the background job to provision the catalog for this specific location
             ExecuteStarterTemplateJob::dispatch(
                 $codes, 
                 'location', 
                 $location->id, 
-                $event->userId ?? 1 // Fallback to system admin user if not provided
+                (int) $event->userId
             );
 
             Log::info("Dispatched Starter Template job for Location ID: {$location->id} with " . count($codes) . " categories.");
