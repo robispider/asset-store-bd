@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "committee.authorization-boundaries",
+  "title": "An ordinary employee reaches only the personal committee page and is offered no registrar or catalogue controls",
+  "features": ["committee.authorization", "committee.mine"],
+  "tags": ["seeded", "readonly", "security"],
+  "execution": {"capability": "observe", "language": "en-US", "timeoutMs": 90000},
+  "fixtures": {
+    "office": {"requirements": {"operational": true}},
+    "actors": {
+      "employee": {
+        "capabilities": {"allOf": ["requests.submit"], "noneOf": ["committee.view", "committee.manage", "committee.types.manage"]},
+        "office": "office",
+        "activeMembership": true
+      }
+    }
+  },
+  "steps": [
+    {"action": "observe", "check": "committee.mine", "args": {"id": "${actors.employee.id}"}, "as": "tenures"},
+    {"action": "observe", "check": "committee.visibility", "args": {"officeId": "${fixtures.office.id}", "companyId": "${fixtures.office.company_id}"}, "as": "visible"},
+    {"use": "auth.login", "with": {"actor": "employee"}},
+    {"action": "probe", "path": "/gov-store/committees/new", "as": "newStatus", "expectStatusByMode": {"shadow": [200, 302, 403, 404], "enforce": [302, 403, 404]}},
+    {"action": "probe", "path": "/gov-store/committees/transfers", "as": "transferStatus", "expectStatusByMode": {"shadow": [200, 302, 403, 404], "enforce": [302, 403, 404]}},
+    {"action": "probe", "path": "/gov-store/committees/registry", "as": "registryStatus", "expectStatusByMode": {"shadow": [200, 302, 403, 404], "enforce": [302, 403, 404]}},
+    {"action": "probe", "path": "/gov-store/committees/admin/purposes", "as": "purposeStatus", "expectStatusByMode": {"shadow": [200, 302, 403, 404], "enforce": [302, 403, 404]}},
+    {"action": "probe", "path": "/gov-store/committees/${observed.visible.foreignId}", "expectStatus": [302, 403, 404], "as": "foreignStatus"},
+    {"action": "goto", "route": "committee.mine"},
+    {"action": "assert", "target": "committee.mineHeading", "test": "visible"},
+    {"action": "assert", "target": "committee.tabRules", "test": "hidden"},
+    {"action": "compare", "actual": "${observed.tenures.current}", "equals": 0, "note": "Precondition: the chosen employee serves on no current committee."},
+    {"action": "assert", "target": "committee.mineEmpty", "test": "visible"},
+    {"action": "goto", "route": "committee.dashboard"},
+    {"action": "assert", "target": "committee.deskNewOrder", "test": "hidden", "modes": ["enforce"]},
+    {"action": "observe", "check": "committee.visibility", "args": {"officeId": "${fixtures.office.id}", "companyId": "${fixtures.office.company_id}"}, "as": "visibleAfter"},
+    {"action": "compare", "actual": "${observed.visibleAfter.count}", "equals": "${observed.visible.count}"}
+  ],
+  "cleanup": {"policy": "no-business-records-created"}
+}

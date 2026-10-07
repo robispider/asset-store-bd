@@ -3,6 +3,19 @@
 @section('title', __('requestlabels::requests.fulfillment_register_show_title_prefix') . $serviceRequest->request_number)
 
 @section('content')
+@if($serviceRequest->return_requested_at)
+    <div class="alert alert-info">
+        <p>{{ __('requestlabels::requests.return_help') }}</p>
+        @if($serviceRequest->return_document_id)
+            <a href="{{ route('storeops.documents.workspace', ['type'=>'receipt', 'id'=>$serviceRequest->return_document_id]) }}">{{ __('requestlabels::requests.open_return_receipt') }}</a>
+        @else
+            <form action="{{ route('gov.requests.fulfillment_register.return', $serviceRequest->id) }}" method="POST">
+                @csrf
+                <button class="btn btn-primary">{{ __('requestlabels::requests.draft_return_receipt') }}</button>
+            </form>
+        @endif
+    </div>
+@endif
 <div class="row">
     <div class="col-md-8">
         <div class="box box-primary">
@@ -12,20 +25,20 @@
             <div class="box-body">
                 <table class="table table-striped">
                     <tr>
-                        <th style="width: 200px;">Request Number</th>
+                        <th style="width: 200px;">{{ __('requestlabels::requests.request_number') }}</th>
                         <td><strong class="text-blue">{{ $serviceRequest->request_number }}</strong></td>
                     </tr>
                     <tr>
-                        <th>Requested By</th>
-                        <td>{{ $serviceRequest->requester->present()->fullName ?? 'N/A' }}</td>
+                        <th>{{ __('requestlabels::requests.requester') }}</th>
+                        <td>{{ $serviceRequest->requester->present()->fullName ?? __('requestlabels::requests.not_available') }}</td>
                     </tr>
                     <tr>
-                        <th>Purpose</th>
+                        <th>{{ __('requestlabels::requests.purpose') }}</th>
                         <td>{{ $serviceRequest->purpose }}</td>
                     </tr>
                     <tr>
-                        <th>Completion Timestamp</th>
-                        <td>{{ $serviceRequest->closed_at ? $serviceRequest->closed_at->format('d M Y, h:i A') : 'N/A' }}</td>
+                        <th>{{ __('requestlabels::requests.completion_date') }}</th>
+                        <td>{{ $serviceRequest->closed_at ? $serviceRequest->closed_at->format('d M Y, h:i A') : __('requestlabels::requests.not_available') }}</td>
                     </tr>
                 </table>
             </div>
@@ -40,13 +53,13 @@
                     <div class="panel panel-default">
                         <div class="panel-heading" style="background-color: #f9fafc;">
                             <strong>{{ __('requestlabels::requests.fulfillment_register_show_doc_label') }}</strong> <span class="text-green">{{ $issue->issue_no }}</span>
-                            <span class="pull-right text-muted">Issued By: {{ $issue->creator->first_name ?? 'System' }} on {{ $issue->created_at->format('d M Y') }}</span>
+                            <span class="pull-right text-muted">{{ __('requestlabels::requests.executed_by') }}: {{ $issue->creator->first_name ?? __('requestlabels::requests.system') }} — {{ $issue->created_at->format('d M Y') }}</span>
                         </div>
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
-                                    <th>Item Type</th>
-                                    <th>Quantity Deducted</th>
+                                    <th>{{ __('requestlabels::requests.item_type') }}</th>
+                                    <th>{{ __('requestlabels::requests.quantity') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -79,10 +92,10 @@
                             <div class="timeline-item" style="box-shadow: none; border: 1px solid #eee;">
                                 <span class="time"><i class="fa fa-clock"></i> {{ $event->created_at->format('H:i') }}</span>
                                 <h3 class="timeline-header" style="font-size: 13px; font-weight: bold;">
-                                    {{ ucwords(str_replace('_', ' ', $event->event_type)) }}
+                                    {{ __('requestlabels::requests.event_'.$event->event_type) }}
                                 </h3>
                                 <div class="timeline-body" style="padding: 5px 10px; font-size: 12px;">
-                                    <strong>Executed by: {{ $event->user->first_name }}</strong><br>
+                                    <strong>{{ __('requestlabels::requests.executed_by') }}: {{ $event->user->first_name }}</strong><br>
                                     @if(isset($event->details['message']))
                                         {{ $event->details['message'] }}
                                     @endif

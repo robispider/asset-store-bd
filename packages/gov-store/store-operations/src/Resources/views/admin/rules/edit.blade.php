@@ -2,6 +2,9 @@
 @section('title', 'Policy Builder Canvas')
 
 @section('content')
+@if($policy->published_by)
+<div class="alert alert-info">{{ __('tenantops::access.published') }}: {{ $policy->published_by }} — {{ $policy->published_at }} — {{ $policy->publish_reason }}</div>
+@endif
 <style>
     .builder-header { background: #fff; padding: 20px; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 20px; }
     .rule-group { background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 20px; overflow: hidden; }

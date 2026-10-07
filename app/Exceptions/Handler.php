@@ -5,6 +5,9 @@ namespace App\Exceptions;
 use App\Helpers\Helper;
 use ArieTimmerman\Laravel\SCIMServer\Exceptions\SCIMException;
 use Carbon\Exceptions\InvalidFormatException;
+use GovStore\TenantScope\Services\AccessAudit;
+use GovStore\TenantScope\Services\AccessDecision;
+use GovStore\TenantScope\Services\GovAccess;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -15,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Session\TokenMismatchException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Intervention\Image\Exception\NotSupportedException;
 use JsonException;
@@ -23,6 +27,7 @@ use League\OAuth2\Server\Exception\OAuthServerException;
 use Livewire\Exceptions\ComponentNotFoundException;
 use Livewire\Exceptions\PublicPropertyNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -76,6 +81,58 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $e)
     {
+        if ($e instanceof \GovStore\TenantScope\Exceptions\TenantBoundaryException) {
+            if (app()->bound('debugbar')) {
+                app('debugbar')->disable();
+            }
+            $reference = (string) Str::uuid();
+            Log::warning('GovStore tenant boundary denied', ['reference_id' => $reference,
+                'reason' => $e->getReasonCode(), 'user_id' => $request->user()?->id]);
+            $message = __('tenantops::access.failed', ['reference' => $reference]);
+
+            return $request->ajax() || $request->expectsJson()
+                ? response()->json(['error' => $message, 'reference_id' => $reference], $e->getStatusCode())
+                : response()->view('govscope::access.failure', compact('message', 'reference'), $e->getStatusCode());
+        }
+        // GovStore declares real HTTP failures; preserve Snipe-IT's legacy API contract elsewhere.
+        $govAbility = collect($request->route()?->gatherMiddleware() ?? [])
+            ->first(fn ($middleware) => is_string($middleware) && str_starts_with($middleware, 'gov.can:'));
+        if ($govAbility) {
+            if ($e instanceof ValidationException) {
+                if ($request->ajax() || $request->expectsJson()) {
+                    return response()->json(['message' => __('tenantops::access.validation_failed'), 'errors' => $e->errors()], 422);
+                }
+
+                return redirect()->back()->withInput()->withErrors($e->errors());
+            }
+            if ($e instanceof ModelNotFoundException || ($e instanceof HttpExceptionInterface && $e->getStatusCode() === 404)) {
+                if ($request->ajax() || $request->expectsJson()) {
+                    return response()->json(['message' => 'Not found'], 404);
+                }
+
+                return response()->view('layouts/basic', ['content' => view('errors/404')], 404);
+            }
+            if ($e instanceof AuthorizationException || ($e instanceof HttpExceptionInterface && $e->getStatusCode() === 403)) {
+                $ability = substr($govAbility, 8);
+                $decision = new AccessDecision(false, $ability, 'role_required', app(GovAccess::class)->roles($request->user()));
+                $reference = app(AccessAudit::class)->record($decision, 'denied');
+                $payload = app(GovAccess::class)->payload($decision, $reference);
+
+                return $request->ajax() || $request->expectsJson() ? response()->json($payload, 403) : response()->view('govscope::access.denied', compact('payload'), 403);
+            }
+            if (! $e instanceof AuthenticationException && ! $e instanceof TokenMismatchException) {
+                $reference = (string) Str::uuid();
+                $status = $e instanceof HttpExceptionInterface ? $e->getStatusCode() : 500;
+                if ($status >= 500) {
+                    Log::error('GovStore request failed', ['reference_id' => $reference, 'exception' => $e]);
+                }
+                $message = __('tenantops::access.failed', ['reference' => $reference]);
+
+                return $request->ajax() || $request->expectsJson()
+                    ? response()->json(['error' => $message, 'reference_id' => $reference], $status)
+                    : response()->view('govscope::access.failure', compact('message', 'reference'), $status);
+            }
+        }
 
         // Livewire tried to set a property that doesn't exist (e.g. stale browser state sending a bare "0" as a property name)
         if ($e instanceof PublicPropertyNotFoundException) {

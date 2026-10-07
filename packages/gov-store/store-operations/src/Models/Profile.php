@@ -2,16 +2,17 @@
 
 namespace GovStore\StoreOperations\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use GovStore\StoreOperations\Enums\PolicyStatus;
+use Illuminate\Database\Eloquent\Model;
 
 class Profile extends Model
 {
     protected $table = 'gov_profiles';
 
     protected $fillable = [
-        'name', 'scope', 'owner_type', 'owner_id', 
-        'status', 'version', 'company_id', 'location_id'
+        'name', 'scope', 'owner_type', 'owner_id',
+        'status', 'version', 'company_id', 'location_id', 'published_by', 'published_at', 'publish_reason',
+        'lineage_id',
     ];
 
     protected $casts = [

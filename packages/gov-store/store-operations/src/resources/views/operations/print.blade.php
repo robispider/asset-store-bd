@@ -32,6 +32,9 @@
         </div>
 
         <div class="header">
+            @if($document->status !== 'POSTED')
+            <p style="font-size: 20px; font-weight: bold;">{{ trans('tenantops::access.draft_print', [], 'bn-BD') }}<br>{{ trans('tenantops::access.draft_print', [], 'en-US') }}</p>
+            @endif
             <h1 class="doc-title">
                 {{ strtoupper($type) }} NOTE
             </h1>
@@ -42,8 +45,9 @@
         <div class="doc-meta">
             <div class="meta-box">
                 <strong>Document No:</strong> {{ $document->getDocumentNumber() }}<br>
-                <strong>Date Posted:</strong> {{ \Carbon\Carbon::parse($document->updated_at)->format('d F Y, h:i A') }}<br>
-                <strong>Operator:</strong> {{ $document->creator->first_name ?? 'System' }}
+                <strong>Date Posted:</strong> {{ $document->posted_at ?? '—' }}<br>
+                <strong>{{ __('tenantops::access.drafted_by') }}:</strong> {{ $document->drafter?->getFullNameAttribute() ?? $document->creator?->getFullNameAttribute() ?? '—' }}<br>
+                <strong>{{ __('tenantops::access.posted_by') }}:</strong> {{ $document->poster?->getFullNameAttribute() ?? '—' }}
             </div>
             <div class="meta-box" style="text-align: right;">
                 <strong>Source:</strong> {{ $document->purchase_type ?? 'Standard' }}<br>
@@ -98,7 +102,7 @@
         </div>
 
         <div class="audit-trail">
-            <strong>System Audit Stamp:</strong> Document posted securely to Gov-Store Immutable Ledger. <br>
+            <strong>System Audit Stamp:</strong> {{ $document->status === 'POSTED' ? 'Document posted to Gov-Store Ledger.' : __('tenantops::access.draft_print') }} <br>
             UUID: {{ $document->id }} | Hash: {{ sha1($document->id . $document->created_at) }}
         </div>
     </div>

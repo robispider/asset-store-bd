@@ -6,7 +6,7 @@ $(document).ready(function() {
 
     @php
         $user = auth()->user();
-        $isAdmin = $user->isSuperUser() || $user->hasAccess('admin');
+        $isAdmin = $user->isSuperUser();
 
         $activeMemberships = \GovStore\OfficeMembership\Models\OfficeMembership::with('location')
             ->where('user_id', $user->id)
@@ -21,6 +21,11 @@ $(document).ready(function() {
         
         $currentLocId = null;
         $currentWorkingName = 'Global Overview';
+        $resolvedContext = app(\GovStore\TenantScope\Contexts\TenantContext::class);
+        if ($isAdmin && $resolvedContext->locationId) {
+            $currentLocId = $resolvedContext->locationId;
+            $currentWorkingName = \App\Models\Location::withoutGlobalScopes()->find($currentLocId)?->name ?? 'Global Overview';
+        }
         
         if ($currentMembershipId) {
             $activeMem = $activeMemberships->where('id', $currentMembershipId)->first();

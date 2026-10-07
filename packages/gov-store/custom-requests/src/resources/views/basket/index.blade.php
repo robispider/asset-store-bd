@@ -23,10 +23,10 @@
                     <table class="table table-striped table-hover">
                         <thead>
                             <tr>
-                                <th>Item</th>
-                                <th>Type</th>
-                                <th style="width: 120px; text-align: center;">Requested Qty</th>
-                                <th style="width: 60px;">Action</th>
+                                <th>{{ __('requestlabels::requests.item_details') }}</th>
+                                <th>{{ __('requestlabels::requests.item_type') }}</th>
+                                <th style="width: 120px; text-align: center;">{{ __('requestlabels::requests.requested') }}</th>
+                                <th style="width: 60px;">{{ __('requestlabels::requests.action') }}</th>
                             </tr>
                         </thead>
                        <tbody>
@@ -36,23 +36,32 @@
                                         // Leverage our Phase 2 factory to safely fetch the correct display name
                                         $adapter = \GovStore\CustomRequests\Factories\RequestableFactory::make($item->requested_type, $item->requested_id);
                                         $name = $adapter->getDisplayName();
+                                        $stock = app(\GovStore\CustomRequests\Services\RequestInventory::class)->validateItem($item->requested_type, $item->requested_id);
+                                        $available = app(\GovStore\CustomRequests\Services\RequestInventory::class)->available($item->requested_type, $stock, app(\GovStore\TenantScope\Contexts\TenantContext::class)->locationId);
                                     } catch (\Exception $e) {
-                                        $name = 'Unknown Item';
+                                        $name = __('requestlabels::requests.unknown_item');
+                                        $available = 0;
                                     }
                                 @endphp
                                 <tr>
-                                    <td style="vertical-align: middle;"><strong>{{ $name }}</strong></td>
+                                    <td style="vertical-align: middle;">
+                                        <strong>{{ $name }}</strong>
+                                        <small class="help-block">{{ __('requestlabels::requests.stock_available') }}: {{ $available }}</small>
+                                        @if($item->requested_qty > $available)
+                                            <p class="text-warning">{{ __('requestlabels::requests.insufficient_available_stock') }}</p>
+                                        @endif
+                                    </td>
                                    <td style="vertical-align: middle;">
-                                        <span class="label label-info">{{ ucfirst($item->requested_type) }}</span>
+                                        <span class="label label-info">{{ __('requestlabels::requests.type_'.$item->requested_type) }}</span>
                                     </td>
                                     <td style="vertical-align: middle; text-align: center;">
                                         <!-- Modern Auto-saving Input Field unlocked for ALL items -->
                                         <div class="qty-wrapper" style="display: inline-flex; align-items: center; gap: 8px;">
-                                            <input type="number" 
-                                                   class="form-control input-sm text-center basket-qty-input" 
-                                                   data-item-id="{{ $item->id }}" 
-                                                   value="{{ $item->requested_qty }}" 
-                                                   min="1" 
+                                            <input aria-label="{{ __('requestlabels::requests.requested') }} — {{ $name }}" type="number"
+                                                   class="form-control input-sm text-center basket-qty-input"
+                                                   data-item-id="{{ $item->id }}"
+                                                   value="{{ $item->requested_qty }}"
+                                                   min="1" max="10000"
                                                    style="width: 70px; margin: 0 auto; border: 1px solid #ccc; border-radius: 4px;">
                                             <span class="save-status-indicator" data-item-id="{{ $item->id }}" style="font-size: 11px; color: #555; width: 45px; text-align: left;"></span>
                                         </div>
@@ -84,13 +93,13 @@
                     <div class="form-group">
                         <label for="request_type">{{ __('requestlabels::requests.basket_index_label_request_type') }} <span class="text-danger">*</span></label>
                         <select name="request_type" id="request_type" class="form-control" required>
-                            <option value="new_employee">New Employee Setup</option>
-                            <option value="replacement">Equipment Replacement</option>
-                            <option value="project">Project Requirement</option>
-                            <option value="office_setup">Office Relocation / Setup</option>
-                            <option value="repair">Repair / Maintenance</option>
-                            <option value="emergency">Emergency Request</option>
-                            <option value="other" selected>Other / General Supply</option>
+                            <option value="new_employee">{{ __('requestlabels::requests.request_type_new_employee') }}</option>
+                            <option value="replacement">{{ __('requestlabels::requests.request_type_replacement') }}</option>
+                            <option value="project">{{ __('requestlabels::requests.request_type_project') }}</option>
+                            <option value="office_setup">{{ __('requestlabels::requests.request_type_office_setup') }}</option>
+                            <option value="repair">{{ __('requestlabels::requests.request_type_repair') }}</option>
+                            <option value="emergency">{{ __('requestlabels::requests.request_type_emergency') }}</option>
+                            <option value="other" selected>{{ __('requestlabels::requests.request_type_other') }}</option>
                         </select>
                     </div>
 
@@ -142,47 +151,5 @@
 @endsection
 
 @section('moar_scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Dynamic background auto-saver on quantity edit (600ms debounce)
-    let autoSaveTimer = null;
 
-    document.querySelectorAll('.basket-qty-input').forEach(input => {
-        input.addEventListener('input', function() {
-            let itemId = this.dataset.itemId;
-            let qty = this.value;
-            let statusIndicator = document.querySelector(`.save-status-indicator[data-item-id="${itemId}"]`);
-
-            if (qty < 1) return;
-
-            statusIndicator.innerHTML = '<i class="fas fa-spinner fa-spin text-muted"></i>';
-
-            clearTimeout(autoSaveTimer);
-            autoSaveTimer = setTimeout(function() {
-                fetch('{{ route("gov.requests.basket.update") }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: JSON.stringify({ item_id: itemId, qty: qty })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        statusIndicator.innerHTML = '<span class="text-success"><i class="fas fa-check"></i></span>';
-                        setTimeout(() => { statusIndicator.innerHTML = ''; }, 1500);
-                    } else {
-                        statusIndicator.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle"></i></span>';
-                    }
-                })
-                .catch(err => {
-                    statusIndicator.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle"></i></span>';
-                });
-            }, 600);
-        });
-    });
-});
-</script>
 @endsection

@@ -2,11 +2,12 @@
 
 namespace GovStore\Classification\Http\Controllers;
 
-use Illuminate\Routing\Controller;
-use Illuminate\Http\Request;
+use Exception;
 use GovStore\Classification\Services\BulkAdoptionService;
 use GovStore\TenantScope\Contexts\TenantContext;
-use Exception;
+use GovStore\TenantScope\Services\ActionFailure;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 
 class BulkAdoptionController extends Controller
 {
@@ -41,20 +42,20 @@ class BulkAdoptionController extends Controller
         try {
             $scope = $this->resolveScope($tenantContext);
             $summary = $this->service->preview(
-                $request->codes, 
-                $scope['type'], 
+                $request->codes,
+                $scope['type'],
                 $scope['id'],
                 $tenantContext->companyId,
                 $tenantContext->locationId
             );
-            
+
             return response()->json([
                 'success' => true,
                 'summary' => $summary,
-                'target_scope' => ucfirst($scope['type'])
+                'target_scope' => ucfirst($scope['type']),
             ]);
         } catch (Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 403);
+            return response()->json(['success' => false, 'message' => app(ActionFailure::class)->message($e)], 403);
         }
     }
 
@@ -70,15 +71,15 @@ class BulkAdoptionController extends Controller
         try {
             $scope = $this->resolveScope($tenantContext);
             $result = $this->service->execute(
-                $request->items, 
-                $scope['type'], 
-                $scope['id'], 
+                $request->items,
+                $scope['type'],
+                $scope['id'],
                 auth()->id()
             );
-            
+
             return response()->json($result);
         } catch (Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+            return response()->json(['success' => false, 'message' => app(ActionFailure::class)->message($e)], 500);
         }
     }
 }

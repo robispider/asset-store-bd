@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "description": "Features, required journeys and coverage status. 'implemented' means the JSON exists and validates; 'verified' means a recorded live run passed on the revision in that run's provenance.json.",
+  "features": [
+    {
+      "id": "requests.catalog",
+      "title": "Request catalog and progress counts",
+      "journeys": [{"id": "requests.catalog-progress-observation", "kind": "seeded-readonly", "status": "verified-live"}],
+      "missing": ["bilingual (bn-BD) labels", "catalog filtering/pagination", "stock shown vs persisted availability"]
+    },
+    {
+      "id": "requests.authorization",
+      "title": "Approver/fulfillment/policy screens denied or empty for an ordinary employee",
+      "journeys": [{"id": "requests.authorization-boundaries", "kind": "seeded-readonly", "status": "verified-live"}],
+      "notes": "Access mode is shadow: approver and fulfillment screens load (200/302) but offer no actionable rows; enforce mode must deny. Enforce-mode expectations are declared but not exercised live.",
+      "missing": ["foreign-office/company actors", "direct request to another office's request id"]
+    },
+    {
+      "id": "requests.submit-approve-fulfill",
+      "title": "Request submit, primary approval and fulfillment",
+      "journeys": [
+        {"id": "requests.basket-validation", "kind": "mutation", "status": "verified-live"},
+        {"id": "requests.submit-approve", "kind": "mutation", "status": "verified-live"}
+      ],
+      "missing": ["final-approver branch (policy dependent)", "fulfillment/issue and stock ledger effects", "rejection and partial approval", "withdraw/receive/return", "boundary quantities min-1/max+1"],
+      "notes": "Submitted and approved requests have no reversal lifecycle and are retained and reported by number."
+    },
+    {
+      "id": "inventory.consumables",
+      "title": "Native consumable inventory (read)",
+      "journeys": [{"id": "inventory.seeded-consumable-observation", "kind": "seeded-readonly", "status": "blocked-no-actor"}],
+      "notes": "Requires native consumables.view; no seeded actor holds it, so the journey is blocked with fixtures.unsatisfied-requirements (see suite native-inventory)."
+    },
+    {
+      "id": "committee.registry",
+      "title": "Committee desk and registry for the working office",
+      "journeys": [{"id": "committee.desk-registry-observation", "kind": "seeded-readonly", "status": "verified-live"}],
+      "missing": ["bn-BD labels", "registry pagination beyond 20 rows", "status/type filters", "desk attention and coverage rows"]
+    },
+    {
+      "id": "committee.authorization",
+      "title": "Committee office/company boundary and role-gated screens",
+      "journeys": [
+        {"id": "committee.foreign-committee-boundary", "kind": "seeded-readonly", "status": "verified-live"},
+        {"id": "committee.authorization-boundaries", "kind": "seeded-readonly", "status": "verified-live"}
+      ],
+      "notes": "Access mode is shadow: registrar-only GET screens (new, transfers, registry, purposes) load for an ordinary employee; enforce mode must deny and is declared but not exercised live. The foreign-committee boundary (404) holds in both modes.",
+      "missing": ["enforce-mode denials exercised live", "mutation endpoints denied (live probe supports GET only)", "private order/declaration file access for another office"]
+    },
+    {
+      "id": "committee.mine",
+      "title": "My committees page for someone who serves on none",
+      "journeys": [{"id": "committee.authorization-boundaries", "kind": "seeded-readonly", "status": "verified-live"}],
+      "missing": ["member with a current appointment", "past committees", "declaration upload", "own order file download"]
+    },
+    {
+      "id": "committee.history",
+      "title": "Committee history and roster as of a selected date",
+      "journeys": [{"id": "committee.record-history-print-observation", "kind": "seeded-readonly", "status": "verified-live"}],
+      "missing": ["date changes and history filter interactions"]
+    },
+    {
+      "id": "committee.print",
+      "title": "Printable committee roster",
+      "journeys": [{"id": "committee.record-history-print-observation", "kind": "seeded-readonly", "status": "verified-live"}],
+      "missing": ["browser print dialog / paper output verification"]
+    },
+    {
+      "id": "committee.transfers",
+      "title": "Review all committee roles for a transferred person",
+      "journeys": [{"id": "committee.record-history-print-observation", "kind": "seeded-readonly", "status": "verified-live"}],
+      "missing": ["person lookup and atomic multi-committee transfer submission"]
+    },
+    {
+      "id": "committee.catalogue",
+      "title": "Committee types and rules (company administrator)",
+      "journeys": [{"id": "committee.rules-catalogue-observation", "kind": "seeded-readonly", "status": "blocked-no-actor"}],
+      "notes": "Requires a company administrator who is also an active member of the working office; the seeded company administrators are not office members, so the journey is blocked with fixtures.unsatisfied-requirements.",
+      "missing": ["type create/edit and national review", "purpose bindings"]
+    },
+    {
+      "id": "committee.lifecycle",
+      "title": "Constitute, appoint, activate, replace, extend, suspend, dissolve",
+      "journeys": [{"id": "committee.order-readiness-guard", "kind": "seeded-readonly", "status": "verified-live"}],
+      "status": "missing",
+      "notes": "Live inspection on 7 October 2026 showed the order wizard stating that no ministry committee rules are active. The order-readiness guard covers this message and required-file validation. No active type is available to complete constitution or amendment flows. A write journey also needs an authorized company catalogue actor, a synthetic signed-file fixture, and a cleanup/retention policy. Do not create a committee type or assign roles just to make this suite pass."
+    },
+    {
+      "id": "committee.order-intake",
+      "title": "Capture and retain a signed committee order before forming a committee",
+      "journeys": [{"id": "committee.order-readiness-guard", "kind": "seeded-readonly", "status": "verified-live"}],
+      "status": "partial",
+      "missing": ["upload and save a synthetic signed order", "resume and discard saved intake through the supported screen"]
+    },
+    {"id": "auth.context", "title": "Authentication and working-context selection", "journeys": [], "status": "partial", "notes": "Login and header context are exercised inside other journeys via flow auth.login only."},
+    {"id": "storeops.documents", "title": "Stock documents", "journeys": [], "status": "missing"},
+    {"id": "tracking", "title": "Tracking", "journeys": [], "status": "missing"},
+    {"id": "access.governance", "title": "Access governance and shadow/enforce switching", "journeys": [], "status": "missing"}
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "seeded-readonly",
+  "title": "Seeded Read-Only Verification Suite",
+  "description": "Observation-only checks against seeded fictional records; no business mutation.",
+  "environment": {
+    "target": "http://snipeit.local",
+    "allowlist": [
+      "http://snipeit.local"
+    ]
+  },
+  "journeys": [
+    "requests.catalog-progress-observation",
+    "requests.authorization-boundaries"
+  ],
+  "defaults": {
+    "language": "en-US",
+    "timeoutMs": 60000
+  }
+}

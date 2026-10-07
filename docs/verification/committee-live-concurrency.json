@@ -1,0 +1,22 @@
+{
+    "workers": [
+        {
+            "committee_id": "01a1084c-9a29-7388-8e42-8b2bebb85e62",
+            "status": 409,
+            "started_at": 1791140604.652758,
+            "finished_at": 1791140604.69756
+        },
+        {
+            "committee_id": "01a1084c-9ab3-7179-a4aa-f5d10011f5c0",
+            "status": 200,
+            "started_at": 1791140604.652793,
+            "finished_at": 1791140604.684781
+        }
+    ],
+    "statuses": [
+        200,
+        409
+    ],
+    "active_slots_remaining": 0,
+    "fixture_cleanup": "winner dissolved; losing draft soft-deleted"
+}

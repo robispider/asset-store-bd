@@ -17,7 +17,7 @@ class TenantScopeController extends Controller
 {
     private function checkSuperadminAccess()
     {
-        if (!auth()->user()->isSuperUser() && !auth()->user()->hasAccess('admin')) {
+        if (!auth()->user()->isSuperUser()) {
             abort(403, __('tenantops::ops.unauthorized_access'));
         }
     }
@@ -55,7 +55,10 @@ class TenantScopeController extends Controller
     public function saveStrategy(Request $request)
     {
         $this->checkSuperadminAccess();
-        $request->validate(['strategies' => 'required|array']);
+        $request->validate(['strategies' => 'required|array:categories,models,manufacturers,suppliers,fieldsets,locations',
+            'strategies.*' => 'required|array:strategy,show_only_used',
+            'strategies.*.strategy' => 'required|in:global,company,location',
+            'strategies.*.show_only_used' => 'sometimes|boolean']);
 
         foreach ($request->input('strategies') as $type => $data) {
             TenantScopeConfig::updateOrCreate(
@@ -101,11 +104,15 @@ class TenantScopeController extends Controller
         $this->checkSuperadminAccess();
 
         $request->validate([
-            'reference_type' => 'required|string',
-            'reference_id'   => 'required|integer',
-            'scope_type'     => 'required|string',
-            'scope_id'       => 'required|integer',
+            'reference_type' => 'required|in:category,model,manufacturer,supplier,fieldset',
+            'reference_id'   => 'required|integer|min:1',
+            'scope_type'     => 'required|in:company,location',
+            'scope_id'       => 'required|integer|min:1',
         ]);
+        $references = ['category' => Category::class, 'model' => AssetModel::class,
+            'manufacturer' => Manufacturer::class, 'supplier' => Supplier::class, 'fieldset' => \App\Models\CustomFieldset::class];
+        $references[$request->reference_type]::withoutGlobalScope(\GovStore\TenantScope\Scopes\TenantScope::class)->findOrFail($request->reference_id);
+        ($request->scope_type === 'company' ? Company::class : Location::class)::query()->findOrFail($request->scope_id);
 
         try {
             TenantScopeMapping::firstOrCreate([
@@ -116,8 +123,8 @@ class TenantScopeController extends Controller
             ]);
 
             return redirect()->back()->with('success', __('tenantops::ops.mapping_created'));
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
+        } catch (\Throwable $e) {
+            return redirect()->back()->with('error', app(\GovStore\TenantScope\Services\ActionFailure::class)->message($e));
         }
     }
 
@@ -126,9 +133,11 @@ class TenantScopeController extends Controller
         $this->checkSuperadminAccess();
         try {
             TenantScopeMapping::findOrFail($id)->delete();
-            return redirect()->back()->with('success', __('storeops::ops.mapping_deleted'));
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
+            return redirect()->back()->with('success', __('tenantops::ops.mapping_deleted'));
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            return redirect()->back()->with('error', app(\GovStore\TenantScope\Services\ActionFailure::class)->message($e));
         }
     }
 

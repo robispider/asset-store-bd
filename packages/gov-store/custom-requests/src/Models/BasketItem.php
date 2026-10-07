@@ -2,6 +2,8 @@
 
 namespace GovStore\CustomRequests\Models;
 
+use App\Models\AssetModel;
+use GovStore\CustomRequests\Support\RequestWorkflow;
 use Illuminate\Database\Eloquent\Model;
 
 class BasketItem extends Model
@@ -23,6 +25,11 @@ class BasketItem extends Model
      */
     public function requested()
     {
+        // Old malformed drafts remain removable without resolving arbitrary class names.
+        if (! in_array($this->requested_type, RequestWorkflow::TYPES)) {
+            return $this->belongsTo(AssetModel::class, 'requested_id')->whereRaw('1 = 0');
+        }
+
         return $this->morphTo('requested', 'requested_type', 'requested_id');
     }
 }

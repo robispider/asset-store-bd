@@ -118,6 +118,8 @@
       "database"
     ],
     "psr-4": {
+      "GovStore\\Committee\\": "packages/gov-store/committee/src/",
+      "GovStore\\Experimentation\\": "packages/gov-store/experimentation/src/",
       "GovStore\\CustomRequests\\": "packages/gov-store/custom-requests/src/",
       "GovStore\\Organization\\": "packages/gov-store/organization/src/",
       "GovStore\\GeoAreas\\": "packages/gov-store/geo-areas/src/",

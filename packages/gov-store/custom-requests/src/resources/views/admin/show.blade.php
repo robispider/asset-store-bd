@@ -12,6 +12,10 @@
             </div>
             <form action="{{ route('gov.requests.admin.process', $serviceRequest->id) }}" method="POST">
                 @csrf
+                @if(!$canDecide)
+                    <p class="alert alert-info">{{ __('requestlabels::requests.independent_approver_required') }}</p>
+                @endif
+                <fieldset {{ !$canDecide ? 'disabled' : '' }}>
                 <div class="box-body table-responsive">
                     
                     <!-- Metadata Header -->
@@ -21,11 +25,11 @@
                             <td>{{ $serviceRequest->purpose }}</td>
                         </tr>
                         <tr>
-                            <td><strong>Justification:</strong></td>
+                            <td><strong>{{ __('requestlabels::requests.justification') }}</strong></td>
                             <td>{{ $serviceRequest->justification }}</td>
                         </tr>
                         <tr>
-                            <td><strong>Required Date / Location:</strong></td>
+                            <td><strong>{{ __('requestlabels::requests.required_location') }}</strong></td>
                             <td>
                                 {{ $serviceRequest->required_by_date ?? __('requestlabels::requests.admin_show_label_no_deadline') }} / 
                                 {{ $serviceRequest->delivery_location_id ? \App\Models\Location::find($serviceRequest->delivery_location_id)?->name : __('requestlabels::requests.admin_show_label_no_location') }}
@@ -37,30 +41,31 @@
                     <table class="table table-striped table-hover">
                         <thead>
                             <tr>
-                                <th>Item Details</th>
-                                <th style="width: 110px;">Requested</th>
-                                <th style="width: 120px;">Approved Qty</th>
-                                <th style="width: 160px;">Decision</th>
-                                <th>Rejection/Adjustment Notes</th>
+                                <th>{{ __('requestlabels::requests.item_details') }}</th>
+                                <th style="width: 110px;">{{ __('requestlabels::requests.requested') }}</th>
+                                <th style="width: 120px;">{{ __('requestlabels::requests.approved_qty') }}</th>
+                                <th style="width: 160px;">{{ __('requestlabels::requests.decision') }}</th>
+                                <th>{{ __('requestlabels::requests.adjustment_notes') }}</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($serviceRequest->items as $item)
+                                @if($serviceRequest->approval_status === 'pending_final' && $item->line_approval_status === 'rejected') @continue @endif
                                 @php
                                     $model = $item->requested;
-                                    $name = $model ? ($model->present()->name ?: ($model->name ?? $model->asset_tag)) : 'Unknown Item';
+                                    $name = $model ? ($model->present()->name ?: ($model->name ?? $model->asset_tag)) : __('requestlabels::requests.unknown_item');
                                 @endphp
                                 <tr id="row_{{ $item->id }}">
                                     <td>
                                         <strong>{{ $name }}</strong><br>
-                                        <small class="text-muted">{{ ucfirst($item->requested_type) }}</small>
+                                        <small class="text-muted">{{ __('requestlabels::requests.type_'.$item->requested_type) }}</small>
                                     </td>
                                     <td style="vertical-align: middle;"><strong>{{ $item->requested_qty }}</strong></td>
                                     <td style="vertical-align: middle;">
                                         @if($item->requested_type === 'asset')
                                             <input type="number" name="items[{{ $item->id }}][qty]" id="qty_{{ $item->id }}" class="form-control input-sm text-center" value="1" min="0" max="1" readonly>
                                         @else
-                                            <input type="number" name="items[{{ $item->id }}][qty]" id="qty_{{ $item->id }}" class="form-control input-sm text-center" value="{{ $item->requested_qty }}" min="1" max="{{ $item->requested_qty }}">
+                                            <input type="number" name="items[{{ $item->id }}][qty]" id="qty_{{ $item->id }}" class="form-control input-sm text-center" value="{{ $serviceRequest->primary_decided_by ? $item->approved_qty : $item->requested_qty }}" min="1" max="{{ $serviceRequest->primary_decided_by ? $item->approved_qty : $item->requested_qty }}">
                                         @endif
                                     </td>
                                     <td style="vertical-align: middle;">
@@ -83,10 +88,11 @@
                 </div>
                 <div class="box-footer">
                     <a href="{{ route('gov.requests.admin.index') }}" class="btn btn-default pull-left"><i class="fas fa-arrow-left"></i> {{ __('requestlabels::requests.admin_show_btn_cancel') }}</a>
-                    <button type="submit" class="btn btn-warning pull-right" onclick="return confirm('{{ __('requestlabels::requests.admin_show_confirm_finalize') }}')">
+                    <button type="submit" class="btn btn-warning pull-right" data-request-confirm="{{ __('requestlabels::requests.admin_show_confirm_finalize') }}">
                         <i class="fas fa-signature"></i> {{ __('requestlabels::requests.admin_show_btn_finalize') }}
                     </button>
                 </div>
+                </fieldset>
             </form>
         </div>
     </div>
@@ -114,10 +120,10 @@
                             <div class="timeline-item" style="box-shadow: none; border: 1px solid #eee; background-color: #fafafa; margin-left: 45px;">
                                 <span class="time"><i class="fa fa-clock"></i> {{ $event->created_at->format('H:i') }}</span>
                                 <h3 class="timeline-header" style="font-size: 13px; font-weight: bold; border-bottom: none; padding: 5px 10px;">
-                                    {{ ucwords(str_replace('_', ' ', $event->event_type)) }}
+                                    {{ __('requestlabels::requests.event_'.$event->event_type) }}
                                 </h3>
                                 <div class="timeline-body" style="padding: 5px 10px; font-size: 12px; color: #555;">
-                                    Executed by: <strong>{{ $event->user->display_name }}</strong>
+                                    {{ __('requestlabels::requests.executed_by') }}: <strong>{{ $event->user->display_name }}</strong>
                                     @if(isset($event->details['message']))
                                         <p style="margin-top: 5px;">{{ $event->details['message'] }}</p>
                                     @endif
@@ -134,27 +140,5 @@
 @endsection
 
 @section('moar_scripts')
-<script>
-$(document).ready(function() {
-    $(document).on('change', '.line-status-radio', function() {
-        var id = $(this).data('id');
-        var status = $(this).val();
-        
-        var row = $('#row_' + id);
-        var qtyInput = $('#qty_' + id);
-        
-        if (status === 'rejected') {
-            row.css('opacity', '0.5');
-            if (qtyInput.length) {
-                qtyInput.val(0).prop('readonly', true);
-            }
-        } else {
-            row.css('opacity', '1');
-            if (qtyInput.length) {
-                qtyInput.val(qtyInput.attr('max')).prop('readonly', false);
-            }
-        }
-    });
-});
-</script>
+
 @endsection

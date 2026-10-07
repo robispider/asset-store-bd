@@ -1,0 +1,293 @@
+{
+  "schemaVersion": 1,
+  "id": "requests.submit-approve",
+  "title": "An employee submits a request and a same-office primary approver approves it",
+  "features": [
+    "requests.submit-approve-fulfill"
+  ],
+  "tags": [
+    "journey",
+    "mutation"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "language": "en-US",
+    "timeoutMs": 120000
+  },
+  "fixtures": {
+    "office": {
+      "requirements": {
+        "operational": true
+      }
+    },
+    "actors": {
+      "employee": {
+        "capabilities": {
+          "allOf": [
+            "requests.submit"
+          ],
+          "noneOf": [
+            "requests.approve"
+          ]
+        },
+        "office": "office",
+        "activeMembership": true,
+        "emptyBasket": true
+      },
+      "approver": {
+        "capabilities": {
+          "allOf": [
+            "requests.approve.primary"
+          ]
+        },
+        "office": "office",
+        "activeMembership": true
+      }
+    },
+    "records": {
+      "item": {
+        "kind": "consumable",
+        "office": "office",
+        "ownedByDataset": true,
+        "minimumAvailable": 10,
+        "selection": "lowest-id"
+      }
+    }
+  },
+  "data": {
+    "qty": {
+      "generate": "integer",
+      "min": 1,
+      "max": 3
+    },
+    "purpose": {
+      "generate": "markedText",
+      "prefix": "LIVE-PURPOSE",
+      "length": 6
+    }
+  },
+  "steps": [
+    {
+      "action": "observe",
+      "check": "request.progress",
+      "args": {
+        "id": "${actors.employee.id}"
+      },
+      "as": "before"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.before.draftItems}",
+      "equals": 0
+    },
+    {
+      "action": "observe",
+      "check": "inventory.consumable",
+      "args": {
+        "id": "${fixtures.item.id}"
+      },
+      "as": "stockBefore"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "employee"
+      }
+    },
+    {
+      "action": "goto",
+      "route": "gov.requests.catalog",
+      "query": {
+        "q": "${fixtures.item.name}"
+      }
+    },
+    {
+      "action": "fill",
+      "target": "catalog.itemQty",
+      "value": "${data.qty}"
+    },
+    {
+      "action": "click",
+      "target": "catalog.itemAdd",
+      "waitForResponse": "basket/add"
+    },
+    {
+      "action": "waitObserve",
+      "check": "basket.line",
+      "args": {
+        "userId": "${actors.employee.id}",
+        "itemType": "consumable",
+        "itemId": "${fixtures.item.id}"
+      },
+      "path": "quantity",
+      "equals": "${data.qty}",
+      "timeoutMs": 15000
+    },
+    {
+      "action": "goto",
+      "route": "gov.requests.basket"
+    },
+    {
+      "action": "assert",
+      "target": "requests.basketLines",
+      "test": "count",
+      "equals": 1
+    },
+    {
+      "action": "assert",
+      "target": "requests.basketQty",
+      "test": "value",
+      "equals": "${data.qty}"
+    },
+    {
+      "action": "fill",
+      "target": "requests.basketPurpose",
+      "value": "${data.purpose}"
+    },
+    {
+      "action": "fill",
+      "target": "requests.basketJustification",
+      "value": "Automated live journey justification for ${data.purpose}"
+    },
+    {
+      "action": "submitForm",
+      "target": "requests.basketSubmit"
+    },
+    {
+      "action": "assert",
+      "test": "url",
+      "contains": "/gov-requests/my-requests"
+    },
+    {
+      "action": "capture",
+      "target": "requests.myNumberByPurpose",
+      "as": "requestNumber"
+    },
+    {
+      "action": "ledger",
+      "kind": "custom_service_request",
+      "id": "${captured.requestNumber}",
+      "effect": "Request submitted by employee and approved by primary approver; fulfillment not performed",
+      "cleanup": "retained"
+    },
+    {
+      "action": "observe",
+      "check": "request.state",
+      "args": {
+        "number": "${captured.requestNumber}"
+      },
+      "as": "submitted"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.submitted.requested_by}",
+      "equals": "${actors.employee.id}"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.submitted.purpose}",
+      "equals": "${data.purpose}"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.submitted.first_line.requested_qty}",
+      "equals": "${data.qty}"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.submitted.first_line.id}",
+      "equals": "${fixtures.item.id}"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.submitted.approval_status}",
+      "equals": "pending_primary"
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "assert",
+      "target": "requests.myRowByNumber",
+      "test": "text",
+      "contains": "${data.purpose}"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "approver"
+      }
+    },
+    {
+      "action": "goto",
+      "route": "gov.requests.admin.index"
+    },
+    {
+      "action": "click",
+      "target": "requests.approverRowOpen"
+    },
+    {
+      "action": "assert",
+      "target": "requests.decisionQty",
+      "test": "value",
+      "equals": "${data.qty}"
+    },
+    {
+      "action": "click",
+      "target": "requests.decisionSubmit"
+    },
+    {
+      "action": "waitObserve",
+      "check": "request.state",
+      "args": {
+        "number": "${captured.requestNumber}"
+      },
+      "path": "primary_decided_by",
+      "equals": "${actors.approver.id}",
+      "as": "decided",
+      "timeoutMs": 15000
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.decided.first_line.approved_qty}",
+      "equals": "${data.qty}"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.decided.requested_by}",
+      "equals": "${actors.employee.id}"
+    },
+    {
+      "action": "actor",
+      "name": "employee"
+    },
+    {
+      "action": "goto",
+      "route": "gov.requests.user.index"
+    },
+    {
+      "action": "assert",
+      "target": "requests.myRowByNumber",
+      "test": "text",
+      "contains": "${data.purpose}"
+    },
+    {
+      "action": "observe",
+      "check": "inventory.consumable",
+      "args": {
+        "id": "${fixtures.item.id}"
+      },
+      "as": "stockAfter"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.stockAfter.quantity}",
+      "equals": "${observed.stockBefore.quantity}"
+    }
+  ],
+  "cleanup": {
+    "policy": "submitted-request-retained",
+    "description": "Submitted and approved requests have no reversal lifecycle; they are retained and reported by request number.",
+    "steps": []
+  }
+}

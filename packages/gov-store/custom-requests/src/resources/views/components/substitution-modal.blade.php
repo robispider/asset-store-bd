@@ -9,7 +9,7 @@
                 </h4>
             </div>
             <div class="modal-body">
-                <p>Select an alternative item to fulfill the request for: <strong id="modalOriginalItemName" class="text-blue"></strong></p>
+                <p>{{ __('requestlabels::requests.substitute_for') }} <strong id="modalOriginalItemName" class="text-blue"></strong></p>
                 
                 <input type="hidden" id="modalLineItemId">
                 <input type="hidden" id="modalItemType">
@@ -23,7 +23,7 @@
                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal">
                     {{ __('requestlabels::requests.fulfillment_show_modal_btn_cancel') ?? 'Cancel' }}
                 </button>
-                <button type="button" class="btn btn-primary" onclick="applySubstitution()">
+                <button type="button" class="btn btn-primary" id="applySubstitution">
                     {{ __('requestlabels::requests.fulfillment_show_modal_btn_save') ?? 'Save Substitution' }}
                 </button>
             </div>

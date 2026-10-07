@@ -78,5 +78,7 @@
     "/js/dist/bootstrap-table-en-US.min.js": "/js/dist/bootstrap-table-en-US.min.js?id=6d0de12d91548ba2cd80b868838ce5fa",
     "/js/dist/Chart.min.js": "/js/dist/Chart.min.js?id=9b1ae20c4c7048d6e4a1b2e1aee7fb31",
     "/css/dist/bootstrap-table.css": "/css/dist/bootstrap-table.css?id=82b56573f8098e439bf14ccb4530de6e",
-    "/js/dist/bootstrap-table.js": "/js/dist/bootstrap-table.js?id=e1531ba4cea2a4a3b966751c2870a8e0"
+    "/js/dist/bootstrap-table.js": "/js/dist/bootstrap-table.js?id=e1531ba4cea2a4a3b966751c2870a8e0",
+    "/js/dist/committee.js": "/js/dist/committee.js?id=08e00a162404dab4e49ae7cc99804a37",
+    "/css/dist/committee.css": "/css/dist/committee.css?id=a1235f2e31697f0219b5de2b24619f71"
 }

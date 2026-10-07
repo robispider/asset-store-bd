@@ -15,24 +15,27 @@ class RepairLedgerBalances extends Command
     {
         $this->info(__('storeops::storeops.scanning_movements'));
 
-        // Find unique stockable items that have NULL balances
-        $unbalancedItems = InventoryMovement::whereNull('balance_after')
-            ->select('stockable_type', 'stockable_id')
-            ->groupBy('stockable_type', 'stockable_id')
+        // Balances are chains per stockable item and office. Recompute every
+        // chain because a non-null later row can depend on an incorrect earlier one.
+        $chains = InventoryMovement::withoutGlobalScopes()
+            ->select('stockable_type', 'stockable_id', 'location_id')
+            ->groupBy('stockable_type', 'stockable_id', 'location_id')
             ->get();
 
-        if ($unbalancedItems->isEmpty()) {
+        if ($chains->isEmpty()) {
             $this->info(__('storeops::storeops.all_balances_healthy'));
             return 0;
         }
 
-        $this->info(__('storeops::storeops.found_unbalanced_items', ['count' => $unbalancedItems->count()]));
+        $this->info(__('storeops::storeops.found_unbalanced_items', ['count' => $chains->count()]));
 
-        DB::transaction(function () use ($unbalancedItems) {
-            foreach ($unbalancedItems as $item) {
-                $movements = InventoryMovement::where('stockable_type', $item->stockable_type)
-                    ->where('stockable_id', $item->stockable_id)
-                    ->orderBy('created_at', 'asc')
+        $negativeChains = [];
+        DB::transaction(function () use ($chains, &$negativeChains) {
+            foreach ($chains as $chain) {
+                $movements = InventoryMovement::withoutGlobalScopes()->where('stockable_type', $chain->stockable_type)
+                    ->where('stockable_id', $chain->stockable_id)
+                    ->where('location_id', $chain->location_id)
+                    ->orderBy('created_at')->orderBy('id')
                     ->get();
 
                 $runningBalance = 0;
@@ -42,13 +45,22 @@ class RepairLedgerBalances extends Command
                     } else {
                         $runningBalance -= $movement->quantity;
                     }
+                    if ($runningBalance < 0) {
+                        $negativeChains[] = $chain->stockable_type.':'.$chain->stockable_id.'@'.$chain->location_id;
+                    }
 
-                    $movement->update(['balance_after' => $runningBalance]);
+                    InventoryMovement::withoutGlobalScopes()->whereKey($movement->id)->update(['balance_after' => $runningBalance]);
                 }
             }
         });
 
-        $this->info("Ledger balances repaired successfully!");
+        $this->info("Recomputed {$chains->count()} item and office balance chains.");
+        if ($negativeChains) {
+            $this->warn('Negative chains found; resolve missing opening stock before permitting issues.');
+            foreach (array_unique($negativeChains) as $chain) {
+                $this->line($chain);
+            }
+        }
         return 0;
     }
 }

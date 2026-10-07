@@ -2,22 +2,27 @@
 
 namespace GovStore\Classification\Http\Controllers;
 
-use Illuminate\Routing\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use GovStore\Classification\Services\CatalogDatasetLocator;
 use GovStore\Classification\Services\CatalogImportCoordinator;
 use GovStore\Classification\Services\CatalogImportService;
+use GovStore\Classification\Services\CatalogReview;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Throwable;
 
 class CatalogAdminController extends Controller
 {
     protected CatalogDatasetLocator $locator;
+
     protected CatalogImportCoordinator $coordinator;
+
     protected CatalogImportService $searchService;
 
     public function __construct(
-        CatalogDatasetLocator $locator, 
+        CatalogDatasetLocator $locator,
         CatalogImportCoordinator $coordinator,
         CatalogImportService $searchService
     ) {
@@ -39,81 +44,47 @@ class CatalogAdminController extends Controller
      */
     public function importValidate(Request $request, CatalogImportService $importer)
     {
-        $request->validate([
-            'scheme'  => 'required|string',
-            'version' => 'required|string',
-            'source'  => 'required|string'
-        ]);
-
+        $data = $request->validate(['scheme' => 'required|string|max:100', 'version' => 'required|string|max:100', 'source' => 'required|in:bundle']);
+        $request->session()->forget('gov_catalog_review');
         try {
-            $source = $request->input('source');
-            $scheme = $request->input('scheme');
-            $version = $request->input('version');
+            $paths = $this->locator->findBundle($data['scheme'], $data['version']);
+            $report = $importer->analyzeDiff($paths['nodes'], $data['scheme']);
+            $reviewToken = app(CatalogReview::class)->create($request, $paths, $data['scheme'], $data['version']);
 
-            if ($source === 'bundle') {
-                $metaPath = $this->resolveBundledPath('compiled_nodes.csv');
-                $treePath = null;
-            } else {
-                $request->validate([
-                    'metadata_file' => 'required|file|mimes:csv,txt',
-                    'tree_file'     => 'nullable|file|mimes:csv,txt'
-                ]);
-
-                $metaPath = $request->file('metadata_file')->store('tmp/catalog_imports');
-                $treePath = $request->hasFile('tree_file') ? $request->file('tree_file')->store('tmp/catalog_imports') : null;
-            }
-
-            // Run Diff Analysis
-            $absMeta = ($source === 'bundle') ? $metaPath : storage_path("app/{$metaPath}");
-            $report = $importer->analyzeDiff($absMeta, $scheme);
-
-            return view('gov-classification::manager.import', [
-                'step'     => 2,
-                'scheme'   => $scheme,
-                'version'  => $version,
-                'metaPath' => $metaPath,
-                'treePath' => $treePath,
-                'source'   => $source,
-                'report'   => $report
-            ]);
-            
-        } catch (\Throwable $e) {
-            return redirect()->route('gov.catalog.import')
-                ->with('error', __('classification::texts.ctrl_analysis_failed') . ' ' . $e->getMessage());
+            return view('gov-classification::manager.import', ['step' => 2, 'scheme' => $data['scheme'], 'version' => $data['version'],
+                'source' => 'bundle', 'metaPath' => '', 'treePath' => '', 'report' => $report, 'reviewToken' => $reviewToken]);
+        } catch (Throwable $e) {
+            return $this->safeFailure($e);
         }
     }
 
-    /**
-     * STEP 3: Execute Ingestion
-     */
     public function importExecute(Request $request)
     {
+        $data = $request->validate(['scheme' => 'required|string|max:100', 'version' => 'required|string|max:100',
+            'catalog_review_token' => 'required|uuid', 'change_reason' => 'required|string|min:5|max:1000']);
+        $paths = $this->locator->findBundle($data['scheme'], $data['version']);
+        app(CatalogReview::class)->consume($request, $paths);
         try {
-            $scheme = $request->input('scheme');
-            $version = $request->input('version');
+            $results = $this->coordinator->execute($paths, $data['scheme'], $data['version'], auth()->id());
 
-            // Find compiled paths through the locator service
-            $paths = $this->locator->findBundle($scheme, $version);
-
-            // Ingest using constant-memory coordinators
-            $results = $this->coordinator->execute($paths, $scheme, $version, auth()->id());
-
-            return view('gov-classification::manager.import', [
-                'step'    => 3,
-                'results' => $results,
-                'scheme'  => $scheme,
-                'version' => $version,
-            ]);
-
+            return view('gov-classification::manager.import', ['step' => 3, 'results' => $results, 'scheme' => $data['scheme'], 'version' => $data['version']]);
         } catch (Throwable $e) {
-            return redirect()->route('gov.catalog.import')
-                ->with('error', __('classification::texts.ctrl_update_failed') . ' ' . $e->getMessage());
+            return $this->safeFailure($e);
         }
+    }
+
+    private function safeFailure(Throwable $exception)
+    {
+        $reference = (string) Str::uuid();
+        Log::error('Catalog import failed', ['reference_id' => $reference, 'exception' => $exception]);
+
+        return redirect()->route('gov.catalog.import')->with('error', __('tenantops::access.failed', ['reference' => $reference]));
     }
 
     public function mappingGrid()
     {
         $mappings = DB::table('gov_catalog_snipe_mappings')->paginate(15);
+
         return view('gov-classification::manager.mapping', compact('mappings'));
     }
 
@@ -127,7 +98,7 @@ class CatalogAdminController extends Controller
         $history = DB::table('gov_catalog_import_history')
             ->orderBy('imported_at', 'desc')
             ->paginate(15);
-            
+
         return view('gov-classification::manager.history', compact('history'));
     }
 }

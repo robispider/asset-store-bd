@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "consumable",
+  "locators": {
+    "title": {
+      "css": "h1, .page-header, .pagetitle",
+      "description": "Page title heading displaying item name"
+    },
+    "name": {
+      "css": "h1, .page-header, .pagetitle",
+      "description": "Consumable name"
+    },
+    "nameLabel": {
+      "css": "h1, .page-header small, .pagetitle",
+      "description": "Name or type label"
+    },
+    "quantity": {
+      "css": "h1 small, .info-box-number, .box-profile",
+      "description": "Consumable quantity or remaining count"
+    }
+  },
+  "labels": {
+    "en-US": {
+      "nameLabel": "Consumable"
+    },
+    "bn-BD": {
+      "nameLabel": "কনজিউমেবল"
+    }
+  }
+}

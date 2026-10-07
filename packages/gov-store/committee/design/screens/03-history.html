@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>History in plain sentences — committee redesign mockup</title>
+<!--
+  STATIC DESIGN MOCKUP — not production code.
+  Screen: 03-history · History in plain sentences
+  Spec: ../../UX-REDESIGN.md (§4 screen table, §5 workflows, §6 wording)
+  Implement in Blade with AdminLTE 2 / Bootstrap 3 classes; move every Bangla string
+  into resources/lang/{bn-BD,en-US}/committee.php. Names, numbers and dates are sample data.
+  Source artboard: ../source/History.dc.html
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+html,body{height:100%}
+body{margin:0}
+a{color:#1F5F8B}a:hover{color:#163F5E}
+</style>
+</head>
+<body>
+<div style="font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif; color: #17201D; background: #F3F5F4; min-height: 100%;">
+
+  <header style="background: #276A93; color: #FFFFFF; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 32px;">
+    <div style="font-size: 20px; font-weight: 600;">স্টোর ক্লাউড</div>
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; font-size: 15px;"><span>উপজেলা স্বাস্থ্য কমপ্লেক্স, শ্রীপুর</span><span>আব্দুল মান্নান · কমিটি নিবন্ধক</span></div>
+  </header>
+
+  <main style="max-width: 1100px; margin: 0 auto; padding: 24px 32px 56px; display: flex; flex-direction: column; gap: 24px;">
+    <a href="02-committee.html" style="font-size: 15px;">← পণ্য গ্রহণ ও পরিদর্শন কমিটি</a>
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; align-items: flex-end;">
+      <div>
+        <h1 style="margin: 0; font-size: 30px; font-weight: 700;">ইতিহাস</h1>
+        <p style="margin: 4px 0 0; font-size: 16px; color: #4F5B57;">এই কমিটিতে কবে কী বদলেছে, কোন আদেশে, কে রেকর্ড করেছেন</p>
+      </div>
+      <span style="display: inline-flex; align-items: center; gap: 8px; background: #E4F3EA; color: #1D6B43; font-size: 15px; font-weight: 600; padding: 8px 14px; border-radius: 999px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"></path><path d="M9 12l2 2 4-4"></path></svg>রেকর্ড অক্ষত — কিছু মোছা বা বদলানো হয়নি</span>
+    </div>
+
+    <section aria-labelledby="ondate" style="background: #FFFFFF; border: 1px solid #D9DFDB; border-radius: 12px; padding: 22px 24px; display: flex; flex-direction: column; gap: 14px;">
+      <h2 id="ondate" style="margin: 0; font-size: 20px; font-weight: 600;">কোনো নির্দিষ্ট দিনে কারা সদস্য ছিলেন?</h2>
+      <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label for="d" style="font-size: 15px;">তারিখ</label>
+          <input id="d" type="text" value="১৫ সেপ্টেম্বর ২০২৬" style="font-family: inherit; font-size: 16px; height: 44px; padding: 0 14px; border: 1px solid #B7C2BC; border-radius: 8px; width: 240px; box-sizing: border-box;">
+        </div>
+        <button type="button" style="font-family: inherit; background: #1F5F8B; color: #FFFFFF; border: 0; font-size: 16px; font-weight: 600; padding: 0 20px; height: 44px; border-radius: 8px;">দেখুন</button>
+        <button type="button" style="font-family: inherit; background: #FFFFFF; color: #1F5F8B; border: 1px solid #B7C2BC; font-size: 16px; padding: 0 18px; height: 44px; border-radius: 8px;">এই তালিকা মুদ্রণ</button>
+      </div>
+      <div style="background: #F6F8F7; border-radius: 10px; padding: 14px 18px; font-size: 15px; line-height: 1.9;">
+        <div style="font-weight: 600;">১৫ সেপ্টেম্বর ২০২৬-এ সদস্য ছিলেন</div>
+        <div>সভাপতি — মো. নজরুল ইসলাম, আবাসিক মেডিকেল অফিসার (তখনকার পদবি)</div>
+        <div>সদস্য সচিব — প্রকৌ. শারমিন সুলতানা, সহকারী প্রকৌশলী</div>
+        <div>সদস্য — মো. জাহিদ হাসান, উপজেলা হিসাবরক্ষণ কর্মকর্তা (অন্য দপ্তর)</div>
+        <div style="color: #4F5B57; font-size: 14px;">ভিত্তি: স্মারক ৪৫.১২.০০০০.০০৩.১১.০০২.২৬-২০১</div>
+      </div>
+    </section>
+
+    <div role="group" aria-label="দেখান" style="display: flex; flex-wrap: wrap; gap: 8px;">
+      <button type="button" aria-pressed="true" style="font-family: inherit; background: #17201D; color: #FFFFFF; border: 0; font-size: 15px; padding: 8px 16px; border-radius: 999px; min-height: 40px;">সব</button>
+      <button type="button" aria-pressed="false" style="font-family: inherit; background: #FFFFFF; color: #17201D; border: 1px solid #B7C2BC; font-size: 15px; padding: 8px 16px; border-radius: 999px; min-height: 40px;">সদস্য</button>
+      <button type="button" aria-pressed="false" style="font-family: inherit; background: #FFFFFF; color: #17201D; border: 1px solid #B7C2BC; font-size: 15px; padding: 8px 16px; border-radius: 999px; min-height: 40px;">মেয়াদ ও অবস্থা</button>
+      <button type="button" aria-pressed="false" style="font-family: inherit; background: #FFFFFF; color: #17201D; border: 1px solid #B7C2BC; font-size: 15px; padding: 8px 16px; border-radius: 999px; min-height: 40px;">সংশোধন</button>
+    </div>
+
+    <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px;">
+      <li style="background: #FFFFFF; border: 1px solid #D9DFDB; border-radius: 12px; padding: 20px 24px; display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px;"><span style="font-size: 17px; font-weight: 600;">০২ অক্টোবর ২০২৬ · সদস্য পরিবর্তনের আদেশ</span><a href="#" style="font-size: 15px;">স্মারক …২৬-২০৯ দেখুন</a></div>
+        <p style="margin: 0; font-size: 16px; line-height: 1.7;">ডা. আবুল কালাম সভাপতি হলেন। তাঁর আগে ছিলেন মো. নজরুল ইসলাম, যিনি ৩০ সেপ্টেম্বর অবসরে গেছেন।</p>
+        <p style="margin: 0; font-size: 14px; color: #4F5B57;">রেকর্ড করেছেন আব্দুল মান্নান, কমিটি নিবন্ধক · ০২ অক্টোবর, বিকাল ৩:১৫</p>
+      </li>
+      <li style="background: #FFFFFF; border: 1px solid #D9DFDB; border-radius: 12px; padding: 20px 24px; display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px;"><span style="font-size: 17px; font-weight: 600;">০১ জুলাই ২০২৬ · নতুন অর্থবছরের জন্য পুনর্গঠন</span><a href="#" style="font-size: 15px;">স্মারক …২৬-২০১ দেখুন</a></div>
+        <p style="margin: 0; font-size: 16px; line-height: 1.7;">২০২৬-২৭ অর্থবছরের কমিটি ৩ জন সদস্য নিয়ে কার্যকর হলো। আগের বছরের থেকে একজন বদলেছেন: মো. জাহিদ হাসান যোগ দিয়েছেন, মোছা. রোকসানা বেগম নেই।</p>
+        <p style="margin: 0; font-size: 14px; color: #4F5B57;">২০২৫-২৬ অর্থবছরের কমিটি ৩০ জুন শেষ হয়েছে · <a href="#">সেই কমিটির ইতিহাস</a></p>
+      </li>
+      <li style="background: #FFFFFF; border: 1px solid #D9DFDB; border-radius: 12px; padding: 20px 24px; display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: center;"><span style="font-size: 17px; font-weight: 600;">১৮ ফেব্রুয়ারি ২০২৬ · ভুল সংশোধন</span><span style="font-size: 13px; background: #EEF1EF; padding: 2px 8px; border-radius: 6px;">শুদ্ধিপত্র</span></div>
+        <p style="margin: 0; font-size: 16px; line-height: 1.7;">মো. নজরুল ইসলামের নিয়োগের তারিখ ১০ ফেব্রুয়ারি থেকে ০১ ফেব্রুয়ারি করা হয়েছে। আগের তথ্যও রাখা আছে।</p>
+        <p style="margin: 0; font-size: 14px; color: #4F5B57;">কারণ: “আদেশে তারিখ ০১ ফেব্রুয়ারি লেখা ছিল, টাইপে ভুল হয়েছিল” · আব্দুল মান্নান</p>
+      </li>
+    </ol>
+  </main>
+</div>
+</body>
+</html>

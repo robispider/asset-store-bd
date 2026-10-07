@@ -2,9 +2,9 @@
 
 namespace GovStore\CustomRequests\Adapters;
 
-use GovStore\CustomRequests\Contracts\RequestableInterface;
 use App\Models\Accessory;
 use App\Models\User;
+use GovStore\CustomRequests\Contracts\RequestableInterface;
 
 class AccessoryAdapter implements RequestableInterface
 {
@@ -15,24 +15,32 @@ class AccessoryAdapter implements RequestableInterface
         $this->accessory = $accessory;
     }
 
-    public function getModel() { return $this->accessory; }
-    
-    public function getDisplayName(): string { return $this->accessory->name; }
-    
-    public function getType(): string { return 'Accessory'; }
-    
-    public function getAvailableQuantity(): int { return $this->accessory->numRemaining(); }
-
-   public function checkout(User $targetUser, User $adminUser, int $quantity = 1, string $notes = ''): bool
+    public function getModel()
     {
-        // Use Snipe-IT's native relationship safely
-        $this->accessory->users()->attach($targetUser->id, [
-            'assigned_to' => $targetUser->id,
-            'note' => $notes,
-        ]);
-        
+        return $this->accessory;
+    }
+
+    public function getDisplayName(): string
+    {
+        return $this->accessory->name;
+    }
+
+    public function getType(): string
+    {
+        return 'Accessory';
+    }
+
+    public function getAvailableQuantity(): int
+    {
+        return $this->accessory->numRemaining();
+    }
+
+    public function checkout(User $targetUser, User $adminUser, int $quantity = 1, string $notes = ''): bool
+    {
+        // Stock was already decremented by the Goods Issue ledger.
         // Trigger Snipe-IT's native logger
-        $this->accessory->logCheckout($notes, $targetUser);
+        $this->accessory->logCheckout($notes, $targetUser, null, [], $quantity);
+
         return true;
     }
 }

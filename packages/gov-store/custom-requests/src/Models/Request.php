@@ -2,9 +2,11 @@
 
 namespace GovStore\CustomRequests\Models;
 
+use App\Models\User;
+use GovStore\CustomRequests\Services\RequestNumberService;
+use GovStore\StoreOperations\Models\Document;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\User;
 
 class Request extends Model
 {
@@ -12,9 +14,15 @@ class Request extends Model
 
     protected $table = 'custom_service_requests';
 
-protected $fillable = [
+    protected $fillable = [
         'request_number',
         'requested_by',
+        'office_id',
+        'primary_decided_by',
+        'decided_by',
+        'received_at',
+        'return_requested_at',
+        'return_document_id',
         'approved_by',
         'request_type',
         'resolved_policy', // NEW
@@ -31,13 +39,22 @@ protected $fillable = [
         'closed_at',
     ];
 
-protected $casts = [
+    protected $casts = [
         'submitted_at' => 'datetime',
+        'received_at' => 'datetime',
+        'return_requested_at' => 'datetime',
+        'required_by_date' => 'date',
         'approved_at' => 'datetime',
         'closed_at' => 'datetime',
     ];
+
+    public function returnDocument()
+    {
+        return $this->belongsTo(Document::class, 'return_document_id');
+    }
+
     /**
-     * Eloquent Boot Handler: Automatically generates an 
+     * Eloquent Boot Handler: Automatically generates an
      * incremental sequential request number on creation.
      */
     protected static function boot()
@@ -45,19 +62,9 @@ protected $casts = [
         parent::boot();
 
         static::creating(function ($model) {
-            $year = date('Y');
-            
-            // Get the highest number generated during the current year
-            $lastRequest = self::whereYear('created_at', $year)
-                                ->orderBy('id', 'desc')
-                                ->first();
-
-            $nextNumber = 1;
-            if ($lastRequest && preg_match('/SR-\d{4}-(\d+)/', $lastRequest->request_number, $matches)) {
-                $nextNumber = intval($matches[1]) + 1;
+            if (! $model->request_number) {
+                $model->request_number = app(RequestNumberService::class)->generate();
             }
-
-            $model->request_number = 'SR-' . $year . '-' . str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
         });
     }
 
@@ -73,18 +80,19 @@ protected $casts = [
 
     public function requester()
     {
-        return $this->belongsTo(User::class, 'requested_by');
+        return $this->belongsTo(User::class, 'requested_by')->withTrashed();
     }
 
     public function approver()
     {
-        return $this->belongsTo(User::class, 'approved_by');
+        return $this->belongsTo(User::class, 'approved_by')->withTrashed();
     }
+
     /**
      * Define the relationship to the Snipe-IT user who approved this Service Request.
      */
     public function approvedBy()
     {
-        return $this->belongsTo(\App\Models\User::class, 'approved_by');
+        return $this->belongsTo(User::class, 'approved_by')->withTrashed();
     }
 }

@@ -2,10 +2,8 @@
 
 namespace GovStore\TenantScope\Navigation;
 
-use GovStore\TenantScope\Contexts\TenantContext;
-use GovStore\OfficeMembership\Models\OfficeResponsibility;
-use GovStore\Organization\Models\LocationProfile;
 use Exception;
+use GovStore\TenantScope\Services\GovAccess;
 
 class MenuRegistry
 {
@@ -27,95 +25,28 @@ class MenuRegistry
     /**
      * Compiles the sorted, permission-filtered hierarchical tree.
      */
-   /**
-     * Compiles the sorted, permission-filtered hierarchical tree.
-     */
     public function tree(): array
     {
-        $context  = app(TenantContext::class);
+        $access = app(GovAccess::class);
+        // One live snapshot per render, discarded afterwards. No session cache
+        // may delay assignment changes, revocation or temporary-cover expiry.
+        $roles = $access->roles(auth()->user());
         $flatList = [];
-
-        foreach ($this->items as $item) {
-            if ($item->permission) {
-                $user = auth()->user();
-
-                if (!$user) {
-                    continue;
-                }
-
-                // 1. Global Superuser Bypass — always allowed
-                if ($user->isSuperUser() && !$item->strict) {
-                    $hasAccess = true;
-                } else {
-                    $qualifiers = is_array($item->permission) ? $item->permission : [$item->permission];
-                    $locationId = $context->locationId;
-                    $hasAccess  = false;
-
-                    foreach ($qualifiers as $perm) {
-                        // 2. Explicit Admin/Superuser Verification
-                        if ($perm === 'admin') {
-                            $hasAccess = $user->isSuperUser() || $user->hasAccess('admin');
-                        }
-                        // 3. Office Admin Verification
-                        elseif ($perm === 'office_admin') {
-                            $hasAccess = LocationProfile::where('location_id', $locationId)
-                                ->where('office_admin_id', $user->id)
-                                ->exists();
-                        } 
-                        // 4. ICT Officer Verification
-                        elseif ($perm === 'ict_officer') {
-                            $hasAccess = \GovStore\Organization\Models\IctJurisdiction::where('user_id', $user->id)
-                                ->exists();
-                        }
-                        // 5. Company Admin Verification
-                        elseif ($perm === 'company_admin') {
-                            $hasAccess = \GovStore\Organization\Models\CompanyAdmin::where('user_id', $user->id)
-                                ->exists();
-                        }
-                        // 6. Contextual Office Role-Slug Verification
-                        elseif (in_array($perm, ['storekeeper', 'approver'])) {
-                            $roleSlugs = ($perm === 'approver')
-                                ? ['primary_approver', 'final_approver']
-                                : ['storekeeper'];
-
-                            $hasAccess = OfficeResponsibility::where('user_id', $user->id)
-                                ->where('location_id', $locationId)
-                                ->whereIn('role_slug', $roleSlugs)
-                                ->exists();
-                        } 
-                        // FIXED: 7. Project-Level Operation Unit Verification (Decoupled DB check)
-                        elseif (in_array($perm, ['project_head', 'project_officer', 'project_member'])) {
-                            $designations = [];
-                            if ($perm === 'project_head') $designations = ['HEAD'];
-                            if ($perm === 'project_officer') $designations = ['OFFICER'];
-                            if ($perm === 'project_member') $designations = ['HEAD', 'OFFICER', 'SUPPORT'];
-
-                            // Query raw database table directly to avoid importing models across packages
-                            $hasAccess = \Illuminate\Support\Facades\DB::table('gov_tracking_operation_units')
-                                ->where('user_id', $user->id)
-                                ->whereIn('designation', $designations)
-                                ->exists();
-                        }
-                        
-                       // 8. Standard Capability/Permission Verification
-                        else {
-                            // Utilize the new helper created in the updated context
-                            $hasAccess = method_exists($context, 'hasPermission') 
-                                ? $context->hasPermission($perm) 
-                                : ($context->effectivePermissions && $context->effectivePermissions->has($perm));
-                        }
-
-                        if ($hasAccess) {
-                            break; // Short-circuit
-                        }
+        foreach ($this->items as $definition) {
+            $item = clone $definition;
+            $item->children = [];
+            $permission = $item->permission;
+            if ($item->route && ($route = app('router')->getRoutes()->getByName($item->route))) {
+                foreach ($route->gatherMiddleware() as $middleware) {
+                    if (str_starts_with($middleware, 'gov.can:')) {
+                        $permission = substr($middleware, 8);
+                        break;
                     }
                 }
-
-                if (!$hasAccess) {
-                    continue;
-                }
             }
-
+            if ($permission && ! $access->qualifier(auth()->user(), $permission, $item->strict, $roles)) {
+                continue;
+            }
             $flatList[$item->id] = $item;
         }
 
@@ -124,7 +55,7 @@ class MenuRegistry
         foreach ($flatList as $item) {
             if ($item->parent && isset($flatList[$item->parent])) {
                 $flatList[$item->parent]->children[] = $item;
-            } elseif (!$item->parent) {
+            } elseif (! $item->parent) {
                 $tree[] = $item;
             }
         }
@@ -139,7 +70,7 @@ class MenuRegistry
         });
 
         foreach ($tree as $item) {
-            if (!empty($item->children)) {
+            if (! empty($item->children)) {
                 $item->children = $this->sortMenuTree($item->children);
             }
         }

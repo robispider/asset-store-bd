@@ -1,0 +1,8 @@
+@extends('committee::layout')
+@section('committee-content')
+<header class="cm-header"><h1>{{ __('committee::committee.ux.all_committees') }}</h1><p class="cm-muted">{{ __('committee::committee.ux.find_help') }}</p></header>
+<section class="box"><form method="get" action="{{ route('committee.registry') }}"><label for="cm-find">{{ __('committee::committee.ux.find') }}</label><div class="input-group"><input type="search" name="q" value="{{ request('q') }}" id="cm-find" class="form-control" placeholder="{{ __('committee::committee.search_placeholder') }}"><span class="input-group-btn"><button class="btn btn-primary" type="submit">{{ __('committee::committee.search') }}</button></span></div></form></section>
+<section class="box"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>{{ __('committee::committee.ux.step_committee') }}</th><th>{{ __('committee::committee.type') }}</th><th>{{ __('committee::committee.status') }}</th><th>{{ __('committee::committee.ux.term') }}</th></tr></thead><tbody>
+@forelse($rows as $row)<tr><td><a href="{{ route('committee.show',$row->id) }}"><strong>{{ $display::text($row->name_bn,$row->name_en) }}</strong></a><br><small>{{ $row->committee_number }}</small></td><td>{{ $display::text($row->type->name_bn,$row->type->name_en) }}</td><td>@include('committee::partials/status',['status'=>$row->status])</td><td>{{ $display::date($row->effective_from) }}<br><small>{{ $display::date($row->effective_to) }}</small></td></tr>@empty<tr><td colspan="4" class="cm-empty">{{ __('committee::committee.ux.no_results') }}</td></tr>@endforelse
+</tbody></table></div>{{ $rows->links() }}</section>
+@stop

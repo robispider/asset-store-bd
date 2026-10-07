@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Check against the paper, then confirm (step 4) — committee redesign mockup</title>
+<!--
+  STATIC DESIGN MOCKUP — not production code.
+  Screen: 07-order-confirm · Check against the paper, then confirm (step 4)
+  Spec: ../../UX-REDESIGN.md (§4 screen table, §5 workflows, §6 wording)
+  Implement in Blade with AdminLTE 2 / Bootstrap 3 classes; move every Bangla string
+  into resources/lang/{bn-BD,en-US}/committee.php. Names, numbers and dates are sample data.
+  Source artboard: ../source/Confirm.dc.html
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&amp;family=Tiro+Bangla&amp;display=swap" rel="stylesheet">
+<style>
+html,body{height:100%}
+body{margin:0}
+a{color:#1F5F8B}a:hover{color:#163F5E}
+</style>
+</head>
+<body>
+<div style="font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif; color: #17201D; background: #F3F5F4; min-height: 100%;">
+
+  <header style="background: #276A93; color: #FFFFFF; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 32px;">
+    <div style="font-size: 20px; font-weight: 600;">স্টোর ক্লাউড</div>
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; font-size: 15px;"><span>উপজেলা স্বাস্থ্য কমপ্লেক্স, শ্রীপুর</span><span>আব্দুল মান্নান · কমিটি নিবন্ধক</span></div>
+  </header>
+
+  <main style="max-width: 1200px; margin: 0 auto; padding: 24px 32px 56px; display: flex; flex-direction: column; gap: 20px;">
+    <ol aria-label="ধাপ" style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px;">
+      <li style="border-top: 4px solid #1D6B43; padding-top: 8px; font-size: 15px; color: #1D6B43;">✓ ১ · আদেশ</li>
+      <li style="border-top: 4px solid #1D6B43; padding-top: 8px; font-size: 15px; color: #1D6B43;">✓ ২ · কমিটি</li>
+      <li style="border-top: 4px solid #1D6B43; padding-top: 8px; font-size: 15px; color: #1D6B43;">✓ ৩ · সদস্য</li>
+      <li aria-current="step" style="border-top: 4px solid #1F5F8B; padding-top: 8px; font-size: 15px; font-weight: 600;">৪ · যাচাই ও কার্যকর</li>
+    </ol>
+
+    <div>
+      <h1 style="margin: 0; font-size: 30px; font-weight: 700;">আদেশের সঙ্গে মিলিয়ে নিন</h1>
+      <p style="margin: 4px 0 0; font-size: 16px; color: #4F5B57;">নিচের সারাংশ স্বাক্ষরিত আদেশের সঙ্গে মিললে কার্যকর করুন। এরপর কিছু বদলাতে নতুন অফিস আদেশ লাগবে।</p>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start;">
+
+      <article aria-label="কমিটির সারাংশ" style="flex: 999 1 620px; min-width: 0; background: #FFFDF8; border: 1px solid #D8D2C4; border-radius: 6px; padding: 36px 40px; display: flex; flex-direction: column; gap: 16px; font-family: 'Tiro Bangla', 'Hind Siliguri', serif;">
+        <div style="text-align: center; display: flex; flex-direction: column; gap: 2px;">
+          <div style="font-size: 18px;">উপজেলা স্বাস্থ্য কমপ্লেক্স, শ্রীপুর, গাজীপুর</div>
+          <div style="font-size: 15px; color: #4F5B57;">স্মারক নং ৪৫.১২.০০০০.০০৩.১১.০০২.২৬-২১০ · তারিখ: ১৮ আশ্বিন ১৪৩৩ / ০৩ অক্টোবর ২০২৬</div>
+        </div>
+        <div style="text-align: center; font-size: 24px; font-weight: 700;">বার্ষিক মজুদ যাচাই কমিটি</div>
+        <div style="font-size: 16px; line-height: 1.8;">মেয়াদ: ০৫ অক্টোবর ২০২৬ থেকে ৩০ জুন ২০২৭ (অর্থবছর ২০২৬-২৭)<br>যে দপ্তরের জন্য: উপজেলা স্বাস্থ্য কমপ্লেক্স, শ্রীপুর ও এর কেন্দ্রীয় ঔষধ ভাণ্ডার<br>কার্যপরিধি: দপ্তরের সকল মজুদের বার্ষিক ভৌত যাচাই ও প্রতিবেদন দাখিল</div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 16px;">
+          <thead><tr>
+            <th scope="col" style="text-align: left; border-bottom: 1px solid #B9B2A3; padding: 8px 6px; width: 48px;">ক্রম</th>
+            <th scope="col" style="text-align: left; border-bottom: 1px solid #B9B2A3; padding: 8px 6px;">নাম ও পদবি</th>
+            <th scope="col" style="text-align: left; border-bottom: 1px solid #B9B2A3; padding: 8px 6px;">কমিটিতে ভূমিকা</th>
+          </tr></thead>
+          <tbody>
+            <tr><td style="padding: 10px 6px; border-bottom: 1px solid #E6E0D3;">১</td><td style="padding: 10px 6px; border-bottom: 1px solid #E6E0D3;">ডা. আবুল কালাম, আবাসিক মেডিকেল অফিসার</td><td style="padding: 10px 6px; border-bottom: 1px solid #E6E0D3;">সভাপতি</td></tr>
+            <tr><td style="padding: 10px 6px; border-bottom: 1px solid #E6E0D3;">২</td><td style="padding: 10px 6px; border-bottom: 1px solid #E6E0D3;">প্রকৌ. শারমিন সুলতানা, সহকারী প্রকৌশলী</td><td style="padding: 10px 6px; border-bottom: 1px solid #E6E0D3;">সদস্য সচিব</td></tr>
+            <tr><td style="padding: 10px 6px;">৩</td><td style="padding: 10px 6px;">উপজেলা হিসাবরক্ষণ কর্মকর্তা, শ্রীপুর (পদাধিকারবলে) — বর্তমানে মো. জাহিদ হাসান</td><td style="padding: 10px 6px;">সদস্য</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size: 15px; color: #4F5B57;">স্বাক্ষর: উপজেলা স্বাস্থ্য ও পরিবার পরিকল্পনা কর্মকর্তা, শ্রীপুর</div>
+      </article>
+
+      <aside style="flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 18px;">
+        <section aria-labelledby="ok" style="background: #FFFFFF; border: 1px solid #D9DFDB; border-radius: 12px; padding: 20px 22px; display: flex; flex-direction: column; gap: 10px;">
+          <h2 id="ok" style="margin: 0; display: flex; align-items: center; gap: 8px; font-size: 19px; font-weight: 600; color: #1D6B43;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>সব নিয়ম মানা হয়েছে</h2>
+          <ul style="margin: 0; padding-left: 20px; font-size: 15px; line-height: 1.8;">
+            <li>৩ জন সদস্য (৩–৫ জন লাগে)</li>
+            <li>সভাপতি ও সদস্য সচিব আছেন</li>
+            <li>১ জন অন্য দপ্তরের সদস্য</li>
+            <li>স্টোরকিপার নেই</li>
+          </ul>
+          <a href="#" style="font-size: 15px;">স্বাক্ষরিত আদেশ পাশাপাশি খুলুন</a>
+        </section>
+
+        <section aria-labelledby="then" style="background: #FFFFFF; border: 1px solid #D9DFDB; border-radius: 12px; padding: 20px 22px; display: flex; flex-direction: column; gap: 10px;">
+          <h2 id="then" style="margin: 0; font-size: 19px; font-weight: 600;">কার্যকর করলে যা হবে</h2>
+          <ul style="margin: 0; padding-left: 20px; font-size: 15px; line-height: 1.8;">
+            <li>স্টোর বিভাগ বার্ষিক মজুদ যাচাইয়ের জন্য এই কমিটিকে খুঁজে পাবে</li>
+            <li>সদস্যরা নিজের “আমার কমিটি” পাতায় এটি দেখবেন</li>
+            <li>কমিটি ডেস্ক থেকে “কমিটি নেই” সতর্কতা সরে যাবে</li>
+            <li>এরপর বদলাতে নতুন অফিস আদেশ লাগবে</li>
+          </ul>
+        </section>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <button type="button" style="font-family: inherit; background: #1D6B43; color: #FFFFFF; border: 0; font-size: 18px; font-weight: 600; height: 52px; border-radius: 8px;">কমিটি কার্যকর করুন</button>
+          <a href="05-order-members.html" style="text-align: center; font-size: 16px; padding: 10px;">ফিরে গিয়ে ঠিক করুন</a>
+        </div>
+      </aside>
+    </div>
+  </main>
+</div>
+</body>
+</html>

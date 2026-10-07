@@ -3,6 +3,7 @@
 @section('title', __('requestlabels::requests.admin_index_title'))
 
 @section('content')
+@include('govstore::components.notices')
 <div class="row">
     <!-- PENDING QUEUE -->
     <div class="col-md-12">
@@ -14,24 +15,24 @@
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>Request #</th>
-                            <th>Requested By</th>
-                            <th>Type</th>
-                            <th>Purpose</th>
-                            <th>Date Submitted</th>
-                            <th>Items Count</th>
-                            <th>Action</th>
+                            <th>{{ __('requestlabels::requests.request_number') }}</th>
+                            <th>{{ __('requestlabels::requests.requester') }}</th>
+                            <th>{{ __('requestlabels::requests.item_type') }}</th>
+                            <th>{{ __('requestlabels::requests.purpose') }}</th>
+                            <th>{{ __('requestlabels::requests.submitted_date') }}</th>
+                            <th>{{ __('requestlabels::requests.items') }}</th>
+                            <th>{{ __('requestlabels::requests.action') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($pendingRequests as $req)
                             <tr>
                                 <td><strong style="color: #3c8dbc;">{{ $req->request_number }}</strong></td>
-                                <td>{{ $req->requester->present()->fullName ?? 'Unknown User' }}</td>
-                                <td><span class="label label-default">{{ ucwords(str_replace('_', ' ', $req->request_type)) }}</span></td>
+                                <td>{{ $req->requester->present()->fullName ?? __('requestlabels::requests.unknown_user') }}</td>
+                                <td><span class="label label-default">{{ __('requestlabels::requests.request_type_'.$req->request_type) }}</span></td>
                                 <td>{{ $req->purpose }}</td>
                                 <td>{{ $req->submitted_at ? $req->submitted_at->format('Y-m-d H:i') : $req->created_at->format('Y-m-d') }}</td>
-                                <td><span class="badge bg-blue">{{ $req->items->count() }} line(s)</span></td>
+                                <td><span class="badge bg-blue">{{ $req->items->count() }} {{ __('requestlabels::requests.lines') }}</span></td>
                                 <td>
                                     <a href="{{ route('gov.requests.admin.show', $req->id) }}" class="btn btn-sm btn-primary">
                                         <i class="fas fa-edit"></i> Review & Process
@@ -61,17 +62,17 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>Request #</th>
-                            <th>Requester</th>
-                            <th>Status</th>
-                            <th>Processed Date</th>
+                            <th>{{ __('requestlabels::requests.request_number') }}</th>
+                            <th>{{ __('requestlabels::requests.requester') }}</th>
+                            <th>{{ __('requestlabels::requests.document_status') }}</th>
+                            <th>{{ __('requestlabels::requests.processed_date') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($processedRequests as $req)
                             <tr>
                                 <td><strong>{{ $req->request_number }}</strong></td>
-                                <td>{{ $req->requester->present()->fullName ?? 'Unknown' }}</td>
+                                <td>{{ $req->requester->present()->fullName ?? __('requestlabels::requests.unknown_user') }}</td>
                                <td>
                                     @if($req->approval_status === 'approved')
                                         <span class="label label-success">{{ __('requestlabels::requests.admin_index_status_approved') }}</span>
@@ -82,7 +83,7 @@
                                     @elseif($req->approval_status === 'rejected')
                                         <span class="label label-danger">{{ __('requestlabels::requests.admin_index_status_rejected') }}</span>
                                     @else
-                                        <span class="label label-info">{{ ucfirst($req->approval_status) }}</span>
+                                        <span class="label label-info">{{ __('requestlabels::requests.event_'.$req->approval_status) }}</span>
                                     @endif
                                 </td>
                                 <td>{{ $req->approved_at ? $req->approved_at->format('Y-m-d H:i') : '-' }}</td>

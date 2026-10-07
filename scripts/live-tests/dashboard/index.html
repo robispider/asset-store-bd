@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live Test Dashboard</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --ink:#1d2330; --mute:#667085; --line:#e3e6eb; --ok:#1a7f4b; --bad:#c0362c; --warn:#a15c00; --run:#2457c5; --okbg:#e7f6ee; --badbg:#fdeceb; --warnbg:#fff4e0; --runbg:#e8effd; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#12151b; --card:#1a1f28; --ink:#e8ebf0; --mute:#97a1b2; --line:#2a313d; --ok:#4cc38a; --bad:#ff7b72; --warn:#e3a43b; --run:#7aa2ff; --okbg:#12301f; --badbg:#3a1a18; --warnbg:#35280e; --runbg:#16233f; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.45 system-ui, sans-serif; }
+  header { padding:14px 20px; border-bottom:1px solid var(--line); background:var(--card); display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+  h1 { font-size:17px; margin:0; } h2 { font-size:14px; margin:0 0 10px; }
+  main { display:grid; grid-template-columns:340px 1fr; gap:16px; padding:16px 20px; }
+  @media (max-width:900px) { main { grid-template-columns:1fr; padding:12px 16px; } }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:14px; margin-bottom:16px; }
+  label { display:block; font-weight:600; margin:10px 0 4px; }
+  select, input[type=text], input[type=number] { width:100%; padding:7px 8px; border:1px solid var(--line); border-radius:6px; background:var(--bg); color:var(--ink); font:inherit; }
+  .row { display:flex; gap:8px; align-items:center; } .row > * { flex:1; }
+  .check { display:flex; gap:8px; align-items:flex-start; font-weight:400; margin:8px 0; } .check input { margin-top:3px; }
+  .hint { color:var(--mute); font-size:12px; margin-top:3px; }
+  button { padding:8px 14px; border-radius:6px; border:1px solid var(--line); background:var(--card); color:var(--ink); font:inherit; cursor:pointer; }
+  button.primary { background:var(--run); color:#fff; border-color:var(--run); font-weight:600; width:100%; margin-top:12px; }
+  button.danger { color:var(--bad); border-color:var(--bad); }
+  button:disabled { opacity:.5; cursor:not-allowed; }
+  .pill { display:inline-block; padding:1px 8px; border-radius:99px; font-size:12px; font-weight:600; }
+  .passed { background:var(--okbg); color:var(--ok); } .failed { background:var(--badbg); color:var(--bad); }
+  .blocked,.flaky,.skipped { background:var(--warnbg); color:var(--warn); } .running,.pending { background:var(--runbg); color:var(--run); }
+  .interrupted,.inconclusive { background:var(--line); color:var(--mute); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(90px,1fr)); gap:8px; margin-bottom:12px; }
+  .stat { border:1px solid var(--line); border-radius:8px; padding:8px 10px; } .stat b { display:block; font-size:20px; }
+  table { width:100%; border-collapse:collapse; } th,td { text-align:left; padding:7px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--mute); font-weight:600; font-size:12px; }
+  .log { font:12px/1.5 ui-monospace, Consolas, monospace; max-height:300px; overflow:auto; background:var(--bg); border:1px solid var(--line); border-radius:6px; padding:8px; white-space:pre-wrap; word-break:break-word; }
+  .log div.fail { color:var(--bad); } .log div.ok { color:var(--ok); }
+  .err { color:var(--bad); margin-top:8px; }
+  .jlist { border:1px solid var(--line); border-radius:6px; max-height:260px; overflow:auto; background:var(--bg); }
+  .jlist label.item { display:flex; gap:8px; align-items:flex-start; font-weight:400; margin:0; padding:7px 9px; border-bottom:1px solid var(--line); cursor:pointer; }
+  .jlist label.item:last-child { border-bottom:0; }
+  .jlist .tag { font-size:11px; color:var(--mute); }
+  a { color:var(--run); cursor:pointer; }
+  .runs td { cursor:pointer; } .runs tr:hover td { background:var(--bg); }
+  img.shot { max-width:100%; border:1px solid var(--line); border-radius:6px; margin-top:8px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Live journey test dashboard</h1>
+  <span id="activeBadge" class="pill pending">idle</span>
+</header>
+<main>
+  <section>
+    <div class="card">
+      <h2>Start a run</h2>
+      <label for="suite">Suite</label>
+      <select id="suite"></select>
+      <div class="row" style="margin-top:10px;justify-content:space-between">
+        <label style="margin:0">Journeys to run <span id="selCount" class="hint"></span></label>
+      </div>
+      <div class="row" style="margin:6px 0">
+        <button type="button" id="selAll">Select all</button>
+        <button type="button" id="selNone">Deselect all</button>
+        <button type="button" id="selInvert">Invert</button>
+      </div>
+      <div id="journeyList" class="jlist"></div>
+      <label for="baseUrl">Server URL</label>
+      <input id="baseUrl" type="text" placeholder="http://snipeit.local">
+      <div class="hint">Local hosts only (<code>*.local</code>, <code>*.test</code>, <code>localhost</code>). Another host needs <code>LIVE_TEST_ALLOWED_HOSTS</code> set when starting the dashboard, and must use the database the PHP bridge reads.</div>
+      <label class="check"><input id="headed" type="checkbox"><span>Show the browser while it runs<br><span class="hint">Opens a visible Chromium window on this computer.</span></span></label>
+      <div id="slowWrap" style="display:none"><label for="slowMo">Slow motion (ms per action)</label><input id="slowMo" type="number" min="0" max="2000" value="300"></div>
+      <label class="check"><input id="retry" type="checkbox"><span>Retry failed read-only journeys once<br><span class="hint">A retried pass is shown as flaky.</span></span></label>
+      <label class="check"><input id="writes" type="checkbox"><span>Allow journeys that create data<br><span class="hint">Needed for mutation journeys. Records created are listed afterwards.</span></span></label>
+      <label class="check"><input id="mail" type="checkbox"><span>Allow external mail driver<br><span class="hint">Only if the server's mail driver is a real one. Delivery is never tested.</span></span></label>
+      <label for="seed">Seed (optional)</label>
+      <input id="seed" type="number" placeholder="20261006">
+      <button class="primary" id="start">Start run</button>
+      <button class="danger" id="stop" style="width:100%;margin-top:8px;display:none">Stop run</button>
+      <div id="formErr" class="err"></div>
+    </div>
+    <div class="card">
+      <h2>Recent runs</h2>
+      <table class="runs"><tbody id="runs"></tbody></table>
+    </div>
+  </section>
+  <section>
+    <div class="card" id="detail">
+      <h2 id="detailTitle">No run selected</h2>
+      <div class="stats" id="stats"></div>
+      <div id="meta" class="hint"></div>
+      <table style="margin-top:10px"><thead><tr><th>Journey</th><th>Status</th><th>Detail</th></tr></thead><tbody id="results"></tbody></table>
+      <p id="reportLink"></p>
+    </div>
+    <div class="card"><h2>Live steps</h2><div class="log" id="steps"></div></div>
+    <div class="card"><h2>Console</h2><div class="log" id="console"></div></div>
+    <div class="card" id="retainedCard" style="display:none"><h2>Retained records</h2><div id="retained"></div></div>
+  </section>
+</main>
+<script>
+const T = new URLSearchParams(location.search).get('t');
+const $ = id => document.getElementById(id);
+const api = (p, o = {}) => fetch(p + (p.includes('?') ? '&' : '?') + 't=' + T, { ...o, headers: { 'x-dashboard-token': T, 'content-type': 'application/json' } }).then(async r => { const b = await r.json().catch(() => ({})); if (!r.ok) throw new Error(b.error || r.status); return b; });
+let state = null, selected = null, timer = null;
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+
+async function loadState() {
+  state = await api('/api/state');
+  if (!$('suite').options.length) {
+    $('suite').innerHTML = '<option value="*">All journeys</option>' + state.suites.map(s => `<option value="${esc(s.id)}">${esc(s.id)} (${s.journeys.length}) — ${esc(s.title || '')}</option>`).join('');
+    $('baseUrl').value = state.defaultBaseUrl;
+    buildJourneyList();
+  }
+  $('runs').innerHTML = state.runs.map(r => {
+    const s = r.summary, st = r.running ? 'running' : !s ? 'pending' : s.failed ? 'failed' : s.blocked ? 'blocked' : 'passed';
+    return `<tr data-id="${esc(r.id)}"><td><span class="pill ${st}">${st}</span></td><td>${esc(r.tests ? r.tests.length + ' selected journey(s)' : (r.testId || r.suiteId || ''))}<div class="hint">${esc(r.baseUrl || '')} ${esc((r.startedAt || '').replace('T', ' ').slice(0, 19))}</div></td></tr>`;
+  }).join('') || '<tr><td class="hint">No runs yet</td></tr>';
+  for (const tr of $('runs').querySelectorAll('tr[data-id]')) tr.onclick = () => select(tr.dataset.id);
+  const act = state.active;
+  $('activeBadge').textContent = act ? 'running' : 'idle'; $('activeBadge').className = 'pill ' + (act ? 'running' : 'pending');
+  updateSel(); $('stop').style.display = act ? 'block' : 'none';
+  if (act && !selected) select(act.runId);
+}
+
+function buildJourneyList() {
+  const suite = state.suites.find(s => s.id === $('suite').value);
+  const ids = suite ? suite.journeys : state.journeys.map(j => j.id);
+  const byId = Object.fromEntries(state.journeys.map(j => [j.id, j]));
+  $('journeyList').innerHTML = ids.map(id => {
+    const j = byId[id] || {};
+    const writes = j.capability === 'write-fixtures';
+    return `<label class="item"><input type="checkbox" class="jsel" value="${esc(id)}" checked><span>${esc(id)}<br><span class="tag">${esc(j.title || '')} · ${writes ? 'creates data' : 'read-only'}</span></span></label>`;
+  }).join('');
+  for (const c of document.querySelectorAll('.jsel')) c.onchange = updateSel;
+  updateSel();
+}
+const boxes = () => [...document.querySelectorAll('.jsel')];
+function updateSel() {
+  const n = boxes().filter(b => b.checked).length;
+  $('selCount').textContent = `(${n} of ${boxes().length} selected)`;
+  $('start').textContent = n ? `Start run (${n} journey${n === 1 ? '' : 's'})` : 'Select a journey to run';
+  $('start').disabled = !n || Boolean(state?.active);
+}
+$('suite').onchange = buildJourneyList;
+$('selAll').onclick = () => { boxes().forEach(b => b.checked = true); updateSel(); };
+$('selNone').onclick = () => { boxes().forEach(b => b.checked = false); updateSel(); };
+$('selInvert').onclick = () => { boxes().forEach(b => b.checked = !b.checked); updateSel(); };
+
+function select(id) { selected = id; refresh(); }
+
+async function refresh() {
+  if (!selected) return;
+  let d; try { d = await api('/api/events?runId=' + encodeURIComponent(selected)); } catch { return; }
+  const res = d.results?.results || [], sm = d.results?.summary;
+  $('detailTitle').textContent = selected + (d.running ? ' (running)' : '');
+  const stat = (k, v) => `<div class="stat"><b>${v ?? 0}</b>${k}</div>`;
+  $('stats').innerHTML = sm ? stat('total', sm.total) + stat('passed', sm.passed) + stat('failed', sm.failed) + stat('blocked', sm.blocked) + stat('flaky', sm.flaky) : '<div class="hint">Results appear when the run finishes.</div>';
+  const p = d.provenance;
+  $('meta').textContent = p ? `${p.baseUrl} · access mode ${p.preflight?.accessMode ?? '?'} · ${p.headed ? 'visible browser' : 'headless'} · revision ${(p.application?.revision || '').slice(0, 8)} · seed ${p.seed}` : '';
+
+  // Per-journey live status from events; final status from results when available.
+  const live = {};
+  for (const e of d.events) {
+    const id = e.caseId || e.journeyId; if (!id) continue;
+    live[id] ??= { status: 'running', step: 0, actor: '', failed: null };
+    if (e.type === 'step_started') { live[id].step = e.stepIndex; live[id].action = e.action; live[id].actor = e.actor; }
+    if (e.type === 'step_failed') live[id].failed = e.error;
+    if (e.type === 'test_finished') live[id].status = e.status;
+  }
+  for (const r of res) live[r.caseId || r.journeyId] = { ...(live[r.caseId || r.journeyId] || {}), status: r.status + (r.flaky ? '' : ''), done: true, error: r.error, cls: r.failureClass || r.code, flaky: r.flaky, screenshot: r.screenshot };
+  $('results').innerHTML = Object.entries(live).map(([id, v]) => {
+    const st = v.status === 'running' && !d.running ? 'interrupted' : v.status;
+    const detail = v.done || v.failed ? `${esc(v.cls || '')} ${esc(v.error || v.failed || '')}` : `step ${v.step}: ${esc(v.action || '')} as ${esc(v.actor || '')}`;
+    const shot = v.screenshot ? `<div><img class="shot" src="/api/screenshot?runId=${encodeURIComponent(selected)}&name=${encodeURIComponent(v.screenshot)}&t=${T}" alt="Failure screenshot"></div>` : '';
+    return `<tr><td>${esc(id)}</td><td><span class="pill ${esc(st)}">${esc(st)}</span>${v.flaky ? ' <span class="pill flaky">flaky</span>' : ''}</td><td>${detail}${shot}</td></tr>`;
+  }).join('') || '<tr><td colspan="3" class="hint">Waiting for first journey…</td></tr>';
+
+  const steps = $('steps'), atBottom = steps.scrollTop + steps.clientHeight >= steps.scrollHeight - 30;
+  steps.innerHTML = d.events.filter(e => /step_|test_|cleanup/.test(e.type)).slice(-150).map(e => {
+    const cls = /failed/.test(e.type) || e.status === 'failed' ? 'fail' : e.type === 'step_finished' ? 'ok' : '';
+    return `<div class="${cls}">${esc((e.timestamp || '').slice(11, 19))} ${esc(e.type)} ${esc(e.caseId || e.journeyId || '')} ${e.stepIndex ? '#' + e.stepIndex : ''} ${esc(e.action || '')} ${esc(e.actor || '')} ${esc(e.error || e.status || '')}</div>`;
+  }).join('');
+  if (atBottom) steps.scrollTop = steps.scrollHeight;
+  $('console').textContent = d.console;
+
+  const retained = d.cleanup?.retained || [];
+  $('retainedCard').style.display = retained.length ? 'block' : 'none';
+  $('retained').innerHTML = '<table><tbody>' + retained.map(r => `<tr><td>${esc(r.kind)}</td><td>${esc(r.id)}</td><td>${esc(r.effect)}</td></tr>`).join('') + '</tbody></table>';
+  $('reportLink').innerHTML = !d.running && sm ? `<a href="/api/report?runId=${encodeURIComponent(selected)}&t=${T}" target="_blank" rel="noopener">Open full HTML report</a>` : '';
+}
+
+$('headed').onchange = () => { $('slowWrap').style.display = $('headed').checked ? 'block' : 'none'; };
+$('start').onclick = async () => {
+  $('formErr').textContent = '';
+  const tests = boxes().filter(b => b.checked).map(b => b.value);
+  try {
+    const body = { baseUrl: $('baseUrl').value.trim(), headed: $('headed').checked, slowMo: $('slowMo').value, retryReadonly: $('retry').checked ? 1 : 0, allowWrites: $('writes').checked, allowExternalMail: $('mail').checked, seed: $('seed').value };
+    body.tests = tests;
+    const r = await api('/api/run', { method: 'POST', body: JSON.stringify(body) });
+    selected = r.runId; await loadState(); refresh();
+  } catch (e) { $('formErr').textContent = e.message; }
+};
+$('stop').onclick = () => api('/api/stop', { method: 'POST', body: '{}' }).then(loadState);
+
+loadState().catch(e => { document.body.innerHTML = '<p style="padding:20px">Dashboard token invalid. Use the URL printed by the dashboard command.</p>'; });
+setInterval(() => { loadState().catch(() => {}); refresh(); }, 1200);
+</script>
+</body>
+</html>

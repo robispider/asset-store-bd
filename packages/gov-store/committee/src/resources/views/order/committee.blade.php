@@ -1,0 +1,10 @@
+@extends('committee::layout')
+@section('committee-content')
+<header class="cm-header"><h1>{{ $display::text($c->name_bn,$c->name_en) }}</h1><p class="cm-draft-save" role="status" aria-live="polite">{{ __('committee::committee.ux.draft_kept') }}</p></header>
+@include('committee::partials/stepper',['step'=>2])
+<form class="cm-command cm-autosave" action="{{ route('committee.command.update',$c->id) }}" method="post" data-method="PUT">@csrf<input type="hidden" name="lock_version" value="{{ $c->lock_version }}">@include('committee::order/committee-form')<x-gov-action ability="committee.manage" type="submit" class="btn btn-primary">{{ __('committee::committee.save') }}</x-gov-action></form>
+@include('committee::partials/working-order',['orderKind'=>$c->supersedes_id ? 'RECONSTITUTION' : 'CONSTITUTION'])
+<section class="box"><h2>{{ __('committee::committee.ux.offices_served') }}</h2>@foreach($coverage as $scope)<p><i class="fa fa-building-o" aria-hidden="true"></i> {{ $scope->scope_label_snapshot }}</p>@endforeach
+<details><summary>{{ __('committee::committee.ux.add_office') }}</summary><form class="cm-command" action="{{ route('committee.command.scope',$c->id) }}" method="post">@csrf<input type="hidden" name="order_id" value="{{ $workingOrder['id'] ?? '' }}"><input type="hidden" name="effective_from" value="{{ $c->effective_from }}">@include('committee::field',['name'=>'scope_type','label'=>'ux.office_or_store','options'=>$enumOptions('office store'),'class'=>'cm-scope-type'])@include('committee::field',['name'=>'scope_id','label'=>'ux.offices_served','options'=>[],'class'=>'cm-scope-id','required'=>true])<x-gov-action ability="committee.manage" type="submit" class="btn btn-default">{{ __('committee::committee.ux.add_office') }}</x-gov-action></form></details></section>
+<div class="cm-actions"><a class="btn btn-default" href="{{ route('committee.show',['committee'=>$c->id,'step'=>1]) }}">← {{ __('committee::committee.ux.previous') }}</a><a class="btn btn-primary" href="{{ route('committee.show',['committee'=>$c->id,'step'=>3]) }}">{{ __('committee::committee.ux.next_members') }} →</a></div>
+@stop

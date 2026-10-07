@@ -23,6 +23,7 @@ use Watson\Validating\ValidatingTrait;
 
 class License extends Depreciable
 {
+    use \GovStore\TenantScope\Concerns\UsesOfficeInventoryBuilder;
     use HasFactory;
 
     protected $presenter = LicensePresenter::class;

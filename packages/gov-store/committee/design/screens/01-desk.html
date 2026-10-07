@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Committee desk (registrar home) — committee redesign mockup</title>
+<!--
+  STATIC DESIGN MOCKUP — not production code.
+  Screen: 01-desk · Committee desk (registrar home)
+  Spec: ../../UX-REDESIGN.md (§4 screen table, §5 workflows, §6 wording)
+  Implement in Blade with AdminLTE 2 / Bootstrap 3 classes; move every Bangla string
+  into resources/lang/{bn-BD,en-US}/committee.php. Names, numbers and dates are sample data.
+  Source artboard: ../source/Main.dc.html
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+html,body{height:100%}
+body{margin:0}
+a{color:#1F5F8B}a:hover{color:#163F5E}
+</style>
+</head>
+<body>
+<div style="font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif; color: #17201D; background: #F3F5F4; min-height: 100%;">
+
+  <header style="background: #276A93; color: #FFFFFF; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 32px;">
+    <div style="font-size: 20px; font-weight: 600;">স্টোর ক্লাউড</div>
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; font-size: 15px;">
+      <span style="display: flex; align-items: center; gap: 6px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21V5l8-3 8 3v16"></path><path d="M9 21v-5h6v5"></path></svg>উপজেলা স্বাস্থ্য কমপ্লেক্স, শ্রীপুর</span>
+      <span>আব্দুল মান্নান · কমিটি নিবন্ধক</span>
+    </div>
+  </header>
+
+  <nav aria-label="কমিটি" style="background: #FFFFFF; border-bottom: 1px solid #D9DFDB; padding: 0 32px; display: flex; flex-wrap: wrap; gap: 4px;">
+    <a href="01-desk.html" style="padding: 14px 16px; font-size: 16px; font-weight: 600; color: #17201D; text-decoration: none; border-bottom: 3px solid #1F5F8B;">কমিটি ডেস্ক</a>
+    <a href="02-committee.html" style="padding: 14px 16px; font-size: 16px; color: #4F5B57; text-decoration: none; border-bottom: 3px solid transparent;">সব কমিটি</a>
+    <a href="11-my-committees-phone.html" style="padding: 14px 16px; font-size: 16px; color: #4F5B57; text-decoration: none; border-bottom: 3px solid transparent;">আমার কমিটি</a>
+  </nav>
+
+  <main style="max-width: 1200px; margin: 0 auto; padding: 32px 32px 56px; display: flex; flex-direction: column; gap: 28px;">
+
+    <div style="display: flex; flex-direction: column; gap: 4px;">
+      <h1 style="margin: 0; font-size: 32px; font-weight: 700;">কমিটি ডেস্ক</h1>
+      <p style="margin: 0; font-size: 16px; color: #4F5B57;">উপজেলা স্বাস্থ্য কমপ্লেক্স, শ্রীপুরের কমিটিগুলোর আজকের অবস্থা · ০৫ অক্টোবর ২০২৬</p>
+    </div>
+
+    <section aria-labelledby="start" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px;">
+      <h2 id="start" style="position: absolute; left: -9999px;">কী করতে চান?</h2>
+      <a href="04-order-start.html" style="background: #1F5F8B; color: #FFFFFF; text-decoration: none; border-radius: 12px; padding: 22px 24px; display: flex; flex-direction: column; gap: 6px; min-height: 120px;">
+        <span style="display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 600;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path><path d="M9 14h6M12 11v6"></path></svg>নতুন অফিস আদেশ এসেছে</span>
+        <span style="font-size: 15px; opacity: 0.95;">কমিটি গঠন, সদস্য বদল, মেয়াদ বৃদ্ধি বা বিলুপ্তি — আদেশ হাতে নিয়ে শুরু করুন</span>
+      </a>
+      <a href="09-transfer.html" style="background: #FFFFFF; color: #17201D; text-decoration: none; border: 1px solid #C9D2CD; border-radius: 12px; padding: 22px 24px; display: flex; flex-direction: column; gap: 6px; min-height: 120px;">
+        <span style="display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 600; color: #1F5F8B;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h12l-3-3"></path><path d="M17 17H5l3 3"></path></svg>কেউ বদলি হয়েছেন</span>
+        <span style="font-size: 15px; color: #4F5B57;">তাঁর সব কমিটির আসন একবারে পূরণ করুন</span>
+      </a>
+      <div style="background: #FFFFFF; border: 1px solid #C9D2CD; border-radius: 12px; padding: 22px 24px; display: flex; flex-direction: column; gap: 10px; min-height: 120px; box-sizing: border-box;">
+        <label for="find" style="display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 600; color: #1F5F8B;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>কমিটি বা সদস্য খুঁজুন</label>
+        <input id="find" type="search" placeholder="নাম, স্মারক নং বা কমিটি নং" style="font-family: inherit; font-size: 16px; height: 44px; padding: 0 14px; border: 1px solid #B7C2BC; border-radius: 8px; box-sizing: border-box; width: 100%;">
+      </div>
+    </section>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start;">
+
+      <div style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 28px;">
+
+        <section aria-labelledby="attention" style="display: flex; flex-direction: column; gap: 12px;">
+          <h2 id="attention" style="margin: 0; font-size: 22px; font-weight: 600;">আপনার মনোযোগ প্রয়োজন <span style="font-size: 16px; font-weight: 500; color: #4F5B57;">· ৩টি বিষয়</span></h2>
+
+          <article style="background: #FFFFFF; border: 1px solid #EFB2AC; border-radius: 12px; padding: 20px 22px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center;">
+            <div style="flex: 999 1 420px; display: flex; flex-direction: column; gap: 6px;">
+              <span style="align-self: flex-start; display: flex; align-items: center; gap: 6px; background: #FCEBE9; color: #A1261C; font-size: 14px; font-weight: 600; padding: 4px 10px; border-radius: 999px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M15 9l-6 6M9 9l6 6"></path></svg>কাজ করতে পারবে না</span>
+              <h3 style="margin: 0; font-size: 18px; font-weight: 600;">কারিগরি পরিদর্শন কমিটির সদস্য সচিবের আসন খালি</h3>
+              <p style="margin: 0; font-size: 15px; color: #4F5B57; line-height: 1.6;">মো. রফিকুল ইসলাম ১৪ সেপ্টেম্বর উপজেলা স্বাস্থ্য কমপ্লেক্স, কাপাসিয়ায় বদলি হয়েছেন। নতুন সদস্য সচিব না দেওয়া পর্যন্ত এই কমিটি কারিগরি সরঞ্জাম পরিদর্শন করতে পারবে না।</p>
+            </div>
+            <a href="08-replace-member.html" style="flex: 1 0 auto; text-align: center; background: #1F5F8B; color: #FFFFFF; text-decoration: none; font-size: 16px; font-weight: 600; padding: 12px 20px; border-radius: 8px;">সদস্য প্রতিস্থাপন করুন</a>
+          </article>
+
+          <article style="background: #FFFFFF; border: 1px solid #F0C27A; border-radius: 12px; padding: 20px 22px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center;">
+            <div style="flex: 999 1 420px; display: flex; flex-direction: column; gap: 6px;">
+              <span style="align-self: flex-start; display: flex; align-items: center; gap: 6px; background: #FFF1D9; color: #8A4B00; font-size: 14px; font-weight: 600; padding: 4px 10px; border-radius: 999px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>মেয়াদ শেষ হচ্ছে</span>
+              <h3 style="margin: 0; font-size: 18px; font-weight: 600;">অকেজো ঘোষণা কমিটির মেয়াদ ২৪ দিন পর শেষ</h3>
+              <p style="margin: 0; font-size: 15px; color: #4F5B57; line-height: 1.6;">মেয়াদ ২৯ অক্টোবর ২০২৬ পর্যন্ত। কাজ বাকি থাকলে মেয়াদ বাড়ানোর আদেশ রেকর্ড করুন; না থাকলে কিছু করতে হবে না, মেয়াদ শেষে কমিটি নিজে থেকেই বন্ধ হবে।</p>
+            </div>
+            <div style="flex: 1 0 auto; display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="button" style="font-family: inherit; background: #1F5F8B; color: #FFFFFF; border: 0; font-size: 16px; font-weight: 600; padding: 12px 20px; border-radius: 8px; min-height: 44px;">মেয়াদ বাড়ান</button>
+              <button type="button" style="font-family: inherit; background: #FFFFFF; color: #1F5F8B; border: 1px solid #B7C2BC; font-size: 16px; padding: 12px 16px; border-radius: 8px; min-height: 44px;">শেষ হতে দিন</button>
+            </div>
+          </article>
+
+          <article style="background: #FFFFFF; border: 1px solid #F0C27A; border-radius: 12px; padding: 20px 22px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center;">
+            <div style="flex: 999 1 420px; display: flex; flex-direction: column; gap: 6px;">
+              <span style="align-self: flex-start; display: flex; align-items: center; gap: 6px; background: #FFF1D9; color: #8A4B00; font-size: 14px; font-weight: 600; padding: 4px 10px; border-radius: 999px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9.5 17h-19z"></path><path d="M12 10v4"></path><path d="M12 17.5v.01"></path></svg>কমিটি নেই</span>
+              <h3 style="margin: 0; font-size: 18px; font-weight: 600;">বার্ষিক মজুদ যাচাইয়ের জন্য এই দপ্তরে কোনো কমিটি নেই</h3>
+              <p style="margin: 0; font-size: 15px; color: #4F5B57; line-height: 1.6;">স্টোর বিভাগ মজুদ যাচাইয়ের সময় এই কমিটি খোঁজে। গঠনের অফিস আদেশ জারি হলে এখানে রেকর্ড করুন।</p>
+            </div>
+            <a href="04-order-start.html" style="flex: 1 0 auto; text-align: center; background: #FFFFFF; color: #1F5F8B; border: 1px solid #1F5F8B; text-decoration: none; font-size: 16px; font-weight: 600; padding: 11px 20px; border-radius: 8px;">গঠনের আদেশ রেকর্ড করুন</a>
+          </article>
+        </section>
+
+        <section aria-labelledby="coverage" style="background: #FFFFFF; border: 1px solid #D9DFDB; border-radius: 12px; padding: 22px 24px; display: flex; flex-direction: column; gap: 4px;">
+          <h2 id="coverage" style="margin: 0; font-size: 22px; font-weight: 600;">কোন কাজ কোন কমিটি দেখছে?</h2>
+          <p style="margin: 0 0 10px; font-size: 15px; color: #4F5B57;">এই দপ্তরের প্রতিটি কাজের জন্য আজ কোন কমিটি দায়িত্বে আছে</p>
+
+          <div style="display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.6fr) minmax(0, 1.3fr); gap: 0; font-size: 15px;">
+            <div style="padding: 10px 8px; font-size: 14px; color: #4F5B57; border-bottom: 1px solid #D9DFDB;">কাজ</div>
+            <div style="padding: 10px 8px; font-size: 14px; color: #4F5B57; border-bottom: 1px solid #D9DFDB;">দায়িত্বে যে কমিটি</div>
+            <div style="padding: 10px 8px; font-size: 14px; color: #4F5B57; border-bottom: 1px solid #D9DFDB;">অবস্থা</div>
+
+            <div style="padding: 14px 8px; border-bottom: 1px solid #EEF1EF; font-weight: 600;">পণ্য গ্রহণ ও পরিদর্শন</div>
+            <div style="padding: 14px 8px; border-bottom: 1px solid #EEF1EF;"><a href="02-committee.html">পণ্য গ্রহণ ও পরিদর্শন কমিটি</a><div style="font-size: 13px; color: #4F5B57;">৩০ জুন ২০২৭ পর্যন্ত · আরও ২৬৮ দিন</div></div>
+            <div style="padding: 14px 8px; border-bottom: 1px solid #EEF1EF;"><span style="display: inline-flex; align-items: center; gap: 6px; color: #1D6B43; font-weight: 600;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>কাজের জন্য প্রস্তুত</span></div>
+
+            <div style="padding: 14px 8px; border-bottom: 1px solid #EEF1EF; font-weight: 600;">কারিগরি পরিদর্শন</div>
+            <div style="padding: 14px 8px; border-bottom: 1px solid #EEF1EF;"><a href="02-committee.html">কারিগরি পরিদর্শন কমিটি</a><div style="font-size: 13px; color: #4F5B57;">৩০ জুন ২০২৭ পর্যন্ত</div></div>
+            <div style="padding: 14px 8px; border-bottom: 1px solid #EEF1EF;"><span style="display: inline-flex; align-items: center; gap: 6px; color: #A1261C; font-weight: 600;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M15 9l-6 6M9 9l6 6"></path></svg>কাজ করতে পারবে না</span><div style="font-size: 13px; color: #4F5B57;">সদস্য সচিব নেই</div></div>
+
+            <div style="padding: 14px 8px; border-bottom: 1px solid #EEF1EF; font-weight: 600;">বার্ষিক মজুদ যাচাই</div>
+            <div style="padding: 14px 8px; border-bottom: 1px solid #EEF1EF; color: #4F5B57;">কোনো কমিটি নেই</div>
+            <div style="padding: 14px 8px; border-bottom: 1px solid #EEF1EF;"><span style="display: inline-flex; align-items: center; gap: 6px; color: #8A4B00; font-weight: 600;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9.5 17h-19z"></path><path d="M12 10v4"></path><path d="M12 17.5v.01"></path></svg>গঠন করতে হবে</span></div>
+
+            <div style="padding: 14px 8px; border-bottom: 1px solid #EEF1EF; font-weight: 600;">অকেজো ঘোষণা (বোর্ড অব সার্ভে)</div>
+            <div style="padding: 14px 8px; border-bottom: 1px solid #EEF1EF;"><a href="02-committee.html">অকেজো ঘোষণা কমিটি</a><div style="font-size: 13px; color: #4F5B57;">২৯ অক্টোবর ২০২৬ পর্যন্ত</div></div>
+            <div style="padding: 14px 8px; border-bottom: 1px solid #EEF1EF;"><span style="display: inline-flex; align-items: center; gap: 6px; color: #8A4B00; font-weight: 600;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>মেয়াদ ২৪ দিন বাকি</span></div>
+
+            <div style="padding: 14px 8px; font-weight: 600;">নিষ্পত্তি</div>
+            <div style="padding: 14px 8px; color: #4F5B57;">এই দপ্তরে এখনো দরকার হয়নি</div>
+            <div style="padding: 14px 8px; color: #4F5B57;">—</div>
+          </div>
+        </section>
+      </div>
+
+      <aside aria-labelledby="recent" style="flex: 1 1 300px; min-width: 0; background: #FFFFFF; border: 1px solid #D9DFDB; border-radius: 12px; padding: 22px 24px; display: flex; flex-direction: column; gap: 16px;">
+        <h2 id="recent" style="margin: 0; font-size: 20px; font-weight: 600;">সাম্প্রতিক পরিবর্তন</h2>
+        <div style="display: flex; flex-direction: column; gap: 4px; padding-bottom: 14px; border-bottom: 1px solid #EEF1EF;">
+          <span style="font-size: 13px; color: #4F5B57;">০২ অক্টোবর ২০২৬ · আপনি</span>
+          <span style="font-size: 15px; line-height: 1.6;">পণ্য গ্রহণ ও পরিদর্শন কমিটিতে ডা. আবুল কালাম সভাপতি হলেন। মো. নজরুল ইসলাম অবসরে গেছেন।</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px; padding-bottom: 14px; border-bottom: 1px solid #EEF1EF;">
+          <span style="font-size: 13px; color: #4F5B57;">১৪ সেপ্টেম্বর ২০২৬ · সিস্টেম লক্ষ করেছে</span>
+          <span style="font-size: 15px; line-height: 1.6;">মো. রফিকুল ইসলাম এই দপ্তর ছেড়েছেন। কারিগরি পরিদর্শন কমিটিতে তাঁর আসন খালি।</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 13px; color: #4F5B57;">০১ জুলাই ২০২৬ · আপনি</span>
+          <span style="font-size: 15px; line-height: 1.6;">পণ্য গ্রহণ ও পরিদর্শন কমিটি ২০২৬-২৭ অর্থবছরের জন্য পুনর্গঠিত হলো।</span>
+        </div>
+        <a href="03-history.html" style="font-size: 15px; font-weight: 600;">সব পরিবর্তন দেখুন</a>
+      </aside>
+    </div>
+  </main>
+</div>
+</body>
+</html>

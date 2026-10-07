@@ -5,61 +5,11 @@
     
     <!-- Dynamic Quantity Input for ALL Items (Models, Consumables, Accessories) -->
     <div class="input-group input-group-sm" style="margin-bottom: 6px;">
-        <span class="input-group-addon" style="font-size: 11px; padding: 4px 8px;">Qty</span>
-        <input type="number" name="qty" class="form-control" value="1" min="1" required style="height: 28px; text-align: center;">
+        <span class="input-group-addon" style="font-size: 11px; padding: 4px 8px;">{{ __('requestlabels::requests.quantity') }}</span>
+        <input aria-label="{{ __('requestlabels::requests.quantity') }} — {{ $itemName }}" type="number" name="qty" class="form-control" value="1" min="1" max="10000" required style="height: 28px; text-align: center;">
     </div>
     
     <button type="submit" class="btn btn-primary btn-sm btn-block add-to-basket-btn" style="height: 28px; font-size: 12px;">
         <i class="fas fa-cart-plus"></i> {{ __('requestlabels::requests.requestbutton_btn_add_to_basket') }}
     </button>
 </form>
-
-<script>
-// Attach AJAX handler once if not already attached
-if (typeof window.basketAjaxInitialized === 'undefined') {
-    window.basketAjaxInitialized = true;
-    document.addEventListener('submit', function(e) {
-        if (e.target && e.target.classList.contains('ajax-basket-form')) {
-            e.preventDefault();
-            let form = e.target;
-            let btn = form.querySelector('.add-to-basket-btn');
-            let originalText = btn.innerHTML;
-            
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {{ __('requestlabels::requests.requestbutton_btn_adding') }}';
-            btn.disabled = true;
-
-            fetch(form.action, {
-                method: 'POST',
-                body: new FormData(form),
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    btn.innerHTML = '<i class="fas fa-check"></i> {{ __('requestlabels::requests.requestbutton_btn_added') }}';
-                    btn.classList.remove('btn-primary');
-                    btn.classList.add('btn-success');
-                    
-                    // Update floating basket badge count
-                    let badge = document.getElementById('floating-basket-count');
-                    if (badge) badge.innerText = data.count;
-
-                    setTimeout(() => {
-                        btn.innerHTML = originalText;
-                        btn.classList.remove('btn-success');
-                        btn.classList.add('btn-primary');
-                        btn.disabled = false;
-                    }, 1500);
-                } else {
-                    alert('{{ __('requestlabels::requests.requestbutton_ajax_error') }}' || 'Error adding item');
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                }
-            })
-            .catch(err => {
-                form.submit(); // Fallback to normal submission if AJAX fails
-            });
-        }
-    });
-}
-</script>

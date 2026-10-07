@@ -120,6 +120,9 @@ $(document).ready(function() {
             if (res.has_requirements && res.html.trim() !== '') {
                 $metaRow.removeClass('hidden');
                 $container.append(res.html);
+                $container.find('select[name*="[adjustment_direction]"]').on('change', function() {
+                    calculateBalance($row);
+                });
 
                 if (!isDraft) {
                     $container.find('input, select').attr('disabled', 'disabled');
@@ -139,7 +142,10 @@ $(document).ready(function() {
         let qty = parseInt($row.find('.qty-input').val()) || 0;
         
         if (qty > 0 && !isNaN(current)) {
-            let balance = mathDirection === '+' ? (current + qty) : (current - qty);
+            let direction = mathDirection;
+            let adjustmentDirection = $(`tr[data-parent-index="${$row.data('index')}"] select[name*="[adjustment_direction]"]`).val();
+            if (adjustmentDirection) direction = adjustmentDirection === 'IN' ? '+' : '-';
+            let balance = direction === '+' ? (current + qty) : (current - qty);
             $row.find('.balance-after').text(balance);
             $row.find('.balance-after').removeClass('text-red text-green').addClass(balance < 0 ? 'text-red' : 'text-green');
         } else {
@@ -250,13 +256,19 @@ $(document).ready(function() {
         // Trigger Posting Preview Modal
         $('#triggerPostBtn').click(function() {
             $.post('{{ route("storeops.documents.draft", ["type" => $type, "id" => $document->id]) }}', $('#workspaceForm').serialize())
-                .done(function() {
+                .done(function(res) {
+                    if (res.validation && !res.validation.is_valid) {
+                        renderServerValidationChecklist(res.validation);
+                        return;
+                    }
                     $.get('{{ route("storeops.documents.preview", ["type" => $type, "id" => $document->id]) }}')
                         .done(function(data) {
                             $('#previewLines').text(data.lines);
                             $('#previewQty').text(data.total_qty);
                             $('#previewValue').text(data.total_value);
                             $('#previewRef').text(data.reference);
+                            $('#previewItems').empty();
+                            (data.items || []).forEach(function(item) { $('<li>').text(item.name + ': ' + item.quantity).appendTo('#previewItems'); });
                             $('#postingModal').modal('show');
                         });
                 })

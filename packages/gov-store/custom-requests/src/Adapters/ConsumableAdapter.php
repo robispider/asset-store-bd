@@ -2,9 +2,9 @@
 
 namespace GovStore\CustomRequests\Adapters;
 
-use GovStore\CustomRequests\Contracts\RequestableInterface;
 use App\Models\Consumable;
 use App\Models\User;
+use GovStore\CustomRequests\Contracts\RequestableInterface;
 
 class ConsumableAdapter implements RequestableInterface
 {
@@ -15,25 +15,32 @@ class ConsumableAdapter implements RequestableInterface
         $this->consumable = $consumable;
     }
 
-    public function getModel() { return $this->consumable; }
-    
-    public function getDisplayName(): string { return $this->consumable->name; }
-    
-    public function getType(): string { return 'Consumable'; }
-    
-    public function getAvailableQuantity(): int { return $this->consumable->numRemaining(); }
-
-  public function checkout(User $targetUser, User $adminUser, int $quantity = 1, string $notes = ''): bool
+    public function getModel()
     {
-        // Use Snipe-IT's native relationship. 
-        // We pass the Target User ID as the primary key, and let Snipe-IT map the pivot columns.
-        $this->consumable->users()->attach($targetUser->id, [
-            'assigned_to' => $targetUser->id,
-            'note' => $notes,
-        ]);
-        
+        return $this->consumable;
+    }
+
+    public function getDisplayName(): string
+    {
+        return $this->consumable->name;
+    }
+
+    public function getType(): string
+    {
+        return 'Consumable';
+    }
+
+    public function getAvailableQuantity(): int
+    {
+        return $this->consumable->numRemaining();
+    }
+
+    public function checkout(User $targetUser, User $adminUser, int $quantity = 1, string $notes = ''): bool
+    {
+        // Stock was already decremented by the Goods Issue ledger.
         // Trigger Snipe-IT's native logger so it appears in the consumable's history tab
-        $this->consumable->logCheckout($notes, $targetUser);
+        $this->consumable->logCheckout($notes, $targetUser, null, [], $quantity);
+
         return true;
     }
 }

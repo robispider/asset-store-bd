@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<title>Record an office order</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1F5F8B}a:hover{color:#163F5E}
+</style>
+</helmet>
+<div style="font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif; color: #17201D; background: #F3F5F4; min-height: 100%;">
+
+  <header style="background: #276A93; color: #FFFFFF; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 32px;">
+    <div style="font-size: 20px; font-weight: 600;">স্টোর ক্লাউড</div>
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; font-size: 15px;"><span>উপজেলা স্বাস্থ্য কমপ্লেক্স, শ্রীপুর</span><span>আব্দুল মান্নান · কমিটি নিবন্ধক</span></div>
+  </header>
+
+  <main style="max-width: 1200px; margin: 0 auto; padding: 24px 32px 56px; display: flex; flex-direction: column; gap: 22px;">
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; align-items: center;">
+      <h1 style="margin: 0; font-size: 30px; font-weight: 700;">নতুন অফিস আদেশ রেকর্ড করুন</h1>
+      <a href="Main.dc.html" style="font-size: 15px;">বাতিল করে ডেস্কে ফিরুন</a>
+    </div>
+
+    <ol aria-label="ধাপ" style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px;">
+      <li aria-current="step" style="border-top: 4px solid #1F5F8B; padding-top: 8px; font-size: 15px; font-weight: 600;">১ · আদেশ</li>
+      <li style="border-top: 4px solid #D9DFDB; padding-top: 8px; font-size: 15px; color: #4F5B57;">২ · কমিটি</li>
+      <li style="border-top: 4px solid #D9DFDB; padding-top: 8px; font-size: 15px; color: #4F5B57;">৩ · সদস্য</li>
+      <li style="border-top: 4px solid #D9DFDB; padding-top: 8px; font-size: 15px; color: #4F5B57;">৪ · যাচাই ও কার্যকর</li>
+    </ol>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start;">
+
+      <section aria-labelledby="paper" style="flex: 1 1 420px; min-width: 0; background: #FFFFFF; border: 1px solid #D9DFDB; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 16px;">
+        <div>
+          <h2 id="paper" style="margin: 0; font-size: 21px; font-weight: 600;">আদেশটি হাতে নিন</h2>
+          <p style="margin: 4px 0 0; font-size: 15px; color: #4F5B57; line-height: 1.6;">আদেশে যেভাবে লেখা আছে, সেভাবেই লিখুন। বাংলা বা ইংরেজি সংখ্যা — দুটোই চলবে।</p>
+        </div>
+
+        <div style="display: flex; gap: 14px; align-items: center; background: #F6F8F7; border: 1px solid #D9DFDB; border-radius: 10px; padding: 14px 16px;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1F5F8B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path></svg>
+          <div style="flex: 1;"><div style="font-size: 16px; font-weight: 600;">মজুদ_যাচাই_কমিটি_আদেশ.pdf</div><div style="font-size: 14px; color: #4F5B57;">স্বাক্ষরিত কপি · ২ পৃষ্ঠা · শুধু অনুমোদিতরা দেখতে পাবেন</div></div>
+          <button type="button" style="font-family: inherit; background: #FFFFFF; color: #1F5F8B; border: 1px solid #B7C2BC; font-size: 15px; padding: 8px 14px; border-radius: 8px; min-height: 44px;">বদলান</button>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label for="memo" style="font-size: 15px; font-weight: 600;">স্মারক নং</label>
+          <input id="memo" type="text" value="৪৫.১২.০০০০.০০৩.১১.০০২.২৬-২১০" style="font-family: inherit; font-size: 16px; height: 44px; padding: 0 14px; border: 1px solid #B7C2BC; border-radius: 8px; box-sizing: border-box; width: 100%;">
+          <span style="display: flex; align-items: center; gap: 6px; font-size: 14px; color: #1D6B43;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>এই নম্বর আগে কোথাও রেকর্ড হয়নি</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px;">
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <label for="date" style="font-size: 15px; font-weight: 600;">আদেশের তারিখ</label>
+            <input id="date" type="text" value="০৩ অক্টোবর ২০২৬" style="font-family: inherit; font-size: 16px; height: 44px; padding: 0 14px; border: 1px solid #B7C2BC; border-radius: 8px; box-sizing: border-box; width: 100%;">
+            <span style="font-size: 13px; color: #4F5B57;">১৮ আশ্বিন ১৪৩৩ বঙ্গাব্দ</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <label for="ono" style="font-size: 15px; font-weight: 600;">অফিস আদেশ নং <span style="font-weight: 400; color: #4F5B57;">(থাকলে)</span></label>
+            <input id="ono" type="text" value="১২/২০২৬" style="font-family: inherit; font-size: 16px; height: 44px; padding: 0 14px; border: 1px solid #B7C2BC; border-radius: 8px; box-sizing: border-box; width: 100%;">
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label for="sign" style="font-size: 15px; font-weight: 600;">কে স্বাক্ষর করেছেন</label>
+          <input id="sign" type="text" value="উপজেলা স্বাস্থ্য ও পরিবার পরিকল্পনা কর্মকর্তা, শ্রীপুর" style="font-family: inherit; font-size: 16px; height: 44px; padding: 0 14px; border: 1px solid #B7C2BC; border-radius: 8px; box-sizing: border-box; width: 100%;">
+          <span style="font-size: 13px; color: #4F5B57;">এই দপ্তরের আগের আদেশ থেকে প্রস্তাবিত</span>
+        </div>
+
+        <details style="font-size: 15px;"><summary style="cursor: pointer; color: #1F5F8B;">নথি নং যোগ করুন (ঐচ্ছিক)</summary></details>
+      </section>
+
+      <section aria-labelledby="does" style="flex: 999 1 560px; min-width: 0; background: #FFFFFF; border: 1px solid #D9DFDB; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 14px;">
+        <h2 id="does" style="margin: 0; font-size: 21px; font-weight: 600;">এই আদেশে কী বলা হয়েছে?</h2>
+        <fieldset style="border: 0; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+          <legend style="position: absolute; left: -9999px;">আদেশের ধরন</legend>
+
+          <label style="display: flex; gap: 12px; border: 2px solid #1F5F8B; background: #EEF5FA; border-radius: 10px; padding: 16px; cursor: pointer;">
+            <input type="radio" name="kind" checked="checked" style="width: 20px; height: 20px; margin-top: 3px;">
+            <span><span style="display: block; font-size: 17px; font-weight: 600;">নতুন কমিটি গঠন</span><span style="display: block; font-size: 14px; color: #4F5B57; line-height: 1.6;">এই দপ্তরে নতুন একটি কমিটি তৈরি হচ্ছে</span></span>
+          </label>
+          <label style="display: flex; gap: 12px; border: 1px solid #C9D2CD; border-radius: 10px; padding: 17px; cursor: pointer;">
+            <input type="radio" name="kind" style="width: 20px; height: 20px; margin-top: 3px;">
+            <span><span style="display: block; font-size: 17px; font-weight: 600;">সদস্য পরিবর্তন</span><span style="display: block; font-size: 14px; color: #4F5B57; line-height: 1.6;">কাউকে যোগ, বাদ বা কারও স্থলে অন্য কেউ</span></span>
+          </label>
+          <label style="display: flex; gap: 12px; border: 1px solid #C9D2CD; border-radius: 10px; padding: 17px; cursor: pointer;">
+            <input type="radio" name="kind" style="width: 20px; height: 20px; margin-top: 3px;">
+            <span><span style="display: block; font-size: 17px; font-weight: 600;">মেয়াদ বৃদ্ধি</span><span style="display: block; font-size: 14px; color: #4F5B57; line-height: 1.6;">একই সদস্যদের নিয়ে কমিটি আরও কিছুদিন চলবে</span></span>
+          </label>
+          <label style="display: flex; gap: 12px; border: 1px solid #C9D2CD; border-radius: 10px; padding: 17px; cursor: pointer;">
+            <input type="radio" name="kind" style="width: 20px; height: 20px; margin-top: 3px;">
+            <span><span style="display: block; font-size: 17px; font-weight: 600;">নতুন মেয়াদের জন্য পুনর্গঠন</span><span style="display: block; font-size: 14px; color: #4F5B57; line-height: 1.6;">যেমন নতুন অর্থবছরের কমিটি; আগেরটি থেকে শুরু করবেন</span></span>
+          </label>
+          <label style="display: flex; gap: 12px; border: 1px solid #C9D2CD; border-radius: 10px; padding: 17px; cursor: pointer;">
+            <input type="radio" name="kind" style="width: 20px; height: 20px; margin-top: 3px;">
+            <span><span style="display: block; font-size: 17px; font-weight: 600;">স্থগিত বা আবার চালু</span><span style="display: block; font-size: 14px; color: #4F5B57; line-height: 1.6;">তদন্ত বা অন্য কারণে সাময়িকভাবে কাজ বন্ধ</span></span>
+          </label>
+          <label style="display: flex; gap: 12px; border: 1px solid #C9D2CD; border-radius: 10px; padding: 17px; cursor: pointer;">
+            <input type="radio" name="kind" style="width: 20px; height: 20px; margin-top: 3px;">
+            <span><span style="display: block; font-size: 17px; font-weight: 600;">কমিটি বিলুপ্তি</span><span style="display: block; font-size: 14px; color: #4F5B57; line-height: 1.6;">কমিটির কাজ শেষ; আর থাকবে না</span></span>
+          </label>
+        </fieldset>
+        <p style="margin: 0; font-size: 15px; color: #4F5B57;">আগের কোনো আদেশে ভুল তথ্য রেকর্ড হয়েছিল? <a href="#">ভুল সংশোধন (শুদ্ধিপত্র)</a></p>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; padding-top: 12px; border-top: 1px solid #EEF1EF;">
+          <button type="button" style="font-family: inherit; background: #FFFFFF; color: #1F5F8B; border: 1px solid #B7C2BC; font-size: 16px; padding: 0 18px; height: 46px; border-radius: 8px;">খসড়া হিসেবে রাখুন</button>
+          <a href="Form.dc.html" style="display: inline-flex; align-items: center; gap: 8px; background: #1F5F8B; color: #FFFFFF; text-decoration: none; font-size: 16px; font-weight: 600; padding: 0 22px; height: 46px; border-radius: 8px;">পরের ধাপ: কমিটির পরিচয় <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1080}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

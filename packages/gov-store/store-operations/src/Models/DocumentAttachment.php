@@ -2,8 +2,9 @@
 
 namespace GovStore\StoreOperations\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
 
 class DocumentAttachment extends Model
 {
@@ -12,7 +13,7 @@ class DocumentAttachment extends Model
     protected $table = 'gov_document_attachments';
 
     protected $fillable = [
-        'document_type', 'document_id', 'file_path', 'original_name', 'mime_type', 'uploaded_by'
+        'document_type', 'document_id', 'file_path', 'original_name', 'mime_type', 'uploaded_by', 'disk',
     ];
 
     public function document()
@@ -22,6 +23,6 @@ class DocumentAttachment extends Model
 
     public function uploader()
     {
-        return $this->belongsTo(\App\Models\User::class, 'uploaded_by');
+        return $this->belongsTo(User::class, 'uploaded_by');
     }
 }

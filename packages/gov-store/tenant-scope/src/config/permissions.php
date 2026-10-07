@@ -206,12 +206,6 @@ return [
             'suppliers.view',
             'statuslabels.view',
             'customfields.view',
-            'assets.view',
-            'accessories.view',
-            'consumables.view',
-            'components.view',
-            'licenses.view',
-            'reports.view',
         ],
         
         'employee' => [

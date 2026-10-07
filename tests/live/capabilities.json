@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "description": "Semantic capability aliases used in journey actor requirements. 'ability' maps to a GovStore ability in packages/gov-store/tenant-scope/src/config/abilities.php; 'native' maps to a Snipe-IT permission checked with User::hasAccess().",
+  "capabilities": {
+    "inventory.consumables.view": {"native": "consumables.view"},
+    "requests.submit": {"ability": "requests.submit"},
+    "requests.approve.primary": {"ability": "requests.approve.primary"},
+    "requests.approve.final": {"ability": "requests.approve.final"},
+    "requests.fulfill": {"ability": "requests.fulfill"},
+    "storeops.documents.view": {"ability": "storeops.documents.view"},
+    "storeops.documents.draft": {"ability": "storeops.documents.draft"},
+    "storeops.documents.post": {"ability": "storeops.documents.post"},
+    "committee.view": {"ability": "committee.view"},
+    "committee.manage": {"ability": "committee.manage"},
+    "committee.activate": {"ability": "committee.activate"},
+    "committee.types.view": {"ability": "committee.types.view"},
+    "committee.types.manage": {"ability": "committee.types.manage"},
+    "committee.purposes.manage": {"ability": "committee.purposes.manage"}
+  }
+}

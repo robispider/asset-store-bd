@@ -1,0 +1,26 @@
+{
+    "date": "2026-10-07",
+    "timezone": "Asia/Dhaka",
+    "database": "snipeit",
+    "mode": "shadow",
+    "read_only": true,
+    "office": {
+        "actor_id": 3,
+        "location_id": 4,
+        "company_id": 412,
+        "roles": ["authenticated", "storekeeper"],
+        "stock_counts": {"asset": 1, "consumable": 1, "accessory": 0, "component": 0, "license": 0},
+        "consumables": [{"id": 1, "qty": 50, "remaining": 46, "location_id": 4, "company_id": 412}]
+    },
+    "global": {
+        "is_global": true,
+        "stock_counts": {"asset": 2433, "consumable": 533, "accessory": 352, "component": 176, "license": 48}
+    },
+    "raw_counts": {"assets": 2433, "consumables": 533, "accessories": 352, "components": 176, "licenses": 48},
+    "global_matches_raw": true,
+    "selected_office": {
+        "is_global": false,
+        "location_id": 4,
+        "stock_counts": {"asset": 1, "consumable": 1, "accessory": 0, "component": 0, "license": 0}
+    }
+}

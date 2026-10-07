@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GovStore Live Suite Schema",
+  "type": "object",
+  "required": ["schemaVersion", "id", "title", "journeys"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_.-]+$"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "environment": {
+      "type": "object",
+      "properties": {
+        "target": { "type": "string" },
+        "allowlist": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "journeys": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "defaults": {
+      "type": "object",
+      "properties": {
+        "language": { "type": "string" },
+        "timeoutMs": { "type": "integer" }
+      }
+    },
+    "limits": {
+      "type": "object",
+      "properties": {
+        "maxDurationMs": { "type": "integer" },
+        "maxSteps": { "type": "integer" }
+      }
+    }
+  }
+}

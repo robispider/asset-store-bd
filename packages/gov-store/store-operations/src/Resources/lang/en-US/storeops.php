@@ -2,6 +2,15 @@
 
 return [
 
+    'tracking_verifier_unavailable' => 'The programme tracking verifier is unavailable. This reference cannot be verified.',
+    'tracking_code_invalid' => 'The programme tracking code is invalid or inactive.',
+    'tracking_initiative_inactive' => 'The programme initiative is unavailable or inactive.',
+    'tracking_verification_failed' => 'The programme reference could not be verified. Reference: :reference',
+    'issue_recipient_required' => 'Choose an active office member or enter a department before saving an issue.',
+    'issue_recipient_invalid' => 'The selected recipient is not an active member of this office.',
+    'adjustment_direction_required' => 'Choose IN or OUT for every adjustment line.',
+    'draft_voided' => 'The draft was voided.',
+
     // ── Goods Issue (Outbound) Views ──────────────────────────────
     'issue_goods_title' => 'Issue Goods',
     'create_goods_issue' => 'Create Goods Issue (Outbound)',

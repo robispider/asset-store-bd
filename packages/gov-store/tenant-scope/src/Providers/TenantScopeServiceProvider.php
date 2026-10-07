@@ -2,27 +2,46 @@
 
 namespace GovStore\TenantScope\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use GovStore\TenantScope\Scopes\TenantScope;
-use GovStore\TenantScope\Scopes\UserScope;
-use GovStore\TenantScope\Scopes\MinistryLocationScope;
+use App\Models\Accessory;
+use App\Models\Asset;
+use App\Models\AssetModel;
+use App\Models\Category;
+use App\Models\Company;
+use App\Models\Component;
+use App\Models\Consumable;
+use App\Models\License;
+use App\Models\Location;
+use App\Models\Manufacturer;
+use App\Models\Supplier;
+use App\Models\User;
 use GovStore\TenantScope\Contexts\TenantContext;
 use GovStore\TenantScope\Http\Middleware\InitializeTenantContext;
-use GovStore\TenantScope\Http\Middleware\InjectTenantScopeUi;
+use GovStore\TenantScope\Http\Middleware\RequireGovAbility;
 use GovStore\TenantScope\Navigation\MenuRegistry;
 use GovStore\TenantScope\Observers\TenantMutationObserver;
+use GovStore\TenantScope\Scopes\MinistryLocationScope;
+use GovStore\TenantScope\Scopes\TenantScope;
+use GovStore\TenantScope\Scopes\UserScope;
+use GovStore\TenantScope\Services\GovAccess;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\ServiceProvider;
 
 class TenantScopeServiceProvider extends ServiceProvider
 {
     public function register()
     {
+        $this->mergeConfigFrom(__DIR__.'/../config/abilities.php', 'govstore-abilities');
+        $this->mergeConfigFrom(__DIR__.'/../config/execution.php', 'govstore-execution');
+        $this->app->singleton(\GovStore\TenantScope\Services\SchemaKnowledge::class);
+        $this->app->singleton(\GovStore\TenantScope\Services\TenantWorkerLifecycle::class);
         // Register the Central Navigation Registry as a shared singleton across all packages
         $this->app->singleton(MenuRegistry::class, function () {
-            return new MenuRegistry();
+            return new MenuRegistry;
         });
 
         $this->app->singleton(TenantContext::class, function () {
-            return new TenantContext();
+            return new TenantContext;
         });
 
         // Merge the new capability configuration file cleanly
@@ -33,6 +52,31 @@ class TenantScopeServiceProvider extends ServiceProvider
 
     public function boot()
     {
+        \Illuminate\Support\Facades\Bus::pipeThrough([\GovStore\TenantScope\Http\Middleware\ExecuteTenantJob::class]);
+        $lifecycle = $this->app->make(\GovStore\TenantScope\Services\TenantWorkerLifecycle::class);
+        $this->app['events']->listen(\Illuminate\Queue\Events\JobProcessing::class,
+            fn ($event) => $lifecycle->begin(str_starts_with($event->job->resolveName(), 'GovStore\\')));
+        foreach ([\Illuminate\Queue\Events\JobProcessed::class, \Illuminate\Queue\Events\JobExceptionOccurred::class] as $event) {
+            $this->app['events']->listen($event, fn () => $lifecycle->finish());
+        }
+        $this->app['events']->listen(\Illuminate\Console\Events\CommandStarting::class, function ($event) use ($lifecycle) {
+            app(\GovStore\TenantScope\Services\SchemaKnowledge::class)->clear();
+            if (preg_match('/^(govstore:|gov-store:|gov-requests:|committee:)/', $event->command ?? '')
+                && ! in_array($event->command, config('govstore-execution.global_commands', []), true)) {
+                app(TenantContext::class)->reset();
+                auth()->forgetUser();
+                app(TenantContext::class)->isActive = true;
+                throw new \Illuminate\Auth\Access\AuthorizationException('Declare the GovStore command execution boundary before running it.');
+            }
+            $lifecycle->begin(false, true);
+        });
+        $this->app['events']->listen(\Illuminate\Console\Events\CommandFinished::class, fn () => $lifecycle->finish());
+        $this->app['router']->aliasMiddleware('gov.can', RequireGovAbility::class);
+        foreach (array_keys(config('govstore-abilities', [])) as $ability) {
+            Gate::define($ability, fn ($user) => app(GovAccess::class)->decide($user, $ability)->toGateResponse());
+        }
+        Blade::component('govscope::components.action', 'gov-action');
+        $this->loadRoutesFrom(__DIR__.'/../routes/access.php');
         // 0. Load Translations
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'tenantops');
 
@@ -46,7 +90,6 @@ class TenantScopeServiceProvider extends ServiceProvider
         ], 'config');
 
         $router = $this->app['router'];
-        $router->pushMiddlewareToGroup('web', InjectTenantScopeUi::class);
         $router->pushMiddlewareToGroup('web', InitializeTenantContext::class);
         $router->pushMiddlewareToGroup('api', InitializeTenantContext::class);
 
@@ -55,32 +98,32 @@ class TenantScopeServiceProvider extends ServiceProvider
 
         // 1. Operational Models (Strict Physical Scoping ONLY)
         $operationalModels = [
-            \App\Models\Asset::class,
-            \App\Models\Consumable::class,
-            \App\Models\Accessory::class,
-            \App\Models\Component::class,
-            \App\Models\License::class,
+            Asset::class,
+            Consumable::class,
+            Accessory::class,
+            Component::class,
+            License::class,
         ];
 
         // 2. Reference Models (Catalog Mapping Scoping)
         $referenceModels = [
-            'categories'    => \App\Models\Category::class,
-            'models'        => \App\Models\AssetModel::class,
-            'suppliers'     => \App\Models\Supplier::class,
-            'manufacturers' => \App\Models\Manufacturer::class,
-            'locations'     => \App\Models\Location::class,
-             'companies'     => \App\Models\Company::class,
+            'categories' => Category::class,
+            'models' => AssetModel::class,
+            'suppliers' => Supplier::class,
+            'manufacturers' => Manufacturer::class,
+            'locations' => Location::class,
+            'companies' => Company::class,
         ];
 
         // 3. Register Custom Hierarchical User Scope
-        if (class_exists(\App\Models\User::class)) {
-            \App\Models\User::addGlobalScope(new UserScope());
+        if (class_exists(User::class)) {
+            User::addGlobalScope(new UserScope);
         }
 
         // 4. Register Operational Scopes
         foreach ($operationalModels as $modelClass) {
             if (class_exists($modelClass)) {
-                $modelClass::addGlobalScope(new MinistryLocationScope());
+                $modelClass::addGlobalScope(new MinistryLocationScope);
             }
         }
 
@@ -102,8 +145,6 @@ class TenantScopeServiceProvider extends ServiceProvider
         }
     }
 
-   
-
     /**
      * Seeds the Central Menu Registry with the base Government Store structure,
      * and the flat, two-level Multitenant Administration dashboard items.
@@ -111,56 +152,60 @@ class TenantScopeServiceProvider extends ServiceProvider
     protected function registerBaseMenuStructure(): void
     {
         $registry = $this->app->make(MenuRegistry::class);
+        foreach (['index' => 'my_access', 'requests.index' => 'requests', 'matrix' => 'matrix', 'shadow' => 'shadow', 'audit' => 'audit'] as $route => $label) {
+            $registry->register(['id' => 'gov-access-'.$label, 'parent' => 'gov-store', 'title' => __('tenantops::access.'.$label),
+                'route' => 'gov.access.'.$route, 'order' => 95, 'permission' => 'access.view']);
+        }
 
         // 1. ROOT FOLDER: Government Store (For standard operational modules)
         $registry->register([
-            'id'    => 'gov-store',
+            'id' => 'gov-store',
             'title' => __('tenantops::ops.menu_gov_store'),
-            'icon'  => 'fas fa-shopping-cart text-aqua',
+            'icon' => 'fas fa-shopping-cart text-aqua',
             'order' => 10,
         ]);
 
         // 2. ROOT FOLDER: Multitenant Administration (Gated strictly to Superadmins)
         $registry->register([
-            'id'         => 'gov-tenantscope-root',
-            'title'      => __('tenantops::ops.menu_multitenant_admin'),
-            'icon'       => 'fas fa-user-shield text-red',
-            'permission' => 'admin',
-            'order'      => 60,
+            'id' => 'gov-tenantscope-root',
+            'title' => __('tenantops::ops.menu_multitenant_admin'),
+            'icon' => 'fas fa-user-shield text-red',
+            'permission' => 'tenant.scope.view',
+            'order' => 60,
             'active_patterns' => ['gov-store/admin/scope*'],
         ]);
 
         // 3. Child 1: Scoping Dashboard (Nested directly under Multitenant Administration)
         $registry->register([
-            'id'         => 'gov-tenantscope-dashboard',
-            'parent'     => 'gov-tenantscope-root',
-            'title'      => __('tenantops::ops.menu_scoping_dashboard'),
-            'icon'       => 'fas fa-tachometer-alt text-aqua',
-            'route'      => 'gov.scope.dashboard',
-            'permission' => 'admin',
-            'order'      => 10,
+            'id' => 'gov-tenantscope-dashboard',
+            'parent' => 'gov-tenantscope-root',
+            'title' => __('tenantops::ops.menu_scoping_dashboard'),
+            'icon' => 'fas fa-tachometer-alt text-aqua',
+            'route' => 'gov.scope.dashboard',
+            'permission' => 'tenant.scope.view',
+            'order' => 10,
         ]);
 
         // 4. Child 2: Policy Configurator (Nested directly under Multitenant Administration)
         $registry->register([
-            'id'         => 'gov-tenantscope-config',
-            'parent'     => 'gov-tenantscope-root',
-            'title'      => __('tenantops::ops.menu_policy_configurator'),
-            'icon'       => 'fas fa-sliders-h text-orange',
-            'route'      => 'gov.scope.config',
-            'permission' => 'admin',
-            'order'      => 20,
+            'id' => 'gov-tenantscope-config',
+            'parent' => 'gov-tenantscope-root',
+            'title' => __('tenantops::ops.menu_policy_configurator'),
+            'icon' => 'fas fa-sliders-h text-orange',
+            'route' => 'gov.scope.config',
+            'permission' => 'tenant.scope.view',
+            'order' => 20,
         ]);
 
         // 5. Child 3: Boundary Explorer Grid (Nested directly under Multitenant Administration)
         $registry->register([
-            'id'         => 'gov-tenantscope-mappings',
-            'parent'     => 'gov-tenantscope-root',
-            'title'      => __('tenantops::ops.menu_boundary_explorer'),
-            'icon'       => 'fas fa-search-plus text-green',
-            'route'      => 'gov.scope.mappings',
-            'permission' => 'admin',
-            'order'      => 30,
+            'id' => 'gov-tenantscope-mappings',
+            'parent' => 'gov-tenantscope-root',
+            'title' => __('tenantops::ops.menu_boundary_explorer'),
+            'icon' => 'fas fa-search-plus text-green',
+            'route' => 'gov.scope.mappings',
+            'permission' => 'tenant.scope.view',
+            'order' => 30,
         ]);
     }
 }

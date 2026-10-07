@@ -31,6 +31,14 @@ class EffectivePermissionSet
         return $this->permissions;
     }
 
+    /** Union capabilities while retaining the working responsibility's attribution. */
+    public function merge(self $other): self
+    {
+        $this->permissions = array_values(array_unique(array_merge($this->permissions, $other->getPermissions())));
+
+        return $this;
+    }
+
     /**
      * Get the active responsibility role slug (e.g. 'storekeeper').
      */

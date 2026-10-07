@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GovStore Live UI Contract Schema",
+  "type": "object",
+  "required": ["schemaVersion", "id", "locators"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_.-]+$"
+    },
+    "locators": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "role": { "type": "string" },
+          "name": { "type": "string" },
+          "testId": { "type": "string" },
+          "label": { "type": "string" },
+          "css": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "labels": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": { "type": "string" }
+      }
+    }
+  }
+}

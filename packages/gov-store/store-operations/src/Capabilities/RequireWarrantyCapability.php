@@ -31,4 +31,9 @@ class RequireWarrantyCapability implements CapabilityInterface
     {
         // Executed during final ledger commit checks
     }
+
+    public function renderUI(object $item = null, array $config = []): string
+    {
+        return '';
+    }
 }

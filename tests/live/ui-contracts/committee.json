@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "committee",
+  "locators": {
+    "workspace": {"css": ".committee-workspace", "description": "Committee workspace container"},
+    "deskHeading": {"css": ".committee-workspace .cm-header h1:text-is(\"Committee desk\")", "description": "Heading of the registrar desk"},
+    "mineHeading": {"css": ".committee-workspace .cm-header h1:text-is(\"My committees\")", "description": "Heading of the personal committees page"},
+    "registryHeading": {"css": ".committee-workspace .cm-header h1:text-is(\"All committees\")", "description": "Heading of the registry"},
+    "detailHeading": {"css": ".committee-workspace .cm-toolbar h1", "description": "Committee title on a detail, history or print page"},
+    "historyEntries": {"css": ".committee-workspace .cm-history-entry", "description": "Individual committee ledger events shown in history"},
+    "paperHeading": {"css": ".committee-workspace .cm-paper h2", "description": "Committee name on the printable roster"},
+    "paperSeatRows": {"css": ".committee-workspace .cm-paper tbody tr", "description": "Rows in the printable committee roster"},
+    "peopleCards": {"css": ".committee-workspace .cm-people-grid .cm-person", "description": "People and vacant seats shown on committee detail"},
+    "tabRules": {"css": ".cm-nav li.cm-settings", "description": "Rules settings tab, offered only to those who may manage the catalogue"},
+    "registrySearch": {"css": "#cm-find", "description": "Registry search field"},
+    "registryRows": {"css": "table tbody tr:has(a[href*='/gov-store/committees/'])", "description": "Committee rows in the registry"},
+    "registryEmpty": {"css": "table tbody td.cm-empty", "description": "Empty-result message cell of the registry"},
+    "mineEmpty": {"css": ".committee-workspace section.cm-empty", "description": "Message shown to someone who serves on no committee"},
+    "typeButtons": {"css": ".cm-actions a.btn[href*='admin/types?type=']:not([href*='type=new'])", "description": "One button per visible committee type, excluding the new-type button"},
+    "newTypeButton": {"css": ".cm-actions a.btn[href*='admin/types?type=new']", "description": "Button that starts a new committee type"},
+    "deskNewOrder": {"css": "a.cm-start-primary[href$='/gov-store/committees/new']", "description": "Start-a-new-order card on the desk"},
+    "orderHeading": {"css": ".committee-workspace .cm-header h1", "description": "Heading of the new order screen"},
+    "orderWarning": {"css": ".committee-workspace > p.alert.alert-warning", "description": "Notice shown before the order form when the ministry has no active committee rules"},
+    "orderFile": {"css": ".committee-workspace .cm-order-flow input[type='file']", "description": "Required signed order attachment"},
+    "transferHeading": {"css": ".committee-workspace .cm-header h1", "description": "Heading of the transferred-member workflow"},
+    "transferForm": {"css": ".committee-workspace form.cm-transfer-form", "description": "Form for reviewing and applying an officer transfer"}
+  },
+  "labels": {"en-US": {}, "bn-BD": {}}
+}

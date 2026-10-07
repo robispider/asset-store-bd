@@ -44,6 +44,7 @@
                                 @endforelse
                             </tbody>
                         </table>
+                        {{ $consumables->links() }}
                     </div>
                 </div>
 
@@ -76,6 +77,7 @@
                                 @endforelse
                             </tbody>
                         </table>
+                        {{ $accessories->links() }}
                     </div>
                 </div>
 
@@ -108,6 +110,7 @@
                                 @endforelse
                             </tbody>
                         </table>
+                        {{ $components->links() }}
                     </div>
                 </div>
             </div>

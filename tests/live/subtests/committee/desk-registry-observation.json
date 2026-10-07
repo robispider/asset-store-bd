@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "committee.desk-registry-observation",
+  "title": "An office administrator sees the committee desk and a registry that matches the stored committees of the office",
+  "features": ["committee.registry"],
+  "tags": ["seeded", "readonly"],
+  "execution": {"capability": "observe", "language": "en-US", "timeoutMs": 90000},
+  "fixtures": {
+    "office": {"requirements": {"operational": true}},
+    "actors": {
+      "registrar": {
+        "capabilities": {"allOf": ["committee.manage", "committee.view"], "noneOf": ["committee.types.manage"]},
+        "office": "office",
+        "activeMembership": true
+      }
+    }
+  },
+  "steps": [
+    {"action": "observe", "check": "committee.visibility", "args": {"officeId": "${fixtures.office.id}", "companyId": "${fixtures.office.company_id}"}, "as": "visible"},
+    {"use": "auth.login", "with": {"actor": "registrar"}},
+    {"action": "goto", "route": "committee.dashboard"},
+    {"action": "assert", "target": "committee.deskHeading", "test": "visible"},
+    {"action": "assert", "target": "committee.deskNewOrder", "test": "visible"},
+    {"action": "assert", "target": "committee.tabRules", "test": "hidden", "note": "The Rules tab needs committee.types.manage, which is enforced even in shadow mode."},
+    {"action": "goto", "route": "committee.registry"},
+    {"action": "assert", "target": "committee.registryHeading", "test": "visible"},
+    {"action": "assert", "target": "committee.registryRows", "test": "count", "equals": "${observed.visible.firstPage}"},
+    {"action": "goto", "route": "committee.registry", "query": {"q": "${observed.visible.searchTerm}"}},
+    {"action": "assert", "target": "committee.registryRows", "test": "count", "equals": "${observed.visible.searchMatches}"},
+    {"action": "goto", "route": "committee.registry", "query": {"q": "LIVE-NO-SUCH-COMMITTEE-ZZ"}},
+    {"action": "assert", "target": "committee.registryRows", "test": "count", "equals": 0},
+    {"action": "assert", "target": "committee.registryEmpty", "test": "visible"},
+    {"action": "observe", "check": "committee.visibility", "args": {"officeId": "${fixtures.office.id}", "companyId": "${fixtures.office.company_id}"}, "as": "visibleAfter"},
+    {"action": "compare", "actual": "${observed.visibleAfter.count}", "equals": "${observed.visible.count}"}
+  ],
+  "cleanup": {"policy": "no-business-records-created"}
+}

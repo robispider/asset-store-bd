@@ -2,100 +2,74 @@
 
 namespace GovStore\CustomRequests\Services;
 
-use GovStore\CustomRequests\Models\Request as ServiceRequest;
-use GovStore\CustomRequests\Models\RequestItem;
-use GovStore\CustomRequests\Models\RequestEvent;
-use GovStore\OfficeMembership\Models\OfficeResponsibility; // IMPORT PIVOT
 use App\Models\User;
+use GovStore\CustomRequests\Models\Request as ServiceRequest;
+use GovStore\CustomRequests\Models\RequestEvent;
+use GovStore\CustomRequests\Support\RequestWorkflow;
 use Illuminate\Support\Facades\DB;
-use Exception;
+use Illuminate\Support\Facades\Validator;
 
 class ApprovalService
 {
     public function processDecision(ServiceRequest $request, User $admin, array $itemDecisions): ServiceRequest
     {
-        if (!in_array($request->approval_status, ['submitted', 'under_review', 'pending_primary', 'pending_final'])) {
-            throw new Exception(__('requestlabels::requests.approvals_service_exception_already_processed'));
-        }
+        return DB::transaction(function () use ($request, $admin, $itemDecisions) {
+            $request = ServiceRequest::whereKey($request->id)->lockForUpdate()->firstOrFail();
+            abort_unless(in_array($request->approval_status, RequestWorkflow::PENDING), 409);
+            $primary = $request->approval_status === 'pending_primary';
+            app(RequestAccess::class)->check($request, $admin, $primary ? 'requests.approve.primary' : 'requests.approve.final');
+            abort_if((int) $request->requested_by === (int) $admin->id, 403);
+            abort_if(! $primary && (int) $request->primary_decided_by === (int) $admin->id, 403);
+            abort_if(! $primary && $request->resolved_policy === 'PRIMARY_AND_FINAL' && ! $request->primary_decided_by, 409);
+            Validator::make(['items' => $itemDecisions], [
+                'items' => 'required|array', 'items.*' => 'required|array',
+                'items.*.status' => 'required|in:approved,rejected',
+                'items.*.qty' => 'required|integer|min:0|max:'.RequestWorkflow::MAX_QUANTITY,
+                'items.*.notes' => 'nullable|string|max:2000',
+            ])->validate();
+            $lines = $request->items()->orderBy('requested_type')->orderBy('requested_id')->get();
+            abort_if(array_diff(array_keys($itemDecisions), $lines->pluck('id')->all()), 422);
+            $accepted = 0;
+            $rejected = 0;
+            foreach ($lines as $line) {
+                if (! $primary && $line->line_approval_status === 'rejected') {
+                    $rejected++;
 
-        $requester = $request->requester;
-
-        DB::transaction(function () use ($request, $admin, $itemDecisions, $requester) {
-            $isPrimaryReview = in_array($request->approval_status, ['submitted', 'under_review', 'pending_primary']);
-            
-            $approvedCount = 0;
-            $rejectedCount = 0;
-            $pendingFinalCount = 0;
-
-            foreach ($request->items as $item) {
-                $decision = $itemDecisions[$item->id] ?? null;
-                if (!$decision) throw new Exception(__('requestlabels::requests.approvals_service_exception_no_decision'));
-
-                $status = $decision['status'];
-                $qty = (int)($decision['qty'] ?? 1);
-                $notes = $decision['notes'] ?? null;
-
-                if ($status === 'approved') {
-                    if ($qty <= 0) throw new Exception(__('requestlabels::requests.approvals_service_exception_qty_must_be_positive'));
-
-                    if ($isPrimaryReview) {
-                        if ($request->resolved_policy === 'PRIMARY_ONLY') {
-                            $item->update(['approved_qty' => $qty, 'line_approval_status' => 'approved', 'line_fulfillment_status' => 'waiting', 'notes' => $notes]);
-                            $approvedCount++;
-                        } else {
-                            $item->update(['approved_qty' => $qty, 'notes' => $notes]);
-                            $pendingFinalCount++;
-                        }
-                    } else {
-                        $item->update(['approved_qty' => min($qty, $item->approved_qty), 'line_approval_status' => 'approved', 'line_fulfillment_status' => 'waiting', 'notes' => $notes]);
-                        $approvedCount++;
-                    }
-                } else {
-                    $item->update(['approved_qty' => 0, 'line_approval_status' => 'rejected', 'line_fulfillment_status' => 'cancelled', 'notes' => $notes]);
-                    RequestEvent::create(['request_id' => $request->id, 'user_id' => $admin->id, 'event_type' => 'line_rejected', 'details' => ['reason' => $notes]]);
-                    $rejectedCount++;
+                    continue;
                 }
+                abort_unless(isset($itemDecisions[$line->id]), 422);
+                $decision = $itemDecisions[$line->id];
+                $approved = $decision['status'] === 'approved';
+                $cap = ($primary || ! $request->primary_decided_by) ? $line->requested_qty : min($line->requested_qty, $line->approved_qty);
+                $qty = $approved ? min((int) $decision['qty'], $cap) : 0;
+                abort_if($approved && $qty < 1, 422);
+                $awaitFinal = $primary && $request->resolved_policy === 'PRIMARY_AND_FINAL';
+                $line->update([
+                    'approved_qty' => $qty, 'reserved_qty' => 0,
+                    'line_approval_status' => $approved ? ($awaitFinal ? 'pending' : 'approved') : 'rejected',
+                    'line_fulfillment_status' => $approved ? ($awaitFinal ? 'unstarted' : 'waiting') : 'cancelled',
+                    'notes' => $decision['notes'] ?? null,
+                ]);
+                $approved ? $accepted++ : $rejected++;
             }
-
-            // 4. Calculate New Parent Document States
-            $parentApprovalStatus = 'approved';
-            $parentFulfillmentStatus = 'unstarted';
-
-            if ($isPrimaryReview && $request->resolved_policy === 'PRIMARY_AND_FINAL' && $pendingFinalCount > 0) {
-                $parentApprovalStatus = 'pending_final';
-                
-                // Self-Approval Conflict Check: Is the requester also a Final Approver here?
-                $isRequesterFinal = OfficeResponsibility::where('location_id', $requester->location_id)->where('user_id', $requester->id)->where('role_slug', 'final_approver')->exists();
-                
-                if ($isRequesterFinal) {
-                    $parentApprovalStatus = 'approved';
-                    foreach ($request->items as $item) {
-                        if ($item->line_approval_status === 'pending') {
-                            $item->update(['line_approval_status' => 'approved', 'line_fulfillment_status' => 'waiting']);
-                        }
-                    }
-                    $approvedCount += $pendingFinalCount;
-                    $pendingFinalCount = 0;
-                }
-            } elseif ($approvedCount === 0) {
-                $parentApprovalStatus = 'rejected';
-                $parentFulfillmentStatus = 'closed';
-                $request->closed_at = now();
-            } elseif ($rejectedCount > 0) {
-                $parentApprovalStatus = 'partially_approved';
-            }
-
+            $status = $accepted === 0 ? 'rejected' : (($primary && $request->resolved_policy === 'PRIMARY_AND_FINAL')
+                ? 'pending_final' : ($rejected > 0 ? 'partially_approved' : 'approved'));
+            $complete = in_array($status, RequestWorkflow::APPROVED);
             $request->update([
-                'approval_status' => $parentApprovalStatus,
-                'fulfillment_status' => $parentFulfillmentStatus,
-                'assigned_approver_id' => null, // Shared queue model
-                'approved_by' => in_array($parentApprovalStatus, ['approved', 'partially_approved']) ? $admin->id : $request->approved_by,
-                'approved_at' => in_array($parentApprovalStatus, ['approved', 'partially_approved']) ? now() : null,
+                'approval_status' => $status, 'fulfillment_status' => $accepted === 0 ? 'closed' : 'unstarted',
+                'primary_decided_by' => $primary ? $admin->id : $request->primary_decided_by,
+                'decided_by' => $admin->id, 'approved_by' => $complete ? $admin->id : null,
+                'approved_at' => $complete ? now() : null, 'closed_at' => $accepted === 0 ? now() : null,
             ]);
+            if ($complete) {
+                app(RequestInventory::class)->reserve($request);
+            } elseif ($status === 'pending_final') {
+                app(ApprovalRouting::class)->assign($request);
+            }
+            RequestEvent::create(['request_id' => $request->id, 'user_id' => $admin->id,
+                'event_type' => $status, 'details' => ['stage' => $primary ? 'primary' : 'final', 'decisions' => $itemDecisions]]);
 
-            RequestEvent::create(['request_id' => $request->id, 'user_id' => $admin->id, 'event_type' => $parentApprovalStatus, 'details' => []]);
-        });
-
-        return $request;
+            return $request;
+        }, 3);
     }
 }

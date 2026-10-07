@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "journeys",
+  "title": "Controlled mutation journeys",
+  "description": "Creates identifiable test requests. Requires --allow-writes; retained records are reported.",
+  "environment": {
+    "target": "http://snipeit.local",
+    "allowlist": [
+      "http://snipeit.local"
+    ]
+  },
+  "journeys": [
+    "requests.basket-validation",
+    "requests.submit-approve"
+  ],
+  "defaults": {
+    "language": "en-US",
+    "timeoutMs": 60000
+  }
+}

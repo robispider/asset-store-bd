@@ -10,21 +10,21 @@ class CreateCustomItemRequestsTable extends Migration
     {
         Schema::create('custom_item_requests', function (Blueprint $table) {
             $table->increments('id');
-            
+
             // Polymorphic columns (Handles Asset, Consumable, Accessory, License)
             $table->string('requestable_type');
             $table->integer('requestable_id')->unsigned();
-            
+
             // User Tracking (Matches Snipe-IT's user ID schema)
             $table->integer('requested_by')->unsigned();
             $table->integer('approved_by')->unsigned()->nullable();
-            
+
             // Request State
             $table->string('status', 20)->default('pending'); // pending, approved, rejected
             $table->text('notes')->nullable();
-            
+
             $table->timestamps();
-            $table->softDeletes(); 
+            $table->softDeletes();
 
             // Indexes for speed and Data Integrity constraints
             $table->index(['requestable_type', 'requestable_id']);

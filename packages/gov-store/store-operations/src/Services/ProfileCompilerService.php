@@ -4,7 +4,9 @@ namespace GovStore\StoreOperations\Services;
 
 use GovStore\StoreOperations\Models\Document;
 use GovStore\StoreOperations\Models\ProfileAssignment;
+use GovStore\StoreOperations\Models\Profile;
 use GovStore\StoreOperations\Enums\AssignmentScope;
+use GovStore\StoreOperations\Enums\PolicyStatus;
 use GovStore\StoreOperations\Enums\CapabilityBehavior;
 use GovStore\TenantScope\Contexts\TenantContext;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +16,11 @@ class ProfileCompilerService
 {
     protected TenantContext $tenantContext;
     protected static array $resolvedCache = [];
+
+    public static function clearResolvedCache(): void
+    {
+        self::$resolvedCache = [];
+    }
 
     public function __construct(TenantContext $tenantContext)
     {
@@ -152,6 +159,7 @@ class ProfileCompilerService
         $now = now();
         
         return ProfileAssignment::with('profile.capabilities')
+            ->whereHas('profile', fn ($query) => $query->where('status', PolicyStatus::PUBLISHED->value))
             ->where('scope_level', $scope->value)
             ->when($scopeId !== null, fn($q) => $q->where('scope_id', $scopeId))
             ->where('target_type', $targetType)

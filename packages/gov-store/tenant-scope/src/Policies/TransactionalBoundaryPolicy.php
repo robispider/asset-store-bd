@@ -3,7 +3,7 @@
 namespace GovStore\TenantScope\Policies;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Schema;
+use GovStore\TenantScope\Services\SchemaKnowledge;
 use GovStore\TenantScope\Contexts\TenantContext;
 
 class TransactionalBoundaryPolicy
@@ -16,14 +16,14 @@ class TransactionalBoundaryPolicy
         $table = $model->getTable();
 
         // Check Company Ownership (Ministry)
-        if (Schema::hasColumn($table, 'company_id')) {
+        if (app(SchemaKnowledge::class)->hasColumn($model, 'company_id')) {
             if ($model->company_id !== $context->companyId) {
                 return false;
             }
         }
 
         // Check Location Ownership (Physical Office)
-        if (Schema::hasColumn($table, 'location_id')) {
+        if (app(SchemaKnowledge::class)->hasColumn($model, 'location_id')) {
             if ($model->location_id !== $context->locationId) {
                 return false;
             }

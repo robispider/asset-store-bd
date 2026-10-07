@@ -2,8 +2,9 @@
 
 namespace GovStore\CustomRequests\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class DraftBasket extends Model
 {
@@ -36,18 +37,26 @@ class DraftBasket extends Model
      */
     public static function getOrCreateForUser(int $userId): self
     {
-        $basket = static::where('user_id', $userId)
-            ->where('status', 'draft')
-            ->first();
+        return DB::transaction(function () use ($userId) {
+            User::whereKey($userId)->lockForUpdate()->firstOrFail();
+            $basket = static::where('user_id', $userId)
+                ->where('status', 'draft')
+                ->first();
 
-        if (!$basket) {
-            $basket = static::create([
-                'user_id' => $userId,
-                'status' => 'draft',
-                'expires_at' => now()->addDays(7),
-            ]);
-        }
+            if ($basket && $basket->expires_at && $basket->expires_at->isPast()) {
+                $basket->items()->delete();
+                $basket->delete();
+                $basket = null;
+            }
+            if (! $basket) {
+                $basket = static::create([
+                    'user_id' => $userId,
+                    'status' => 'draft',
+                    'expires_at' => now()->addDays(7),
+                ]);
+            }
 
-        return $basket;
+            return $basket;
+        }, 3);
     }
 }

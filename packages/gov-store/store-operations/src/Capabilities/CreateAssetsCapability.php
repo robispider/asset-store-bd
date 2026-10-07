@@ -5,6 +5,7 @@ namespace GovStore\StoreOperations\Capabilities;
 use GovStore\StoreOperations\Contracts\CapabilityInterface;
 use GovStore\StoreOperations\Services\CustomFieldProvisioner;
 use App\Models\Asset;
+use App\Models\Statuslabel;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
@@ -54,13 +55,8 @@ class CreateAssetsCapability implements CapabilityInterface
                 $tag = $rowMeta->where('field_key', 'asset_tag')->first()?->value;
             }
 
-            if (!$serial) {
-                $serial = 'SN-AUTO-' . $document->getDocumentNumber() . '-' . $item->product_id . '-' . $r;
-            }
-
-            // FIXED: If custom asset tag is not captured in EAV, auto-generate a unique traceable tag
             if (!$tag) {
-                $tag = 'TAG-AUTO-' . $document->getDocumentNumber() . '-' . $item->product_id . '-' . uniqid();
+                $tag = Asset::autoincrement_asset();
             }
 
             // 1. INSTANTIATE NATIVE ASSET (Purely Transactional)
@@ -68,7 +64,11 @@ class CreateAssetsCapability implements CapabilityInterface
             $asset->model_id    = $item->product_id;
             $asset->serial      = $serial;
             $asset->asset_tag   = $tag; // FIXED: Assigned required unique asset tag
-            $asset->status_id   = $config['status_id'] ?? 1; // Default "Ready to Deploy"
+            $statusId = $config['status_id'] ?? Statuslabel::where('deployable', 1)->where('archived', 0)->orderBy('id')->value('id');
+            if (! $statusId || ! Statuslabel::whereKey($statusId)->where('deployable', 1)->where('archived', 0)->exists()) {
+                throw new Exception('A valid deployable default asset status must be configured before receipt posting.');
+            }
+            $asset->status_id   = $statusId;
             $asset->company_id  = $document->company_id;
             $asset->location_id = $document->location_id;
             
@@ -102,8 +102,7 @@ class CreateAssetsCapability implements CapabilityInterface
                 'created_at'     => now(),
             ]);
 
-            // 4. TRIGGER NATIVE ACTION LOGGER
-            $asset->logCheckout("Received under dynamic GRN: {$document->document_number}", auth()->user() ?? app(\App\Models\User::class)->first());
+            // Snipe-IT's AssetObserver records the native create action on save.
         }
     }
 

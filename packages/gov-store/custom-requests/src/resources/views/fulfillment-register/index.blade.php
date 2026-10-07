@@ -16,23 +16,23 @@
                 <table class="table table-striped table-bordered table-hover dataTable">
                     <thead>
                         <tr>
-                            <th>Service Request #</th>
-                            <th>Requested By</th>
-                            <th>Purpose / Location</th>
-                            <th>Completion Date</th>
-                            <th class="text-center">Action</th>
+                            <th>{{ __('requestlabels::requests.request_number') }}</th>
+                            <th>{{ __('requestlabels::requests.requester') }}</th>
+                            <th>{{ __('requestlabels::requests.purpose_location') }}</th>
+                            <th>{{ __('requestlabels::requests.completion_date') }}</th>
+                            <th class="text-center">{{ __('requestlabels::requests.action') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($completedRequests as $req)
                             <tr>
                                 <td><strong>{{ $req->request_number }}</strong></td>
-                                <td>{{ $req->requester->present()->fullName ?? 'Unknown User' }}</td>
+                                <td>{{ $req->requester->present()->fullName ?? __('requestlabels::requests.unknown_user') }}</td>
                               <td>
                                     {{ \Illuminate\Support\Str::limit($req->purpose, 50) }}<br>
-                                    <small class="text-muted"><i class="fas fa-map-marker-alt"></i> {{ $req->delivery_location_id ? \App\Models\Location::find($req->delivery_location_id)?->name : 'Main Office' }}</small>
+                                    <small class="text-muted"><i class="fas fa-map-marker-alt"></i> {{ $req->delivery_location_id ? \App\Models\Location::find($req->delivery_location_id)?->name : __('requestlabels::requests.working_office') }}</small>
                                 </td>
-                                <td>{{ $req->closed_at ? $req->closed_at->format('d M Y, h:i A') : 'N/A' }}</td>
+                                <td>{{ $req->closed_at ? $req->closed_at->format('d M Y, h:i A') : __('requestlabels::requests.not_available') }}</td>
                                 <td class="text-center">
                                     <a href="{{ route('gov.requests.fulfillment_register.show', $req->id) }}" class="btn btn-sm btn-default">
                                         <i class="fas fa-search"></i> {{ __('requestlabels::requests.fulfillment_register_btn_view_ledger') }}

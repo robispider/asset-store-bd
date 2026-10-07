@@ -8,35 +8,7 @@ class CreateGovApprovalPolicyTables extends Migration
 {
     public function up()
     {
-        // 1. Create Location Roles Table
-        Schema::create('gov_location_roles', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('location_id')->unsigned()->unique();
-            
-            // Primary Approver & Delegate
-            $table->integer('primary_approver_id')->unsigned();
-            $table->integer('primary_delegate_id')->unsigned()->nullable();
-            $table->date('primary_delegate_until')->nullable();
-            
-            // Final Approver & Delegate
-            $table->integer('final_approver_id')->unsigned()->nullable();
-            $table->integer('final_delegate_id')->unsigned()->nullable();
-            $table->date('final_delegate_until')->nullable();
-            
-            // Location Storekeeper
-            $table->integer('storekeeper_id')->unsigned();
-            
-            $table->timestamps();
-
-            // Foreign Keys to Snipe-IT's core tables
-            $table->foreign('location_id')->references('id')->on('locations')->onDelete('cascade');
-            $table->foreign('primary_approver_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('primary_delegate_id')->references('id')->on('users')->onDelete('set null');
-            $table->foreign('final_approver_id')->references('id')->on('users')->onDelete('set null');
-            $table->foreign('final_delegate_id')->references('id')->on('users')->onDelete('set null');
-            $table->foreign('storekeeper_id')->references('id')->on('users')->onDelete('cascade');
-        });
-
+        // Organization owns office roles.
         // 2. Create Polymorphic Policies Table
         Schema::create('gov_approval_policies', function (Blueprint $table) {
             $table->increments('id');
@@ -66,6 +38,6 @@ class CreateGovApprovalPolicyTables extends Migration
         });
 
         Schema::dropIfExists('gov_approval_policies');
-        Schema::dropIfExists('gov_location_roles');
+
     }
 }

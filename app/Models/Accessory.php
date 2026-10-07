@@ -23,6 +23,7 @@ use Watson\Validating\ValidatingTrait;
  */
 class Accessory extends SnipeModel
 {
+    use \GovStore\TenantScope\Concerns\UsesOfficeInventoryBuilder;
     use Acceptable;
     use CompanyableTrait;
     use HasFactory;

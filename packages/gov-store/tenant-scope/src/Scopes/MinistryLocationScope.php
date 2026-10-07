@@ -2,39 +2,35 @@
 
 namespace GovStore\TenantScope\Scopes;
 
-use Illuminate\Database\Eloquent\Scope;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Schema;
 use GovStore\TenantScope\Contexts\TenantContext;
+use GovStore\TenantScope\Services\SchemaKnowledge;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Scope;
 
 class MinistryLocationScope implements Scope
 {
     public function apply(Builder $builder, Model $model)
     {
-        if (!app()->bound(TenantContext::class)) {
-            return;
-        }
-        
         $context = app(TenantContext::class);
-
-        // If inactive (Superadmin global view), bypass
-        if (!$context->isActive) {
+        if (! $context->isActive || $context->isGlobal) {
             return;
         }
-
+        $schema = app(SchemaKnowledge::class);
         $table = $model->getTable();
-
-        if ($context->companyId && Schema::hasColumn($table, 'company_id')) {
-            $builder->where($table . '.company_id', $context->companyId);
-        }
-
-        if (Schema::hasColumn($table, 'location_id')) {
-            if ($context->locationId) {
-                $builder->where($table . '.location_id', $context->locationId);
-            } else {
-                $builder->whereRaw('1 = 0');
+        $locations = $context->allowedInventoryLocationIds ?? ($context->isCompanyAdmin
+            ? $context->allowedLocationIds : ($context->locationId ? [$context->locationId] : []));
+        $companies = $context->allowedInventoryCompanyIds ?? $context->allowedCompanyIds ?? ($context->companyId ? [$context->companyId] : []);
+        if ($schema->hasColumn($model, 'location_id')) {
+            $builder->whereIn($table.'.location_id', $locations ?? []);
+            if ($schema->hasColumn($model, 'company_id')) {
+                $builder->whereIn($table.'.company_id', $companies);
             }
+        } elseif ($schema->hasColumn($model, 'company_id')) {
+            // Native licenses have company ownership, never jurisdiction ownership.
+            $builder->whereIn($table.'.company_id', $companies);
+        } else {
+            $builder->whereRaw('1 = 0');
         }
     }
 }

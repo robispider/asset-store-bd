@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "id": "requests.authorization-boundaries",
+  "title": "An ordinary employee is denied approver and fulfillment screens and nothing changes",
+  "features": [
+    "requests.authorization"
+  ],
+  "tags": [
+    "seeded",
+    "readonly",
+    "security"
+  ],
+  "execution": {
+    "capability": "observe",
+    "language": "en-US",
+    "timeoutMs": 60000
+  },
+  "fixtures": {
+    "office": {
+      "requirements": {
+        "operational": true
+      }
+    },
+    "actors": {
+      "employee": {
+        "capabilities": {
+          "allOf": [
+            "requests.submit"
+          ],
+          "noneOf": [
+            "requests.approve",
+            "requests.fulfill"
+          ]
+        },
+        "office": "office",
+        "activeMembership": true
+      }
+    }
+  },
+  "steps": [
+    {
+      "action": "observe",
+      "check": "request.progress",
+      "args": {
+        "id": "${actors.employee.id}"
+      },
+      "as": "before"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "employee"
+      }
+    },
+    {
+      "action": "probe",
+      "path": "/gov-requests/admin",
+      "as": "adminStatus",
+      "expectStatusByMode": {
+        "shadow": [
+          200,
+          403,
+          404
+        ],
+        "enforce": [
+          403,
+          404
+        ]
+      }
+    },
+    {
+      "action": "probe",
+      "path": "/gov-requests/fulfillment",
+      "as": "fulfillStatus",
+      "expectStatusByMode": {
+        "shadow": [
+          200,
+          302,
+          403,
+          404
+        ],
+        "enforce": [
+          302,
+          403,
+          404
+        ]
+      }
+    },
+    {
+      "action": "probe",
+      "path": "/gov-requests/admin/settings/policies",
+      "expectStatus": [
+        403,
+        404
+      ],
+      "as": "policyStatus"
+    },
+    {
+      "action": "goto",
+      "route": "gov.requests.admin.index"
+    },
+    {
+      "action": "assert",
+      "target": "requests.approverOpenButtons",
+      "test": "count",
+      "equals": 0
+    },
+    {
+      "action": "goto",
+      "route": "gov.requests.fulfillment.index"
+    },
+    {
+      "action": "capture",
+      "target": "requests.fulfillmentOpenButtons",
+      "as": "shadowVisibleFulfillmentLinks",
+      "count": true
+    },
+    {
+      "action": "assert",
+      "target": "requests.fulfillmentOpenButtons",
+      "test": "count",
+      "equals": 0,
+      "modes": [
+        "enforce"
+      ],
+      "note": "In shadow mode the office fulfillment queue is visible to any office member by design; enforce mode must show no actionable rows to a non-storekeeper."
+    },
+    {
+      "action": "observe",
+      "check": "request.progress",
+      "args": {
+        "id": "${actors.employee.id}"
+      },
+      "as": "after"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.after.total}",
+      "equals": "${observed.before.total}"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.after.draftItems}",
+      "equals": "${observed.before.draftItems}"
+    }
+  ],
+  "cleanup": {
+    "policy": "no-business-records-created"
+  },
+  "description": "In shadow mode the approver page may load (HTTP 200) but must offer no actionable pending request; in enforce mode it must be denied."
+}

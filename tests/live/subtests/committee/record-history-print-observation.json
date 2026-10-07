@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "committee.record-history-print-observation",
+  "title": "A registrar opens a visible committee, checks its history, and prints its roster",
+  "features": ["committee.registry", "committee.history", "committee.print"],
+  "tags": ["seeded", "readonly"],
+  "execution": {"capability": "observe", "language": "en-US", "timeoutMs": 90000},
+  "fixtures": {
+    "office": {"requirements": {"operational": true}},
+    "actors": {
+      "registrar": {
+        "capabilities": {"allOf": ["committee.manage", "committee.view"], "noneOf": ["committee.types.manage"]},
+        "office": "office",
+        "activeMembership": true
+      }
+    }
+  },
+  "steps": [
+    {"action": "observe", "check": "committee.record", "args": {"officeId": "${fixtures.office.id}", "companyId": "${fixtures.office.company_id}"}, "as": "record"},
+    {"use": "auth.login", "with": {"actor": "registrar"}},
+    {"action": "goto", "url": "/gov-store/committees/${observed.record.id}"},
+    {"action": "assert", "target": "committee.detailHeading", "test": "text", "equals": "${observed.record.name}"},
+    {"action": "assert", "target": "committee.peopleCards", "test": "count", "equals": "${observed.record.seatCount}"},
+    {"action": "goto", "url": "/gov-store/committees/${observed.record.id}/history"},
+    {"action": "assert", "target": "committee.historyEntries", "test": "count", "equals": "${observed.record.historyCount}"},
+    {"action": "goto", "url": "/gov-store/committees/${observed.record.id}/print"},
+    {"action": "assert", "target": "committee.paperHeading", "test": "text", "equals": "${observed.record.name}"},
+    {"action": "assert", "target": "committee.paperSeatRows", "test": "count", "equals": "${observed.record.seatCount}"},
+    {"action": "goto", "url": "/gov-store/committees/transfers"},
+    {"action": "assert", "target": "committee.transferHeading", "test": "visible"},
+    {"action": "assert", "target": "committee.transferForm", "test": "visible"}
+  ],
+  "cleanup": {"policy": "no-business-records-created"}
+}

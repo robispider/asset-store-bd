@@ -2,10 +2,12 @@
 
 namespace GovStore\CustomRequests\Adapters;
 
-use GovStore\CustomRequests\Contracts\RequestableInterface;
 use App\Models\AssetModel;
 use App\Models\User;
 use Exception;
+use GovStore\CustomRequests\Contracts\RequestableInterface;
+use GovStore\CustomRequests\Services\RequestInventory;
+use GovStore\TenantScope\Contexts\TenantContext;
 
 class AssetModelAdapter implements RequestableInterface
 {
@@ -16,25 +18,32 @@ class AssetModelAdapter implements RequestableInterface
         $this->assetModel = $assetModel;
     }
 
-    public function getModel() { return $this->assetModel; }
-    
-    public function getDisplayName(): string { return $this->assetModel->name ?: 'Unknown Asset Model'; }
-    
-    public function getType(): string { return 'Hardware'; }
-    
-    public function getAvailableQuantity(): int 
-    { 
-        // Dynamic aggregate count of unassigned physical machines
-        return \App\Models\Asset::where('model_id', $this->assetModel->id)
-            ->whereNull('assigned_to')
-            ->where('requestable', 1)
-            ->count(); 
+    public function getModel()
+    {
+        return $this->assetModel;
+    }
+
+    public function getDisplayName(): string
+    {
+        return $this->assetModel->name ?: __('requestlabels::requests.unknown_item');
+    }
+
+    public function getType(): string
+    {
+        return 'Hardware';
+    }
+
+    public function getAvailableQuantity(): int
+    {
+        $office = app(TenantContext::class)->locationId;
+
+        return $office ? app(RequestInventory::class)->available('asset_model', $this->assetModel, $office) : 0;
     }
 
     public function checkout(User $targetUser, User $adminUser, int $quantity = 1, string $notes = ''): bool
     {
-        // This should never be called directly. 
+        // This should never be called directly.
         // Asset Models require explicit serial assignment in the Fulfillment Engine.
-        throw new Exception("Asset Models cannot be blindly checked out. They require specific serial assignment.");
+        throw new Exception(__('requestlabels::requests.serial_fulfillment_required'));
     }
 }

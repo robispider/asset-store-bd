@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "contracts": {
+    "inventory.consumable": {
+      "description": "Read-only projection of a consumable item, its office stock and business fingerprint",
+      "parameters": {
+        "id": "integer"
+      },
+      "outputFields": [
+        "id",
+        "name",
+        "category_id",
+        "category_name",
+        "company_id",
+        "location_id",
+        "quantity",
+        "available",
+        "businessFingerprint"
+      ]
+    },
+    "office.context": {
+      "description": "Read-only projection of office operational status, company, and administrative assignments",
+      "parameters": {
+        "id": "integer"
+      },
+      "outputFields": [
+        "id",
+        "name",
+        "company_id",
+        "operational",
+        "office_admin_id",
+        "storekeeper_id"
+      ]
+    },
+    "actor.assignments": {
+      "description": "Read-only projection of user memberships, responsibilities, and effective role slugs",
+      "parameters": {
+        "id": "integer"
+      },
+      "outputFields": [
+        "id",
+        "username",
+        "display_name",
+        "office_ids",
+        "roles",
+        "is_superadmin"
+      ]
+    },
+    "document.state": {
+      "description": "Read-only projection of a GovStore stock or transfer document",
+      "parameters": {
+        "id": "integer"
+      },
+      "outputFields": [
+        "id",
+        "doc_number",
+        "status",
+        "creator_id",
+        "poster_id",
+        "source_office_id",
+        "target_office_id",
+        "lines_count"
+      ]
+    },
+    "request.progress": {
+      "description": "Counts of a user's submitted requests by pipeline bucket, plus draft basket line count",
+      "parameters": {
+        "id": "integer"
+      },
+      "outputFields": [
+        "user_id",
+        "pending",
+        "approved",
+        "rejected",
+        "total",
+        "draftItems"
+      ]
+    },
+    "audit.outcome": {
+      "description": "Read-only projection of recent audit log entries for a record",
+      "parameters": {
+        "item_type": "string",
+        "item_id": "integer"
+      },
+      "outputFields": [
+        "id",
+        "action_type",
+        "user_id",
+        "target_id",
+        "created_at"
+      ]
+    },
+    "mutation.effects": {
+      "description": "Diagnostic check comparing baseline to current counts for isolated verification",
+      "parameters": {
+        "run_id": "string"
+      },
+      "outputFields": [
+        "retained_records_count",
+        "untracked_records_count"
+      ]
+    },
+    "request.state": {
+      "description": "Persisted state of one request by request number, including first line quantities and deciders",
+      "parameters": {
+        "number": "string"
+      },
+      "outputFields": [
+        "id",
+        "request_number",
+        "requested_by",
+        "office_id",
+        "purpose",
+        "approval_status",
+        "fulfillment_status",
+        "primary_decided_by",
+        "decided_by",
+        "lines_count",
+        "first_line"
+      ]
+    },
+    "basket.line": {
+      "description": "Quantity of one catalog item in a user's draft basket",
+      "parameters": {
+        "userId": "integer",
+        "itemType": "string",
+        "itemId": "integer"
+      },
+      "outputFields": [
+        "user_id",
+        "quantity"
+      ]
+    },
+    "committee.visibility": {
+      "description": "Read-only count of committees visible to a non-company-admin office user (company and office or office-scope boundary), a search term and a committee outside that boundary",
+      "parameters": {
+        "officeId": "integer",
+        "companyId": "integer"
+      },
+      "outputFields": [
+        "count",
+        "firstPage",
+        "searchTerm",
+        "searchMatches",
+        "foreignId",
+        "foreignNumber"
+      ]
+    },
+    "committee.record": {
+      "description": "A visible office committee selected for independent detail, history and print checks",
+      "parameters": {
+        "officeId": "integer",
+        "companyId": "integer"
+      },
+      "outputFields": [
+        "id",
+        "number",
+        "name",
+        "status",
+        "seatCount",
+        "orderCount",
+        "historyCount"
+      ]
+    },
+    "committee.catalog": {
+      "description": "Read-only count of committee types visible to a company (national plus the company's own)",
+      "parameters": {
+        "companyId": "integer"
+      },
+      "outputFields": [
+        "visibleTypes",
+        "activeTypes",
+        "firstCode"
+      ]
+    },
+    "committee.mine": {
+      "description": "Read-only count of a user's committee tenures, and those current today (Asia/Dhaka)",
+      "parameters": {
+        "id": "integer"
+      },
+      "outputFields": [
+        "user_id",
+        "tenures",
+        "current"
+      ]
+    }
+  }
+}

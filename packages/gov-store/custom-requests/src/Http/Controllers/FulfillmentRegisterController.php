@@ -2,24 +2,18 @@
 
 namespace GovStore\CustomRequests\Http\Controllers;
 
-use Illuminate\Routing\Controller;
 use GovStore\CustomRequests\Models\Request as ServiceRequest;
+use GovStore\CustomRequests\Services\RequestReturnService;
 use GovStore\StoreOperations\Models\GoodsIssue;
-use GovStore\OfficeMembership\Models\OfficeResponsibility;
+use GovStore\TenantScope\Contexts\TenantContext;
+use GovStore\TenantScope\Services\GovAccess;
+use Illuminate\Routing\Controller;
 
 class FulfillmentRegisterController extends Controller
 {
     private function checkAccess()
     {
-        $user = auth()->user();
-        if ($user->isSuperUser() || $user->hasAccess('admin')) return;
-
-        // Verify user has administrative or stores responsibilities (Includes office_admin)
-        $hasAccess = OfficeResponsibility::where('user_id', $user->id)
-            ->whereIn('role_slug', ['storekeeper', 'primary_approver', 'final_approver', 'office_admin'])
-            ->exists();
-
-        if (!$hasAccess) abort(403, __('requestlabels::requests.fulfillmentregistercontroller_abort_unauthorized'));
+        abort_unless(app(GovAccess::class)->permitsRequest(auth()->user(), 'storeops.documents.view'), 403);
     }
 
     /**
@@ -36,10 +30,9 @@ class FulfillmentRegisterController extends Controller
             ->orderBy('closed_at', 'desc');
 
         // Non-superusers only see records for their active office locations
-        if (!$user->isSuperUser()) {
-            $myLocationIds = OfficeResponsibility::where('user_id', $user->id)
-                ->pluck('location_id');
-            $query->whereIn('delivery_location_id', $myLocationIds);
+        if (! $user->isSuperUser()) {
+            $myLocationIds = [app(TenantContext::class)->locationId];
+            $query->whereIn('office_id', $myLocationIds);
         }
 
         $completedRequests = $query->get();
@@ -55,14 +48,21 @@ class FulfillmentRegisterController extends Controller
         $this->checkAccess();
 
         $serviceRequest = ServiceRequest::with(['requester', 'items.requested', 'events.user'])->findOrFail($id);
+        abort_unless(auth()->user()->isSuperUser() || (int) $serviceRequest->office_id === app(TenantContext::class)->locationId, 404);
 
         // Fetch all generated system Goods Issue documents for this Request.
-        // This query safely ignores 'asset_model' lines (which do not generate GI documents).
         $goodsIssues = GoodsIssue::with(['items', 'creator'])
             ->where('reference_type', ServiceRequest::class)
             ->where('reference_id', $id)
             ->get();
 
         return view('govstore::fulfillment-register.show', compact('serviceRequest', 'goodsIssues'));
+    }
+
+    public function draftReturn($id, RequestReturnService $service)
+    {
+        $document = $service->draftReceipt((int) $id, auth()->user());
+
+        return redirect()->route('storeops.documents.workspace', ['type' => 'receipt', 'id' => $document->id]);
     }
 }

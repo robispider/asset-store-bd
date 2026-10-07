@@ -1,0 +1,15 @@
+@extends('committee::layout')
+@section('committee-content')
+<header class="cm-header"><div class="cm-toolbar"><h1>{{ $display::text($c->name_bn,$c->name_en) }}</h1><span class="cm-draft-save">{{ __('committee::committee.ux.draft_kept') }}</span></div>@include('committee::partials/order-summary')</header>
+@include('committee::partials/stepper',['step'=>3])
+@include('committee::partials/reconstitution-diff')
+<div class="row"><section class="col-md-8" id="cm-members"><h2>{{ __('committee::committee.ux.who_members') }}</h2><p class="cm-muted">{{ __('committee::committee.ux.members_help') }}</p>
+@foreach($view->seats as $seat)<article class="box cm-person-row"><span>{{ $display::digits($seat->number) }}</span><span class="cm-avatar" aria-hidden="true">{{ mb_substr($display::text($seat->holder?->nameBn,$seat->holder?->nameEn),0,1) }}</span><div class="cm-person-main"><h3>{{ $display::text($seat->holder?->nameBn,$seat->holder?->nameEn) ?: __('committee::committee.ux.vacant') }}</h3><small>{{ $display::text($seat->holder?->designationBn,$seat->holder?->designationEn) }}</small></div>
+<form class="cm-command" method="post" data-method="PUT" action="{{ route('committee.command.seat.update',['committee'=>$c->id,'seat'=>$seat->id]) }}">@csrf @include('committee::field',['name'=>'seat_no','label'=>'ux.position','type'=>'number','value'=>$seat->number,'required'=>true])@include('committee::field',['name'=>'seat_role_code','label'=>'ux.role','value'=>$seat->role,'options'=>$roles->mapWithKeys(fn ($r) => [$r->code=>$display::text($r->name_bn,$r->name_en)])->all()])<x-gov-action ability="committee.manage" type="submit" class="btn btn-default">{{ __('committee::committee.save') }}</x-gov-action></form>
+<button class="btn btn-default cm-open-person" type="button" data-seat="{{ $seat->id }}" data-holder-kind="{{ $seat->holderKind }}" data-command="{{ $seat->holder ? 'change-draft-holder' : 'appoint' }}">{{ __('committee::committee.ux.'.($seat->holder ? 'replace' : 'add_person')) }}</button>
+<form class="cm-command" data-confirm="true" method="post" data-method="DELETE" action="{{ route('committee.command.removeSeat',['committee'=>$c->id,'seat'=>$seat->id]) }}">@csrf<x-gov-action ability="committee.manage" type="submit" class="btn btn-default">{{ __('committee::committee.ux.remove') }}</x-gov-action></form></article>@endforeach
+<button type="button" class="btn btn-default btn-block cm-open-person" data-command="new"><i class="fa fa-plus" aria-hidden="true"></i> {{ __('committee::committee.ux.add_another') }}</button>
+<div class="cm-actions"><a class="btn btn-default" href="{{ route('committee.show',['committee'=>$c->id,'step'=>2]) }}">← {{ __('committee::committee.ux.previous') }}</a><a class="btn btn-primary" href="{{ route('committee.show',['committee'=>$c->id,'step'=>4]) }}">{{ __('committee::committee.ux.next_check') }} →</a></div>
+</section><div class="col-md-4">@include('committee::partials/rules-panel')</div></div>
+@include('committee::partials/add-person-drawer')
+@stop

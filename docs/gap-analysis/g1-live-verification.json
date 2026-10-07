@@ -1,0 +1,463 @@
+{
+  "date": "2026-10-04",
+  "host": "http://snipeit.local",
+  "passed": 91,
+  "enforcement": {
+    "checks": [
+      {
+        "check": "employee denied admin/catalog/mapping/save",
+        "status": 403
+      },
+      {
+        "check": "employee denied admin/catalog/import/validate",
+        "status": 403
+      },
+      {
+        "check": "employee denied admin/catalog/import/execute",
+        "status": 403
+      },
+      {
+        "check": "employee denied admin/catalog/adoption/adopt",
+        "status": 403
+      },
+      {
+        "check": "employee denied admin/catalog/adoption/abandon",
+        "status": 403
+      },
+      {
+        "check": "employee denied admin/catalog/adoption/provision",
+        "status": 403
+      },
+      {
+        "check": "employee denied admin/catalog/collections",
+        "status": 403
+      },
+      {
+        "check": "employee denied admin/catalog/collections/{id}/attach",
+        "status": 403
+      },
+      {
+        "check": "employee denied admin/catalog/collections/{id}/detach",
+        "status": 403
+      },
+      {
+        "check": "employee denied gov-store/operations/catalog/archive",
+        "status": 403
+      },
+      {
+        "check": "employee denied gov-store/operations/catalog/restore",
+        "status": 403
+      },
+      {
+        "check": "employee denied gov-store/operations/catalog/adopt/copy/fetch",
+        "status": 403
+      },
+      {
+        "check": "employee denied gov-store/operations/catalog/bulk/preview",
+        "status": 403
+      },
+      {
+        "check": "employee denied gov-store/operations/catalog/bulk/execute",
+        "status": 403
+      },
+      {
+        "check": "employee denied gov-store/operations/catalog/discover/collections-api/add-nodes",
+        "status": 403
+      },
+      {
+        "check": "employee denied gov-store/operations/documents/initialize",
+        "status": 403
+      },
+      {
+        "check": "employee denied gov-store/operations/documents/{type}/{id}/draft",
+        "status": 403
+      },
+      {
+        "check": "employee denied gov-store/operations/documents/{type}/{id}/post",
+        "status": 403
+      },
+      {
+        "check": "employee denied gov-store/operations/documents/{type}/{id}/attachments",
+        "status": 403
+      },
+      {
+        "check": "employee denied gov-store/operations/documents/{type}/{id}/attachments/{attachmentId}",
+        "status": 403
+      },
+      {
+        "check": "employee denied gov-store/operations/documents/{type}/{id}/takeover",
+        "status": 403
+      },
+      {
+        "check": "employee denied gov-store/operations/settings/product-rules/assign",
+        "status": 403
+      },
+      {
+        "check": "employee denied gov-store/operations/settings/product-rules/policies/{id}/draft",
+        "status": 403
+      },
+      {
+        "check": "employee denied gov-store/operations/settings/product-rules/policies/{id}/publish",
+        "status": 403
+      },
+      {
+        "check": "employee denied gov-store/operations/settings/product-rules/assign-gpo",
+        "status": 403
+      },
+      {
+        "check": "employee denied gov-store/operations/settings/product-rules/assignments/{id}/unassign",
+        "status": 403
+      },
+      {
+        "check": "employee denied gov-store/operations/settings/product-rules/policies/store",
+        "status": 403
+      },
+      {
+        "check": "employee denied gov-store/operations/settings/product-rules/policies/{id}/duplicate",
+        "status": 403
+      },
+      {
+        "check": "employee HTML denial",
+        "status": 403
+      },
+      {
+        "check": "employee audit denied",
+        "status": 403
+      },
+      {
+        "check": "approver hub",
+        "status": 200
+      },
+      {
+        "check": "approver workspace",
+        "status": 200
+      },
+      {
+        "check": "approver print draft",
+        "status": 200
+      },
+      {
+        "check": "approver post denied",
+        "status": 403
+      },
+      {
+        "check": "storekeeper hub",
+        "status": 200
+      },
+      {
+        "check": "foreign document hidden",
+        "status": 404
+      },
+      {
+        "check": "storekeeper initialize",
+        "status": 302
+      },
+      {
+        "check": "storekeeper new workspace",
+        "status": 200
+      },
+      {
+        "check": "storekeeper saves",
+        "status": 200
+      },
+      {
+        "check": "posting preview",
+        "status": 200
+      },
+      {
+        "check": "wrong document type",
+        "status": 404
+      },
+      {
+        "check": "storekeeper issue initialize",
+        "status": 302
+      },
+      {
+        "check": "storekeeper issue workspace",
+        "status": 200
+      },
+      {
+        "check": "missing reference cannot bypass checklist",
+        "status": 422
+      },
+      {
+        "check": "receipt posts",
+        "status": 302
+      },
+      {
+        "check": "receipt cannot repost",
+        "status": 409
+      },
+      {
+        "check": "receipt cannot edit",
+        "status": 409
+      },
+      {
+        "check": "issue saves",
+        "status": 200
+      },
+      {
+        "check": "issue posts",
+        "status": 302
+      },
+      {
+        "check": "issue cannot repost",
+        "status": 409
+      },
+      {
+        "check": "approver read-only receipt",
+        "status": 200
+      },
+      {
+        "check": "approver print posted",
+        "status": 200
+      },
+      {
+        "check": "approver post rejected",
+        "status": 403
+      },
+      {
+        "check": "employee request temporary access",
+        "status": 302
+      },
+      {
+        "check": "office admin access inbox",
+        "status": 200
+      },
+      {
+        "check": "office admin approve access",
+        "status": 302
+      },
+      {
+        "check": "employee access without logout",
+        "status": 200
+      },
+      {
+        "check": "temporary cover fulfillment",
+        "status": 200
+      },
+      {
+        "check": "admin /gov-store/access/matrix",
+        "status": 200
+      },
+      {
+        "check": "admin /gov-store/access/shadow",
+        "status": 200
+      },
+      {
+        "check": "admin /gov-store/access/audit",
+        "status": 200
+      },
+      {
+        "check": "admin /admin/catalog/import",
+        "status": 200
+      },
+      {
+        "check": "admin /gov-store/operations/settings/product-rules",
+        "status": 200
+      },
+      {
+        "check": "national changes require review",
+        "status": 409
+      },
+      {
+        "check": "matrix CSV",
+        "status": 200
+      }
+    ],
+    "draft": "/gov-store/operations/documents/receipt/01a106ce-1ee0-7309-a5e2-c84457ffbdac",
+    "issue": "/gov-store/operations/documents/issue/01a106ce-26e4-730e-a522-ff07f3557efb"
+  },
+  "national": {
+    "checks": [
+      {
+        "check": "national review /gov-store/operations/settings/product-rules/policies/store",
+        "status": 200
+      },
+      {
+        "check": "national draft creation confirmed",
+        "status": 302
+      },
+      {
+        "check": "national review /gov-store/operations/settings/product-rules/policies/274/publish",
+        "status": 200
+      },
+      {
+        "check": "national publication confirmed",
+        "status": 302
+      },
+      {
+        "check": "national review replay rejected",
+        "status": 422
+      },
+      {
+        "check": "national review /gov-store/operations/settings/product-rules/policies/274/draft",
+        "status": 200
+      },
+      {
+        "check": "published rule immutable",
+        "status": 409
+      }
+    ],
+    "policy": "274"
+  },
+  "attachments": {
+    "checks": [
+      {
+        "check": "cover expired without logout",
+        "status": 403
+      },
+      {
+        "check": "private attachment upload",
+        "status": 200
+      },
+      {
+        "check": "operator private download",
+        "status": 200
+      },
+      {
+        "check": "approver private download",
+        "status": 200
+      },
+      {
+        "check": "employee private download denied",
+        "status": 403
+      },
+      {
+        "check": "anonymous private download login required",
+        "status": 302
+      },
+      {
+        "check": "private attachment deletion",
+        "status": 200
+      },
+      {
+        "check": "deleted private evidence unavailable",
+        "status": 404
+      },
+      {
+        "check": "national HTML denial",
+        "status": 403
+      }
+    ]
+  },
+  "shadow": {
+    "checks": [
+      {
+        "check": "shadow office hub allowed",
+        "status": 200
+      },
+      {
+        "check": "shadow still enforces national permissions",
+        "status": 403
+      },
+      {
+        "check": "shadow employee draft allowed",
+        "status": 302
+      },
+      {
+        "check": "storekeeper takes over retained draft",
+        "status": 302
+      },
+      {
+        "check": "taken-over workspace available",
+        "status": 200
+      }
+    ],
+    "draft": "/gov-store/operations/documents/receipt/01a106cf-44d0-7246-9d8d-456c5606ebc2"
+  },
+  "database": {
+    "documents": [
+      {
+        "id": "01a106ce-1ee0-7309-a5e2-c84457ffbdac",
+        "type": "receipt",
+        "status": "POSTED",
+        "location_id": 4,
+        "created_by": 3,
+        "drafted_by": 3,
+        "posted_by": 3,
+        "posted_at": "2026-10-04 12:05:37"
+      },
+      {
+        "id": "01a106ce-26e4-730e-a522-ff07f3557efb",
+        "type": "issue",
+        "status": "POSTED",
+        "location_id": 4,
+        "created_by": 3,
+        "drafted_by": 3,
+        "posted_by": 3,
+        "posted_at": "2026-10-04 12:05:38"
+      }
+    ],
+    "publication": {
+      "id": 274,
+      "status": "PUBLISHED",
+      "published_by": 1,
+      "published_at": "2026-10-04 11:58:28",
+      "publish_reason": "G1 local verification with unassigned test policy"
+    },
+    "net_stock": 50,
+    "test_cover_expired": true,
+    "audit_outcomes": [
+      {
+        "outcome": "allowed",
+        "total": 32
+      },
+      {
+        "outcome": "denied",
+        "total": 9
+      },
+      {
+        "outcome": "failed",
+        "total": 11
+      },
+      {
+        "outcome": "shadow",
+        "total": 2
+      }
+    ]
+  },
+  "final_office_mode": "shadow",
+  "requests": {
+    "checks": [
+      {
+        "check": "foreign request blocked /gov-requests/admin/12",
+        "status": 404
+      },
+      {
+        "check": "foreign request blocked /gov-requests/admin/12/process",
+        "status": 404
+      },
+      {
+        "check": "foreign request blocked /gov-requests/fulfillment/12",
+        "status": 404
+      },
+      {
+        "check": "foreign request blocked /gov-requests/fulfillment/12/issue",
+        "status": 404
+      },
+      {
+        "check": "foreign request blocked /gov-requests/fulfillment/12/close",
+        "status": 404
+      }
+    ]
+  },
+  "final_state": {
+    "office_mode": "shadow",
+    "protected_routes": 99,
+    "takeover": {
+      "id": "01a106cf-44d0-7246-9d8d-456c5606ebc2",
+      "created_by": 2,
+      "drafted_by": 2,
+      "managed_by": 3,
+      "status": "DRAFT"
+    },
+    "foreign_request": 12,
+    "unassigned_test_policy": true
+  },
+  "automated": {
+    "tests": 29,
+    "assertions": 649,
+    "database": "isolated SQLite in memory"
+  }
+}

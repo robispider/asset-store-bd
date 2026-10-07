@@ -6,6 +6,7 @@ use GovStore\StoreOperations\Contracts\StockableInterface;
 use GovStore\StoreOperations\Adapters\ConsumableAdapter;
 use GovStore\StoreOperations\Adapters\AccessoryAdapter;
 use GovStore\StoreOperations\Adapters\ComponentAdapter;
+use GovStore\StoreOperations\Adapters\AssetModelAdapter;
 use GovStore\StoreOperations\Enums\StockableType;
 
 class StockableFactory
@@ -26,6 +27,7 @@ class StockableFactory
             StockableType::CONSUMABLE => new ConsumableAdapter($id),
             StockableType::ACCESSORY  => new AccessoryAdapter($id),
             StockableType::COMPONENT  => new ComponentAdapter($id),
+            StockableType::ASSET_MODEL => new AssetModelAdapter($id),
         };
     }
 }

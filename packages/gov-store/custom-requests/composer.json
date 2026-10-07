@@ -8,7 +8,15 @@
             "name": "DoICT"
         }
     ],
-    "require": {},
+    "require": {
+        "php": "^8.2",
+        "illuminate/support": "^12.0",
+        "illuminate/database": "^12.0",
+        "illuminate/validation": "^12.0",
+        "gov-store/office-membership": "dev-master",
+        "gov-store/tenant-scope": "dev-master",
+        "gov-store/store-operations": "dev-master"
+    },
     "autoload": {
         "psr-4": {
             "GovStore\\CustomRequests\\": "src/"

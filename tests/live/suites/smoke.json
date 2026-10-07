@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "smoke",
+  "title": "GovStore Live Smoke Suite",
+  "description": "Fast verification of login, catalog and persisted-versus-UI counts.",
+  "environment": {
+    "target": "http://snipeit.local",
+    "allowlist": [
+      "http://snipeit.local"
+    ]
+  },
+  "journeys": [
+    "requests.catalog-progress-observation"
+  ],
+  "defaults": {
+    "language": "en-US",
+    "timeoutMs": 60000
+  }
+}

@@ -115,6 +115,7 @@ class OrganizationServiceProvider extends ServiceProvider
 
     public function register()
     {
-        //
+        $this->app->bind(\GovStore\TenantScope\Contracts\OrganizationContextResolver::class,
+            \GovStore\Organization\Services\TenantOrganizationResolver::class);
     }
 }

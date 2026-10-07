@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dissolve, knowing the impact — committee redesign mockup</title>
+<!--
+  STATIC DESIGN MOCKUP — not production code.
+  Screen: 10-dissolve · Dissolve, knowing the impact
+  Spec: ../../UX-REDESIGN.md (§4 screen table, §5 workflows, §6 wording)
+  Implement in Blade with AdminLTE 2 / Bootstrap 3 classes; move every Bangla string
+  into resources/lang/{bn-BD,en-US}/committee.php. Names, numbers and dates are sample data.
+  Source artboard: ../source/Dissolve.dc.html
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+html,body{height:100%}
+body{margin:0}
+a{color:#1F5F8B}a:hover{color:#163F5E}
+</style>
+</head>
+<body>
+<div style="font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif; color: #17201D; background: #5C6763; min-height: 100%; display: flex; flex-direction: column;">
+
+  <header style="background: #1B4A67; color: #D5E1E9; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 32px;">
+    <div style="font-size: 20px; font-weight: 600;">স্টোর ক্লাউড</div>
+    <div style="font-size: 15px;">উপজেলা স্বাস্থ্য কমপ্লেক্স, শ্রীপুর</div>
+  </header>
+
+  <div style="flex: 1; display: flex; justify-content: center; padding: 40px 24px;">
+    <section role="alertdialog" aria-modal="true" aria-labelledby="dt" style="width: 100%; max-width: 760px; background: #FFFFFF; border-radius: 14px; padding: 30px 34px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box;">
+      <div>
+        <h2 id="dt" style="margin: 0; font-size: 26px; font-weight: 700;">কমিটি বিলুপ্ত করবেন?</h2>
+        <p style="margin: 4px 0 0; font-size: 16px; color: #4F5B57;">পণ্য গ্রহণ ও পরিদর্শন কমিটি · CM-412-2627-0003</p>
+      </div>
+
+      <div style="display: flex; gap: 10px; background: #F6F8F7; border-radius: 10px; padding: 14px 16px; font-size: 15px; line-height: 1.6;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1F5F8B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 2px;"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.01"></path></svg>
+        <span>শুধু কয়েকজন সদস্য বদলাতে চাইলে বিলুপ্ত করার দরকার নেই — <a href="08-replace-member.html">সদস্য বদলান</a>। নতুন অর্থবছরের কমিটি হলে <a href="#">পুনর্গঠন</a> ব্যবহার করুন; তাতে আগেরটি নিজে থেকেই শেষ হবে।</span>
+      </div>
+
+      <section aria-labelledby="imp" style="border: 1px solid #EFB2AC; background: #FCEBE9; border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px;">
+        <h3 id="imp" style="margin: 0; font-size: 18px; font-weight: 600; color: #A1261C;">এরপর যা হবে</h3>
+        <ul style="margin: 0; padding-left: 20px; font-size: 15px; line-height: 1.8; color: #17201D;">
+          <li>উপজেলা স্বাস্থ্য কমপ্লেক্স, শ্রীপুর ও কেন্দ্রীয় ঔষধ ভাণ্ডারে <strong>পণ্য গ্রহণ ও পরিদর্শনের জন্য কোনো কমিটি থাকবে না</strong></li>
+          <li>৩ জন সদস্যের দায়িত্ব শেষ হবে</li>
+          <li>কমিটির সব তথ্য, আদেশ ও ইতিহাস রাখা থাকবে; মুছে যাবে না</li>
+        </ul>
+      </section>
+
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px;">
+        <label style="display: flex; flex-direction: column; gap: 6px; font-size: 15px; font-weight: 600;">বিলুপ্তির আদেশ<select style="font-family: inherit; font-size: 16px; height: 44px; border: 1px solid #B7C2BC; border-radius: 8px; padding: 0 10px; font-weight: 400;"><option>স্মারক …২৬-২১৫, ০৫ অক্টোবর ২০২৬</option></select></label>
+        <label style="display: flex; flex-direction: column; gap: 6px; font-size: 15px; font-weight: 600;">শেষ দিন<input type="text" value="০৫ অক্টোবর ২০২৬" style="font-family: inherit; font-size: 16px; height: 44px; padding: 0 14px; border: 1px solid #B7C2BC; border-radius: 8px; font-weight: 400;"></label>
+      </div>
+      <label style="display: flex; flex-direction: column; gap: 6px; font-size: 15px; font-weight: 600;">কারণ<textarea rows="2" style="font-family: inherit; font-size: 16px; padding: 10px 14px; border: 1px solid #B7C2BC; border-radius: 8px; font-weight: 400; resize: vertical;">দপ্তর পুনর্বিন্যাসে পণ্য গ্রহণের দায়িত্ব জেলা কমিটিতে গেছে</textarea></label>
+      <label style="display: flex; flex-direction: column; gap: 6px; font-size: 15px; font-weight: 600;">নিশ্চিত করতে কমিটির নম্বর লিখুন: <span style="font-weight: 700;">CM-412-2627-0003</span><input type="text" value="" style="font-family: inherit; font-size: 16px; height: 44px; padding: 0 14px; border: 1px solid #B7C2BC; border-radius: 8px; font-weight: 400;"></label>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; align-items: center;">
+        <a href="02-committee.html" style="display: inline-flex; align-items: center; font-size: 16px; padding: 0 16px; height: 48px;">না, ফিরে যান</a>
+        <button type="button" disabled="disabled" aria-describedby="why" style="font-family: inherit; background: #E7C9C5; color: #6B1A13; border: 0; font-size: 17px; font-weight: 600; padding: 0 22px; height: 48px; border-radius: 8px;">কমিটি বিলুপ্ত করুন</button>
+        <span id="why" style="width: 100%; text-align: right; font-size: 14px; color: #4F5B57;">কমিটির নম্বর লিখলে বোতামটি চালু হবে</span>
+      </div>
+    </section>
+  </div>
+</div>
+</body>
+</html>

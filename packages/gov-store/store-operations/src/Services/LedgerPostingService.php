@@ -3,7 +3,10 @@
 namespace GovStore\StoreOperations\Services;
 
 use GovStore\StoreOperations\Models\InventoryMovement;
+use GovStore\StoreOperations\Enums\StockableType;
 use GovStore\StoreOperations\Events\InventoryMovementCreated;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Facades\DB;
 use Exception;
 
 class LedgerPostingService
@@ -20,7 +23,8 @@ class LedgerPostingService
         object $document,
         ?int $companyId = null,  // Made nullable
         ?int $locationId = null, // Made nullable
-        int $userId = 1
+        int $userId = 1,
+        ?string $notes = null
     ): InventoryMovement {
         if ($quantity <= 0) {
             throw new Exception("Movement quantity must be greater than zero.");
@@ -30,9 +34,30 @@ class LedgerPostingService
             throw new Exception("Invalid movement direction. Allowed: IN, OUT.");
         }
 
-        // 1. Read latest balance with a pessimistic lock
-        $latestBalance = InventoryMovement::where('stockable_type', $stockableType)
+        $locationId ??= app(\GovStore\TenantScope\Contexts\TenantContext::class)->locationId;
+        if (! $locationId) {
+            throw new Exception('A working office is required to post ledger movements.');
+        }
+
+        $type = StockableType::fromString($stockableType);
+        $modelClass = Relation::getMorphedModel($type->value) ?? $type->value;
+        $stockable = $modelClass::withoutGlobalScopes()->whereKey($stockableId)->lockForUpdate()->firstOrFail();
+        if ($type !== StockableType::ASSET_MODEL && (int) $stockable->location_id !== $locationId) {
+            throw new Exception('The stock item does not belong to the posting office.');
+        }
+        if ($companyId && $stockable->company_id && (int) $stockable->company_id !== $companyId) {
+            throw new Exception('The stock item does not belong to the posting company.');
+        }
+        $stockableType = $stockable->getMorphClass();
+
+        if ($document->type !== 'opening' && ! DB::table('gov_store_ledger_openings')->where('location_id', $locationId)->exists()) {
+            throw new Exception('Opening stock must be recorded for this office before ledger posting.');
+        }
+
+        // Serialize by stock item before reading the office-specific balance.
+        $latestBalance = InventoryMovement::withoutGlobalScopes()->where('stockable_type', $stockableType)
             ->where('stockable_id', $stockableId)
+            ->where('location_id', $locationId)
             ->lockForUpdate() 
             ->orderBy('created_at', 'desc')
             ->orderBy('id', 'desc')
@@ -60,6 +85,7 @@ class LedgerPostingService
             'company_id'     => $companyId,
             'location_id'    => $locationId,
             'created_by'     => $userId,
+            'notes' => $notes,
         ]);
 
         // 5. Fire event for projection engine

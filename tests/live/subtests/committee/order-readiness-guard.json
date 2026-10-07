@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "committee.order-readiness-guard",
+  "title": "A registrar is told when no active committee rules are available and the signed order remains required",
+  "features": ["committee.lifecycle", "committee.order-intake"],
+  "tags": ["seeded", "readonly"],
+  "execution": {"capability": "observe", "language": "en-US", "timeoutMs": 90000},
+  "fixtures": {
+    "office": {"requirements": {"operational": true}},
+    "actors": {
+      "registrar": {
+        "capabilities": {"allOf": ["committee.manage", "committee.view"], "noneOf": ["committee.types.manage"]},
+        "office": "office",
+        "activeMembership": true
+      }
+    }
+  },
+  "steps": [
+    {"action": "observe", "check": "committee.catalog", "args": {"companyId": "${fixtures.office.company_id}"}, "as": "catalog"},
+    {"action": "compare", "actual": "${observed.catalog.activeTypes}", "equals": 0, "note": "Current local prerequisite: no visible committee type is active."},
+    {"use": "auth.login", "with": {"actor": "registrar"}},
+    {"action": "goto", "url": "/gov-store/committees/new"},
+    {"action": "assert", "target": "committee.orderHeading", "test": "visible"},
+    {"action": "assert", "target": "committee.orderWarning", "test": "text", "contains": "There are no enabled committee rules for this ministry."},
+    {"action": "assert", "target": "committee.orderFile", "test": "invalid"}
+  ],
+  "cleanup": {"policy": "no-business-records-created"}
+}

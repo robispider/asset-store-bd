@@ -1,0 +1,7 @@
+{
+    "name": "gov-store/experimentation",
+    "description": "Super admin experiment data population and wiping for GovStore",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {"psr-4": {"GovStore\\Experimentation\\": "src/"}}
+}

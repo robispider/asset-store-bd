@@ -1,17 +1,19 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use GovStore\Classification\Http\Controllers\CatalogDashboardController;
-use GovStore\Classification\Http\Controllers\CatalogSearchController;
+use GovStore\Classification\Http\Controllers\BulkAdoptionController;
 use GovStore\Classification\Http\Controllers\CatalogAdminController;
+use GovStore\Classification\Http\Controllers\CatalogDashboardController;
+use GovStore\Classification\Http\Controllers\CatalogExplorerController;
+use GovStore\Classification\Http\Controllers\CatalogSearchController;
 use GovStore\Classification\Http\Controllers\CategoryAdoptionController;
 use GovStore\Classification\Http\Controllers\CategoryGovernanceController;
-use GovStore\Classification\Http\Controllers\MyCatalogController;
 use GovStore\Classification\Http\Controllers\CollectionBuilderController;
 use GovStore\Classification\Http\Controllers\CollectionDiscoveryController;
-use GovStore\Classification\Http\Controllers\CatalogExplorerController;
+use GovStore\Classification\Http\Controllers\MyCatalogController;
 use GovStore\Classification\Http\Controllers\OfficeCopyController;
-use GovStore\Classification\Http\Controllers\BulkAdoptionController;
+use GovStore\Classification\Http\Middleware\ImportPerformanceGuard;
+use GovStore\TenantScope\Http\Middleware\InitializeTenantContext;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,51 +23,51 @@ use GovStore\Classification\Http\Controllers\BulkAdoptionController;
 | taxonomy governance. Bypasses local tenant scoping rules.
 */
 Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'admin/catalog'], function () {
-    
+
     // Core Dashboard & Explorer Search
-    Route::get('/', [CatalogDashboardController::class, 'index'])->name('gov.catalog.dashboard');
-    Route::get('/search', [CatalogSearchController::class, 'index'])->name('gov.catalog.search');
+    Route::get('/', [CatalogDashboardController::class, 'index'])->middleware('gov.can:catalog.view')->name('gov.catalog.dashboard');
+    Route::get('/search', [CatalogSearchController::class, 'index'])->middleware('gov.can:catalog.view')->name('gov.catalog.search');
 
     // AJAX Reference Search Endpoints
-    Route::get('/search/ajax', [CatalogSearchController::class, 'searchAjax'])->name('gov.catalog.search.ajax');
-    Route::get('/browse/ajax', [CatalogSearchController::class, 'browseAjax'])->name('gov.catalog.browse.ajax');
-    Route::get('/ancestors/ajax', [CatalogSearchController::class, 'ancestorsAjax'])->name('gov.catalog.ancestors.ajax');
-    Route::get('/context/ajax', [CatalogSearchController::class, 'contextAjax'])->name('gov.catalog.context.ajax');
-    
+    Route::get('/search/ajax', [CatalogSearchController::class, 'searchAjax'])->middleware('gov.can:catalog.view')->name('gov.catalog.search.ajax');
+    Route::get('/browse/ajax', [CatalogSearchController::class, 'browseAjax'])->middleware('gov.can:catalog.view')->name('gov.catalog.browse.ajax');
+    Route::get('/ancestors/ajax', [CatalogSearchController::class, 'ancestorsAjax'])->middleware('gov.can:catalog.view')->name('gov.catalog.ancestors.ajax');
+    Route::get('/context/ajax', [CatalogSearchController::class, 'contextAjax'])->middleware('gov.can:catalog.view')->name('gov.catalog.context.ajax');
+
     // Mapping Action Endpoints
-    Route::get('/snipe-categories/ajax', [CatalogSearchController::class, 'searchSnipeCategories'])->name('gov.catalog.snipe-categories.ajax');
-    Route::post('/mapping/save', [CatalogSearchController::class, 'saveMapping'])->name('gov.catalog.mapping.save');
-    Route::get('/mapping', [CatalogSearchController::class, 'showMapping'])->name('gov.catalog.mapping');
-    Route::get('/mapping/{id}', [CatalogSearchController::class, 'showMapping'])->name('gov.catalog.mapping.show');
+    Route::get('/snipe-categories/ajax', [CatalogSearchController::class, 'searchSnipeCategories'])->middleware('gov.can:catalog.master.manage')->name('gov.catalog.snipe-categories.ajax');
+    Route::post('/mapping/save', [CatalogSearchController::class, 'saveMapping'])->middleware('gov.can:catalog.master.manage')->name('gov.catalog.mapping.save');
+    Route::get('/mapping', [CatalogSearchController::class, 'showMapping'])->middleware('gov.can:catalog.master.manage')->name('gov.catalog.mapping');
+    Route::get('/mapping/{id}', [CatalogSearchController::class, 'showMapping'])->middleware('gov.can:catalog.master.manage')->name('gov.catalog.mapping.show');
 
     // Ingestion Wizard & History
-    Route::get('/import', [CatalogAdminController::class, 'importForm'])->name('gov.catalog.import');
-    Route::get('/external', [CatalogAdminController::class, 'externalGrid'])->name('gov.catalog.external');
-    Route::get('/history', [CatalogAdminController::class, 'importHistory'])->name('gov.catalog.history');
+    Route::get('/import', [CatalogAdminController::class, 'importForm'])->middleware('gov.can:catalog.master.manage')->name('gov.catalog.import');
+    Route::get('/external', [CatalogAdminController::class, 'externalGrid'])->middleware('gov.can:catalog.master.manage')->name('gov.catalog.external');
+    Route::get('/history', [CatalogAdminController::class, 'importHistory'])->middleware('gov.can:catalog.master.manage')->name('gov.catalog.history');
 
     Route::post('/import/validate', [CatalogAdminController::class, 'importValidate'])
-        ->middleware(\GovStore\Classification\Http\Middleware\ImportPerformanceGuard::class)
-        ->name('gov.catalog.import.validate');
-        
+        ->middleware(ImportPerformanceGuard::class)
+        ->middleware('gov.can:catalog.master.manage')->name('gov.catalog.import.validate');
+
     Route::post('/import/execute', [CatalogAdminController::class, 'importExecute'])
-        ->middleware(\GovStore\Classification\Http\Middleware\ImportPerformanceGuard::class)
-        ->name('gov.catalog.import.execute');
+        ->middleware(ImportPerformanceGuard::class)
+        ->middleware('gov.can:catalog.master.manage')->name('gov.catalog.import.execute');
 
     // Single-item Adoption Actions
-    Route::post('/adoption/adopt', [CategoryAdoptionController::class, 'adopt'])->name('gov.catalog.adoption.adopt');
-    Route::post('/adoption/abandon', [CategoryAdoptionController::class, 'abandon'])->name('gov.catalog.adoption.abandon');
-    Route::post('/adoption/provision', [CategoryAdoptionController::class, 'provision'])->name('gov.catalog.adoption.provision');
+    Route::post('/adoption/adopt', [CategoryAdoptionController::class, 'adopt'])->middleware('gov.can:catalog.office.adopt')->name('gov.catalog.adoption.adopt');
+    Route::post('/adoption/abandon', [CategoryAdoptionController::class, 'abandon'])->middleware('gov.can:catalog.office.adopt')->name('gov.catalog.adoption.abandon');
+    Route::post('/adoption/provision', [CategoryAdoptionController::class, 'provision'])->middleware('gov.can:catalog.office.adopt')->name('gov.catalog.adoption.provision');
 
     // Global Governance Registry
-    Route::get('/governance', [CategoryGovernanceController::class, 'index'])->name('gov.catalog.governance.index');
-    Route::get('/governance/{id}', [CategoryGovernanceController::class, 'show'])->name('gov.catalog.governance.show');
+    Route::get('/governance', [CategoryGovernanceController::class, 'index'])->middleware('gov.can:catalog.master.manage')->name('gov.catalog.governance.index');
+    Route::get('/governance/{id}', [CategoryGovernanceController::class, 'show'])->middleware('gov.can:catalog.master.manage')->name('gov.catalog.governance.show');
 
     // SuperAdmin Collection Library Builder
-    Route::get('/collections', [CollectionBuilderController::class, 'index'])->name('gov.catalog.collections.index');
-    Route::post('/collections', [CollectionBuilderController::class, 'store'])->name('gov.catalog.collections.store');
-    Route::get('/collections/{id}/edit', [CollectionBuilderController::class, 'edit'])->name('gov.catalog.collections.edit');
-    Route::post('/collections/{id}/attach', [CollectionBuilderController::class, 'attachNode'])->name('gov.catalog.collections.attach');
-    Route::post('/collections/{id}/detach', [CollectionBuilderController::class, 'detachNode'])->name('gov.catalog.collections.detach');
+    Route::get('/collections', [CollectionBuilderController::class, 'index'])->middleware('gov.can:catalog.master.manage')->name('gov.catalog.collections.index');
+    Route::post('/collections', [CollectionBuilderController::class, 'store'])->middleware('gov.can:catalog.master.manage')->name('gov.catalog.collections.store');
+    Route::get('/collections/{id}/edit', [CollectionBuilderController::class, 'edit'])->middleware('gov.can:catalog.master.manage')->name('gov.catalog.collections.edit');
+    Route::post('/collections/{id}/attach', [CollectionBuilderController::class, 'attachNode'])->middleware('gov.can:catalog.master.manage')->name('gov.catalog.collections.attach');
+    Route::post('/collections/{id}/detach', [CollectionBuilderController::class, 'detachNode'])->middleware('gov.can:catalog.master.manage')->name('gov.catalog.collections.detach');
 });
 
 /*
@@ -76,36 +78,36 @@ Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'admin/catalog'], fun
 | or physical Office (Location) context.
 */
 Route::group([
-    'prefix' => 'gov-store/operations/catalog', 
-    'middleware' => ['web', 'auth', \GovStore\TenantScope\Http\Middleware\InitializeTenantContext::class]
+    'prefix' => 'gov-store/operations/catalog',
+    'middleware' => ['web', 'auth', InitializeTenantContext::class],
 ], function () {
-    
+
     // User Operational Workspace (My Organization Catalog)
-    Route::get('/', [MyCatalogController::class, 'index'])->name('gov.catalog.my_catalog.index');
-    Route::get('/{id}', [MyCatalogController::class, 'show'])->name('gov.catalog.my_catalog.show');
-    Route::post('/archive', [MyCatalogController::class, 'archive'])->name('gov.catalog.my_catalog.archive');
-    Route::post('/restore', [MyCatalogController::class, 'restore'])->name('gov.catalog.my_catalog.restore');
+    Route::get('/', [MyCatalogController::class, 'index'])->middleware('gov.can:catalog.view')->name('gov.catalog.my_catalog.index');
+    Route::get('/{id}', [MyCatalogController::class, 'show'])->middleware('gov.can:catalog.view')->name('gov.catalog.my_catalog.show');
+    Route::post('/archive', [MyCatalogController::class, 'archive'])->middleware('gov.can:catalog.office.adopt')->name('gov.catalog.my_catalog.archive');
+    Route::post('/restore', [MyCatalogController::class, 'restore'])->middleware('gov.can:catalog.office.adopt')->name('gov.catalog.my_catalog.restore');
 
     // Discover Mode: Windows-style Explorer
-    Route::get('/discover/explorer', [CatalogExplorerController::class, 'index'])->name('gov.catalog.discover.explorer');
+    Route::get('/discover/explorer', [CatalogExplorerController::class, 'index'])->middleware('gov.can:catalog.view')->name('gov.catalog.discover.explorer');
 
     // Discover Mode: Curated Collections
-    Route::get('/discover/collections', [CollectionDiscoveryController::class, 'index'])->name('gov.catalog.discover.collections');
-    Route::get('/discover/collections/{id}', [CollectionDiscoveryController::class, 'show'])->name('gov.catalog.discover.collections.show');
+    Route::get('/discover/collections', [CollectionDiscoveryController::class, 'index'])->middleware('gov.can:catalog.view')->name('gov.catalog.discover.collections');
+    Route::get('/discover/collections/{id}', [CollectionDiscoveryController::class, 'show'])->middleware('gov.can:catalog.view')->name('gov.catalog.discover.collections.show');
 
     // Onboarding Mode: Office Copy
-    Route::get('/adopt/copy', [OfficeCopyController::class, 'index'])->name('gov.catalog.adopt.copy');
-    Route::post('/adopt/copy/fetch', [OfficeCopyController::class, 'fetchSourceCodes'])->name('gov.catalog.adopt.copy.fetch');
+    Route::get('/adopt/copy', [OfficeCopyController::class, 'index'])->middleware('gov.can:catalog.office.adopt')->name('gov.catalog.adopt.copy');
+    Route::post('/adopt/copy/fetch', [OfficeCopyController::class, 'fetchSourceCodes'])->middleware('gov.can:catalog.office.adopt')->name('gov.catalog.adopt.copy.fetch');
 
     // Shared Bulk Adoption Engine
-    Route::post('/bulk/preview', [BulkAdoptionController::class, 'preview'])->name('gov.catalog.bulk.preview');
-    Route::post('/bulk/execute', [BulkAdoptionController::class, 'execute'])->name('gov.catalog.bulk.execute');
+    Route::post('/bulk/preview', [BulkAdoptionController::class, 'preview'])->middleware('gov.can:catalog.office.adopt')->name('gov.catalog.bulk.preview');
+    Route::post('/bulk/execute', [BulkAdoptionController::class, 'execute'])->middleware('gov.can:catalog.office.adopt')->name('gov.catalog.bulk.execute');
 
     // Universal Search API Endpoint
-    Route::get('/search/universal/ajax', [CatalogSearchController::class, 'searchUniversalAjax'])->name('gov.catalog.search.universal.ajax');
+    Route::get('/search/universal/ajax', [CatalogSearchController::class, 'searchUniversalAjax'])->middleware('gov.can:catalog.view')->name('gov.catalog.search.universal.ajax');
 
     // Collection Membership API Endpoints
-    Route::get('/discover/collections-api/list', [\GovStore\Classification\Http\Controllers\CollectionDiscoveryController::class, 'listActive'])->name('gov.catalog.discover.collections.api.list');
-    Route::post('/discover/collections-api/add-nodes', [\GovStore\Classification\Http\Controllers\CollectionDiscoveryController::class, 'addNodes'])->name('gov.catalog.discover.collections.api.add-nodes');
-    
+    Route::get('/discover/collections-api/list', [CollectionDiscoveryController::class, 'listActive'])->middleware('gov.can:catalog.view')->name('gov.catalog.discover.collections.api.list');
+    Route::post('/discover/collections-api/add-nodes', [CollectionDiscoveryController::class, 'addNodes'])->middleware('gov.can:catalog.master.manage')->name('gov.catalog.discover.collections.api.add-nodes');
+
 });

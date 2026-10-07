@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "committee-readonly",
+  "title": "Committee read-only user journeys",
+  "description": "Desk, registry, committee detail, history, printable roster, personal page, office/company boundary and catalogue visibility against seeded fictional users. Creates nothing; needs no --allow-writes. Catalogue/lifecycle journeys are included and report blocked when the current role or active type prerequisites are absent.",
+  "environment": {"target": "http://snipeit.local", "allowlist": ["http://snipeit.local"]},
+  "journeys": [
+    "committee.desk-registry-observation",
+    "committee.record-history-print-observation",
+    "committee.order-readiness-guard",
+    "committee.foreign-committee-boundary",
+    "committee.authorization-boundaries",
+    "committee.rules-catalogue-observation"
+  ],
+  "defaults": {"language": "en-US", "timeoutMs": 90000}
+}
