@@ -41,7 +41,7 @@
                     foreach ($trackingCodes as $code) {
                         foreach ($code->targets as $target) {
                             $catId = $target->category_id;
-                            $catName = $target->category->name;
+                            $catName = $target->category->name ?? 'Unknown Category';
 
                             $prog = $target->progress ?? [
                                 'percentage' => 0,
@@ -125,7 +125,7 @@
                                         $prog = $target->progress ?? ['received' => 0, 'planned' => $target->planned_qty, 'percentage' => 0];
                                     @endphp
                                     ↳ {{ __('govtracking::general.col_economic_code') }}: <strong>{{ $target->economic_code ?? 'N/A' }}</strong><br>
-                                    <span style="padding-left: 15px;">Planned: {{ $prog['planned'] }} {{ $target->category->name }} | Received: {{ $prog['received'] }} {{ $target->category->name }} ({{ $prog['percentage'] }}% Complete)</span><br>
+                                    <span style="padding-left: 15px;">Planned: {{ $prog['planned'] }} {{ $target->category->name ?? 'Unknown Category' }} | Received: {{ $prog['received'] }} {{ $target->category->name ?? 'Unknown Category' }} ({{ $prog['percentage'] }}% Complete)</span><br>
                                 @endforeach
                             </div>
                         </li>
@@ -245,7 +245,7 @@
                                     <td><strong>{{ $geoName }}</strong></td>
                                     <td>{{ $fact->location->name ?? "Office #{$fact->location_id}" }}</td>
                                     <td><code>{{ $econCode }}</code></td>
-                                    <td>{{ $fact->category->name }}</td>
+                                    <td>{{ $fact->category->name ?? 'Unknown Category' }}</td>
                                     <td><strong>{{ $fact->received_qty }} units</strong></td>
                                     <td>{{ $avgPrice > 0 ? number_format($avgPrice, 2) . ' BDT' : 'N/A' }}</td>
                                     <td><strong>{{ $fact->transaction_count }}</strong></td>

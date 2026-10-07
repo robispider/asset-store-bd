@@ -140,7 +140,13 @@ class InitiativeController extends Controller
 
         $health = $projectionRepo->getLifecycleSummary($initiative);
 
-        $trackingCodes = \GovStore\Tracking\Models\TrackingCode::with(['targets.category', 'scopes', 'fundingType'])
+        $trackingCodes = \GovStore\Tracking\Models\TrackingCode::with([
+            'targets.category' => function($query) {
+                $query->withTrashed();
+            },
+            'scopes',
+            'fundingType'
+        ])
             ->where('initiative_id', $initiative->id)
             ->orderBy('created_at', 'desc')
             ->get();
@@ -156,7 +162,9 @@ class InitiativeController extends Controller
         }
 
         $facts = \GovStore\Tracking\Models\TrackingFactDelivery::with([
-            'category',
+            'category' => function($query) {
+                $query->withTrashed();
+            },
             'trackingCode',
             'location' => function($query) {
                 $query->withoutGlobalScopes();
