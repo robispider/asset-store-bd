@@ -84,6 +84,14 @@
                         <label for="name">{{ __('organization_labels::orglabel.create_field_office_name') }} <span class="text-danger">*</span></label>
                         <input type="text" name="name" id="name" class="form-control input-lg" placeholder="{{ __('organization_labels::orglabel.create_placeholder_office_name') }}" required value="{{ old('name') }}">
                     </div>
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="office_type">{{ __('organization_labels::orglabel.office_type_label') }}</label>
+                        <select name="office_type" id="office_type" class="form-control" required>
+                            @foreach(['default', 'hospital', 'school', 'ict_office'] as $type)
+                                <option value="{{ $type }}" {{ old('office_type', 'default') === $type ? 'selected' : '' }}>{{ __('organization_labels::orglabel.office_type_' . $type) }}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
 
                     <!-- SECTION 2: GEOGRAPHY -->

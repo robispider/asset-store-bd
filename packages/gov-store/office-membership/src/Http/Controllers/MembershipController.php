@@ -10,7 +10,6 @@ use GovStore\OfficeMembership\Models\OfficeResponsibility;
 use GovStore\OfficeMembership\Models\RoleHandshake;
 use GovStore\OfficeMembership\Services\ClearanceEngine;
 use GovStore\Organization\Models\LocationProfile;
-use GovStore\Organization\Models\LocationRole;
 use GovStore\TenantScope\Scopes\UserScope;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -41,22 +40,20 @@ class MembershipController extends Controller
                     ->where('id', '!=', $user->id)
                     ->get();
 
-                if (class_exists(LocationRole::class)) {
-                    $profile = LocationProfile::where('location_id', $locId)->first();
-                    $roles = OfficeResponsibility::where('location_id', $locId)->get();
+                $profile = LocationProfile::where('location_id', $locId)->first();
+                $roles = OfficeResponsibility::where('location_id', $locId)->get();
 
-                    if ($profile && $profile->office_admin_id === $user->id) {
-                        $myActiveRoles[$locId][] = 'office_admin';
-                    }
-                    if ($roles->where('role_slug', 'primary_approver')->first()?->user_id === $user->id) {
-                        $myActiveRoles[$locId][] = 'primary_approver';
-                    }
-                    if ($roles->where('role_slug', 'final_approver')->first()?->user_id === $user->id) {
-                        $myActiveRoles[$locId][] = 'final_approver';
-                    }
-                    if ($roles->where('role_slug', 'storekeeper')->first()?->user_id === $user->id) {
-                        $myActiveRoles[$locId][] = 'storekeeper';
-                    }
+                if ($profile && (int) $profile->office_admin_id === (int) $user->id) {
+                    $myActiveRoles[$locId][] = 'office_admin';
+                }
+                if ((int) $roles->where('role_slug', 'primary_approver')->first()?->user_id === (int) $user->id) {
+                    $myActiveRoles[$locId][] = 'primary_approver';
+                }
+                if ((int) $roles->where('role_slug', 'final_approver')->first()?->user_id === (int) $user->id) {
+                    $myActiveRoles[$locId][] = 'final_approver';
+                }
+                if ((int) $roles->where('role_slug', 'storekeeper')->first()?->user_id === (int) $user->id) {
+                    $myActiveRoles[$locId][] = 'storekeeper';
                 }
             }
         }

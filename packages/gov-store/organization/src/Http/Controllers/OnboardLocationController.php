@@ -67,6 +67,7 @@ class OnboardLocationController extends Controller
             'geo_area_id' => 'required|integer',
             'company_id' => 'nullable|integer',
             'office_admin_id' => 'nullable|integer',
+            'office_type' => 'required|in:default,hospital,school,ict_office',
         ]);
 
         try {

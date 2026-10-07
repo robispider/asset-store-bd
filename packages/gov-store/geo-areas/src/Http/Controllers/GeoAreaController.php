@@ -8,35 +8,32 @@ use GovStore\GeoAreas\Services\GeoAreaService;
 
 class GeoAreaController extends Controller
 {
-    /**
-     * Shared Geographical Search API. Fully decoupled from organizational models.
-     */
+    /** Shared geographical typeahead. */
     public function search(Request $request, GeoAreaService $geoService)
     {
-        $term = $request->input('q', '');
-        $restrictToHid = $request->input('restrict_hid', null);
-        $types = $request->input('types', []);
+        $validated = $request->validate([
+            'q' => ['nullable', 'string', 'max:100'],
+            'restrict_hid' => ['nullable', 'string', 'max:255'],
+            'types' => ['sometimes', 'array', 'max:20'],
+            'types.*' => ['string', 'max:30'],
+        ]);
 
-        // Diagnostic visual pre-check
-        if (empty($term) && !$request->ajax()) {
-            $count = \GovStore\GeoAreas\Models\GeoArea::count();
-            dd([
-                'STATUS' => 'Shared Geographical Reference API is active!',
-                'Total Registered Territories' => $count
-            ]);
-        }
+        $results = $geoService->search(
+            trim($validated['q'] ?? ''),
+            $validated['types'] ?? [],
+            $validated['restrict_hid'] ?? null
+        );
+        $useBangla = str_starts_with(strtolower(app()->getLocale()), 'bn');
 
-        // Query our decoupled library service
-        $results = $geoService->search($term, $types, $restrictToHid);
-
-        $formatted = [];
-        foreach ($results as $area) {
-            $formatted[] = [
+        return response()->json($results->map(static function ($area) use ($useBangla) {
+            return [
                 'id' => $area->GeoAreaId,
-                'text' => "{$area->en_name} ({$area->bn_name}) - " . ucwords(str_replace('_', ' ', $area->geo_type))
+                'text' => $useBangla ? $area->bn_name : $area->en_name,
+                'en_name' => $area->en_name,
+                'bn_name' => $area->bn_name,
+                'geo_type' => GeoAreaService::canonicalType($area->geo_type),
+                'geo_type_label' => __('geo_areas::types.' . GeoAreaService::canonicalType($area->geo_type)),
             ];
-        }
-
-        return response()->json($formatted);
+        })->values());
     }
 }

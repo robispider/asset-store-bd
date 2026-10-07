@@ -7,6 +7,12 @@ use Illuminate\Support\Collection;
 
 class GeoAreaService
 {
+    /** Normalize the historic source spelling without changing persisted identifiers. */
+    public static function canonicalType(string $type): string
+    {
+        return strtolower($type) === 'divison' ? 'division' : strtolower($type);
+    }
+
     /**
      * Resolves a single geographical territory by its master ID.
      */
@@ -57,18 +63,27 @@ class GeoAreaService
     public function search(string $term, array $types = [], ?string $restrictToHid = null, int $limit = 15): Collection
     {
         $query = GeoArea::query();
+        $limit = max(1, min($limit, 50));
 
-        // 1. Live text match on both English and Bengali fields
+        // Prefix matching supports the typeahead use case and can use name indexes.
         if (!empty($term)) {
             $query->where(function ($q) use ($term) {
-                $q->where('en_name', 'like', "%{$term}%")
-                  ->orWhere('bn_name', 'like', "%{$term}%");
+                $q->where('en_name', 'like', $term . '%')
+                  ->orWhere('bn_name', 'like', $term . '%');
             });
         }
 
         // 2. Multi-type filter (supports upazila, union, pourasabha, ward, etc.)
         if (!empty($types)) {
-            $query->whereIn('geo_type', $types);
+            $acceptedTypes = [];
+            foreach ($types as $type) {
+                $canonical = self::canonicalType((string) $type);
+                $acceptedTypes[] = $canonical;
+                if ($canonical === 'division') {
+                    $acceptedTypes[] = 'divison';
+                }
+            }
+            $query->whereIn('geo_type', array_values(array_unique($acceptedTypes)));
         }
 
         // 3. Structural Boundary Scoping (O(1) tree containment)
@@ -76,7 +91,7 @@ class GeoAreaService
             $query->where('hid', 'like', $restrictToHid . '%');
         }
 
-        return $query->limit($limit)->get();
+        return $query->orderBy('en_name')->limit($limit)->get();
     }
 
     /**

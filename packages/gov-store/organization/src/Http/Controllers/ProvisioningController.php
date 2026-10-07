@@ -37,13 +37,7 @@ class ProvisioningController extends Controller
         $this->checkIctOfficerAccess();
         $user = auth()->user();
 
-        // 1. Calculate Real-Time Rollout Stats Metrics (Top Dashboard Badges)
-        $totalOfficesCount = Location::count();
-        $operationalCount = LocationProfile::where('lifecycle_status', 'operational')->count();
-        $pendingCount = LocationProfile::where('lifecycle_status', '!=', 'operational')->count();
-        $ministriesCount = Location::whereNotNull('company_id')->distinct('company_id')->count();
-
-        // 2. Build Core Scoped Query eager loading Snipe-IT relationships
+        // Build the authorized geography scope before computing any registry totals.
         $query = Location::with(['company', 'parent', 'profile.geoArea', 'profile.officeAdmin']);
 
         // Scope queue strictly to the officer's jurisdiction bounds
@@ -57,6 +51,15 @@ class ProvisioningController extends Controller
                 });
             });
         }
+
+        $scopeQuery = clone $query;
+        $scopedLocationIds = (clone $scopeQuery)->select('locations.id');
+        $totalOfficesCount = (clone $scopeQuery)->count();
+        $operationalCount = LocationProfile::whereIn('location_id', $scopedLocationIds)
+            ->where('lifecycle_status', 'operational')->count();
+        $pendingCount = LocationProfile::whereIn('location_id', (clone $scopeQuery)->select('locations.id'))
+            ->where('lifecycle_status', '!=', 'operational')->count();
+        $ministriesCount = (clone $scopeQuery)->whereNotNull('company_id')->distinct('company_id')->count('company_id');
 
         // Apply Filters
         if ($request->filled('search')) {
@@ -92,12 +95,12 @@ class ProvisioningController extends Controller
         }
 
         // Execute query
-        $offices = $query->orderBy('name')->get();
+        $offices = $query->orderBy('name')->paginate(25)->withQueryString();
 
         // =========================================================================
         // 3. DICTIONARY LOOKUP: Fetch roles from our new pivot matrix (FAST DB LOAD)
         // =========================================================================
-        $locationIds = $offices->pluck('id');
+        $locationIds = $offices->getCollection()->pluck('id');
         $responsibilities = OfficeResponsibility::whereIn('location_id', $locationIds)->get();
 
         // Reconstruct flat mock role objects to maintain 100% compatibility with ViewModel
@@ -111,7 +114,7 @@ class ProvisioningController extends Controller
         }
 
         // 4. MAP ELOQUENT MODELS TO THE VIEWMODEL (Dynamic Paginator check)
-        $collection = $offices instanceof \Illuminate\Pagination\LengthAwarePaginator ? $offices->getCollection() : $offices;
+        $collection = $offices->getCollection();
         
         $collection->transform(function ($loc) use ($rolesDictionary) {
             $role = $rolesDictionary->get($loc->id); // Match mock role to location in memory
@@ -119,7 +122,8 @@ class ProvisioningController extends Controller
         });
 
         // Fetch select list values using the decoupled Shared Service API
-        $companies = Company::orderBy('name')->get();
+        $companies = Company::whereIn('id', (clone $scopeQuery)->whereNotNull('company_id')->select('company_id'))
+            ->orderBy('name')->get();
         $districts = $geoService->getAllDistricts(); // BOUNDARY CORRECTED
 
         return view('govorg::provisioning.index', compact(
@@ -186,6 +190,7 @@ class ProvisioningController extends Controller
             'company_id' => 'nullable|integer',
             'office_admin_id' => 'nullable|integer',
             'geo_area_id' => 'required|integer',
+            'office_type' => 'required|in:default,hospital,school,ict_office',
         ]);
 
         try {

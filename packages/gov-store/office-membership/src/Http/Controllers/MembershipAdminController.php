@@ -197,12 +197,8 @@ class MembershipAdminController extends Controller
             }
 
             if ($request->override_type === 'strip_roles') {
-                if (class_exists(\GovStore\Organization\Models\LocationRole::class)) {
-                    \GovStore\Organization\Models\LocationRole::where('primary_approver_id', $user->id)->update(['primary_approver_id' => null]);
-                    \GovStore\Organization\Models\LocationRole::where('final_approver_id', $user->id)->update(['final_approver_id' => null]);
-                    \GovStore\Organization\Models\LocationRole::where('storekeeper_id', $user->id)->update(['storekeeper_id' => null]);
-                    \GovStore\Organization\Models\LocationProfile::where('office_admin_id', $user->id)->update(['office_admin_id' => null]);
-                }
+                OfficeResponsibility::where('user_id', $user->id)->delete();
+                \GovStore\Organization\Models\LocationProfile::where('office_admin_id', $user->id)->update(['office_admin_id' => null]);
             }
 
             OverrideAuditLog::create([

@@ -17,8 +17,12 @@ class ProvisionStarterCatalog
         try {
             $location = $event->location;
             
-            // Assume the location has a 'type' attribute (e.g., 'hospital'). Fallback to 'default'.
-            $officeType = $location->type ?? 'default'; 
+            $officeType = $event->officeType ?? 'default';
+
+            if (!$location->company_id || !$event->catalogActorId) {
+                Log::info('Starter catalog waits for a company-scoped office administrator.');
+                return;
+            }
             
             // 1. Get the collection names from our config map
             $collectionNames = config("starter_templates.office_types.{$officeType}");
@@ -39,8 +43,8 @@ class ProvisionStarterCatalog
                 return;
             }
 
-            if (! isset($event->userId) || ! filter_var($event->userId, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]])) {
-                Log::warning('Starter catalog requires an explicit initiating actor.');
+            if (!filter_var($event->catalogActorId, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]])) {
+                Log::warning('Starter catalog requires an explicit office administrator actor.');
                 return;
             }
 
@@ -49,7 +53,7 @@ class ProvisionStarterCatalog
                 $codes, 
                 'location', 
                 $location->id, 
-                (int) $event->userId
+                (int) $event->catalogActorId
             );
 
             Log::info("Dispatched Starter Template job for Location ID: {$location->id} with " . count($codes) . " categories.");

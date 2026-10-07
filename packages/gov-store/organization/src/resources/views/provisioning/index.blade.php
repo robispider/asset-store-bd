@@ -132,7 +132,7 @@
     <div class="col-md-12">
         <div class="box box-default">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-sitemap"></i> {{ __('organization_labels::orglabel.registry_table_offices_count') }} ({{ isset($offices) ? $offices->count() : 0 }})</h3>
+                <h3 class="box-title"><i class="fas fa-sitemap"></i> {{ __('organization_labels::orglabel.registry_table_offices_count') }} ({{ isset($offices) ? $offices->total() : 0 }})</h3>
             </div>
             <div class="box-body table-responsive">
                 <table class="table table-striped table-hover registry-table">
@@ -213,5 +213,8 @@
             </div>
         </div>
     </div>
+</div>
+<div class="row">
+    <div class="col-md-12">{{ $offices->links() }}</div>
 </div>
 @endsection
