@@ -107,6 +107,7 @@
                         <option value="operational" {{ request('status') == 'operational' ? 'selected' : '' }}>{{ __('organization_labels::orglabel.registry_status_operational') }}</option>
                         <option value="configured" {{ request('status') == 'configured' ? 'selected' : '' }}>{{ __('organization_labels::orglabel.registry_status_configured') }}</option>
                         <option value="provisioned" {{ request('status') == 'provisioned' ? 'selected' : '' }}>{{ __('organization_labels::orglabel.registry_status_provisioned') }}</option>
+                        <option value="suspended" {{ request('status') == 'suspended' ? 'selected' : '' }}>{{ __('organization_labels::orglabel.lifecycle_suspended') }}</option>
                     </select>
                 </div>
 
@@ -169,7 +170,9 @@
 
                                 <td>
                                     <div class="status-badge-container">
-                                        @if($office->status === 'operational')
+                                        @if($office->status === 'suspended')
+                                            <span class="label label-danger">{{ __('organization_labels::orglabel.lifecycle_suspended') }}</span>
+                                        @elseif($office->status === 'operational')
                                             <span class="label label-success"><i class="fas fa-check-double"></i> {{ __('organization_labels::orglabel.registry_status_operational_label') }}</span>
                                         @elseif($office->status === 'configured')
                                             <span class="label label-info"><i class="fas fa-sliders-h"></i> {{ __('organization_labels::orglabel.registry_status_configured_label') }}</span>

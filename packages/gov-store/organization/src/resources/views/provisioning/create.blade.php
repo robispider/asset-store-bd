@@ -139,13 +139,13 @@
 
                     <div class="form-group" style="margin-top: 10px; margin-bottom: 10px;">
                         <label for="office_admin_id">{{ __('organization_labels::orglabel.create_field_delegate_admin') }}</label>
-                        <select name="office_admin_id" id="office_admin_id" class="form-control select2" style="width: 100%;">
+                        <select id="office_admin_id" class="form-control select2" disabled style="width: 100%;">
                             <option value="">{{ __('organization_labels::orglabel.create_placeholder_leave_unassigned') }}</option>
                             @foreach($users as $user)
                                 <option value="{{ $user->id }}">{{ $user->present()->fullName }} ({{ $user->username }})</option>
                             @endforeach
                         </select>
-                        <p class="help-block" style="margin-top: 6px;">{{ __('organization_labels::orglabel.create_help_delegate_admin') }}</p>
+                        <p class="help-block" style="margin-top: 6px;">{{ __('organization_labels::orglabel.starter_admin_membership') }}</p>
                     </div>
 
                 </div>

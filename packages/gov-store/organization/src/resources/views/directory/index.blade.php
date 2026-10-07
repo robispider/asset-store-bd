@@ -33,14 +33,7 @@
                         <button type="submit" class="btn btn-default btn-block"><i class="fa fa-play"></i> {{ __('organization_labels::orglabel.directory_option_bundled_button') }}</button>
                     </div>
 
-                    <div class="well" style="background-color: #fcfcfc; margin-top: 15px;">
-                        <h4>{{ __('organization_labels::orglabel.directory_option_custom_title') }}</h4>
-                        <div class="form-group">
-                            <label>{{ __('organization_labels::orglabel.directory_upload_label') }}</label>
-                            <input type="file" name="csv_file" class="form-control">
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-block"><i class="fa fa-upload"></i> {{ __('organization_labels::orglabel.directory_upload_button') }}</button>
-                    </div>
+                    <p class="help-block">{{ __('organization_labels::orglabel.directory_review_bundle') }}</p>
                 </div>
             </form>
         </div>

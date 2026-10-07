@@ -114,6 +114,10 @@
             </div>
             <form action="{{ route('gov.org.config.save') }}" method="POST">
                 @csrf
+                @if(!in_array($profile->lifecycle_status, ['provisioned', 'configured', 'operational'], true))
+                    <p class="alert alert-warning">{{ __('organization_labels::orglabel.lifecycle_help') }}</p>
+                @endif
+                <fieldset @if(!in_array($profile->lifecycle_status, ['provisioned', 'configured', 'operational'], true)) disabled @endif>
                 <div class="box-body">
                     
                     <div class="form-group">
@@ -159,6 +163,7 @@
                 <div class="box-footer">
                     <button type="submit" class="btn btn-primary pull-right"><i class="fas fa-save"></i> {{ __('organization_labels::orglabel.config_save_button') }}</button>
                 </div>
+                </fieldset>
             </form>
         </div>
 

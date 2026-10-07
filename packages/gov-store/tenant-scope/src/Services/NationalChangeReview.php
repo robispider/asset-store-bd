@@ -83,6 +83,27 @@ class NationalChangeReview
 
     private function currentConfiguration(Request $request): array
     {
+        if ($request->routeIs('gov.org.jurisdictions.*')) {
+            $query = DB::table('gov_ict_jurisdictions');
+            $request->routeIs('gov.org.jurisdictions.destroy')
+                ? $query->where('id', $request->route('id')) : $query->where('user_id', $request->input('user_id'));
+
+            return $query->orderBy('id')->get()->map(fn ($row) => (array) $row)->all();
+        }
+        if ($request->routeIs('gov.org.company_admins.*')) {
+            $query = DB::table('gov_company_admins');
+            $request->routeIs('gov.org.company_admins.destroy')
+                ? $query->where('id', $request->route('id')) : $query->where('user_id', $request->input('user_id'));
+
+            return $query->orderBy('id')->get()->map(fn ($row) => (array) $row)->all();
+        }
+        if ($request->routeIs('gov.org.directory.import')) {
+            abort_if($request->hasFile('csv_file'), 422);
+
+            return ['bundle_sha256' => hash_file('sha256', base_path('packages/gov-store/organization/src/database/data/bangladesh_ministries_bilingual.csv')),
+                'directory' => DB::table('gov_ministries_directory')->orderBy('id')->get()->map(fn ($row) => (array) $row)->all(),
+                'companies' => DB::table('companies')->whereNull('deleted_at')->orderBy('id')->get(['id', 'name'])->map(fn ($row) => (array) $row)->all()];
+        }
         if ($request->routeIs('gov.scope.save-strategy')) {
             return \GovStore\TenantScope\Models\TenantScopeConfig::orderBy('reference_type')->get()->toArray();
         }

@@ -22,11 +22,11 @@
 
 @php
     // Evaluate operational readiness checklist on the fly
-    $hasAdmin = !is_null($profile->office_admin_id);
-    $hasPrimary = $roles && !is_null($roles->primary_approver_id);
-    $hasStorekeeper = $roles && !is_null($roles->storekeeper_id);
-    $hasStaff = $localStaff->count() > 0;
-    $isOperational = $hasAdmin && $hasPrimary && $hasStorekeeper && $hasStaff;
+    $hasAdmin = $readiness['checklist']['has_office_admin'];
+    $hasPrimary = $readiness['checklist']['has_primary_approver'];
+    $hasStorekeeper = $readiness['checklist']['has_storekeeper'];
+    $hasStaff = $readiness['checklist']['has_users'];
+    $isOperational = $readiness['is_operational'];
 @endphp
 
 <!-- HUB MASTER HEADER & STATUS BLOCK -->
@@ -43,7 +43,9 @@
                     </p>
                 </div>
                 <div>
-                    @if($profile->lifecycle_status === 'operational')
+                    @if($profile->lifecycle_status === 'suspended')
+                        <span class="label label-danger">{{ __('organization_labels::orglabel.lifecycle_suspended') }}</span>
+                    @elseif($profile->lifecycle_status === 'operational')
                         <span class="label label-success" style="font-size: 14px; padding: 8px 15px;"><i class="fas fa-check-double"></i> {{ __('organization_labels::orglabel.hub_status_operational') }}</span>
                     @elseif($profile->lifecycle_status === 'configured')
                         <span class="label label-info" style="font-size: 14px; padding: 8px 15px;"><i class="fas fa-sliders-h"></i> {{ __('organization_labels::orglabel.hub_status_configured') }}</span>
@@ -74,6 +76,7 @@
                 <div class="tab-pane active" id="tab_overview">
                     <form action="{{ route('gov.org.hub.update', $location->id) }}" method="POST" style="max-width: 700px; padding: 15px 0;">
                         @csrf
+                        <fieldset @if(!in_array($profile->lifecycle_status, ['provisioned', 'configured', 'operational'], true)) disabled @endif>
                         <div class="form-group">
                             <label for="name">{{ __('organization_labels::orglabel.hub_field_office_name') }} <span class="text-danger">*</span></label>
                             <input type="text" name="name" id="name" class="form-control" value="{{ $location->name }}" required>
@@ -81,7 +84,8 @@
 
                         <div class="form-group">
                             <label for="company_id">{{ __('organization_labels::orglabel.hub_field_ministry') }}</label>
-                            <select name="company_id" id="company_id" class="form-control select2" style="width: 100%;">
+                            <input type="hidden" name="company_id" value="{{ $location->company_id }}">
+                            <select id="company_id" class="form-control select2" style="width: 100%;" disabled>
                                 <option value="">{{ __('organization_labels::orglabel.create_placeholder_standalone') }}</option>
                                 @foreach($companies as $comp)
                                     <option value="{{ $comp->id }}" {{ $location->company_id == $comp->id ? 'selected' : '' }}>{{ $comp->name }}</option>
@@ -91,7 +95,11 @@
 
                         <div class="form-group">
                             <label for="parent_id">{{ __('organization_labels::orglabel.hub_field_parent_office') }}</label>
-                            <select name="parent_id" id="parent_id" class="form-control select2" style="width: 100%;">
+                            <input type="hidden" name="parent_id" value="{{ $location->parent_id }}">
+                            <select id="parent_id" class="form-control select2" disabled style="width: 100%;">
+                                @if($location->parent)
+                                    <option value="{{ $location->parent_id }}" selected>{{ $location->parent->name }}</option>
+                                @endif
                                 <option value="">{{ __('organization_labels::orglabel.create_placeholder_no_parent') }}</option>
                                 @foreach($allOffices as $parent)
                                     <option value="{{ $parent->id }}" {{ $location->parent_id == $parent->id ? 'selected' : '' }}>{{ $parent->name }}</option>
@@ -101,7 +109,8 @@
 
                         <div class="form-group">
                             <label for="geoAreaSelector">{{ __('organization_labels::orglabel.hub_field_geo_area') }} <span class="text-danger">*</span></label>
-                            <select name="geo_area_id" id="geoAreaSelector" class="form-control" required style="width: 100%;">
+                            <input type="hidden" name="geo_area_id" value="{{ $profile->geo_area_id }}">
+                            <select id="geoAreaSelector" class="form-control" disabled style="width: 100%;">
                                 @if($profile->geoArea)
                                     <option value="{{ $profile->geo_area_id }}" selected>
                                         {{ $profile->geoArea->en_name }} ({{ $profile->geoArea->bn_name }}) - {{ ucfirst($profile->geoArea->geo_type) }}
@@ -125,6 +134,7 @@
                         <div style="margin-top: 25px;">
                             <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> {{ __('organization_labels::orglabel.hub_save_button') }}</button>
                         </div>
+                        </fieldset>
                     </form>
                 </div>
 
@@ -135,6 +145,7 @@
                         <div class="col-md-7" style="border-right: 1px solid #f4f4f4; padding-right: 30px;">
                             <form action="{{ route('gov.org.hub.save-roles', $location->id) }}" method="POST">
                                 @csrf
+                                <fieldset @if(!in_array($profile->lifecycle_status, ['provisioned', 'configured', 'operational'], true)) disabled @endif>
                                 <div class="form-group">
                                     <label for="primary_approver_id">Primary Approver (Supervisor) <span class="text-danger">*</span></label>
                                     <select name="primary_approver_id" id="primary_approver_id" class="form-control select2" required style="width: 100%;">
@@ -177,6 +188,7 @@
                                 <div style="margin-top: 25px; margin-bottom: 15px;">
                                     <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> {{ __('organization_labels::orglabel.config_save_button') }}</button>
                                 </div>
+                                </fieldset>
                             </form>
                         </div>
 
@@ -358,12 +370,13 @@
         </div>
     </div>
 </div>
+@include('govorg::provisioning.lifecycle')
 @endsection
 
 @section('moar_scripts')
 <script>
 $(document).ready(function() {
-    $('#geoAreaSelector').select2({
+    $('#lifecycle-geo').select2({
         minimumInputLength: 2,
         ajax: {
             url: '{{ route("gov.geo.search") }}',
@@ -379,7 +392,7 @@ $(document).ready(function() {
             },
             cache: true
         },
-        placeholder: "Search Division, District, Upazila, or Union..."
+        placeholder: @json(__('organization_labels::orglabel.lifecycle_geo_search'))
     });
 });
 </script>

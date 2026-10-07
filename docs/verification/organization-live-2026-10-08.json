@@ -1,0 +1,96 @@
+{
+    "database": "snipeit",
+    "office_profiles": 57,
+    "profile_states": [
+        {
+            "lifecycle_status": "configured",
+            "total": 6
+        },
+        {
+            "lifecycle_status": "operational",
+            "total": 49
+        },
+        {
+            "lifecycle_status": "provisioned",
+            "total": 2
+        }
+    ],
+    "starter_runs_table": true,
+    "starter_run_count": 0,
+    "starter_library": {
+        "hospital": [
+            {
+                "name": "Medical & Clinical Equipment",
+                "active_matches": 0,
+                "entries": 0
+            },
+            {
+                "name": "ICT & Computing",
+                "active_matches": 0,
+                "entries": 0
+            },
+            {
+                "name": "Office Furniture",
+                "active_matches": 0,
+                "entries": 0
+            },
+            {
+                "name": "Janitorial & Sanitation",
+                "active_matches": 0,
+                "entries": 0
+            }
+        ],
+        "school": [
+            {
+                "name": "Educational Materials",
+                "active_matches": 0,
+                "entries": 0
+            },
+            {
+                "name": "ICT & Computing",
+                "active_matches": 0,
+                "entries": 0
+            },
+            {
+                "name": "Office Furniture",
+                "active_matches": 0,
+                "entries": 0
+            },
+            {
+                "name": "Sports & Recreation",
+                "active_matches": 0,
+                "entries": 0
+            }
+        ],
+        "ict_office": [
+            {
+                "name": "ICT & Computing",
+                "active_matches": 0,
+                "entries": 0
+            },
+            {
+                "name": "Office Furniture",
+                "active_matches": 0,
+                "entries": 0
+            },
+            {
+                "name": "Server & Networking",
+                "active_matches": 0,
+                "entries": 0
+            }
+        ],
+        "default": [
+            {
+                "name": "Office Furniture",
+                "active_matches": 0,
+                "entries": 0
+            },
+            {
+                "name": "Basic Stationery",
+                "active_matches": 0,
+                "entries": 0
+            }
+        ]
+    },
+    "access_mode": "shadow"
+}

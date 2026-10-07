@@ -1,6 +1,31 @@
 <?php
 
 return [
+    'directory_review_bundle' => 'Synchronization requires review of the bundled directory, a reason and CHANGE confirmation. Custom uploads are not supported by this review workflow.',
+    'lifecycle_title' => 'Office lifecycle and starter catalog',
+    'lifecycle_help' => 'Suspension pauses new requests and office setup. Existing requests, approvals and returns remain available. Relocation keeps the office identity and ministry, and clears geography verification.',
+    'lifecycle_clearance_pending' => 'Closure and merge are unavailable until membership, holdings, request and committee clearance is complete.',
+    'lifecycle_intake_paused' => 'This office is not accepting new requests.',
+    'lifecycle_action' => 'Action',
+    'lifecycle_suspend' => 'Suspend request intake',
+    'lifecycle_resume' => 'Resume office',
+    'lifecycle_relocate' => 'Relocate within authorized territory',
+    'lifecycle_suspended' => 'Suspended',
+    'lifecycle_new_geo' => 'New geographic area (relocation only)',
+    'lifecycle_geo_search' => 'Search division, district, upazila or union',
+    'lifecycle_geo_help' => 'Relocation requires an ICT officer authorized for both areas or a superuser.',
+    'lifecycle_reason' => 'Reason',
+    'lifecycle_confirmation' => 'Type CHANGE to confirm',
+    'lifecycle_apply' => 'Apply office transition',
+    'lifecycle_saved' => 'Office changes saved.',
+    'starter_title' => 'Starter catalog',
+    'starter_status_waiting' => 'Waiting for a company and an active office administrator membership.',
+    'starter_status_pending' => 'Queued or ready to retry. Delivery requires the application queue worker.',
+    'starter_status_completed' => 'The saved starter bundle was adopted successfully.',
+    'starter_status_failed' => 'Starter delivery failed. Resolve the failure before retrying the saved bundle.',
+    'starter_reference' => 'Failure reference',
+    'starter_retry' => 'Retry starter catalog',
+    'starter_admin_membership' => 'Create the office first, onboard an active membership, then assign its administrator in the office hub.',
 
     // =========================================================================
     // Origin: ConfigurationController.php

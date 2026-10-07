@@ -19,11 +19,6 @@ class EnsureOfficeIsOperational
 
         $user = auth()->user();
 
-        // 2. Exception-Safe: Standard Laravel gates bypass operational checks
-        if ($user->isSuperUser() || Gate::allows('admin') || Gate::allows('superadmin')) {
-            return $next($request);
-        }
-
         $path = $request->path();
         
         // 3. We only intercept catalog browsing and shopping basket actions
@@ -31,6 +26,10 @@ class EnsureOfficeIsOperational
                          && !str_contains($path, 'my-requests');
 
         if ($isTargetRoute) {
+            $officeId = app(\GovStore\TenantScope\Contexts\TenantContext::class)->locationId;
+            if ($officeId) {
+                app(\GovStore\Organization\Services\OfficeRequestIntake::class)->assertOpen([$officeId]);
+            }
             
             // Safety Intercept: User is not assigned to any physical office building
             if (!$user->location_id) {

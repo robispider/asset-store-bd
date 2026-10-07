@@ -55,7 +55,7 @@ class TenantScopeServiceProvider extends ServiceProvider
         \Illuminate\Support\Facades\Bus::pipeThrough([\GovStore\TenantScope\Http\Middleware\ExecuteTenantJob::class]);
         $lifecycle = $this->app->make(\GovStore\TenantScope\Services\TenantWorkerLifecycle::class);
         $this->app['events']->listen(\Illuminate\Queue\Events\JobProcessing::class,
-            fn ($event) => $lifecycle->begin(str_starts_with($event->job->resolveName(), 'GovStore\\')));
+            fn ($event) => $lifecycle->begin(str_starts_with($event->job->resolveName(), 'GovStore\\'), $event->connectionName === 'sync'));
         foreach ([\Illuminate\Queue\Events\JobProcessed::class, \Illuminate\Queue\Events\JobExceptionOccurred::class] as $event) {
             $this->app['events']->listen($event, fn () => $lifecycle->finish());
         }

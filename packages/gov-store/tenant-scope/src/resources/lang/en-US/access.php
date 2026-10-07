@@ -34,6 +34,8 @@ return [
     'notifications' => 'Updates', 'notification_request' => 'An office access request is awaiting review.',
     'notification_review' => 'Your office access request has been reviewed.', 'filter' => 'Filter', 'all' => 'All',
     'abilities' => [
+        'organization_office_manage' => 'Manage offices in your assigned scope',
+        'organization_national_manage' => 'Manage national organization assignments and directory',
         'tenant_scope_view' => 'View national tenant boundaries',
         'tenant_scope_manage' => 'Change national tenant boundaries',
         'committee_view' => 'View committees',

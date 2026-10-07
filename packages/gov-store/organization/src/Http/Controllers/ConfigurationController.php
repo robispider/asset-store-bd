@@ -18,17 +18,23 @@ class ConfigurationController extends Controller
         $user = auth()->user();
 
         // 1. Superadmins bypass strict local scopes and can pass any location ID
-        if (($user->isSuperUser() || $user->hasAccess('admin')) && request()->has('location_id')) {
-            return (int)request()->input('location_id');
+        if ($user->isSuperUser() && request()->has('location_id')) {
+            $id = (int) request()->input('location_id');
+            $guard = app(\GovStore\Organization\Services\OfficeAdministration::class);
+            $guard->office($guard->actor((int) $user->id), $id);
+            return $id;
         }
 
         // 2. Standard Office Administrators are locked strictly to their assigned profile
-        $profile = LocationProfile::where('office_admin_id', $user->id)->first();
+        $profile = LocationProfile::where('office_admin_id', $user->id)
+            ->where('location_id', app(\GovStore\TenantScope\Contexts\TenantContext::class)->locationId)->first();
         
         if (!$profile) {
             abort(403, 'Access Denied: You are not assigned as an Office Administrator.');
         }
 
+        $guard = app(\GovStore\Organization\Services\OfficeAdministration::class);
+        $guard->office($guard->actor((int) $user->id), (int) $profile->location_id);
         return $profile->location_id;
     }
 
@@ -51,10 +57,15 @@ class ConfigurationController extends Controller
         ];
         
         // Fetch all local staff users mapped to this physical building/location
-        $localStaff = User::where('location_id', $locationId)->orderBy('first_name')->get();
+        $localStaff = User::withoutGlobalScopes()->whereNull('deleted_at')->where('activated', true)
+            ->where('company_id', $location->company_id)->whereIn('id', function ($query) use ($locationId) {
+                $query->select('user_id')->from('gov_office_memberships')->where('location_id', $locationId)->where('status', 'active');
+            })->orderBy('first_name')->get()->filter(fn ($user) => app(\GovStore\TenantScope\Contracts\MembershipContextResolver::class)
+                ->hasActiveMembershipAt((int) $user->id, (int) $locationId));
         
         // Execute operational checks and fetch status
         $readiness = $readinessService->evaluateAndTransition($locationId);
+        $profile->refresh();
 
         return view('govorg::configuration.index', compact('location', 'profile', 'roles', 'localStaff', 'readiness'));
     }
@@ -69,11 +80,7 @@ class ConfigurationController extends Controller
             'storekeeper_id'      => 'required|integer',
         ]);
 
-        try {
-            $service->saveRoles($locationId, $request->all(), auth()->id());
-            return redirect()->back()->with('success', 'Office roles successfully saved.');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Configuration error: ' . $e->getMessage());
-        }
+        $service->saveRoles($locationId, $request->only(['primary_approver_id', 'final_approver_id', 'storekeeper_id']), (int) auth()->id());
+        return redirect()->back()->with('success', __('organization_labels::orglabel.lifecycle_saved'));
     }
 }

@@ -34,6 +34,8 @@ return [
     'notifications' => 'হালনাগাদ', 'notification_request' => 'অফিসের অনুমতির একটি আবেদন পর্যালোচনার অপেক্ষায় আছে।',
     'notification_review' => 'অফিসের অনুমতির আপনার আবেদন পর্যালোচনা করা হয়েছে।', 'filter' => 'ফিল্টার', 'all' => 'সব',
     'abilities' => [
+        'organization_office_manage' => 'দায়িত্বপ্রাপ্ত এলাকার অফিস পরিচালনা করুন',
+        'organization_national_manage' => 'জাতীয় সাংগঠনিক দায়িত্ব ও ডিরেক্টরি পরিচালনা করুন',
         'tenant_scope_view' => 'জাতীয় টেন্যান্ট সীমানা দেখুন',
         'tenant_scope_manage' => 'জাতীয় টেন্যান্ট সীমানা পরিবর্তন করুন',
         'committee_view' => 'কমিটি দেখুন',

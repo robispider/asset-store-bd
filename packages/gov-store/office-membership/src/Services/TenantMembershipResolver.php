@@ -12,6 +12,7 @@ class TenantMembershipResolver implements MembershipContextResolver
     {
         $query = OfficeMembership::with(['location' => fn ($q) => $q->withoutGlobalScopes()->whereNull('deleted_at')])
             ->where('user_id', $userId)->where('status', 'active');
+        $this->unexpired($query);
         if ($selection !== null) {
             $membershipId = filter_var($selection, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
             if ($membershipId === false) {
@@ -43,7 +44,17 @@ class TenantMembershipResolver implements MembershipContextResolver
 
     public function hasActiveMembershipAt(int $userId, int $locationId): bool
     {
-        return OfficeMembership::where('user_id', $userId)->where('location_id', $locationId)->where('status', 'active')->exists();
+        $query = OfficeMembership::where('user_id', $userId)->where('location_id', $locationId)->where('status', 'active');
+        $this->unexpired($query);
+
+        return $query->exists();
+    }
+
+    private function unexpired($query): void
+    {
+        if (app(\GovStore\TenantScope\Services\SchemaKnowledge::class)->hasColumn(new OfficeMembership, 'valid_until')) {
+            $query->where(fn ($q) => $q->whereNull('valid_until')->orWhereDate('valid_until', '>=', now()->toDateString()));
+        }
     }
 
     public function responsibilityUserIds(int $locationId, array $roles): array

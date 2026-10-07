@@ -19,7 +19,7 @@ class ProvisioningController extends Controller
     private function checkIctOfficerAccess()
     {
         $user = auth()->user();
-        if ($user->isSuperUser() || $user->hasAccess('admin')) {
+        if ($user->isSuperUser()) {
             return;
         }
 
@@ -41,7 +41,7 @@ class ProvisioningController extends Controller
         $query = Location::with(['company', 'parent', 'profile.geoArea', 'profile.officeAdmin']);
 
         // Scope queue strictly to the officer's jurisdiction bounds
-        if (!$user->isSuperUser() && !$user->hasAccess('admin')) {
+        if (!$user->isSuperUser()) {
             $jurisdiction = IctJurisdiction::where('user_id', $user->id)->firstOrFail();
             $query->whereHas('profile', function ($q) use ($jurisdiction) {
                 $q->whereIn('geo_area_id', function ($sub) use ($jurisdiction) {
@@ -139,7 +139,7 @@ class ProvisioningController extends Controller
 
         // DECOUPLED SECURITY PASSTHROUGH: 
         $restrictToHid = null;
-        if (!$user->isSuperUser() && !$user->hasAccess('admin')) {
+        if (!$user->isSuperUser()) {
             $jurisdiction = IctJurisdiction::with('geoArea')->where('user_id', $user->id)->first();
             $restrictToHid = $jurisdiction && $jurisdiction->geoArea ? $jurisdiction->geoArea->hid : null;
         }
@@ -160,6 +160,8 @@ class ProvisioningController extends Controller
         if (empty($companyId) || empty($geoAreaId)) {
             return response()->json([]);
         }
+        app(\GovStore\Organization\Services\OfficeAdministration::class)->geography(auth()->user(), (int) $geoAreaId);
+        Company::whereNull('deleted_at')->findOrFail((int) $companyId);
 
         $duplicates = Location::where('company_id', $companyId)
             ->whereHas('profile', function($q) use ($geoAreaId) {
@@ -207,7 +209,7 @@ class ProvisioningController extends Controller
             $service->provisionOffice($data, auth()->id());
             return redirect()->route('gov.org.provisioning.index')->with('success', 'Office successfully provisioned.');
         } catch (\Exception $e) {
-            return redirect()->back()->withInput()->with('error', $e->getMessage());
+            throw $e;
         }
     }
 
@@ -228,7 +230,7 @@ class ProvisioningController extends Controller
             );
             return redirect()->back()->with('success', 'Office Administrator updated.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Update error: ' . $e->getMessage());
+            throw $e;
         }
     }
 
@@ -238,7 +240,7 @@ class ProvisioningController extends Controller
 
     public function jurisdictionsIndex()
     {
-        $this->checkIctOfficerAccess();
+        abort_unless(auth()->user()->isSuperUser(), 403);
 
         // Load all active officer mappings with their home office users and geographical territories
         $jurisdictions = IctJurisdiction::with(['user.location', 'geoArea'])->get();
@@ -251,14 +253,15 @@ class ProvisioningController extends Controller
 
     public function jurisdictionsStore(Request $request)
     {
-        $this->checkIctOfficerAccess();
+        abort_unless(auth()->user()->isSuperUser(), 403);
 
         $request->validate([
-            'user_id' => 'required|integer',
-            'geo_area_id' => 'required|integer',
+            'user_id' => 'required|integer|exists:users,id,deleted_at,NULL',
+            'geo_area_id' => 'required|integer|exists:gov_geo_areas,GeoAreaId',
         ]);
 
         try {
+            app(\GovStore\Organization\Services\OfficeAdministration::class)->actor((int) $request->user_id);
             IctJurisdiction::updateOrCreate(
                 ['user_id' => $request->user_id],
                 ['geo_area_id' => $request->geo_area_id]
@@ -266,13 +269,13 @@ class ProvisioningController extends Controller
 
             return redirect()->back()->with('success', 'ICT Officer boundary successfully mapped.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Mapping error: ' . $e->getMessage());
+            throw $e;
         }
     }
 
     public function jurisdictionsDestroy($id)
     {
-        $this->checkIctOfficerAccess();
+        abort_unless(auth()->user()->isSuperUser(), 403);
 
         try {
             $jurisdiction = IctJurisdiction::findOrFail($id);
@@ -280,7 +283,22 @@ class ProvisioningController extends Controller
 
             return redirect()->back()->with('success', 'ICT Officer jurisdiction revoked.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Revocation error: ' . $e->getMessage());
+            throw $e;
         }
+    }
+
+    public function geoSearch(Request $request, GeoAreaService $service)
+    {
+        $this->checkIctOfficerAccess();
+        $data = $request->validate(['q' => 'nullable|string|max:100']);
+        $hid = null;
+        if (! auth()->user()->isSuperUser()) {
+            $hid = IctJurisdiction::with('geoArea')->where('user_id', auth()->id())->first()?->geoArea?->hid;
+            abort_unless($hid, 403);
+        }
+        return response()->json($service->search($data['q'] ?? '', [], $hid)->map(fn ($geo) => [
+            'id' => $geo->getKey(), 'text' => app()->getLocale() === 'bn-BD' ? $geo->bn_name : $geo->en_name,
+            'en_name' => $geo->en_name, 'bn_name' => $geo->bn_name,
+        ]));
     }
 }

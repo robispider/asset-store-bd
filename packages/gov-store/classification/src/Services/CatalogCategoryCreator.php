@@ -34,6 +34,7 @@ class CatalogCategoryCreator
         return DB::transaction(function () use ($node, $name, $categoryType, $governanceType, $targetScopeType, $targetScopeId, $creatorUserId) {
             
             // 1. Defensively check if a Snipe-IT Category with this name already exists in the production DB
+            // Retain category visibility checks when resolving an unmapped code.
             $category = Category::where('name', $name)->first();
 
             if (!$category) {
@@ -56,6 +57,10 @@ class CatalogCategoryCreator
                 throw new Exception("Critical Error: Mapped category has no ID.");
             }
 
+            if ($category->category_type !== $categoryType) {
+                throw new Exception('The existing category has a different inventory type.');
+            }
+
             // 2. Map UNSPSC Code to the verified Category ID
             DB::table('gov_catalog_snipe_mappings')->updateOrInsert(
                 ['code' => $node->code],
@@ -63,7 +68,7 @@ class CatalogCategoryCreator
             );
 
             // 3. Write/Update Governance Metadata
-            \GovStore\Classification\Models\CategoryGovernance::updateOrCreate(
+            \GovStore\Classification\Models\CategoryGovernance::firstOrCreate(
                 ['category_id' => $category->id],
                 [
                     'governance_type'       => $governanceType,

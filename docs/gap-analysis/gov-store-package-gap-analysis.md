@@ -4,9 +4,15 @@ Original review: 4 October 2026 · @zahid. Reassessed: **7 October 2026 (Asia/Dh
 
 ## Updated scorecard
 
-**25 of the original 64 gaps are mitigated (39.06%); 8 are partially mitigated; 31 remain open.** There are **39 gaps requiring further work**, including the partial rows. The package sections below are arranged in dependency order, with foundations before their consumers.
+**27 of the original 64 gaps are mitigated (42.19%); 8 are partially mitigated; 29 remain open.** There are **37 gaps requiring further work**, including the partial rows. The package sections below are arranged in dependency order, with foundations before their consumers.
 
 Tenant-scope implementation update: **7 October 2026 (Asia/Dhaka), working tree**. The original reassessment revision above remains the baseline for the other packages. See [tenant-scope implementation and verification](../verification/tenant-scope-implementation-2026-10-07.md).
+
+Organization and starter-consumer update: **8 October 2026 (Asia/Dhaka), working tree**.
+ORG-2/CL-2 have verified local implementation; ORG-1 is partial with suspension,
+resume and geographic relocation delivered. Closure/merge still require complete
+clearance, and live starter delivery requires the missing reviewed collections.
+See [organization implementation and verification](../verification/organization-implementation-2026-10-08.md).
 
 These are implementation statuses, not production closure. Office-role enforcement still has outstanding G1 rollout requirements. A package with mitigated rows can also have deployment, historical-data or policy work remaining.
 
@@ -14,27 +20,27 @@ These are implementation statuses, not production closure. Office-role enforceme
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | tenant-scope | 7 | 7 | 0 | 0 | Deploy resolver/job contracts; retain outstanding G1 rollout gates |
 | 2 | geo-areas | 4 | 3 | 1 | 0 | Verify dataset publisher/license before an upstream refresh |
-| 3 | organization | 6 | 4 | 1 | 1 | Complete office lifecycle only after consumer clearance; verify starter-catalog handoff |
+| 3 | organization | 6 | 5 | 1 | 0 | Complete closure/merge after consumer clearance; populate reviewed starter library |
 | 4 | office-membership | 5 | 1 | 0 | 4 | Secure role transfers; complete clearance rules |
 | 5 | user-onboarding | 4 | 0 | 0 | 4 | Queue system-created users using membership services |
-| 6 | classification | 7 | 1 | 0 | 6 | Consume provisioning event; queue bulk adoption |
+| 6 | classification | 7 | 2 | 0 | 5 | Deploy reviewed starter library; queue bulk adoption |
 | 7 | metadata | 4 | 0 | 0 | 4 | Stabilize provider and field-mapping contracts |
 | 8 | tracking | 7 | 0 | 0 | 7 | Fix projection refresh and scoped evaluation |
 | 9 | committee | 2 | 1 | 1 | 0 | Registry delivered; complete consumer integration boundary |
 | 10 | store-operations | 8 | 2 | 3 | 3 | Ledger cut-over, remaining document types and receipt fields |
 | 11 | custom-requests | 6 | 5 | 1 | 0 | Complete item adapters after stock contracts |
 | 12 | experimentation | 4 | 1 | 1 | 2 | Isolated fixture CI, packaging and restore |
-| **Total** | **12 packages** | **64** | **25** | **8** | **31** | **39 still require work** |
+| **Total** | **12 packages** | **64** | **27** | **8** | **29** | **37 still require work** |
 
 Original severities are preserved for reconciliation with the baseline. They are not a new assessment of residual risk.
 
 | Original severity | Original gaps | Mitigated | Partial | Open |
 | --- | --- | --- | --- | --- |
 | Critical | 3 | 3 | 0 | 0 |
-| High | 19 | 7 | 4 | 8 |
+| High | 19 | 9 | 4 | 6 |
 | Medium | 31 | 10 | 4 | 17 |
 | Low | 11 | 5 | 0 | 6 |
-| **Total** | **64** | **25** | **8** | **31** |
+| **Total** | **64** | **27** | **8** | **29** |
 
 ### Counting and evidence
 
@@ -109,7 +115,7 @@ Arrows show selected handoffs after contract extraction, not every current impor
 | --- | --- | --- |
 | tenant-scope ↔ organization/membership | Resolver contracts and owning-package bindings delivered under TS-3 | Shared-context reset, active membership ownership and immediate role updates verified locally. Consumers must preserve these invariants; other workflow cycles remain separate gaps. |
 | organization ↔ membership clearance | Finish office identity/provisioning and safe ownership | Complete ORG-1 closure after OM-2 and request/committee clearance extensions cover holdings and obligations. |
-| organization → classification | Define office type; emit provisioning event after commit | Close ORG-2/CL-2 with a provisioning-to-starter-catalog test, explicit job context and safe retries. |
+| organization → classification | Office type/event and durable frozen starter bundle delivered | ORG-2/CL-2 verified locally on 8 October: actual provisioning-to-adoption, explicit job context, rollback and duplicate-safe retries. Live delivery still needs reviewed collection contents and workers. |
 | tracking ↔ store-operations | Repair TR-1; establish verifier/event boundary | Close TR-2 only after successful serialized receipt posting updates programme associations/projections once. A listener alone is insufficient. |
 | committee → store-operations | Retain delivered resolver/snapshot/purpose contracts | CM-2, SO-3 and SO-4's committee reference need consumer integration and policy review. Inspection is deferred and does not block other repairs/current direct posting. |
 | store-operations → custom-requests | Review opening stock, canonical identities, stock locks and issuing contract | Verify reservations/issue/return against that ledger before exposing new adapters. Recheck live cut-over state; the 6 October record reports empty opening markers and historical aliases. |
@@ -128,7 +134,7 @@ Run focused isolated checks at each handoff. Address reachable debug/authorizati
 | TS-2 | High | Mitigated | Physical stock reads use separate inventory-office/company bounds. ICT jurisdictions authorize office/user support only and never reveal office stock; an independent inventory responsibility stays within its working office. Model ownership includes original values; bulk updates/deletes/counters, OR predicates and direct inserts cannot escape the working office. [ICT boundary regression verification](../verification/ict-jurisdiction-inventory-boundary-2026-10-07.md). | Native licenses have company ownership without an office column; independently authorized inventory users retain company-bound license reads. Pure ICT support users see no inventory or inventory reports. Do not claim physical-office license ownership. |
 | TS-3 | High | Mitigated | `OrganizationContextResolver` and `MembershipContextResolver` live in tenant-scope, with bindings/adapters in their owners. Initializer, assignment, access and boundary services consume contracts. Context reset stays in place; foreign, inactive, deleted-office and stale memberships fail closed. | This extracts the context dependency cycle; remaining business-workflow cycles belong to their own package gaps. |
 | TS-4 | Medium | Mitigated | `EffectivePermissionSet::merge()` provides an idempotent union while retaining working-role attribution. Company overlay is injected once, preserving local capabilities; native admin never supplies global/company scope. | Maintain role sources and test changes to capability profiles. |
-| TS-5 | Medium | Mitigated | `TenantExecution` validates live actor, office/company target, membership and named ability. All four current GovStore jobs declare scoped execution or explicit global maintenance; bus/queue lifecycle clears context and restores synchronous callers. Commands have a reviewed execution registry; ledger opening additionally uses the scoped actor runner. | Restart long-running workers on deployment. Starter-catalog provisioning/payload gaps (CL-2/CL-5) remain separate; this does not announce queued adoption rollout. |
+| TS-5 | Medium | Mitigated | `TenantExecution` validates live actor, office/company target, membership and named ability. All four current GovStore jobs declare scoped execution or explicit global maintenance; bus/queue lifecycle clears context and restores synchronous callers, including synchronous console delivery after the 8 October correction. Commands have a reviewed execution registry; ledger opening additionally uses the scoped actor runner. | Restart long-running workers on deployment. ORG-2/CL-2 starter delivery is locally verified; queued bulk UI adoption (CL-3) remains separate. |
 | TS-6 | Medium | Mitigated | `SchemaKnowledge` caches columns per connection/database/table. Menu rendering resolves roles once per render. Isolated query checks bound initialization to ≤12 queries, a 30-item menu to ≤5 role queries, and five warm stock counts to exactly five SELECTs. Membership/role/grant checks stay fresh. | No session cache of authorization. Clear schema knowledge/restart workers after schema changes. |
 | TS-7 | Medium | Mitigated | Sidebar, My access and rollout banner render as layout partials; response-body rewriting is removed. `MenuRegistry` still derives named route abilities. Eight tenant-administration routes now declare superuser abilities, with national review/fingerprint/replay controls on mutations. | Other packages retain their own narrower policies; G1 coverage is not proof of every application surface. |
 
@@ -149,14 +155,14 @@ Verification and operational limits are recorded in [the tenant-scope execution 
 
 ## 3. organization
 
-**4 mitigated, 1 partial, 1 open.** `configured` exists alongside provisioned/operational; suspend/merge/closure remain absent. See the [implementation and verification record](../verification/geo-areas-organization-implementation-2026-10-07.md).
+**5 mitigated, 1 partial, 0 open.** Suspend, resume and geographic relocation are authorized and audited; closure/merge remain blocked until full consumer clearance. Starter delivery has an attributable frozen bundle and verified retry/rollback behavior. The current local library has no matching starter collections. See the [8 October implementation and verification record](../verification/organization-implementation-2026-10-08.md); the [7 October record](../verification/geo-areas-organization-implementation-2026-10-07.md) remains historical evidence.
 
 **Internal order:** ORG-3 safe ownership → ORG-2 office type/event → ORG-1 after complete clearance. Localization/cleanup can proceed within the package.
 
 | ID | Original severity | Status | Current finding and evidence | Remaining mitigation |
 | --- | --- | --- | --- | --- |
-| ORG-1 | High | Open | No supported suspend, merge, relocate or close workflow. | Add authorized audited transitions; require complete membership/consumer clearance before closure. |
-| ORG-2 | High | Partial | Office profiles now carry a type and provisioning dispatches a typed event after commit. Starter jobs use an explicit company-scoped office-admin actor and wait for admin assignment. The full provision-to-catalog workflow still needs retry and CL-2 consumer verification. | Verify successful and failed handoff, scoped execution, safe retries and idempotence against the exact starter bundle. |
+| ORG-1 | High | Partial | Office hub provides suspend/resume/geographic relocation with office/territory checks, reason, typed confirmation, locked state/geography rechecks and audit. Suspension pauses new intake/setup; readiness cannot reactivate it. Closure/merge return 409 even for superusers until full clearance exists. | Complete OM-2 and all holdings/request/committee clearance before terminal transitions; verify positive live admin flows. |
+| ORG-2 | High | Mitigated | Typed after-commit event is consumed by Classification. Active member/admin assignment triggers a durable, frozen commodity bundle, tenant-scoped job, reference checks, atomic rollback and duplicate-safe retry. Actual provisioning → membership → assignment → adoption and failure cases pass isolated tests. | Populate the currently missing reviewed starter collections, run workers, and verify live delivery. Existing offices are not bulk-adopted automatically. |
 | ORG-3 | Medium | Mitigated | Historical organization migration is non-destructive on rerun. The additive migration backfills valid legacy roles only for active, unexpired memberships; `OfficeResponsibility` is the active owner. Legacy table is retained as an archive; model/relation and live compatibility paths are removed. | Preserve the archive and backfill safeguards. |
 | ORG-4 | Medium | Mitigated | G1 access-request/admin review supplies expiring `gov_access_grants`; request `ApprovalRouting` uses responsibilities and unexpired cover. This replaces unused delegate columns and addresses leave cover. | Preserve expiry/next-request checks. Legacy-column cleanup is ORG-3; rollout/mail setup remain operational. |
 | ORG-5 | Medium | Mitigated | English/Bangla organization keys have parity. Office registry is paginated at 25 rows; counts and company filters derive from the authorized ICT geography, with a regression test. | Retain scoped pagination as registry filters evolve. |
@@ -191,14 +197,14 @@ Verification and operational limits are recorded in [the tenant-scope execution 
 
 ## 6. classification
 
-**1 mitigated, 0 partial, 6 open.** G1 controls national changes/adoption; starter provisioning and bulk processing remain incomplete.
+**2 mitigated, 0 partial, 5 open.** G1 controls national changes/adoption, and starter provisioning is locally verified under ORG-2/CL-2. Live starter-library population and queued bulk UI processing remain separate work.
 
 **Internal order:** CL-7 migration compatibility → ORG-2/CL-2 → CL-3 with TS-5 context; CL-4/5/6 can follow.
 
 | ID | Original severity | Status | Current finding and evidence | Remaining mitigation |
 | --- | --- | --- | --- | --- |
 | CL-1 | Critical | Mitigated | Explicit route abilities, national review/reason/typed confirmation, exact supported bundle review and office/company adoption boundaries exist with G1 coverage. | Complete G1 rollout; preserve narrower catalog authorization. |
-| CL-2 | High | Open | `ProvisionStarterCatalog` listens for missing event and still reads `$location->type ?? 'default'`. | Consume ORG-2 after-commit event/profile type; use attributable tenant-aware retry-safe job. |
+| CL-2 | High | Mitigated | `ProvisionStarterCatalog` consumes the typed committed event/profile type. `OfficeStarterCatalog` freezes expanded commodity items with explicit types and persists one run per office; the job validates live actor/context/reference and completes atomically. Actual handoff, failures and retries are verified under ORG-2. | Populate reviewed starter collections on deployment and verify live queued delivery; this does not complete CL-3 bulk UI adoption. |
 | CL-3 | High | Open | `BulkAdoptionController::execute` still runs the service synchronously. | Queue bounded work with validated actor/scope, progress and safe retry; depends on TS-5. |
 | CL-4 | Medium | Open | `compiled_synonyms.csv` contains only its header. | Compile reviewed synonyms, Bangla first, within exact reviewed import bundle. |
 | CL-5 | Medium | Open | Package-wide hard-coded text and mixed Livewire/Blade interaction remain; G1 translations cover only its controls. | Localize views/menus and use consistent keyboard-accessible interactions. |
@@ -294,7 +300,7 @@ See the [refactor record](../verification/custom-requests-refactor.md) for unres
 | EX-3 | Low | Open | Backups exist; CLI has no restore action or supported restore UI. | Provide verified restore into explicit separate destination with integrity/environment checks. |
 | EX-4 | Low | Mitigated | Current `ui.php` has **59 English and 59 Bangla keys**, with no missing/extra top-level keys. Original seven-key deficit is gone. | Maintain parity; parity alone is not usability verification. |
 
-## Verification performed for this reassessment
+## Verification performed for the 7 October baseline reassessment
 
 Source inspection established statuses and package handoffs. Key comparison confirmed ORG-5's 20 missing Bangla keys and EX-4's complete 59-key parity.
 
@@ -306,6 +312,14 @@ OK (99 tests, 2775 assertions)
 ```
 
 No live HTTP/database inspection, migration, ledger cut-over, catalog re-import or access-mode change was performed for this document update. Linked live records are dated prior evidence. This suite does not cover every original package gap or run experimentation's separate-schema tests.
+
+The **8 October Organization follow-up** ran the eight top-level GovStore test
+files on PHP 8.4.15 with isolated SQLite and a process-local 512 MB limit:
+**146 tests, 3,376 assertions passed**. It also verified compiled Organization
+templates, a local ordinary-user denial, the additive starter-run migration and
+an isolated MySQL profile-lock check. Current live starter collections are missing;
+closure/merge clearance and positive live admin flows remain incomplete. See the
+[new execution record](../verification/organization-implementation-2026-10-08.md).
 
 ## Work remaining outside the mitigation count
 

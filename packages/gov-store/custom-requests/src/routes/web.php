@@ -8,7 +8,7 @@ use GovStore\CustomRequests\Http\Controllers\GovRequestController;
 use Illuminate\Support\Facades\Route;
 
 // We wrap our routes in the standard web and auth middleware so only logged-in Snipe-IT users can access them.
-Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'gov-requests'], function () {
+Route::group(['middleware' => ['web', 'auth', \GovStore\Organization\Http\Middleware\EnsureOfficeRequestIntake::class], 'prefix' => 'gov-requests'], function () {
 
     // NEW: User Route: Browse all requestable items (The Catalog)
     Route::get('/catalog', [GovRequestController::class, 'catalog'])->middleware('gov.can:requests.submit')->name('gov.requests.catalog');

@@ -19,7 +19,8 @@ class OfficeProvisioningService
     public function provisionOffice(array $data, int $executorId): Location
     {
         $geoService = app(GeoAreaService::class);
-        $user = \App\Models\User::findOrFail($executorId);
+        $guard = app(OfficeAdministration::class);
+        $user = $guard->actor($executorId);
 
         $geoAreaId = (int)($data['geo_area_id'] ?? 0);
         $officeType = $data['office_type'] ?? 'default';
@@ -28,12 +29,7 @@ class OfficeProvisioningService
         }
 
         // 1. SECURITY BOUNDARY CHECK
-        if (!$user->isSuperUser() && !$user->hasAccess('admin')) {
-            $jurisdiction = IctJurisdiction::where('user_id', $user->id)->firstOrFail();
-            if (!$geoService->isWithinBoundary($jurisdiction->geo_area_id, $geoAreaId)) {
-                throw new Exception("Access Denied: The chosen territory lies outside of your assigned geographical jurisdiction.");
-            }
-        }
+        $guard->geography($user, $geoAreaId);
 
         // 2. CONTEXTUAL DUPLICATE PREVENTION PRE-CHECK
         $companyId = $data['company_id'] ?? null;
@@ -48,20 +44,37 @@ class OfficeProvisioningService
             }
         }
 
-        return DB::transaction(function () use ($data, $executorId, $geoAreaId, $officeType) {
+        return DB::transaction(function () use ($data, $executorId, $geoAreaId, $officeType, $guard, $user) {
             
             $existingId = $data['existing_location_id'] ?? null;
             $name = $data['name'] ?? null;
 
             // 3. IDENTITY CHECK: If onboarding a legacy location, reload it. Otherwise create fresh.
             if (!empty($existingId)) {
-                $location = Location::findOrFail($existingId);
+                $location = Location::whereNull('deleted_at')->lockForUpdate()->findOrFail($existingId);
+                abort_if(LocationProfile::where('location_id', $existingId)->exists(), 409);
+                abort_if(isset($data['company_id']) && (int) $data['company_id'] !== (int) $location->company_id, 409);
                 if (!empty($name)) {
                     $location->name = $name;
                 }
             } else {
                 $location = new Location();
                 $location->name = $name;
+            }
+
+            if (! empty($data['company_id'])) {
+                \App\Models\Company::whereNull('deleted_at')->findOrFail((int) $data['company_id']);
+            }
+            if (! empty($data['parent_id'])) {
+                $parent = Location::whereNull('deleted_at')->findOrFail((int) $data['parent_id']);
+                $guard->office($user, (int) $parent->id, true);
+                abort_unless((int) $parent->company_id === (int) ($data['company_id'] ?? $location->company_id), 422);
+                abort_if($existingId && (int) $parent->id === (int) $existingId, 422);
+            }
+            if (! empty($data['office_admin_id'])) {
+                // Assign after membership onboarding; a fresh office has no members yet.
+                abort_unless($existingId, 422);
+                $guard->assignee((int) $data['office_admin_id'], (int) $existingId, $location->company_id);
             }
 
             // Sync structural attributes
@@ -89,7 +102,7 @@ class OfficeProvisioningService
                 'geo_area_id' => $geoAreaId,
                 'office_type' => $officeType,
                 'office_admin_id' => $data['office_admin_id'] ?? null,
-                'lifecycle_status' => 'provisioned',
+                'lifecycle_status' => ! empty($data['office_admin_id']) ? 'configured' : 'provisioned',
             ]);
 
             // 5. DEPRECATED TABLE REMOVED: LocationRole::updateOrCreate(...) was removed.
@@ -118,7 +131,15 @@ class OfficeProvisioningService
     public function assignOfficeAdmin(int $locationId, ?int $adminId, int $executorId): void
     {
         DB::transaction(function () use ($locationId, $adminId, $executorId) {
-            $profile = LocationProfile::where('location_id', $locationId)->firstOrFail();
+            $guard = app(OfficeAdministration::class);
+            $actor = $guard->actor($executorId);
+            $location = Location::withoutGlobalScopes()->whereNull('deleted_at')->lockForUpdate()->findOrFail($locationId);
+            $profile = LocationProfile::where('location_id', $locationId)->lockForUpdate()->firstOrFail();
+            $guard->office($actor, $locationId);
+            abort_unless(in_array($profile->lifecycle_status, OfficeLifecycleService::ACTIVE, true), 409);
+            if ($adminId) {
+                $guard->assignee($adminId, $locationId, $location->company_id);
+            }
             $oldAdminId = $profile->office_admin_id;
 
             if ($oldAdminId === $adminId) {

@@ -18,7 +18,10 @@ class ExecuteStarterTemplateJob implements ShouldQueue, \GovStore\TenantScope\Co
     protected int $scopeId;
     protected int $userId;
 
-    public function __construct(array $codes, string $scopeType, int $scopeId, int $userId)
+    public int $tries = 3;
+    public int $backoff = 30;
+
+    public function __construct(array $codes, string $scopeType, int $scopeId, int $userId, private ?int $runId = null)
     {
         $this->codes = $codes;
         $this->scopeType = $scopeType;
@@ -31,6 +34,13 @@ class ExecuteStarterTemplateJob implements ShouldQueue, \GovStore\TenantScope\Co
      */
     public function handle(BulkAdoptionService $adoptionService)
     {
+        if ($this->runId) {
+            // Also guard direct service invocation; bus middleware protects normal delivery.
+            return app(\GovStore\TenantScope\Services\TenantExecution::class)->run($this->tenantExecution(),
+                fn () => app(\GovStore\Classification\Services\OfficeStarterCatalog::class)->execute(
+                    $this->runId, $this->codes, $this->userId, $adoptionService
+                ));
+        }
         // Execute the exact same engine used by the UI Modal, but silently in the background
         $adoptionService->execute(
             $this->codes, 
@@ -38,6 +48,13 @@ class ExecuteStarterTemplateJob implements ShouldQueue, \GovStore\TenantScope\Co
             $this->scopeId, 
             $this->userId
         );
+    }
+
+    public function failed(?\Throwable $exception): void
+    {
+        if ($exception && $this->runId) {
+            app(\GovStore\Classification\Services\OfficeStarterCatalog::class)->failure($this->runId, $exception);
+        }
     }
 
     public function tenantExecution(): array

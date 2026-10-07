@@ -65,7 +65,7 @@ class TenantScopeTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        config(['database.default' => 'sqlite', 'database.connections.sqlite.database' => ':memory:', 'cache.default' => 'array', 'govstore-access.mode' => 'enforce']);
+        config(['database.default' => 'sqlite', 'database.connections.sqlite.database' => ':memory:', 'cache.default' => 'array', 'govstore-access.mode' => 'enforce', 'logging.default' => 'stderr']);
         DB::purge('sqlite');
         app(SchemaKnowledge::class)->clear();
         foreach (['assets', 'consumables', 'accessories', 'components', 'licenses'] as $name) {
@@ -619,7 +619,9 @@ class TenantScopeTest extends TestCase
         });
         app()->instance(BulkAdoptionService::class, $service);
         Bus::dispatchSync(new ExecuteStarterTemplateJob([], 'location', 10, 1));
-        $this->assertNull(app(TenantContext::class)->locationId);
+        // Synchronous delivery restores the caller; background worker cleanup is
+        // asserted separately by test_worker_lifecycle_and_scoped_jobs above.
+        $this->assertSame(10, app(TenantContext::class)->locationId);
         $this->assertNull(auth()->user());
         DB::table('users')->where('id', 1)->update(['activated' => false]);
         try {
@@ -628,7 +630,7 @@ class TenantScopeTest extends TestCase
         } catch (AuthorizationException $e) {
             $this->assertNotEmpty($e->getMessage());
         }
-        $this->assertNull(app(TenantContext::class)->locationId);
+        $this->assertSame(10, app(TenantContext::class)->locationId);
         $this->assertNull(auth()->user());
     }
 
