@@ -14,8 +14,8 @@
                         <label>{{ __('office_membership::member.override_target_label') }}</label>
                         <select name="user_id" class="form-control select2" required style="width:100%;">
                             <option value="">{{ __('office_membership::member.override_target_placeholder') }}</option>
-                            @foreach(\App\Models\User::all() as $u)
-                                <option value="{{ $u->id }}">{{ $u->display_name ?? trim($u->first_name . ' ' . $u->last_name) ?: 'Unknown' }} ({{ $u->username }})</option>
+                            @foreach($allUsers as $u)
+                                <option value="{{ $u->id }}">{{ $u->display_name ?? trim($u->first_name . ' ' . $u->last_name) ?: __('office_membership::member.unknown') }} ({{ $u->username }})</option>
                             @endforeach
                         </select>
                     </div>
@@ -52,7 +52,7 @@
                         @forelse($logs as $log)
                             <tr>
                                 <td>{{ $log->created_at->format('Y-m-d H:i') }}</td>
-                                <td><span class="label label-danger">{{ $log->executor->username ?? 'System' }}</span></td>
+                                <td><span class="label label-danger">{{ $log->executor->username ?? __('office_membership::member.system') }}</span></td>
                                 <td><!-- DEFENSIVE CHECK FOR HISTORICAL LOGS -->
                                     <strong>{{ $log->targetUser ? $log->targetUser->present()->fullName : __('office_membership::member.staff_unknown_employee') }}</strong>
                                 </td>

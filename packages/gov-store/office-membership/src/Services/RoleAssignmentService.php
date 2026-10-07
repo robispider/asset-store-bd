@@ -2,10 +2,8 @@
 
 namespace GovStore\OfficeMembership\Services;
 
-use Exception;
 use GovStore\OfficeMembership\Models\OfficeResponsibility;
 use GovStore\OfficeMembership\Models\RoleAssignment;
-use GovStore\Organization\Models\LocationProfile;
 use GovStore\Organization\Models\OrganizationActivityLog;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -33,85 +31,21 @@ class RoleAssignmentService
 
     public function proposeTransfer(int $locationId, string $roleType, int $fromUserId, int $toUserId): RoleAssignment
     {
-        if ($fromUserId === $toUserId) {
-            throw new Exception(__('office_membership::member.assignment_self_delegate_error'));
-        }
-
-        // Prevent duplicate pending requests for the same role
-        $existing = RoleAssignment::where('location_id', $locationId)
-            ->where('role_type', $roleType)
-            ->where('assigned_by_user_id', $fromUserId)
-            ->where('status', 'pending')
-            ->first();
-
-        if ($existing) {
-            throw new Exception(__('office_membership::member.assignment_pending_exists'));
-        }
-
-        return RoleAssignment::create([
-            'location_id' => $locationId,
-            'role_type' => $roleType,
-            'assigned_user_id' => $toUserId,
-            'assigned_by_user_id' => $fromUserId,
-            'status' => 'pending',
-        ]);
+        return app(RoleTransfer::class)->propose(RoleAssignment::class, $locationId, $roleType, $fromUserId, $toUserId);
     }
 
-    public function acceptTransfer(int $assignmentId, int $userId): void
+    public function acceptTransfer(int $id, int $userId): void
     {
-        DB::transaction(function () use ($assignmentId, $userId) {
-            $assignment = RoleAssignment::where('assigned_user_id', $userId)
-                ->where('status', 'pending')
-                ->findOrFail($assignmentId);
-
-            $locId = $assignment->location_id;
-            $roleType = $assignment->role_type;
-
-            // 1. Update the actual underlying roles
-            if ($roleType === 'office_admin') {
-                $profile = LocationProfile::where('location_id', $locId)->firstOrFail();
-                $profile->update(['office_admin_id' => $userId]);
-            } else {
-                if (! in_array($roleType, ['storekeeper', 'primary_approver', 'final_approver', 'committee_registrar'], true)) {
-                    throw new \InvalidArgumentException('Unsupported office responsibility.');
-                }
-                OfficeResponsibility::where('location_id', $locId)
-                    ->where('user_id', $assignment->assigned_by_user_id)->where('role_slug', $roleType)->delete();
-                OfficeResponsibility::firstOrCreate(['location_id' => $locId, 'user_id' => $userId, 'role_slug' => $roleType]);
-            }
-
-            // 2. Mark the assignment as completed
-            $assignment->update(['status' => 'completed']);
-            Cache::forget("gov_user_role_{$userId}_loc_{$locId}");
-            Cache::forget("gov_user_role_{$assignment->assigned_by_user_id}_loc_{$locId}");
-
-            // 3. Log the immutable audit event
-            OrganizationActivityLog::create([
-                'location_id' => $locId,
-                'performed_by' => $userId,
-                'event_type' => 'roles_configured',
-                'details' => [
-                    'message' => __('office_membership::member.assignment_audit_message', ['role' => $roleType, 'userId' => $assignment->assigned_by_user_id]),
-                ],
-            ]);
-        });
+        app(RoleTransfer::class)->transition(RoleAssignment::class, $id, $userId, 'accept');
     }
 
-    public function rejectTransfer(int $assignmentId, int $userId): void
+    public function rejectTransfer(int $id, int $userId): void
     {
-        $assignment = RoleAssignment::where('assigned_user_id', $userId)
-            ->where('status', 'pending')
-            ->findOrFail($assignmentId);
-
-        $assignment->update(['status' => 'rejected']);
+        app(RoleTransfer::class)->transition(RoleAssignment::class, $id, $userId, 'reject');
     }
 
-    public function cancelTransfer(int $assignmentId, int $userId): void
+    public function cancelTransfer(int $id, int $userId): void
     {
-        $assignment = RoleAssignment::where('assigned_by_user_id', $userId)
-            ->where('status', 'pending')
-            ->findOrFail($assignmentId);
-
-        $assignment->delete(); // Hard delete cancelled drafts to keep tables clean
+        app(RoleTransfer::class)->transition(RoleAssignment::class, $id, $userId, 'cancel');
     }
 }

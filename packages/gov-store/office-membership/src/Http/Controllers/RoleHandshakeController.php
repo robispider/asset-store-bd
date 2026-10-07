@@ -2,9 +2,9 @@
 
 namespace GovStore\OfficeMembership\Http\Controllers;
 
-use Illuminate\Routing\Controller;
-use Illuminate\Http\Request;
 use GovStore\OfficeMembership\Services\RoleHandshakeService;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 
 class RoleHandshakeController extends Controller
 {
@@ -13,49 +13,36 @@ class RoleHandshakeController extends Controller
         $request->validate([
             'location_id' => 'required|integer',
             'role_type' => 'required|string',
-            'assigned_user_id' => 'required|integer'
+            'assigned_user_id' => 'required|integer',
         ]);
+        $service->proposeHandshake(
+            $request->location_id,
+            $request->role_type,
+            auth()->id(),
+            $request->assigned_user_id
+        );
 
-        try {
-            $service->proposeHandshake(
-                $request->location_id, 
-                $request->role_type, 
-                auth()->id(), 
-                $request->assigned_user_id
-            );
-            return redirect()->back()->with('success', __('office_membership::member.handshake_proposed'));
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
-        }
+        return redirect()->back()->with('success', __('office_membership::member.handshake_proposed'));
     }
 
     public function accept($id, RoleHandshakeService $service)
     {
-        try {
-            $service->acceptHandshake($id, auth()->id());
-            return redirect()->back()->with('success', __('office_membership::member.handshake_accepted'));
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
-        }
+        $service->acceptHandshake($id, auth()->id());
+
+        return redirect()->back()->with('success', __('office_membership::member.handshake_accepted'));
     }
 
     public function reject($id, RoleHandshakeService $service)
     {
-        try {
-            $service->rejectHandshake($id, auth()->id());
-            return redirect()->back()->with('success', __('office_membership::member.handshake_rejected'));
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
-        }
+        $service->rejectHandshake($id, auth()->id());
+
+        return redirect()->back()->with('success', __('office_membership::member.handshake_rejected'));
     }
 
     public function cancel($id, RoleHandshakeService $service)
     {
-        try {
-            $service->cancelHandshake($id, auth()->id());
-            return redirect()->back()->with('success', __('office_membership::member.handshake_cancelled'));
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
-        }
+        $service->cancelHandshake($id, auth()->id());
+
+        return redirect()->back()->with('success', __('office_membership::member.handshake_cancelled'));
     }
 }

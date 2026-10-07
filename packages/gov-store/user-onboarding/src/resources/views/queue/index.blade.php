@@ -1,73 +1,69 @@
 @extends('layouts/default')
-
-@section('title', 'User Onboarding Queue')
-
+@section('title', __('govonboard::onboard.title'))
 @section('content')
-<div class="row">
-    <div class="col-md-12">
-        <div class="box box-primary">
-            <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-user-plus text-blue"></i> Mapped Unassigned Employees</h3>
-            </div>
-            <div class="box-body table-responsive">
-                <table class="table table-striped table-hover table-bordered">
-                    <thead style="background-color: #f9f9f9;">
-                        <tr>
-                            <th>Employee Details</th>
-                            <th>Created By</th>
-                            <th>Territory Scope Tag</th>
-                            <th>Creation Date</th>
-                            <th class="text-center" style="width: 280px;">Action / Location Assignment</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($queue as $item)
-                            <tr>
-                                <tr>
-                                <td>
-                                    <strong>{{ $item->user ? ($item->user->first_name . ' ' . $item->user->last_name) : 'Deleted Employee' }}</strong><br>
-                                    <small class="text-muted"><i class="fas fa-user"></i> {{ $item->user->username ?? '-' }}</small>
-                                </td>
-                                <td>{{ $item->creator->first_name ?? 'System' }}</td>
-                                <td>
-                                    @if($item->geoArea)
-                                        <span class="label bg-orange" style="font-size: 11px;">
-                                            <i class="fas fa-map-marker-alt"></i> {{ $item->geoArea->en_name }} ({{ ucfirst($item->geoArea->geo_type) }})
-                                        </span>
-                                    @else
-                                        <span class="label bg-purple" style="font-size: 11px;">Company Scoped</span>
+<div class="box box-primary">
+    <div class="box-header"><h1 class="box-title">{{ __('govonboard::onboard.title') }}</h1></div>
+    <div class="box-body">
+        <p>{{ __('govonboard::onboard.intro') }}</p>
+        <nav aria-label="{{ __('govonboard::onboard.status') }}">
+            @foreach(['WAITING','COMPLETED','CANCELLED'] as $tab)
+                <a class="btn {{ $status === $tab ? 'btn-primary' : 'btn-default' }}" href="{{ route('gov.onboard.index', ['status' => $tab]) }}" @if($status === $tab) aria-current="page" @endif>{{ __('govonboard::onboard.'.$tab) }}</a>
+            @endforeach
+        </nav>
+        @include('govonboard::queue.notices')
+        <div class="table-responsive"><table class="table table-striped">
+            <thead><tr><th scope="col">{{ __('govonboard::onboard.employee') }}</th><th scope="col">{{ __('govonboard::onboard.authority') }}</th><th scope="col">{{ __('govonboard::onboard.actions') }}</th></tr></thead>
+            <tbody>
+            @forelse($queue as $item)
+                <tr>
+                    <td>{{ $item->user?->first_name }} {{ $item->user?->last_name }}<br><small>{{ $item->user?->username }}</small></td>
+                    <td>{{ __('govonboard::onboard.owner_'.$item->owner_type) }}<br>{{ __('govonboard::onboard.creator') }}: {{ $item->creator ? trim($item->creator->first_name.' '.$item->creator->last_name) : __('govonboard::onboard.system') }}<br>{{ $item->geoArea?->en_name }}</td>
+                    <td>
+                        @if($status === 'WAITING')
+                        <form method="POST" action="{{ route('gov.onboard.assign') }}">
+                            @csrf<input type="hidden" name="onboarding_id" value="{{ $item->id }}">
+                            <label for="office-{{ $item->id }}">{{ __('govonboard::onboard.office') }}</label>
+                            <select class="form-control" id="office-{{ $item->id }}" name="location_id" required>
+                                <option value="">{{ __('govonboard::onboard.choose_office') }}</option>
+                                @foreach($locations as $loc)
+                                    @if(!$item->user?->company_id || $item->user->company_id == $loc->company_id)
+                                    <option value="{{ $loc->id }}">{{ $loc->name }}</option>
                                     @endif
-                                </td>
-                                <td>{{ $item->created_at->format('d M Y, h:i A') }}</td>
-                                <td style="vertical-align: middle;">
-                                    {{-- Direct Inline Assignment Form --}}
-                                    <form action="{{ route('gov.onboard.assign') }}" method="POST" style="margin: 0;">
-                                        @csrf
-                                        <input type="hidden" name="onboarding_id" value="{{ $item->id }}">
-                                        <div class="input-group input-group-sm">
-                                            <select name="location_id" class="form-control select2" required style="width: 180px;">
-                                                <option value="">-- Choose Office --</option>
-                                                @foreach($locations as $loc)
-                                                    <option value="{{ $loc->id }}">{{ $loc->name }}</option>
-                                                @endforeach
-                                            </select>
-                                            <span class="input-group-btn">
-                                                <button type="submit" class="btn btn-success btn-flat" style="font-weight: bold;">Assign</button>
-                                            </span>
-                                        </div>
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="text-center text-muted" style="padding: 35px;">No unassigned employees in your queue. All accounts are configured and operational.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-                {{ $queue->links() }}
-            </div>
-        </div>
+                                @endforeach
+                            </select>
+                            <button type="submit" class="btn btn-success">{{ __('govonboard::onboard.assign') }}</button>
+                        </form>
+                        @endif
+                        @if($status !== 'COMPLETED')
+                        <form method="POST" action="{{ route('gov.onboard.decide') }}">
+                            @csrf<input type="hidden" name="onboarding_id" value="{{ $item->id }}">
+                            <label for="reason-{{ $item->id }}">{{ __('govonboard::onboard.reason') }}</label>
+                            <textarea class="form-control" id="reason-{{ $item->id }}" name="reason" minlength="5" maxlength="1000" required></textarea>
+                            @if($status === 'WAITING')
+                                <label for="manager-{{ $item->id }}">{{ __('govonboard::onboard.reassign') }}</label>
+                                <select class="form-control" id="manager-{{ $item->id }}" name="owner_choice">
+                                    <option value="">{{ __('govonboard::onboard.choose_manager') }}</option>
+                                    @foreach($managers[$item->id] as $value => $label)<option value="{{ $value }}">{{ $label }}</option>@endforeach
+                                </select>
+                                <button class="btn btn-default" name="action" value="reassign">{{ __('govonboard::onboard.reassign') }}</button>
+                                <button class="btn btn-warning" name="action" value="reject">{{ __('govonboard::onboard.reject') }}</button>
+                                <button class="btn btn-danger" name="action" value="cancel">{{ __('govonboard::onboard.cancel') }}</button>
+                            @else
+                                <button class="btn btn-default" name="action" value="reopen">{{ __('govonboard::onboard.reopen') }}</button>
+                            @endif
+                        </form>
+                        @endif
+                        <details><summary>{{ __('govonboard::onboard.history') }}</summary><ul>
+                            @foreach($item->events as $event)<li>{{ __('govonboard::onboard.event_'.$event->event_key) }} — {{ $event->reason }} <small>{{ $event->created_at }}</small></li>@endforeach
+                        </ul></details>
+                    </td>
+                </tr>
+            @empty
+                <tr><td colspan="3">{{ __('govonboard::onboard.empty') }}</td></tr>
+            @endforelse
+            </tbody>
+        </table></div>
+        {{ $queue->links() }}
     </div>
 </div>
 @endsection

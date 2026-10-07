@@ -2,6 +2,11 @@
 
 // Only explicitly named abilities are registered; Snipe-IT's gates stay intact.
 return [
+    'onboarding.manage' => ['roles' => ['office_admin', 'company_admin', 'ict_officer'], 'enforce' => true],
+    'onboarding.self' => ['roles' => ['authenticated'], 'enforce' => true],
+    'membership.self' => ['roles' => ['authenticated'], 'enforce' => true],
+    'membership.manage' => ['roles' => ['office_admin'], 'enforce' => true],
+    'membership.override' => ['roles' => ['superuser'], 'national' => true],
     'organization.office.manage' => ['roles' => ['office_admin', 'ict_officer'], 'enforce' => true],
     'organization.national.manage' => ['roles' => ['superuser'], 'national' => true],
     'tenant.scope.view' => ['roles' => ['superuser'], 'national' => true],

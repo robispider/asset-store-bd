@@ -1480,6 +1480,7 @@
                                         @endcan
                                         
                                         @includeIf('govscope::hooks.my-access')
+                                        @includeIf('govmem::hooks.membership-menu')
                                         <li class="divider"></li>
                                         <li>
                                             <a href="{{ route('logout.get') }}"

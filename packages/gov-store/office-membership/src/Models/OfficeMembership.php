@@ -2,15 +2,17 @@
 
 namespace GovStore\OfficeMembership\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
 use App\Models\Location;
+use App\Models\User;
+use GovStore\TenantScope\Scopes\UserScope;
+use Illuminate\Database\Eloquent\Model;
 
 class OfficeMembership extends Model
 {
     protected $table = 'gov_office_memberships';
 
     protected $fillable = [
+        'valid_until',
         'user_id',
         'location_id',
         'is_home_office',
@@ -21,6 +23,7 @@ class OfficeMembership extends Model
     ];
 
     protected $casts = [
+        'valid_until' => 'date',
         'is_home_office' => 'boolean',
         'approved_at' => 'datetime',
     ];
@@ -32,10 +35,10 @@ class OfficeMembership extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id')
-            ->withoutGlobalScope(\GovStore\TenantScope\Scopes\UserScope::class);
+            ->withoutGlobalScope(UserScope::class);
     }
 
-   public function location()
+    public function location()
     {
         return $this->belongsTo(Location::class, 'location_id')
             ->withoutGlobalScopes(); // Add this to bypass TenantScope hiding the name

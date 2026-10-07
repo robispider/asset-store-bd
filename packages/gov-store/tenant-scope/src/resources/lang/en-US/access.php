@@ -34,6 +34,11 @@ return [
     'notifications' => 'Updates', 'notification_request' => 'An office access request is awaiting review.',
     'notification_review' => 'Your office access request has been reviewed.', 'filter' => 'Filter', 'all' => 'All',
     'abilities' => [
+        'onboarding_manage' => 'Review and assign office onboarding',
+        'onboarding_self' => 'View your office onboarding updates',
+        'membership_self' => 'Manage your office memberships and handovers',
+        'membership_manage' => 'Manage staff in your working office',
+        'membership_override' => 'Review emergency membership overrides',
         'organization_office_manage' => 'Manage offices in your assigned scope',
         'organization_national_manage' => 'Manage national organization assignments and directory',
         'tenant_scope_view' => 'View national tenant boundaries',

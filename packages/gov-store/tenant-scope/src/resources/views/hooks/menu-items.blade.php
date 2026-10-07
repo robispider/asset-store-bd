@@ -2,7 +2,7 @@
     <li id="menu-{{ $item->id }}" class="{{ $item->children ? 'treeview' : '' }} {{ $item->isActive() ? 'active' : '' }}">
         <a href="{{ $item->route ? route($item->route) : '#' }}">
             <i class="{{ $item->icon }}" aria-hidden="true"></i>
-            <span>{{ $item->title }}</span>
+            <span>{{ __($item->title) }}</span>
             @if($item->children)
                 <span class="pull-right-container"><i class="fa fa-angle-left pull-right" aria-hidden="true"></i></span>
             @endif

@@ -5,6 +5,7 @@ namespace GovStore\OfficeMembership\Services;
 use App\Models\User;
 use GovStore\OfficeMembership\Models\OfficeMembership;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class LegacyUserSynchronizationService
 {
@@ -20,7 +21,14 @@ class LegacyUserSynchronizationService
      */
     public function handleNewUser(User $user): void
     {
-        if (!$user->location_id) return;
+        // When onboarding is installed, its authorized workflow owns first membership.
+        // Do not pre-approve a supplied native office before the queue reviews it.
+        if (Schema::hasTable('gov_user_onboardings')) {
+            return;
+        }
+        if (! $user->location_id) {
+            return;
+        }
 
         OfficeMembership::create([
             'user_id' => $user->id,
@@ -29,7 +37,7 @@ class LegacyUserSynchronizationService
             'status' => 'active',
             'approved_by_user_id' => auth()->id() ?? 1,
             'approved_at' => now(),
-            'approval_note' => __('office_membership::member.sync_auto_onboarding_note')
+            'approval_note' => __('office_membership::member.sync_auto_onboarding_note'),
         ]);
     }
 
@@ -42,7 +50,9 @@ class LegacyUserSynchronizationService
         $oldLocationId = $user->getOriginal('location_id');
 
         // No change made, ignore.
-        if ($newLocationId == $oldLocationId) return;
+        if ($newLocationId == $oldLocationId) {
+            return;
+        }
 
         // Check if the user is bound to an active home office
         $oldMembership = OfficeMembership::where('user_id', $user->id)
@@ -53,18 +63,20 @@ class LegacyUserSynchronizationService
         // =========================================================================
         // SCENARIO A: Admin is trying to wipe the location to NULL natively
         // =========================================================================
-        if (!$newLocationId) {
+        if (! $newLocationId) {
             if ($oldMembership && $oldMembership->status !== 'released') {
                 // FORCE REVERT: Block unauthorized removal
                 $user->location_id = $oldLocationId;
                 $user->saveQuietly();
 
                 Log::warning("Native User location removal blocked for {$user->username}. Location ID {$oldLocationId} preserved.");
-                
+
                 // Fallback translation string if key doesn't exist
                 session()->flash('error', __('office_membership::member.sync_removal_blocked_flash') ?: 'Update Reverted: You cannot remove a user\'s location natively. Use the Staff Management module to process a formal release.');
+
                 return;
             }
+
             return; // Allowed if they genuinely had no active membership anyway
         }
 
@@ -73,21 +85,22 @@ class LegacyUserSynchronizationService
         // =========================================================================
         if ($oldMembership) {
             $clearanceResults = $this->clearanceEngine->runChecks($user, $oldLocationId);
-            
-            if (!$this->clearanceEngine->isCleared($clearanceResults)) {
+
+            if (! $this->clearanceEngine->isCleared($clearanceResults)) {
                 // FORCE REVERT: User holds assets or roles.
                 $user->location_id = $oldLocationId;
                 $user->saveQuietly();
 
                 Log::warning(__('office_membership::member.sync_transfer_blocked_warning', ['username' => $user->username, 'locationId' => $oldLocationId]));
                 session()->flash('error', __('office_membership::member.sync_transfer_reverted_flash'));
+
                 return;
             }
 
             // User is clear. Release the old membership.
             $oldMembership->update([
                 'status' => 'released',
-                'is_home_office' => false
+                'is_home_office' => false,
             ]);
         }
 
@@ -99,7 +112,7 @@ class LegacyUserSynchronizationService
                 'is_home_office' => true,
                 'approved_by_user_id' => auth()->id() ?? 1,
                 'approved_at' => now(),
-                'approval_note' => __('office_membership::member.sync_native_transfer_note')
+                'approval_note' => __('office_membership::member.sync_native_transfer_note'),
             ]
         );
     }

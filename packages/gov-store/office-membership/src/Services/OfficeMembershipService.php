@@ -2,9 +2,10 @@
 
 namespace GovStore\OfficeMembership\Services;
 
+use App\Models\User;
 use GovStore\OfficeMembership\Models\OfficeMembership;
 use Illuminate\Support\Collection;
-use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class OfficeMembershipService
 {
@@ -14,7 +15,8 @@ class OfficeMembershipService
     public function getActiveMembers(int $locationId): Collection
     {
         return User::whereHas('memberships', function ($q) use ($locationId) {
-            $q->where('location_id', $locationId)->where('status', 'active');
+            $q->where('location_id', $locationId)->where('status', 'active')
+                ->where(fn ($q) => $q->whereNull('valid_until')->orWhere('valid_until', '>=', today()->toDateString()));
         })->orderBy('first_name')->get();
     }
 
@@ -26,6 +28,7 @@ class OfficeMembershipService
         return OfficeMembership::with('location.company')
             ->where('user_id', $userId)
             ->where('status', 'active')
+            ->where(fn ($q) => $q->whereNull('valid_until')->orWhere('valid_until', '>=', today()->toDateString()))
             ->orderBy('is_home_office', 'desc')
             ->get();
     }
@@ -35,19 +38,22 @@ class OfficeMembershipService
      */
     public function grantMembership(int $userId, int $locationId, bool $isHome = false, $validUntil = null): void
     {
-        if ($isHome) {
-            // A user can only have exactly ONE HR Home Office base. Reset other home office tags for this user.
-            OfficeMembership::where('user_id', $userId)->update(['is_home_office' => false]);
-        }
+        DB::transaction(function () use ($userId, $locationId, $isHome, $validUntil) {
+            User::withoutGlobalScopes()->whereNull('deleted_at')->lockForUpdate()->findOrFail($userId);
+            if ($isHome) {
+                // A user can only have exactly ONE HR Home Office base. Reset other home office tags for this user.
+                OfficeMembership::where('user_id', $userId)->update(['is_home_office' => false]);
+            }
 
-        OfficeMembership::updateOrCreate(
-            ['user_id' => $userId, 'location_id' => $locationId],
-            [
-                'is_home_office' => $isHome,
-                'status' => 'active',
-                'valid_until' => $validUntil ?: null
-            ]
-        );
+            OfficeMembership::updateOrCreate(
+                ['user_id' => $userId, 'location_id' => $locationId],
+                [
+                    'is_home_office' => $isHome,
+                    'status' => 'active',
+                    'valid_until' => $validUntil ?: null,
+                ]
+            );
+        });
     }
 
     /**
@@ -55,8 +61,9 @@ class OfficeMembershipService
      */
     public function revokeMembership(int $userId, int $locationId): void
     {
-        OfficeMembership::where('user_id', $userId)
-            ->where('location_id', $locationId)
-            ->update(['status' => 'inactive', 'is_home_office' => false]);
+        DB::transaction(function () use ($userId, $locationId) {
+            $membership = OfficeMembership::where('user_id', $userId)->where('location_id', $locationId)->lockForUpdate()->firstOrFail();
+            $membership->update(['status' => 'inactive', 'is_home_office' => false]);
+        });
     }
 }

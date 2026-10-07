@@ -3,6 +3,7 @@
 @section('title', __('office_membership::member.user_page_title'))
 
 @section('content')
+@include('govmem::hooks.notices')
 <div class="row">
     <!-- LEFT PANEL: Active Memberships and dynamic Clearance Engine indicators -->
     <div class="col-md-7">
@@ -17,7 +18,7 @@
                             <th>{{ __('office_membership::member.user_table_office') }}</th>
                             <th>{{ __('office_membership::member.user_table_status') }}</th>
                             <th>{{ __('office_membership::member.user_table_clearance') }}</th>
-                            <th>style="width: 150px;">{{ __('office_membership::member.user_table_action') }}</th>
+                            <th style="width: 150px;">{{ __('office_membership::member.user_table_action') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -29,7 +30,7 @@
                             <tr>
                                 <td>
                                     <strong>{{ $mem->location->name ?? __('office_membership::member.user_table_office') }}</strong><br>
-                                    <small class="text-muted">{{ $mem->location->company->name ?? 'Standalone' }}</small>
+                                    <small class="text-muted">{{ $mem->location->company->name ?? __('office_membership::member.standalone') }}</small>
                                 </td>
                                 <td style="vertical-align: middle;">
                                     @if($mem->status === 'active')
@@ -61,7 +62,7 @@
                                     @if($mem->status === 'active')
                                         <form action="{{ route('gov.membership.request-release', $mem->id) }}" method="POST">
                                             @csrf
-                                            <button type="submit" class="btn btn-sm btn-block {{ $isCleared ? 'btn-danger' : 'btn-default' }}" {{ $isCleared ? '' : 'disabled title="Clearance blocks exist"' }} onclick="return confirm('{{ __('office_membership::member.user_request_release_confirm') }}')">
+                                            <button type="submit" class="btn btn-sm btn-block {{ $isCleared ? 'btn-danger' : 'btn-default' }}" @if(!$isCleared) disabled title="{{ __('office_membership::member.clearance_blocks') }}" @endif onclick="return confirm('{{ __('office_membership::member.user_request_release_confirm') }}')">
                                                 <i class="fas fa-sign-out-alt"></i> {{ __('office_membership::member.user_request_release_button') }}
                                             </button>
                                         </form>
@@ -97,7 +98,7 @@
                         <span style="font-size: 12px; color: #777; display: block; text-transform: uppercase;">{{ __('office_membership::member.user_token_active_label') }}</span>
                         <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #333;">{{ $activeToken->token }}</span>
                         <span style="display: block; font-size: 11px; color: #a94442; margin-top: 5px;">
-                            <i class="fas fa-clock"></i> Expires: {{ $activeToken->expires_at->diffForHumans() }}
+                            <i class="fas fa-clock"></i> {{ __('office_membership::member.expires') }}: {{ $activeToken->expires_at->diffForHumans() }}
                         </span>
                     </div>
                 @else
@@ -146,7 +147,7 @@
                 @foreach($incomingRequests as $inc)
                     <div style="padding: 12px; border: 1px solid #faebcc; background: #fffcf5; border-radius: 4px; margin-bottom: 12px;">
                         <strong>{{ $inc->outgoingUser ? $inc->outgoingUser->present()->fullName : __('office_membership::member.staff_unknown_employee') }}</strong> {{ __('office_membership::member.user_handover_delegate_text') }} 
-                        <span class="label bg-orange" style="font-size: 11px;">{{ ucwords(str_replace('_', ' ', $inc->role_slug)) }}</span> {{ __('office_membership::member.user_handover_role_to_you_for') }} <strong>{{ $inc->location->name ?? __('office_membership::member.staff_claim_hint') }}</strong>.
+                        <span class="label bg-orange" style="font-size: 11px;">{{ __('office_membership::member.role_'.$inc->role_slug) }}</span> {{ __('office_membership::member.user_handover_role_to_you_for') }} <strong>{{ $inc->location->name ?? __('office_membership::member.staff_claim_hint') }}</strong>.
                         
                         <div style="margin-top: 15px; display: flex; gap: 10px;">
                             <form action="{{ route('gov.membership.handshake.accept', $inc->id) }}" method="POST" style="flex: 1;">
@@ -171,7 +172,7 @@
                 <p class="text-muted" style="font-size: 13px;">{{ __('office_membership::member.user_responsibilities_hint') }}</p>
                 
                 @forelse($myActiveRoles as $locId => $rolesList)
-                    @php $locName = \App\Models\Location::find($locId)->name ?? 'Office'; @endphp
+                    @php $locName = $memberships->firstWhere('location_id', $locId)?->location?->name ?? __('office_membership::member.user_table_office'); @endphp
                     <h5 style="font-weight: bold; margin-top: 15px; border-bottom: 1px solid #f4f4f4; padding-bottom: 6px;">{{ $locName }}</h5>
                     
                     <table class="table table-condensed">
@@ -181,19 +182,19 @@
                             @endphp
                             <tr>
                                 <td style="vertical-align: middle;">
-                                    <span class="label bg-blue">{{ ucwords(str_replace('_', ' ', $roleType)) }}</span>
+                                    <span class="label bg-blue">{{ __('office_membership::member.role_'.$roleType) }}</span>
                                 </td>
                                 <td style="vertical-align: middle; text-align: right;">
                                     @if($pendingOutgoing)
                                         <span class="text-warning" style="font-size: 12px; margin-right: 10px;">
-                                            <i class="fas fa-hourglass-half"></i> Awaiting {{ $pendingOutgoing->incomingUser ? $pendingOutgoing->incomingUser->first_name : 'Colleague' }}
+                                            <i class="fas fa-hourglass-half"></i> {{ __('office_membership::member.awaiting', ['name' => $pendingOutgoing->incomingUser?->first_name ?? __('office_membership::member.user_modal_colleague_label')]) }}
                                         </span>
                                         <form action="{{ route('gov.membership.handshake.cancel', $pendingOutgoing->id) }}" method="POST" style="display:inline;">
-                                            @csrf <button type="submit" class="btn btn-xs btn-default text-danger" title="Cancel Request"><i class="fas fa-times"></i></button>
+                                            @csrf <button type="submit" class="btn btn-xs btn-default text-danger" title="{{ __('office_membership::member.cancel_request') }}"><i class="fas fa-times"></i></button>
                                         </form>
                                     @else
-                                        <button class="btn btn-xs btn-default" onclick="openDelegateModal({{ $locId }}, '{{ $roleType }}', '{{ ucwords(str_replace('_', ' ', $roleType)) }}')">
-                                            <i class="fas fa-exchange-alt"></i> Delegate
+                                        <button class="btn btn-xs btn-default" data-location="{{ $locId }}" data-role="{{ $roleType }}" data-role-name="{{ __('office_membership::member.role_'.$roleType) }}" onclick="openDelegateModal(this.dataset.location, this.dataset.role, this.dataset.roleName)">
+                                            <i class="fas fa-exchange-alt"></i> {{ __('office_membership::member.delegate') }}
                                         </button>
                                     @endif
                                 </td>
@@ -209,23 +210,23 @@
 </div>
 
 <!-- DELEGATION HANDSHAKE MODAL -->
-<div class="modal fade" id="delegateModal" tabindex="-1" role="dialog">
+<div class="modal fade" id="delegateModal" tabindex="-1" role="dialog" aria-labelledby="delegateModalTitle">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <form action="{{ route('gov.membership.handshake.propose') }}" method="POST">
                 @csrf
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title"><i class="fas fa-exchange-alt"></i> {{ __('office_membership::member.user_modal_title') }}</h4>
+                    <h4 class="modal-title" id="delegateModalTitle"><i class="fas fa-exchange-alt"></i> {{ __('office_membership::member.user_modal_title') }}</h4>
                 </div>
                 <div class="modal-body">
-                    <p>Select a local colleague to take over the <strong id="modalRoleName"></strong> role. Once they accept, you will be cleared from this responsibility.</p>
+                    <p>{{ __('office_membership::member.delegate_hint') }} <strong id="modalRoleName"></strong></p>
                     
                     <input type="hidden" name="location_id" id="modalLocId">
                     <input type="hidden" name="role_type" id="modalRoleType">
 
                     <div class="form-group">
-                        <label>{{ __('office_membership::member.user_modal_colleague_label') }}</label>
+                        <label for="colleagueSelector">{{ __('office_membership::member.user_modal_colleague_label') }}</label>
                         <select name="assigned_user_id" id="colleagueSelector" class="form-control" required style="width: 100%;">
                             <option value="">{{ __('office_membership::member.user_modal_colleague_placeholder') }}</option>
                         </select>
@@ -244,7 +245,7 @@
 @section('moar_scripts')
 <script>
     var colleagues = @json($eligibleColleagues);
-    var modalColleaguePlaceholder = '{{ __('office_membership::member.user_modal_colleague_placeholder') }}';
+    var modalColleaguePlaceholder = @json(__('office_membership::member.user_modal_colleague_placeholder'));
 
     function openDelegateModal(locId, roleType, roleName) {
         $('#modalLocId').val(locId);
@@ -252,11 +253,11 @@
         $('#modalRoleName').text(roleName);
         
         var select = $('#colleagueSelector');
-        select.empty().append('<option value="">' + modalColleaguePlaceholder + '</option>');
+        select.empty().append(new Option(modalColleaguePlaceholder, ''));
         
         if (colleagues[locId]) {
             colleagues[locId].forEach(function(user) {
-                select.append('<option value="' + user.id + '">' + user.first_name + ' ' + user.last_name + ' (' + user.username + ')</option>');
+                select.append(new Option(user.first_name + ' ' + (user.last_name || '') + ' (' + user.username + ')', user.id));
             });
         }
         

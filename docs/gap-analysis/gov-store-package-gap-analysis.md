@@ -4,7 +4,7 @@ Original review: 4 October 2026 · @zahid. Reassessed: **7 October 2026 (Asia/Dh
 
 ## Updated scorecard
 
-**27 of the original 64 gaps are mitigated (42.19%); 8 are partially mitigated; 29 remain open.** There are **37 gaps requiring further work**, including the partial rows. The package sections below are arranged in dependency order, with foundations before their consumers.
+**35 of the original 64 gaps are mitigated (54.69%); 8 are partially mitigated; 21 remain open.** There are **29 gaps requiring further work**, including the partial rows. The package sections below are arranged in dependency order, with foundations before their consumers.
 
 Tenant-scope implementation update: **7 October 2026 (Asia/Dhaka), working tree**. The original reassessment revision above remains the baseline for the other packages. See [tenant-scope implementation and verification](../verification/tenant-scope-implementation-2026-10-07.md).
 
@@ -14,6 +14,10 @@ resume and geographic relocation delivered. Closure/merge still require complete
 clearance, and live starter delivery requires the missing reviewed collections.
 See [organization implementation and verification](../verification/organization-implementation-2026-10-08.md).
 
+Office-membership update: **8 October 2026 (Asia/Dhaka), working tree**. OM-1/2/4/5 join OM-3 as locally mitigated; see [office-membership verification](../verification/office-membership-implementation-2026-10-08.md).
+
+User-onboarding update: **8 October 2026 (Asia/Dhaka), working tree**. UO-1 through UO-4 are locally mitigated; see [user-onboarding verification](../verification/user-onboarding-implementation-2026-10-08.md).
+
 These are implementation statuses, not production closure. Office-role enforcement still has outstanding G1 rollout requirements. A package with mitigated rows can also have deployment, historical-data or policy work remaining.
 
 | Order | Package | Original gaps | Mitigated | Partial | Open | Next dependency-relevant work |
@@ -21,8 +25,8 @@ These are implementation statuses, not production closure. Office-role enforceme
 | 1 | tenant-scope | 7 | 7 | 0 | 0 | Deploy resolver/job contracts; retain outstanding G1 rollout gates |
 | 2 | geo-areas | 4 | 3 | 1 | 0 | Verify dataset publisher/license before an upstream refresh |
 | 3 | organization | 6 | 5 | 1 | 0 | Complete closure/merge after consumer clearance; populate reviewed starter library |
-| 4 | office-membership | 5 | 1 | 0 | 4 | Secure role transfers; complete clearance rules |
-| 5 | user-onboarding | 4 | 0 | 0 | 4 | Queue system-created users using membership services |
+| 4 | office-membership | 5 | 5 | 0 | 0 | Deploy notice outbox; finish admin/recipient live UI and rollout checks |
+| 5 | user-onboarding | 4 | 4 | 0 | 0 | Deploy history/notices; finish manager UI and historical orphan review |
 | 6 | classification | 7 | 2 | 0 | 5 | Deploy reviewed starter library; queue bulk adoption |
 | 7 | metadata | 4 | 0 | 0 | 4 | Stabilize provider and field-mapping contracts |
 | 8 | tracking | 7 | 0 | 0 | 7 | Fix projection refresh and scoped evaluation |
@@ -30,17 +34,17 @@ These are implementation statuses, not production closure. Office-role enforceme
 | 10 | store-operations | 8 | 2 | 3 | 3 | Ledger cut-over, remaining document types and receipt fields |
 | 11 | custom-requests | 6 | 5 | 1 | 0 | Complete item adapters after stock contracts |
 | 12 | experimentation | 4 | 1 | 1 | 2 | Isolated fixture CI, packaging and restore |
-| **Total** | **12 packages** | **64** | **27** | **8** | **29** | **37 still require work** |
+| **Total** | **12 packages** | **64** | **35** | **8** | **21** | **29 still require work** |
 
 Original severities are preserved for reconciliation with the baseline. They are not a new assessment of residual risk.
 
 | Original severity | Original gaps | Mitigated | Partial | Open |
 | --- | --- | --- | --- | --- |
 | Critical | 3 | 3 | 0 | 0 |
-| High | 19 | 9 | 4 | 6 |
-| Medium | 31 | 10 | 4 | 17 |
+| High | 19 | 12 | 4 | 3 |
+| Medium | 31 | 15 | 4 | 12 |
 | Low | 11 | 5 | 0 | 6 |
-| **Total** | **64** | **27** | **8** | **29** |
+| **Total** | **64** | **35** | **8** | **21** |
 
 ### Counting and evidence
 
@@ -161,7 +165,7 @@ Verification and operational limits are recorded in [the tenant-scope execution 
 
 | ID | Original severity | Status | Current finding and evidence | Remaining mitigation |
 | --- | --- | --- | --- | --- |
-| ORG-1 | High | Partial | Office hub provides suspend/resume/geographic relocation with office/territory checks, reason, typed confirmation, locked state/geography rechecks and audit. Suspension pauses new intake/setup; readiness cannot reactivate it. Closure/merge return 409 even for superusers until full clearance exists. | Complete OM-2 and all holdings/request/committee clearance before terminal transitions; verify positive live admin flows. |
+| ORG-1 | High | Partial | Office hub provides suspend/resume/geographic relocation with office/territory checks, reason, typed confirmation, locked state/geography rechecks and audit. Suspension pauses new intake/setup; readiness cannot reactivate it. Closure/merge return 409 even for superusers until full clearance exists. | Use delivered OM-2 employee rules and finish office-wide holdings/request/committee clearance before terminal transitions; verify positive live admin flows. |
 | ORG-2 | High | Mitigated | Typed after-commit event is consumed by Classification. Active member/admin assignment triggers a durable, frozen commodity bundle, tenant-scoped job, reference checks, atomic rollback and duplicate-safe retry. Actual provisioning → membership → assignment → adoption and failure cases pass isolated tests. | Populate the currently missing reviewed starter collections, run workers, and verify live delivery. Existing offices are not bulk-adopted automatically. |
 | ORG-3 | Medium | Mitigated | Historical organization migration is non-destructive on rerun. The additive migration backfills valid legacy roles only for active, unexpired memberships; `OfficeResponsibility` is the active owner. Legacy table is retained as an archive; model/relation and live compatibility paths are removed. | Preserve the archive and backfill safeguards. |
 | ORG-4 | Medium | Mitigated | G1 access-request/admin review supplies expiring `gov_access_grants`; request `ApprovalRouting` uses responsibilities and unexpired cover. This replaces unused delegate columns and addresses leave cover. | Preserve expiry/next-request checks. Legacy-column cleanup is ORG-3; rollout/mail setup remain operational. |
@@ -170,30 +174,30 @@ Verification and operational limits are recorded in [the tenant-scope execution 
 
 ## 4. office-membership
 
-**1 mitigated, 0 partial, 4 open.** G1 access review does not secure every original transfer endpoint.
+**5 mitigated, 0 partial, 0 open** in the original inventory. The 8 October local implementation secures both role-transfer stores, completes employee clearance/release/sign-off/claim, adds durable notices and bilingual layout navigation. See [implementation, tests and operational limits](../verification/office-membership-implementation-2026-10-08.md). This does not close office-wide lifecycle or production rollout work.
 
-**Internal order:** OM-1 → OM-2; retain corrected OM-3 extension boundary. Return to office lifecycle after clearance.
+**Internal order:** OM-1 → OM-2; preserve OM-3 consumer registration. Employee clearance is delivered; organization closure/merge still require office-wide consumer clearance.
 
 | ID | Original severity | Status | Current finding and evidence | Remaining mitigation |
 | --- | --- | --- | --- | --- |
-| OM-1 | High | Open | Controllers lack complete authorization. Participant checks and handshake role checks exist, but `proposeTransfer` does not establish authority over the supplied office/role/recipient. | Check actor/office, recipient active membership, role ownership and state; lock/recheck transitions and test cross-user/cross-office actions on both paths. |
-| OM-2 | High | Open | `NoActiveAssetsRule` checks assets only; complete accessory/component/licence/consumable holding clearance is absent. | Define rules for each holding type and request-return obligations before release/office closure. |
-| OM-3 | Medium | Mitigated | `CustomRequests/Rules/NoPendingRequestsRule` is registered by its provider with `ClearanceEngine`; membership no longer imports it. | Preserve consumer registration; committee likewise registers its own vacancy rule. |
-| OM-4 | Medium | Open | Original handshake/membership/release notification workflows remain incomplete. G1/request notices do not close this broader gap. | Add durable after-commit notices and optional mail without reverse consumer imports. |
-| OM-5 | Medium | Open | Menu localization and breadcrumbs remain unfinished. | Translate titles and add navigation through shared layout. |
+| OM-1 | High | Mitigated | Registered abilities protect all 18 routes. Both transfer paths validate actor, office, supported role, active/unexpired memberships, current ownership and participant/state; locked acceptance rejects stale ownership and replay. Office-admin handover is supported. Isolated tests and concurrent MySQL acceptance checks pass. | Complete disposable admin/recipient browser mutation checks before rollout; preserve narrower ownership checks in all modes. |
+| OM-2 | High | Mitigated | Assets, accessories, carried-asset components, licence seats, roles/cover and consumer request/return obligations are checked before release, sign-off and claim. Transactional reads lock current records. Consumable allocations remain consumption history; unresolved returns require a posted receipt in the releasing office. | Native licences remain company-owned. Office closure/merge still need office-wide inventory and consumer clearance; employee clearance cannot authorize terminal transitions. |
+| OM-3 | Medium | Mitigated | Request and committee rules remain registered by their owning providers; membership has no reverse consumer import. Request return clearance now checks actual receipt office/type independently of working context. | Preserve extension registration and conservative handling of historical obligations. |
+| OM-4 | Medium | Mitigated | Durable transactional notices cover transfer and membership/release transitions; per-user view and optional outbox mail provide committed delivery and retry. Notice failure rolls back role/status/audit; mail failure retains the notice. | Deploy migration. Optional mail is off by default; configure/schedule delivery when intended and account for at-least-once email behavior. |
+| OM-5 | Medium | Mitigated | English/Bangla menu, role, dialog and notice strings; shared-layout context/menu and breadcrumbs replace response rewriting. Blade PHP syntax/key parity pass; live Bengali membership/dialog and staff denial verified without browser errors. | Complete broader admin/recipient usability and accessibility checks; local rendering is not WCAG certification. |
 
 ## 5. user-onboarding
 
-**0 mitigated, 0 partial, 4 open.** Queue pagination exists; the original four gaps remain.
+**4 mitigated, 0 partial, 0 open** in the original inventory. The 8 October local implementation queues system-created accounts, secures manager/office boundaries, adds retained decision history and durable notices, and localizes the queue and personal page. See [implementation, tests and operational limits](../verification/user-onboarding-implementation-2026-10-08.md).
 
-**Internal order:** UO-1/2 after authorized membership assignment; deliver notices/localization with transitions.
+**Internal order:** UO-1/2 delivered through authorized membership services; UO-3/4 delivered with the transitions. Existing memberships still use membership release and transfer.
 
 | ID | Original severity | Status | Current finding and evidence | Remaining mitigation |
 | --- | --- | --- | --- | --- |
-| UO-1 | High | Open | Observer `created()` still returns without an authenticated creator; system-created users can miss the queue. | Queue with existing SYSTEM owner type; test unauthenticated creation without inventing office/admin. |
-| UO-2 | Medium | Open | No supported cancel/reject/reassign transitions consume CANCELLED. | Add authorized state transitions, reason and assignment audit. |
-| UO-3 | Medium | Open | Completion lacks user/admin notices. | Deliver durable after-commit notices for the assigned membership/office. |
-| UO-4 | Medium | Open | No package English/Bangla language files. | Localize queue/transitions and verify parity. |
+| UO-1 | High | Mitigated | Unauthenticated creation produces one SYSTEM WAITING record with nullable creator/owner, without inventing a system user or office. Native first-membership synchronization defers to onboarding. Owned company/ICT/local queues apply explicit live boundaries. | Apply additive migration; review historical missing accounts individually, retaining intentionally excluded oversight accounts. |
+| UO-2 | Medium | Mitigated | Authorized cancel/reject/reassign/reopen transitions retain reasons and actor/state history. Locked first-office completion checks ownership, office/company/geography, lifecycle, memberships and replay; activation/permissions remain unchanged. Concurrent MySQL completion commits once. | Complete disposable manager/recipient browser mutation checks. Completed memberships cannot use onboarding to bypass release/transfer. |
+| UO-3 | Medium | Mitigated | Durable per-recipient in-app notices commit with creation/decision/completion history. Employee, creator/manager and destination office admin receive completion updates. Private reasons remain in the authorized administrative queue. Notice failure rolls back assignment. | Deploy history/notices; integrate their ownership with the pending experiment packaging/cleanup work. No SMTP delivery is claimed. |
+| UO-4 | Medium | Mitigated | English/Bangla queue, status, role, choice, action, history, notice, menu, breadcrumb and denial labels; three Blade PHP checks and key parity pass. Actual queue fragments render and escape reasons; personal page and denial verified live in Bengali. | Complete broader manager/recipient usability/accessibility and rollout checks. |
 
 ## 6. classification
 

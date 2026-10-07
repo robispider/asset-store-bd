@@ -3,6 +3,19 @@
 @section('title', __('office_membership::member.staff_title_prefix') . $location->name)
 
 @section('content')
+<div class="box box-warning">
+    <div class="box-header"><h2 class="box-title">{{ __('office_membership::member.release_signoff_title') }}</h2></div>
+    <div class="box-body">
+        @forelse($releaseRequests as $release)
+            <form action="{{ route('gov.membership.admin.release', $release->id) }}" method="POST">@csrf
+                <span>{{ $release->user?->present()->fullName }}</span>
+                <button type="submit" class="btn btn-warning">{{ __('office_membership::member.release_signoff_button') }}</button>
+            </form>
+        @empty
+            <p>{{ __('office_membership::member.no_release_requests') }}</p>
+        @endforelse
+    </div>
+</div>
 <div class="row">
     <!-- LEFT PANEL: Active Staff -->
     <div class="col-md-8">
@@ -30,7 +43,7 @@
                                         <span class="label bg-gray">{{ __('office_membership::member.staff_secondary_label') }}</span> 
                                     @endif
                                 </td>
-                                <td><span class="text-success"><i class="fas fa-check-circle"></i> Active</span></td>
+                                <td><span class="text-success"><i class="fas fa-check-circle"></i> {{ __('office_membership::member.user_status_active') }}</span></td>
                             </tr>
                         @empty
                             <tr><td colspan="4" class="text-center">{{ __('office_membership::member.staff_no_active') }}</td></tr>
@@ -58,8 +71,8 @@
                             <small class="text-muted">{{ $req->user->username ?? '-' }}</small>
                         </div>
                         <div style="display: flex; gap: 5px;">
-                            <form action="{{ route('gov.membership.admin.approve', $req->id) }}" method="POST">@csrf <button class="btn btn-xs btn-success"><i class="fas fa-check"></i></button></form>
-                            <form action="{{ route('gov.membership.admin.reject', $req->id) }}" method="POST">@csrf <button class="btn btn-xs btn-danger"><i class="fas fa-times"></i></button></form>
+                            <form action="{{ route('gov.membership.admin.approve', $req->id) }}" method="POST">@csrf <button class="btn btn-xs btn-success" aria-label="{{ __('office_membership::member.admin_membership_approved') }}"><i class="fas fa-check"></i></button></form>
+                            <form action="{{ route('gov.membership.admin.reject', $req->id) }}" method="POST">@csrf <button class="btn btn-xs btn-danger" aria-label="{{ __('office_membership::member.admin_membership_rejected') }}"><i class="fas fa-times"></i></button></form>
                         </div>
                     </li>
                     @endforeach
@@ -90,7 +103,7 @@
                     <p class="text-muted" style="font-size: 12px;">{{ __('office_membership::member.staff_share_code_hint') }}</p>
                     <div style="background: #f4f4f4; border: 1px dashed #ccc; padding: 10px; margin-bottom: 10px;">
                         <span style="font-size: 24px; font-weight: bold; letter-spacing: 3px;">{{ $profile->invitation_code }}</span><br>
-                        <span class="text-danger" style="font-size: 10px;">Expires: {{ $profile->invitation_code_expires_at->format('Y-m-d') }}</span>
+                        <span class="text-danger" style="font-size: 10px;">{{ __('office_membership::member.expires') }}: {{ $profile->invitation_code_expires_at->format('Y-m-d') }}</span>
                     </div>
                 @else
                     <p class="text-warning"><i class="fas fa-exclamation-triangle"></i> {{ __('office_membership::member.staff_no_active_code') }}</p>

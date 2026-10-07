@@ -779,7 +779,7 @@ class CustomRequestsWorkflowTest extends TestCase
         $this->assertStatus(403, fn () => $service->draftReceipt($request->id, $owner));
         $receipt = new Document;
         $receipt->forceFill(['id' => (string) Str::uuid(), 'document_number' => 'GR-RETURN']);
-        DB::table('gov_documents')->insert(['id' => $receipt->id, 'document_number' => $receipt->document_number]);
+        DB::table('gov_documents')->insert(['id' => $receipt->id, 'document_number' => $receipt->document_number, 'type' => 'receipt', 'location_id' => 10]);
         $mock = Mockery::mock(GoodsReceiptService::class);
         $mock->shouldReceive('saveDraft')->once()->withArgs(fn ($header, $lines, $actorId) => $header['reference_no'] === $request->request_number
             && $lines[0]['type'] === 'consumable' && $lines[0]['qty'] === 5 && $actorId === 2)->andReturn($receipt);

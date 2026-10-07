@@ -9,6 +9,8 @@ use GovStore\OfficeMembership\Models\OfficeMembership;
 use GovStore\OfficeMembership\Models\OfficeResponsibility;
 use GovStore\OfficeMembership\Models\RoleHandshake;
 use GovStore\OfficeMembership\Services\ClearanceEngine;
+use GovStore\OfficeMembership\Services\MembershipNotices;
+use GovStore\OfficeMembership\Services\MembershipWorkflow;
 use GovStore\Organization\Models\LocationProfile;
 use GovStore\TenantScope\Scopes\UserScope;
 use Illuminate\Http\Request;
@@ -36,24 +38,20 @@ class MembershipController extends Controller
                 $clearanceMatrix[$membership->id] = $engine->runChecks($user, $locId);
 
                 $eligibleColleagues[$locId] = User::withoutGlobalScope(UserScope::class)
-                    ->where('location_id', $locId)
+                    ->where('activated', true)
+                    ->whereHas('memberships', fn ($q) => $q->where('location_id', $locId)->where('status', 'active')
+                        ->where(fn ($q) => $q->whereNull('valid_until')->orWhere('valid_until', '>=', today()->toDateString())))
                     ->where('id', '!=', $user->id)
-                    ->get();
+                    ->get(['id', 'first_name', 'last_name', 'username']);
 
                 $profile = LocationProfile::where('location_id', $locId)->first();
-                $roles = OfficeResponsibility::where('location_id', $locId)->get();
+                $roles = OfficeResponsibility::where('location_id', $locId)->where('user_id', $user->id)->get();
 
                 if ($profile && (int) $profile->office_admin_id === (int) $user->id) {
                     $myActiveRoles[$locId][] = 'office_admin';
                 }
-                if ((int) $roles->where('role_slug', 'primary_approver')->first()?->user_id === (int) $user->id) {
-                    $myActiveRoles[$locId][] = 'primary_approver';
-                }
-                if ((int) $roles->where('role_slug', 'final_approver')->first()?->user_id === (int) $user->id) {
-                    $myActiveRoles[$locId][] = 'final_approver';
-                }
-                if ((int) $roles->where('role_slug', 'storekeeper')->first()?->user_id === (int) $user->id) {
-                    $myActiveRoles[$locId][] = 'storekeeper';
+                foreach ($roles as $role) {
+                    $myActiveRoles[$locId][] = $role->role_slug;
                 }
             }
         }
@@ -73,7 +71,9 @@ class MembershipController extends Controller
             ->latest()
             ->first();
 
-        return view('govmem::user.index', compact(
+        $notices = app(MembershipNotices::class)->forUser((int) $user->id);
+
+        return view('govmem::user.index', compact('notices',
             'memberships', 'clearanceMatrix', 'engine',
             'myActiveRoles', 'eligibleColleagues', 'incomingRequests', 'outgoingRequests', 'activeToken'
         ));
@@ -105,22 +105,9 @@ class MembershipController extends Controller
 
     public function requestRelease($id, ClearanceEngine $engine)
     {
-        $user = auth()->user();
-        $membership = OfficeMembership::where('user_id', $user->id)->findOrFail($id);
+        app(MembershipWorkflow::class)->requestRelease((int) $id);
 
-        if ($membership->status !== 'active') {
-            return redirect()->back()->with('error', __('office_membership::member.membership_only_active_release'));
-        }
-
-        // Final backend validation guard
-        $results = $engine->runChecks($user, $membership->location_id);
-        if (! $engine->isCleared($results)) {
-            return redirect()->back()->with('error', __('office_membership::member.membership_clearance_failed'));
-        }
-
-        $membership->update(['status' => 'release_requested']);
-
-        return redirect()->back()->with('success', 'Release requested successfully. Awaiting final office sign-off.');
+        return redirect()->back()->with('success', __('office_membership::member.release_requested'));
     }
 
     public function switchContext(Request $request)
@@ -150,7 +137,7 @@ class MembershipController extends Controller
 
         $membership = OfficeMembership::where('user_id', $user->id)
             ->where('id', $request->membership_id)
-            ->where('status', 'active')
+            ->where('status', 'active')->where(fn ($q) => $q->whereNull('valid_until')->orWhere('valid_until', '>=', today()->toDateString()))
             ->firstOrFail();
 
         session()->put('gov_working_membership_id', $membership->id);
@@ -163,37 +150,8 @@ class MembershipController extends Controller
      */
     public function joinByCode(Request $request)
     {
-        $request->validate(['office_code' => 'required|string']);
-        $code = strtoupper(trim($request->input('office_code')));
-        $user = auth()->user();
-
-        $profile = LocationProfile::where('invitation_code', $code)->first();
-
-        if (! $profile || ! $profile->invitation_code_expires_at || $profile->invitation_code_expires_at->isPast()) {
-            return redirect()->back()->with('error', __('office_membership::member.membership_invalid_code'));
-        }
-
-        $existing = OfficeMembership::where('user_id', $user->id)->where('location_id', $profile->location_id)->first();
-
-        if ($existing) {
-            if ($existing->status === 'active') {
-                return redirect()->back()->with('error', __('office_membership::member.membership_already_member'));
-            }
-            if ($existing->status === 'pending') {
-                return redirect()->back()->with('error', __('office_membership::member.membership_request_pending'));
-            }
-        }
-
-        // =========================================================================
-        // REFACTORED: Use updateOrCreate to prevent unique key violations
-        // =========================================================================
-        OfficeMembership::updateOrCreate(
-            ['user_id' => $user->id, 'location_id' => $profile->location_id],
-            [
-                'status' => 'pending',
-                'is_home_office' => false,
-            ]
-        );
+        $request->validate(['office_code' => 'required|string|max:15']);
+        app(MembershipWorkflow::class)->join($request->input('office_code'));
 
         return redirect()->back()->with('success', __('office_membership::member.membership_request_sent'));
     }
