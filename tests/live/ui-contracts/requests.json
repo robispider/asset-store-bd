@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "id": "requests",
+  "locators": {
+    "basketQty": {
+      "css": "tr:has-text(\"${fixtures.item.name}\") .basket-qty-input",
+      "description": "Quantity input of the pinned fixture item row"
+    },
+    "basketPurpose": {
+      "css": "#purpose",
+      "description": "Purpose field"
+    },
+    "basketJustification": {
+      "css": "#justification",
+      "description": "Justification field"
+    },
+    "basketSubmit": {
+      "css": "form[action*='basket/submit'] button[type='submit']",
+      "description": "Submit request button"
+    },
+    "basketRemove": {
+      "css": "tr:has-text(\"${fixtures.item.name}\") form[action*='basket/remove'] button[type='submit']",
+      "description": "Remove button on the pinned fixture item row"
+    },
+    "basketLines": {
+      "css": "tr:has-text(\"${fixtures.item.name}\") form[action*='basket/remove']",
+      "description": "Basket rows for the pinned fixture item"
+    },
+    "myNumberByPurpose": {
+      "css": "tr:has-text(\"${data.purpose}\") td strong",
+      "description": "Request number in my-requests row for the generated purpose"
+    },
+    "myRowByNumber": {
+      "css": "tr:has-text(\"${captured.requestNumber}\")",
+      "description": "my-requests row for the captured request"
+    },
+    "approverRowOpen": {
+      "css": "tr:has-text(\"${captured.requestNumber}\") a.btn-primary",
+      "description": "Open button on approver pending row for the captured request"
+    },
+    "approverRowByNumber": {
+      "css": "tr:has-text(\"${captured.requestNumber}\")",
+      "description": "Approver list row for the captured request"
+    },
+    "decisionSubmit": {
+      "css": "form[action*='/process'] button.btn-warning",
+      "description": "Finalize decision button"
+    },
+    "decisionQty": {
+      "css": "input[name$='[qty]']",
+      "description": "Approved quantity input"
+    },
+    "decisionFieldset": {
+      "css": "form[action*='/process'] fieldset",
+      "description": "Decision form fieldset"
+    },
+    "flashSuccess": {
+      "css": ".alert-success",
+      "description": "Success flash"
+    },
+    "flashError": {
+      "css": ".alert-danger",
+      "description": "Error flash"
+    },
+    "approverOpenButtons": {
+      "css": "table a.btn-primary[href*='/gov-requests/admin/']",
+      "description": "Open buttons on the approver pending list"
+    },
+    "fulfillmentOpenButtons": {
+      "css": "table a[href*='/gov-requests/fulfillment/']",
+      "description": "Open buttons in the fulfillment queue"
+    }
+  },
+  "labels": {
+    "en-US": {},
+    "bn-BD": {}
+  }
+}

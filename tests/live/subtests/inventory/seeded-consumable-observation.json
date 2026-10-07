@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "id": "inventory.seeded-consumable-observation",
+  "title": "A storekeeper sees the current seeded consumable correctly",
+  "features": ["inventory.consumables"],
+  "tags": ["seeded", "readonly", "smoke"],
+  "execution": {
+    "capability": "observe",
+    "language": "en-US",
+    "timeoutMs": 60000
+  },
+  "fixtures": {
+    "office": {
+      "requirements": {
+        "operational": true
+      }
+    },
+    "actors": {
+      "storekeeper": {
+        "capabilities": {
+          "allOf": ["inventory.consumables.view"]
+        },
+        "office": "office",
+        "activeMembership": true
+      }
+    },
+    "records": {
+      "item": {
+        "kind": "consumable",
+        "office": "office",
+        "ownedByDataset": true,
+        "minimumAvailable": 1,
+        "selection": "lowest-id"
+      }
+    }
+  },
+  "steps": [
+    {
+      "action": "observe",
+      "check": "inventory.consumable",
+      "args": {
+        "id": "${fixtures.item.id}"
+      },
+      "as": "before"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "storekeeper"
+      }
+    },
+    {
+      "use": "context.select-and-verify",
+      "with": {
+        "office": "office"
+      }
+    },
+    {
+      "action": "goto",
+      "route": "inventory.consumable.show",
+      "params": {
+        "id": "${fixtures.item.id}"
+      }
+    },
+    {
+      "action": "assert",
+      "target": "consumable.name",
+      "test": "text",
+      "contains": "${observed.before.name}"
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "assert",
+      "target": "consumable.name",
+      "test": "text",
+      "contains": "${observed.before.name}"
+    },
+    {
+      "action": "observe",
+      "check": "inventory.consumable",
+      "args": {
+        "id": "${fixtures.item.id}"
+      },
+      "as": "after"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.after.businessFingerprint}",
+      "equals": "${observed.before.businessFingerprint}"
+    }
+  ],
+  "cleanup": {
+    "policy": "no-business-records-created"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "auth.login",
+  "title": "Standard Application Login Flow",
+  "params": {
+    "actor": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "steps": [
+    {
+      "action": "actor",
+      "name": "${params.actor}"
+    },
+    {
+      "action": "goto",
+      "url": "/login"
+    },
+    {
+      "action": "fill",
+      "target": "auth.username",
+      "value": "${actors.${params.actor}.username}"
+    },
+    {
+      "action": "fill",
+      "target": "auth.password",
+      "value": "${actors.${params.actor}.password}"
+    },
+    {
+      "action": "click",
+      "target": "auth.submit"
+    },
+    {
+      "action": "wait",
+      "target": "auth.userDropdown",
+      "state": "visible"
+    }
+  ]
+}

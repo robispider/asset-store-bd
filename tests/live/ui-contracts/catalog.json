@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "catalog",
+  "locators": {
+    "pending": {
+      "css": ".compact-pipeline-card .badge.bg-yellow-active",
+      "description": "Pending request count in the pipeline panel"
+    },
+    "approved": {
+      "css": ".compact-pipeline-card .badge.bg-green-active",
+      "description": "Approved request count"
+    },
+    "rejected": {
+      "css": ".compact-pipeline-card .badge.bg-red-active",
+      "description": "Rejected request count"
+    },
+    "productCount": {
+      "css": "#productCount",
+      "description": "Items available count"
+    },
+    "search": {
+      "css": "#catalogSearch",
+      "description": "Catalog search box"
+    },
+    "itemCard": {
+      "css": ".catalog-item:has(.item-title:text-is(\"${fixtures.item.name}\"))",
+      "description": "Exact catalog card of the pinned fixture item"
+    },
+    "itemQty": {
+      "css": ".catalog-item:has(.item-title:text-is(\"${fixtures.item.name}\")) input[name='qty']",
+      "description": "Quantity input on the pinned item's card"
+    },
+    "itemAdd": {
+      "css": ".catalog-item:has(.item-title:text-is(\"${fixtures.item.name}\")) .add-to-basket-btn",
+      "description": "Add-to-basket button on the pinned item's card"
+    }
+  },
+  "labels": {
+    "en-US": {},
+    "bn-BD": {}
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GovStore Live Journey Schema",
+  "type": "object",
+  "required": ["schemaVersion", "id", "title", "execution", "steps"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_.-]+$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 3
+    },
+    "features": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "execution": {
+      "type": "object",
+      "required": ["capability"],
+      "additionalProperties": false,
+      "properties": {
+        "capability": {
+          "type": "string",
+          "enum": ["observe", "write-fixtures"]
+        },
+        "language": {
+          "type": "string",
+          "default": "en-US"
+        },
+        "timeoutMs": {
+          "type": "integer",
+          "minimum": 1000,
+          "default": 60000
+        },
+        "accessMode": {
+          "type": "string",
+          "enum": ["enforce", "shadow", "any"],
+          "default": "any"
+        }
+      }
+    },
+    "fixtures": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "office": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "requirements": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "id": {
+              "type": "integer"
+            }
+          }
+        },
+        "actors": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "capabilities": {
+                "type": "object",
+                "properties": {
+                  "allOf": { "type": "array", "items": { "type": "string" } },
+                  "noneOf": { "type": "array", "items": { "type": "string" } }
+                }
+              },
+              "office": { "type": "string" },
+              "role": { "type": "string" },
+              "activeMembership": { "type": "boolean", "default": true },
+              "distinctFrom": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          }
+        },
+        "records": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["kind"],
+            "additionalProperties": false,
+            "properties": {
+              "kind": { "type": "string" },
+              "office": { "type": "string" },
+              "ownedByDataset": { "type": "boolean", "default": true },
+              "minimumAvailable": { "type": "integer", "default": 0 },
+              "selection": { "type": "string", "default": "lowest-id" },
+              "state": { "type": "string" },
+              "id": { "type": "integer" }
+            }
+          }
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "matrix": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "preconditions": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "postconditions": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "cleanup": {
+      "type": "object",
+      "required": ["policy"],
+      "additionalProperties": false,
+      "properties": {
+        "policy": {
+          "type": "string",
+          "enum": ["no-business-records-created", "supported-actions", "retained-with-report"]
+        },
+        "actions": {
+          "type": "array",
+          "items": { "type": "object" }
+        }
+      }
+    }
+  }
+}

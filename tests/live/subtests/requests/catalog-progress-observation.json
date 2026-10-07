@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "id": "requests.catalog-progress-observation",
+  "title": "An employee sees request progress counts that match persisted requests",
+  "features": [
+    "requests.catalog"
+  ],
+  "tags": [
+    "seeded",
+    "readonly",
+    "smoke"
+  ],
+  "execution": {
+    "capability": "observe",
+    "language": "en-US",
+    "timeoutMs": 60000
+  },
+  "fixtures": {
+    "office": {
+      "requirements": {
+        "operational": true
+      }
+    },
+    "actors": {
+      "employee": {
+        "capabilities": {
+          "allOf": [
+            "requests.submit"
+          ]
+        },
+        "office": "office",
+        "activeMembership": true
+      }
+    }
+  },
+  "steps": [
+    {
+      "action": "observe",
+      "check": "request.progress",
+      "args": {
+        "id": "${actors.employee.id}"
+      },
+      "as": "before"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "employee"
+      }
+    },
+    {
+      "action": "goto",
+      "route": "gov.requests.catalog"
+    },
+    {
+      "action": "assert",
+      "target": "catalog.pending",
+      "test": "number",
+      "equals": "${observed.before.pending}"
+    },
+    {
+      "action": "assert",
+      "target": "catalog.approved",
+      "test": "number",
+      "equals": "${observed.before.approved}"
+    },
+    {
+      "action": "assert",
+      "target": "catalog.rejected",
+      "test": "number",
+      "equals": "${observed.before.rejected}"
+    },
+    {
+      "action": "assert",
+      "target": "catalog.search",
+      "test": "visible"
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "assert",
+      "target": "catalog.pending",
+      "test": "number",
+      "equals": "${observed.before.pending}"
+    },
+    {
+      "action": "observe",
+      "check": "request.progress",
+      "args": {
+        "id": "${actors.employee.id}"
+      },
+      "as": "after"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.after.total}",
+      "equals": "${observed.before.total}"
+    }
+  ],
+  "cleanup": {
+    "policy": "no-business-records-created"
+  }
+}

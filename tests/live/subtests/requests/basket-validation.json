@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 1,
+  "id": "requests.basket-validation",
+  "title": "Basket submission rejects empty inputs without creating a request",
+  "features": [
+    "requests.submit-approve-fulfill",
+    "validation"
+  ],
+  "tags": [
+    "journey",
+    "mutation",
+    "validation"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "language": "en-US",
+    "timeoutMs": 120000
+  },
+  "fixtures": {
+    "office": {
+      "requirements": {
+        "operational": true
+      }
+    },
+    "actors": {
+      "employee": {
+        "capabilities": {
+          "allOf": [
+            "requests.submit"
+          ],
+          "noneOf": [
+            "requests.approve"
+          ]
+        },
+        "office": "office",
+        "activeMembership": true,
+        "emptyBasket": true
+      }
+    },
+    "records": {
+      "item": {
+        "kind": "consumable",
+        "office": "office",
+        "ownedByDataset": true,
+        "minimumAvailable": 10,
+        "selection": "lowest-id"
+      }
+    }
+  },
+  "data": {
+    "qty": {
+      "generate": "integer",
+      "min": 1,
+      "max": 2
+    }
+  },
+  "steps": [
+    {
+      "action": "observe",
+      "check": "request.progress",
+      "args": {
+        "id": "${actors.employee.id}"
+      },
+      "as": "before"
+    },
+    {
+      "action": "observe",
+      "check": "basket.line",
+      "args": {
+        "userId": "${actors.employee.id}",
+        "itemType": "consumable",
+        "itemId": "${fixtures.item.id}"
+      },
+      "as": "lineBefore"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.lineBefore.quantity}",
+      "equals": 0
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "employee"
+      }
+    },
+    {
+      "action": "goto",
+      "route": "gov.requests.catalog",
+      "query": {
+        "q": "${fixtures.item.name}"
+      }
+    },
+    {
+      "action": "fill",
+      "target": "catalog.itemQty",
+      "value": "${data.qty}"
+    },
+    {
+      "action": "click",
+      "target": "catalog.itemAdd",
+      "waitForResponse": "basket/add"
+    },
+    {
+      "action": "waitObserve",
+      "check": "basket.line",
+      "args": {
+        "userId": "${actors.employee.id}",
+        "itemType": "consumable",
+        "itemId": "${fixtures.item.id}"
+      },
+      "path": "quantity",
+      "equals": "${data.qty}",
+      "timeoutMs": 15000
+    },
+    {
+      "action": "goto",
+      "route": "gov.requests.basket"
+    },
+    {
+      "action": "ledger",
+      "kind": "draft_basket_line",
+      "id": "employee-${actors.employee.id}",
+      "effect": "Draft basket line added; removed through the basket UI in cleanup",
+      "cleanup": "removed"
+    },
+    {
+      "action": "assert",
+      "target": "requests.basketPurpose",
+      "test": "invalid"
+    },
+    {
+      "action": "assert",
+      "target": "requests.basketJustification",
+      "test": "invalid"
+    },
+    {
+      "action": "click",
+      "target": "requests.basketSubmit"
+    },
+    {
+      "action": "assert",
+      "test": "url",
+      "contains": "/gov-requests/basket"
+    },
+    {
+      "action": "observe",
+      "check": "request.progress",
+      "args": {
+        "id": "${actors.employee.id}"
+      },
+      "as": "after"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.after.total}",
+      "equals": "${observed.before.total}"
+    }
+  ],
+  "cleanup": {
+    "policy": "supported-ui-removal",
+    "steps": [
+      {
+        "action": "actor",
+        "name": "employee"
+      },
+      {
+        "action": "goto",
+        "route": "gov.requests.basket"
+      },
+      {
+        "action": "click",
+        "target": "requests.basketRemove"
+      },
+      {
+        "action": "observe",
+        "check": "basket.line",
+        "args": {
+          "userId": "${actors.employee.id}",
+          "itemType": "consumable",
+          "itemId": "${fixtures.item.id}"
+        },
+        "as": "cleanupProbe"
+      },
+      {
+        "action": "compare",
+        "actual": "${observed.cleanupProbe.quantity}",
+        "equals": 0
+      }
+    ]
+  }
+}

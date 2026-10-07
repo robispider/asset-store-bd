@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "native-inventory",
+  "title": "Native inventory observation",
+  "description": "Requires an actor with the native consumables.view permission. No seeded actor currently has it, so this suite is expected to be blocked with fixtures.unsatisfied-requirements.",
+  "environment": {
+    "target": "http://snipeit.local",
+    "allowlist": [
+      "http://snipeit.local"
+    ]
+  },
+  "journeys": [
+    "inventory.seeded-consumable-observation"
+  ],
+  "defaults": {
+    "language": "en-US",
+    "timeoutMs": 60000
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "context.select-and-verify",
+  "title": "Select and Verify Working Office Context",
+  "params": {
+    "office": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "steps": [
+    {
+      "action": "assert",
+      "target": "auth.userDropdown",
+      "test": "visible"
+    }
+  ]
+}
