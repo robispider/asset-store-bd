@@ -1,7 +1,7 @@
 # Dynamic Theming — Implementation Plan
 
 > **Package:** `gov-store/theming` (`packages/gov-store/theming`) · **Namespace:** `GovStore\Theming`
-> **Status:** Proposed — decisions D1–D9 resolved, C1 pending (§21) · **Date:** 2026-10-07 · **Target branch:** `feature/gs-theming` (cut from `master`)
+> **Status:** Implemented on branch `govstore-theming` — phases 0–5, 7 (charts) and 8 delivered; phase 6 (gov-store view migration), the three print-view conversions and the woff2 font binaries remain (see `packages/gov-store/theming/README.md`). Decisions D1–D9 resolved, C1 pending (§21) · **Date:** 2026-10-07
 > **Design source:** Claude artifact *"National Asset Register — Theme Directions"* (Theme 1 Institutional Green, Theme 2 Digital Blue, Theme 3 Executive Neutral)
 
 ---

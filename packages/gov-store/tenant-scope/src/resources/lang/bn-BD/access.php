@@ -54,5 +54,8 @@ return [
         'requests_fulfill' => 'অফিসের আবেদন পূরণ করুন', 'requests_configure' => 'অফিসের আবেদন ব্যবস্থা নির্ধারণ করুন',
         'access_view' => 'অনুমতি দেখুন ও আবেদন করুন', 'access_manage' => 'অফিসের অনুমতির আবেদন পর্যালোচনা করুন',
         'access_matrix' => 'অনুমতির ছক দেখুন', 'access_audit' => 'ব্যক্তিগত নিরীক্ষা ঘটনা দেখুন', 'access_shadow' => 'সামগ্রিক পর্যবেক্ষণ প্রতিবেদন দেখুন',
+        'theming_appearance_self' => 'নিজের থিম ও আলো/অন্ধকার মোড বাছাই', 'theming_assign_office' => 'আমার অফিসের ডিফল্ট থিম বাছাই',
+        'theming_assign_company' => 'আমার মন্ত্রণালয়ের ডিফল্ট থিম বাছাই', 'theming_assign_organization' => 'প্রতিষ্ঠানের ডিফল্ট থিম বাছাই',
+        'theming_lab_view' => 'থিম ল্যাবে প্রকাশিত থিম পর্যালোচনা',
     ],
 ];

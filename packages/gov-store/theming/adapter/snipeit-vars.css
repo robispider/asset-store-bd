@@ -1,0 +1,80 @@
+/*
+ * Layer 1 — variable mapping (UNLAYERED on purpose).
+ * Loaded after Snipe-IT's inline <style>, so these declarations win over core's :root and
+ * [data-theme] variable blocks; most core rules read these variables, so most theming happens
+ * here without selector fights.
+ *
+ * "Snipe-IT Classic" (data-skin="default") maps nothing: Branding colours and the per-user
+ * colour fields keep working exactly as stock. Instead, the gs-* brand tokens follow Snipe-IT's
+ * Branding variables so kit components match the stock header.
+ */
+
+/* Repeated attribute raises specificity above the generated theme blocks (loaded later). */
+[data-skin="default"][data-skin][data-skin] {
+    --gs-header-bg: var(--main-theme-color);
+    --gs-header-fg: var(--nav-primary-text-color, var(--gs-color-on-primary));
+    --gs-color-primary: var(--main-theme-color);
+    --gs-color-primary-hover: var(--main-theme-hover, var(--main-theme-color));
+    --gs-color-link: var(--link-color);
+    --gs-sidebar-active-marker: var(--main-theme-color);
+}
+
+[data-skin]:not([data-skin="default"]) {
+    /* brand & header */
+    --main-theme-color: var(--gs-color-primary);
+    --main-theme-hover: var(--gs-color-primary-hover);
+    --nav-primary-text-color: var(--gs-header-fg);
+    --nav-hover-text-color: var(--gs-header-fg-muted);
+    --btn-theme-base: var(--gs-color-primary);
+    --btn-theme-border: var(--gs-color-primary-active);
+    --btn-theme-hover: var(--gs-color-primary-hover);
+    --btn-theme-text-color: var(--gs-color-on-primary);
+    --btn-theme-hover-text-color: var(--gs-color-on-primary);
+
+    /* ground & text */
+    --color-bg: var(--gs-color-bg);
+    --color-fg: var(--gs-color-text);
+    --header-color: var(--gs-color-text);
+    --box-bg: var(--gs-color-surface);
+    --box-header-top-border-color: var(--gs-color-border-strong);
+    --box-header-bottom-border-color: var(--gs-color-border);
+    --callout-bg-color: var(--gs-color-surface-sunken);
+    --callout-left-border: var(--gs-color-border-strong);
+    --tab-bottom-border: var(--gs-border-width) solid var(--gs-color-border);
+    --input-border-color: var(--gs-color-border);
+    --input-group-bg: var(--gs-color-surface-sunken);
+    --input-group-fg: var(--gs-color-text-muted);
+    --search-highlight: var(--gs-color-warning-subtle);
+
+    /* links */
+    --link-color: var(--gs-color-link);
+    --link-hover: var(--gs-color-link-hover);
+    --default-label-link-bg: var(--gs-color-surface-sunken);
+    --default-label-link-text: var(--gs-color-link);
+    --default-label-link-border: var(--gs-border-width) solid var(--gs-color-border);
+
+    /* tables */
+    --table-stripe-bg: var(--gs-color-surface);
+    --table-stripe-bg-alt: var(--gs-table-row-alt);
+    --table-border-row-color: var(--gs-table-border);
+    --table-border-row-top: var(--gs-border-width) solid var(--gs-table-border);
+    --table-border-row: var(--gs-border-width) solid var(--gs-table-border);
+
+    /* feedback text */
+    --text-danger: var(--gs-color-danger);
+    --text-success: var(--gs-color-success);
+    --text-warning: var(--gs-color-warning);
+    --text-info: var(--gs-color-info);
+    --text-help: var(--gs-color-text-muted);
+    --text-legend-help: var(--gs-color-text-muted);
+
+    /* sidebar */
+    --sidenav-hover-color-bg: var(--gs-sidebar-active-bg);
+    --sidenav-text-hover-color: var(--gs-sidebar-active-fg);
+    --sidenav-text-nohover-color: var(--gs-sidebar-fg);
+
+    /* footer */
+    --main-footer-bg-color: var(--gs-footer-bg);
+    --main-footer-text-color: var(--gs-footer-fg);
+    --main-footer-top-border-color: var(--gs-color-border);
+}

@@ -1,0 +1,64 @@
+{
+    "seed": {
+        "$type": "color",
+        "primary": { "$value": "#4ADE80" },
+        "accent": { "$value": "#86EFAC" },
+        "neutral": { "$value": "#0B120E" },
+        "danger": { "$value": "#F97066" }
+    },
+    "color": {
+        "$type": "color",
+        "bg": { "$value": "#0E1511" },
+        "surface": { "$value": "#16201A" },
+        "surface-raised": { "$value": "#1C2922" },
+        "surface-sunken": { "$value": "#0B110E" },
+        "border": { "$value": "#2B3B31" },
+        "border-strong": { "$value": "#61796A" },
+        "text": { "$value": "#E7EEE9" },
+        "text-muted": { "$value": "#A9BAAF" },
+        "text-subtle": { "$value": "#84978B" },
+        "text-inverse": { "$value": "#0E1511" },
+        "link": { "$value": "#6EE7A0" },
+        "focus-ring": { "$value": "#4ADE80" },
+        "on-primary": { "$value": "#052E16" },
+        "on-accent": { "$value": "#052E16" },
+        "doc-posted": { "$value": "#4ADE80" }
+    },
+    "header": {
+        "$type": "color",
+        "bg": { "$value": "#103A22" },
+        "fg": { "$value": "#E7EEE9" }
+    },
+    "sidebar": {
+        "$type": "color",
+        "bg": { "$value": "#0B120E" },
+        "fg": { "$value": "#B7C4BB" },
+        "active-bg": { "$value": "#14532D" },
+        "active-fg": { "$value": "#FFFFFF" },
+        "active-marker": { "$value": "#4ADE80" }
+    },
+    "footer": {
+        "$type": "color",
+        "bg": { "$value": "#0B110E" },
+        "fg": { "$value": "#A9BAAF" }
+    },
+    "table": {
+        "$type": "color",
+        "head-bg": { "$value": "#1C2922" },
+        "row-alt": { "$value": "#121B16" },
+        "border": { "$value": "#26352C" }
+    },
+    "chart": {
+        "$type": "color",
+        "1": { "$value": "#4ADE80" },
+        "2": { "$value": "#86EFAC" },
+        "3": { "$value": "#FBBF24" },
+        "4": { "$value": "#93C5FD" },
+        "5": { "$value": "#67E8F9" },
+        "6": { "$value": "#F0ABFC" },
+        "7": { "$value": "#CBD5E1" },
+        "8": { "$value": "#FDE047" },
+        "9": { "$value": "#BEF264" },
+        "10": { "$value": "#FCA5A5" }
+    }
+}

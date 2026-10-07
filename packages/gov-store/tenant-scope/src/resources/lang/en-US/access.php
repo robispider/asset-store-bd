@@ -54,5 +54,8 @@ return [
         'requests_fulfill' => 'Fulfill office requests', 'requests_configure' => 'Configure office requests',
         'access_view' => 'View and request access', 'access_manage' => 'Review office access requests',
         'access_matrix' => 'View the permission matrix', 'access_audit' => 'View individual audit events', 'access_shadow' => 'View aggregate rollout events',
+        'theming_appearance_self' => 'Choose own theme and light/dark mode', 'theming_assign_office' => 'Choose the default theme for my office',
+        'theming_assign_company' => 'Choose the default theme for my ministry', 'theming_assign_organization' => 'Choose the organisation default theme',
+        'theming_lab_view' => 'Review shipped themes in the Theme Lab',
     ],
 ];

@@ -1,0 +1,51 @@
+{
+    "seed": {
+        "$type": "color",
+        "primary": { "$value": "#14532D" },
+        "accent": { "$value": "#15803D" },
+        "neutral": { "$value": "#1F2937" },
+        "danger": { "$value": "#B42318" }
+    },
+    "color": {
+        "$type": "color",
+        "bg": { "$value": "#F7F9F8" },
+        "border": { "$value": "#D5DDD8" },
+        "border-strong": { "$value": "#77857C" },
+        "text": { "$value": "#1F2937" },
+        "text-muted": { "$value": "#4B5563" },
+        "text-subtle": { "$value": "#6B7280" },
+        "link": { "$value": "#166534" },
+        "focus-ring": { "$value": "#15803D" },
+        "info": { "$value": "#1D4ED8" },
+        "status-deployed": { "$value": "#1D4ED8" },
+        "doc-ready": { "$value": "#1D4ED8" },
+        "doc-posted": { "$value": "#14532D" }
+    },
+    "sidebar": {
+        "$type": "color",
+        "bg": { "$value": "{seed.neutral}" },
+        "fg": { "$value": "#CBD5E1" },
+        "active-bg": { "$value": "#14532D" },
+        "active-fg": { "$value": "#FFFFFF" },
+        "active-marker": { "$value": "#4ADE80" }
+    },
+    "table": {
+        "$type": "color",
+        "head-bg": { "$value": "#EEF3F0" },
+        "row-alt": { "$value": "#F7F9F8" },
+        "border": { "$value": "#E2E8E4" }
+    },
+    "chart": {
+        "$type": "color",
+        "1": { "$value": "#14532D" },
+        "2": { "$value": "#22C55E" },
+        "3": { "$value": "#B45309" },
+        "4": { "$value": "#1D4ED8" },
+        "5": { "$value": "#0E7490" },
+        "6": { "$value": "#A21CAF" },
+        "7": { "$value": "#4B5563" },
+        "8": { "$value": "#CA8A04" },
+        "9": { "$value": "#65A30D" },
+        "10": { "$value": "#B42318" }
+    }
+}

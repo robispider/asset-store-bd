@@ -1,0 +1,99 @@
+{
+    "seed": {
+        "$type": "color",
+        "primary": { "$value": "#2A6A93" },
+        "accent": { "$value": "#00804A" },
+        "neutral": { "$value": "#222D32" },
+        "danger": { "$value": "#F97066" }
+    },
+    "color": {
+        "$type": "color",
+        "bg": { "$value": "#222222" },
+        "surface": { "$value": "#33373A" },
+        "surface-raised": { "$value": "#3B3F42" },
+        "surface-sunken": { "$value": "#2A2D30" },
+        "border": { "$value": "#55595D" },
+        "border-strong": { "$value": "#8A8F94" },
+        "overlay": { "$value": "rgba(0, 0, 0, 0.65)" },
+
+        "text": { "$value": "#FFFFFF" },
+        "text-muted": { "$value": "#C3C7CC" },
+        "text-subtle": { "$value": "#A6A4A4" },
+        "text-inverse": { "$value": "#1F2328" },
+        "link": { "$value": "#8CC4E6" },
+        "link-hover": { "$value": "{color.link}", "$extensions": { "gs.derive": { "l": 0.06 } } },
+        "focus-ring": { "$value": "#8CC4E6" },
+
+        "primary": { "$value": "{seed.primary}" },
+        "primary-hover": { "$value": "{color.primary}", "$extensions": { "gs.derive": { "l": 0.05 } } },
+        "primary-active": { "$value": "{color.primary}", "$extensions": { "gs.derive": { "l": -0.04 } } },
+        "primary-subtle": { "$value": "{color.primary}", "$extensions": { "gs.derive": { "mix": { "with": "{color.surface}", "amount": 0.7 } } } },
+        "on-primary": { "$value": "#FFFFFF" },
+        "accent": { "$value": "{seed.accent}" },
+        "on-accent": { "$value": "#FFFFFF" },
+
+        "success": { "$value": "#47CD89" },
+        "success-subtle": { "$value": "{color.success}", "$extensions": { "gs.derive": { "mix": { "with": "{color.surface}", "amount": 0.8 } } } },
+        "on-success": { "$value": "#052E16" },
+        "warning": { "$value": "#FDB022" },
+        "warning-subtle": { "$value": "{color.warning}", "$extensions": { "gs.derive": { "mix": { "with": "{color.surface}", "amount": 0.8 } } } },
+        "on-warning": { "$value": "#2B1700" },
+        "danger": { "$value": "{seed.danger}" },
+        "danger-subtle": { "$value": "{color.danger}", "$extensions": { "gs.derive": { "mix": { "with": "{color.surface}", "amount": 0.8 } } } },
+        "on-danger": { "$value": "#2A0A07" },
+        "info": { "$value": "#84CAFF" },
+        "info-subtle": { "$value": "{color.info}", "$extensions": { "gs.derive": { "mix": { "with": "{color.surface}", "amount": 0.8 } } } },
+        "on-info": { "$value": "#0B1F3A" },
+
+        "status-deployed": { "$value": "#84CAFF" },
+        "status-ready": { "$value": "#47CD89" },
+        "status-pending": { "$value": "#FDB022" },
+        "status-undeployable": { "$value": "#F97066" },
+        "status-archived": { "$value": "#98A2B3" },
+
+        "doc-draft": { "$value": "#98A2B3" },
+        "doc-ready": { "$value": "#84CAFF" },
+        "doc-posted": { "$value": "#47CD89" },
+        "doc-cancelled": { "$value": "#FDA29B" },
+        "doc-approved": { "$value": "#47CD89" },
+        "doc-rejected": { "$value": "#F97066" }
+    },
+    "sidebar": {
+        "$type": "color",
+        "bg": { "$value": "#1E282C" },
+        "fg": { "$value": "#B8C7CE" },
+        "active-bg": { "$value": "#151C1F" },
+        "active-fg": { "$value": "#FFFFFF" }
+    },
+    "footer": {
+        "$type": "color",
+        "bg": { "$value": "#2A2D30" },
+        "fg": { "$value": "#D2D6DE" }
+    },
+    "table": {
+        "$type": "color",
+        "row-alt": { "$value": "#2E3235" },
+        "row-hover": { "$value": "{color.primary}", "$extensions": { "gs.derive": { "mix": { "with": "{color.surface}", "amount": 0.82 } } } },
+        "row-selected": { "$value": "{color.primary}", "$extensions": { "gs.derive": { "mix": { "with": "{color.surface}", "amount": 0.6 } } } },
+        "border": { "$value": "#4A4E52" }
+    },
+    "chart": {
+        "$type": "color",
+        "1": { "$value": "#84CAFF" },
+        "2": { "$value": "#47CD89" },
+        "3": { "$value": "#FDB022" },
+        "4": { "$value": "#BDB4FE" },
+        "5": { "$value": "#5FE9D0" },
+        "6": { "$value": "#FAA7E0" },
+        "7": { "$value": "#D0D5DD" },
+        "8": { "$value": "#FEC84B" },
+        "9": { "$value": "#53B1FD" },
+        "10": { "$value": "#FDA29B" },
+        "grid": { "$value": "rgba(255, 255, 255, 0.12)" }
+    },
+    "shadow": {
+        "$type": "shadow",
+        "1": { "$value": "0 1px 2px rgba(0, 0, 0, 0.5)" },
+        "2": { "$value": "0 8px 24px rgba(0, 0, 0, 0.5)" }
+    }
+}

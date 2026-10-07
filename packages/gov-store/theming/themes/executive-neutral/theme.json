@@ -1,0 +1,25 @@
+{
+    "key": "executive-neutral",
+    "version": "1.0.0",
+    "status": "published",
+    "extends": "default",
+    "label": { "en-US": "Executive Neutral", "bn-BD": "নির্বাহী নিরপেক্ষ" },
+    "description": {
+        "en-US": "Quiet, document-like look for review and reporting: ledger tables, serif headings, generous spacing.",
+        "bn-BD": "পর্যালোচনা ও প্রতিবেদনের জন্য শান্ত, নথির মতো চেহারা: খতিয়ান টেবিল, সেরিফ শিরোনাম, প্রশস্ত বিন্যাস।"
+    },
+    "authors": ["UI/UX Team"],
+    "fonts": { "sans": "noto-sans", "display": "source-serif-4", "bengali": "noto-serif-bengali", "mono": "ibm-plex-mono" },
+    "variants": {
+        "header": "dark",
+        "sidebar": "light",
+        "nav_icons": "hidden",
+        "density": "comfortable",
+        "table": "ledger",
+        "surfaces": "flat",
+        "radius": "none",
+        "type": "serif-display",
+        "status_style": "text"
+    },
+    "swatches": ["#263238", "#2F6B4F", "#B68A3A", "#F7F6F3", "#20252B"]
+}

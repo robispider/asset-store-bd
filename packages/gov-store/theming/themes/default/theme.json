@@ -1,0 +1,25 @@
+{
+    "key": "default",
+    "version": "1.0.0",
+    "status": "published",
+    "extends": null,
+    "label": { "en-US": "Snipe-IT Classic", "bn-BD": "স্নাইপ-আইটি ক্লাসিক" },
+    "description": {
+        "en-US": "The stock Snipe-IT look. Uses the colours chosen in Settings › Branding and on each profile.",
+        "bn-BD": "স্নাইপ-আইটির মূল চেহারা। সেটিংস › ব্র্যান্ডিং ও প্রোফাইলে বেছে নেওয়া রং ব্যবহার করে।"
+    },
+    "authors": ["UI/UX Team"],
+    "fonts": { "sans": "system-sans", "bengali": "noto-sans-bengali", "mono": "system-mono" },
+    "variants": {
+        "header": "brand",
+        "sidebar": "dark",
+        "nav_icons": "shown",
+        "density": "regular",
+        "table": "grid",
+        "surfaces": "card",
+        "radius": "sm",
+        "type": "sans",
+        "status_style": "tinted"
+    },
+    "swatches": ["#2A6A93", "#00804A", "#B42318", "#ECF0F5", "#222D32"]
+}

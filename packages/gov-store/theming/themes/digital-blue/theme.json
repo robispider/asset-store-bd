@@ -1,0 +1,25 @@
+{
+    "key": "digital-blue",
+    "version": "1.0.0",
+    "status": "published",
+    "extends": "default",
+    "label": { "en-US": "Digital Blue", "bn-BD": "ডিজিটাল নীল" },
+    "description": {
+        "en-US": "Modern digital-service look with dense tables and crisp status chips.",
+        "bn-BD": "ঘন টেবিল ও স্পষ্ট স্ট্যাটাস চিপসহ আধুনিক ডিজিটাল সেবার চেহারা।"
+    },
+    "authors": ["UI/UX Team"],
+    "fonts": { "sans": "inter", "bengali": "noto-sans-bengali", "mono": "ibm-plex-mono" },
+    "variants": {
+        "header": "dark",
+        "sidebar": "dark",
+        "nav_icons": "shown",
+        "density": "compact",
+        "table": "rules",
+        "surfaces": "card",
+        "radius": "sm",
+        "type": "sans",
+        "status_style": "chip"
+    },
+    "swatches": ["#17365D", "#2563EB", "#0F766E", "#D97706", "#F5F7FA"]
+}

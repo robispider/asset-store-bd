@@ -1,0 +1,148 @@
+/*
+ * Layer 3 — layout variants, implemented once. Themes only choose values in theme.json;
+ * the layout hook writes them to <html> as data-gs-* attributes (Lab panels carry them too).
+ *
+ * Part A (unlayered): variant → token values. Custom properties take part in cascade layers,
+ * so token overrides must be unlayered to beat the generated theme blocks; [data-skin][data-gs-*]
+ * (0,2,0) beats the theme's [data-skin="…"] (0,1,0) block.
+ */
+
+/* ---- density ---- */
+[data-skin][data-gs-density="compact"] { --gs-size-row-h: 32px; --gs-size-control-h: 30px; --gs-box-pad: 8px; --gs-cell-pad-y: 5px; }
+[data-skin][data-gs-density="regular"] { --gs-size-row-h: 38px; --gs-size-control-h: 34px; --gs-box-pad: 10px; --gs-cell-pad-y: 8px; }
+[data-skin][data-gs-density="comfortable"] { --gs-size-row-h: 44px; --gs-size-control-h: 38px; --gs-box-pad: 16px; --gs-cell-pad-y: 12px; }
+@media (pointer: coarse) {
+    /* Touch targets stay at least 44px whatever the density. */
+    [data-skin][data-gs-density] { --gs-size-row-h: max(44px, var(--gs-size-row-h)); --gs-size-control-h: 44px; }
+}
+
+/* ---- radius ---- */
+[data-skin][data-gs-radius="none"] { --gs-radius-sm: 0; --gs-radius-md: 0; --gs-radius-lg: 0; }
+[data-skin][data-gs-radius="sm"] { --gs-radius-sm: 2px; --gs-radius-md: 3px; --gs-radius-lg: 4px; }
+[data-skin][data-gs-radius="md"] { --gs-radius-sm: 4px; --gs-radius-md: 6px; --gs-radius-lg: 8px; }
+[data-skin][data-gs-radius="lg"] { --gs-radius-sm: 6px; --gs-radius-md: 10px; --gs-radius-lg: 14px; }
+
+/* ---- type ---- */
+[data-skin][data-gs-type="sans"] { --gs-font-display: var(--gs-font-sans); }
+
+/* ---- surfaces ---- */
+[data-skin][data-gs-surfaces="card"] { --gs-surface-shadow: var(--gs-shadow-1); }
+[data-skin][data-gs-surfaces="flat"] { --gs-surface-shadow: none; }
+
+/* ---- table ---- */
+[data-skin][data-gs-table="grid"] { --gs-table-stripe: var(--gs-table-row-alt); --gs-table-cell-rule: var(--gs-border-width) solid var(--gs-table-border); }
+[data-skin][data-gs-table="rules"] { --gs-table-stripe: var(--gs-color-surface); --gs-table-cell-rule: 0; }
+[data-skin][data-gs-table="ledger"] { --gs-table-stripe: var(--gs-color-surface); --gs-table-cell-rule: 0; }
+
+/* ---- header (shell tokens read by the adapter) ---- */
+[data-skin][data-gs-header="brand"],
+[data-skin][data-gs-header="dark"] {
+    --gs-shell-header-bg: var(--gs-header-bg);
+    --gs-shell-header-fg: var(--gs-header-fg);
+    --gs-shell-header-fg-muted: var(--gs-header-fg-muted);
+    --gs-shell-header-hover: color-mix(in oklab, var(--gs-header-fg) 14%, transparent);
+    --gs-shell-header-input-bg: color-mix(in oklab, var(--gs-header-fg) 14%, transparent);
+}
+[data-skin][data-gs-header="neutral"] {
+    --gs-shell-header-bg: var(--gs-color-surface);
+    --gs-shell-header-fg: var(--gs-color-text);
+    --gs-shell-header-fg-muted: var(--gs-color-text-muted);
+    --gs-shell-header-hover: var(--gs-color-surface-sunken);
+    --gs-shell-header-input-bg: var(--gs-color-surface-sunken);
+}
+
+/* ---- sidebar (shell tokens read by the adapter) ---- */
+[data-skin][data-gs-sidebar="dark"],
+[data-skin][data-gs-sidebar="light"] {
+    --gs-shell-sidebar-bg: var(--gs-sidebar-bg);
+    --gs-shell-sidebar-fg: var(--gs-sidebar-fg);
+    --gs-shell-sidebar-section-fg: var(--gs-sidebar-section-fg);
+    --gs-shell-sidebar-active-bg: var(--gs-sidebar-active-bg);
+    --gs-shell-sidebar-active-fg: var(--gs-sidebar-active-fg);
+    --gs-shell-sidebar-hover: color-mix(in oklab, var(--gs-sidebar-fg) 10%, transparent);
+    --gs-shell-sidebar-rule: 0;
+}
+[data-skin][data-gs-sidebar="light"] { --gs-shell-sidebar-rule: var(--gs-border-width) solid var(--gs-color-border); }
+[data-skin][data-gs-sidebar="brand"] {
+    --gs-shell-sidebar-bg: var(--gs-color-primary);
+    --gs-shell-sidebar-fg: var(--gs-color-on-primary);
+    --gs-shell-sidebar-section-fg: color-mix(in oklab, var(--gs-color-on-primary) 70%, transparent);
+    --gs-shell-sidebar-active-bg: var(--gs-color-primary-active);
+    --gs-shell-sidebar-active-fg: var(--gs-color-on-primary);
+    --gs-shell-sidebar-hover: color-mix(in oklab, var(--gs-color-on-primary) 12%, transparent);
+    --gs-shell-sidebar-rule: 0;
+}
+
+/*
+ * Part B (@layer gs-adapter): selector effects on Snipe-IT's shell and tables.
+ * Snipe-IT Classic keeps the stock layout, so these apply to designed themes only.
+ */
+@layer gs-adapter {
+    [data-skin]:not([data-skin="default"]) {
+        /* header */
+        &[data-gs-header="dark"] .main-header .navbar { box-shadow: inset 0 -2px 0 var(--gs-sidebar-active-marker) !important; }
+        &[data-gs-header="neutral"] .main-header .navbar,
+        &[data-gs-header="neutral"] .main-header .logo { border-bottom: var(--gs-border-width) solid var(--gs-color-border) !important; }
+
+        /* sidebar: text-only first level (collapsed mini mode always keeps icons) */
+        &[data-gs-nav-icons="hidden"] body:not(.sidebar-collapse) .sidebar-menu > li > a > i:first-child,
+        &[data-gs-nav-icons="hidden"] body:not(.sidebar-collapse) .sidebar-menu > li > a > .fa:first-child,
+        &[data-gs-nav-icons="hidden"] body:not(.sidebar-collapse) .sidebar-menu > li > a > .fas:first-child { display: none !important; }
+
+        /* density */
+        & .box-body, & .box-header, & .box-footer, & .panel-body { padding: var(--gs-box-pad) calc(var(--gs-box-pad) + 4px) !important; }
+        & .table > thead > tr > th,
+        & .table > tbody > tr > td,
+        & .table > tbody > tr > th,
+        & .table > tfoot > tr > td {
+            padding-top: var(--gs-cell-pad-y) !important;
+            padding-bottom: var(--gs-cell-pad-y) !important;
+            height: var(--gs-size-row-h) !important;
+            vertical-align: middle !important;
+        }
+
+        /* table styles */
+        &[data-gs-table="grid"] .table > thead > tr > th,
+        &[data-gs-table="grid"] .table > tbody > tr > td {
+            border-left: var(--gs-table-cell-rule) !important;
+        }
+        &[data-gs-table="grid"] .table > thead > tr > th:first-child,
+        &[data-gs-table="grid"] .table > tbody > tr > td:first-child { border-left: 0 !important; }
+        &[data-gs-table="ledger"] .table > thead > tr > th {
+            text-transform: uppercase !important;
+            font-size: var(--gs-font-size-sm) !important;
+            letter-spacing: 0.06em !important;
+            font-weight: 600 !important;
+            border-bottom: 2px solid var(--gs-table-total-rule) !important;
+        }
+        &[data-gs-table="ledger"] .table > tfoot > tr:first-child > td,
+        &[data-gs-table="ledger"] .table > tfoot > tr:first-child > th {
+            border-top: 3px double var(--gs-table-total-rule) !important;
+            font-weight: 600 !important;
+        }
+        &[data-gs-table="ledger"] .table > tbody > tr > td { font-variant-numeric: tabular-nums !important; }
+
+        /* surfaces */
+        &[data-gs-surfaces="flat"] .box,
+        &[data-gs-surfaces="flat"] .info-box,
+        &[data-gs-surfaces="flat"] .nav-tabs-custom,
+        &[data-gs-surfaces="flat"] .panel {
+            background-color: transparent !important;
+            border: 0 !important;
+            border-top: var(--gs-border-width) solid var(--gs-color-border) !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+        }
+        &[data-gs-surfaces="flat"] .box-header.with-border { background: transparent !important; }
+        &[data-gs-surfaces="flat"] .content { padding-top: var(--gs-space-5) !important; }
+
+        /* display type */
+        &[data-gs-type="serif-display"] .content-header > h1,
+        &[data-gs-type="serif-display"] .box-title,
+        &[data-gs-type="serif-display"] .info-box-number,
+        &[data-gs-type="serif-display"] .small-box h3 {
+            font-family: var(--gs-font-display) !important;
+            letter-spacing: -0.01em !important;
+        }
+    }
+}
