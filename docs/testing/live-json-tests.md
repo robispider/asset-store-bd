@@ -1,6 +1,6 @@
-# Live JSON journey tests — operator guide
+# Live JSON journey tests — command reference
 
-Runner for JSON-defined browser journeys against the **local, nonproduction** application. Design: [json-live-journey-testing-plan.md](../plans/json-live-journey-testing-plan.md). Authoring: [live-json-authoring.md](live-json-authoring.md).
+Runner for JSON-defined browser journeys against the **local, nonproduction** application. Design: [json-live-journey-testing-plan.md](../plans/json-live-journey-testing-plan.md). Authoring: [agent guide](live-tests-agent-guide.md); operators: [user guide](live-tests-user-guide.md).
 
 ## Commands
 

@@ -84,7 +84,7 @@ tests/live/
   feature-catalog.json       # features, required cases and coverage status
 docs/testing/
   live-json-tests.md         # operator guide
-  live-json-authoring.md     # agent authoring contract and examples
+  live-tests-agent-guide.md   # agent authoring contract and examples (live-tests-user-guide.md for operators)
 storage/app/private/live-tests/<run-id>/
   events.jsonl
   results.json
