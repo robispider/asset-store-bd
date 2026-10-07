@@ -38,8 +38,13 @@
             outline: 2px solid var(--gs-color-focus-ring) !important;
             outline-offset: 2px !important;
         }
-        & a:not([class*="gs-"]) { color: var(--gs-color-link) !important; }
-        & a:not([class*="gs-"]):is(:hover, :focus) { color: var(--gs-color-link-hover) !important; }
+        /* :where() zeroes the specificity of the exclusion so this stays below any single-class rule
+           (`.btn-info`, `.label-success`, …). A bare `a:not([class*="gs-"])` is (0,1,1) — higher than
+           a one-class selector — so every anchor-rendered button/label/badge below would lose its
+           on-{tone} text colour to the link colour (e.g. green link text on a blue .btn-info, far
+           below AA contrast) without this. */
+        & a:where(:not([class*="gs-"])) { color: var(--gs-color-link) !important; }
+        & a:where(:not([class*="gs-"])):is(:hover, :focus) { color: var(--gs-color-link-hover) !important; }
         & ::selection { background: var(--gs-color-primary-subtle) !important; color: var(--gs-color-text) !important; }
 
         /* ---------- header / navbar ---------- */

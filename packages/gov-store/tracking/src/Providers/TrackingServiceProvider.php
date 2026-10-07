@@ -10,6 +10,7 @@ use GovStore\Tracking\Repositories\TrackingProjectionRepositoryInterface;
 use GovStore\Tracking\Repositories\CachedTrackingProjectionRepository;
 use GovStore\Tracking\Repositories\EloquentTrackingProjectionRepository;
 use GovStore\TenantScope\Navigation\MenuRegistry;
+use GovStore\Theming\Facades\GsTheme;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
 
@@ -42,6 +43,7 @@ class TrackingServiceProvider extends ServiceProvider
         $this->registerConsoleCommands();
         $this->registerMetadataBridge();
         $this->registerEvents();
+        $this->registerThemeAssets();
 
         if ($this->app->bound(MenuRegistry::class)) {
             $this->registerTrackingMenuStructure();
@@ -89,6 +91,13 @@ class TrackingServiceProvider extends ServiceProvider
             [\GovStore\Tracking\Listeners\AssociateAssetsToProgramme::class, 'handle']
         );
     }
+    protected function registerThemeAssets(): void
+    {
+        if ($this->app->bound('gs.theme')) {
+            GsTheme::assets()->css('tracking', __DIR__.'/../resources/css/tracking.css');
+        }
+    }
+
     protected function registerMiddleware(): void
     {
         $router = $this->app['router'];

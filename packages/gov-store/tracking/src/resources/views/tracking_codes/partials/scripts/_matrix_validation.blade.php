@@ -20,13 +20,13 @@
                     var errors = [];
                     var warnings = [];
 
-                    $('.matrix-cell').css('background-color', '');
-                    $('.matrix-row').css('border-left', '');
+                    $('.matrix-cell').removeClass('gs-cell-input--invalid');
+                    $('.matrix-row').removeClass('gs-matrix-row--zero');
 
                     $('.matrix-cell').each(function() {
                         var val = parseInt($(this).val()) || 0;
                         if (val < 0) {
-                            $(this).css('background-color', '#fee2e2');
+                            $(this).addClass('gs-cell-input--invalid');
                             if (!errors.includes('Negative quantities are not allowed.')) {
                                 errors.push('Negative quantities are not allowed.');
                             }
@@ -40,7 +40,7 @@
                         });
 
                         if (rowSum === 0) {
-                            $(this).css('border-left', '4px solid #f59e0b');
+                            $(this).addClass('gs-matrix-row--zero');
                             if (!warnings.includes('Some participating offices have zero items allocated.')) {
                                 warnings.push('Some participating offices have zero items allocated.');
                             }
@@ -56,15 +56,15 @@
 
                     if (errors.length > 0) {
                         html = `<span class="text-red"><i class="fa fa-times-circle"></i> <strong>Spreadsheet Error:</strong> ${errors.join(' ')} (Saving blocked)</span>`;
-                        $('#matrix-grid-table').css('border-color', '#ef4444');
+                        $('#matrix-grid-table').removeClass('gs-matrix--warning gs-matrix--ok').addClass('gs-matrix--error');
                         $('button[type="submit"]').prop('disabled', true);
                     } else if (warnings.length > 0) {
                         html = `<span class="text-yellow"><i class="fa fa-warning"></i> <strong>Operational Warning:</strong> ${warnings.join(' ')} (Draft saving allowed)</span>`;
-                        $('#matrix-grid-table').css('border-color', '#f59e0b');
+                        $('#matrix-grid-table').removeClass('gs-matrix--error gs-matrix--ok').addClass('gs-matrix--warning');
                         $('button[type="submit"]').prop('disabled', false);
                     } else {
                         html = `<span class="text-green"><i class="fa fa-check-circle"></i> <strong>Spreadsheet Status:</strong> Healthy (All allocations conform to planning rules)</span>`;
-                        $('#matrix-grid-table').css('border-color', '#cbd5e1');
+                        $('#matrix-grid-table').removeClass('gs-matrix--error gs-matrix--warning').addClass('gs-matrix--ok');
                         $('button[type="submit"]').prop('disabled', false);
                     }
 

@@ -19,7 +19,7 @@
                 
                 state.columns.forEach(function(col) {
                     headerHtml += `
-                        <th class="matrix-cat-header" draggable="true" data-col-uuid="${col.uuid}" style="text-align: center; background-color: #f8fafc; cursor: grab;">
+                        <th class="matrix-cat-header" draggable="true" data-col-uuid="${col.uuid}" style="text-align: center; cursor: grab;">
                             <span class="header-name">
                                 <i class="fa fa-ellipsis-v text-muted" style="margin-right: 5px; cursor: move;" title="Drag to reorder column"></i>
                                 ${col.name} <i class="fa fa-caret-down text-muted"></i>
@@ -34,8 +34,8 @@
                 });
 
                 headerHtml += '<th width="150" class="gs-inline-spawner" id="btn-spawn-column" style="vertical-align: middle;"><i class="fa fa-plus"></i> Category</th>';
-                headerHtml += '<th width="120" id="col-row-total-header" style="background-color: #f1f5f9; font-weight: bold; border-right: 2px solid #cbd5e1; line-height: 24px;">ROW TOTAL</th>';
-                headerHtml += '<th width="80" style="text-align: right; background-color: #f8fafc;">Action</th>';
+                headerHtml += '<th width="120" id="col-row-total-header" style="font-weight: bold; line-height: 24px;">ROW TOTAL</th>';
+                headerHtml += '<th width="80" class="gs-matrix-head-cell" style="text-align: right;">Action</th>';
                 headerHtml += '</tr>';
                 $table.find('thead').append(headerHtml);
 
@@ -62,11 +62,11 @@
                     });
 
                     // Injected missing spacer cell to sit directly underneath the "+ Category" spawner column header
-                    bodyHtml += `<td style="background-color: #f8fafc; border-bottom: 1px solid #e2e8f0;"></td>`;
+                    bodyHtml += `<td class="gs-matrix-spacer"></td>`;
 
                     bodyHtml += `
-                        <td class="row-total-cell text-center text-bold" data-row-uuid="${row.uuid}" style="background-color: #f1f5f9; font-weight: bold; border-right: 2px solid #cbd5e1; line-height: 36px;">0</td>
-                        <td class="text-right cell-actions" style="background-color: #f8fafc; padding: 5px 12px; line-height: 26px;">
+                        <td class="row-total-cell text-center text-bold" data-row-uuid="${row.uuid}" style="line-height: 36px;">0</td>
+                        <td class="text-right cell-actions gs-matrix-head-cell" style="padding: 5px 12px; line-height: 26px;">
                             <button type="button" class="btn btn-xs btn-danger remove-matrix-row-action" data-row-uuid="${row.uuid}"><i class="fa fa-trash"></i></button>
                         </td>
                     `;
@@ -80,14 +80,14 @@
                 footerHtml += '<td class="gs-inline-spawner" id="btn-spawn-row" style="text-align: left;"><i class="fa fa-plus"></i> Select Office...</td>';
                 
                 state.columns.forEach(function(col) {
-                    footerHtml += `<td class="spacer-${col.category_id}" style="background-color: #f8fafc; border-bottom: 1px solid #cbd5e1;"></td>`;
+                    footerHtml += `<td class="spacer-${col.category_id} gs-matrix-spacer"></td>`;
                 });
-                
+
                 footerHtml += '<td id="matrix-spawner-spacer"></td>';
-                
+
                 // FIXED: Resolved the string concatenation syntax error here by wrapping it correctly
-                footerHtml += '<td style="background-color: #f8fafc; border-right: 2px solid #cbd5e1;"></td>';
-                
+                footerHtml += '<td class="gs-matrix-spacer--right"></td>';
+
                 footerHtml += '<td></td>';
                 footerHtml += '</tr>';
 
@@ -97,14 +97,14 @@
                 footerHtml += '<td>TOTAL ALLOCATIONS</td>';
                 
                 state.columns.forEach(function(col) {
-                    footerHtml += `<td id="total-cat-${col.category_id}" class="col-total-cell text-center text-bold" data-col-uuid="${col.uuid}" style="background-color: #f1f5f9; font-weight: bold; border-top: 2px solid #cbd5e1;">0</td>`;
+                    footerHtml += `<td id="total-cat-${col.category_id}" class="col-total-cell text-center text-bold" data-col-uuid="${col.uuid}">0</td>`;
                 });
 
                 // Injected missing spacer cell to sit directly underneath the "+ Category" spawner column footer
-                footerHtml += `<td style="background-color: #f8fafc; border-top: 2px solid #cbd5e1;"></td>`;
+                footerHtml += `<td></td>`;
 
-                footerHtml += `<td id="matrix-grand-total" style="background-color: #f1f5f9; font-weight: bold; border-right: 2px solid #cbd5e1;">0</td>`;
-                footerHtml += '<td style="background-color: #f8fafc;"></td>';
+                footerHtml += `<td id="matrix-grand-total">0</td>`;
+                footerHtml += '<td></td>';
                 footerHtml += '</tr>';
                 $table.find('tfoot').append(footerHtml);
 
@@ -130,33 +130,33 @@
                 var $table = $('#matrix-grid-table');
                 var $statusBar = $('#matrix-status-text');
 
-                $('.matrix-cell').css('background-color', '');
-                $('.matrix-row-container').css('border-left', '');
+                $('.matrix-cell').removeClass('gs-cell-input--invalid');
+                $('.matrix-row-container').removeClass('gs-matrix-row--zero');
 
                 state.rows.forEach(function(row) {
                     state.columns.forEach(function(col) {
                         if (state.validation.invalidCells[row.uuid + '-' + col.uuid]) {
-                            $(`.matrix-cell[data-row-uuid="${row.uuid}"][data-col-uuid="${col.uuid}"]`).css('background-color', '#fee2e2');
+                            $(`.matrix-cell[data-row-uuid="${row.uuid}"][data-col-uuid="${col.uuid}"]`).addClass('gs-cell-input--invalid');
                         }
                     });
 
                     if (state.totals.rows[row.uuid] === 0) {
-                        $(`.matrix-row-container[data-row-uuid="${row.uuid}"]`).css('border-left', '4px solid #f59e0b');
+                        $(`.matrix-row-container[data-row-uuid="${row.uuid}"]`).addClass('gs-matrix-row--zero');
                     }
                 });
 
                 var html = '';
                 if (state.validation.errors.length > 0) {
                     html = `<span class="text-red"><i class="fa fa-times-circle"></i> <strong>Spreadsheet Error:</strong> ${state.validation.errors.join(' ')} (Saving blocked)</span>`;
-                    $table.css('border-color', '#ef4444');
+                    $table.removeClass('gs-matrix--warning gs-matrix--ok').addClass('gs-matrix--error');
                     $('button[type="submit"]').prop('disabled', true);
                 } else if (state.validation.warnings.length > 0) {
                     html = `<span class="text-yellow"><i class="fa fa-warning"></i> <strong>Operational Warning:</strong> ${state.validation.warnings.join(' ')} (Draft saving allowed)</span>`;
-                    $table.css('border-color', '#f59e0b');
+                    $table.removeClass('gs-matrix--error gs-matrix--ok').addClass('gs-matrix--warning');
                     $('button[type="submit"]').prop('disabled', false);
                 } else {
                     html = `<span class="text-green"><i class="fa fa-check-circle"></i> <strong>Spreadsheet Status:</strong> Healthy (All allocations conform to planning rules)</span>`;
-                    $table.css('border-color', '#cbd5e1');
+                    $table.removeClass('gs-matrix--error gs-matrix--warning').addClass('gs-matrix--ok');
                     $('button[type="submit"]').prop('disabled', false);
                 }
 

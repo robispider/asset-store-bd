@@ -1,0 +1,508 @@
+/*
+ * gov-store/tracking package CSS — registered with GsTheme::assets() (§15.2 of the theming plan).
+ * Bundled by `gs-theme:build` into packages.{hash}.css inside @layer gs-packages.
+ * No colour literals: every colour comes from a --gs-* token so the package renders correctly
+ * in every theme x mode (R1). Dark mode needs no separate rules here — the tokens already
+ * resolve per [data-theme].
+ */
+
+/* ===================================================================== */
+/* Shared: breadcrumb-style context path (tracking_codes create/edit)    */
+/* ===================================================================== */
+.gs-tracking-breadcrumb-path {
+    margin-bottom: 20px;
+    padding: 10px 15px;
+    background: var(--gs-color-surface);
+    border: 1px solid var(--gs-table-border);
+    border-radius: var(--gs-radius-sm);
+}
+.gs-tracking-breadcrumb-path .breadcrumb {
+    background: transparent;
+    margin: 0;
+    padding: 0;
+}
+
+/* Shared submit-footer box (tracking_codes create/edit) */
+.gs-tracking-submit-box {
+    border-radius: var(--gs-radius-sm);
+    box-shadow: var(--gs-shadow-1);
+    margin-bottom: 40px;
+}
+.gs-tracking-submit-footer {
+    background: var(--gs-color-surface-sunken);
+    padding: 15px 20px;
+}
+
+/* ===================================================================== */
+/* tracking_codes/create.blade.php                                       */
+/* ===================================================================== */
+.gs-tracking-task-errors {
+    margin-bottom: 20px;
+}
+
+/* ===================================================================== */
+/* tracking_codes/edit.blade.php — immutable strategy indicator           */
+/* ===================================================================== */
+.gs-tracking-strategy-box {
+    border-left: 4px solid var(--gs-color-primary);
+    border-radius: var(--gs-radius-sm);
+    box-shadow: var(--gs-shadow-1);
+    margin-bottom: 20px;
+}
+.gs-tracking-strategy-box__body { padding: 15px 20px; }
+.gs-tracking-strategy-text {
+    font-size: 15px;
+    color: var(--gs-color-text-muted);
+    display: block;
+}
+
+/* ===================================================================== */
+/* tracking_codes/partials/_level1_blanket.blade.php                     */
+/* ===================================================================== */
+/* (now uses <x-gs::alert>; no extra CSS needed) */
+
+/* ===================================================================== */
+/* tracking_codes/partials/_level3_matrix_grid.blade.php                 */
+/* + scripts/_matrix_renderer.blade.php + scripts/_matrix_validation.blade.php */
+/* (was styles/_matrix_styles.blade.php, now retired — see README)       */
+/* ===================================================================== */
+.gs-matrix-status-bar {
+    font-size: 14px;
+    padding: 10px;
+    background: var(--gs-color-surface-sunken);
+    border: 1px solid var(--gs-table-border);
+    border-radius: var(--gs-radius-sm);
+}
+
+.gs-grid-container {
+    position: relative;
+    max-height: 500px;
+    overflow: auto;
+    border: 1px solid var(--gs-table-border);
+    border-radius: var(--gs-radius-md);
+    background: var(--gs-color-surface);
+    box-shadow: var(--gs-shadow-1);
+}
+
+#matrix-grid-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    margin-bottom: 0;
+    font-size: 13px;
+    color: var(--gs-color-text);
+}
+
+#matrix-grid-table thead th {
+    position: sticky;
+    top: 0;
+    background: var(--gs-table-head-bg);
+    color: var(--gs-table-head-fg);
+    z-index: 20;
+    border-bottom: 2px solid var(--gs-table-border);
+    border-right: 1px solid var(--gs-table-border);
+    padding: 8px 12px;
+    font-weight: 600;
+    text-align: center;
+    height: 40px;
+}
+
+#matrix-grid-table tbody td:first-child,
+#matrix-grid-table tfoot td:first-child {
+    position: sticky;
+    left: 0;
+    background: var(--gs-table-head-bg);
+    z-index: 15;
+    border-right: 2px solid var(--gs-table-border);
+    border-bottom: 1px solid var(--gs-table-border);
+    font-weight: 600;
+    padding: 10px 15px;
+}
+
+#matrix-grid-table thead th:first-child {
+    position: sticky;
+    left: 0;
+    top: 0;
+    z-index: 30;
+    border-right: 2px solid var(--gs-table-border);
+    border-bottom: 2px solid var(--gs-table-border);
+    background: var(--gs-color-surface-sunken);
+    text-align: left;
+}
+
+#matrix-grid-table td {
+    border-right: 1px solid var(--gs-table-border);
+    border-bottom: 1px solid var(--gs-table-border);
+    padding: 0;
+    height: 36px;
+}
+
+.gs-cell-input {
+    width: 100%;
+    height: 36px;
+    border: none;
+    outline: none;
+    text-align: center;
+    padding: 0 8px;
+    background: transparent;
+    color: inherit;
+    transition: background-color .15s ease-in-out;
+}
+
+.gs-cell-input:focus {
+    background: var(--gs-color-surface);
+    box-shadow: inset 0 0 0 2px var(--gs-color-focus-ring);
+    z-index: 5;
+    position: relative;
+}
+
+.gs-cell-input--invalid { background: var(--gs-color-danger-subtle); }
+
+#matrix-grid-table tbody tr:hover td { background: var(--gs-table-row-hover); }
+
+#matrix-grid-table tfoot tr td {
+    position: sticky;
+    bottom: 0;
+    background: var(--gs-table-head-bg);
+    z-index: 10;
+    border-top: 2px solid var(--gs-table-total-rule);
+    font-weight: 700;
+    padding: 10px 12px;
+    text-align: center;
+}
+#matrix-grid-table tfoot td:first-child { z-index: 25; }
+
+.gs-inline-spawner {
+    background: var(--gs-color-surface-sunken) !important;
+    cursor: pointer;
+    color: var(--gs-color-primary);
+    font-weight: 600 !important;
+    text-align: center;
+    transition: background-color .15s;
+}
+.gs-inline-spawner:hover { background: var(--gs-color-primary-subtle) !important; }
+
+.gs-inline-select .select2-container--default .select2-selection--single {
+    border: none !important;
+    background: transparent !important;
+    height: 34px !important;
+}
+
+.gs-context-menu {
+    position: absolute;
+    background: var(--gs-color-surface);
+    border: 1px solid var(--gs-color-border-strong);
+    border-radius: var(--gs-radius-sm);
+    box-shadow: var(--gs-shadow-2);
+    z-index: 50;
+    display: none;
+    width: 180px;
+}
+.gs-context-menu ul { list-style: none; padding: 5px 0; margin: 0; }
+.gs-context-menu ul li {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--gs-color-text);
+    transition: background-color .15s;
+}
+.gs-context-menu ul li:hover { background: var(--gs-color-surface-sunken); }
+.gs-context-menu ul li i { margin-right: 8px; color: var(--gs-color-text-muted); }
+
+.gs-dragging { opacity: .4; border: 2px dashed var(--gs-color-primary) !important; }
+.gs-drag-over-left { border-left: 3px solid var(--gs-color-primary) !important; }
+.gs-drag-over-top { border-top: 3px solid var(--gs-color-primary) !important; }
+
+/* Cells rendered dynamically by _matrix_renderer.blade.php */
+#matrix-grid-table .matrix-cat-header,
+#matrix-grid-table .gs-matrix-head-cell { background: var(--gs-table-head-bg); }
+#matrix-grid-table #col-row-total-header,
+#matrix-grid-table .row-total-cell,
+#matrix-grid-table #matrix-grand-total {
+    background: var(--gs-color-surface-sunken);
+    border-right: 2px solid var(--gs-table-total-rule);
+}
+#matrix-grid-table .col-total-cell { background: var(--gs-color-surface-sunken); }
+#matrix-grid-table .gs-matrix-spacer {
+    background: var(--gs-table-head-bg);
+    border-bottom: 1px solid var(--gs-table-border);
+}
+#matrix-grid-table .gs-matrix-spacer--right {
+    background: var(--gs-table-head-bg);
+    border-right: 2px solid var(--gs-table-total-rule);
+}
+
+/* Validation states toggled by _matrix_renderer.blade.php / _matrix_validation.blade.php */
+#matrix-grid-table.gs-matrix--error { border-color: var(--gs-color-danger); }
+#matrix-grid-table.gs-matrix--warning { border-color: var(--gs-color-warning); }
+#matrix-grid-table.gs-matrix--ok { border-color: var(--gs-table-border); }
+.matrix-row-container.gs-matrix-row--zero,
+.matrix-row.gs-matrix-row--zero { border-left: 4px solid var(--gs-color-warning); }
+
+/* ===================================================================== */
+/* operation_unit/index.blade.php                                        */
+/* ===================================================================== */
+.gs-op-team-card {
+    border-top: 3px solid;
+    border-radius: var(--gs-radius-sm);
+    background: var(--gs-color-surface);
+    box-shadow: var(--gs-shadow-1);
+    margin-bottom: 25px;
+}
+.gs-op-team-card--head { border-top-color: var(--gs-color-warning); }
+.gs-op-team-card--officer { border-top-color: var(--gs-color-info); }
+.gs-op-team-card--support { border-top-color: var(--gs-color-success); }
+
+.gs-op-team-header {
+    padding: 15px;
+    border-bottom: 1px solid var(--gs-table-border);
+    background: var(--gs-table-head-bg);
+}
+.gs-op-team-title { margin: 0; font-size: 16px; font-weight: bold; }
+.gs-op-team-body { padding: 15px; }
+.gs-op-team-body hr { border-top: 1px solid var(--gs-table-border); }
+
+.gs-op-staff-row {
+    padding: 10px;
+    border-bottom: 1px dashed var(--gs-table-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.gs-op-staff-row:last-child { border-bottom: none; }
+
+.gs-op-staff-row--head {
+    border-left: 3px solid var(--gs-color-warning);
+    background: var(--gs-color-warning-subtle);
+    border-radius: var(--gs-radius-sm);
+}
+.gs-op-staff-name { font-size: 15px; font-weight: bold; color: var(--gs-color-text); }
+.gs-op-staff-meta { color: var(--gs-color-text); }
+
+.gs-op-summary-bar { background: var(--gs-table-head-bg); }
+
+.gs-op-assign-form {
+    padding: 10px;
+    background: var(--gs-color-surface-sunken);
+    border: 1px dashed var(--gs-color-border-strong);
+    border-radius: var(--gs-radius-sm);
+}
+
+/* select2 override scoped to this page only — not a sitewide change */
+.gs-op-unit-page .select2-container .select2-selection--single {
+    height: 34px !important;
+    padding: 6px 12px;
+    border: 1px solid var(--gs-color-border);
+}
+
+/* ===================================================================== */
+/* initiatives/index.blade.php — portfolio dashboard                     */
+/* ===================================================================== */
+.portfolio-header {
+    background: var(--gs-color-surface);
+    padding: 25px;
+    border-radius: var(--gs-radius-md);
+    border-top: 4px solid var(--gs-color-primary);
+    box-shadow: var(--gs-shadow-1);
+    margin-bottom: 20px;
+}
+
+.portfolio-title { margin-top: 0; font-weight: bold; color: var(--gs-color-text); letter-spacing: .5px; }
+
+.summary-strip { display: flex; gap: 15px; margin-top: 20px; }
+
+.summary-box {
+    flex: 1;
+    background: var(--gs-color-surface-sunken);
+    border: 1px solid var(--gs-color-border);
+    border-radius: var(--gs-radius-sm);
+    padding: 15px;
+    text-align: center;
+}
+.summary-box .count { display: block; font-size: 24px; font-weight: bold; color: var(--gs-color-text); }
+.summary-box .label {
+    font-size: 13px;
+    color: var(--gs-color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    background: transparent;
+    padding: 0;
+}
+
+.section-divider { margin: 40px 0 20px 0; border-bottom: 2px solid var(--gs-color-border); padding-bottom: 10px; }
+.section-title { font-size: 16px; font-weight: bold; color: var(--gs-color-text); text-transform: uppercase; letter-spacing: 1px; }
+
+.initiative-card {
+    background: var(--gs-color-surface);
+    border: 1px solid var(--gs-color-border);
+    border-radius: var(--gs-radius-md);
+    box-shadow: var(--gs-shadow-1);
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.initiative-card--planning { border-top: 3px solid var(--gs-color-warning); }
+.initiative-card--closed { opacity: .85; }
+.initiative-card--archived { opacity: .6; background: var(--gs-color-surface-sunken); }
+
+.initiative-card-body { padding: 20px; flex-grow: 1; }
+.initiative-card-title { font-size: 18px; font-weight: bold; color: var(--gs-color-text); margin-top: 0; margin-bottom: 8px; }
+.initiative-card-purpose { color: var(--gs-color-text-muted); font-size: 14px; min-height: 42px; margin-bottom: 15px; }
+
+.initiative-meta { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--gs-color-border); padding-top: 15px; }
+.initiative-meta--flush { border-top: none; padding-top: 5px; }
+.initiative-meta li { margin-bottom: 8px; font-size: 13px; display: flex; }
+.initiative-meta li span:first-child { width: 100px; color: var(--gs-color-text-muted); font-weight: 600; }
+
+.initiative-card-footer {
+    background: var(--gs-color-surface-sunken);
+    border-top: 1px solid var(--gs-color-border);
+    padding: 15px 20px;
+    border-radius: 0 0 var(--gs-radius-md) var(--gs-radius-md);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* ===================================================================== */
+/* initiatives/report.blade.php (<x-gs::document>) & shared print        */
+/* ===================================================================== */
+.gs-tracking-divider { border: none; border-top: 1px dashed var(--gs-color-border-strong); margin: 25px 0; }
+.gs-tracking-report-section-title {
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--gs-color-text);
+}
+.gs-tracking-ascii-bar { font-size: 14px; background: transparent; padding: 0; }
+.gs-tracking-report-rowspan-top { vertical-align: top; font-weight: bold; border-bottom: 1px solid var(--gs-table-border) !important; }
+
+.gs-tracking-list-tree { list-style: none; padding-left: 0; }
+.gs-tracking-list-tree li { margin-bottom: 10px; position: relative; }
+.gs-tracking-list-tree .bullet { font-weight: bold; margin-right: 5px; }
+.gs-tracking-list-tree .sub-node { padding-left: 20px; }
+
+/* Shared: hide core chrome when a tracking print view is sent to the printer */
+@media print {
+    .gs-tracking-print-toolbar,
+    .hidden-print { display: none !important; }
+    .content-wrapper { margin-left: 0 !important; }
+}
+
+/* ===================================================================== */
+/* tracking_codes/view_task_component.blade.php (<x-gs::document>)       */
+/* ===================================================================== */
+.gs-tracking-doc-ministry {
+    text-transform: uppercase;
+    font-weight: bold;
+    color: var(--gs-color-text-muted);
+    margin-bottom: 5px;
+    letter-spacing: .5px;
+    font-size: 13px;
+}
+.gs-tracking-doc-initiative { margin: 0 0 10px; color: var(--gs-color-primary); font-weight: bold; letter-spacing: .5px; }
+
+.gs-tracking-doc-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--gs-color-text-muted);
+    display: block;
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+.gs-tracking-doc-value { font-size: 14px; color: var(--gs-color-text); }
+.gs-tracking-doc-value--lg { font-size: 20px; font-weight: bold; color: var(--gs-color-text); display: block; line-height: 1.4; }
+.gs-tracking-doc-field { margin-bottom: 15px; }
+.gs-tracking-doc-field--bordered { padding-bottom: 15px; margin-bottom: 20px; border-bottom: 1px solid var(--gs-color-border); }
+.gs-tracking-doc-col-divider { border-left: 1px solid var(--gs-color-border); padding-left: 15px; }
+
+.gs-tracking-doc-empty { padding: 40px 20px; text-align: center; color: var(--gs-color-text-muted); }
+.gs-tracking-doc-table-head { background: var(--gs-table-head-bg); }
+.gs-tracking-doc-footnote { background: var(--gs-table-head-bg); padding: 15px; color: var(--gs-color-text-muted); font-size: 12px; }
+
+/* ===================================================================== */
+/* initiatives/workspace.blade.php                                       */
+/* ===================================================================== */
+.gs-ws-header-box { border-top: 4px solid var(--gs-color-primary); border-radius: var(--gs-radius-sm); box-shadow: var(--gs-shadow-1); }
+.gs-ws-header-body { padding: 25px; }
+.gs-ws-header-lead { font-size: 15px; margin-bottom: 20px; }
+.gs-ws-header-divider { margin: 15px 0; border-top: 1px solid var(--gs-color-border); }
+.gs-ws-stat-label { font-size: 11px; letter-spacing: 1px; display: block; margin-bottom: 5px; }
+.gs-ws-stat-value { margin: 0; font-weight: bold; color: var(--gs-color-text); }
+.gs-ws-stat-sub { display: block; font-size: 11px; font-weight: normal; margin-top: 2px; }
+
+.gs-ws-toolbar { background: var(--gs-color-surface); padding: 15px; border-radius: var(--gs-radius-sm); border: 1px solid var(--gs-color-border); }
+.gs-ws-toolbar-label { font-weight: bold; text-transform: uppercase; font-size: 12px; display: block; margin-bottom: 10px; letter-spacing: .5px; }
+.gs-ws-toolbar a.btn { margin-right: 5px; }
+
+.gs-ws-task-item { padding: 20px; border-bottom: 1px solid var(--gs-color-border); }
+.gs-ws-task-identifier { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
+.gs-ws-task-code { font-size: 16px; font-weight: bold; color: var(--gs-color-primary); }
+.gs-ws-task-sep { font-weight: normal; color: var(--gs-color-text-muted); margin: 0 8px; }
+.gs-ws-task-meta { font-size: 13px; color: var(--gs-color-text-muted); margin-bottom: 12px; }
+.gs-ws-task-meta-sep { margin: 0 6px; color: var(--gs-color-border-strong); }
+
+.gs-ws-empty-tasks { padding: 40px 20px; }
+.gs-ws-empty-tasks .fa-info-circle { color: var(--gs-color-border-strong); }
+
+.gs-ws-strategy-blanket { background: var(--gs-color-surface-sunken); border-left: 4px solid var(--gs-color-border-strong); padding: 12px; border-radius: 0 var(--gs-radius-sm) var(--gs-radius-sm) 0; }
+.gs-ws-strategy-blanket p { margin: 0; font-size: 13px; color: var(--gs-color-text-muted); }
+
+.gs-ws-strategy-category { padding: 15px; background: var(--gs-color-surface-sunken); border-radius: var(--gs-radius-sm); border-left: 4px solid var(--gs-color-primary); }
+.gs-ws-strategy-category h5 { margin-top: 0; font-weight: bold; border-bottom: 1px solid var(--gs-color-border); padding-bottom: 8px; color: var(--gs-color-text); }
+.gs-ws-target-row { margin-bottom: 10px; }
+.gs-ws-target-row-head { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 3px; }
+.gs-ws-target-econ { font-size: 11px; }
+.gs-ws-target-bar { margin-bottom: 3px; height: 6px; background: var(--gs-color-border); }
+.gs-ws-target-foot { font-size: 11px; display: block; }
+
+.gs-ws-matrix-panel { margin-bottom: 0; }
+.gs-ws-matrix-heading { border: 1px solid var(--gs-color-border); border-left: 4px solid var(--gs-color-accent); border-radius: var(--gs-radius-sm); }
+.gs-ws-matrix-heading-bar { background: var(--gs-color-surface-sunken); padding: 10px 15px; }
+.gs-ws-matrix-heading-title { font-size: 13px; }
+.gs-ws-matrix-heading-link { display: flex; justify-content: space-between; font-weight: bold; color: var(--gs-color-text-muted); text-decoration: none; }
+.gs-ws-matrix-body { padding: 15px; background: var(--gs-color-surface); }
+.gs-ws-matrix-office { margin-bottom: 15px; border-bottom: 1px solid var(--gs-color-border); padding-bottom: 10px; }
+.gs-ws-matrix-office h5 { margin-top: 0; font-weight: bold; color: var(--gs-color-text); }
+.gs-ws-matrix-item { margin-bottom: 5px; }
+.gs-ws-matrix-item-head { display: flex; justify-content: space-between; font-size: 11px; }
+.gs-ws-matrix-item-bar { margin-top: 3px; margin-bottom: 3px; height: 4px; }
+.gs-ws-matrix-item-foot { font-size: 11px; }
+
+.gs-ws-snapshot-box { border: 1px solid var(--gs-table-border); border-radius: var(--gs-radius-sm); }
+.gs-ws-snapshot-head { background: var(--gs-table-head-bg); }
+.gs-ws-snapshot-title { font-weight: bold; color: var(--gs-color-text); }
+.gs-ws-snapshot-body { padding: 20px; }
+.gs-ws-snapshot-col { border-right: 1px solid var(--gs-color-border); }
+.gs-ws-snapshot-col:last-child { border-right: 0; }
+.gs-ws-snapshot-col h5 { font-weight: bold; text-transform: uppercase; font-size: 11px; color: var(--gs-color-text-muted); letter-spacing: .5px; margin-top: 0; margin-bottom: 15px; }
+.gs-ws-snapshot-list { padding-left: 0; line-height: 2; }
+.gs-ws-snapshot-list li { display: flex; justify-content: space-between; font-size: 13px; }
+
+.gs-ws-readiness-box { border-radius: var(--gs-radius-sm); }
+.gs-ws-readiness-title { font-weight: bold; font-size: 13px; margin-bottom: 5px; }
+.gs-ws-readiness-copy { font-size: 12px; opacity: .9; margin-bottom: 15px; }
+.gs-ws-readiness-list { padding-left: 20px; font-size: 12px; margin-bottom: 15px; line-height: 1.8; }
+.gs-ws-readiness-cta { font-weight: bold; color: var(--gs-color-danger); }
+
+.gs-ws-gov-box { border: 1px solid var(--gs-table-border); border-radius: var(--gs-radius-sm); }
+.gs-ws-gov-head { background: var(--gs-table-head-bg); }
+.gs-ws-gov-title { font-weight: bold; color: var(--gs-color-text); }
+.gs-ws-gov-body { padding: 15px; }
+.gs-ws-gov-list { line-height: 2.2; }
+.gs-ws-gov-list li { border-bottom: 1px solid var(--gs-color-border); padding-bottom: 5px; margin-bottom: 5px; }
+.gs-ws-gov-list li:last-child { border-bottom: none; margin-bottom: 0; }
+.gs-ws-gov-label { display: block; font-size: 11px; text-transform: uppercase; }
+
+.gs-ws-timeline-body { max-height: 400px; overflow-y: auto; padding: 15px; }
+/* .timeline-item is core AdminLTE, unlayered, with a hard-coded white card (background:#fff) —
+   !important is required here to win against it (§7.1: layered !important beats unlayered). */
+.gs-ws-timeline-item { background: transparent !important; box-shadow: none !important; }
+.gs-ws-timeline-time { color: var(--gs-color-text-muted) !important; }
+.gs-ws-timeline-time { font-size: 11px; }
+.gs-ws-timeline-header { font-size: 13px; padding-top: 0; }
+.gs-ws-timeline-copy { padding-top: 0; padding-bottom: 5px; color: var(--gs-color-text-muted); font-size: 12px; line-height: 1.4; }
+.gs-ws-timeline-empty { padding: 20px 0; }

@@ -167,86 +167,86 @@
         "R2": 1,
         "R3": 3
     },
-    "store-operations/src/Resources/views/admin/rules/confirmation.blade.php": {
+    "store-operations/src/resources/views/admin/rules/confirmation.blade.php": {
         "R1": 17,
         "R2": 1,
         "R3": 2
     },
-    "store-operations/src/Resources/views/admin/rules/create.blade.php": {
+    "store-operations/src/resources/views/admin/rules/create.blade.php": {
         "R1": 23,
         "R2": 1,
         "R3": 11
     },
-    "store-operations/src/Resources/views/admin/rules/edit.blade.php": {
+    "store-operations/src/resources/views/admin/rules/edit.blade.php": {
         "R1": 33,
         "R2": 1,
         "R3": 10
     },
-    "store-operations/src/Resources/views/admin/rules/index.blade.php": {
+    "store-operations/src/resources/views/admin/rules/index.blade.php": {
         "R1": 61,
         "R2": 1,
         "R3": 18
     },
-    "store-operations/src/Resources/views/admin/rules/partials/inspector.blade.php": {
+    "store-operations/src/resources/views/admin/rules/partials/inspector.blade.php": {
         "R1": 40,
         "R2": 1,
         "R3": 14
     },
-    "store-operations/src/Resources/views/admin/rules/partials/simulation-result.blade.php": {
+    "store-operations/src/resources/views/admin/rules/partials/simulation-result.blade.php": {
         "R1": 28,
         "R2": 1,
         "R3": 7
     },
-    "store-operations/src/Resources/views/admin/rules/simulator.blade.php": {
+    "store-operations/src/resources/views/admin/rules/simulator.blade.php": {
         "R1": 6,
         "R3": 5
     },
-    "store-operations/src/Resources/views/capabilities/adjustment_direction.blade.php": {
+    "store-operations/src/resources/views/capabilities/adjustment_direction.blade.php": {
         "R1": 2,
         "R3": 1
     },
-    "store-operations/src/Resources/views/capabilities/serial.blade.php": {
+    "store-operations/src/resources/views/capabilities/serial.blade.php": {
         "R1": 9,
         "R3": 6
     },
-    "store-operations/src/Resources/views/capabilities/transfer_destination.blade.php": {
+    "store-operations/src/resources/views/capabilities/transfer_destination.blade.php": {
         "R1": 2,
         "R3": 1
     },
-    "store-operations/src/Resources/views/hooks/menu-injection.blade.php": {
+    "store-operations/src/resources/views/hooks/menu-injection.blade.php": {
         "R1": 3,
         "R3": 3
     },
-    "store-operations/src/Resources/views/issues/create.blade.php": {
+    "store-operations/src/resources/views/issues/create.blade.php": {
         "R1": 1,
         "R3": 1
     },
-    "store-operations/src/Resources/views/operations/partials/grid-script.blade.php": {
+    "store-operations/src/resources/views/operations/partials/grid-script.blade.php": {
         "R1": 2,
         "R3": 1
     },
-    "store-operations/src/Resources/views/operations/partials/tracking-handshake.blade.php": {
+    "store-operations/src/resources/views/operations/partials/tracking-handshake.blade.php": {
         "R1": 17,
         "R3": 11
     },
-    "store-operations/src/Resources/views/operations/partials/validation-checklist.blade.php": {
+    "store-operations/src/resources/views/operations/partials/validation-checklist.blade.php": {
         "R1": 2,
         "R3": 2
     },
-    "store-operations/src/Resources/views/operations/print.blade.php": {
+    "store-operations/src/resources/views/operations/print.blade.php": {
         "R1": 10,
         "R2": 1,
         "R3": 3
     },
-    "store-operations/src/Resources/views/operations/workspace.blade.php": {
+    "store-operations/src/resources/views/operations/workspace.blade.php": {
         "R1": 18,
         "R3": 12
     },
-    "store-operations/src/Resources/views/register/kardex-table.blade.php": {
+    "store-operations/src/resources/views/register/kardex-table.blade.php": {
         "R1": 3,
         "R3": 3
     },
-    "store-operations/src/Resources/views/register/kardex.blade.php": {
+    "store-operations/src/resources/views/register/kardex.blade.php": {
         "R1": 3,
         "R3": 3
     },
@@ -257,61 +257,6 @@
     "tenant-scope/src/resources/views/admin/explorer.blade.php": {
         "R1": 2,
         "R3": 1
-    },
-    "tracking/src/resources/views/initiatives/create.blade.php": {
-        "R1": 3,
-        "R3": 1
-    },
-    "tracking/src/resources/views/initiatives/index.blade.php": {
-        "R1": 34,
-        "R2": 1,
-        "R3": 3
-    },
-    "tracking/src/resources/views/initiatives/report.blade.php": {
-        "R1": 21,
-        "R2": 1,
-        "R3": 2
-    },
-    "tracking/src/resources/views/initiatives/workspace.blade.php": {
-        "R1": 47,
-        "R3": 38
-    },
-    "tracking/src/resources/views/operation_unit/index.blade.php": {
-        "R1": 22,
-        "R2": 1,
-        "R3": 8
-    },
-    "tracking/src/resources/views/tracking_codes/create.blade.php": {
-        "R1": 4,
-        "R3": 4
-    },
-    "tracking/src/resources/views/tracking_codes/edit.blade.php": {
-        "R1": 7,
-        "R3": 6
-    },
-    "tracking/src/resources/views/tracking_codes/partials/_level1_blanket.blade.php": {
-        "R1": 2,
-        "R3": 1
-    },
-    "tracking/src/resources/views/tracking_codes/partials/_level3_matrix_grid.blade.php": {
-        "R1": 5,
-        "R3": 2
-    },
-    "tracking/src/resources/views/tracking_codes/partials/scripts/_matrix_renderer.blade.php": {
-        "R1": 25,
-        "R3": 12
-    },
-    "tracking/src/resources/views/tracking_codes/partials/scripts/_matrix_validation.blade.php": {
-        "R1": 5
-    },
-    "tracking/src/resources/views/tracking_codes/partials/styles/_matrix_styles.blade.php": {
-        "R1": 54,
-        "R2": 1
-    },
-    "tracking/src/resources/views/tracking_codes/view_task_component.blade.php": {
-        "R1": 10,
-        "R2": 1,
-        "R3": 45
     },
     "user-onboarding/src/resources/views/queue/index.blade.php": {
         "R1": 1,

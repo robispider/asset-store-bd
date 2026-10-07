@@ -1,23 +1,19 @@
-<!-- Load Dynamic Theme-Adaptive Stylesheet -->
-@include('govtracking::tracking_codes.partials.styles._matrix_styles')
-
 <div id="panel-level3" class="box box-solid" style="display: none;">
     <div class="box-header with-border">
         <h3 class="box-title text-purple"><i class="fa fa-table"></i> Exact Delivery Schedule Matrix</h3>
     </div>
     <div class="box-body">
-        <div class="alert alert-info" style="background-color: #faf5ff !important; border-color: #d8b4fe !important; color: #581c87 !important;">
-            <p><i class="fa fa-info-circle text-purple"></i> <strong>Interactive Spreadsheet Matrix:</strong></p>
+        <x-gs::alert tone="info" title="Interactive Spreadsheet Matrix:">
             <ul style="margin-left: 15px; padding-left: 0; list-style-type: square;">
                 <li>Click on any column or row header to trigger action menus (Move, Rename, Delete).</li>
                 <li>Use standard arrow keys or Tab / Enter to navigate the grid cells exactly like Excel.</li>
                 <li>You can copy tabular data from <strong>Excel</strong> or <strong>Google Sheets</strong> and paste it directly!</li>
                 <li>You can **drag and drop** column and row headers to reorder them on-the-fly!</li>
             </ul>
-        </div>
+        </x-gs::alert>
 
         <!-- Dynamic Spreadsheet Real-Time Status Bar -->
-        <div id="matrix-status-bar" class="margin-bottom-15" style="font-size: 14px; padding: 10px; background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px;">
+        <div id="matrix-status-bar" class="margin-bottom-15 gs-matrix-status-bar">
             <span id="matrix-status-text">
                 <span class="text-green"><i class="fa fa-check-circle"></i> <strong>Spreadsheet Status:</strong> Healthy (All allocations conform to planning rules)</span>
             </span>

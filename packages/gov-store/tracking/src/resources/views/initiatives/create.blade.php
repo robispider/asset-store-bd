@@ -53,10 +53,9 @@
                         </select>
                     </div>
                     
-                    <div class="callout callout-warning" style="margin-bottom: 0; background-color: #fcf8e3 !important; border-color: #faf2cc !important; color: #8a6d3b !important;">
-                        <h4><i class="fa fa-users"></i> Operation Unit Required</h4>
+                    <x-gs::alert tone="warning" title="Operation Unit Required">
                         <p class="text-sm">You must designate an Operation Head and at least one Operation Officer inside the workspace immediately after launching before this Initiative can be activated.</p>
-                    </div>
+                    </x-gs::alert>
                 </div>
             </div>
 

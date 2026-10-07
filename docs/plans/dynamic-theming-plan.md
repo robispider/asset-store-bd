@@ -1,7 +1,7 @@
 # Dynamic Theming — Implementation Plan
 
 > **Package:** `gov-store/theming` (`packages/gov-store/theming`) · **Namespace:** `GovStore\Theming`
-> **Status:** Implemented on branch `govstore-theming` — phases 0–5, 7 (charts) and 8 delivered; phase 6 (gov-store view migration), the three print-view conversions and the woff2 font binaries remain (see `packages/gov-store/theming/README.md`). Decisions D1–D9 resolved, C1 pending (§21) · **Date:** 2026-10-07
+> **Status:** `govstore-theming` merged to `master`. Phases 0–5, 7 (charts) and 8 delivered. Phase 6 (gov-store view migration) is **in progress, package by package** — see the migration-order checklist in §15.4 for current status; `tracking` is the first package fully migrated (2026-10-07). Of the three print-view conversions, the two in `tracking` (`initiatives/report.blade.php`, `tracking_codes/view_task_component.blade.php`) are done; `store-operations/.../operations/print.blade.php` remains. The woff2 font binaries still remain. See `packages/gov-store/theming/README.md`. Decisions D1–D9 resolved, C1 pending (§21) · **Date:** 2026-10-07
 > **Design source:** Claude artifact *"National Asset Register — Theme Directions"* (Theme 1 Institutional Green, Theme 2 Digital Blue, Theme 3 Executive Neutral)
 
 ---
@@ -923,9 +923,24 @@ GsTheme::assets()->js('storeops',  __DIR__.'/../resources/js/storeops.js');   //
 4. Check the screen in Theme Lab focus view (via `gs_preview`) in all themes × modes.
 5. Lower the baseline.
 
-Order: store-operations (274) → tracking (225) → classification (145) → custom-requests (77) → organization (65) → office-membership (30) → tenant-scope (3) → user-onboarding (1). Within a package, highest-traffic screens first (Store Documents Hub, Goods Receipt workspace, Stock Register Dashboard, Fulfillment Queue).
+Order and status (hex-literal counts are the figure recorded when this plan was written; §15.3's baseline is the live count — run `php artisan gs-theme:compliance` for current numbers):
 
-Print views to convert to `<x-gs::document>`: `store-operations/…/operations/print.blade.php`, `tracking/…/initiatives/report.blade.php`, `tracking/…/tracking_codes/view_task_component.blade.php`.
+| Package | R1 at plan time | Status | Migrated |
+|---|---|---|---|
+| store-operations | 274 | not started | — |
+| **tracking** | **225** | **done** | **2026-10-07** — all 13 views, `tracking.css` registered, baseline entries removed |
+| classification | 145 | not started | — |
+| custom-requests | 77 | not started | — |
+| organization | 65 | not started | — |
+| office-membership | 30 | not started | — |
+| tenant-scope | 3 | not started | — |
+| user-onboarding | 1 | not started | — |
+
+Within a package, highest-traffic screens first (Store Documents Hub, Goods Receipt workspace, Stock Register Dashboard, Fulfillment Queue).
+
+Print views to convert to `<x-gs::document>`: `store-operations/…/operations/print.blade.php` (remaining), `tracking/…/initiatives/report.blade.php` (done), `tracking/…/tracking_codes/view_task_component.blade.php` (done).
+
+> **Note (2026-10-07):** migrating `tracking` also surfaced and fixed a pre-existing bug in `compliance-baseline.json`: 19 `store-operations` entries were keyed under a stale `src/Resources/` (capital R) path that no longer matches the real `src/resources/` directory, so the ratchet test was silently not checking them (they read as "new"/already-fixed instead of as still-outstanding violations). The baseline now points at the real paths with their original counts unchanged — this does not mean store-operations was migrated, only that its existing violations are enforced again.
 
 ---
 
@@ -980,6 +995,7 @@ Estimates are rough person-days for one developer familiar with the codebase. Ph
 | 4 | **Three themes** *(theme developers)* | Institutional Green, Digital Blue, Executive Neutral — seeds, variants, fonts, **designed** light and dark tokens (from scaffold), previews | 3 theme folders | All pass `gs-theme:validate` with no scaffold markers, both modes | 5–8 |
 | 5 | **UI kit & Theme Lab** | 15 components (§14.2), `status-map.php`, Lab matrix + focus views, sections 1–9 | Kit + Lab | Acceptance criteria §14.7 | 7–10 |
 | 6 | **Gov-store migration** | Compliance test + baseline; asset registration in each package; migrate views per §15.4 | Compliant packages | Baseline empty | 10–15 |
+| 6.tracking | ↳ `tracking` package (part of Phase 6) | 13 views migrated; `tracking.css` registered via `GsTheme::assets()`; 2 of 3 print views converted to `<x-gs::document>` | `tracking` fully compliant | `tracking/*` removed from baseline; `GovStoreThemeComplianceTest` green | done 2026-10-07 |
 | 7 | **Charts & print** | Chart.js plugin with the §13 policy (frame themed, admin colours kept, fallback palette re-mapped); print tokens; convert 3 print views to `<x-gs::document>` | Themed charts & prints | Charts redraw on mode switch; admin status colours unchanged; prints always light & legible | 3–4 |
 | 8 | **Safety net** | Contract test, rendering tests, Playwright visual suite (Chromium + Firefox/WebKit smoke), upstream-merge checklist | Tests in CI | All green; checklist adopted | 3–4 |
 | | | | | **Total** | **≈ 47–65** |

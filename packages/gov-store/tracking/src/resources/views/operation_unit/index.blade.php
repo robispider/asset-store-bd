@@ -2,75 +2,35 @@
 @section('title', 'Operation Unit Management')
 
 @section('content')
-<style>
-    .team-card {
-        border-top: 3px solid;
-        border-radius: 4px;
-        background-color: #ffffff;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        margin-bottom: 25px;
-    }
-    .team-card-head { border-top-color: #f39c12; }
-    .team-card-officer { border-top-color: #00c0ef; }
-    .team-card-support { border-top-color: #00a65a; }
-    
-    .team-header {
-        padding: 15px;
-        border-bottom: 1px solid #f4f4f4;
-        background-color: #f8fafc;
-    }
-    .team-title {
-        margin: 0;
-        font-size: 16px;
-        font-weight: bold;
-    }
-    .team-body { padding: 15px; }
-    .staff-row {
-        padding: 10px;
-        border-bottom: 1px dashed #e2e8f0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .staff-row:last-child { border-bottom: none; }
-    
-    .select2-container .select2-selection--single {
-        height: 34px !important;
-        padding: 6px 12px;
-        border: 1px solid #ccc;
-    }
-</style>
-
-<div class="row">
+<div class="row gs-op-unit-page">
     <div class="col-md-10 col-md-offset-1">
-        
+
         <div class="box box-solid" style="margin-bottom: 25px;">
-            <div class="box-body text-right" style="background-color: #f8fafc;">
+            <div class="box-body text-right gs-op-summary-bar">
                 <a href="{{ route('gov.tracking.initiatives.show', $initiative->id) }}" class="btn btn-default pull-left"><i class="fa fa-arrow-left"></i> Back to Workspace</a>
                 <span class="lead pull-right" style="margin-bottom: 0;">Initiative: <strong>{{ $initiative->title }}</strong></span>
             </div>
         </div>
 
-        <div class="callout callout-info" style="background-color: #3c8dbc !important; border-color: #367fa9;">
-            <h4><i class="fa fa-users"></i> Operation Unit Assignments</h4>
+        <x-gs::alert tone="info" title="Operation Unit Assignments">
             <p>Designate the administrative authorities for this initiative. <strong>A single Operation Head and at least one Operation Officer are required</strong> before this project can be activated for procurement operations.</p>
-        </div>
+        </x-gs::alert>
 
         <!-- 1. OPERATION HEAD -->
-        <div class="team-card team-card-head">
-            <div class="team-header">
-                <h4 class="team-title"><i class="fa fa-star text-yellow"></i> Operation Head (Project Director / Lead)</h4>
+        <div class="gs-op-team-card gs-op-team-card--head">
+            <div class="gs-op-team-header">
+                <h4 class="gs-op-team-title"><i class="fa fa-star text-yellow"></i> Operation Head (Project Director / Lead)</h4>
                 <p class="text-muted text-sm" style="margin-top: 5px; margin-bottom: 0;">Full authority over the initiative. Only one person may hold this designation.</p>
             </div>
-            <div class="team-body">
+            <div class="gs-op-team-body">
                 @if($head)
-                    <div class="staff-row bg-warning" style="border-left: 3px solid #f39c12; background-color: #fcf8e3; border-radius: 3px;">
+                    <div class="gs-op-staff-row gs-op-staff-row--head">
                         <div>
                             @php
                                 $headName = $head->user ? "{$head->user->first_name} {$head->user->last_name}" : "Unknown User (ID: {$head->user_id})";
                             @endphp
-                            <span style="font-size: 15px; font-weight: bold; color: #8a6d3b;">{{ $headName }}</span><br>
-                            <small style="color: #8a6d3b;">Username: {{ $head->user->username ?? 'N/A' }} | EMP No: {{ $head->user->employee_num ?? 'N/A' }}</small>
+                            <span class="gs-op-staff-name">{{ $headName }}</span><br>
+                            <small class="gs-op-staff-meta">Username: {{ $head->user->username ?? 'N/A' }} | EMP No: {{ $head->user->employee_num ?? 'N/A' }}</small>
                         </div>
                         <form action="{{ route('gov.tracking.initiatives.operation-unit.destroy', [$initiative->id, $head->id]) }}" method="POST">
                             @csrf @method('DELETE')
@@ -78,7 +38,7 @@
                         </form>
                     </div>
                 @else
-                    <form action="{{ route('gov.tracking.initiatives.operation-unit.store', $initiative->id) }}" method="POST" class="form-inline" style="padding: 10px; background-color: #f9fafb; border: 1px dashed #cbd5e1; border-radius: 4px;">
+                    <form action="{{ route('gov.tracking.initiatives.operation-unit.store', $initiative->id) }}" method="POST" class="form-inline gs-op-assign-form">
                         @csrf
                         <input type="hidden" name="designation" value="HEAD">
                         <div class="form-group" style="width: 70%;">
@@ -93,19 +53,19 @@
         </div>
 
         <!-- 2. OPERATION OFFICERS -->
-        <div class="team-card team-card-officer">
-            <div class="team-header">
-                <h4 class="team-title"><i class="fa fa-user-tie text-aqua"></i> Operation Officers (Planners & Approvers)</h4>
+        <div class="gs-op-team-card gs-op-team-card--officer">
+            <div class="gs-op-team-header">
+                <h4 class="gs-op-team-title"><i class="fa fa-user-tie text-aqua"></i> Operation Officers (Planners & Approvers)</h4>
                 <p class="text-muted text-sm" style="margin-top: 5px; margin-bottom: 0;">Authorized to define exact delivery matrices and manage execution tracking codes.</p>
             </div>
-            <div class="team-body">
+            <div class="gs-op-team-body">
                 @forelse($officers as $officer)
                     @php
                         $officerName = $officer->user ? "{$officer->user->first_name} {$officer->user->last_name}" : "Unknown User (ID: {$officer->user_id})";
                     @endphp
-                    <div class="staff-row">
+                    <div class="gs-op-staff-row">
                         <div>
-                            <span style="font-size: 15px; font-weight: bold; color: #333;">{{ $officerName }}</span><br>
+                            <span class="gs-op-staff-name">{{ $officerName }}</span><br>
                             <small class="text-muted">Username: {{ $officer->user->username ?? 'N/A' }} | EMP No: {{ $officer->user->employee_num ?? 'N/A' }}</small>
                         </div>
                         <form action="{{ route('gov.tracking.initiatives.operation-unit.destroy', [$initiative->id, $officer->id]) }}" method="POST">
@@ -117,7 +77,7 @@
                     <p class="text-muted text-center" style="padding: 15px; margin: 0; font-style: italic;">No Operation Officers designated yet.</p>
                 @endforelse
 
-                <hr style="margin: 15px 0; border-top: 1px solid #e2e8f0;">
+                <hr style="margin: 15px 0;">
                 <form action="{{ route('gov.tracking.initiatives.operation-unit.store', $initiative->id) }}" method="POST" class="form-inline">
                     @csrf
                     <input type="hidden" name="designation" value="OFFICER">
@@ -132,19 +92,19 @@
         </div>
 
         <!-- 3. SUPPORT STAFF -->
-        <div class="team-card team-card-support">
-            <div class="team-header">
-                <h4 class="team-title"><i class="fa fa-users text-green"></i> Support Staff (Document Handlers)</h4>
+        <div class="gs-op-team-card gs-op-team-card--support">
+            <div class="gs-op-team-header">
+                <h4 class="gs-op-team-title"><i class="fa fa-users text-green"></i> Support Staff (Document Handlers)</h4>
                 <p class="text-muted text-sm" style="margin-top: 5px; margin-bottom: 0;">Optional. Authorized to upload official documents and execute retrospective tagging.</p>
             </div>
-            <div class="team-body">
+            <div class="gs-op-team-body">
                 @forelse($support as $staff)
                     @php
                         $staffName = $staff->user ? "{$staff->user->first_name} {$staff->user->last_name}" : "Unknown User (ID: {$staff->user_id})";
                     @endphp
-                    <div class="staff-row">
+                    <div class="gs-op-staff-row">
                         <div>
-                            <span style="font-size: 15px; font-weight: bold; color: #333;">{{ $staffName }}</span><br>
+                            <span class="gs-op-staff-name">{{ $staffName }}</span><br>
                             <small class="text-muted">Username: {{ $staff->user->username ?? 'N/A' }} | EMP No: {{ $staff->user->employee_num ?? 'N/A' }}</small>
                         </div>
                         <form action="{{ route('gov.tracking.initiatives.operation-unit.destroy', [$initiative->id, $staff->id]) }}" method="POST">
@@ -156,7 +116,7 @@
                     <p class="text-muted text-center" style="padding: 15px; margin: 0; font-style: italic;">No support staff designated.</p>
                 @endforelse
 
-                <hr style="margin: 15px 0; border-top: 1px solid #e2e8f0;">
+                <hr style="margin: 15px 0;">
                 <form action="{{ route('gov.tracking.initiatives.operation-unit.store', $initiative->id) }}" method="POST" class="form-inline">
                     @csrf
                     <input type="hidden" name="designation" value="SUPPORT">
@@ -186,7 +146,7 @@
                     dataType: 'json',
                     delay: 250,
                     data: function (params) {
-                        return { 
+                        return {
                             q: params.term,
                             initiative_id: "{{ $initiative->id }}"
                         };

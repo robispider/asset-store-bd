@@ -14,8 +14,8 @@
     <div class="col-md-10 col-md-offset-1">
         
         <!-- Programme Context Path Indicator -->
-        <div style="margin-bottom: 20px; padding: 10px 15px; background-color: #fff; border: 1px solid #cbd5e1; border-radius: 4px;">
-            <ol class="breadcrumb" style="background: transparent; margin: 0; padding: 0;">
+        <div class="gs-tracking-breadcrumb-path">
+            <ol class="breadcrumb">
                 <li><a href="{{ route('gov.tracking.initiatives.index') }}" class="text-muted"><i class="fa fa-briefcase"></i> Programmes</a></li>
                 <li><a href="{{ route('gov.tracking.initiatives.show', $initiative->id) }}" class="text-blue"><strong>{{ $initiative->title }}</strong></a></li>
                 <li class="active text-muted">Create Task</li>
@@ -23,7 +23,7 @@
         </div>
 
         @if ($errors->any())
-            <div class="alert alert-danger" style="margin-bottom: 20px;">
+            <div class="alert alert-danger gs-tracking-task-errors">
                 <strong>Please check your parameters:</strong>
                 <ul style="margin-left: 15px; padding-left: 0; margin-top: 5px;">
                     @foreach ($errors->all() as $error)
@@ -56,8 +56,8 @@
             </div>
 
             <!-- Submit Footer -->
-            <div class="box box-solid" style="border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 40px;">
-                <div class="box-footer text-right" style="background-color: #f8fafc; padding: 15px 20px;">
+            <div class="box box-solid gs-tracking-submit-box">
+                <div class="box-footer text-right gs-tracking-submit-footer">
                     <a href="{{ route('gov.tracking.initiatives.show', $initiative->id) }}" class="btn btn-default btn-lg" style="margin-right: 10px;">Cancel</a>
                     <button type="submit" class="btn btn-success btn-lg" style="font-weight: bold;"><i class="fa fa-check-circle"></i> Create Task</button>
                 </div>
