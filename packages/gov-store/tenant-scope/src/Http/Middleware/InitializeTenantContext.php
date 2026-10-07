@@ -79,10 +79,12 @@ class InitializeTenantContext
             }
         }
 
+        $hasJurisdiction = false;
         if ($context->isCompanyAdmin) {
             $context->allowedLocationIds = Location::withoutGlobalScopes()->whereNull('deleted_at')->where('company_id', $adminCompany)->pluck('id')->all();
             $context->allowedCompanyIds = [$adminCompany];
         } elseif (($locations = $organization->jurisdictionLocations((int) $user->id)) !== null) {
+            $hasJurisdiction = true;
             $context->allowedLocationIds = $locations;
             $context->allowedCompanyIds = null;
         } else {
@@ -92,9 +94,22 @@ class InitializeTenantContext
 
         $role = $this->assignmentResolver->resolveActiveRole((int) $user->id, $context->locationId);
         $context->effectivePermissions = $this->capabilityResolver->resolveSchema($role);
+        if ($hasJurisdiction && $role !== 'ict_officer') {
+            $context->effectivePermissions->merge($this->capabilityResolver->resolveSchema('ict_officer'));
+        }
         if ($context->isCompanyAdmin) {
             $context->companyAdminPermissions = $this->capabilityResolver->resolveSchema('company_admin');
             $context->effectivePermissions->merge($context->companyAdminPermissions);
+        }
+        $context->allowedInventoryLocationIds = $context->allowedLocationIds;
+        $context->allowedInventoryCompanyIds = $context->allowedCompanyIds;
+        if (! $context->isCompanyAdmin && ($hasJurisdiction || $context->effectivePermissions->getProfile() === 'ict_operations')) {
+            // Jurisdiction grants office/user support, never access to their stock.
+            // An independently assigned inventory responsibility stays local.
+            $hasOfficeInventoryRole = (bool) array_intersect($context->effectivePermissions->getPermissions(),
+                ['assets.view', 'consumables.view', 'accessories.view', 'components.view', 'licenses.view']);
+            $context->allowedInventoryLocationIds = $hasOfficeInventoryRole && $context->locationId ? [$context->locationId] : [];
+            $context->allowedInventoryCompanyIds = $hasOfficeInventoryRole && $context->companyId ? [$context->companyId] : [];
         }
         // Inject the union once; a second injection would overwrite the local role.
         $this->permissionAdapter->adaptAndInject($user, $context->effectivePermissions);

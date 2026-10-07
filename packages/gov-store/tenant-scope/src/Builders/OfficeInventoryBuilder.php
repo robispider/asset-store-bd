@@ -30,7 +30,7 @@ class OfficeInventoryBuilder extends Builder
         if (! $context->isActive) {
             return; // Explicit console/system maintenance, outside an actor context.
         }
-        if ($context->isGlobal || ! $context->locationId || ! $context->companyId) {
+        if (! $context->canUseInventoryOffice()) {
             throw new TenantBoundaryException(__('tenantops::ops.exception_out_of_bounds'), 'OUT_OF_BOUNDS', 403);
         }
         if ($this->model->exists && ! app(AssetBoundaryPolicy::class)->canMutate($this->model, $context)) {

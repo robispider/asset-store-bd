@@ -2,12 +2,14 @@
 
 Date: **7 October 2026 (Asia/Dhaka)**. Evidence applies to the local working tree and `http://snipeit.local/`. This records local implementation closure for TS-1 through TS-7 in [the package gap analysis](../gap-analysis/gov-store-package-gap-analysis.md). It does not establish production closure or completion of the [G1 rollout gates](../gap-analysis/g1-unprotected-actions-analysis.md).
 
+The same-day [ICT boundary correction](ict-jurisdiction-inventory-boundary-2026-10-07.md) supersedes the initial geographic inventory-read behavior and updates the regression evidence to 123 tests / 3,120 assertions. ICT jurisdiction grants support access to offices/users, not their inventory.
+
 ## Implemented
 
 | Gap | Delivered behavior |
 | --- | --- |
 | TS-1 | Validated superuser global overview reads all stock; explicit office selection narrows reads. Global operational inventory mutations are refused. |
-| TS-2 | Physical stock reads honor allowed offices and applicable companies. Eloquent model and bulk mutations retain working-office ownership, including original persisted values, quiet saves, counters, force deletion and caller OR predicates. Direct bulk inserts/upserts are refused in active actor context; normal validated model creation remains available. |
+| TS-2 | Physical stock reads honor inventory-specific offices and applicable companies, separately from support jurisdictions. Pure ICT officers cannot list or view inventory; an independent office inventory role remains confined to its working office. Eloquent model and bulk mutations retain working-office ownership, including original persisted values, quiet saves, counters, force deletion and caller OR predicates. Direct bulk inserts/upserts are refused in active actor context; normal validated model creation remains available. |
 | TS-3 | Tenant-owned organization/membership resolver interfaces are bound by their owning packages. Context resets preserve the shared object. Membership selection requires a positive integer, current-user ownership, active membership and a nondeleted office; stale selections cannot fall back to native office access. |
 | TS-4 | Permission union is idempotent and preserves local role attribution. Company overlays are injected once. Native `admin` permission does not imply superuser or company-wide mutation access. |
 | TS-5 | Scoped background execution rechecks live actor, target, membership and named ability, including in shadow mode. All four current GovStore jobs declare scoped execution or explicit global maintenance. Bus/worker lifecycle clears stale context and restores synchronous callers. Commands have an explicit reviewed execution registry; ledger opening additionally validates its actor and office through the scoped runner. |
@@ -16,7 +18,7 @@ Date: **7 October 2026 (Asia/Dhaka)**. Evidence applies to the local working tre
 
 Primary code is in [tenant-scope](../../packages/gov-store/tenant-scope/src), with resolver adapters in [organization](../../packages/gov-store/organization/src/Services/TenantOrganizationResolver.php) and [office-membership](../../packages/gov-store/office-membership/src/Services/TenantMembershipResolver.php), inventory builder hooks on the five native stock models, shared exception handling and layout integration. Existing narrower native/package authorization remains applicable.
 
-Native licenses have a company owner and no physical-office column. They retain company-bound reads/mutations and are excluded from ICT cross-company stock reads; this implementation does not invent office ownership for licenses. Raw database queries remain trusted server callers' responsibility and require explicit boundaries; Eloquent safeguards are not database row-level security.
+Native licenses have a company owner and no physical-office column. Independently authorized inventory users retain company-bound reads/mutations; ICT support alone grants no license or other stock visibility. This implementation does not invent office ownership for licenses. Raw database queries remain trusted server callers' responsibility and require explicit boundaries; Eloquent safeguards are not database row-level security.
 
 ## Verified locally
 
@@ -26,7 +28,7 @@ Automated tests use **isolated SQLite in memory**, never the existing developmen
 php -d xdebug.mode=off -d memory_limit=512M vendor/bin/phpunit tests/Feature/GovStore
 ```
 
-Result: **120 tests, 2,999 assertions, passed**, elapsed 29.798 seconds. This includes 21 tenant-scope tests, the required G1 authorization suite, and Store Operations, Custom Requests and Committee regressions. The focused G1 run also passed independently: 29 tests, 1,003 assertions.
+Initial result before the ICT correction: **120 tests, 2,999 assertions, passed**, elapsed 29.798 seconds. This included 21 tenant-scope tests, the required G1 authorization suite, and Store Operations, Custom Requests and Committee regressions. The focused G1 run also passed independently: 29 tests, 1,003 assertions. Current regression evidence is in the linked ICT correction record.
 
 Coverage in [TenantScopeTest](../../tests/Feature/GovStore/TenantScopeTest.php) verifies positive own-office creation alongside rejected cross-office mutations, global/selected-office reads, company/geography boundaries, malformed/foreign/revoked memberships, native-admin denial, permission union, grant freshness, delayed actor revalidation, actual synchronous bus execution, context restoration, unknown command denial, national review fingerprint/replay behavior, safe failure responses, escaped menu rendering and compiled Blade syntax. G1 route coverage now includes all eight tenant-administration routes.
 

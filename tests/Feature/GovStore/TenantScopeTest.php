@@ -9,6 +9,7 @@ use App\Models\CompanyableScope;
 use App\Models\Component;
 use App\Models\Consumable;
 use App\Models\License;
+use App\Models\Location;
 use App\Models\User;
 use GovStore\Classification\Jobs\ExecuteStarterTemplateJob;
 use GovStore\Classification\Services\BulkAdoptionService;
@@ -39,6 +40,7 @@ use Illuminate\Foundation\Testing\TestCase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Schema;
 use Mockery;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -99,6 +101,8 @@ class TenantScopeTest extends TestCase
         DB::table('companies')->insert([['id' => 20], ['id' => 40]]);
         Schema::create('users', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('first_name')->nullable();
+            $table->string('last_name')->nullable();
             $table->integer('location_id')->nullable();
             $table->integer('company_id')->nullable();
             $table->boolean('activated')->default(true);
@@ -189,7 +193,7 @@ class TenantScopeTest extends TestCase
         $this->assertSame([], $this->stock()->pluck('id')->all());
     }
 
-    public function test_company_and_geography_reads_do_not_authorize_foreign_model_or_bulk_mutations(): void
+    public function test_company_reads_do_not_authorize_foreign_mutations_and_support_bounds_do_not_expand_stock(): void
     {
         $context = app(TenantContext::class);
         $context->allowedLocationIds = [10, 11];
@@ -208,8 +212,9 @@ class TenantScopeTest extends TestCase
         $this->assertSame(1, $this->stock()->whereKey(1)->update(['qty' => 8]));
         $context->allowedLocationIds = [10, 30];
         $context->allowedCompanyIds = null;
-        $this->assertSame([1, 3], $this->stock()->orderBy('id')->pluck('id')->all());
-        $this->assertSame([], $this->stock(License::class)->pluck('id')->all());
+        $context->isCompanyAdmin = false;
+        $this->assertSame([1], $this->stock()->orderBy('id')->pluck('id')->all());
+        $this->assertSame([1, 2], $this->stock(License::class)->orderBy('id')->pluck('id')->all());
         $this->assertSame(0, $this->stock()->whereKey(3)->update(['qty' => 99]));
         $this->assertSame(5, DB::table('consumables')->where('id', 3)->value('qty'));
     }
@@ -329,17 +334,145 @@ class TenantScopeTest extends TestCase
         $this->assertFalse($context->effectivePermissions->has('users.create'));
     }
 
-    public function test_ict_jurisdiction_uses_live_geography_across_companies_and_revokes_on_next_request(): void
+    private function assignIctJurisdiction(): void
     {
-        $this->actor();
         DB::table('gov_geo_areas')->insert([['GeoAreaId' => 1, 'hid' => '01.'], ['GeoAreaId' => 2, 'hid' => '01.02.'], ['GeoAreaId' => 3, 'hid' => '09.']]);
         DB::table('gov_location_profiles')->insert([['location_id' => 10, 'geo_area_id' => 1], ['location_id' => 30, 'geo_area_id' => 2], ['location_id' => 31, 'geo_area_id' => 3]]);
         DB::table('gov_ict_jurisdictions')->insert(['user_id' => 1, 'geo_area_id' => 1]);
+    }
+
+    public function test_ict_jurisdiction_is_support_only_and_revokes_on_next_request(): void
+    {
+        $this->actor();
+        $this->assignIctJurisdiction();
+        DB::table('users')->insert([['id' => 2, 'location_id' => 30], ['id' => 3, 'location_id' => 31]]);
         $this->initialize();
-        $this->assertSame([1, 3], $this->stock()->orderBy('id')->pluck('id')->all());
+        $context = app(TenantContext::class);
+        $this->assertSame([10, 30], $context->allowedLocationIds);
+        $this->assertSame([10, 30], Location::withoutGlobalScope(CompanyableScope::class)->orderBy('id')->pluck('id')->all());
+        $this->assertSame([1, 2], User::withoutGlobalScope(CompanyableScope::class)->orderBy('id')->pluck('id')->all());
+        foreach (['office.provision', 'office.onboard', 'users.create', 'users.edit', 'locations.view'] as $permission) {
+            $this->assertTrue($context->hasPermission($permission));
+        }
+        foreach ([Asset::class, Consumable::class, Accessory::class, Component::class, License::class] as $class) {
+            $this->assertSame([], $this->stock($class)->pluck('id')->all());
+            foreach ([1, 3] as $id) {
+                $this->assertNull($this->stock($class)->find($id));
+            }
+            $this->assertFalse(app(AssetBoundaryPolicy::class)->canMutate($class::withoutGlobalScopes()->findOrFail(1), $context));
+        }
+        try {
+            $this->stock()->whereKey(1)->update(['qty' => 999]);
+            $this->fail('ICT support changed stock through a bulk query');
+        } catch (TenantBoundaryException $e) {
+            $this->assertSame(403, $e->getCode());
+        }
+        $this->assertSame(5, DB::table('consumables')->where('id', 1)->value('qty'));
         DB::table('gov_ict_jurisdictions')->delete();
         $this->initialize();
+        $this->assertFalse($context->hasPermission('office.provision'));
+        $this->assertSame([10], $context->allowedLocationIds);
         $this->assertSame([1], $this->stock()->pluck('id')->all());
+    }
+
+    public function test_ict_native_inventory_lists_details_and_reports_are_denied_in_shadow_and_enforce(): void
+    {
+        $this->assignIctJurisdiction();
+        $controllers = [Consumable::class => \App\Http\Controllers\Api\ConsumablesController::class,
+            Accessory::class => \App\Http\Controllers\Api\AccessoriesController::class,
+            Component::class => \App\Http\Controllers\Api\ComponentsController::class,
+            License::class => \App\Http\Controllers\Api\LicensesController::class];
+        foreach (['shadow', 'enforce'] as $mode) {
+            config(['govstore-access.mode' => $mode]);
+            // Actual native permissions, not a mocked hasAccess result.
+            $actor = User::withoutGlobalScopes()->findOrFail(1);
+            auth()->setUser($actor);
+            $this->initialize();
+            $gate = Gate::forUser($actor);
+            foreach (array_merge([Asset::class], array_keys($controllers)) as $class) {
+                $this->assertFalse($gate->allows('index', $class));
+                $this->assertFalse($gate->allows('view', $class::withoutGlobalScopes()->findOrFail(3)));
+            }
+            $this->assertFalse($gate->allows('reports.view'));
+            $this->assertTrue($gate->allows('create', User::class));
+            $this->assertTrue($gate->allows('view', Location::class));
+            $access = app(GovAccess::class);
+            foreach (['storeops.documents.view', 'storeops.documents.draft', 'storeops.documents.post'] as $ability) {
+                $this->assertFalse($access->permitsRequest($actor, $ability));
+                $this->assertTrue($access->enforces($ability));
+                $request = Request::create('/gov-store/operations/register');
+                $request->headers->set('Accept', 'application/json');
+                $request->setUserResolver(fn () => $actor);
+                $response = app(\GovStore\TenantScope\Http\Middleware\RequireGovAbility::class)->handle($request,
+                    fn () => $this->fail('ICT support reached stock/documents in '.$mode), $ability);
+                $this->assertSame(403, $response->getStatusCode());
+                $this->assertArrayHasKey('reference_id', $response->getData(true));
+            }
+            try {
+                app(\GovStore\StoreOperations\Policies\DocumentPolicy::class)->check(
+                    new \GovStore\StoreOperations\Models\Document(['type' => 'receipt', 'location_id' => 10, 'company_id' => 20, 'status' => 'POSTED']), 'receipt');
+                $this->fail('ICT support viewed a stock document');
+            } catch (HttpExceptionInterface $e) {
+                $this->assertSame(403, $e->getStatusCode());
+            }
+            $listRequest = \App\Http\Requests\FilterRequest::create('/api/v1/stock');
+            $listRequest->setUserResolver(fn () => $actor);
+            foreach ($controllers as $class => $controller) {
+                foreach (['index', 'show'] as $action) {
+                    try {
+                        $action === 'index'
+                            ? app($controller)->index($listRequest)
+                            : app($controller)->show(3);
+                        $this->fail('ICT inventory '.$action.' returned protected data: '.$class);
+                    } catch (AuthorizationException $e) {
+                        $this->assertSame(403, $e->status() ?? 403);
+                    }
+                }
+            }
+            try {
+                app(\App\Http\Controllers\Api\AssetsController::class)->index(\App\Http\Requests\FilterRequest::create('/api/v1/hardware'));
+                $this->fail('ICT asset listing returned protected data');
+            } catch (AuthorizationException $e) {
+                $this->assertSame(403, $e->status() ?? 403);
+            }
+        }
+    }
+
+    public function test_ict_with_independent_office_inventory_role_can_only_read_working_office_stock(): void
+    {
+        $this->actor();
+        $this->assignIctJurisdiction();
+        DB::table('gov_office_responsibilities')->insert(['user_id' => 1, 'location_id' => 10, 'role_slug' => 'storekeeper']);
+        $this->initialize();
+        $context = app(TenantContext::class);
+        $this->assertSame('storekeeper', $context->effectivePermissions->getRole());
+        $this->assertTrue($context->hasPermission('assets.checkout'));
+        $this->assertTrue($context->hasPermission('office.provision'));
+        $this->assertSame([10, 30], $context->allowedLocationIds);
+        $this->assertSame([10], $context->allowedInventoryLocationIds);
+        foreach ([Asset::class, Consumable::class, Accessory::class, Component::class] as $class) {
+            $this->assertSame([1], $this->stock($class)->pluck('id')->all());
+            $this->assertNull($this->stock($class)->find(3));
+        }
+        $this->assertSame([1, 2], $this->stock(License::class)->orderBy('id')->pluck('id')->all());
+        DB::table('gov_office_responsibilities')->delete();
+        $this->initialize();
+        $this->assertSame([], $context->allowedInventoryLocationIds);
+        $this->assertSame([], $this->stock()->pluck('id')->all());
+    }
+
+    public function test_ict_support_profile_alias_never_gains_inventory_from_an_office_membership(): void
+    {
+        $this->actor();
+        config(['govstore-permissions.responsibilities.ict_support' => 'ict_operations']);
+        DB::table('gov_office_memberships')->insert(['user_id' => 1, 'location_id' => 10, 'status' => 'active']);
+        DB::table('gov_office_responsibilities')->insert(['user_id' => 1, 'location_id' => 10, 'role_slug' => 'ict_support']);
+        $this->initialize();
+        $context = app(TenantContext::class);
+        $this->assertSame(10, $context->locationId);
+        $this->assertTrue($context->hasPermission('office.provision'));
+        $this->assertFalse($context->hasPermission('assets.view'));
+        $this->assertSame([], $this->stock()->pluck('id')->all());
     }
 
     public function test_schema_introspection_is_cached_but_context_and_grants_are_fresh(): void

@@ -1,7 +1,7 @@
 # Dynamic Theming — Implementation Plan
 
 > **Package:** `gov-store/theming` (`packages/gov-store/theming`) · **Namespace:** `GovStore\Theming`
-> **Status:** Proposed · **Date:** 2026-10-07 · **Target branch:** `feature/gs-theming` (cut from `master`)
+> **Status:** Proposed — decisions D1–D9 resolved, C1 pending (§21) · **Date:** 2026-10-07 · **Target branch:** `feature/gs-theming` (cut from `master`)
 > **Design source:** Claude artifact *"National Asset Register — Theme Directions"* (Theme 1 Institutional Green, Theme 2 Digital Blue, Theme 3 Executive Neutral)
 
 ---
@@ -16,19 +16,22 @@ The theme is attached to Snipe-IT's layouts **when Blade compiles them** (`Blade
 
 | # | Goal |
 |---|---|
-| G1 | Users can pick a theme (and Light / Dark / System mode) besides the default. |
+| G1 | Users can pick a theme (and Light / Dark / System mode) besides the default; the organisation, each company (ministry/tenant) and each office can set their own default. |
 | G2 | Zero edits to Snipe-IT core files; upstream merges stay conflict-free for theming. |
-| G3 | Themes are **file-based only**: a theme is a folder in git, reviewed like code. |
+| G3 | Themes are **file-based and developer-owned**: a theme is a folder of files (JSON tokens, optional CSS, previews) that **developers build and ship with the code**, reviewed in git like any other change. Nothing can be uploaded or designed inside the running application. |
 | G4 | Every theme **must** provide light and dark modes; validated automatically. |
 | G5 | All gov-store packages are fully compliant with themes and layout variants. |
-| G6 | A UI/UX developer can create a new theme by adding one folder, mostly as JSON. |
+| G6 | A developer can add a new theme by adding one folder (mostly JSON) and releasing it — no PHP, routes or Blade. In the application, every admin — super admin included — only **chooses** among the shipped themes. |
 | G7 | Breakage after an upstream merge shows up as failing tests, not user reports. |
+| G8 | Theme administration and the Theme Lab are governed by gov-store roles **and** permissions, not by environment. |
 
 ### Non-goals
 
-- No in-browser theme editor / Theme Studio, no database-stored themes.
-- No new page *structure* on Snipe-IT core screens (e.g. status tabs on core *Assets › List All*). Structural patterns live in gov-store screens only.
-- No change to Snipe-IT's own branding settings (`header_color`, link colours, custom CSS); they keep working for the `default` theme.
+- No in-browser theme editor, no Theme Studio, no theme upload, no database-stored themes. Themes exist only as files in the release.
+- No theme creation by any application user, including the super admin.
+- No edits to Snipe-IT page files. Snipe-IT pages **are** themed — every page uses the selected theme (§7.4) — but through the layout hook and adapter, never by changing a Snipe-IT Blade file.
+- No new page *structure* on Snipe-IT screens (e.g. status tabs on core *Assets › List All*). Themes change how Snipe-IT pages look, not what is on them; structural patterns live in gov-store screens.
+- No changes to Snipe-IT's Settings › Branding or profile screens. How their colour fields interact with themes is defined in §7.4.
 
 ---
 
@@ -77,6 +80,8 @@ The main layout is upstream's most-churned file, and theming is the area upstrea
 | Charts | Chart.js v2.9.4; colours from `Helper::defaultChartColors()` and status-label colours. |
 | Gov-store packages | 12 packages, path repositories, each with its own view namespace (`storeops`, `govtracking`, `gov-classification`, `govstore`, `govorg`, `govmem`, `govscope`, …). Existing UI is injected through response-rewriting middlewares (`InjectStoreOperationsUi`, `InjectMembershipUi`). |
 | Gov-store styling debt | 24 views contain `<style>` blocks; ~820 hex colour literals (3- and 6-digit) in package views/CSS; 3 print views. |
+| Access control | `tenant-scope` owns gov-store authorisation: abilities in config `govstore-abilities` (ability → `roles`, `national`, `enforce`), turned into Gates by `TenantScopeServiceProvider`, decided by `GovAccess`. Roles: `authenticated`, `superuser`, `company_admin`, `ict_officer`, `office_admin`, office responsibilities (`storekeeper`, approvers, …) and time-limited office grants (`gov_access_grants.role_slug`). Permission strings come from responsibility → profile mappings in `govstore-permissions`, checked with `TenantContext::hasPermission()`. Abilities appear automatically in the existing Access matrix page. |
+| Tenant context | `TenantContext` (per request): `companyId` (ministry/tenant), `locationId` (working office, switchable per session), `isGlobal`, `isCompanyAdmin`. Set by `InitializeTenantContext` middleware. |
 | Tests | PHPUnit suites `tests/Unit`, `tests/Feature` (gov-store tests live in `tests/Feature/GovStore/`). Playwright is installed; live tests under `scripts/live-tests/`. |
 | Framework | Laravel 12.65 — `Blade::precompiler()` and `Blade::getPath()` confirmed in vendor. |
 
@@ -109,13 +114,15 @@ Hex-literal debt per package (migration order, §15):
           │                                                 @include('gs-theme::head')  before </head>│
           │                                                 @include('gs-theme::foot')  before </body>│
           │                                                                                          │
-          │ ThemeRepository ─ discovers themes/*/theme.json, resolves `extends`                      │
-          │ ThemeResolver   ─ user → office/tenant → org default → `default`                         │
+          │ ThemeRepository ─ discovers themes/*/theme.json (shipped in code), resolves `extends`    │
+          │ ThemeResolver   ─ enforced scope → user → office → company → organisation → config       │
+          │ Access          ─ `theming.*` abilities (roles) + permission strings, via tenant-scope   │
           │ ThemeCompiler   ─ tokens.*.json → CSS (build time), OKLCH derivations, contrast checks   │
           │ AssetRegistry   ─ packages register their CSS/JS; bundled into the build                 │
           │ UI kit          ─ <x-gs::*> Blade components                                             │
           │ gs-theme.js     ─ token reader, mode sync, Chart.js plugin                               │
-          │ Appearance page ─ /gov/appearance        Theme Lab ─ /gov/theme-lab                      │
+          │ Appearance page ─ /gov/appearance   Assignments ─ /gov/appearance/assignments            │
+          │ Theme Lab       ─ /gov/theme-lab                                                         │
           └──────────────────────────────────────────────────────────────────────────────────────────┘
                                    ▲ uses tokens + kit
           ┌────────────────────────┴─────────────────────────────────────────────────────────────────┐
@@ -129,9 +136,10 @@ Hex-literal debt per package (migration order, §15):
 packages/gov-store/theming/
 ├─ composer.json                       # extra.laravel.providers → auto-discovery
 ├─ config/gs-theme.php
+├─ config/abilities.php                 # theming.* abilities merged into govstore-abilities
 ├─ database/migrations/
 │  ├─ 2026_10_xx_create_gs_theme_preferences_table.php
-│  └─ 2026_10_xx_create_gs_theme_assignments_table.php      # office/tenant defaults (Phase 3b)
+│  └─ 2026_10_xx_create_gs_theme_assignments_table.php      # organisation / company / office defaults
 ├─ routes/web.php
 ├─ lang/en-US/appearance.php
 ├─ lang/bn-BD/appearance.php
@@ -141,7 +149,8 @@ packages/gov-store/theming/
 │  ├─ Themes/{Theme.php, ThemeRepository.php, ThemeResolver.php, Manifest.php}
 │  ├─ Build/{ThemeCompiler.php, TokenResolver.php, ColorMath.php, ContrastChecker.php}
 │  ├─ Assets/AssetRegistry.php
-│  ├─ Http/Controllers/{AppearanceController.php, ThemeLabController.php, DevAssetController.php}
+│  ├─ Access/ThemeAccess.php           # role OR permission decisions, scope checks
+│  ├─ Http/Controllers/{AppearanceController.php, AssignmentController.php, ThemeLabController.php, DevAssetController.php}
 │  ├─ Models/{ThemePreference.php, ThemeAssignment.php}
 │  ├─ Console/{BuildThemes.php, MakeTheme.php, ValidateThemes.php, ComplianceReport.php}
 │  └─ Facades/GsTheme.php
@@ -160,7 +169,7 @@ packages/gov-store/theming/
 ├─ status-map.php                      # status → tone + icon for badges/steppers
 ├─ compliance-baseline.json            # ratchet allowlist for gov-store compliance
 └─ themes/
-   ├─ default/                         # stock Snipe-IT look; root of inheritance
+   ├─ default/                         # "Snipe-IT Classic": stock look + Branding colours; root of inheritance
    ├─ institutional-green/
    ├─ digital-blue/
    └─ executive-neutral/
@@ -212,8 +221,12 @@ final class LayoutHook
             return Str::replaceLast('>', ' {!! app(\'gs.theme\')->htmlAttributes() !!}>', $tag);
         }, $source, 1, $htmlCount);
 
-        // 2. head assets, last </head>
-        $source = Str::replaceLast('</head>', "@include('gs-theme::head')\n</head>", $source);
+        // 2. head assets: just before the admin Custom CSS block, else before </head>
+        $head = "@include('gs-theme::head')\n";
+        $customCss = '/@if\s*\(\s*\(\s*\$snipeSettings\s*\)\s*&&\s*\(\s*\$snipeSettings->custom_css\s*\)\s*\)/';
+        $source = preg_match($customCss, $source)
+            ? preg_replace($customCss, $head.'$0', $source, 1)
+            : Str::replaceLast('</head>', $head.'</head>', $source);
 
         // 3. foot script, last </body>
         $source = Str::replaceLast('</body>', "@include('gs-theme::foot')\n</body>", $source);
@@ -234,7 +247,7 @@ Blade::precompiler(app(LayoutHook::class));
 | Anchor | Inserted | Purpose |
 |---|---|---|
 | `<html …>` | `data-skin="institutional-green" data-theme="dark" data-gs-sidebar="dark" data-gs-density="compact" …` (replaces core's hard-coded `data-theme="light"`) | Server-side theme + mode → no flash for explicit modes |
-| before `</head>` | `gs-theme::head` → `<link>` to built kit CSS, theme CSS, package CSS; `<link rel="preload">` fonts; inline nonce'd mode script (for `system` mode and `localStorage` sync) | Theme styles load **after** core inline styles and win by source order |
+| immediately before the Custom CSS block (`@if (($snipeSettings) && ($snipeSettings->custom_css))`), falling back to before `</head>` | `gs-theme::head` → `<link>` to built kit CSS, theme CSS, package CSS; `<link rel="preload">` fonts; inline nonce'd mode script (for `system` mode and `localStorage` sync) | Theme styles load **after** core inline styles (theme beats Snipe-IT defaults) and **before** the admin's Custom CSS (Custom CSS stays the final word, §7.4) |
 | before `</body>` | `gs-theme::foot` → `gs-theme.js` (nonce'd), Chart.js plugin, toggle sync | Runtime helpers |
 
 ### 5.3 Operational notes
@@ -242,7 +255,7 @@ Blade::precompiler(app(LayoutHook::class));
 - **Deploy:** `php artisan view:clear` (already covered by `optimize:clear`) after enabling or upgrading the hook. `php artisan view:cache` runs precompilers too.
 - **Graceful fallback:** if an anchor is missing, that insertion is skipped; the page renders with stock Snipe-IT styles.
 - **Detection:** the contract test (§16.2) compiles each target layout and asserts the `VERSION` marker and all three insertions are present.
-- **Admin Custom CSS** (Settings › Branding) is emitted inside `<head>` before our include. Theme tokens therefore take precedence over Custom CSS for variables the theme defines. Documented; the `default` theme defines none of Snipe-IT's brand variables, so Custom CSS behaves as today under `default`.
+- **Admin Custom CSS** (Settings › Branding) is loaded **after** the theme in both `default` and `basic` layouts, so it can still adjust any theme — same role it has today.
 - **Existing response-rewriting middlewares** in other packages are left as is; migrating them to this hook is a separate, optional follow-up.
 
 ---
@@ -354,9 +367,33 @@ Rule for theme authors: *if a theme needs to change something the adapter forces
 | `--main-footer-*` | `--gs-footer-*` |
 | `--search-highlight` | `--gs-color-warning-subtle` |
 
-The `default` theme does **not** map brand variables (`--main-theme-color`, link colours), so Snipe-IT's `header_color` and per-user link colours keep working exactly as today under `default`.
+The `default` theme (labelled **"Snipe-IT Classic"**) does **not** map the brand variables (`--main-theme-color`, nav/link colours), so under it Snipe-IT's Branding colours and per-user colour fields work exactly as today. Every other theme maps them. See §7.4.
 
-### 7.3 Core surface coverage checklist
+### 7.4 Snipe-IT pages and Snipe-IT's Branding settings
+
+**Snipe-IT pages use the selected theme.** Every page rendered through `layouts/default`, `layouts/basic` or `layouts/setup` — Dashboard, Assets, Licenses, Accessories, Consumables, Components, People, Reports, Settings, Account, login, setup — gets the user's resolved theme (colours, fonts, layout variants, light/dark), exactly like gov-store pages. Nothing in any Snipe-IT page file changes: the theme arrives through the compile-time layout hook (§5) and the adapter CSS (§7.1–7.3).
+
+**What changes and what doesn't on a Snipe-IT page:**
+
+| Changes with the theme | Stays as Snipe-IT renders it |
+|---|---|
+| Colours of header, sidebar, boxes, tables, buttons, labels, forms, links, footer | Which menus, columns, fields, buttons and tabs exist |
+| Fonts (incl. Bengali), radius, density, table style, card vs flat surfaces | Page layout order and content |
+| Light / dark rendering | Snipe-IT behaviour and JavaScript |
+
+**Snipe-IT's Branding settings** (Settings › Branding) and **profile colour fields** fall into two groups:
+
+| Snipe-IT setting | Under any theme |
+|---|---|
+| **Identity:** `site_name`, logo, favicon, `brand` (logo/text display), `footer_text`, `support_footer`, `version_footer`, `logo_print_assets`, `show_url_in_emails`, `load_remote` | **Always applied, unchanged.** Themes never replace your logo, name or footer |
+| **Custom CSS** (`custom_css`) | **Always applied, after the theme** — the administrator's final adjustment layer, as today |
+| **Colours:** `header_color`, `nav_link_color`, `link_light_color`, `link_dark_color` (Branding) and the same three fields on each user's profile | **Used only by the "Snipe-IT Classic" theme** (`default`). Every other theme provides its own designed light and dark colours, so these fields have no effect while it is active |
+
+Why the colour fields can't also apply to designed themes: a theme is a tested set of light **and** dark colours with guaranteed contrast. A single `header_color` chosen in Branding would break that guarantee (e.g. white header text on a light green chosen for Institutional Green's dark mode). Choosing "Snipe-IT Classic" restores the Branding-colour behaviour completely.
+
+**Avoiding confusion without editing Snipe-IT pages:** when a theme other than Snipe-IT Classic is active, `gs-theme::foot` shows a small dismissible, translated notice on the Branding and profile routes (`settings.branding.index`, `profile`): *"Colour settings here apply only to the Snipe-IT Classic theme. Current theme: Institutional Green — manage themes in Appearance."* The notice is inserted by the theming script at runtime; the Snipe-IT views are untouched.
+
+### 7.5 Core surface coverage checklist
 
 Header/navbar · sidebar menu (levels 1–2, active, hover, collapsed) · content header & breadcrumbs · `.box` (all variants) · bootstrap-table (toolbar, header, rows, stripes, hover, selected, pagination, column chooser, sticky header) · forms (inputs, input-group, help, errors, required marker) · select2 (single, multi, dropdown, ajax) · datepicker · buttons (`.btn-*`, `.btn-theme`) · labels/badges · alerts & callouts · nav-tabs · modals · info-boxes & small-boxes (dashboard) · dropdown menus · tooltips/popovers · footer · login page (`basic`) · setup (`setup`).
 
@@ -383,7 +420,7 @@ themes/<key>/
 {
   "key": "institutional-green",
   "version": "1.0.0",
-  "status": "stable",
+  "status": "published",
   "extends": "default",
   "label":       { "en-US": "Institutional Green", "bn-BD": "প্রাতিষ্ঠানিক সবুজ" },
   "description": { "en-US": "National government ERP look for daily operational work.",
@@ -408,11 +445,14 @@ themes/<key>/
 | Field | Rule |
 |---|---|
 | `key` | kebab-case, equals folder name, unique |
-| `status` | `stable` (visible to everyone) · `experimental` (Theme Lab and admins only) · `deprecated` (hidden from picker; users on it fall back to org default) |
+| `version` | semver, bumped by the developer on every change (shown in the Lab and picker tooltips) |
+| `status` | `draft` (Theme Lab only — lets developers ship a theme to production for review before release) · `published` (selectable by users and admins) · `deprecated` (hidden from pickers; anyone on it falls back down the resolution chain, §12.2) |
 | `extends` | another theme key or `null` (only `default`). Max depth 3, no cycles |
-| `label`, `description` | `en-US` required, `bn-BD` required for `stable` |
+| `label`, `description` | `en-US` and `bn-BD` required |
 | `fonts` | keys from the font registry (`theming/fonts/fonts.json`) |
 | `variants` | each value must be a known option (§9) |
+
+All of these are changed only by developers, in git, and take effect with a release.
 
 ### 8.3 Inheritance (`extends`)
 
@@ -437,9 +477,32 @@ A colour variant of an existing theme can be ~10 lines: `extends` + four seeds i
 | Distinguishability | status colours that differ only in hue (ΔL < 0.08 in OKLCH) |
 | Fonts | font key unknown, or a `bengali` slot missing |
 | `overrides.css` | literal colours, `!important`, selectors not starting with `.gs-` or `[data-gs-` |
-| Previews | missing `preview.light.png` / `preview.dark.png` for `stable` themes |
+| Previews | missing `preview.light.png` / `preview.dark.png` for `published` themes |
+| Dark mode authored *(warning for `draft`; error for `published`)* | dark file still marked `"$extensions": {"gs.scaffold": true}` from `gs-theme:make`, or `color-bg`/`color-surface` in dark have OKLCH lightness > 0.35 |
 
 Output: human table plus `--json` for CI.
+
+### 8.5 Ownership of light and dark modes
+
+The **theme developer** designs and owns **both** modes of every theme they build — there is no separate dark-mode design track. To make this fast:
+
+- `gs-theme:make` generates `tokens.dark.json` as a *scaffold* derived from the light seeds (lowered lightness, reduced chroma, inverted surfaces), marked `"gs.scaffold": true`.
+- The developer refines it in the Theme Lab (matrix view shows light and dark side by side) and removes the scaffold marker.
+- `gs-theme:build` (run in CI and at deploy) fails for a `published` theme while the scaffold marker is present or contrast fails in either mode — an unfinished theme cannot be released.
+
+### 8.6 Who does what
+
+| Who | Can do |
+|---|---|
+| **Theme developers** | Build themes as files (`gs-theme:make`, edit JSON, preview in Theme Lab locally), set `status`, ship them through git, code review and the normal release |
+| **Super admin** | Choose (and optionally enforce) the **organisation** default; may also set any company or office default; preview `draft` themes in the Theme Lab in production |
+| **Company admin** | Choose (and optionally enforce) the default theme for **their company** |
+| **Office admin** | Choose (and optionally enforce) the default theme for **their office** |
+| **Every user** | Choose their own theme (unless enforced) and Light / Dark / System mode |
+
+Nobody can create, upload, edit or delete a theme inside the application. Adding, changing, deprecating or removing a theme is a code change.
+
+**Removing a theme** (developer): first set `"status": "deprecated"` for at least one release so users, offices and companies on it fall back gracefully; then delete the folder. Saved preferences/assignments that point at a missing key are ignored by the resolver and cleaned up by `php artisan gs-theme:prune-references`.
 
 ---
 
@@ -477,7 +540,7 @@ Implemented once in `adapter/variants.css`; themes only choose values.
 
 Estimated coverage of the artboards with zero core edits: Theme 1 ≈ 100%, Theme 2 ≈ 85% (status tabs/bulk bar on gov-store screens only), Theme 3 ≈ 85–90% (charcoal bar + light text-only sidebar achieved via `header: dark`, `sidebar: light`, `nav_icons: hidden`).
 
-Dark modes for all three are **new design work** (the artboards show light only) — see §19 open decisions.
+The artboards show light mode only. Dark modes for all three system themes are designed as part of Phase 4 (§8.5), starting from the generated scaffold.
 
 ---
 
@@ -491,6 +554,7 @@ Dark modes for all three are **new design work** (the artboards show light only)
 | `php artisan gs-theme:validate [key] [--json]` | Validation only (§8.4) |
 | `php artisan gs-theme:make {key} [--extends=default] [--from=key]` | Scaffold a theme folder (`--from` copies seeds and variants of an existing theme) |
 | `php artisan gs-theme:compliance [--update-baseline]` | Gov-store compliance report (§15.3) |
+| `php artisan gs-theme:prune-references` | Clears preferences/assignments pointing at themes removed in a release (§8.6) |
 
 ### 10.2 Output
 
@@ -519,6 +583,23 @@ Deploy step: `php artisan gs-theme:build` alongside `php artisan optimize:clear`
 
 Self-hosted woff2 (all OFL-licensed: Noto Sans, Noto Sans Bengali, Noto Serif Bengali, Source Serif 4, Inter, IBM Plex Mono) in `theming/fonts/`, registered in `fonts/fonts.json` with `unicode-range` subsets so Bengali files load only when Bengali text renders. No Google Fonts calls (government intranets often block them).
 
+### 10.5 Browser support baseline
+
+The baseline is **set by upstream Snipe-IT**, not by theming: the core layout already depends on `light-dark()` and relative colour syntax (`hsl(from …)`). Theming itself needs less (custom properties + cascade layers), because derivations are resolved to literal colours at build time.
+
+| Browser | Minimum | Limiting feature (from upstream) |
+|---|---|---|
+| Chrome / Edge (Chromium) | **123** | `light-dark()` |
+| Firefox | **128** | relative colour syntax |
+| Safari | **18** | relative colour syntax (complete support) |
+| Internet Explorer, legacy Edge | not supported | — |
+
+Consequences and actions:
+
+1. **Windows 7 / 8.1 machines are capped at Chrome/Edge 109** — they cannot render upstream Snipe-IT's current colours correctly, with or without themes. Before Phase 4, the ICT team pulls a user-agent report from web server logs to size this.
+2. `gs-theme::head` shows a dismissible, translated **"browser not supported"** notice when `CSS.supports('color', 'light-dark(#000, #fff)')` is false.
+3. Visual tests (§16.4) run on Chromium; a smoke subset also runs on Firefox and WebKit.
+
 ---
 
 ## 11. Light / dark mode
@@ -538,72 +619,141 @@ Self-hosted woff2 (all OFL-licensed: Noto Sans, Noto Sans Bengali, Noto Serif Be
 
 ## 12. Theme resolution and preferences
 
-### 12.1 Resolution chain
+### 12.1 Scopes
+
+Terminology follows `TenantContext`: **organisation** = the whole system; **company** = ministry / tenant (`companyId`); **office** = location (`locationId`, the user's *working* office).
+
+| Scope | Who sets it (§12.6) | Can enforce? |
+|---|---|---|
+| Organisation default | superuser | yes |
+| Company default | company admin of that company (superuser: any) | yes |
+| Office default | office admin of that office (superuser: any) | yes |
+| User preference | the user, if `allow_user_choice` is on | — |
+
+### 12.2 Resolution chain
 
 ```
-?gs_preview=<key>&gs_mode=<mode>   (only users with gs-theme.lab ability; never saved)
-        ↓ else
-user preference                    (only if gs-theme.allow_user_choice = true and theme is stable)
-        ↓ else
-office / tenant assignment         (Phase 3b — via office-membership / tenant-scope context)
-        ↓ else
-organisation default               (config gs-theme.default, env GS_THEME_DEFAULT)
-        ↓ else
-default
+1. ?gs_preview=<key>&gs_mode=<mode>      only with theming.lab.view; never saved
+2. Enforced assignment, top-down          organisation → company → office
+                                          (a higher authority's enforcement cannot be overridden below it)
+3. User preference                        if gs-theme.allow_user_choice = true
+4. Office default                         TenantContext->locationId (working office)
+5. Company default                        TenantContext->companyId
+6. Organisation default                   gs_theme_assignments (scope organization)
+7. Config default                         GS_THEME_DEFAULT = institutional-green
+8. default
 ```
 
-Unknown or `deprecated` keys fall through to the next level. Resolved once per request in `ThemeResolver` (singleton), memoised.
+- Unknown keys (e.g. a theme removed in a release), `draft` themes (except in Lab preview) and `deprecated` themes fall through to the next step.
+- Non-enforced defaults resolve **bottom-up** (most specific wins); enforcement resolves **top-down** (most senior wins).
+- Mode (light/dark/system) always comes from the user preference, else `system`; scopes assign themes, not modes.
+- Resolved **lazily at render time** in `gs-theme::head` (after `InitializeTenantContext` has run), memoised per request. Guests (login page) get steps 6–8.
+- Switching working office (`gov_working_membership_id`) switches to that office's default unless the user has their own preference — a deliberate visual cue of the active office.
+- Assignments are cached (`gs-theme:assignments:{scope}:{id}`), busted on save.
 
-### 12.2 Data
+### 12.3 Data
 
 ```
 gs_theme_preferences
   id              bigint PK
   user_id         FK users.id, unique, cascade on delete
-  theme           varchar(64) null     -- null = follow office/org default
+  theme           varchar(64) null      -- null = follow office/company/organisation default
   mode            enum('light','dark','system') default 'system'
   timestamps
 
-gs_theme_assignments                    -- Phase 3b
+gs_theme_assignments
   id              bigint PK
-  scope_type      varchar(32)          -- 'office' | 'tenant'
-  scope_id        bigint
+  scope_type      enum('organization','company','office')
+  scope_id        bigint null           -- null only for organization; companies.id / locations.id otherwise
   theme           varchar(64)
+  enforced        boolean default false
+  updated_by      FK users.id null
   timestamps
   unique(scope_type, scope_id)
 ```
 
-### 12.3 Config (`config/gs-theme.php`, package-owned, merged)
+Every change to an assignment is written to the application log with actor, scope, old → new theme and `enforced` flag.
+
+### 12.4 Config (`config/gs-theme.php`, package-owned, merged)
 
 ```php
 return [
-    'default'           => env('GS_THEME_DEFAULT', 'institutional-green'),
-    'allow_user_choice' => env('GS_THEME_ALLOW_USER_CHOICE', true),
-    'lab_enabled'       => env('GS_THEME_LAB', ! app()->isProduction()),
-    'themes_path'       => base_path('packages/gov-store/theming/themes'),
-    'extra_theme_paths' => [],      // future: other folders of themes
+    'default'             => env('GS_THEME_DEFAULT', 'institutional-green'),
+    'allow_user_choice'   => env('GS_THEME_ALLOW_USER_CHOICE', true),
+    'lab_enabled'         => env('GS_THEME_LAB', true),          // kill switch only; access is by ability
+    'themes_path'         => base_path('packages/gov-store/theming/themes'),   // shipped themes
+    // permission strings added to tenant-scope capability profiles (§12.6)
+    'permission_profiles' => [
+        'company_operations' => ['theming.assign.company'],   // company admins
+        'office_operations'  => ['theming.assign.office'],    // office admins
+    ],
 ];
 ```
 
-### 12.4 Routes (package `routes/web.php`, `web` + `auth` middleware, each with a breadcrumb)
+### 12.5 Routes (package `routes/web.php`, `web` + `auth`, each with a breadcrumb)
 
-| Method | URI | Name | Purpose |
+| Method | URI | Name | Ability |
 |---|---|---|---|
-| GET | `/gov/appearance` | `gs-theme.appearance` | Theme & mode picker |
-| PUT | `/gov/appearance` | `gs-theme.appearance.update` | Save theme + mode |
-| POST | `/gov/appearance/mode` | `gs-theme.appearance.mode` | AJAX mode sync from Snipe-IT toggle |
-| GET | `/gov/theme-lab` | `gs-theme.lab` | Theme Lab matrix view |
-| GET | `/gov/theme-lab/{theme}` | `gs-theme.lab.focus` | Theme Lab focus view |
+| GET | `/gov/appearance` | `gs-theme.appearance` | `theming.appearance.self` |
+| PUT | `/gov/appearance` | `gs-theme.appearance.update` | `theming.appearance.self` |
+| POST | `/gov/appearance/mode` | `gs-theme.appearance.mode` | `theming.appearance.self` |
+| GET | `/gov/appearance/assignments` | `gs-theme.assignments` | any `theming.assign.*` |
+| PUT | `/gov/appearance/assignments/{scope}/{id?}` | `gs-theme.assignments.update` | matching `theming.assign.{scope}` + scope check |
+| GET | `/gov/theme-lab` | `gs-theme.lab` | `theming.lab.view` |
+| GET | `/gov/theme-lab/{theme}` | `gs-theme.lab.focus` | `theming.lab.view` |
 
-Validation: `theme` → `nullable|string|in:<stable theme keys>`; `mode` → `in:light,dark,system`.
+Validation: `theme` → `nullable|string|in:<published theme keys>`; `mode` → `in:light,dark,system`; `enforced` → `boolean`.
 
-### 12.5 Appearance page
+### 12.6 Access control — role-based **and** permission-based
 
-- Theme cards (radio group): name, description, light + dark preview images, swatch strip, "Default" tag on the org default. Experimental themes shown only to lab users.
+Theming plugs into tenant-scope's existing access model instead of inventing its own.
+
+**Abilities** (`theming/config/abilities.php`, merged into `govstore-abilities` in `ThemingServiceProvider::register()` so tenant-scope defines their Gates and lists them in the Access matrix):
+
+| Ability | Roles (role-based) | Permission string (permission-based) | Scope check |
+|---|---|---|---|
+| `theming.appearance.self` | `authenticated` | — | own preference only; denied when `allow_user_choice` is off |
+| `theming.assign.office` | **`office_admin`** | `theming.assign.office` (profile `office_operations`) | `scope_id` must equal `TenantContext->locationId` (superuser: any) |
+| `theming.assign.company` | **`company_admin`** | `theming.assign.company` (profile `company_operations`) | `scope_id` must equal `TenantContext->companyId` (superuser: any) |
+| `theming.assign.organization` | `superuser` | — | `national: true` |
+| `theming.lab.view` | `superuser` | — | review shipped themes (incl. `draft`) in production; Lab uses fixture data · `national: true`, `enforce: true` |
+
+There is **no ability to create, upload or edit themes** — themes come only from the release (§8.6). Every admin ability is a *choose* ability for a scope. `theming.lab.view` is super-admin only in production and has no permission-string path; developers use the Theme Lab in their local and staging environments.
+
+**Decision rule** (`ThemeAccess`):
+
+```php
+public function allows(User $user, string $ability, ?int $scopeId = null): bool
+{
+    $granted = app(GovAccess::class)->decide($user, $ability)->allowed      // role-based
+            || app(TenantContext::class)->hasPermission($ability);          // permission-based
+
+    return $granted && $this->withinScope($user, $ability, $scopeId);
+}
+```
+
+- **Role-based:** roles resolved by `GovAccess::roles()` — `office_admin` for the working office, `company_admin` for the company, `superuser` everywhere.
+- **Permission-based:** the strings in `gs-theme.permission_profiles` are appended to tenant-scope's capability profiles at register time. By default `office_operations` (mapped from the `office_admin` responsibility) gets `theming.assign.office` and `company_operations` (mapped from `company_admin`) gets `theming.assign.company`. Another profile can be given the same choose-only permission in config without code changes; it can never be given manage/lab rights.
+- **Why not Snipe-IT group permissions:** adding new keys to Snipe-IT's group permission editor requires editing core `config/permissions.php` — excluded by §2.2.
+- **Soft dependency:** if tenant-scope is not installed, `ThemeAccess` falls back to `isSuperUser()` for every `theming.*` ability except `theming.appearance.self`.
+
+### 12.7 Appearance page (user)
+
+- Theme cards (radio group): name, description, light + dark preview images, swatch strip, tags for "Office default" / "Company default" / "Organisation default". Only **published** themes are listed.
+- If an enforced assignment applies, the picker is read-only with a translated notice naming the scope ("Your ministry uses Institutional Green"); mode can still be changed.
 - Mode segmented control: Light · Dark · System.
 - **Live preview before saving:** selecting a card swaps `data-skin` and loads that theme's CSS link; Cancel restores.
-- Entry point: a link in the user menu and gov-store navigation, added through the existing gov-store menu registry (no core view edit).
-- Strings in `theming/lang/{en-US,bn-BD}/appearance.php` (package-owned so no core lang edits).
+- "Reset to default" clears `theme` (follow office/company/organisation).
+- Entry point: user menu and gov-store navigation via the existing gov-store menu registry (no core view edit).
+- Strings in `theming/lang/{en-US,bn-BD}/appearance.php`.
+
+### 12.8 Assignments page (administrators)
+
+- One card per scope the viewer may manage: Organisation (superuser), Company (company admin → own company; superuser → company picker), Office (office admin → working office; superuser → office picker).
+- Each card: theme select (**published** themes only, with previews), "Enforce for everyone in this scope" switch, current effective theme for that scope, last changed by/at.
+- Admins (super admin included) only **choose** here; there is no create, upload, edit or design control anywhere in the application.
+- Shows inheritance: "Not set — inherits *Digital Blue* from Ministry of Health".
+- Saving clears the assignment cache for that scope.
 
 ---
 
@@ -619,13 +769,19 @@ GS.theme.on('change', ({key, mode}) => …)   // fires on data-skin / data-theme
 
 **Chart.js v2 global plugin** (`Chart.plugins.register({ id: 'gsTheme', … })`), registered in the foot include; then `Chart.helpers.each(Chart.instances, c => c.update())` for charts created earlier.
 
-| Applies to | What it changes |
-|---|---|
-| All charts (core + gov-store) | Grid lines, tick labels, legend text, tooltip colours → `--gs-chart-grid`, `--gs-chart-label`, surface tokens; redraw on mode change |
-| Gov-store charts, or any chart with `options.plugins.gsTheme.recolorData = true` | Dataset colours from `GS.theme.palette()` |
-| Core dashboard data colours | **Unchanged** — they carry meaning (status-label colours chosen by admins) |
+**Policy — "theme the frame, keep the meaning":**
 
-Opt-out per chart: `options.plugins.gsTheme = false`.
+| Chart element | Behaviour | Why |
+|---|---|---|
+| Grid lines, ticks, axis titles, legend text, tooltips (all charts) | Always themed: `--gs-chart-grid`, `--gs-chart-label`, surface/text tokens; redraw on mode change | Readability in both modes is the theme's job |
+| Slice / bar borders (all charts) | `borderColor` = `--gs-color-surface`, 1px | Keeps adjacent segments distinguishable in dark mode, even with dark admin colours |
+| Core series coloured by an **admin-chosen** status-label colour | **Unchanged** | The colour carries meaning admins chose (e.g. red = broken) |
+| Core series using Snipe-IT's **fallback palette** (`Helper::defaultChartColors()`) | Re-mapped index-for-index to `--gs-chart-1…10` | These colours carry no meaning; they should match the theme |
+| Gov-store charts | Always `GS.theme.palette()` | Built on tokens (R5) |
+
+How fallback colours are detected: `gs-theme::foot` reads the fallback list by **calling** the core helper `Helper::defaultChartColors($i)` (read-only use, no edit) and passes it to JS; the plugin re-maps only dataset colours that exactly match an entry. If upstream changes the palette, detection updates automatically.
+
+Opt-out per chart: `options.plugins.gsTheme = false`. Force full recolour: `options.plugins.gsTheme.recolorData = 'all'`.
 
 ---
 
@@ -679,11 +835,15 @@ One page where a UI/UX developer reviews a theme completely — every token, eve
 
 ### 14.4 Access
 
+The Theme Lab is a **developer tool**. Developers use it locally and on staging while building themes; in production it lets the super admin review shipped themes before choosing defaults (§12.6):
+
 | Setting | Behaviour |
 |---|---|
-| Ability `gs-theme.lab` | `Gate::define('gs-theme.lab', fn ($u) => $u->isSuperUser())`; can be widened to a gov-store role later |
-| `GS_THEME_LAB` | Default `true` in local/staging, `false` in production (route returns 404 when disabled) |
-| Data | Uses static fixture data only (no DB reads of real assets), so it is safe in any environment |
+| Ability `theming.lab.view` | Production: `superuser` only (review shipped and `draft` themes before choosing defaults). Local / staging: developers, who are superusers in their own environments. Denied users get tenant-scope's standard access-denied page |
+| `GS_THEME_LAB` | Kill switch only (default `true`); when `false` the routes return 404 for everyone |
+| Data | Static fixture data only (no reads of real assets, users or offices) — safe to open in production |
+| Preview links | `?gs_preview=` honoured only for users holding `theming.lab.view`; never persisted |
+| `draft` themes | Visible only in the Lab and via `gs_preview`, so a theme can be shipped to production for review before developers flip it to `published` |
 
 ### 14.5 Two views
 
@@ -778,15 +938,19 @@ Print views to convert to `<x-gs::document>`: `store-operations/…/operations/p
 | `ThemeRepositoryTest` | discovery, `extends` merge rules, depth/cycle errors, status filtering |
 | `TokenResolverTest` | references, derivations (OKLCH), cycles |
 | `ThemeValidationTest` | every rule in §8.4 with fixture themes (good + each failure) |
-| `ThemeResolverTest` | full resolution chain, `allow_user_choice=false`, deprecated/unknown fallback, `gs_preview` only for lab users |
-| `AppearanceControllerTest` | save theme/mode, validation errors, mode AJAX endpoint, guests redirected |
-| `ThemeLabAccessTest` | 404 when disabled, 403 for non-superusers, 200 for superusers |
+| `ThemeResolverTest` | every step of §12.2: preview, top-down enforcement (organisation beats office), user preference, bottom-up defaults (office beats company beats organisation), working-office switch, guests, `allow_user_choice=false`, draft/deprecated/removed-theme fallback |
+| `AppearanceControllerTest` | save theme/mode, validation errors, enforced scope makes theme read-only, mode AJAX endpoint, guests redirected |
+| `AssignmentControllerTest` | office admin can set own working office only; company admin own company only; superuser any scope; organisation scope superuser-only; `enforced` flag; cache busted; change logged |
+| `ThemeAccessTest` | role path (office_admin → own office, company_admin → own company, superuser → any scope + Lab), permission path (`office_operations` / `company_operations` profile strings), no other role can reach the Lab, scope checks, fallback when tenant-scope is absent |
+| `ThemeLabAccessTest` | 404 when kill switch off; denied page without ability; 200 via role; 200 via permission; `gs_preview` ignored without ability |
+| `ChartPaletteTest` | foot include exports exactly the core fallback palette from `Helper::defaultChartColors()` |
 | `GovStoreThemeComplianceTest` | ratchet (§15.3) |
 | `BuildCommandTest` | manifest contents, hashing, failure on invalid theme |
 
 ### 16.2 Upstream contract test (`SnipeItContractTest`)
 
-- Compiles each target layout through Blade and asserts: `gs-theme-hook:v1` marker present, `<html>` carries `data-skin`, `gs-theme::head` and `gs-theme::foot` included.
+- Compiles each target layout through Blade and asserts: `gs-theme-hook:v1` marker present, `<html>` carries `data-skin`, `gs-theme::head` and `gs-theme::foot` included, and the theme head appears **before** the Custom CSS block.
+- Renders a Snipe-IT page under Snipe-IT Classic with a custom `header_color` and asserts it is used; under Institutional Green asserts the theme colour is used and the Branding notice appears on `settings.branding.index`.
 - Parses the core layout's inline `<style>` and asserts every Snipe-IT variable listed in `adapter/snipeit-vars.css` still exists.
 - Asserts the AdminLTE/Bootstrap class names used in `adapter/snipeit.css` still appear in core views (smoke check).
 
@@ -804,23 +968,25 @@ Print views to convert to `<x-gs::document>`: `store-operations/…/operations/p
 
 ## 17. Phases
 
-Estimates are rough person-days for one developer familiar with the codebase; theme dark-mode design is separate design effort.
+Estimates are rough person-days for one developer familiar with the codebase. Phase 4 is done by theme developers and includes designing both light and dark modes.
 
 | # | Phase | Key tasks | Deliverables | Done when | Est. |
 |---|---|---|---|---|---|
 | 0 | **Spike** | Package skeleton + auto-discovery; `LayoutHook` on `default` & `basic`; one layered adapter rule beating a core `!important`; seed → OKLCH derivation; light+dark tokens for one test theme; nonce'd head mode script | Branch with working proof | Dashboard & login re-themed in both modes, no flash, core diff = 0, `view:cache` works | 2–3 |
-| 1 | **Token contract & adapter** | DTCG schema; semantic catalogue (§6.4); `snipeit-vars.css`; `snipeit.css` covering §7.3; `default` theme reproducing stock look | Adapter + `default` theme | Every core screen in `default` matches stock Snipe-IT in light & dark (visual diff) | 5–7 |
+| 1 | **Token contract & adapter** | DTCG schema; semantic catalogue (§6.4); `snipeit-vars.css`; `snipeit.css` covering §7.5; `default` theme ("Snipe-IT Classic") reproducing stock look incl. Branding colours; Branding/profile notice (§7.4) | Adapter + `default` theme | Every Snipe-IT screen in `default` matches stock Snipe-IT in light & dark (visual diff); every Snipe-IT screen follows a non-default theme | 5–7 |
 | 2 | **Layout variants** | All variants in §9 in `variants.css` | Variant CSS | Each value visibly correct on core shell, tables, boxes | 3–4 |
-| 3 | **Engine & tooling** | Repository, inheritance, compiler, `ColorMath`, contrast checker, build/validate/make commands, manifest, dev asset route, resolver, preferences migration, Appearance page, toggle sync, translations | Engine + Appearance page | A new theme ships by adding a folder + `gs-theme:build`; users can pick theme & mode | 5–6 |
-| 3b | **Office/tenant defaults** (optional) | `gs_theme_assignments`, admin screen, resolver step | Scoped defaults | An office default applies to its members | 2 |
-| 4 | **Three themes** | Institutional Green, Digital Blue, Executive Neutral — seeds, variants, fonts, light **and** dark tokens, previews | 3 theme folders | All pass `gs-theme:validate` in both modes | 4–6 |
+| 3 | **Engine & tooling** | Repository, inheritance, compiler, `ColorMath`, contrast checker, build/validate/make commands (dark scaffold), manifest, dev asset route, unsupported-browser notice, toggle sync, translations | Engine | A new theme ships by adding a folder + `gs-theme:build` | 5–6 |
+| 3a | **Preferences, scopes & access** | `gs_theme_preferences` + `gs_theme_assignments` migrations; full resolver (§12.2) on `TenantContext`; `theming.*` abilities merged into `govstore-abilities`; permission strings into `office_operations` / `company_operations` profiles; `ThemeAccess`; Appearance page; Assignments page; audit logging | Users pick theme & mode; organisation/company/office admins set (and optionally enforce) defaults | Resolver, access and controller tests green; abilities visible in the Access matrix | 4–5 |
+| 4 | **Three themes** *(theme developers)* | Institutional Green, Digital Blue, Executive Neutral — seeds, variants, fonts, **designed** light and dark tokens (from scaffold), previews | 3 theme folders | All pass `gs-theme:validate` with no scaffold markers, both modes | 5–8 |
 | 5 | **UI kit & Theme Lab** | 15 components (§14.2), `status-map.php`, Lab matrix + focus views, sections 1–9 | Kit + Lab | Acceptance criteria §14.7 | 7–10 |
 | 6 | **Gov-store migration** | Compliance test + baseline; asset registration in each package; migrate views per §15.4 | Compliant packages | Baseline empty | 10–15 |
-| 7 | **Charts & print** | Chart.js plugin; print tokens; convert 3 print views to `<x-gs::document>` | Themed charts & prints | Charts redraw on mode switch; prints always light & legible | 3–4 |
-| 8 | **Safety net** | Contract test, rendering tests, Playwright visual suite, upstream-merge checklist in this doc | Tests in CI | All green; checklist adopted | 3–4 |
-| | | | | **Total** | **≈ 44–61** |
+| 7 | **Charts & print** | Chart.js plugin with the §13 policy (frame themed, admin colours kept, fallback palette re-mapped); print tokens; convert 3 print views to `<x-gs::document>` | Themed charts & prints | Charts redraw on mode switch; admin status colours unchanged; prints always light & legible | 3–4 |
+| 8 | **Safety net** | Contract test, rendering tests, Playwright visual suite (Chromium + Firefox/WebKit smoke), upstream-merge checklist | Tests in CI | All green; checklist adopted | 3–4 |
+| | | | | **Total** | **≈ 47–65** |
 
-Dependencies: 0 → 1 → 2 → {3, 5}; 4 needs 1–3; 6 and 7 need 5; 8 runs alongside from Phase 1.
+Dependencies: 0 → 1 → 2 → {3, 5}; 3a needs 3; 4 needs 1–3 (Lab from 5 helps but is not required); 6 and 7 need 5; 8 runs alongside from Phase 1.
+
+Pre-Phase-4 action (ICT team): user-agent report from web server logs to size the share of browsers below the §10.5 baseline.
 
 ---
 
@@ -828,12 +994,13 @@ Dependencies: 0 → 1 → 2 → {3, 5}; 4 needs 1–3; 6 and 7 need 5; 8 runs al
 
 1. `php artisan gs-theme:make civic-teal --from=institutional-green`
 2. Edit `themes/civic-teal/theme.json`: labels (en-US, bn-BD), description, `variants`, `fonts`, `swatches`.
-3. Edit `tokens.light.json` and `tokens.dark.json` — start with the four seeds; override semantic tokens only where derivation isn't right. (Or export both files from Figma Tokens Studio.)
-4. Open `/gov/theme-lab/civic-teal` (local) — every save is picked up on refresh. Use the variant dropdowns to experiment; paste the shown JSON into `theme.json`.
-5. Fix anything the Lab's validation panel flags (contrast, missing tokens) in **both** modes.
-6. Add `preview.light.png` / `preview.dark.png` (Lab has a "capture preview" button that produces the right size).
-7. Set `"status": "experimental"` to test with admins, then `"stable"` to release.
-8. `php artisan gs-theme:validate civic-teal` and `npm run test:themes -- --update-snapshots` for the new theme; open a PR.
+3. Design **light mode** in `tokens.light.json` — start with the four seeds; override semantic tokens only where derivation isn't right. (Or export from Figma Tokens Studio.)
+4. Design **dark mode** in `tokens.dark.json` — you own it. Start from the generated scaffold, tune grounds, surfaces, text and status colours, then delete the `"gs.scaffold": true` marker.
+5. Open `/gov/theme-lab/civic-teal` (local) — every save is picked up on refresh. The matrix view shows light and dark side by side. Use the variant dropdowns to experiment; paste the shown JSON into `theme.json`.
+6. Fix anything the Lab's validation panel flags (contrast, missing tokens, scaffold marker) in **both** modes.
+7. Add `preview.light.png` / `preview.dark.png` (Lab has a "capture preview" button that produces the right size).
+8. Keep `"status": "draft"` to ship it to production for review in the Theme Lab (super admin only); change to `"published"` in a later release to make it selectable by users and on the Assignments page.
+9. `php artisan gs-theme:validate civic-teal` and `npm run test:themes -- --update-snapshots` for the new theme; open a PR.
 
 No PHP, no routes, no Blade edits required.
 
@@ -858,26 +1025,38 @@ No PHP, no routes, no Blade edits required.
 | Upstream changes `<html>`/`</head>`/`</body>` markup in layouts | Low | Theme not applied (stock look) | Graceful fallback; contract test fails loudly |
 | Upstream renames CSS variables or AdminLTE classes | Medium | Parts of theme stop applying | Adapter is the single place to fix; contract + visual tests detect |
 | Laravel changes/removes `Blade::precompiler` | Low | Hook stops | Long-standing API; contract test; fallback to a response-injection middleware is a 1-day swap |
-| Cascade-layer `!important` behaviour in older browsers | Low | Some overrides lose | Upstream already requires `light-dark()` / relative colour syntax (newer than cascade layers); verify in spike against office browser baseline |
-| Theme tokens override admin Custom CSS | Medium | Admin CSS appears ignored under non-default themes | Documented; `default` theme leaves brand variables to Snipe-IT |
+| Offices running browsers below the §10.5 baseline (e.g. Windows 7/8.1, capped at Chrome 109) | Medium | Wrong colours — already true for upstream Snipe-IT today | User-agent report before Phase 4; in-app unsupported-browser notice; theming's own CSS needs only cascade layers (older than the baseline) |
+| Admins change Branding colours and see no effect under a designed theme | Medium | Confusion | Runtime notice on Branding/profile pages (§7.4); "Snipe-IT Classic" restores Branding colours |
+| Custom CSS anchor missing after an upstream change | Low | Theme loads after Custom CSS (Custom CSS loses on equal selectors) | Falls back to `</head>`; contract test asserts theme head appears before the Custom CSS block |
 | Dynamic DOM (bootstrap-table, select2 popups) misses theme | Medium | Unstyled fragments | Popups inherit from `<html>` in normal pages; Lab sets `dropdownParent`; covered by visual tests |
 | Gov-store migration effort larger than estimated | Medium | Phase 6 slips | Ratchet lets migration proceed incrementally without blocking releases |
-| Dark-mode designs not ready for Phase 4 | Medium | Themes blocked by G4 | Derivation gives a working first dark mode from seeds; designers refine |
+| Dark mode left as the generated scaffold | Medium | Poor dark experience | Scaffold marker fails `gs-theme:build` for `published` themes (CI + deploy); Lab matrix makes light/dark review a single page |
+| `theming.*` abilities merged after tenant-scope defines its Gates | Low | Abilities missing / always denied | Merge in `register()` (runs before every `boot()`); `ThemeAccessTest` asserts the Gates exist |
+| Enforced assignments surprise users | Low | Support requests | Picker shows which scope enforces and why; enforcement changes are logged with actor |
+| Theme changes when a user switches working office | Low | Confusion | Intended cue of the active office; documented on the Appearance page; a personal preference overrides it unless enforced |
 | Font payload (Bengali) | Low | Slower first load | woff2 + `unicode-range` subsets + preload of the active theme's primary font only |
 
 ---
 
-## 21. Open decisions
+## 21. Decisions
 
-| # | Decision | Proposed default |
+| # | Decision | Resolution | Where in plan |
+|---|---|---|---|
+| D1 | Organisation default theme | **Yes** — `institutional-green`; superuser can change it on the Assignments page (config value is the fallback) | §12.1–12.4, §12.8 |
+| D2 | Users choose their own theme | **Yes** — `allow_user_choice = true`; overridden only by an enforced assignment | §12.2, §12.7 |
+| D3 | Company (ministry/tenant) and office defaults | **Yes** — in scope (Phase 3a), with optional enforcement | §12.1–12.3, §12.8, §17 |
+| D4 | Who designs dark modes | **Theme developers** design and own both light and dark; scaffold + validation support them | §8.5, §17 Phase 4, §18 |
+| D5 | Theme Lab access in production | **Super admin only** (`theming.lab.view`, role-based, no permission path) — to review shipped and `draft` themes; developers use the Lab locally and on staging; `GS_THEME_LAB` is a kill switch | §12.6, §14.4 |
+| D8 | Who creates themes | **Developers only, shipped in the code.** No upload, editor or theme creation in the application — not even for the super admin. Every admin only chooses | §1 (G3, G6), §8.6 |
+| D9 | Default permissions for choosing (was C2) | **Office admin → their office; company admin → their company** (`theming.assign.office` / `theming.assign.company`, by role and via the `office_operations` / `company_operations` permission profiles); super admin → organisation and any scope | §12.6 |
+| D6 | Browser baseline | **Set by upstream Snipe-IT**: Chrome/Edge 123+, Firefox 128+, Safari 18+; unsupported-browser notice; ICT user-agent report before Phase 4 | §10.5 |
+| D7 | Recolour core dashboard charts | **"Theme the frame, keep the meaning"**: axes/legends/tooltips/borders always themed; admin-chosen status colours kept; Snipe-IT fallback palette re-mapped to the theme palette; gov-store charts fully themed | §13 |
+
+### Pending
+
+| # | Item | Proposed |
 |---|---|---|
-| D1 | Organisation default theme | `institutional-green` (per design recommendation) |
-| D2 | Allow users to choose their own theme | Yes |
-| D3 | Office/tenant-level defaults (Phase 3b) | Defer until after Phase 4 |
-| D4 | Who designs dark modes for the three themes | UI/UX team, starting from derived defaults |
-| D5 | Theme Lab access in production | Disabled; superusers only when enabled |
-| D6 | Browser baseline for government offices | Same as upstream Snipe-IT (evergreen Chromium/Firefox/Edge) — confirm in spike |
-| D7 | Recolour core dashboard data series | No — keep status-label colours; only axes/legends follow the theme |
+| C1 | Browser baseline (D6) — **pending the ICT user-agent report** | Keep upstream's baseline unless a large share of offices is below it. Owner: ICT team; due before Phase 4 |
 
 ---
 
@@ -913,5 +1092,6 @@ No PHP, no routes, no Blade edits required.
 | Variant | A declared layout option (`data-gs-*`) implemented once in the adapter |
 | Adapter | CSS that maps `--gs-*` tokens onto Snipe-IT variables and overrides hard-coded core rules |
 | UI kit | `<x-gs::*>` Blade components used by gov-store packages |
-| Theme Lab | Admin page showing every token/component/pattern in every theme × mode |
+| Theme Lab | Page showing every token/component/pattern in every theme × mode; access via `theming.lab.view` |
+| Assignment | A theme default set for the organisation, a company (ministry/tenant) or an office; optionally enforced |
 | Ratchet | Compliance baseline that may only decrease |

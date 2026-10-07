@@ -48,6 +48,9 @@ class GovAccess
             return new AccessDecision(false, $ability, 'unknown_ability');
         }
         $roles = $resolvedRoles ?? $this->roles($user);
+        if ($this->outsideInventoryBoundary($definition)) {
+            return new AccessDecision(false, $ability, 'role_required', $roles);
+        }
         $allowed = in_array('superuser', $roles) || (bool) array_intersect($roles, $definition['roles']);
 
         return new AccessDecision($allowed, $ability, $allowed ? 'allowed' : 'role_required', $roles);
@@ -57,8 +60,16 @@ class GovAccess
     {
         $definition = config('govstore-abilities', [])[$ability] ?? [];
 
-        return ($definition['national'] ?? false) || ($definition['enforce'] ?? false)
+        return $this->outsideInventoryBoundary($definition) || ($definition['national'] ?? false) || ($definition['enforce'] ?? false)
             || config('govstore-access.mode') !== 'shadow';
+    }
+
+    private function outsideInventoryBoundary(array $definition): bool
+    {
+        // Object scope enforces in shadow too. Support jurisdictions do not grant
+        // an inventory office even when an operational URL is requested directly.
+        return ($definition['inventory'] ?? false) && $this->context->isActive
+            && ! $this->context->isGlobal && ! $this->context->canUseInventoryOffice();
     }
 
     public function permitsRequest($user, string $ability): bool

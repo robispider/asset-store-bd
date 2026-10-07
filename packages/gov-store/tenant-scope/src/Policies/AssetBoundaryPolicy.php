@@ -26,7 +26,7 @@ class AssetBoundaryPolicy
 
     public function canMutate(Model $model, TenantContext $context): bool
     {
-        if ($context->isGlobal || ! $context->locationId || ! $context->companyId) {
+        if (! $context->canUseInventoryOffice()) {
             return false;
         }
         $schema = app(\GovStore\TenantScope\Services\SchemaKnowledge::class);

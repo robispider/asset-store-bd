@@ -18,14 +18,17 @@ class MinistryLocationScope implements Scope
         }
         $schema = app(SchemaKnowledge::class);
         $table = $model->getTable();
+        $locations = $context->allowedInventoryLocationIds ?? ($context->isCompanyAdmin
+            ? $context->allowedLocationIds : ($context->locationId ? [$context->locationId] : []));
+        $companies = $context->allowedInventoryCompanyIds ?? $context->allowedCompanyIds ?? ($context->companyId ? [$context->companyId] : []);
         if ($schema->hasColumn($model, 'location_id')) {
-            $builder->whereIn($table.'.location_id', $context->allowedLocationIds ?? ($context->locationId ? [$context->locationId] : []));
-            if ($context->allowedCompanyIds !== null && $schema->hasColumn($model, 'company_id')) {
-                $builder->whereIn($table.'.company_id', $context->allowedCompanyIds);
+            $builder->whereIn($table.'.location_id', $locations ?? []);
+            if ($schema->hasColumn($model, 'company_id')) {
+                $builder->whereIn($table.'.company_id', $companies);
             }
         } elseif ($schema->hasColumn($model, 'company_id')) {
-            // Native licenses have no office column: deny cross-ministry jurisdiction reads.
-            $builder->whereIn($table.'.company_id', $context->allowedCompanyIds ?? []);
+            // Native licenses have company ownership, never jurisdiction ownership.
+            $builder->whereIn($table.'.company_id', $companies);
         } else {
             $builder->whereRaw('1 = 0');
         }

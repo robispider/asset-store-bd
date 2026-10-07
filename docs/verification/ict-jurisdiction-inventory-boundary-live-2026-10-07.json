@@ -1,0 +1,30 @@
+{
+    "date": "2026-10-07",
+    "timezone": "Asia/Dhaka",
+    "read_only": true,
+    "mode": "shadow",
+    "actor_id": 1976,
+    "role": "ict_officer",
+    "support_office_count": 6,
+    "inventory_office_ids": [],
+    "support_permissions": {
+        "office.provision": true,
+        "office.onboard": true,
+        "users.create": true,
+        "users.edit": true,
+        "locations.view": true
+    },
+    "stock": {
+        "assets": {"visible_count": 0, "list_allowed": false, "detail_allowed": false},
+        "consumables": {"visible_count": 0, "list_allowed": false, "detail_allowed": false},
+        "accessories": {"visible_count": 0, "list_allowed": false, "detail_allowed": false},
+        "components": {"visible_count": 0, "list_allowed": false, "detail_allowed": false},
+        "licenses": {"visible_count": 0, "list_allowed": false, "detail_allowed": false}
+    },
+    "reports_allowed": false,
+    "operational_inventory": {
+        "storeops.documents.view": {"allowed": false, "enforced": true},
+        "storeops.documents.draft": {"allowed": false, "enforced": true},
+        "storeops.documents.post": {"allowed": false, "enforced": true}
+    }
+}

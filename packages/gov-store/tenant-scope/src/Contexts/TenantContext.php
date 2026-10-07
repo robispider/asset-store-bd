@@ -13,6 +13,10 @@ class TenantContext
     
     public ?array $allowedLocationIds = null; // Pre-computed hierarchy bounds for viewing users/offices
     public ?array $allowedCompanyIds = null;  // Pre-computed bounds for viewing/selecting Companies
+
+    // Inventory bounds are independent of office/user support jurisdictions.
+    public ?array $allowedInventoryLocationIds = null;
+    public ?array $allowedInventoryCompanyIds = null;
     
     public ?int $membershipId = null;
     public ?int $companyId = null;
@@ -30,6 +34,13 @@ class TenantContext
         foreach (get_object_vars(new self) as $property => $value) {
             $this->$property = $value;
         }
+    }
+
+    public function canUseInventoryOffice(): bool
+    {
+        return ! $this->isGlobal && $this->locationId && $this->companyId
+            && ($this->allowedInventoryLocationIds === null || in_array($this->locationId, $this->allowedInventoryLocationIds, true))
+            && ($this->allowedInventoryCompanyIds === null || in_array($this->companyId, $this->allowedInventoryCompanyIds, true));
     }
 
     /**
