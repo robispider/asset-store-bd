@@ -167,7 +167,12 @@ export class BrowserActionEngine {
       'gov.requests.fulfillment.index': '/gov-requests/fulfillment',
       'requests.show': `/requests/${params.id}`,
       'requests.index': '/requests',
-      'gov.context.switch': '/gov-store/switch-context'
+      'gov.context.switch': '/gov-store/switch-context',
+      'committee.dashboard': '/gov-store/committees',
+      'committee.registry': '/gov-store/committees/registry',
+      'committee.mine': '/gov-store/committees/mine',
+      'committee.types': '/gov-store/committees/admin/types',
+      'committee.show': `/gov-store/committees/${params.id}`
     };
 
     const path = routeMap[routeName];

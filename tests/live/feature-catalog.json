@@ -31,6 +31,42 @@
       "journeys": [{"id": "inventory.seeded-consumable-observation", "kind": "seeded-readonly", "status": "blocked-no-actor"}],
       "notes": "Requires native consumables.view; no seeded actor holds it, so the journey is blocked with fixtures.unsatisfied-requirements (see suite native-inventory)."
     },
+    {
+      "id": "committee.registry",
+      "title": "Committee desk and registry for the working office",
+      "journeys": [{"id": "committee.desk-registry-observation", "kind": "seeded-readonly", "status": "verified-live"}],
+      "missing": ["bn-BD labels", "registry pagination beyond 20 rows", "status/type filters", "desk attention and coverage rows", "print roster and history pages"]
+    },
+    {
+      "id": "committee.authorization",
+      "title": "Committee office/company boundary and role-gated screens",
+      "journeys": [
+        {"id": "committee.foreign-committee-boundary", "kind": "seeded-readonly", "status": "verified-live"},
+        {"id": "committee.authorization-boundaries", "kind": "seeded-readonly", "status": "verified-live"}
+      ],
+      "notes": "Access mode is shadow: registrar-only GET screens (new, transfers, registry, purposes) load for an ordinary employee; enforce mode must deny and is declared but not exercised live. The foreign-committee boundary (404) holds in both modes.",
+      "missing": ["enforce-mode denials exercised live", "mutation endpoints denied (live probe supports GET only)", "private order/declaration file access for another office"]
+    },
+    {
+      "id": "committee.mine",
+      "title": "My committees page for someone who serves on none",
+      "journeys": [{"id": "committee.authorization-boundaries", "kind": "seeded-readonly", "status": "verified-live"}],
+      "missing": ["member with a current appointment", "past committees", "declaration upload", "own order file download"]
+    },
+    {
+      "id": "committee.catalogue",
+      "title": "Committee types and rules (company administrator)",
+      "journeys": [{"id": "committee.rules-catalogue-observation", "kind": "seeded-readonly", "status": "blocked-no-actor"}],
+      "notes": "Requires a company administrator who is also an active member of the working office; the seeded company administrators are not office members, so the journey is blocked with fixtures.unsatisfied-requirements.",
+      "missing": ["type create/edit and national review", "purpose bindings"]
+    },
+    {
+      "id": "committee.lifecycle",
+      "title": "Constitute, appoint, activate, replace, extend, suspend, dissolve",
+      "journeys": [],
+      "status": "missing",
+      "notes": "No committee type is active in the seeded catalogue (all five national templates are inactive), and the order wizard needs a signed file upload. A write journey needs a disposable ministry type created through the Rules screen by a company administrator first."
+    },
     {"id": "auth.context", "title": "Authentication and working-context selection", "journeys": [], "status": "partial", "notes": "Login and header context are exercised inside other journeys via flow auth.login only."},
     {"id": "storeops.documents", "title": "Stock documents", "journeys": [], "status": "missing"},
     {"id": "tracking", "title": "Tracking", "journeys": [], "status": "missing"},

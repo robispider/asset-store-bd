@@ -9,6 +9,12 @@
     "requests.fulfill": {"ability": "requests.fulfill"},
     "storeops.documents.view": {"ability": "storeops.documents.view"},
     "storeops.documents.draft": {"ability": "storeops.documents.draft"},
-    "storeops.documents.post": {"ability": "storeops.documents.post"}
+    "storeops.documents.post": {"ability": "storeops.documents.post"},
+    "committee.view": {"ability": "committee.view"},
+    "committee.manage": {"ability": "committee.manage"},
+    "committee.activate": {"ability": "committee.activate"},
+    "committee.types.view": {"ability": "committee.types.view"},
+    "committee.types.manage": {"ability": "committee.types.manage"},
+    "committee.purposes.manage": {"ability": "committee.purposes.manage"}
   }
 }

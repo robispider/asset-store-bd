@@ -499,6 +499,63 @@ try {
                         'is_superadmin' => (bool) ($u->permissions && str_contains($u->permissions, '"superuser":"1"')),
                     ]);
 
+                case 'committee.visibility':
+                    // Mirrors CommitteeBoundaryScope for a non-company-admin office user (read-only).
+                    $officeId = (int) ($args['officeId'] ?? 0);
+                    $companyId = (int) ($args['companyId'] ?? 0);
+                    $visible = fn ($q) => $q->where('owner_company_id', $companyId)->where(function ($w) use ($officeId) {
+                        $w->where('owner_location_id', $officeId)->orWhereExists(function ($s) use ($officeId) {
+                            $s->select(DB::raw(1))->from('gov_committee_scopes')
+                                ->whereColumn('gov_committee_scopes.committee_id', 'gov_committees.id')
+                                ->where('scope_type', 'office')->where('scope_id', (string) $officeId);
+                        });
+                    });
+                    $mine = $visible(DB::table('gov_committees')->whereNull('deleted_at'));
+                    $latest = (clone $mine)->orderByDesc('created_at')->orderByDesc('id')->first(['committee_number']);
+                    $foreign = DB::table('gov_committees')->whereNull('deleted_at')
+                        ->whereNotIn('id', $visible(DB::table('gov_committees')->whereNull('deleted_at'))->select('id'))
+                        ->orderByDesc('created_at')->first(['id', 'committee_number']);
+                    if (! $foreign) {
+                        jsonError('No committee outside this office and company exists to test the boundary', 'observation.not-found');
+                    }
+                    $count = (clone $mine)->count();
+                    jsonResponse([
+                        'count' => $count,
+                        'firstPage' => min($count, 20),
+                        'searchTerm' => $latest->committee_number ?? 'LIVE-NO-SUCH-COMMITTEE',
+                        'searchMatches' => $latest ? 1 : 0,
+                        'foreignId' => $foreign->id,
+                        'foreignNumber' => $foreign->committee_number,
+                    ]);
+
+                case 'committee.catalog':
+                    $companyId = (int) ($args['companyId'] ?? 0);
+                    $types = DB::table('gov_committee_types')
+                        ->where(fn ($q) => $q->whereNull('owner_company_id')->orWhere('owner_company_id', $companyId));
+                    jsonResponse([
+                        'visibleTypes' => (clone $types)->count(),
+                        'activeTypes' => (clone $types)->where('is_active', 1)->count(),
+                        'firstCode' => (clone $types)->orderBy('name_en')->value('code'),
+                    ]);
+
+                case 'committee.mine':
+                    $id = (int) ($args['id'] ?? 0);
+                    $on = now('Asia/Dhaka')->toDateString();
+                    $current = DB::table('gov_committee_tenures as t')
+                        ->join('gov_committees as c', 'c.id', '=', 't.committee_id')
+                        ->where('t.user_id', $id)->whereNull('c.deleted_at')
+                        ->whereIn('c.status', ['ACTIVE', 'SUSPENDED'])
+                        ->where('c.effective_from', '<=', $on)
+                        ->where(fn ($q) => $q->whereNull('c.effective_to')->orWhere('c.effective_to', '>=', $on))
+                        ->where('t.from_date', '<=', $on)
+                        ->where(fn ($q) => $q->whereNull('t.to_date')->orWhere('t.to_date', '>=', $on))
+                        ->count();
+                    jsonResponse([
+                        'user_id' => $id,
+                        'tenures' => DB::table('gov_committee_tenures')->where('user_id', $id)->count(),
+                        'current' => $current,
+                    ]);
+
                 default:
                     jsonError("Unsupported observation check: '{$check}'", 'observation.unsupported');
             }

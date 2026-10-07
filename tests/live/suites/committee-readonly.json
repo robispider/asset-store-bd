@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "committee-readonly",
+  "title": "Committee registry read-only verification",
+  "description": "Desk, registry, personal page, office/company boundary and catalogue visibility of the committee package against seeded fictional users. Creates nothing; needs no --allow-writes.",
+  "environment": {"target": "http://snipeit.local", "allowlist": ["http://snipeit.local"]},
+  "journeys": [
+    "committee.desk-registry-observation",
+    "committee.foreign-committee-boundary",
+    "committee.authorization-boundaries",
+    "committee.rules-catalogue-observation"
+  ],
+  "defaults": {"language": "en-US", "timeoutMs": 90000}
+}

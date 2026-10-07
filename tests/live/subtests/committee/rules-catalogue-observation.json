@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "committee.rules-catalogue-observation",
+  "title": "A company administrator sees the Rules tab and one button per committee type visible to the company",
+  "features": ["committee.catalogue"],
+  "tags": ["seeded", "readonly"],
+  "execution": {"capability": "observe", "language": "en-US", "timeoutMs": 90000},
+  "fixtures": {
+    "office": {"requirements": {"operational": true}},
+    "actors": {
+      "companyAdmin": {
+        "capabilities": {"allOf": ["committee.types.manage", "committee.view"]},
+        "office": "office",
+        "activeMembership": true
+      }
+    }
+  },
+  "steps": [
+    {"action": "observe", "check": "committee.catalog", "args": {"companyId": "${fixtures.office.company_id}"}, "as": "catalog"},
+    {"use": "auth.login", "with": {"actor": "companyAdmin"}},
+    {"action": "goto", "route": "committee.registry"},
+    {"action": "assert", "target": "committee.tabRules", "test": "visible"},
+    {"action": "goto", "route": "committee.types"},
+    {"action": "assert", "target": "committee.typeButtons", "test": "count", "equals": "${observed.catalog.visibleTypes}"},
+    {"action": "assert", "target": "committee.newTypeButton", "test": "visible"},
+    {"action": "observe", "check": "committee.catalog", "args": {"companyId": "${fixtures.office.company_id}"}, "as": "catalogAfter"},
+    {"action": "compare", "actual": "${observed.catalogAfter.visibleTypes}", "equals": "${observed.catalog.visibleTypes}"}
+  ],
+  "cleanup": {"policy": "no-business-records-created"}
+}
