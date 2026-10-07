@@ -56,3 +56,14 @@ Submitted and approved requests have no reversal lifecycle. They are listed in `
 ## Known limits
 
 Not covered yet (see `tests/live/feature-catalog.json`): fulfillment/issue and stock ledger effects, final-approver branch, rejection/partial approval, bn-BD labels, foreign-office/company actors, enforce-mode live runs, lifecycle leases against population/wipe (mutating journeys are serialized and need a quiet fixture environment), and a dashboard. The runner drives Playwright directly rather than through Playwright Test.
+
+## Dashboard, visible browser and server URL
+
+```bash
+npm run test:live:dashboard            # prints http://127.0.0.1:4780/?t=<token>
+npm run test:live -- run --suite smoke --headed --slow-mo 300 --baseUrl http://snipeit.local
+```
+
+The dashboard is local only: it binds to `127.0.0.1`, requires the per-start token on every request, checks the Host header and only launches this repository's CLI with validated arguments. It lets you pick a suite or journey, enter the **server URL**, tick **Show the browser** (opens a visible Chromium window, optional slow motion), and watch per-journey status, live steps, console output, failure screenshots, retained records and the HTML report. One run at a time; **Stop run** terminates it.
+
+Server URL rules: local hosts (`*.local`, `*.test`, `localhost`) are accepted. For any other host start the dashboard/CLI with `LIVE_TEST_ALLOWED_HOSTS=host1,host2`. The PHP bridge always reads the **local** database, so the target server must use that same database; pointing at a server with a different database makes fixture resolution wrong.

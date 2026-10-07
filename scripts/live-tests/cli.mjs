@@ -37,9 +37,10 @@ import { DeterministicRandom, resolveData } from './core/generators.mjs';
 const LOCAL_HOST_PATTERN = /^(localhost|127\.0\.0\.1|\[::1\]|[a-z0-9-]+\.(local|localhost|test))$/i;
 
 /** Initial scope is local/nonproduction only; a CLI base URL never authorizes another installation. */
-function assertLocalTarget(baseUrl) {
+export function assertLocalTarget(baseUrl) {
   const host = new URL(baseUrl).hostname;
-  if (!LOCAL_HOST_PATTERN.test(host)) {
+  const extra = (process.env.LIVE_TEST_ALLOWED_HOSTS || '').split(',').map(h => h.trim().toLowerCase()).filter(Boolean);
+  if (!LOCAL_HOST_PATTERN.test(host) && !extra.includes(host.toLowerCase())) {
     throw new Error(`Target host '${host}' is not on the local environment allowlist`);
   }
 }
@@ -221,7 +222,8 @@ async function main() {
       const datasetOverride = options.dataset;
       const seed = options.seed ? parseInt(options.seed, 10) : 20261006;
       const baseUrl = options.baseUrl || 'http://snipeit.local';
-      const headless = options.headless !== false;
+      const headless = !options.headed;
+      const slowMo = options['slow-mo'] ? Math.min(parseInt(options['slow-mo'], 10) || 0, 2000) : 0;
 
       try {
         assertLocalTarget(baseUrl);
@@ -230,7 +232,9 @@ async function main() {
         process.exit(2);
       }
 
-      const runId = `run_${Date.now()}_${new DeterministicRandom(seed).uniqueMarkedText('R', 4)}`;
+      const runId = /^run_[A-Za-z0-9_-]+$/.test(String(options['run-id'] || ''))
+        ? options['run-id']
+        : `run_${Date.now()}_${new DeterministicRandom(seed).uniqueMarkedText('R', 4)}`;
       const runDir = path.join(baseDir, 'storage', 'app', 'private', 'live-tests', runId);
       fs.mkdirSync(runDir, { recursive: true });
 
@@ -244,7 +248,7 @@ async function main() {
       console.log(`Target URL  : ${baseUrl}`);
       console.log(`Artifact Dir: ${runDir}\n`);
 
-      eventLogger.log('run_started', { runId, suiteId, testId, seed, baseUrl });
+      eventLogger.log('run_started', { runId, suiteId, testId, tests: options.tests || null, seed, baseUrl });
 
       let interrupted = false;
       process.on('SIGINT', () => { interrupted = true; });
@@ -258,10 +262,12 @@ async function main() {
         runId,
         startedAt: new Date().toISOString(),
         baseUrl,
+        headed: !headless,
         seed,
         uniqueSuffix,
         suiteId,
         testId: testId || null,
+        tests: options.tests ? String(options.tests).split(',') : null,
         datasetOverride: datasetOverride || null,
         application: gitInfo(),
         definitionsHash: hashTree(path.join(baseDir, 'tests', 'live')),
@@ -272,7 +278,14 @@ async function main() {
 
       // Determine list of journeys to run
       let journeyIds = [];
-      if (testId) {
+      if (options.tests) {
+        // Comma-separated subset; keep suite order when --suite is also given, validate every id first.
+        const wanted = String(options.tests).split(',').map(x => x.trim()).filter(Boolean);
+        const known = new Set(loader.listJourneys().map(j => j.id));
+        const unknown = wanted.filter(w => !known.has(w));
+        if (unknown.length) { console.error(`Unknown journey(s): ${unknown.join(', ')}`); process.exit(2); }
+        journeyIds = [...new Set(wanted)];
+      } else if (testId) {
         journeyIds = [testId];
       } else {
         const suite = loader.loadSuite(suiteId);
@@ -298,7 +311,7 @@ async function main() {
       const sinkSafe = allowExternalMail || ['log', 'array', 'null', 'mailpit', 'smtp-local'].includes(String(preflight.mailer));
       provenance.mailPolicy = { mailer: preflight.mailer, externalMailOverride: allowExternalMail, note: allowExternalMail ? 'Operator accepted external mail driver; seeded actors use undeliverable example.invalid addresses; delivery is not tested.' : 'local sink required' };
 
-      const browser = await chromium.launch({ headless });
+      const browser = await chromium.launch({ headless, slowMo });
       const artifactsDir = path.join(runDir, 'artifacts');
 
       try {
@@ -515,6 +528,12 @@ async function main() {
       break;
     }
 
+    case 'dashboard': {
+      const { startDashboard } = await import('./dashboard/server.mjs');
+      await startDashboard({ baseDir, port: options.port ? parseInt(options.port, 10) : 4780 });
+      return; // keep the server alive
+    }
+
     case 'coverage': {
       // Distinct counts from definitions, the feature catalog and the most recent result of each journey.
       const catalog = readJson(path.join(baseDir, 'tests', 'live', 'feature-catalog.json'), { features: [] });
@@ -549,7 +568,8 @@ Commands:
   list [--feature <name>]           List all available journeys and suites
   discover                          Discover seeded datasets via read-only PHP bridge
   plan --suite <id> | --test <id>   View expanded execution plan without browser mutations
-  run [--suite <id>] [--test <id>]  Run live browser journeys against application
+  run [--suite <id>] [--test <id>] [--tests a,b,c] [--baseUrl <url>] [--headed] [--slow-mo ms]  Run live browser journeys
+  dashboard [--port 4780]           Local dashboard: start runs, watch progress, pick server URL
   report --run <runId> [--html]    View results, or write report.html
   replay --run <runId> [--failed-only] [--allow-writes]  Re-run journeys with fresh fixtures
   coverage                          Defined / executed / passed / blocked / missing counts

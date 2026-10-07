@@ -13,6 +13,7 @@
         "production": "mix --production",
         "test:live": "node scripts/live-tests/cli.mjs",
         "test:live:contract": "node scripts/live-tests/tests/contract.spec.mjs",
+        "test:live:dashboard": "node scripts/live-tests/cli.mjs dashboard",
         "test:live:bridge": "node scripts/live-tests/tests/bridge-readonly.spec.mjs"
     },
     "engines": {
