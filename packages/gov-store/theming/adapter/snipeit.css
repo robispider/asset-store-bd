@@ -16,6 +16,20 @@
             background-color: var(--gs-color-bg) !important;
             color: var(--gs-color-text) !important;
         }
+        /* Native scrollbars (any overflow:auto/scroll box — timelines, the matrix grid, bootstrap-table
+           panels, …) otherwise stay the OS/browser default light track regardless of mode, which reads
+           as a stray white bar in dark mode. scrollbar-color is inherited, so setting it once here
+           themes every scrollable element; ::-webkit-scrollbar is a belt-and-braces fallback. */
+        & {
+            scrollbar-color: var(--gs-color-border-strong) var(--gs-color-surface-sunken) !important;
+        }
+        & ::-webkit-scrollbar { width: 12px; height: 12px; }
+        & ::-webkit-scrollbar-track { background: var(--gs-color-surface-sunken) !important; }
+        & ::-webkit-scrollbar-thumb {
+            background-color: var(--gs-color-border-strong) !important;
+            border-radius: var(--gs-radius-sm) !important;
+            border: 3px solid var(--gs-color-surface-sunken) !important;
+        }
         & body,
         & .content-wrapper,
         & .main-sidebar,

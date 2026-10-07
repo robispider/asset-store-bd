@@ -438,7 +438,9 @@
 .gs-ws-toolbar-label { font-weight: bold; text-transform: uppercase; font-size: 12px; display: block; margin-bottom: 10px; letter-spacing: .5px; }
 .gs-ws-toolbar a.btn { margin-right: 5px; }
 
-.gs-ws-task-item { padding: 20px; border-bottom: 1px solid var(--gs-color-border); }
+/* .products-list > .item is core AdminLTE, unlayered, with a hard-coded white background
+   (background:#fff) — !important is required here to win against it, same as .timeline-item above. */
+.gs-ws-task-item { padding: 20px; border-bottom: 1px solid var(--gs-color-border); background: transparent !important; box-shadow: none !important; }
 .gs-ws-task-identifier { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
 .gs-ws-task-code { font-size: 16px; font-weight: bold; color: var(--gs-color-primary); }
 .gs-ws-task-sep { font-weight: normal; color: var(--gs-color-text-muted); margin: 0 8px; }
