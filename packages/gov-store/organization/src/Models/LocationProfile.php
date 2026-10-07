@@ -14,6 +14,7 @@ class LocationProfile extends Model
     protected $fillable = [
         'location_id',
         'geo_area_id',
+        'office_type',
         'office_admin_id',
         'lifecycle_status',
         'geo_area_verified_at',

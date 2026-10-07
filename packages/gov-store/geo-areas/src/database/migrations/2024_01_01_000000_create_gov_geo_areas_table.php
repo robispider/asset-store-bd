@@ -9,10 +9,11 @@ class CreateGovGeoAreasTable extends Migration
 {
     public function up()
     {
-        // 1. Disable constraints and recreate table
-        Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('gov_geo_areas');
-        Schema::enableForeignKeyConstraints();
+        // Migration identities may already be recorded on installed databases.
+        // Never drop reference data when this historical migration is rerun.
+        if (Schema::hasTable('gov_geo_areas')) {
+            return;
+        }
 
         Schema::create('gov_geo_areas', function (Blueprint $table) {
             $table->integer('GeoAreaId')->unsigned()->primary();

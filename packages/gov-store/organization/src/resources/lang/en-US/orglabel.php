@@ -375,5 +375,10 @@ return [
     'menu_company_admins'      => 'Assign Company Admins',
     'menu_office_setup'        => 'My Office Setup',
     'menu_gov_directory'       => 'Government Directory',
+    'office_type_label' => 'Office type',
+    'office_type_default' => 'General office',
+    'office_type_hospital' => 'Hospital',
+    'office_type_school' => 'School',
+    'office_type_ict_office' => 'ICT office',
 
 ];

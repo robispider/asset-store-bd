@@ -4,7 +4,7 @@ Original review: 4 October 2026 · @zahid. Reassessed: **7 October 2026 (Asia/Dh
 
 ## Updated scorecard
 
-**19 of the original 64 gaps are mitigated (29.69%); 7 are partially mitigated; 38 remain open.** There are **45 gaps requiring further work**, including the partial rows. The package sections below are arranged in dependency order, with foundations before their consumers.
+**25 of the original 64 gaps are mitigated (39.06%); 8 are partially mitigated; 31 remain open.** There are **39 gaps requiring further work**, including the partial rows. The package sections below are arranged in dependency order, with foundations before their consumers.
 
 Tenant-scope implementation update: **7 October 2026 (Asia/Dhaka), working tree**. The original reassessment revision above remains the baseline for the other packages. See [tenant-scope implementation and verification](../verification/tenant-scope-implementation-2026-10-07.md).
 
@@ -13,8 +13,8 @@ These are implementation statuses, not production closure. Office-role enforceme
 | Order | Package | Original gaps | Mitigated | Partial | Open | Next dependency-relevant work |
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | tenant-scope | 7 | 7 | 0 | 0 | Deploy resolver/job contracts; retain outstanding G1 rollout gates |
-| 2 | geo-areas | 4 | 0 | 0 | 4 | Remove debug dump; establish versioned geography |
-| 3 | organization | 6 | 1 | 1 | 4 | Safe schema ownership; office type and provisioning event |
+| 2 | geo-areas | 4 | 3 | 1 | 0 | Verify dataset publisher/license before an upstream refresh |
+| 3 | organization | 6 | 4 | 1 | 1 | Complete office lifecycle only after consumer clearance; verify starter-catalog handoff |
 | 4 | office-membership | 5 | 1 | 0 | 4 | Secure role transfers; complete clearance rules |
 | 5 | user-onboarding | 4 | 0 | 0 | 4 | Queue system-created users using membership services |
 | 6 | classification | 7 | 1 | 0 | 6 | Consume provisioning event; queue bulk adoption |
@@ -24,17 +24,17 @@ These are implementation statuses, not production closure. Office-role enforceme
 | 10 | store-operations | 8 | 2 | 3 | 3 | Ledger cut-over, remaining document types and receipt fields |
 | 11 | custom-requests | 6 | 5 | 1 | 0 | Complete item adapters after stock contracts |
 | 12 | experimentation | 4 | 1 | 1 | 2 | Isolated fixture CI, packaging and restore |
-| **Total** | **12 packages** | **64** | **19** | **7** | **38** | **45 still require work** |
+| **Total** | **12 packages** | **64** | **25** | **8** | **31** | **39 still require work** |
 
 Original severities are preserved for reconciliation with the baseline. They are not a new assessment of residual risk.
 
 | Original severity | Original gaps | Mitigated | Partial | Open |
 | --- | --- | --- | --- | --- |
 | Critical | 3 | 3 | 0 | 0 |
-| High | 19 | 6 | 3 | 10 |
-| Medium | 31 | 7 | 4 | 20 |
-| Low | 11 | 3 | 0 | 8 |
-| **Total** | **64** | **19** | **7** | **38** |
+| High | 19 | 7 | 4 | 8 |
+| Medium | 31 | 10 | 4 | 17 |
+| Low | 11 | 5 | 0 | 6 |
+| **Total** | **64** | **25** | **8** | **31** |
 
 ### Counting and evidence
 
@@ -136,31 +136,31 @@ Verification and operational limits are recorded in [the tenant-scope execution 
 
 ## 2. geo-areas
 
-**0 mitigated, 0 partial, 4 open.** Reference geography supports office and programme boundaries.
+**3 mitigated, 1 partial, 0 open.** Reference geography supports office and programme boundaries. Current implementation and live index evidence are recorded in [Geo Areas and Organization verification](../verification/geo-areas-organization-implementation-2026-10-07.md).
 
 **Internal order:** GEO-1 → GEO-2 → GEO-3/4; display/search improvements do not block office schema work.
 
 | ID | Original severity | Status | Current finding and evidence | Remaining mitigation |
 | --- | --- | --- | --- | --- |
-| GEO-1 | High | Open | `GeoAreaController::search` still calls `dd()` for empty non-AJAX search. | Remove the diagnostic branch; return safe JSON and cover this request shape. |
-| GEO-2 | Medium | Open | No maintained source/version/refresh workflow; the baseline `divison` type spelling remains a compatibility concern. | Record provenance/version; review additive type correction and update consumers before changing identifiers. |
-| GEO-3 | Medium | Open | Search combines English/Bangla in `text`; no package language files. | Return both names and select by locale, preserving dropdown compatibility. |
-| GEO-4 | Low | Open | Contains search remains; baseline row count is not a current performance measurement. | Measure and introduce prefix/full-text lookup when scale warrants it. |
+| GEO-1 | High | Mitigated | Empty non-AJAX searches return the standard bounded JSON response; controller regression covers the request shape. | Preserve safe API behavior. |
+| GEO-2 | Medium | Partial | Dataset is versioned and hashed with a reviewed refresh procedure; the original migration no longer drops existing reference data. The bundled CSV still lacks verified publisher, retrieval date and license. | Establish source/terms before adopting a refreshed dataset; retain stable IDs and the `divison` compatibility alias. |
+| GEO-3 | Medium | Mitigated | API returns English and Bangla names separately and selects dropdown `text` by locale; both package language files are registered. | Preserve response compatibility for Select2 consumers. |
+| GEO-4 | Low | Mitigated | Search is sorted, bounded prefix matching with English/Bangla indexes. Live `EXPLAIN` on 9,111 rows used both indexes (`index_merge`, estimated 8 rows). | Re-measure when data volume or search behavior changes. |
 
 ## 3. organization
 
-**1 mitigated, 1 partial, 4 open.** `configured` exists alongside provisioned/operational; suspend/merge/closure remain absent.
+**4 mitigated, 1 partial, 1 open.** `configured` exists alongside provisioned/operational; suspend/merge/closure remain absent. See the [implementation and verification record](../verification/geo-areas-organization-implementation-2026-10-07.md).
 
 **Internal order:** ORG-3 safe ownership → ORG-2 office type/event → ORG-1 after complete clearance. Localization/cleanup can proceed within the package.
 
 | ID | Original severity | Status | Current finding and evidence | Remaining mitigation |
 | --- | --- | --- | --- | --- |
 | ORG-1 | High | Open | No supported suspend, merge, relocate or close workflow. | Add authorized audited transitions; require complete membership/consumer clearance before closure. |
-| ORG-2 | High | Open | `provisionOffice()` still returns without a defined/dispatched `OfficeProvisioned` event; classification listens for it. | Define after-commit event and profile office type; test starter handoff with CL-2. |
-| ORG-3 | Medium | Partial | Custom Requests no longer owns the deprecated role table/model; current role writes use `OfficeResponsibility`. Organization's `2024_01_04` migration still drops/recreates tables, and `LocationRole` remains. | Establish one owner and additive upgrades; remove proven unused legacy code while preserving role data/installed migration identities. |
+| ORG-2 | High | Partial | Office profiles now carry a type and provisioning dispatches a typed event after commit. Starter jobs use an explicit company-scoped office-admin actor and wait for admin assignment. The full provision-to-catalog workflow still needs retry and CL-2 consumer verification. | Verify successful and failed handoff, scoped execution, safe retries and idempotence against the exact starter bundle. |
+| ORG-3 | Medium | Mitigated | Historical organization migration is non-destructive on rerun. The additive migration backfills valid legacy roles only for active, unexpired memberships; `OfficeResponsibility` is the active owner. Legacy table is retained as an archive; model/relation and live compatibility paths are removed. | Preserve the archive and backfill safeguards. |
 | ORG-4 | Medium | Mitigated | G1 access-request/admin review supplies expiring `gov_access_grants`; request `ApprovalRouting` uses responsibilities and unexpired cover. This replaces unused delegate columns and addresses leave cover. | Preserve expiry/next-request checks. Legacy-column cleanup is ORG-3; rollout/mail setup remain operational. |
-| ORG-5 | Medium | Open | Current language files have 282 English/262 Bangla keys (20 missing); office registry still uses `get()`. | Complete keys and bounded list pagination; verify directory/registry behavior. |
-| ORG-6 | Low | Open | `InjectOrganizationUi` remains unused integration code. | Confirm no consumer, then remove middleware/empty hooks. |
+| ORG-5 | Medium | Mitigated | English/Bangla organization keys have parity. Office registry is paginated at 25 rows; counts and company filters derive from the authorized ICT geography, with a regression test. | Retain scoped pagination as registry filters evolve. |
+| ORG-6 | Low | Mitigated | No active consumer existed; unused response-rewriting middleware and role-model integration have been removed. | Keep organization UI on normal layout integrations. |
 
 ## 4. office-membership
 

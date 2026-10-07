@@ -9,6 +9,7 @@ use GovStore\Organization\Models\OrganizationActivityLog;
 use GovStore\GeoAreas\Services\GeoAreaService;
 use Illuminate\Support\Facades\DB;
 use Exception;
+use GovStore\Organization\Events\OfficeProvisioned;
 
 class OfficeProvisioningService
 {
@@ -21,6 +22,10 @@ class OfficeProvisioningService
         $user = \App\Models\User::findOrFail($executorId);
 
         $geoAreaId = (int)($data['geo_area_id'] ?? 0);
+        $officeType = $data['office_type'] ?? 'default';
+        if (!in_array($officeType, ['default', 'hospital', 'school', 'ict_office'], true)) {
+            throw new Exception('The selected office type is not supported.');
+        }
 
         // 1. SECURITY BOUNDARY CHECK
         if (!$user->isSuperUser() && !$user->hasAccess('admin')) {
@@ -43,7 +48,7 @@ class OfficeProvisioningService
             }
         }
 
-        return DB::transaction(function () use ($data, $executorId, $geoAreaId) {
+        return DB::transaction(function () use ($data, $executorId, $geoAreaId, $officeType) {
             
             $existingId = $data['existing_location_id'] ?? null;
             $name = $data['name'] ?? null;
@@ -82,6 +87,7 @@ class OfficeProvisioningService
             LocationProfile::create([
                 'location_id' => $location->id,
                 'geo_area_id' => $geoAreaId,
+                'office_type' => $officeType,
                 'office_admin_id' => $data['office_admin_id'] ?? null,
                 'lifecycle_status' => 'provisioned',
             ]);
@@ -99,6 +105,11 @@ class OfficeProvisioningService
                     'geo_area_id' => $geoAreaId
                 ]
             ]);
+
+            $catalogActorId = !empty($data['office_admin_id']) ? (int) $data['office_admin_id'] : null;
+            DB::afterCommit(static function () use ($location, $executorId, $officeType, $catalogActorId) {
+                event(new OfficeProvisioned($location, $executorId, $officeType, $catalogActorId));
+            });
 
             return $location;
         });
@@ -128,6 +139,21 @@ class OfficeProvisioningService
                     'new_admin_id' => $adminId
                 ]
             ]);
+
+            if ($adminId) {
+                DB::afterCommit(static function () use ($locationId, $executorId, $adminId) {
+                    $location = Location::find($locationId);
+                    $profile = LocationProfile::where('location_id', $locationId)->first();
+                    if ($location && $profile) {
+                        event(new OfficeProvisioned(
+                            $location,
+                            $executorId,
+                            $profile->office_type ?: 'default',
+                            $adminId
+                        ));
+                    }
+                });
+            }
         });
     }
 }

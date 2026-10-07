@@ -5,7 +5,6 @@ namespace GovStore\Organization\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Location;
 use GovStore\Organization\Models\LocationProfile;
-use GovStore\Organization\Models\LocationRole;
 use GovStore\Organization\Models\IctJurisdiction;
 use GovStore\Organization\Observers\IctJurisdictionObserver;
 use GovStore\TenantScope\Navigation\MenuRegistry;
@@ -30,10 +29,6 @@ class OrganizationServiceProvider extends ServiceProvider
 
         Location::resolveRelationUsing('profile', function ($locationModel) {
             return $locationModel->hasOne(LocationProfile::class, 'location_id', 'id');
-        });
-
-        Location::resolveRelationUsing('roles', function ($locationModel) {
-            return $locationModel->hasOne(LocationRole::class, 'location_id', 'id');
         });
 
         // Register menus in the central registry

@@ -8,13 +8,9 @@ class CreateGovOrganizationTables extends Migration
 {
     public function up()
     {
-        // 1. Drop existing tables to ensure clean compilation
-        Schema::dropIfExists('gov_organization_activity_logs');
-        Schema::dropIfExists('gov_location_roles');
-        Schema::dropIfExists('gov_ict_jurisdictions');
-        Schema::dropIfExists('gov_location_profiles');
-
-        // 2. Create Location Profiles (Fixed: geo_area_id set to unsignedInteger to match GeoAreaId)
+        // This migration is installed under a historical identity. Preserve any
+        // existing tables/data if an operator reruns it during recovery.
+        if (!Schema::hasTable('gov_location_profiles')) {
         Schema::create('gov_location_profiles', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('location_id')->unsigned()->unique();
@@ -30,8 +26,10 @@ class CreateGovOrganizationTables extends Migration
             $table->foreign('office_admin_id')->references('id')->on('users')->onDelete('set null');
             $table->foreign('geo_area_verified_by')->references('id')->on('users')->onDelete('set null');
         });
+        }
 
         // 3. Create ICT Officer Jurisdictions (Fixed: geo_area_id set to unsignedInteger to match GeoAreaId)
+        if (!Schema::hasTable('gov_ict_jurisdictions')) {
         Schema::create('gov_ict_jurisdictions', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned()->unique();
@@ -41,8 +39,10 @@ class CreateGovOrganizationTables extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('geo_area_id')->references('GeoAreaId')->on('gov_geo_areas')->onDelete('restrict');
         });
+        }
 
         // 4. Create Location Roles
+        if (!Schema::hasTable('gov_location_roles')) {
         Schema::create('gov_location_roles', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('location_id')->unsigned()->unique();
@@ -69,8 +69,10 @@ class CreateGovOrganizationTables extends Migration
             $table->foreign('storekeeper_id')->references('id')->on('users')->onDelete('set null');
             $table->foreign('storekeeper_delegate_id')->references('id')->on('users')->onDelete('set null');
         });
+        }
 
         // 5. Create Organization Activity Log
+        if (!Schema::hasTable('gov_organization_activity_logs')) {
         Schema::create('gov_organization_activity_logs', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('location_id')->unsigned();
@@ -82,6 +84,7 @@ class CreateGovOrganizationTables extends Migration
             $table->foreign('location_id')->references('id')->on('locations')->onDelete('cascade');
             $table->foreign('performed_by')->references('id')->on('users')->onDelete('cascade');
         });
+        }
     }
 
     public function down()
