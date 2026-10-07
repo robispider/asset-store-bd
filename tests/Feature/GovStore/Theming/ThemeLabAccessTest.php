@@ -45,7 +45,7 @@ class ThemeLabAccessTest extends ThemingTestCase
         $this->actor('superuser');
         $view = $this->lab('index');
         $this->assertSame('gs-theme::lab.matrix', $view->name());
-        $this->assertCount(4, $view->getData()['themes']);
+        $this->assertCount(5, $view->getData()['themes']);
         $this->assertArrayHasKey('institutional-green', $view->getData()['validation']);
 
         $filtered = $this->lab('index', ['themes' => ['digital-blue']]);

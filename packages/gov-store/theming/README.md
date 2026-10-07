@@ -99,7 +99,11 @@ inline colour styles per file). Migrate a view (§15.4 of the plan), then
 ## UI kit
 
 `<x-gs::page-header>`, `box`, `table`, `status-badge`, `status-tabs`, `bulk-bar`, `stepper`, `kpi`,
-`filter-bar`, `key-value`, `timeline`, `form-row`, `alert`, `empty-state`, `document`. Status semantics
+`filter-bar`, `key-value`, `timeline`, `form-row`, `alert`, `empty-state`, `document`.
+
+General-purpose kit (Lab section 6, §14.2a of the plan): `button`, `button-group`, `badge`, `spinner`, `progress`,
+`accordion` / `accordion-item`, `card`, `tile`, `list` / `list-item`, `avatar`, `tabs` / `tab-panel`; `kpi` gains
+`layout`, `spark`, `progress`, `caption`, and `alert` gains `appearance` (tinted · outline · card). Status semantics
 come from `status-map.php`. Charts: `GS.theme.palette(n)`, `GS.theme.token('color-primary')`, and the
 global Chart.js v2 plugin `gsTheme` (frame always themed; admin status colours kept; Snipe-IT's fallback
 palette re-mapped; `options.plugins.gsTheme = false` opts out, `{recolorData: 'all'}` recolours fully).

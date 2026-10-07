@@ -57,7 +57,7 @@ class EloquentTrackingProjectionRepository implements TrackingProjectionReposito
                 ->count();
 
             $summary['disposed'] = (int) Asset::whereIn('id', $associatedAssetIds)
-                ->whereHas('assetstatus', function ($query) {
+                ->whereHas('status', function ($query) {
                     $query->where('archived', 1);
                 })
                 ->count();

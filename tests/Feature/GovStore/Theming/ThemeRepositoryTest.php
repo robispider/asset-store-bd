@@ -10,7 +10,7 @@ class ThemeRepositoryTest extends ThemingTestCase
     public function test_shipped_themes_are_discovered_and_published(): void
     {
         $repo = new ThemeRepository(base_path('packages/gov-store/theming/themes'));
-        $this->assertSame(['default', 'digital-blue', 'executive-neutral', 'institutional-green'], array_keys($repo->all()));
+        $this->assertSame(['default', 'digital-blue', 'executive-neutral', 'institutional-green', 'lavender'], array_keys($repo->all()));
         $this->assertSame(array_keys($repo->all()), array_keys($repo->published()));
         $this->assertSame([], $repo->loadErrors());
         $this->assertSame('Institutional Green', $repo->find('institutional-green')->label('en-US'));

@@ -1,11 +1,11 @@
-// Every Theme Lab focus-view section × 4 themes × 2 modes, plus real pages under each theme.
+// Every Theme Lab focus-view section × 5 themes × 2 modes, plus real pages under each theme.
 // Real pages are rendered through the never-saved `gs_preview` override, which requires a
 // super admin session (GS_THEME_STORAGE_STATE). Optional page URLs come from env vars.
 import { test, expect } from '@playwright/test';
 
-const THEMES = (process.env.GS_THEME_KEYS || 'default,institutional-green,digital-blue,executive-neutral').split(',');
+const THEMES = (process.env.GS_THEME_KEYS || 'default,institutional-green,digital-blue,executive-neutral,lavender').split(',');
 const MODES = ['light', 'dark'];
-const SECTIONS = ['colour', 'type', 'shape', 'core', 'kit', 'patterns', 'charts', 'print', 'validation'];
+const SECTIONS = ['colour', 'type', 'shape', 'core', 'kit', 'general', 'patterns', 'charts', 'print', 'validation'];
 
 const PAGES = [
     { name: 'dashboard', path: '/' },

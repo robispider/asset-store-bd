@@ -1,0 +1,85 @@
+{
+    "seed": {
+        "$type": "color",
+        "primary": { "$value": "#663399" },
+        "accent": { "$value": "#52495A" },
+        "neutral": { "$value": "#332E38" },
+        "danger": { "$value": "#C21F3F" }
+    },
+    "color": {
+        "$type": "color",
+        "bg": { "$value": "#FFFFFF" },
+        "surface": { "$value": "#FFFFFF" },
+        "surface-raised": { "$value": "#FFFFFF" },
+        "surface-sunken": { "$value": "#F8F9FA" },
+        "border": { "$value": "#E6E1EC" },
+        "border-strong": { "$value": "#8A8095" },
+        "overlay": { "$value": "rgba(51, 46, 56, 0.45)" },
+
+        "text": { "$value": "#47404F" },
+        "text-muted": { "$value": "#6B6177" },
+        "text-subtle": { "$value": "#8A8095" },
+        "link": { "$value": "{color.primary}" },
+        "focus-ring": { "$value": "{color.primary}" },
+
+        "success": { "$value": "#2E7D32" },
+        "warning": { "$value": "#A35A00" },
+        "info": { "$value": "#263DB5" },
+
+        "status-deployed": { "$value": "#263DB5" },
+        "status-ready": { "$value": "#2E7D32" },
+        "status-pending": { "$value": "#A35A00" },
+        "status-undeployable": { "$value": "#C21F3F" },
+        "status-archived": { "$value": "#6B6177" },
+
+        "doc-draft": { "$value": "#6B6177" },
+        "doc-ready": { "$value": "#663399" },
+        "doc-posted": { "$value": "#2E7D32" },
+        "doc-cancelled": { "$value": "#9B1B34" },
+        "doc-approved": { "$value": "#2E7D32" },
+        "doc-rejected": { "$value": "#C21F3F" }
+    },
+    "header": {
+        "$type": "color",
+        "bg": { "$value": "{color.surface}" },
+        "fg": { "$value": "{color.text}" }
+    },
+    "sidebar": {
+        "$type": "color",
+        "bg": { "$value": "{color.surface}" },
+        "fg": { "$value": "{color.text}" },
+        "section-fg": { "$value": "{color.text-muted}" },
+        "active-bg": { "$value": "{color.primary-subtle}" },
+        "active-fg": { "$value": "{color.primary}" },
+        "active-marker": { "$value": "{color.primary}" }
+    },
+    "table": {
+        "$type": "color",
+        "head-bg": { "$value": "{color.surface}" },
+        "head-fg": { "$value": "#332E38" },
+        "row-alt": { "$value": "#FAF8FC" },
+        "border": { "$value": "#ECE8F1" }
+    },
+    "chart": {
+        "$type": "color",
+        "1": { "$value": "#663399" },
+        "2": { "$value": "#A78BCF" },
+        "3": { "$value": "#263DB5" },
+        "4": { "$value": "#2E7D32" },
+        "5": { "$value": "#C21F3F" },
+        "6": { "$value": "#A35A00" },
+        "7": { "$value": "#52495A" },
+        "8": { "$value": "#0E7C86" },
+        "9": { "$value": "#C2185B" },
+        "10": { "$value": "#8D6E63" },
+        "grid": { "$value": "rgba(51, 46, 56, 0.08)" }
+    },
+    "font": {
+        "heading-weight": { "$type": "fontWeight", "$value": "500" }
+    },
+    "shadow": {
+        "$type": "shadow",
+        "1": { "$value": "0 4px 20px 1px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.08)" },
+        "2": { "$value": "0 12px 32px rgba(51, 46, 56, 0.16)" }
+    }
+}

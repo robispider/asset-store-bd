@@ -13,7 +13,7 @@ class BuildCommandTest extends ThemingTestCase
         $this->assertMatchesRegularExpression('/^kit\.[0-9a-f]{10}\.css$/', $manifest['kit']);
         $this->assertMatchesRegularExpression('/^packages\.[0-9a-f]{10}\.css$/', $manifest['packages']);
         $this->assertMatchesRegularExpression('/^gs-theme\.[0-9a-f]{10}\.js$/', $manifest['js']);
-        $this->assertSame(['default', 'digital-blue', 'executive-neutral', 'institutional-green'], array_keys($manifest['themes']));
+        $this->assertSame(['default', 'digital-blue', 'executive-neutral', 'institutional-green', 'lavender'], array_keys($manifest['themes']));
         foreach ($manifest['themes'] as $key => $file) {
             $css = file_get_contents($out.'/'.$file);
             $this->assertStringContainsString('[data-skin="'.$key.'"]{color-scheme:light;', $css);

@@ -5,6 +5,7 @@ namespace GovStore\TenantScope\Scopes;
 use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Auth\SessionGuard;
 use GovStore\TenantScope\Contexts\TenantContext;
 
 class UserScope implements Scope
@@ -41,10 +42,26 @@ class UserScope implements Scope
                 // Regardless of location mapping, a user MUST always be able to retrieve 
                 // their own row from the database to prevent login redirect loops.
                 // =========================================================================
-                if ($authId = auth()->id()) {
+                if ($authId = $this->authenticatedIdWithoutResolving()) {
                     $query->orWhere($table . '.id', $authId);
                 }
             });
         }
+    }
+
+    // auth()->id() would load the user through this same scope and recurse forever.
+    private function authenticatedIdWithoutResolving(): mixed
+    {
+        $guard = auth()->guard();
+
+        if ($guard->hasUser()) {
+            return $guard->id();
+        }
+
+        if ($guard instanceof SessionGuard) {
+            return $guard->getSession()->get($guard->getName());
+        }
+
+        return null;
     }
 }

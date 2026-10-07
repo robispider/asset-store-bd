@@ -1,5 +1,5 @@
 {{--
-    Lab sections 1–9 for one theme × mode. Expects: $theme, $mode, $tokens, $fixtures, $contract,
+    Lab sections 1–10 for one theme × mode. Expects: $theme, $mode, $tokens, $fixtures, $contract,
     $issues, $panel (unique id), $bengali (bool), $compact (matrix panels skip the largest blocks).
 --}}
 @php
@@ -207,9 +207,147 @@
     <x-gs::timeline :items="$fixtures->timeline()" />
 </section>
 
-{{-- 6 · Patterns --}}
+{{-- 6 · General-purpose kit --}}
+<section class="gs-lab-section" data-lab-section="general" aria-labelledby="{{ $panel }}-general">
+    <h3 class="gs-lab-section__title" id="{{ $panel }}-general">6 · {{ __('gs-theme::appearance.lab_sections.general') }}</h3>
+    @php($tones = ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'])
+
+    <h4 class="gs-lab-subtitle">Buttons</h4>
+    <div class="gs-lab-row">@foreach ($tones as $tone)<x-gs::button :tone="$tone">{{ ucfirst($tone) }}</x-gs::button>@endforeach</div>
+    <div class="gs-lab-row">@foreach ($tones as $tone)<x-gs::button :tone="$tone" pill>{{ ucfirst($tone) }}</x-gs::button>@endforeach</div>
+    <div class="gs-lab-row">@foreach ($tones as $tone)<x-gs::button :tone="$tone" outline>{{ ucfirst($tone) }}</x-gs::button>@endforeach</div>
+    <div class="gs-lab-row">
+        <x-gs::button-group label="View">
+            <x-gs::button tone="light" icon="fa-table-cells">Grid</x-gs::button>
+            <x-gs::button tone="primary" icon="fa-list">List</x-gs::button>
+            <x-gs::button tone="light" icon="fa-chart-simple">Chart</x-gs::button>
+        </x-gs::button-group>
+        <x-gs::button size="sm">Small</x-gs::button>
+        <x-gs::button size="lg">Large</x-gs::button>
+        <x-gs::button loading>Saving</x-gs::button>
+        <x-gs::button tone="secondary" disabled>Disabled</x-gs::button>
+        <x-gs::button href="#{{ $panel }}" tone="primary" outline icon="fa-arrow-up-right-from-square">Link</x-gs::button>
+    </div>
+
+    <h4 class="gs-lab-subtitle">Badges</h4>
+    <div class="gs-lab-row">@foreach ($tones as $tone)<x-gs::badge :tone="$tone">{{ ucfirst($tone) }}</x-gs::badge>@endforeach</div>
+    <div class="gs-lab-row">@foreach ($tones as $tone)<x-gs::badge :tone="$tone" outline>{{ ucfirst($tone) }}</x-gs::badge>@endforeach</div>
+    <div class="gs-lab-row">@foreach ($tones as $tone)<x-gs::badge :tone="$tone" pill>{{ ucfirst($tone) }}</x-gs::badge>@endforeach</div>
+    <div class="gs-lab-row gs-lab-row--loose">
+        <x-gs::button>Notifications <x-gs::badge tone="light" pill>4</x-gs::badge></x-gs::button>
+        <x-gs::button>Inbox <x-gs::badge tone="danger" floating label="unread">99+</x-gs::badge></x-gs::button>
+        <x-gs::button>Profile <x-gs::badge tone="danger" floating label="new activity"></x-gs::badge></x-gs::button>
+    </div>
+
+    <h4 class="gs-lab-subtitle">Loaders &amp; progress</h4>
+    <div class="gs-lab-row">
+        @foreach (['primary', 'secondary', 'success', 'danger', 'warning', 'info'] as $tone)<x-gs::spinner :tone="$tone" />@endforeach
+        @foreach (['primary', 'success', 'info'] as $tone)<x-gs::spinner type="dots" :tone="$tone" />@endforeach
+        @foreach (['primary', 'danger'] as $tone)<x-gs::spinner type="pulse" :tone="$tone" />@endforeach
+    </div>
+    <div class="gs-lab-grid">
+        <x-gs::progress label="Storage usage" :value="50" tone="success" caption="Most data used in the last 3 days" />
+        <x-gs::progress label="Bandwidth usage" :value="90" tone="danger" />
+        <x-gs::progress label="Audit completion" :value="62" tone="warning" size="lg" />
+        <x-gs::progress label="Stock counted" :value="7" :max="12" tone="info" size="sm" />
+    </div>
+
+    <h4 class="gs-lab-subtitle">Metric cards</h4>
+    <div class="gs-kpis">
+        <x-gs::kpi layout="icon-left" icon="fa-user-plus" label="New users" value="205" />
+        <x-gs::kpi layout="icon-left" icon="fa-hand-holding-dollar" label="Issued" value="4,021" />
+        <x-gs::kpi layout="centered" icon="fa-cloud-arrow-up" label="Uploads today" value="21" />
+        <x-gs::kpi layout="centered" icon="fa-bell" label="Alerts" value="8" tone="danger" />
+    </div>
+    <div class="gs-kpis">
+        <x-gs::kpi label="Requests in last 24h" value="1,300" tone="success" :spark="[3, 4, 2, 6, 5, 8, 9]" />
+        <x-gs::kpi label="Requests last week" value="6,505" tone="danger" :spark="[8, 5, 9, 5, 7, 4, 2]" />
+        <x-gs::kpi label="Storage usage" value="50%" tone="success" :progress="50" caption="Most data used in last 3 days" />
+        <x-gs::kpi label="Server status" value="Up" tone="success" icon="fa-circle-check" caption="Last down 4 days ago" />
+    </div>
+
+    <h4 class="gs-lab-subtitle">Tiles, cards &amp; lists</h4>
+    <div class="gs-lab-grid">
+        <x-gs::tile filled icon="fa-database" title="Backups" meta="Total: 32" href="#{{ $panel }}" />
+        <x-gs::tile filled icon="fa-server" title="Databases" meta="Total: 302" />
+        <x-gs::tile icon="fa-hard-drive" title="Space used" meta="Total: 160 GB" />
+        <x-gs::tile icon="fa-download" title="Downloaded" meta="Total: 30 GB" />
+    </div>
+    <div class="gs-lab-grid">
+        <x-gs::card title="Card title" subtitle="Plain content card">
+            Some quick example text to build on the card title and make up the bulk of the content.
+            <x-slot:actions><a href="#{{ $panel }}">Card link</a><a href="#{{ $panel }}">Another link</a></x-slot:actions>
+        </x-gs::card>
+        <x-gs::card header="Featured" title="Card title text">
+            With supporting text below as a natural lead-in to additional content.
+            <x-slot:actions><x-gs::button pill>Go somewhere</x-gs::button></x-slot:actions>
+        </x-gs::card>
+        <x-gs::card align="center" title="Md. Karim" subtitle="Storekeeper · Dhaka District Store">
+            <x-slot:media><div class="gs-lab-card-avatar"><x-gs::avatar name="Md Karim" size="lg" /></div></x-slot:media>
+            Responsible for receipts and issues at the district store.
+            <x-slot:actions><x-gs::button pill>Contact</x-gs::button></x-slot:actions>
+        </x-gs::card>
+    </div>
+    <div class="gs-lab-grid gs-lab-grid--2">
+        <x-gs::box title="Top items issued">
+            <x-gs::list>
+                <x-gs::list-item icon="fa-print" title="Toner cartridge 85A" subtitle="Consumable · Printing">
+                    <x-slot:meta>412</x-slot:meta>
+                </x-gs::list-item>
+                <x-gs::list-item icon="fa-laptop" title="Laptop, 14-inch" subtitle="Asset · Computing">
+                    <x-slot:meta>38</x-slot:meta>
+                </x-gs::list-item>
+                <x-gs::list-item avatar="Rahima Akter" title="Rahima Akter" subtitle="Office admin" href="#{{ $panel }}">
+                    <x-slot:actions><x-gs::button size="sm" pill outline>Follow</x-gs::button></x-slot:actions>
+                </x-gs::list-item>
+            </x-gs::list>
+        </x-gs::box>
+        <div>
+            <x-gs::list cards>
+                <x-gs::list-item icon="fa-keyboard" title="Wireless keyboard and mouse set" subtitle="Accessory">
+                    <x-slot:meta>৳ 2,450</x-slot:meta>
+                    <x-slot:actions><x-gs::badge tone="success" pill>In stock</x-gs::badge></x-slot:actions>
+                </x-gs::list-item>
+                <x-gs::list-item icon="fa-chair" title="Office chair, ergonomic" subtitle="Furniture">
+                    <x-slot:meta>৳ 9,800</x-slot:meta>
+                    <x-slot:actions><x-gs::badge tone="warning" pill>Low</x-gs::badge></x-slot:actions>
+                </x-gs::list-item>
+            </x-gs::list>
+        </div>
+    </div>
+
+    <h4 class="gs-lab-subtitle">Tabs &amp; accordion</h4>
+    <x-gs::tabs id="{{ $panel }}-wizard" justified label="Registration steps"
+        :tabs="[['key' => 'basic', 'label' => 'Basic info'], ['key' => 'office', 'label' => 'Office info'], ['key' => 'docs', 'label' => 'Documents'], ['key' => 'final', 'label' => 'Final']]">
+        <x-gs::tab-panel for="basic">
+            <div class="gs-lab-grid gs-lab-grid--2">
+                <div><label class="control-label" for="{{ $panel }}-first">First name</label><input id="{{ $panel }}-first" class="form-control" type="text" placeholder="First name"></div>
+                <div><label class="control-label" for="{{ $panel }}-last">Last name</label><input id="{{ $panel }}-last" class="form-control" type="text" placeholder="Last name"></div>
+            </div>
+            <x-gs::button tone="light" pill>Next</x-gs::button>
+        </x-gs::tab-panel>
+        <x-gs::tab-panel for="office">Office details go here.</x-gs::tab-panel>
+        <x-gs::tab-panel for="docs">Attach supporting documents.</x-gs::tab-panel>
+        <x-gs::tab-panel for="final">Review and submit.</x-gs::tab-panel>
+    </x-gs::tabs>
+    <x-gs::accordion name="{{ $panel }}-faq">
+        <x-gs::accordion-item title="How are receipts posted?" icon="fa-circle-question" open>Receipts move from Draft to Ready after inspection, then to Posted.</x-gs::accordion-item>
+        <x-gs::accordion-item title="Who can cancel a document?" icon="fa-circle-question">The office admin, before the document is posted.</x-gs::accordion-item>
+        <x-gs::accordion-item title="Can I print a register?" icon="fa-circle-question">Yes. Every register has a print view in the ledger style.</x-gs::accordion-item>
+    </x-gs::accordion>
+
+    <h4 class="gs-lab-subtitle">Alert appearances</h4>
+    @foreach (['success', 'info', 'warning', 'danger'] as $tone)
+        <x-gs::alert :tone="$tone" appearance="outline" :title="ucfirst($tone).'!'" dismissible>This is an outline {{ $tone }} alert.</x-gs::alert>
+    @endforeach
+    @foreach (['success', 'danger'] as $tone)
+        <x-gs::alert :tone="$tone" appearance="card" :title="ucfirst($tone).'!'">This is a card {{ $tone }} alert.</x-gs::alert>
+    @endforeach
+</section>
+
+{{-- 7 · Patterns --}}
 <section class="gs-lab-section" data-lab-section="patterns" aria-labelledby="{{ $panel }}-patterns">
-    <h3 class="gs-lab-section__title" id="{{ $panel }}-patterns">6 · {{ __('gs-theme::appearance.lab_sections.patterns') }}</h3>
+    <h3 class="gs-lab-section__title" id="{{ $panel }}-patterns">7 · {{ __('gs-theme::appearance.lab_sections.patterns') }}</h3>
     <h4 class="gs-lab-group">List page</h4>
     <x-gs::page-header title="Store Documents Hub" subtitle="{{ $sample }}" :level="2">
         <x-slot:actions><button type="button" class="gs-btn gs-btn--primary">+ New receipt</button></x-slot:actions>
@@ -254,9 +392,9 @@
     @endunless
 </section>
 
-{{-- 7 · Charts --}}
+{{-- 8 · Charts --}}
 <section class="gs-lab-section" data-lab-section="charts" aria-labelledby="{{ $panel }}-charts">
-    <h3 class="gs-lab-section__title" id="{{ $panel }}-charts">7 · {{ __('gs-theme::appearance.lab_sections.charts') }}</h3>
+    <h3 class="gs-lab-section__title" id="{{ $panel }}-charts">8 · {{ __('gs-theme::appearance.lab_sections.charts') }}</h3>
     <div class="gs-lab-charts">
         @foreach (($compact ? ['horizontalBar', 'pie'] : ['horizontalBar', 'pie', 'line']) as $type)
             <div class="gs-lab-chart"><canvas class="js-gs-lab-chart" data-type="{{ $type }}" data-chart='@json($fixtures->chart())' height="200" aria-label="{{ $type }} chart" role="img"></canvas></div>
@@ -264,9 +402,9 @@
     </div>
 </section>
 
-{{-- 8 · Print --}}
+{{-- 9 · Print --}}
 <section class="gs-lab-section" data-lab-section="print" aria-labelledby="{{ $panel }}-print">
-    <h3 class="gs-lab-section__title" id="{{ $panel }}-print">8 · {{ __('gs-theme::appearance.lab_sections.print') }}</h3>
+    <h3 class="gs-lab-section__title" id="{{ $panel }}-print">9 · {{ __('gs-theme::appearance.lab_sections.print') }}</h3>
     {{-- Print preview: same theme, always light. --}}
     <div class="gs-lab-print" data-skin="{{ $theme->key }}" data-theme="light" data-gs-table="ledger" data-gs-status-style="{{ $theme->variants['status_style'] ?? 'tinted' }}">
         <x-gs::document doc-no="GRN-2026-00413" date="03-10-2026" title="Goods Receipt Note · পণ্য প্রাপ্তি নোট">
@@ -283,9 +421,9 @@
     </div>
 </section>
 
-{{-- 9 · Validation --}}
+{{-- 10 · Validation --}}
 <section class="gs-lab-section" data-lab-section="validation" aria-labelledby="{{ $panel }}-validation">
-    <h3 class="gs-lab-section__title" id="{{ $panel }}-validation">9 · {{ __('gs-theme::appearance.lab_sections.validation') }}</h3>
+    <h3 class="gs-lab-section__title" id="{{ $panel }}-validation">10 · {{ __('gs-theme::appearance.lab_sections.validation') }}</h3>
     @php($modeIssues = array_values(array_filter($issues, fn ($i) => $i['mode'] === null || $i['mode'] === $mode)))
     @if ($modeIssues === [])
         <x-gs::alert tone="success">{{ __('gs-theme::appearance.lab_no_issues') }}</x-gs::alert>

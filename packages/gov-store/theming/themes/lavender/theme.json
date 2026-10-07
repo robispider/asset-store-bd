@@ -1,0 +1,27 @@
+{
+    "key": "lavender",
+    "version": "1.0.0",
+    "status": "published",
+    "extends": "default",
+    "label": { "en-US": "Lavender", "bn-BD": "ল্যাভেন্ডার" },
+    "description": {
+        "en-US": "Soft, airy look: white floating header, light tree sidebar with lavender highlights, rounded shadowed cards and a rebeccapurple accent.",
+        "bn-BD": "কোমল ও হালকা চেহারা: ভাসমান সাদা হেডার, ল্যাভেন্ডার হাইলাইটসহ হালকা সাইডবার, গোলাকার ছায়াযুক্ত কার্ড ও বেগুনি অ্যাকসেন্ট।"
+    },
+    "authors": ["UI/UX Team"],
+    "fonts": { "sans": "nunito", "bengali": "noto-sans-bengali", "mono": "ibm-plex-mono" },
+    "variants": {
+        "header": "floating",
+        "sidebar": "light",
+        "nav_icons": "shown",
+        "nav_style": "pill",
+        "density": "regular",
+        "table": "rules",
+        "surfaces": "elevated",
+        "controls": "filled",
+        "radius": "lg",
+        "type": "sans",
+        "status_style": "tinted"
+    },
+    "swatches": ["#663399", "#52495A", "#C21F3F", "#F8F9FA", "#47404F"]
+}

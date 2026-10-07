@@ -1,6 +1,6 @@
 # Theme visual regression
 
-Screenshots every Theme Lab focus-view section (`data-lab-section`) × 4 themes × 2 modes, plus
+Screenshots every Theme Lab focus-view section (`data-lab-section`) × 5 themes × 2 modes, plus
 dashboard, assets list, asset detail, Store Documents Hub, Goods Receipt workspace and login, under
 each theme via the never-saved `gs_preview` override. Chromium runs everything; Firefox and WebKit run
 the `@smoke` subset. Local / non-production hosts only.

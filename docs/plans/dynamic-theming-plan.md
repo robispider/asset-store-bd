@@ -512,12 +512,14 @@ Implemented once in `adapter/variants.css`; themes only choose values.
 
 | Variant | Values | Effect |
 |---|---|---|
-| `header` | `brand` · `neutral` · `dark` | Top bar fill: primary colour, surface colour with bottom rule, or near-black identity bar |
+| `header` | `brand` · `neutral` · `dark` · `floating` | Top bar fill: primary colour, surface colour with bottom rule, or near-black identity bar · `floating`: the header tokens on a rounded, shadowed card inset from the page edges (sidebar starts below it) |
 | `sidebar` | `dark` · `light` · `brand` | Sidebar ground and text; `light` adds right hairline |
 | `nav_icons` | `shown` · `hidden` | Hides first-level sidebar icons (text-only navigation); collapsed-mini mode always keeps icons |
+| `nav_style` | `bar` · `pill` | Active/hover sidebar item: full-width row with a 3px left marker · rounded inset pill (sub-items indented), no marker. The tree sidebar itself is unchanged |
 | `density` | `compact` (32px rows) · `regular` (38px) · `comfortable` (44px) | Table rows, control heights, box padding. Touch targets stay ≥ 44px on `pointer: coarse` |
 | `table` | `grid` · `rules` · `ledger` | Full gridlines + zebra · row rules only · ledger rules, uppercase small headers, double-rule totals |
-| `surfaces` | `card` · `flat` | Boxes with border/shadow · no cards, hairline section dividers and whitespace |
+| `surfaces` | `card` · `flat` · `elevated` | Boxes with border/shadow · no cards, hairline section dividers and whitespace · borderless rounded cards on `shadow.1`, no box accent stripe, page title over a hairline, dashboard small boxes as white metric cards (tone figure, faded tone icon) |
+| `controls` | `outlined` · `filled` | Form field fill: surface · sunken. Both keep `border-strong` (≥ 3:1) — a fill alone is too faint to mark a field (WCAG 1.4.11) |
 | `radius` | `none` · `sm` (2px) · `md` (6px) · `lg` (10px) | Sets `--gs-radius-*` scale |
 | `type` | `sans` · `serif-display` | Headings, KPI figures and page titles use `--gs-font-display` |
 | `status_style` | `tinted` · `chip` · `text` | Badge rendering: tinted bordered pill with icon · mono uppercase chip · icon + coloured text, no fill |
@@ -541,6 +543,20 @@ Implemented once in `adapter/variants.css`; themes only choose values.
 Estimated coverage of the artboards with zero core edits: Theme 1 ≈ 100%, Theme 2 ≈ 85% (status tabs/bulk bar on gov-store screens only), Theme 3 ≈ 85–90% (charcoal bar + light text-only sidebar achieved via `header: dark`, `sidebar: light`, `nav_icons: hidden`).
 
 The artboards show light mode only. Dark modes for all three system themes are designed as part of Phase 4 (§8.5), starting from the generated scaffold.
+
+### 9.2 Theme 4 · Lavender (2026-10-08)
+
+Reproduces the *Gull* admin template look (reference snapshots in `docs/plans/theming/`) on Snipe-IT's own tree sidebar, with zero core edits. It needed four new variant values, all generic and reusable by any theme: `header: floating`, `nav_style: pill`, `surfaces: elevated`, `controls: filled`. Every other theme inherits `nav_style: bar` and `controls: outlined` from `default`, so their rendering is unchanged.
+
+| Variant | Lavender |
+|---|---|
+| `header` · `sidebar` · `nav_style` | floating · light · pill |
+| `density` · `table` · `surfaces` · `controls` | regular · rules · elevated · filled |
+| `radius` · `type` · `status_style` | lg · sans · tinted |
+| Seeds (light) | #663399 (rebeccapurple) · #52495A · #332E38 · #C21F3F |
+| Fonts | Nunito (new registry key `nunito`), IBM Plex Mono, Noto Sans Bengali |
+
+Deliberate deviations from the reference, for WCAG 2.2 AA: success/warning are darkened (#2E7D32, #A35A00) so white text passes 4.5:1, and filled inputs keep a 3:1 border. Not reproduced (structural, out of scope per §1): Gull's horizontal and two-panel sidebar layouts, the floating customizer panel, and full-bleed photo sign-in pages.
 
 ---
 
@@ -828,6 +844,28 @@ return [
     // …
 ];
 ```
+
+### 14.2a General-purpose kit (Lab section 6, `components/15-general.css`)
+
+Added with Lavender; every component follows the active theme, mode and variants (`surfaces: elevated` makes cards, KPIs, accordions and list cards borderless with `shadow.1`).
+
+| Component | Key props / slots |
+|---|---|
+| `<x-gs::button>` | `tone` (primary · secondary · success · danger · warning · info · light · dark), `outline`, `pill`, `size` (sm · md · lg), `icon`, `href`, `loading`, `disabled` |
+| `<x-gs::button-group>` | `label`; slot of buttons |
+| `<x-gs::badge>` | `tone`, `outline`, `pill`, `floating` (count pinned to the parent's corner), `label` (screen-reader text). Renders `.gs-tag`; workflow states keep using `status-badge` |
+| `<x-gs::spinner>` | `type` (ring · dots · pulse), `tone` (or `current`), `size`, `label` (`false` when the control already announces it) |
+| `<x-gs::progress>` | `value`, `max`, `tone`, `label`, `show-value`, `caption`, `size` — `role="progressbar"` |
+| `<x-gs::accordion>` / `accordion-item` | native `<details>`; `name` makes it exclusive; item `title`, `icon`, `open` |
+| `<x-gs::card>` | `title`, `subtitle`, `header`, `image`/`image-alt` or `media` slot, `align`, `href`; slots `actions`, `footer` |
+| `<x-gs::tile>` | `title`, `meta`, `icon`, `tone`, `filled`, `href` |
+| `<x-gs::list>` / `list-item` | list `divided` · `cards`; item `title`, `subtitle`, `href`, `image` · `avatar` · `icon`, slots `meta`, `actions` |
+| `<x-gs::avatar>` | `name` (initials), `image`, `size`, `tone`, `decorative` |
+| `<x-gs::tabs>` / `tab-panel` | `id` (required), `tabs`, `active`, `justified`, `label`; ARIA tabs with arrow/Home/End keys in `gs-theme.js` |
+| `<x-gs::kpi>` (extended) | + `layout` (stack · icon-left · centered), `spark` (numbers → inline SVG sparkline), `progress`, `caption` |
+| `<x-gs::alert>` (extended) | + `appearance` (tinted · outline · card) |
+
+Cascade note: Snipe-IT's base CSS is unlayered, so it beats layered kit rules on bare elements (`a { background-color: transparent }`, `summary { display: list-item }`); link-rendered buttons/tiles/KPIs and the accordion summary restate those properties with `!important`.
 
 ### 14.3 Theme Lab — purpose
 

@@ -28,6 +28,12 @@
 /* ---- surfaces ---- */
 [data-skin][data-gs-surfaces="card"] { --gs-surface-shadow: var(--gs-shadow-1); }
 [data-skin][data-gs-surfaces="flat"] { --gs-surface-shadow: none; }
+[data-skin][data-gs-surfaces="elevated"] { --gs-surface-shadow: var(--gs-shadow-1); }
+
+/* ---- controls ---- */
+[data-skin][data-gs-controls="outlined"] { --gs-control-bg: var(--gs-color-surface); }
+/* Filled fields keep the strong border: a fill alone is too faint to mark a field (WCAG 1.4.11). */
+[data-skin][data-gs-controls="filled"] { --gs-control-bg: var(--gs-color-surface-sunken); }
 
 /* ---- table ---- */
 [data-skin][data-gs-table="grid"] { --gs-table-stripe: var(--gs-table-row-alt); --gs-table-cell-rule: var(--gs-border-width) solid var(--gs-table-border); }
@@ -42,6 +48,15 @@
     --gs-shell-header-fg-muted: var(--gs-header-fg-muted);
     --gs-shell-header-hover: color-mix(in oklab, var(--gs-header-fg) 14%, transparent);
     --gs-shell-header-input-bg: color-mix(in oklab, var(--gs-header-fg) 14%, transparent);
+}
+/* floating: the header tokens on a rounded, shadowed card inset from the page edges */
+[data-skin][data-gs-header="floating"] {
+    --gs-shell-header-bg: var(--gs-header-bg);
+    --gs-shell-header-fg: var(--gs-header-fg);
+    --gs-shell-header-fg-muted: var(--gs-header-fg-muted);
+    --gs-shell-header-hover: color-mix(in oklab, var(--gs-header-fg) 8%, transparent);
+    --gs-shell-header-input-bg: color-mix(in oklab, var(--gs-header-fg) 6%, var(--gs-header-bg));
+    --gs-shell-header-inset: var(--gs-space-2);
 }
 [data-skin][data-gs-header="neutral"] {
     --gs-shell-header-bg: var(--gs-color-surface);
@@ -83,6 +98,49 @@
         &[data-gs-header="dark"] .main-header .navbar { box-shadow: inset 0 -2px 0 var(--gs-sidebar-active-marker) !important; }
         &[data-gs-header="neutral"] .main-header .navbar,
         &[data-gs-header="neutral"] .main-header .logo { border-bottom: var(--gs-border-width) solid var(--gs-color-border) !important; }
+
+        /* floating header: inset card; the sidebar starts below it */
+        &[data-gs-header="floating"] .main-header {
+            background-color: var(--gs-color-bg) !important;
+            padding: var(--gs-shell-header-inset) var(--gs-shell-header-inset) 0 !important;
+        }
+        &[data-gs-header="floating"] .main-header .navbar {
+            border-radius: var(--gs-radius-lg) !important;
+            box-shadow: var(--gs-shadow-1) !important;
+        }
+        /* The insets cost width; tighter item padding keeps the stock one-row header with the sidebar open. */
+        &[data-gs-header="floating"] .main-header .navbar-custom-menu .navbar-nav > li > a { padding-left: 10px !important; padding-right: 10px !important; }
+        /* Snipe-IT's navbar is ~64px (two-line user block) while AdminLTE pads the sidebar by 50px, so the
+           first item sits under the header in stock too; with pill items that clip shows, so clear it here. */
+        &[data-gs-header="floating"] .main-sidebar,
+        &[data-gs-header="floating"] .left-side { padding-top: calc(64px + var(--gs-shell-header-inset)) !important; }
+
+        /* nav style: pill — rounded, inset items, no left marker (collapsed mini mode keeps the stock shape) */
+        &[data-gs-nav-style="pill"] .sidebar-menu > li:hover,
+        &[data-gs-nav-style="pill"] .treeview-menu > li:hover { background-color: transparent !important; }
+        &[data-gs-nav-style="pill"] .sidebar-menu > li.active > a,
+        &[data-gs-nav-style="pill"] .treeview-menu > li.active > a { border-left: 0 !important; }
+        &[data-gs-nav-style="pill"] body:not(.sidebar-collapse) .sidebar-menu > li > a,
+        &[data-gs-nav-style="pill"] body:not(.sidebar-collapse) .treeview-menu > li > a {
+            margin: 2px var(--gs-space-2) !important;
+            border-radius: var(--gs-radius-md) !important;
+            border-left: 0 !important;
+        }
+        /* Sub-items: indented pills, tighter padding so labels and count badges keep their width. */
+        &[data-gs-nav-style="pill"] body:not(.sidebar-collapse) .treeview-menu > li > a {
+            margin: 1px var(--gs-space-2) 1px var(--gs-space-3) !important;
+            padding-left: var(--gs-space-2) !important;
+        }
+        &[data-gs-nav-style="pill"] body:not(.sidebar-collapse) .sidebar-menu > li.header { padding-left: var(--gs-space-4) !important; }
+
+        /* controls: field fill (outlined = surface, filled = sunken) */
+        & :is(input[type="date"], input[type="number"], input[type="text"], input[type="url"], input[type="email"],
+              input[type="password"], input[type="tel"], input[type="search"], select, textarea, .form-control,
+              .select2-selection):not(:disabled):not([readonly]) {
+            background-color: var(--gs-control-bg, var(--gs-color-surface)) !important;
+        }
+        &[data-gs-controls="filled"] :is(.form-control, .select2-selection, select, textarea) { border-radius: var(--gs-radius-md) !important; }
+        &[data-gs-controls="filled"] .main-header #tagSearch { background-color: var(--gs-shell-header-input-bg) !important; }
 
         /* sidebar: text-only first level (collapsed mini mode always keeps icons) */
         &[data-gs-nav-icons="hidden"] body:not(.sidebar-collapse) .sidebar-menu > li > a > i:first-child,
@@ -135,6 +193,40 @@
         }
         &[data-gs-surfaces="flat"] .box-header.with-border { background: transparent !important; }
         &[data-gs-surfaces="flat"] .content { padding-top: var(--gs-space-5) !important; }
+
+        &[data-gs-surfaces="elevated"] .box,
+        &[data-gs-surfaces="elevated"] .info-box,
+        &[data-gs-surfaces="elevated"] .nav-tabs-custom,
+        &[data-gs-surfaces="elevated"] .panel {
+            border: 0 !important;
+            border-radius: var(--gs-radius-lg) !important;
+            box-shadow: var(--gs-surface-shadow) !important;
+        }
+        &[data-gs-surfaces="elevated"] .box-header.with-border { border-bottom-color: transparent !important; }
+        /* Dashboard small boxes become white metric cards: tone figure, faded tone icon, tinted footer link. */
+        &[data-gs-surfaces="elevated"] .small-box[class] {
+            background-color: var(--gs-color-surface) !important;
+            border-radius: var(--gs-radius-lg) !important;
+            box-shadow: var(--gs-surface-shadow) !important;
+            overflow: hidden !important;
+        }
+        &[data-gs-surfaces="elevated"] .small-box h3 { color: var(--gs-small-box-tone, var(--gs-color-primary)) !important; font-weight: 500 !important; }
+        &[data-gs-surfaces="elevated"] .small-box p { color: var(--gs-color-text-muted) !important; }
+        &[data-gs-surfaces="elevated"] .small-box .icon { color: var(--gs-small-box-tone, var(--gs-color-primary)) !important; opacity: .22 !important; }
+        &[data-gs-surfaces="elevated"] .small-box .small-box-footer {
+            background-color: color-mix(in oklab, var(--gs-small-box-tone, var(--gs-color-primary)) 10%, var(--gs-color-surface)) !important;
+            color: var(--gs-color-text) !important;
+        }
+        &[data-gs-surfaces="elevated"] .box-header .box-title { font-size: 1.15em !important; }
+        &[data-gs-surfaces="elevated"] .content-header {
+            margin: 0 var(--gs-space-4) var(--gs-space-4) !important;
+            padding: var(--gs-space-4) 0 var(--gs-space-3) !important;
+            border-bottom: var(--gs-border-width) solid var(--gs-color-border) !important;
+        }
+        &[data-gs-surfaces="elevated"] .content-header::after { content: "" !important; display: table !important; clear: both !important; }
+        &[data-gs-surfaces="elevated"] :is(.btn-primary, .btn-theme):hover {
+            box-shadow: 0 8px 25px -8px var(--gs-color-primary) !important;
+        }
 
         /* display type */
         &[data-gs-type="serif-display"] .content-header > h1,

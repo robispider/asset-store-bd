@@ -97,6 +97,8 @@
             border-color: transparent !important;
         }
         & .main-header #tagSearch::placeholder { color: var(--gs-shell-header-fg-muted, var(--gs-header-fg-muted)) !important; }
+        /* Icons inside filled buttons in the header (tag search) follow the button, not the header text. */
+        & .main-header :is(.btn-primary, .btn-theme) :is(.fa, .fas, .far) { color: var(--gs-color-on-primary) !important; }
 
         /* ---------- dropdown menus (header and general) ---------- */
         & .dropdown-menu,
@@ -500,12 +502,13 @@
         & .info-box-text, & .info-box-number { color: var(--gs-color-text) !important; }
         & .small-box { border-radius: var(--gs-radius-md) !important; }
         & .small-box h3, & .small-box p, & .small-box .small-box-footer, & .small-box .icon { color: var(--gs-small-box-fg, var(--gs-color-on-primary)) !important; }
-        & .bg-teal, & .small-box.bg-teal { background-color: var(--gs-chart-5) !important; }
-        & .bg-aqua, & .small-box.bg-aqua, & .bg-blue { background-color: var(--gs-color-info) !important; --gs-small-box-fg: var(--gs-color-on-info); }
-        & .bg-green, & .small-box.bg-green { background-color: var(--gs-color-success) !important; --gs-small-box-fg: var(--gs-color-on-success); }
-        & .bg-yellow, & .bg-orange, & .small-box.bg-yellow, & .small-box.bg-orange { background-color: var(--gs-color-warning) !important; --gs-small-box-fg: var(--gs-color-on-warning); }
-        & .bg-red, & .small-box.bg-red { background-color: var(--gs-color-danger) !important; --gs-small-box-fg: var(--gs-color-on-danger); }
-        & .bg-maroon, & .bg-purple, & .small-box.bg-maroon, & .small-box.bg-purple { background-color: var(--gs-color-primary) !important; --gs-small-box-fg: var(--gs-color-on-primary); }
+        /* --gs-small-box-tone carries the fill colour so surface variants (elevated) can reuse it as an accent. */
+        & .bg-teal, & .small-box.bg-teal { background-color: var(--gs-chart-5) !important; --gs-small-box-tone: var(--gs-chart-5); }
+        & .bg-aqua, & .small-box.bg-aqua, & .bg-blue { background-color: var(--gs-color-info) !important; --gs-small-box-fg: var(--gs-color-on-info); --gs-small-box-tone: var(--gs-color-info); }
+        & .bg-green, & .small-box.bg-green { background-color: var(--gs-color-success) !important; --gs-small-box-fg: var(--gs-color-on-success); --gs-small-box-tone: var(--gs-color-success); }
+        & .bg-yellow, & .bg-orange, & .small-box.bg-yellow, & .small-box.bg-orange { background-color: var(--gs-color-warning) !important; --gs-small-box-fg: var(--gs-color-on-warning); --gs-small-box-tone: var(--gs-color-warning); }
+        & .bg-red, & .small-box.bg-red { background-color: var(--gs-color-danger) !important; --gs-small-box-fg: var(--gs-color-on-danger); --gs-small-box-tone: var(--gs-color-danger); }
+        & .bg-maroon, & .bg-purple, & .small-box.bg-maroon, & .small-box.bg-purple { background-color: var(--gs-color-primary) !important; --gs-small-box-fg: var(--gs-color-on-primary); --gs-small-box-tone: var(--gs-color-primary); }
 
         /* ---------- footer ---------- */
         & footer.main-footer {

@@ -53,7 +53,7 @@ class AppearanceControllerTest extends ThemingTestCase
         $view = $this->controller()->index($this->request('GET'));
         $data = $view->getData();
         $this->assertSame('gs-theme::appearance.index', $view->name());
-        $this->assertSame(['default', 'digital-blue', 'executive-neutral', 'institutional-green'], array_keys($data['themes']));
+        $this->assertSame(['default', 'digital-blue', 'executive-neutral', 'institutional-green', 'lavender'], array_keys($data['themes']));
         $this->assertSame('digital-blue', $data['current']);
         $this->assertSame(['office'], $data['tags']['digital-blue']);
         $this->assertTrue($data['canChoose']);

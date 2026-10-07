@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "snipeit-local-preview",
+      "runtimeExecutable": "php",
+      "runtimeArgs": ["artisan", "serve", "--host=127.0.0.1", "--port=8010"],
+      "env": { "APP_URL": "http://127.0.0.1:8010" },
+      "port": 8010
+    }
+  ]
+}

@@ -12,12 +12,14 @@ use Throwable;
 final class ThemeValidator
 {
     public const VARIANTS = [
-        'header' => ['brand', 'neutral', 'dark'],
+        'header' => ['brand', 'neutral', 'dark', 'floating'],
         'sidebar' => ['dark', 'light', 'brand'],
         'nav_icons' => ['shown', 'hidden'],
+        'nav_style' => ['bar', 'pill'],
         'density' => ['compact', 'regular', 'comfortable'],
         'table' => ['grid', 'rules', 'ledger'],
-        'surfaces' => ['card', 'flat'],
+        'surfaces' => ['card', 'flat', 'elevated'],
+        'controls' => ['outlined', 'filled'],
         'radius' => ['none', 'sm', 'md', 'lg'],
         'type' => ['sans', 'serif-display'],
         'status_style' => ['tinted', 'chip', 'text'],

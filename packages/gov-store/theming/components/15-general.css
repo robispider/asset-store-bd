@@ -1,0 +1,242 @@
+/*
+ * General-purpose UI kit (@layer gs-components): buttons, badges, spinners, progress, accordion,
+ * cards, tiles, lists, avatars, tabs, KPI layouts and alert appearances — plus the `elevated`
+ * surface treatment for kit components. Only .gs-* classes and --gs-* tokens; every component
+ * follows the active theme and mode, so the same markup works in all themes.
+ */
+@layer gs-components {
+
+    /* ---------- tones (shared by button, badge, spinner, progress, tile, avatar) ---------- */
+    .gs-tone-primary, .gs-btn--primary, .gs-tag--primary { --gs-kit-tone: var(--gs-color-primary); --gs-kit-on: var(--gs-color-on-primary); }
+    .gs-tone-secondary, .gs-btn--secondary, .gs-tag--secondary { --gs-kit-tone: var(--gs-color-accent); --gs-kit-on: var(--gs-color-on-accent); }
+    .gs-tone-success, .gs-btn--success, .gs-tag--success { --gs-kit-tone: var(--gs-color-success); --gs-kit-on: var(--gs-color-on-success); }
+    .gs-tone-danger, .gs-btn--danger, .gs-tag--danger { --gs-kit-tone: var(--gs-color-danger); --gs-kit-on: var(--gs-color-on-danger); }
+    .gs-tone-warning, .gs-btn--warning, .gs-tag--warning { --gs-kit-tone: var(--gs-color-warning); --gs-kit-on: var(--gs-color-on-warning); }
+    .gs-tone-info, .gs-btn--info, .gs-tag--info { --gs-kit-tone: var(--gs-color-info); --gs-kit-on: var(--gs-color-on-info); }
+    .gs-tone-light, .gs-btn--light, .gs-tag--light { --gs-kit-tone: var(--gs-color-surface-sunken); --gs-kit-on: var(--gs-color-text); --gs-kit-line: var(--gs-color-border-strong); }
+    .gs-tone-dark, .gs-btn--dark, .gs-tag--dark { --gs-kit-tone: var(--gs-color-text); --gs-kit-on: var(--gs-color-surface); }
+    .gs-tone-muted { --gs-kit-tone: var(--gs-color-text-muted); --gs-kit-on: var(--gs-color-surface); }
+    .gs-tone-current { --gs-kit-tone: currentColor; --gs-kit-on: var(--gs-color-surface); }
+
+    /* ---------- buttons ---------- */
+    .gs-btn { position: relative; justify-content: center; line-height: 1.2; transition: background-color .15s, box-shadow .15s, border-color .15s; }
+    .gs-btn:is(.gs-btn--primary, .gs-btn--secondary, .gs-btn--success, .gs-btn--danger, .gs-btn--warning, .gs-btn--info, .gs-btn--light, .gs-btn--dark) {
+        background: var(--gs-kit-tone);
+        border-color: var(--gs-kit-line, var(--gs-kit-tone));
+        color: var(--gs-kit-on) !important;
+    }
+    .gs-btn:is(.gs-btn--primary, .gs-btn--secondary, .gs-btn--success, .gs-btn--danger, .gs-btn--warning, .gs-btn--info, .gs-btn--light, .gs-btn--dark):not(:disabled):hover {
+        /* Mixing toward the text colour darkens in light mode and lightens in dark mode. */
+        background: color-mix(in oklab, var(--gs-kit-tone) 86%, var(--gs-color-text));
+    }
+    .gs-btn.gs-btn--outline { background: transparent; border-color: var(--gs-kit-line, var(--gs-kit-tone)); color: var(--gs-kit-tone) !important; }
+    .gs-btn--light.gs-btn--outline { color: var(--gs-color-text) !important; }
+    .gs-btn.gs-btn--outline:not(:disabled):hover { background: var(--gs-kit-tone); color: var(--gs-kit-on) !important; }
+    .gs-btn--pill { border-radius: 999px; }
+    .gs-btn--sm { min-height: calc(var(--gs-size-control-h) - 6px); padding: 0 var(--gs-space-3); font-size: var(--gs-font-size-sm); }
+    .gs-btn--lg { min-height: calc(var(--gs-size-control-h) + 10px); padding: 0 var(--gs-space-5); font-size: 1.1em; }
+    .gs-btn:disabled { opacity: .6; cursor: not-allowed; }
+    .gs-btn[aria-busy="true"] { cursor: progress; }
+    [data-gs-surfaces="elevated"] .gs-btn:is(.gs-btn--primary, .gs-btn--secondary, .gs-btn--success, .gs-btn--danger, .gs-btn--info, .gs-btn--dark):not(.gs-btn--outline):not(:disabled):hover {
+        box-shadow: 0 8px 25px -8px var(--gs-kit-tone);
+    }
+
+    .gs-btn-group { display: inline-flex; }
+    .gs-btn-group > .gs-btn:not(:first-child) { border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: calc(var(--gs-border-width) * -1); }
+    .gs-btn-group > .gs-btn:not(:last-child) { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+    .gs-btn-group > .gs-btn:hover, .gs-btn-group > .gs-btn:focus-visible { z-index: 1; }
+
+    /* ---------- badge (general purpose, .gs-tag) ---------- */
+    .gs-tag {
+        display: inline-flex; align-items: center; gap: .3em;
+        padding: .15em .55em; border: var(--gs-border-width) solid var(--gs-kit-line, var(--gs-kit-tone));
+        border-radius: var(--gs-radius-sm);
+        background: var(--gs-kit-tone); color: var(--gs-kit-on) !important;
+        font-size: .78em; font-weight: 600; line-height: 1.35; white-space: nowrap; vertical-align: middle;
+    }
+    .gs-tag--outline { background: transparent; color: var(--gs-kit-tone) !important; }
+    .gs-tag--light.gs-tag--outline { color: var(--gs-color-text) !important; }
+    .gs-tag--pill { border-radius: 999px; }
+    .gs-tag--floating { position: absolute; top: 0; right: 0; transform: translate(40%, -45%); min-width: 1.6em; justify-content: center; box-shadow: 0 0 0 2px var(--gs-color-surface); }
+    .gs-tag--floating:empty { min-width: 0; width: .9em; height: .9em; padding: 0; }
+
+    /* ---------- spinner ---------- */
+    .gs-spinner { --gs-spin-size: 2rem; display: inline-flex; align-items: center; justify-content: center; gap: calc(var(--gs-spin-size) / 8); color: var(--gs-kit-tone, var(--gs-color-primary)); vertical-align: middle; }
+    .gs-spinner--sm { --gs-spin-size: 1em; }
+    .gs-spinner--lg { --gs-spin-size: 3rem; }
+    .gs-spinner--ring::before {
+        content: ""; width: var(--gs-spin-size); height: var(--gs-spin-size); border-radius: 50%;
+        border: max(2px, calc(var(--gs-spin-size) / 9)) solid color-mix(in oklab, currentColor 20%, transparent);
+        border-top-color: currentColor; animation: gs-spin .8s linear infinite;
+    }
+    .gs-spinner--pulse::before {
+        content: ""; width: var(--gs-spin-size); height: var(--gs-spin-size); border-radius: 50%;
+        background: currentColor; animation: gs-pulse 1.2s ease-in-out infinite;
+    }
+    .gs-spinner--dots > span { width: calc(var(--gs-spin-size) / 4); height: calc(var(--gs-spin-size) / 4); border-radius: 50%; background: currentColor; animation: gs-dot 1.2s ease-in-out infinite; }
+    .gs-spinner--dots > span:nth-child(2) { animation-delay: .15s; }
+    .gs-spinner--dots > span:nth-child(3) { animation-delay: .3s; }
+    @keyframes gs-spin { to { transform: rotate(360deg); } }
+    @keyframes gs-pulse { 0% { transform: scale(.2); opacity: .9; } 100% { transform: scale(1); opacity: 0; } }
+    @keyframes gs-dot { 0%, 80%, 100% { transform: scale(.4); opacity: .4; } 40% { transform: scale(1); opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) {
+        .gs-spinner--ring::before { animation-duration: 2.4s; }
+        .gs-spinner--pulse::before, .gs-spinner--dots > span { animation: none; opacity: .7; }
+    }
+
+    /* ---------- progress ---------- */
+    .gs-progress { margin-bottom: var(--gs-space-3); }
+    .gs-progress__head { display: flex; justify-content: space-between; gap: var(--gs-space-2); margin-bottom: var(--gs-space-1); font-size: var(--gs-font-size-sm); }
+    .gs-progress__label { color: var(--gs-color-text-muted); }
+    .gs-progress__value { font-weight: 600; font-variant-numeric: tabular-nums; }
+    .gs-progress__track { display: block; height: 6px; border-radius: 999px; background: var(--gs-color-surface-sunken); box-shadow: inset 0 0 0 var(--gs-border-width) var(--gs-color-border); overflow: hidden; }
+    .gs-progress--sm .gs-progress__track { height: 4px; }
+    .gs-progress--lg .gs-progress__track { height: 10px; }
+    .gs-progress__bar { display: block; height: 100%; border-radius: inherit; background: var(--gs-kit-tone, var(--gs-color-primary)); transition: width .3s; }
+    .gs-progress__caption { margin: var(--gs-space-1) 0 0 !important; color: var(--gs-color-text-muted) !important; font-size: var(--gs-font-size-sm); }
+
+    /* ---------- accordion ---------- */
+    .gs-accordion { margin-bottom: var(--gs-space-4); border: var(--gs-border-width) solid var(--gs-color-border); border-radius: var(--gs-radius-md); background: var(--gs-color-surface); overflow: hidden; }
+    .gs-accordion__item + .gs-accordion__item { border-top: var(--gs-border-width) solid var(--gs-color-border); }
+    .gs-accordion__summary {
+        display: flex; align-items: center; gap: var(--gs-space-2);
+        min-height: var(--gs-size-row-h); padding: var(--gs-space-2) var(--gs-space-4);
+        cursor: pointer; list-style: none; font-weight: 600; color: var(--gs-color-text);
+    }
+    /* Snipe-IT's base CSS sets `summary { display: list-item }` unlayered, which beats a layered display. */
+    .gs-accordion__summary { display: flex !important; }
+    .gs-accordion__summary::-webkit-details-marker { display: none; }
+    .gs-accordion__summary:hover { background: var(--gs-color-surface-sunken); }
+    .gs-accordion__summary:focus-visible { outline: 2px solid var(--gs-color-focus-ring); outline-offset: -2px; }
+    .gs-accordion__title { flex: 1; }
+    .gs-accordion__chevron { color: var(--gs-color-text-muted); transition: transform .2s; }
+    .gs-accordion__item[open] > .gs-accordion__summary { color: var(--gs-color-primary); }
+    .gs-accordion__item[open] .gs-accordion__chevron { transform: rotate(180deg); }
+    .gs-accordion__body { padding: 0 var(--gs-space-4) var(--gs-space-4); color: var(--gs-color-text); }
+
+    /* ---------- card ---------- */
+    .gs-card {
+        display: flex; flex-direction: column; overflow: hidden;
+        background: var(--gs-color-surface); color: var(--gs-color-text);
+        border: var(--gs-border-width) solid var(--gs-color-border); border-radius: var(--gs-radius-md);
+        box-shadow: var(--gs-surface-shadow, none); margin-bottom: var(--gs-space-4);
+    }
+    .gs-card--center { text-align: center; align-items: stretch; }
+    .gs-card__header { padding: var(--gs-space-2) var(--gs-space-4); background: var(--gs-color-surface-sunken); border-bottom: var(--gs-border-width) solid var(--gs-color-border); color: var(--gs-color-text-muted); font-size: var(--gs-font-size-sm); }
+    .gs-card__media { display: block; width: 100%; max-height: 220px; object-fit: cover; }
+    .gs-card__body { flex: 1; padding: var(--gs-space-4); }
+    .gs-card__title { margin: 0 0 var(--gs-space-2) !important; font-size: 1.2em !important; font-family: var(--gs-font-display) !important; font-weight: var(--gs-font-heading-weight) !important; color: var(--gs-color-text) !important; }
+    .gs-card__subtitle { margin: 0 0 var(--gs-space-3) !important; color: var(--gs-color-text-muted) !important; font-size: var(--gs-font-size-sm); }
+    .gs-card__actions { display: flex; flex-wrap: wrap; gap: var(--gs-space-3); padding: 0 var(--gs-space-4) var(--gs-space-4); }
+    .gs-card--center .gs-card__actions { justify-content: center; }
+    .gs-card__footer { padding: var(--gs-space-2) var(--gs-space-4); border-top: var(--gs-border-width) solid var(--gs-color-border); color: var(--gs-color-text-muted); font-size: var(--gs-font-size-sm); }
+    [data-gs-surfaces="flat"] .gs-card { border-radius: 0; box-shadow: none; border-width: var(--gs-border-width) 0 0; background: transparent; }
+
+    /* ---------- tile ---------- */
+    .gs-tile {
+        display: flex; align-items: center; gap: var(--gs-space-3);
+        padding: var(--gs-space-4) var(--gs-space-5); margin-bottom: var(--gs-space-3);
+        border: var(--gs-border-width) solid var(--gs-color-border-strong); border-radius: var(--gs-radius-md);
+        background: var(--gs-color-surface); color: var(--gs-color-text) !important; text-decoration: none !important;
+    }
+    .gs-tile__icon { font-size: 2em; color: var(--gs-kit-tone); flex: none; }
+    .gs-tile__text { display: flex; flex-direction: column; min-width: 0; }
+    .gs-tile__title { font-size: 1.15em; font-weight: 600; line-height: 1.3; }
+    .gs-tile__meta { font-size: var(--gs-font-size-sm); color: var(--gs-color-text-muted); }
+    .gs-tile--filled { background: var(--gs-kit-tone); border-color: var(--gs-kit-tone); color: var(--gs-kit-on) !important; }
+    .gs-tile--filled .gs-tile__icon, .gs-tile--filled .gs-tile__meta { color: inherit; }
+    .gs-tile--link:hover { border-color: var(--gs-kit-tone); box-shadow: var(--gs-shadow-1); }
+    .gs-tile--filled.gs-tile--link:hover { background: color-mix(in oklab, var(--gs-kit-tone) 86%, var(--gs-color-text)); }
+
+    /* ---------- avatar ---------- */
+    .gs-avatar {
+        --gs-avatar-size: 40px;
+        display: inline-flex; align-items: center; justify-content: center; flex: none;
+        width: var(--gs-avatar-size); height: var(--gs-avatar-size); border-radius: 50%; overflow: hidden;
+        background: color-mix(in oklab, var(--gs-kit-tone) 16%, var(--gs-color-surface)); color: var(--gs-kit-tone);
+        font-weight: 700; font-size: calc(var(--gs-avatar-size) * .38); line-height: 1;
+    }
+    .gs-avatar--sm { --gs-avatar-size: 28px; }
+    .gs-avatar--lg { --gs-avatar-size: 64px; }
+    .gs-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* ---------- list ---------- */
+    .gs-list { list-style: none; margin: 0 0 var(--gs-space-4); padding: 0; }
+    .gs-list__item { display: flex; align-items: center; gap: var(--gs-space-3); padding: var(--gs-space-3) 0; min-height: var(--gs-size-row-h); }
+    .gs-list--divided .gs-list__item + .gs-list__item { border-top: var(--gs-border-width) solid var(--gs-color-border); }
+    .gs-list--cards .gs-list__item {
+        padding: var(--gs-space-3) var(--gs-space-4); margin-bottom: var(--gs-space-3);
+        background: var(--gs-color-surface); border: var(--gs-border-width) solid var(--gs-color-border);
+        border-radius: var(--gs-radius-md); box-shadow: var(--gs-surface-shadow, none);
+    }
+    .gs-list__media { width: 56px; height: 56px; object-fit: cover; border-radius: var(--gs-radius-sm); flex: none; background: var(--gs-color-surface-sunken); }
+    .gs-list__icon { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; flex: none; border-radius: var(--gs-radius-md); background: var(--gs-color-primary-subtle); color: var(--gs-color-primary); }
+    .gs-list__text { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+    .gs-list__title { color: var(--gs-color-text) !important; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    a.gs-list__title:hover { color: var(--gs-color-link) !important; }
+    .gs-list__subtitle { color: var(--gs-color-text-muted); font-size: var(--gs-font-size-sm); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .gs-list__meta { flex: none; font-variant-numeric: tabular-nums; color: var(--gs-color-text); font-weight: 600; text-align: right; }
+    .gs-list__actions { flex: none; display: flex; gap: var(--gs-space-2); }
+
+    /* ---------- tabs (in-page) ---------- */
+    .gs-tabset { margin-bottom: var(--gs-space-4); }
+    .gs-tabset__list { display: flex; overflow-x: auto; border-bottom: 2px solid var(--gs-color-border); scrollbar-width: thin; }
+    .gs-tabset--justified .gs-tabset__tab { flex: 1; justify-content: center; }
+    .gs-tabset__tab {
+        display: inline-flex; align-items: center; gap: var(--gs-space-2);
+        min-height: calc(var(--gs-size-control-h) + 12px); padding: 0 var(--gs-space-4); margin-bottom: -2px;
+        background: transparent; border: 0; border-bottom: 2px solid transparent;
+        color: var(--gs-color-text-muted); font: inherit; cursor: pointer; white-space: nowrap;
+    }
+    .gs-tabset__tab:hover { color: var(--gs-color-text); background: var(--gs-color-surface-sunken); }
+    .gs-tabset__tab[aria-selected="true"] { color: var(--gs-color-text); background: var(--gs-color-primary-subtle); border-bottom-color: var(--gs-color-primary); font-weight: 600; }
+    .gs-tabset__tab:focus-visible { outline: 2px solid var(--gs-color-focus-ring); outline-offset: -2px; }
+    .gs-tabset__panel { padding: var(--gs-space-4) 0 0; }
+    .gs-tabset__panel:focus-visible { outline: 2px solid var(--gs-color-focus-ring); outline-offset: 2px; }
+
+    /* ---------- KPI layouts, sparkline, usage bar ---------- */
+    .gs-kpi__main { display: flex; flex-direction: column; gap: var(--gs-space-1); min-width: 0; flex: 1; }
+    .gs-kpi--icon-left { flex-direction: row; align-items: center; gap: var(--gs-space-4); }
+    .gs-kpi--centered { align-items: center; text-align: center; }
+    .gs-kpi--centered .gs-kpi__main { align-items: center; }
+    .gs-kpi__icon--lg { font-size: 2.6em; color: var(--gs-kpi-tone); opacity: .55; flex: none; }
+    .gs-kpi--centered .gs-kpi__icon--lg { font-size: 2em; opacity: .7; }
+    .gs-kpi--icon-left .gs-kpi__value, .gs-kpi--centered .gs-kpi__value { color: var(--gs-kpi-tone); font-weight: 500; }
+    .gs-kpi__spark { display: block; width: 100%; height: 40px; margin-top: var(--gs-space-2); overflow: visible; }
+    .gs-kpi__spark polyline { stroke: var(--gs-kpi-tone); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+    .gs-kpi__progress { display: block; height: 5px; margin-top: var(--gs-space-2); border-radius: 999px; background: var(--gs-color-surface-sunken); box-shadow: inset 0 0 0 var(--gs-border-width) var(--gs-color-border); overflow: hidden; }
+    .gs-kpi__progress > span { display: block; height: 100%; background: var(--gs-kpi-tone); border-radius: inherit; }
+    .gs-kpi__caption { color: var(--gs-color-text-muted); font-size: var(--gs-font-size-sm); }
+    .gs-kpi--info { --gs-kpi-tone: var(--gs-color-info); }
+
+    /* ---------- alert appearances ---------- */
+    .gs-alert--outline { background: var(--gs-color-surface); border-left-width: var(--gs-border-width); }
+    .gs-alert--outline .gs-alert__body > strong { color: var(--gs-alert-tone); }
+    .gs-alert--card { background: var(--gs-color-surface); border: 0; border-top: 3px solid var(--gs-alert-tone); box-shadow: var(--gs-shadow-1); }
+    [data-gs-surfaces="flat"] .gs-alert--card { box-shadow: none; border-bottom: var(--gs-border-width) solid var(--gs-color-border); }
+
+    /* ---------- link-rendered components ----------
+       Snipe-IT's unlayered base CSS has `a { background-color: transparent }`, and unlayered rules beat
+       layered ones; button, tile and KPI rendered as <a> therefore restate their fill with !important. */
+    a.gs-btn { background-color: var(--gs-color-surface) !important; }
+    a.gs-btn:hover { background-color: var(--gs-color-surface-sunken) !important; }
+    a.gs-btn:is(.gs-btn--primary, .gs-btn--secondary, .gs-btn--success, .gs-btn--danger, .gs-btn--warning, .gs-btn--info, .gs-btn--light, .gs-btn--dark) { background-color: var(--gs-kit-tone) !important; }
+    a.gs-btn:is(.gs-btn--primary, .gs-btn--secondary, .gs-btn--success, .gs-btn--danger, .gs-btn--warning, .gs-btn--info, .gs-btn--light, .gs-btn--dark):hover { background-color: color-mix(in oklab, var(--gs-kit-tone) 86%, var(--gs-color-text)) !important; }
+    a.gs-btn.gs-btn--outline, a.gs-btn.gs-btn--ghost { background-color: transparent !important; }
+    a.gs-btn.gs-btn--outline:hover { background-color: var(--gs-kit-tone) !important; }
+    a.gs-tile { background-color: var(--gs-color-surface) !important; }
+    a.gs-tile.gs-tile--filled { background-color: var(--gs-kit-tone) !important; }
+    a.gs-tile.gs-tile--filled:hover { background-color: color-mix(in oklab, var(--gs-kit-tone) 86%, var(--gs-color-text)) !important; }
+    a.gs-kpi { background-color: var(--gs-color-surface) !important; }
+    [data-gs-surfaces="flat"] a.gs-kpi { background-color: transparent !important; }
+
+    /* ---------- elevated surfaces: borderless, rounded, soft shadow ---------- */
+    [data-gs-surfaces="elevated"] :is(.gs-box, .gs-kpi, .gs-card, .gs-accordion, .gs-list--cards .gs-list__item) {
+        border: 0; border-radius: var(--gs-radius-lg); box-shadow: var(--gs-surface-shadow);
+    }
+    [data-gs-surfaces="elevated"] .gs-box--primary { border-top: 3px solid var(--gs-color-primary); }
+    [data-gs-surfaces="elevated"] .gs-box__header { border-bottom-color: transparent; padding-top: var(--gs-space-4); }
+    [data-gs-surfaces="elevated"] .gs-box__title { font-size: 1.2em !important; }
+    [data-gs-surfaces="elevated"] .gs-page-header { border-bottom-color: var(--gs-color-border); }
+    [data-gs-surfaces="elevated"] .gs-kpi--link:hover { box-shadow: var(--gs-shadow-2); }
+}

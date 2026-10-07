@@ -48,7 +48,7 @@ class LayoutRenderingTest extends ThemingTestCase
 
     public static function themes(): array
     {
-        return [['default'], ['institutional-green'], ['digital-blue'], ['executive-neutral']];
+        return [['default'], ['institutional-green'], ['digital-blue'], ['executive-neutral'], ['lavender']];
     }
 
     #[\PHPUnit\Framework\Attributes\DataProvider('themes')]

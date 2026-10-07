@@ -1,0 +1,105 @@
+{
+    "seed": {
+        "$type": "color",
+        "primary": { "$value": "#B594E8" },
+        "accent": { "$value": "#C9BFD4" },
+        "neutral": { "$value": "#1F1B27" },
+        "danger": { "$value": "#F2667F" }
+    },
+    "color": {
+        "$type": "color",
+        "bg": { "$value": "#16131C" },
+        "surface": { "$value": "#1F1B27" },
+        "surface-raised": { "$value": "#272231" },
+        "surface-sunken": { "$value": "#1A1721" },
+        "border": { "$value": "#352E40" },
+        "border-strong": { "$value": "#7D7289" },
+        "overlay": { "$value": "rgba(0, 0, 0, 0.6)" },
+
+        "text": { "$value": "#EEEAF3" },
+        "text-muted": { "$value": "#B8AEC4" },
+        "text-subtle": { "$value": "#968CA3" },
+        "text-inverse": { "$value": "#16131C" },
+        "link": { "$value": "#C7A8F2" },
+        "link-hover": { "$value": "{color.link}", "$extensions": { "gs.derive": { "l": 0.06 } } },
+        "focus-ring": { "$value": "#B594E8" },
+
+        "primary-hover": { "$value": "{color.primary}", "$extensions": { "gs.derive": { "l": 0.05 } } },
+        "primary-active": { "$value": "{color.primary}", "$extensions": { "gs.derive": { "l": -0.04 } } },
+        "primary-subtle": { "$value": "{color.primary}", "$extensions": { "gs.derive": { "mix": { "with": "{color.surface}", "amount": 0.78 } } } },
+        "on-primary": { "$value": "#1A0D2E" },
+        "on-accent": { "$value": "#1F1B27" },
+
+        "success": { "$value": "#5CC46A" },
+        "success-subtle": { "$value": "{color.success}", "$extensions": { "gs.derive": { "mix": { "with": "{color.surface}", "amount": 0.8 } } } },
+        "on-success": { "$value": "#082A0D" },
+        "warning": { "$value": "#F2B33D" },
+        "warning-subtle": { "$value": "{color.warning}", "$extensions": { "gs.derive": { "mix": { "with": "{color.surface}", "amount": 0.8 } } } },
+        "on-warning": { "$value": "#2B1A00" },
+        "danger-subtle": { "$value": "{color.danger}", "$extensions": { "gs.derive": { "mix": { "with": "{color.surface}", "amount": 0.8 } } } },
+        "on-danger": { "$value": "#2E0610" },
+        "info": { "$value": "#8EA2F5" },
+        "info-subtle": { "$value": "{color.info}", "$extensions": { "gs.derive": { "mix": { "with": "{color.surface}", "amount": 0.8 } } } },
+        "on-info": { "$value": "#0D1640" },
+
+        "status-deployed": { "$value": "#8EA2F5" },
+        "status-ready": { "$value": "#5CC46A" },
+        "status-pending": { "$value": "#F2B33D" },
+        "status-undeployable": { "$value": "#F2667F" },
+        "status-archived": { "$value": "#A69CB2" },
+
+        "doc-draft": { "$value": "#A69CB2" },
+        "doc-ready": { "$value": "#C7A8F2" },
+        "doc-posted": { "$value": "#5CC46A" },
+        "doc-cancelled": { "$value": "#F7A0AF" },
+        "doc-approved": { "$value": "#5CC46A" },
+        "doc-rejected": { "$value": "#F2667F" }
+    },
+    "header": {
+        "$type": "color",
+        "bg": { "$value": "{color.surface}" },
+        "fg": { "$value": "{color.text}" }
+    },
+    "sidebar": {
+        "$type": "color",
+        "bg": { "$value": "{color.surface}" },
+        "fg": { "$value": "#D6CEE0" },
+        "section-fg": { "$value": "{color.text-muted}" },
+        "active-bg": { "$value": "#3A2C52" },
+        "active-fg": { "$value": "#EBDDFF" },
+        "active-marker": { "$value": "{color.primary}" }
+    },
+    "footer": {
+        "$type": "color",
+        "bg": { "$value": "{color.surface}" },
+        "fg": { "$value": "{color.text-muted}" }
+    },
+    "table": {
+        "$type": "color",
+        "head-bg": { "$value": "{color.surface}" },
+        "head-fg": { "$value": "#E0D9EA" },
+        "row-alt": { "$value": "#221E2B" },
+        "row-hover": { "$value": "{color.primary}", "$extensions": { "gs.derive": { "mix": { "with": "{color.surface}", "amount": 0.86 } } } },
+        "row-selected": { "$value": "{color.primary}", "$extensions": { "gs.derive": { "mix": { "with": "{color.surface}", "amount": 0.7 } } } },
+        "border": { "$value": "#2F2939" }
+    },
+    "chart": {
+        "$type": "color",
+        "1": { "$value": "#B594E8" },
+        "2": { "$value": "#E0CFFA" },
+        "3": { "$value": "#8EA2F5" },
+        "4": { "$value": "#5CC46A" },
+        "5": { "$value": "#F2667F" },
+        "6": { "$value": "#F2B33D" },
+        "7": { "$value": "#C9BFD4" },
+        "8": { "$value": "#4FD1DB" },
+        "9": { "$value": "#F48FB1" },
+        "10": { "$value": "#BCAAA4" },
+        "grid": { "$value": "rgba(255, 255, 255, 0.1)" }
+    },
+    "shadow": {
+        "$type": "shadow",
+        "1": { "$value": "0 4px 20px rgba(0, 0, 0, 0.45), 0 1px 4px rgba(0, 0, 0, 0.5)" },
+        "2": { "$value": "0 12px 32px rgba(0, 0, 0, 0.6)" }
+    }
+}

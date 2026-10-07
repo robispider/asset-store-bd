@@ -14,9 +14,11 @@
         "header": "brand",
         "sidebar": "dark",
         "nav_icons": "shown",
+        "nav_style": "bar",
         "density": "regular",
         "table": "grid",
         "surfaces": "card",
+        "controls": "outlined",
         "radius": "sm",
         "type": "sans",
         "status_style": "tinted"

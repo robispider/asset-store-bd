@@ -84,7 +84,13 @@ class GeneratePreviews extends Command
             'neutral' => ['color.surface', 'color.text'],
             default => ['header.bg', 'header.fg'],
         };
-        imagefilledrectangle($img, 0, 0, self::W, 56, $c($hbg));
+        if (($v['header'] ?? '') === 'floating') {
+            // Inset rounded card on the page ground; the shadow is suggested by a border hairline.
+            $this->box($img, 7, 7, self::W - 7, 57, $radius, $c('color.border'));
+            $this->box($img, 8, 8, self::W - 8, 56, $radius, $c($hbg));
+        } else {
+            imagefilledrectangle($img, 0, 0, self::W, 56, $c($hbg));
+        }
         if (($v['header'] ?? '') === 'neutral') {
             imageline($img, 0, 56, self::W, 56, $c('color.border'));
         }
@@ -105,8 +111,12 @@ class GeneratePreviews extends Command
         foreach ($items as $i => $label) {
             $y = 80 + $i * 40;
             if ($i === 2) {
-                imagefilledrectangle($img, 0, $y - 8, 229, $y + 24, $c(($v['sidebar'] ?? '') === 'light' ? 'sidebar.active-bg' : 'sidebar.active-bg'));
-                imagefilledrectangle($img, 0, $y - 8, 4, $y + 24, $c('sidebar.active-marker'));
+                if (($v['nav_style'] ?? 'bar') === 'pill') {
+                    $this->box($img, 10, $y - 8, 219, $y + 24, $radius, $c('sidebar.active-bg'));
+                } else {
+                    imagefilledrectangle($img, 0, $y - 8, 229, $y + 24, $c('sidebar.active-bg'));
+                    imagefilledrectangle($img, 0, $y - 8, 4, $y + 24, $c('sidebar.active-marker'));
+                }
             }
             $x = ($v['nav_icons'] ?? 'shown') === 'shown' ? 50 : 24;
             if ($x === 50) {

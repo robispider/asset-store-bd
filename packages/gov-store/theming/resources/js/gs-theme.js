@@ -235,6 +235,32 @@
                 bar.setAttribute('data-open', open ? 'true' : 'false');
                 filter.setAttribute('aria-expanded', open ? 'true' : 'false');
             }
+            var tab = event.target.closest('[data-gs-tabs] [role="tab"]');
+            if (tab) { selectTab(tab); }
+        });
+
+        // In-page tabs (<x-gs::tabs>): ARIA tabs pattern — arrows / Home / End move and activate.
+        function selectTab(tab) {
+            var set = tab.closest('[data-gs-tabs]');
+            set.querySelectorAll(':scope > [role="tablist"] > [role="tab"]').forEach(function (other) {
+                var selected = other === tab;
+                other.setAttribute('aria-selected', selected ? 'true' : 'false');
+                other.tabIndex = selected ? 0 : -1;
+                var panel = document.getElementById(other.getAttribute('aria-controls'));
+                if (panel) { panel.hidden = !selected; }
+            });
+        }
+        document.addEventListener('keydown', function (event) {
+            var tab = event.target.closest && event.target.closest('[data-gs-tabs] [role="tab"]');
+            if (!tab) { return; }
+            var tabs = Array.prototype.slice.call(tab.parentNode.querySelectorAll('[role="tab"]'));
+            var i = tabs.indexOf(tab);
+            var next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[event.key];
+            if (next === undefined) { return; }
+            event.preventDefault();
+            var target = tabs[(next + tabs.length) % tabs.length];
+            target.focus();
+            selectTab(target);
         });
 
         // Swatch strips: colours come from theme.json data, applied at runtime.
