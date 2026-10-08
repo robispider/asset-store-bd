@@ -27,8 +27,7 @@
                     headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } });
                 const data = await response.json();
                 if (!response.ok || !data.success) throw new Error(data.message || data.error || config.errorLabel);
-                const badge = document.getElementById('floating-basket-count');
-                if (badge) badge.textContent = data.count;
+                document.querySelectorAll('[data-basket-count]').forEach(badge => { badge.textContent = data.count; });
                 button.textContent = config.addedLabel;
             } catch (error) {
                 window.alert(error.message || config.errorLabel);

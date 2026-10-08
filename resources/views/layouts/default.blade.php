@@ -1382,6 +1382,8 @@
 
 
 
+                            @includeIf('govstore::hooks.basket-nav', ['draftCount' => $govBasketCount ?? 0])
+
                             <!-- User Account: style can be found in dropdown.less -->
                             @auth
                                 <li class="dropdown user user-menu">

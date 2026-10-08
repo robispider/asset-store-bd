@@ -10,10 +10,5 @@
      data-saved-label="{{ __('requestlabels::requests.saved') }}"
      data-error-label="{{ __('requestlabels::requests.requestbutton_ajax_error') }}"
      data-duplicate-label="{{ __('requestlabels::requests.duplicate_asset') }}"></div>
-<a href="{{ route('gov.requests.basket.index') }}" id="floating-basket-btn" class="btn btn-primary cr-floating-basket">
-    <i class="fas fa-shopping-basket" aria-hidden="true"></i>
-    {{ __('requestlabels::requests.basket_widget_basket_label') }}
-    (<span id="floating-basket-count" aria-live="polite">{{ $draftCount }}</span>)
-</a>
 <script src="{{ asset('js/gov-requests.js') }}?v={{ filemtime(public_path('js/gov-requests.js')) }}" defer></script>
 @endauth
