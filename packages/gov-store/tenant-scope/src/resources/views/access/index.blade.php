@@ -1,6 +1,7 @@
 @extends('layouts/default')
 @section('title', __('tenantops::access.my_access'))
 @section('content')
+<div class="tenant-scope-theme">
 <div class="box box-primary"><div class="box-header with-border"><h1 class="box-title">{{ __('tenantops::access.my_access') }}</h1></div><div class="box-body">
 <p>{{ __('tenantops::access.office') }}: {{ $context->locationId ?? '—' }}</p>
 <p>{{ __('tenantops::access.roles') }}: {{ implode(', ', array_map(fn ($role) => __('tenantops::access.role_names.'.$role), $roles)) }}</p>
@@ -26,4 +27,6 @@
 @can('access.shadow')<a class="btn btn-default" href="{{ route('gov.access.shadow') }}">{{ __('tenantops::access.shadow') }}</a>@endcan
 @can('access.audit')<a class="btn btn-default" href="{{ route('gov.access.audit') }}">{{ __('tenantops::access.audit') }}</a>@endcan
 </div></div>
+
+</div>
 @endsection

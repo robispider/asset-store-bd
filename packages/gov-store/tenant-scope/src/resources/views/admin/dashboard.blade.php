@@ -1,8 +1,9 @@
-﻿@extends('layouts/default')
+@extends('layouts/default')
 
 @section('title', __('tenantops::ops.dashboard_title'))
 
 @section('content')
+<div class="tenant-scope-theme">
 <div class="row">
     <!-- Stat Cards -->
     <div class="col-md-3 col-sm-6">
@@ -81,7 +82,7 @@
                 <h3 class="box-title"><i class="fas fa-history"></i> {{ __('tenantops::ops.recent_actions_title') }}</h3>
             </div>
             <div class="box-body table-responsive" style="padding: 0;">
-                <table class="table table-striped" style="margin-bottom: 0;">
+                <x-gs::table class="table table-striped" style="margin-bottom: 0;">
                     <thead>
                         <tr>
                             <th>{{ __('tenantops::ops.table_item_name') }}</th>
@@ -111,9 +112,11 @@
                             <tr><td colspan="3" class="text-center text-muted" style="padding: 20px;">{{ __('tenantops::ops.empty_no_actions') }}</td></tr>
                         @endforelse
                     </tbody>
-                </table>
+                </x-gs::table>
             </div>
         </div>
     </div>
+</div>
+
 </div>
 @endsection

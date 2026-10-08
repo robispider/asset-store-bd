@@ -1,6 +1,7 @@
 @extends('layouts/default')
 @section('title', __('tenantops::access.title'))
 @section('content')
+<div class="tenant-scope-theme">
 <div class="box box-warning">
     <div class="box-header with-border"><h1 class="box-title" lang="bn">{{ trans('tenantops::access.title', [], 'bn-BD') }}</h1><p lang="en">{{ trans('tenantops::access.title', [], 'en-US') }}</p></div>
     <div class="box-body" role="alert">
@@ -17,5 +18,7 @@
         <a class="btn btn-default" href="{{ route('gov.access.index') }}">{{ __('tenantops::access.my_access') }}</a>
         <a class="btn btn-default" href="{{ url('/') }}">{{ __('tenantops::access.back') }}</a>
     </div>
+</div>
+
 </div>
 @endsection

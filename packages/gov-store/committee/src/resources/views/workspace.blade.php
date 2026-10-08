@@ -46,9 +46,9 @@
         </div></div>
         <div class="row"><div class="col-md-8">
             <div class="box"><div class="box-header"><h2 class="box-title">{{ __('committee::committee.members') }}</h2></div><div class="box-body table-responsive">
-                <table class="table table-striped"><thead><tr><th>{{ __('committee::committee.seat_no') }}</th><th>{{ __('committee::committee.seat_role_code') }}</th><th>{{ __('committee::committee.user_id') }}</th><th>{{ __('committee::committee.declaration') }}</th></tr></thead><tbody>
+                <x-gs::table class="table table-striped"><thead><tr><th>{{ __('committee::committee.seat_no') }}</th><th>{{ __('committee::committee.seat_role_code') }}</th><th>{{ __('committee::committee.user_id') }}</th><th>{{ __('committee::committee.declaration') }}</th></tr></thead><tbody>
                     @foreach($view->seats as $seat)<tr><td>{{ $seat->number }}</td><td>{{ $roles->firstWhere('code',$seat->role)?->name_bn }}</td><td>{{ $seat->holder?->nameBn }}<br><small>{{ $seat->holder?->nameEn }} · {{ $seat->holder?->designationBn }}</small></td><td>{{ __('committee::committee.options.'.($seat->holder?->declarationStatus ?? 'PENDING')) }}</td></tr>@endforeach
-                </tbody></table>
+                </tbody></x-gs::table>
                 @if($editable && $c->status === 'DRAFT')
                     <details><summary>{{ __('committee::committee.add_seat') }}</summary>
                     <form class="cm-command" method="post" action="{{ route('committee.command.seat',$c->id) }}">@csrf
@@ -157,9 +157,9 @@
         @endif
         <div class="box"><div class="box-body">
             <form class="cm-search form-inline" action="{{ route('committee.api.registry') }}"><label for="cm-search">{{ __('committee::committee.search') }}</label> <input class="form-control" id="cm-search" name="q" placeholder="{{ __('committee::committee.search_placeholder') }}"><button class="btn btn-default" type="submit">{{ __('committee::committee.search') }}</button></form>
-            <div class="table-responsive"><table class="table table-striped"><thead><tr><th>{{ __('committee::committee.number') }}</th><th>{{ __('committee::committee.name_bn') }}</th><th>{{ __('committee::committee.status') }}</th><th>{{ __('committee::committee.effective_to') }}</th></tr></thead><tbody class="cm-registry-rows">
+            <div class="table-responsive"><x-gs::table class="table table-striped"><thead><tr><th>{{ __('committee::committee.number') }}</th><th>{{ __('committee::committee.name_bn') }}</th><th>{{ __('committee::committee.status') }}</th><th>{{ __('committee::committee.effective_to') }}</th></tr></thead><tbody class="cm-registry-rows">
                 @forelse($rows as $row)<tr><td><a href="{{ route('committee.show',$row->id) }}">{{ $row->committee_number }}</a></td><td>{{ $row->name_bn }}<br><small>{{ $row->name_en }}</small></td><td>{{ __('committee::committee.options.'.$row->status) }}</td><td>{{ $row->effective_to }}</td></tr>@empty<tr><td colspan="4">{{ __('committee::committee.empty') }}</td></tr>@endforelse
-            </tbody></table></div>{{ $rows->links() }}
+            </tbody></x-gs::table></div>{{ $rows->links() }}
         </div></div>
     @endif
 </div>

@@ -1,8 +1,5 @@
 @extends('layouts.default')
 @section('title', __('committee::committee.title'))
-@push('css')
-<link rel="stylesheet" href="{{ mix('css/dist/committee.css') }}">
-@endpush
 @section('content')
 @php
     $display = \GovStore\Committee\Support\CommitteeDisplay::class;

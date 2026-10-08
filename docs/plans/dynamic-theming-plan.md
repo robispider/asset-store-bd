@@ -971,8 +971,9 @@ Order and status (hex-literal counts are the figure recorded when this plan was 
 | custom-requests | 77 | **done** | **2026-10-08** — all request views use registered token-based package CSS and GS tables; compliance baseline entries removed |
 | organization | 65 | **done** | **2026-10-08** — all package views use registered token-based CSS and GS tables; compliance baseline entries removed |
 | office-membership | 30 | **done** | **2026-10-08** — all package views use registered token-based CSS and GS tables; compliance baseline entries removed |
-| tenant-scope | 3 | not started | — |
+| tenant-scope | 3 | **done** | **2026-10-08** — access and admin views use registered token-based CSS and GS table components; compliance baseline entries removed |
 | user-onboarding | 1 | **done** | **2026-10-08** — queue and self-service views use registered token-based CSS and GS components; compliance baseline entries removed |
+| committee | 0 | **done** | **2026-10-08** — workspace styles use registered token-based package CSS, GS tables, and theme variables; no baseline entries |
 
 Within a package, highest-traffic screens first (Store Documents Hub, Goods Receipt workspace, Stock Register Dashboard, Fulfillment Queue).
 

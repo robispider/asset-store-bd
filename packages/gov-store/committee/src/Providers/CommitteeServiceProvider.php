@@ -7,6 +7,7 @@ use GovStore\Committee\Services;
 use GovStore\Committee\Scopes\Types\CoreScopeResolver;
 use GovStore\OfficeMembership\Services\ClearanceEngine;
 use GovStore\TenantScope\Navigation\MenuRegistry;
+use GovStore\Theming\Facades\GsTheme;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\ServiceProvider;
 
@@ -32,6 +33,9 @@ class CommitteeServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/../Database/migrations');
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang','committee');
         $this->loadViewsFrom(__DIR__.'/../resources/views','committee');
+        if ($this->app->bound('gs.theme')) {
+            GsTheme::assets()->css('committee', __DIR__.'/../resources/css/committee.css');
+        }
         $this->loadRoutesFrom(__DIR__.'/../Routes/web.php');
         $registry = $this->app->make(Contracts\ScopeTypeRegistry::class);
         foreach (['office','store','ministry'] as $key) { $registry->register($key,new CoreScopeResolver($key)); }

@@ -1,6 +1,7 @@
 @extends('layouts/default')
 @section('title', __('tenantops::access.requests'))
 @section('content')
+<div class="tenant-scope-theme">
 @foreach($requests as $entry)
 <div class="box box-default"><div class="box-header with-border"><h2 class="box-title">{{ __('tenantops::access.abilities.'.str_replace('.', '_', $entry->ability)) }} — {{ __('tenantops::access.'.$entry->status) }}</h2></div><div class="box-body">
 <p>{{ __('tenantops::access.actor') }}: {{ \App\Models\User::withoutGlobalScopes()->find($entry->user_id)?->getFullNameAttribute() ?? $entry->user_id }}</p>
@@ -15,4 +16,6 @@
 </div></div>
 @endforeach
 {{ $requests->links() }}
+
+</div>
 @endsection

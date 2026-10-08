@@ -5,7 +5,6 @@ const path = 'public/mix-manifest.json';
 const manifest = JSON.parse(fs.readFileSync(path, 'utf8'));
 for (const [sourcePath, targetPath] of [
     ['resources/assets/js/committee.js', 'public/js/dist/committee.js'],
-    ['resources/assets/css/committee.css', 'public/css/dist/committee.css'],
 ]) {
     const source = fs.readFileSync(sourcePath);
     fs.writeFileSync(targetPath, source);
