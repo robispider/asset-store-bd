@@ -5,6 +5,7 @@ namespace GovStore\Classification\Providers;
 use GovStore\Classification\Listeners\ProvisionStarterCatalog;
 use GovStore\Organization\Events\OfficeProvisioned;
 use GovStore\TenantScope\Navigation\MenuRegistry;
+use GovStore\Theming\Facades\GsTheme;
 use Illuminate\Support\ServiceProvider;
 
 class ClassificationServiceProvider extends ServiceProvider
@@ -45,6 +46,10 @@ class ClassificationServiceProvider extends ServiceProvider
         // Load views
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'gov-classification');
 
+        if ($this->app->bound('gs.theme')) {
+            GsTheme::assets()->css('classification', __DIR__.'/../resources/css/classification.css');
+        }
+
         // Load routes
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
 
@@ -63,7 +68,7 @@ class ClassificationServiceProvider extends ServiceProvider
             $registry->register([
                 'id' => 'gov-catalog-root',
                 'title' => 'Global Catalog',
-                'icon' => 'fas fa-globe text-blue',
+                'icon' => 'fas fa-globe',
                 'permission' => 'catalog.view',
                 'order' => 40,
                 'active_patterns' => ['admin/catalog*', 'gov-store/operations/catalog*'],
@@ -78,7 +83,7 @@ class ClassificationServiceProvider extends ServiceProvider
                 'id' => 'gov-catalog-collections',
                 'parent' => 'gov-catalog-root',
                 'title' => 'Discover Collections',
-                'icon' => 'fas fa-layer-group text-purple',
+                'icon' => 'fas fa-layer-group',
                 'route' => 'gov.catalog.discover.collections',
                 'permission' => ['storekeeper', 'office_admin', 'admin', 'ict_officer'],
                 'order' => 10,
@@ -89,7 +94,7 @@ class ClassificationServiceProvider extends ServiceProvider
                 'id' => 'gov-catalog-explorer',
                 'parent' => 'gov-catalog-root',
                 'title' => 'Catalog Explorer',
-                'icon' => 'fas fa-folder-tree text-yellow',
+                'icon' => 'fas fa-folder-tree',
                 'route' => 'gov.catalog.discover.explorer',
                 'permission' => ['storekeeper', 'office_admin', 'admin', 'ict_officer'],
                 'order' => 20,
@@ -100,7 +105,7 @@ class ClassificationServiceProvider extends ServiceProvider
                 'id' => 'gov-catalog-search',
                 'parent' => 'gov-catalog-root',
                 'title' => 'Universal Search',
-                'icon' => 'fas fa-search text-green',
+                'icon' => 'fas fa-search',
                 'route' => 'gov.catalog.search',
                 'permission' => ['storekeeper', 'office_admin', 'admin', 'ict_officer'],
                 'order' => 30,
@@ -111,7 +116,7 @@ class ClassificationServiceProvider extends ServiceProvider
                 'id' => 'storeops-my-catalog',
                 'parent' => 'gov-catalog-root',
                 'title' => 'My Organization Catalog',
-                'icon' => 'fas fa-book text-aqua',
+                'icon' => 'fas fa-book',
                 'route' => 'gov.catalog.my_catalog.index',
                 'permission' => ['storekeeper', 'office_admin', 'admin'],
                 'order' => 40,
@@ -122,7 +127,7 @@ class ClassificationServiceProvider extends ServiceProvider
                 'id' => 'gov-catalog-builder',
                 'parent' => 'gov-catalog-root',
                 'title' => 'Collection Library',
-                'icon' => 'fas fa-boxes text-orange',
+                'icon' => 'fas fa-boxes',
                 'route' => 'gov.catalog.collections.index',
                 'permission' => 'admin',
                 'order' => 50,
@@ -144,7 +149,7 @@ class ClassificationServiceProvider extends ServiceProvider
                 'id' => 'gov-catalog-import',
                 'parent' => 'gov-catalog-root',
                 'title' => 'Catalog Import',
-                'icon' => 'fas fa-upload text-green',
+                'icon' => 'fas fa-upload',
                 'route' => 'gov.catalog.import',
                 'permission' => 'admin',
                 'order' => 70,

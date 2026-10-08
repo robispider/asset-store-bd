@@ -3,14 +3,10 @@
 @section('title', __('organization_labels::orglabel.config_title'))
 
 @section('content')
+<div class="govorg-theme">
 
 {{-- Readiness Checklist and Config Layout --}}
-<style>
-    .checklist-item { display: flex; align-items: center; padding: 12px 15px; border-bottom: 1px solid #f4f4f4; }
-    .checklist-item:last-child { border-bottom: none; }
-    .checklist-icon { font-size: 18px; margin-right: 15px; }
-    .checklist-text { font-size: 14px; font-weight: bold; flex-grow: 1; }
-</style>
+
 
 <div class="row">
     <!-- LEFT COLUMN: Dynamic Operational Readiness Checklist -->
@@ -19,12 +15,12 @@
         <!-- Checklist status panel -->
         <div class="box box-solid {{ $readiness['is_operational'] ? 'box-success' : 'box-warning' }}">
             <div class="box-header with-border">
-                <h3 class="box-title" style="color: white !important;">
+                <h3 class="box-title org-inline-1b4b4734">
                     <i class="fas {{ $readiness['is_operational'] ? 'fa-check-double' : 'fa-clipboard-list' }}"></i> 
                     Office Status: {{ strtoupper($profile->lifecycle_status) }}
                 </h3>
             </div>
-            <div class="box-body no-padding" style="background-color: white;">
+            <div class="box-body no-padding org-inline-2d2f5fdd">
                 
                 <div class="checklist-item">
                     <span class="checklist-icon {{ $readiness['checklist']['has_office_admin'] ? 'text-success' : 'text-gray' }}">
@@ -68,11 +64,11 @@
 
             </div>
             @if($readiness['is_operational'])
-                <div class="box-footer text-center" style="background-color: #dff0d8; border-top: 1px solid #d6e9c6;">
+                <div class="box-footer text-center org-inline-18698e3c">
                     <strong class="text-success"><i class="fas fa-check-double"></i> {{ __('organization_labels::orglabel.config_operational_verified') }}</strong>
                 </div>
             @else
-                <div class="box-footer text-center" style="background-color: #fcf8e3; border-top: 1px solid #faebcc;">
+                <div class="box-footer text-center org-inline-ec5f400a">
                     <strong class="text-warning"><i class="fas fa-exclamation-triangle"></i> {{ __('organization_labels::orglabel.config_pending_instruction') }}</strong>
                 </div>
             @endif
@@ -84,10 +80,10 @@
                 <h3 class="box-title"><i class="fas fa-info-circle"></i> {{ __('organization_labels::orglabel.config_profile_title') }}</h3>
             </div>
             <div class="box-body table-responsive">
-                <table class="table">
+                <x-gs::table class="table">
                     <tr>
-                        <td style="border-top: none;"><strong>{{ __('organization_labels::orglabel.config_field_physical_office') }}</strong></td>
-                        <td style="border-top: none;">{{ $location->name }}</td>
+                        <td class="org-inline-b38bc629"><strong>{{ __('organization_labels::orglabel.config_field_physical_office') }}</strong></td>
+                        <td class="org-inline-b38bc629">{{ $location->name }}</td>
                     </tr>
                     <tr>
                         <td><strong>{{ __('organization_labels::orglabel.config_field_ministry_division') }}</strong></td>
@@ -96,12 +92,12 @@
                     <tr>
                         <td><strong>{{ __('organization_labels::orglabel.config_field_territory_tag') }}</strong></td>
                         <td>
-                            <span class="label bg-blue" style="font-size: 11px;">
+                            <span class="label bg-blue org-inline-19b327ae">
                                 <i class="fas fa-map-marker-alt"></i> {{ $profile->geoArea->en_name ?? __('organization_labels::orglabel.config_field_unspecified') }} ({{ ucfirst($profile->geoArea->geo_type ?? 'N/A') }})
                             </span>
                         </td>
                     </tr>
-                </table>
+                </x-gs::table>
             </div>
         </div>
     </div>
@@ -122,7 +118,7 @@
                     
                     <div class="form-group">
                         <label for="primary_approver_id">{{ __('organization_labels::orglabel.config_role_primary_approver') }} <span class="text-danger">*</span></label>
-                        <select name="primary_approver_id" id="primary_approver_id" class="form-control select2" required style="width: 100%;">
+                        <select class="form-control select2 org-inline-442a70a1" name="primary_approver_id" id="primary_approver_id" required>
                             <option value="">{{ __('organization_labels::orglabel.config_role_select_employee') }}</option>
                             @foreach($localStaff as $user)
                                 <option value="{{ $user->id }}" {{ $roles && $roles->primary_approver_id == $user->id ? 'selected' : '' }}>
@@ -135,7 +131,7 @@
 
                     <div class="form-group">
                         <label for="final_approver_id">{{ __('organization_labels::orglabel.config_role_final_approver') }}</label>
-                        <select name="final_approver_id" id="final_approver_id" class="form-control select2" style="width: 100%;">
+                        <select class="form-control select2 org-inline-442a70a1" name="final_approver_id" id="final_approver_id">
                             <option value="">{{ __('organization_labels::orglabel.config_role_none_single_level') }}</option>
                             @foreach($localStaff as $user)
                                 <option value="{{ $user->id }}" {{ $roles && $roles->final_approver_id == $user->id ? 'selected' : '' }}>
@@ -148,7 +144,7 @@
 
                     <div class="form-group">
                         <label for="storekeeper_id">{{ __('organization_labels::orglabel.config_role_storekeeper') }} <span class="text-danger">*</span></label>
-                        <select name="storekeeper_id" id="storekeeper_id" class="form-control select2" required style="width: 100%;">
+                        <select class="form-control select2 org-inline-442a70a1" name="storekeeper_id" id="storekeeper_id" required>
                             <option value="">{{ __('organization_labels::orglabel.config_role_select_employee') }}</option>
                             @foreach($localStaff as $user)
                                 <option value="{{ $user->id }}" {{ $roles && $roles->storekeeper_id == $user->id ? 'selected' : '' }}>
@@ -172,8 +168,8 @@
             <div class="box-header with-border">
                 <h3 class="box-title"><i class="fas fa-users"></i> {{ __('organization_labels::orglabel.config_employees_title') }}</h3>
             </div>
-            <div class="box-body table-responsive" style="max-height: 250px; overflow-y: auto;">
-                <table class="table table-striped table-hover">
+            <div class="box-body table-responsive org-inline-033db5fe">
+                <x-gs::table class="table table-striped table-hover">
                     <thead>
                         <tr>
                             <th>{{ __('organization_labels::orglabel.config_employee_name') }}</th>
@@ -194,9 +190,10 @@
                             </tr>
                         @endforelse
                     </tbody>
-                </table>
+                </x-gs::table>
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

@@ -3,16 +3,17 @@
 @section('title', __('classification::texts.governance_title'))
 
 @section('content')
+<div class="classification-theme">
 <div class="row">
     <div class="col-md-12">
         <div class="box box-primary">
             <div class="box-header with-border">
                 <h3 class="box-title"><i class="fas fa-landmark text-blue"></i> {{ __('classification::texts.governance_registry_title') }}</h3>
-                <p class="text-muted" style="margin-top: 5px; margin-bottom: 0;">{{ __('classification::texts.governance_registry_desc') }}</p>
+                <p class="text-muted classify-inline-6c6dfb55">{{ __('classification::texts.governance_registry_desc') }}</p>
             </div>
             <div class="box-body table-responsive">
-                <table class="table table-striped table-hover table-bordered">
-                    <thead style="background-color: #f9f9f9;">
+                <x-gs::table class="table table-striped table-hover table-bordered">
+                    <thead class="classify-inline-0e5be659">
                         <tr>
                             <th>{{ __('classification::texts.governance_col_operational_category') }}</th>
                             <th>{{ __('classification::texts.governance_col_unspsc_code') }}</th>
@@ -51,14 +52,15 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center text-muted" style="padding: 30px;">{{ __('classification::texts.governance_empty_state') }}</td>
+                                <td class="text-center text-muted classify-inline-6b881e6b" colspan="7">{{ __('classification::texts.governance_empty_state') }}</td>
                             </tr>
                         @endforelse
                     </tbody>
-                </table>
+                </x-gs::table>
                 {{ $categories->links() }}
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

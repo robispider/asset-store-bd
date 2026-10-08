@@ -3,13 +3,14 @@
 @section('title', __('classification::texts.search_title'))
 
 @section('content')
+<div class="classification-theme">
 <div class="row">
     <div class="col-md-12">
         <!-- Main Explorer Header -->
-        <div class="box box-solid bg-gray-light" style="border-bottom: 2px solid #ddd; margin-bottom: 20px;">
+        <div class="box box-solid bg-gray-light classify-inline-c5bb90ff">
             <div class="box-body">
-                <h3 style="margin-top: 5px; font-weight: bold;"><i class="fas fa-search text-blue"></i> {{ __('classification::texts.search_header_title') }}</h3>
-                <p class="text-muted" style="margin-bottom: 0;">{{ __('classification::texts.search_header_desc') }}</p>
+                <h3 class="classify-inline-bc5af139"><i class="fas fa-search text-blue"></i> {{ __('classification::texts.search_header_title') }}</h3>
+                <p class="text-muted classify-inline-648149ce">{{ __('classification::texts.search_header_desc') }}</p>
             </div>
         </div>
 
@@ -21,41 +22,41 @@
                     <div class="box-header with-border">
                         <h3 class="box-title">{{ __('classification::texts.search_col_results') }}</h3>
                     </div>
-                    <div class="box-body" style="padding: 15px;">
+                    <div class="box-body classify-inline-cfb76d2b">
                         <!-- Search Box and Autocomplete Input -->
-                        <div class="form-group" style="margin-bottom: 10px;">
+                        <div class="form-group classify-inline-2d98adf5">
                             <div class="input-group">
-                                <span class="input-group-addon" style="background-color: #fff;"><i class="fas fa-search text-muted"></i></span>
+                                <span class="input-group-addon classify-inline-eec876ec"><i class="fas fa-search text-muted"></i></span>
                                 <input type="text" id="catalog-search-input" class="form-control input-lg" 
                                        placeholder="{{ __('classification::texts.search_placeholder_code_or_keyword') }}" autocomplete="off" autofocus>
                             </div>
                         </div>
 
                         <!-- Filters & Recent Search Chips -->
-                        <div class="row" style="margin-bottom: 20px;">
+                        <div class="row classify-inline-b75fad00">
                             <div class="col-xs-12">
                                 <!-- Search Filters/Chips -->
-                                <div class="pull-left" style="margin-top: 5px;">
-                                    <label style="margin-right: 15px; font-weight: normal; cursor: pointer; font-size: 12px;" class="text-muted">
-                                        <input type="checkbox" id="filter-unmapped" style="margin-right: 5px; vertical-align: middle; position: relative; top: -1px;"> {{ __('classification::texts.search_filter_unmapped_only') }}
+                                <div class="pull-left classify-inline-49e4866e">
+                                    <label class="classify-inline-5b2b685a text-muted">
+                                        <input type="checkbox" id="filter-unmapped" class="classify-inline-70eae362"> {{ __('classification::texts.search_filter_unmapped_only') }}
                                     </label>
-                                    <label style="font-weight: normal; cursor: pointer; font-size: 12px;" class="text-muted">
-                                        <input type="checkbox" id="filter-commodities" checked style="margin-right: 5px; vertical-align: middle; position: relative; top: -1px;"> {{ __('classification::texts.search_filter_commodities_only') }}
+                                    <label class="classify-inline-543bd8ac text-muted">
+                                        <input type="checkbox" id="filter-commodities" checked class="classify-inline-70eae362"> {{ __('classification::texts.search_filter_commodities_only') }}
                                     </label>
                                 </div>
                                 
                                 <!-- Recent Searches container (Local Storage) -->
-                                <div class="pull-right" id="recent-searches-container" style="display: none; margin-top: 5px;">
-                                    <span class="text-muted" style="margin-right: 5px; font-size: 11px;">{{ __('classification::texts.search_recent_label') }}</span>
+                                <div class="pull-right classify-inline-4bc3bf9e" id="recent-searches-container">
+                                    <span class="text-muted classify-inline-38e6816e">{{ __('classification::texts.search_recent_label') }}</span>
                                     <span id="recent-searches-chips"></span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Results List Container -->
-                        <div id="catalog-results" style="max-height: 550px; overflow-y: auto; padding-right: 5px;">
-                            <div class="text-center text-muted" style="padding: 60px 20px;">
-                                <i class="fas fa-search fa-3x" style="margin-bottom: 15px; opacity: 0.5;"></i>
+                        <div id="catalog-results" class="classify-inline-f039a379">
+                            <div class="text-center text-muted classify-inline-9cb0d6dd">
+                                <i class="fas fa-search fa-3x classify-inline-5f0ae864"></i>
                                 <h4>{{ __('classification::texts.search_begin_typing_title') }}</h4>
                                 <p class="small">{{ __('classification::texts.search_begin_typing_desc') }}</p>
                             </div>
@@ -66,11 +67,11 @@
 
             <!-- RIGHT PANEL: Detail Workspace Panel (60% Width) -->
             <div class="col-md-7">
-                <div class="box box-solid box-default" id="detail-workspace-box" style="min-height: 720px; border-left: 4px solid #d2d6de;">
-                    <div class="box-body" id="detail-workspace-container" style="padding: 30px 20px;">
+                <div class="box box-solid box-default classify-inline-4c10bdcf" id="detail-workspace-box">
+                    <div class="box-body classify-inline-5bf81b71" id="detail-workspace-container">
                         <!-- Initial Empty State -->
-                        <div class="text-center text-muted" style="padding-top: 200px;">
-                            <i class="fas fa-info-circle fa-4x" style="margin-bottom: 20px; opacity: 0.5;"></i>
+                        <div class="text-center text-muted classify-inline-4c4c0fab">
+                            <i class="fas fa-info-circle fa-4x classify-inline-77b06690"></i>
                             <h3>{{ __('classification::texts.search_no_item_selected') }}</h3>
                             <p class="lead">{{ __('classification::texts.search_no_item_desc') }}</p>
                         </div>
@@ -79,6 +80,7 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection
 
@@ -110,8 +112,8 @@ function bootstrapCatalogExplorer() {
         
         if (query.length < 2) {
             resultsContainer.html(`
-                <div class="text-center text-muted" style="padding: 60px 20px;">
-                    <i class="fas fa-search fa-3x" style="margin-bottom: 15px; opacity: 0.5;"></i>
+                <div>
+                    <i class="fas fa-search fa-3x classify-inline-5f0ae864"></i>
                     <h4>Begin Typing to Search</h4>
                     <p class="small">Enter a classification title or official UNSPSC code to inspect.</p>
                 </div>
@@ -132,7 +134,7 @@ function bootstrapCatalogExplorer() {
 
     // Execute AJAX Search
    function executeSearch(query) {
-        resultsContainer.html(`<div class="text-center" style="padding: 40px;"><i class="fas fa-spinner fa-spin fa-2x text-blue"></i></div>`);
+        resultsContainer.html(`<div class="text-center classify-inline-73fc9c37"><i class="fas fa-spinner fa-spin fa-2x text-blue"></i></div>`);
 
         $.ajax({
             url: '{{ route("gov.catalog.search.universal.ajax") }}', // NEW ROUTE
@@ -145,7 +147,7 @@ function bootstrapCatalogExplorer() {
 
     function renderUniversalResults(data, query) {
         if (data.collections.length === 0 && data.catalog.length === 0 && data.local.length === 0) {
-            resultsContainer.html(`<div class="text-center text-muted" style="padding: 40px;">No matches found.</div>`);
+            resultsContainer.html(`<div class="text-center text-muted classify-inline-73fc9c37">No matches found.</div>`);
             return;
         }
 
@@ -153,10 +155,10 @@ function bootstrapCatalogExplorer() {
 
         // Render Collections Group
         if (data.collections.length > 0) {
-            html += `<h5 style="margin-top:0; font-weight:bold; color:#3c8dbc; border-bottom:1px solid #eee; padding-bottom:5px;">📚 Collections</h5><div class="list-group">`;
+            html += `<h5 class="classify-inline-9c0e35ab">📚 Collections</h5><div class="list-group">`;
             data.collections.forEach(item => {
-                html += `<a href="/gov-store/operations/catalog/discover/collections/${item.id}" class="list-group-item" style="border-left: 3px solid #3c8dbc;">
-                            <i class="${item.icon} text-muted" style="margin-right:10px;"></i> <strong>${highlightMatchText(item.text, query)}</strong>
+                html += `<a class="list-group-item classify-inline-c78b7504" href="/gov-store/operations/catalog/discover/collections/${item.id}">
+                            <i class="${item.icon} text-muted classify-inline-ef97e545"></i> <strong>${highlightMatchText(item.text, query)}</strong>
                          </a>`;
             });
             html += `</div>`;
@@ -164,9 +166,9 @@ function bootstrapCatalogExplorer() {
 
         // Render Master Catalog Group
         if (data.catalog.length > 0) {
-            html += `<h5 style="margin-top:15px; font-weight:bold; color:#f39c12; border-bottom:1px solid #eee; padding-bottom:5px;">🌐 Official Catalog (UNSPSC)</h5><div class="list-group">`;
+            html += `<h5 class="classify-inline-1991ea71">🌐 Official Catalog (UNSPSC)</h5><div class="list-group">`;
             data.catalog.forEach(item => {
-                html += `<a href="#" class="list-group-item catalog-result-item" data-code="${item.code}" style="border-left: 3px solid #f39c12;">
+                html += `<a class="list-group-item catalog-result-item classify-inline-1ed9afdb" href="#" data-code="${item.code}">
                             <small class="text-muted pull-right">${item.code}</small>
                             <strong>${highlightMatchText(item.text, query)}</strong>
                          </a>`;
@@ -176,9 +178,9 @@ function bootstrapCatalogExplorer() {
 
         // Render Local Inventory Group
         if (data.local.length > 0) {
-            html += `<h5 style="margin-top:15px; font-weight:bold; color:#00a65a; border-bottom:1px solid #eee; padding-bottom:5px;">🏢 Existing Office Inventory</h5><div class="list-group">`;
+            html += `<h5 class="classify-inline-49116149">🏢 Existing Office Inventory</h5><div class="list-group">`;
             data.local.forEach(item => {
-                html += `<a href="/gov-store/operations/catalog/my-catalog/${item.id}" class="list-group-item" style="border-left: 3px solid #00a65a;">
+                html += `<a class="list-group-item classify-inline-15daa8ae" href="/gov-store/operations/catalog/my-catalog/${item.id}">
                             <span class="label label-default pull-right">${item.cat_type}</span>
                             <strong>${highlightMatchText(item.text, query)}</strong>
                          </a>`;
@@ -203,7 +205,7 @@ function bootstrapCatalogExplorer() {
 
         if (results.length === 0) {
             resultsContainer.html(`
-                <div class="well text-center" style="background-color: #fff; border-style: dashed; padding: 40px 10px;">
+                <div class="well text-center classify-inline-b45d9b35">
                     <h4 class="text-muted"><i class="fas fa-search-minus"></i> {{ __('classification::texts.search_no_matches_found') }}</h4>
                     <p class="small text-muted">{{ __('classification::texts.search_verify_spelling_filters') }}</p>
                 </div>
@@ -211,7 +213,7 @@ function bootstrapCatalogExplorer() {
             return;
         }
 
-        let html = '<div class="list-group" style="margin-bottom: 0;" id="results-list-group">';
+        let html = '<div class="list-group classify-inline-648149ce" id="results-list-group">';
         let breadcrumbCache = {}; 
 
         results.forEach(function(node) {
@@ -226,19 +228,19 @@ function bootstrapCatalogExplorer() {
                 breadcrumbCache[node.hid] = parts.length > 2 ? parts.slice(0, -1).join(' > ') : 'Top Level';
             }
             
-            const breadcrumbHtml = `<div class="text-muted" style="font-size: 11px; margin-top: 4px;">${breadcrumbCache[node.hid]}</div>`;
+            const breadcrumbHtml = `<div class="text-muted classify-inline-f33e2bfa">${breadcrumbCache[node.hid]}</div>`;
             const levelBadge = getLevelBadge(node.level);
             const mappingStatus = node.has_mapping 
                 ? '<span class="text-success"><i class="fas fa-check-circle"></i> Mapped</span>' 
                 : '<span class="text-muted"><i class="far fa-circle"></i> Unmapped</span>';
 
             html += `
-                <a href="#" class="list-group-item catalog-result-item" data-code="${node.code}" style="border-left: 4px solid #d2d6de; margin-bottom: 6px; padding: 12px 15px; transition: background 0.1s;">
-                    <h4 class="list-group-item-heading" style="font-size: 15px; font-weight: bold; line-height: 1.4; margin-bottom: 6px;">
+                <a class="list-group-item catalog-result-item classify-inline-9974ea9b" href="#" data-code="${node.code}">
+                    <h4 class="list-group-item-heading classify-inline-ffebe43c">
                         ${highlightedTitle} ${levelBadge}
                     </h4>
-                    <p class="list-group-item-text text-muted" style="font-size: 12px; margin-bottom: 0;">
-                        Code: <code>${highlightedCode}</code> <span style="margin: 0 5px;">|</span> ${mappingStatus}
+                    <p class="list-group-item-text text-muted classify-inline-93833fd7">
+                        Code: <code>${highlightedCode}</code> <span class="classify-inline-446e6f7e">|</span> ${mappingStatus}
                     </p>
                     ${breadcrumbHtml}
                 </a>
@@ -252,8 +254,8 @@ function bootstrapCatalogExplorer() {
         $('.catalog-result-item').on('click', function(e) {
             e.preventDefault();
             
-            $('.catalog-result-item').css('border-left-color', '#d2d6de').removeClass('active kbd-focused').css('background-color', '');
-            $(this).css('border-left-color', '#3c8dbc').addClass('active');
+            $('.catalog-result-item').removeClass('active kbd-focused');
+            $(this).addClass('active');
 
             activeIndex = $(this).index(); // Sync keyboard navigation to clicked card
             const code = $(this).data('code');
@@ -264,12 +266,12 @@ function bootstrapCatalogExplorer() {
     // Load Right Detail Panel dynamically
     function loadWorkspaceDetails(code) {
         workspaceContainer.html(`
-            <div class="text-center" style="padding-top: 200px;">
-                <i class="fas fa-sync-alt fa-spin fa-4x text-blue" style="margin-bottom: 20px;"></i>
+            <div class="text-center classify-inline-4c4c0fab">
+                <i class="fas fa-sync-alt fa-spin fa-4x text-blue classify-inline-b75fad00"></i>
                 <h4>{{ __('classification::texts.search_retrieving_metadata') }}</h4>
             </div>
         `);
-        workspaceBox.css('border-left-color', '#3c8dbc');
+        workspaceBox.addClass('catalog-workspace-active');
 
         workspaceContainer.load('{{ route("gov.catalog.mapping") }}?code=' + code, function() {
             $.ajax({
@@ -284,14 +286,14 @@ function bootstrapCatalogExplorer() {
 
     // Render the mini "explorer" tree on the right panel
     function renderContextTree(ancestors, siblings, selectedCode) {
-        let html = '<ul class="list-unstyled" style="padding-left: 5px; font-size: 13.5px; line-height: 1.8;">';
+        let html = '<ul class="list-unstyled classify-inline-25f47a97">';
         
         // Render ancestor folders
         ancestors.forEach(function(ancestor, index) {
             if (ancestor.code === selectedCode) return;
             html += `
-                <li style="padding-left: ${index * 15}px; margin-bottom: 3px; color: #666;">
-                    <i class="far fa-folder-open text-yellow" style="margin-right: 6px;"></i> ${ancestor.title_en}
+                <li class="catalog-search-path-item" style="--catalog-indent: ${index * 15}px;">
+                    <i class="far fa-folder-open text-yellow classify-inline-a36b1709"></i> ${ancestor.title_en}
                 </li>
             `;
         });
@@ -301,8 +303,8 @@ function bootstrapCatalogExplorer() {
         // Render sibling nodes
         siblings.forEach(function(sibling) {
             html += `
-                <li style="padding-left: ${activeIndent}px; margin-bottom: 3px; color: #888;">
-                    <i class="far fa-file" style="margin-right: 6px;"></i> ${sibling.title_en}
+                <li class="catalog-search-path-item--active" style="--catalog-indent: ${activeIndent}px;">
+                    <i class="far fa-file classify-inline-a36b1709"></i> ${sibling.title_en}
                 </li>
             `;
         });
@@ -313,8 +315,8 @@ function bootstrapCatalogExplorer() {
         const selectedNode = ancestors.find(a => a.code === selectedCode);
         if (selectedNode) {
             const activeNodeHtml = `
-                <div style="background-color: #f0f7ff; padding: 6px 12px; border-left: 3px solid #3c8dbc; margin-left: ${activeIndent}px; margin-top: 5px; margin-bottom: 5px; border-radius: 0 4px 4px 0;">
-                    <strong class="text-blue"><i class="fas fa-file-alt" style="margin-right: 6px; color: #3c8dbc;"></i> ${selectedNode.title_en}</strong>
+                <div class="catalog-search-current-item" style="--catalog-indent: ${activeIndent}px;">
+                    <strong class="text-blue"><i class="fas fa-file-alt classify-inline-9df5a4e3"></i> ${selectedNode.title_en}</strong>
                 </div>
             `;
             html = html.replace('</ul>', activeNodeHtml + '</ul>');
@@ -328,7 +330,7 @@ function bootstrapCatalogExplorer() {
         if (!query) return text;
         const escapedQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'); // Sanitize regex inputs
         const regex = new RegExp(`(${escapedQuery})`, 'gi');
-        return text.replace(regex, '<mark style="background-color: #fcf8e3; padding: .1em .2em; border-radius: 2px;">$1</mark>');
+        return text.replace(regex, '<mark class="classify-inline-e5f83b82">$1</mark>');
     }
 
     // ==============================================
@@ -358,29 +360,29 @@ function bootstrapCatalogExplorer() {
             e.preventDefault();
             searchInput.val('').focus();
             resultsContainer.html(`
-                <div class="text-center text-muted" style="padding: 60px 20px;">
-                    <i class="fas fa-search fa-3x" style="margin-bottom: 15px; opacity: 0.5;"></i>
+                <div>
+                    <i class="fas fa-search fa-3x classify-inline-5f0ae864"></i>
                     <h4>Begin Typing to Search</h4>
                     <p class="small">Enter a classification title or official UNSPSC code to inspect.</p>
                 </div>
             `);
             workspaceContainer.html(`
-                <div class="text-center text-muted" style="padding-top: 200px;">
-                    <i class="fas fa-info-circle fa-4x" style="margin-bottom: 20px; opacity: 0.5;"></i>
+                <div class="text-center text-muted classify-inline-4c4c0fab">
+                    <i class="fas fa-info-circle fa-4x classify-inline-77b06690"></i>
                     <h3>No Item Selected</h3>
                     <p class="lead">Select a classification from the search results on the left to inspect its definitions, synonyms, and mapping status.</p>
                 </div>
             `);
-            workspaceBox.css('border-left-color', '#d2d6de');
+            workspaceBox.removeClass('catalog-workspace-active');
         }
     });
 
     function updateKeyboardSelection(items) {
-        items.removeClass('kbd-focused').css('background-color', '');
+        items.removeClass('kbd-focused');
         
         if (activeIndex >= 0) {
             const activeItem = items.eq(activeIndex);
-            activeItem.addClass('kbd-focused').css('background-color', '#f4f4f4');
+            activeItem.addClass('kbd-focused');
             
             // Auto-scroll the left panel to keep the keyboard selection visible
             const container = resultsContainer;
@@ -413,7 +415,7 @@ function bootstrapCatalogExplorer() {
 
         let html = '';
         recents.forEach(function(query) {
-            html += `<span class="label label-info recent-chip" style="cursor: pointer; margin-right: 5px; font-weight: normal; padding: 4px 8px; font-size: 11px;">${query}</span>`;
+            html += `<span class="label label-info recent-chip classify-inline-35b0ce68">${query}</span>`;
         });
 
         $('#recent-searches-chips').html(html);
@@ -428,10 +430,10 @@ function bootstrapCatalogExplorer() {
 
     function getLevelBadge(level) {
         switch(parseInt(level)) {
-            case 1: return '<span class="label label-default pull-right" style="font-size: 10px; font-weight: normal; padding: 3px 6px;">Segment</span>';
-            case 2: return '<span class="label label-default pull-right" style="font-size: 10px; font-weight: normal; padding: 3px 6px;">Family</span>';
-            case 3: return '<span class="label label-default pull-right" style="font-size: 10px; font-weight: normal; padding: 3px 6px;">Class</span>';
-            case 4: return '<span class="label label-primary pull-right" style="font-size: 10px; font-weight: normal; padding: 3px 6px;">Commodity</span>';
+            case 1: return '<span class="label label-default pull-right classify-inline-3100222b">Segment</span>';
+            case 2: return '<span class="label label-default pull-right classify-inline-3100222b">Family</span>';
+            case 3: return '<span class="label label-default pull-right classify-inline-3100222b">Class</span>';
+            case 4: return '<span class="label label-primary pull-right classify-inline-3100222b">Commodity</span>';
             default: return '';
         }
     }

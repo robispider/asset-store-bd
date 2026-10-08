@@ -3,6 +3,7 @@
 @section('title', __('storeops::storeops.stock_card_title', ['name' => $item->name]))
 
 @section('content')
+<div class="storeops-theme">
 <div class="row">
     <div class="col-md-12">
         <div class="box box-default">
@@ -11,23 +12,23 @@
                     <i class="fa fa-book"></i> {{ __('storeops::storeops.immutable_stock_register') }}
                 </h3>
                 <div class="box-tools pull-right">
-                    <span class="label label-primary" style="font-size: 14px;">
+                    <span class="label label-primary storeops-inline-231" >
                         {{ __('storeops::storeops.current_snipeit_projection') }} {{ $item->qty }}
                     </span>
                 </div>
             </div>
             <div class="box-body">
                 <h4>{{ __('storeops::storeops.item_label') }} <strong>{{ $item->name }}</strong></h4>
-                
-                <table class="table table-striped table-bordered" style="margin-top: 20px;">
+
+                <table class="table table-striped table-bordered storeops-inline-230 gs-table" >
                     <thead>
-                        <tr style="background-color: #f4f4f4;">
+                        <tr  class="storeops-inline-229">
                             <th>Date & Time</th>
                             <th>Reference Document</th>
                             <th>Operator</th>
                             <th class="text-center text-success">IN (+)</th>
                             <th class="text-center text-danger">OUT (-)</th>
-                            <th class="text-center" style="background-color: #e8e8e8;">Running Balance</th>
+                            <th class="text-center storeops-inline-228" >Running Balance</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -43,14 +44,14 @@
                                     @endif
                                 </td>
                                 <td>{{ $movement->creator->first_name ?? __('storeops::storeops.system_initialization') }}</td>
-                                
+
                                 <td class="text-center text-success">
                                     {{ $movement->movement_type === 'IN' ? $movement->quantity : '-' }}
                                 </td>
                                 <td class="text-center text-danger">
                                     {{ $movement->movement_type === 'OUT' ? $movement->quantity : '-' }}
                                 </td>
-                                <td class="text-center" style="font-weight: bold; background-color: #f9f9f9;">
+                                <td class="text-center storeops-inline-227" >
                                     {{ $movement->running_balance }}
                                 </td>
                             </tr>
@@ -64,5 +65,6 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

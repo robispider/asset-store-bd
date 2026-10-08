@@ -20,7 +20,7 @@
             </div>
             <div class="form-group">
                 <label for="lifecycle-geo">{{ __('organization_labels::orglabel.lifecycle_new_geo') }}</label>
-                <select class="form-control" id="lifecycle-geo" name="geo_area_id" style="width:100%"></select>
+                <select class="form-control org-inline-0466783d" id="lifecycle-geo" name="geo_area_id"></select>
                 <p class="help-block">{{ __('organization_labels::orglabel.lifecycle_geo_help') }}</p>
             </div>
             <div class="form-group">

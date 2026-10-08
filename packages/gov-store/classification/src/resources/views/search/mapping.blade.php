@@ -1,15 +1,15 @@
-﻿<div class="detail-sheet" style="position: relative; overflow: hidden; min-height: 600px;">
+﻿<div class="detail-sheet classify-inline-514f7b08">
     
     <!-- Main Node Details Workspace -->
     <div id="details-main-content">
         <!-- Header -->
-        <div style="border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
-            <span class="label label-primary" style="font-size: 11px;">{{ __('classification::texts.mapping_detail_level_classification', ['level' => $node->level]) }}</span>
-            <h2 style="margin-top: 10px; margin-bottom: 5px; font-weight: bold; color: #333;">
+        <div class="classify-inline-cc1a0abe">
+            <span class="label label-primary classify-inline-e9e0e4af">{{ __('classification::texts.mapping_detail_level_classification', ['level' => $node->level]) }}</span>
+            <h2 class="classify-inline-3ebe1a72">
                 {{ $node->title_en }}
             </h2>
-            <p class="text-muted" style="font-size: 14px; margin-bottom: 0;">
-                {{ __('classification::texts.mapping_detail_official_code') }} <code style="font-size: 14px;">{{ $node->code }}</code>
+            <p class="text-muted classify-inline-d3e2f5c3">
+                {{ __('classification::texts.mapping_detail_official_code') }} <code class="classify-inline-df67104f">{{ $node->code }}</code>
             </p>
         </div>
 
@@ -18,9 +18,9 @@
             <div class="col-md-7">
                 <!-- Definition Block -->
                 @if($node->definition && $node->definition->definition_en)
-                    <div class="well bg-white" style="background-color: #fff; border-left: 3px solid #00c0ef; margin-bottom: 25px;">
-                        <h4 style="margin-top: 0; font-weight: bold; color: #00c0ef;"><i class="fas fa-info-circle"></i> {{ __('classification::texts.mapping_detail_official_definition') }}</h4>
-                        <p style="font-size: 13.5px; line-height: 1.6; color: #555; margin-bottom: 0;">
+                    <div class="well bg-white classify-inline-55a2e054">
+                        <h4 class="classify-inline-2b3bd00f"><i class="fas fa-info-circle"></i> {{ __('classification::texts.mapping_detail_official_definition') }}</h4>
+                        <p class="classify-inline-7525f7bb">
                             {{ $node->definition->definition_en }}
                         </p>
                     </div>
@@ -28,11 +28,11 @@
 
                 <!-- Synonym List -->
                 @if($node->synonyms->count() > 0)
-                    <div style="margin-bottom: 25px;">
-                        <h4 style="font-weight: bold; color: #333;"><i class="fas fa-tags"></i> {{ __('classification::texts.mapping_detail_recognized_synonyms') }}</h4>
-                        <div style="margin-top: 10px;">
+                    <div class="classify-inline-39ffb623">
+                        <h4 class="classify-inline-13330f66"><i class="fas fa-tags"></i> {{ __('classification::texts.mapping_detail_recognized_synonyms') }}</h4>
+                        <div class="classify-inline-54d32d80">
                             @foreach($node->synonyms as $synonym)
-                                <span class="badge bg-gray" style="font-size: 12px; font-weight: normal; margin-right: 5px; margin-bottom: 5px; padding: 5px 10px; color: #444;">
+                                <span class="badge bg-gray classify-inline-c8a482f8">
                                     {{ $synonym->synonym }}
                                 </span>
                             @endforeach
@@ -43,12 +43,12 @@
 
             <div class="col-md-5">
                 <!-- Contextual Hierarchy Panel -->
-                <div id="context-hierarchy-panel" style="background: #f9fafb; padding: 15px; border-radius: 4px; border: 1px solid #eee; min-height: 200px;">
-                    <h4 style="margin-top: 0; font-weight: bold; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 10px;">
+                <div id="context-hierarchy-panel" class="classify-inline-936da7ee">
+                    <h4 class="classify-inline-e8aeb6f8">
                         <i class="fas fa-sitemap"></i> {{ __('classification::texts.mapping_detail_contextual_hierarchy') }}
                     </h4>
                     <div id="context-hierarchy-tree">
-                        <div class="text-center" style="padding: 20px 0;">
+                        <div class="text-center classify-inline-3c9ee7ce">
                             <i class="fas fa-spinner fa-spin text-muted"></i>
                         </div>
                     </div>
@@ -63,24 +63,24 @@
     <!-- ==============================================
          INLINE SLIDING MAPPING DRAWER
          ============================================== -->
-    <div id="mapping-drawer" style="position: absolute; right: -105%; top: 0; width: 100%; height: 100%; background: #ffffff; padding: 25px 20px; box-shadow: -10px 0 25px rgba(0,0,0,0.08); transition: right 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 100; border-radius: 4px; border-left: 1px solid #eee;">
+    <div id="mapping-drawer" class="classify-inline-866b743e">
         
-        <h3 style="margin-top: 0; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 25px;">
+        <h3 class="classify-inline-aff159b4">
             <i class="fas fa-link text-blue"></i> {{ __('classification::texts.mapping_drawer_title') }}
         </h3>
 
         <!-- Manual Autocomplete Form -->
         <form id="mapping-submission-form">
-            <div class="form-group" style="margin-bottom: 25px;">
-                <label style="font-size: 14px; margin-bottom: 8px;">{{ __('classification::texts.mapping_drawer_search_label') }}</label>
+            <div class="form-group classify-inline-39ffb623">
+                <label class="classify-inline-44fc5a60">{{ __('classification::texts.mapping_drawer_search_label') }}</label>
                 <!-- Standard Snipe-IT Select2 container -->
-                <select id="snipe-category-select" class="form-control input-lg" style="width: 100%;" required>
+                <select class="form-control input-lg classify-inline-69d66e5b" id="snipe-category-select" required>
                     <option value="">{{ __('classification::texts.mapping_drawer_select_placeholder') }}</option>
                 </select>
             </div>
 
-            <div style="border-top: 1px solid #eee; padding-top: 20px; margin-top: 40px;" class="text-right">
-                <button type="button" class="btn btn-default btn-lg" id="btn-close-drawer" style="margin-right: 10px;">{{ __('classification::texts.mapping_drawer_btn_cancel') }}</button>
+            <div class="classify-inline-9155d9bd text-right">
+                <button class="btn btn-default btn-lg classify-inline-31f575be" type="button" id="btn-close-drawer">{{ __('classification::texts.mapping_drawer_btn_cancel') }}</button>
                 <button type="submit" class="btn btn-primary btn-lg" id="btn-save-mapping">{{ __('classification::texts.mapping_drawer_btn_save') }}</button>
             </div>
         </form>

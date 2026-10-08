@@ -8,6 +8,7 @@ use GovStore\Organization\Models\LocationProfile;
 use GovStore\Organization\Models\IctJurisdiction;
 use GovStore\Organization\Observers\IctJurisdictionObserver;
 use GovStore\TenantScope\Navigation\MenuRegistry;
+use GovStore\Theming\Facades\GsTheme;
 
 use GovStore\Organization\Models\CompanyAdmin;
 use GovStore\Organization\Observers\CompanyAdminObserver;
@@ -21,6 +22,10 @@ class OrganizationServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'govorg');
+
+        if ($this->app->bound('gs.theme')) {
+            GsTheme::assets()->css('organization', __DIR__.'/../resources/css/organization.css');
+        }
 
         
 

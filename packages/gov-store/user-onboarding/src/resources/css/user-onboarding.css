@@ -1,0 +1,31 @@
+/* User Onboarding surfaces follow the shared GovStore semantic palette. */
+.govonboard-theme .box,
+.govonboard-theme .panel {
+    color: var(--gs-color-text) !important;
+    background-color: var(--gs-color-surface) !important;
+    border-color: var(--gs-color-border) !important;
+}
+.govonboard-theme .box-header,
+.govonboard-theme .box-footer,
+.govonboard-theme .panel-heading {
+    color: var(--gs-color-text) !important;
+    background-color: var(--gs-color-surface-sunken) !important;
+    border-color: var(--gs-color-border) !important;
+}
+.govonboard-theme .text-muted { color: var(--gs-color-text-muted) !important; }
+.govonboard-theme .text-success { color: var(--gs-color-success) !important; }
+.govonboard-theme .text-warning { color: var(--gs-color-warning) !important; }
+.govonboard-theme .text-danger { color: var(--gs-color-danger) !important; }
+.govonboard-theme .btn-primary { color: var(--gs-color-on-primary) !important; background: var(--gs-color-primary) !important; border-color: var(--gs-color-primary) !important; }
+.govonboard-theme .btn-success { color: var(--gs-color-on-success) !important; background: var(--gs-color-success) !important; border-color: var(--gs-color-success) !important; }
+.govonboard-theme .btn-warning { color: var(--gs-color-on-warning) !important; background: var(--gs-color-warning) !important; border-color: var(--gs-color-warning) !important; }
+.govonboard-theme .btn-danger { color: var(--gs-color-on-danger) !important; background: var(--gs-color-danger) !important; border-color: var(--gs-color-danger) !important; }
+.govonboard-theme .table,
+.govonboard-theme .table > tbody > tr > td,
+.govonboard-theme .table > thead > tr > th {
+    color: var(--gs-color-text) !important;
+    border-color: var(--gs-table-border) !important;
+}
+.govonboard-theme .table > thead > tr > th { background: var(--gs-table-head-bg) !important; color: var(--gs-table-head-fg) !important; }
+.govonboard-theme .table-striped > tbody > tr:nth-of-type(odd) > td { background: var(--gs-table-row-alt) !important; }
+.govonboard-theme .table-hover > tbody > tr:hover > td { background: var(--gs-table-row-hover) !important; }

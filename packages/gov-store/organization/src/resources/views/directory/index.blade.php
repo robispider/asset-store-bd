@@ -3,6 +3,7 @@
 @section('title', __('organization_labels::orglabel.directory_title'))
 
 @section('content')
+<div class="govorg-theme">
 <div class="row">
     <!-- LEFT: Ingestion Console -->
     <div class="col-md-5">
@@ -27,7 +28,7 @@
                         </div>
                     @endif
 
-                    <div class="well" style="background-color: #fcfcfc;">
+                    <div class="well org-inline-1f5081db">
                         <h4>{{ __('organization_labels::orglabel.directory_option_bundled_title') }}</h4>
                         <p class="small text-muted">{{ __('organization_labels::orglabel.directory_option_bundled_desc') }}</p>
                         <button type="submit" class="btn btn-default btn-block"><i class="fa fa-play"></i> {{ __('organization_labels::orglabel.directory_option_bundled_button') }}</button>
@@ -45,15 +46,15 @@
             <div class="box-header with-border">
                 <h3 class="box-title"><i class="fa fa-database"></i> {{ __('organization_labels::orglabel.directory_status_title') }}</h3>
                 <div class="box-tools pull-right">
-                    <span class="label label-info" style="font-size: 13px;">{{ __('organization_labels::orglabel.directory_total_registered') }}{{ $totalRecords }}</span>
+                    <span class="label label-info org-inline-d75cbef7">{{ __('organization_labels::orglabel.directory_total_registered') }}{{ $totalRecords }}</span>
                 </div>
             </div>
             <div class="box-body table-responsive">
                 <h4>{{ __('organization_labels::orglabel.directory_preview_title') }}</h4>
-                <table class="table table-striped table-bordered" style="margin-top: 15px;">
+                <x-gs::table class="table table-striped table-bordered org-inline-e3bba13d">
                     <thead>
-                        <tr style="background-color: #f9f9f9;">
-                            <th style="width: 50px;">{{ __('organization_labels::orglabel.directory_col_id') }}</th>
+                        <tr class="org-inline-1f5081db">
+                            <th class="org-inline-13c1870b">{{ __('organization_labels::orglabel.directory_col_id') }}</th>
                             <th>{{ __('organization_labels::orglabel.directory_col_en_name') }}</th>
                             <th>{{ __('organization_labels::orglabel.directory_col_bn_name') }}</th>
                             <th>{{ __('organization_labels::orglabel.directory_col_type') }}</th>
@@ -73,9 +74,10 @@
                             </tr>
                         @endforelse
                     </tbody>
-                </table>
+                </x-gs::table>
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

@@ -4,6 +4,7 @@ namespace GovStore\UserOnboarding\Providers;
 
 use App\Models\User;
 use GovStore\TenantScope\Navigation\MenuRegistry;
+use GovStore\Theming\Facades\GsTheme;
 use GovStore\UserOnboarding\Observers\SnipeUserOnboardingObserver;
 use Illuminate\Support\ServiceProvider;
 
@@ -20,6 +21,10 @@ class UserOnboardingServiceProvider extends ServiceProvider
         // Load package views
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'govonboard');
 
+        if ($this->app->bound('gs.theme')) {
+            GsTheme::assets()->css('user-onboarding', __DIR__.'/../resources/css/user-onboarding.css');
+        }
+
         // Register the Observer to intercept core User creations
         User::observe(SnipeUserOnboardingObserver::class);
 
@@ -31,7 +36,7 @@ class UserOnboardingServiceProvider extends ServiceProvider
                 'id' => 'gov-onboard-queue',
                 'parent' => 'gov-org', // Placed under the Office Provisioning parent directory
                 'title' => 'govonboard::onboard.title',
-                'icon' => 'fas fa-user-plus text-red',
+                'icon' => 'fas fa-user-plus',
                 'route' => 'gov.onboard.index',
                 'permission' => 'onboarding.manage',
                 'order' => 35,

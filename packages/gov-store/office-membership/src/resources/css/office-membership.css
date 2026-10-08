@@ -1,0 +1,148 @@
+/* Office Membership package styles use the shared GovStore theme tokens. */
+.office-membership-theme .onboarding-box { border-radius: var(--gs-radius-md); box-shadow: var(--gs-shadow-1); border: 1px solid var(--gs-color-border); background: var(--gs-color-surface); }
+.office-membership-theme .form-section-header { font-size: 15px; font-weight: bold; color: var(--gs-color-primary); border-bottom: 2px solid var(--gs-color-border); padding-bottom: 8px; margin-top: 30px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+.office-membership-theme .form-section-header:first-of-type { margin-top: 10px; }
+.office-membership-theme .filter-bar { background: var(--gs-color-surface); border: 1px solid var(--gs-color-border); border-radius: var(--gs-radius-sm); padding: 15px; margin-bottom: 20px; box-shadow: var(--gs-shadow-1); }
+.office-membership-theme .registry-table td { vertical-align: middle !important; }
+.office-membership-theme .status-badge-container { line-height: 1.4; }
+.office-membership-theme .om-inline-aedab6f0 { width: 120px; }
+.office-membership-theme .om-accent-success { border-top: 3px solid var(--gs-color-success); }
+.office-membership-theme .om-accent-primary { border-top: 3px solid var(--gs-color-primary); }
+.office-membership-theme .om-accent-warning { border-top: 3px solid var(--gs-color-warning); }
+.office-membership-theme .om-accent-neutral { border-top: 3px solid var(--gs-color-border-strong); }
+.office-membership-theme .om-accent-danger { border-top: 3px solid var(--gs-color-danger); }
+.office-membership-theme table.gs-table { color: var(--gs-color-text); border-color: var(--gs-table-border); }
+
+.om-inline-ca3519f9 { border-top: 3px solid var(--gs-color-danger); }
+
+.om-inline-8147ff4b { width:100%; }
+
+.om-inline-c6345704 { padding: 10px 15px; border-bottom: 1px solid var(--gs-color-border); display: flex; justify-content: space-between; }
+
+.om-inline-51676ca7 { display: flex; gap: 5px; }
+
+.om-inline-a55a8c40 { font-size: 12px; }
+
+.om-inline-2ad9dde7 { text-transform: uppercase; }
+
+.om-inline-3801632f { background: var(--gs-color-surface-sunken); border: 1px dashed var(--gs-color-border-strong); padding: 10px; margin-bottom: 10px; }
+
+.om-inline-b654cc01 { font-size: 24px; font-weight: bold; letter-spacing: 3px; }
+
+.om-inline-0346f018 { font-size: 10px; }
+
+.om-inline-92a5d53a { font-size:12px; }
+
+.om-inline-442a70a1 { width: 100%; }
+
+.om-inline-3591cfd6 { padding: 3px 20px; }
+
+.om-inline-c2cf9d67 { padding: 15px 0; }
+
+.om-inline-ed0f0aa0 { padding: 30px; }
+
+.om-inline-92a5d53a { font-size:12px; }
+
+.om-inline-442a70a1 { width: 100%; }
+
+.om-inline-00abe7ff { margin-right: 15px; }
+
+.om-inline-ae731390 { margin-right: 5px; }
+
+.om-inline-4c3ea102 { min-width: 180px; }
+
+.om-inline-3cdfe113 { font-weight: bold; }
+
+.om-inline-1ac8bcc9 { display:block; margin-top: 3px; }
+
+.om-inline-ea7b6b7b { padding: 40px; }
+
+.om-inline-3225db96 { margin-top: 10px; }
+
+.om-inline-670de20b { border-top: 3px solid var(--gs-color-primary); }
+
+.om-inline-baa07011 { padding: 15px 20px; }
+
+.om-inline-7a0ebc26 { font-weight: bold; font-size: 16px; }
+
+.om-inline-b9c79929 { padding: 20px 25px; }
+
+.om-inline-19f5c02e { margin-bottom: 20px; }
+
+.om-inline-442a70a1 { width: 100%; }
+
+.om-inline-f5897d74 { margin-top: 25px; }
+
+.om-inline-67ef8815 { margin-top: 35px; }
+
+.om-inline-81063683 { padding: 15px 25px; background-color: var(--gs-color-surface-sunken); border-top: 1px solid var(--gs-color-bg); }
+
+.om-inline-b28ac730 { padding: 8px 15px; }
+
+.om-inline-4140e91d { padding: 8px 25px; font-weight: bold; }
+
+.om-inline-80472c54 { border-top: 3px solid var(--gs-color-border); }
+
+.om-inline-0fcefbc5 { font-weight: bold; font-size: 15px; }
+
+.om-inline-ca9b09af { padding: 20px 25px; font-size: 13px; line-height: 1.6; color: var(--gs-color-text-muted); }
+
+.om-inline-5a2f1a27 { width: 150px; }
+
+.om-inline-092f0f30 { vertical-align: middle; }
+
+.om-inline-7fdeb8b8 { margin-bottom: 0; font-size: 12px; line-height: 1.6; }
+
+.om-inline-3119a226 { margin-left: 15px; }
+
+.om-inline-ed0f0aa0 { padding: 30px; }
+
+.om-inline-709ea946 { border-top: 3px solid var(--gs-color-success); }
+
+.om-inline-6fe3c4ac { padding: 20px; }
+
+.om-inline-eca5fde5 { font-size: 13px; margin-bottom: 15px; }
+
+.om-inline-20b7438c { background: var(--gs-color-surface-sunken); border: 1px dashed var(--gs-color-border-strong); padding: 15px; border-radius: 6px; margin-bottom: 15px; }
+
+.om-inline-d18dd8b8 { font-size: 12px; color: var(--gs-color-text-muted); display: block; text-transform: uppercase; }
+
+.om-inline-63a3af60 { font-size: 32px; font-weight: bold; letter-spacing: 5px; color: var(--gs-color-text); }
+
+.om-inline-5e98ec0d { display: block; font-size: 11px; color: var(--gs-color-danger); margin-top: 5px; }
+
+.om-inline-3312350a { background: var(--gs-color-surface-sunken); border: 1px solid var(--gs-color-border); padding: 15px; border-radius: 6px; margin-bottom: 15px; }
+
+.om-inline-c7560035 { font-size: 14px; color: var(--gs-color-text-muted); }
+
+.om-inline-39a594e2 { border-top: 3px solid var(--gs-color-primary); }
+
+.om-inline-b9a57387 { font-size: 16px; letter-spacing: 2px; text-transform: uppercase; }
+
+.om-inline-ce5e73b6 { border-top: 3px solid var(--gs-color-warning); }
+
+.om-inline-f76a3cae { padding: 12px; border: 1px solid var(--gs-color-warning-subtle); background: var(--gs-color-warning-subtle); border-radius: 4px; margin-bottom: 12px; }
+
+.om-inline-19b327ae { font-size: 11px; }
+
+.om-inline-03804ad7 { margin-top: 15px; display: flex; gap: 10px; }
+
+.om-inline-7bf38354 { flex: 1; }
+
+.om-inline-80472c54 { border-top: 3px solid var(--gs-color-border); }
+
+.om-inline-d75cbef7 { font-size: 13px; }
+
+.om-inline-494240c8 { font-weight: bold; margin-top: 15px; border-bottom: 1px solid var(--gs-color-border); padding-bottom: 6px; }
+
+.om-inline-b198ccc8 { vertical-align: middle; text-align: right; }
+
+.om-inline-cba5f610 { font-size: 12px; margin-right: 10px; }
+
+.om-inline-f8bef7f8 { display:inline; }
+
+.om-inline-921a2ecf { padding: 15px; font-size: 13px; }
+
+.om-inline-442a70a1 { width: 100%; }
+
+

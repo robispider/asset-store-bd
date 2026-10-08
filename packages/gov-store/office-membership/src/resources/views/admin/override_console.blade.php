@@ -1,9 +1,10 @@
 @extends('layouts/default')
 @section('title', __('office_membership::member.override_console_title'))
 @section('content')
+<div class="office-membership-theme">
 <div class="row">
     <div class="col-md-5">
-        <div class="box box-danger" style="border-top: 3px solid #c0392b;">
+        <div class="box box-danger om-inline-ca3519f9">
             <div class="box-header with-border">
                 <h3 class="box-title"><i class="fas fa-exclamation-triangle text-danger"></i> {{ __('office_membership::member.override_execute_label') }}</h3>
             </div>
@@ -12,7 +13,7 @@
                 <div class="box-body">
                     <div class="form-group">
                         <label>{{ __('office_membership::member.override_target_label') }}</label>
-                        <select name="user_id" class="form-control select2" required style="width:100%;">
+                        <select class="form-control select2 om-inline-8147ff4b" name="user_id" required>
                             <option value="">{{ __('office_membership::member.override_target_placeholder') }}</option>
                             @foreach($allUsers as $u)
                                 <option value="{{ $u->id }}">{{ $u->display_name ?? trim($u->first_name . ' ' . $u->last_name) ?: __('office_membership::member.unknown') }} ({{ $u->username }})</option>
@@ -46,7 +47,7 @@
                 <h3 class="box-title"><i class="fas fa-shield-alt"></i> {{ __('office_membership::member.override_audit_title') }}</h3>
             </div>
             <div class="box-body table-responsive">
-                <table class="table table-striped">
+                <x-gs::table class="table table-striped">
                     <thead><tr><th>{{ __('office_membership::member.override_audit_date') }}</th><th>{{ __('office_membership::member.override_audit_executor') }}</th><th>{{ __('office_membership::member.override_audit_target') }}</th><th>{{ __('office_membership::member.override_audit_action') }}</th><th>{{ __('office_membership::member.override_audit_justification') }}</th></tr></thead>
                     <tbody>
                         @forelse($logs as $log)
@@ -63,9 +64,10 @@
                             <tr><td colspan="5" class="text-center text-muted">{{ __('office_membership::member.override_audit_no_entries') }}</td></tr>
                         @endforelse
                     </tbody>
-                </table>
+                </x-gs::table>
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

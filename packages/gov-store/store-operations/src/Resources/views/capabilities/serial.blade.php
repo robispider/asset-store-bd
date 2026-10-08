@@ -4,34 +4,34 @@
     $metadata = $item ? $item->metadata->groupBy('row_index') : collect();
 @endphp
 
-<div style="margin-top: 15px; margin-bottom: 20px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 20px;">
-    <h4 style="margin-top: 0; color: #1e293b; font-weight: bold; font-size: 15px;">
-        <i class="fa fa-barcode text-blue"></i> {{ __('storeops::storeops.serial_required') }}
+<div  class="storeops-inline-148">
+    <h4  class="storeops-inline-147">
+        <i class="fa fa-barcode"></i> {{ __('storeops::storeops.serial_required') }}
     </h4>
-    <p class="text-muted" style="font-size: 12.5px; margin-bottom: 15px;">
+    <p class="text-muted storeops-inline-146" >
         {{ __('storeops::storeops.serial_help') }}
     </p>
-    
-    <div style="display: flex; flex-direction: column; gap: 10px;">
+
+    <div  class="storeops-inline-145">
         @for($i = 0; $i < $qty; $i++)
             @php
                 $existingSerial = $metadata->has($i) ? $metadata->get($i)->where('field_key', 'serial_number')->first() : null;
                 $val = $existingSerial ? $existingSerial->value : '';
             @endphp
-            <div style="display: flex; align-items: center; gap: 15px; background: #fff; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px;">
-                <div style="flex: 0 0 80px; font-weight: bold; color: #475569; font-size: 12px; text-transform: uppercase; background: #f1f5f9; padding: 6px; border-radius: 4px; text-align: center;">
+            <div  class="storeops-inline-144">
+                <div  class="storeops-inline-143">
                     {{ __('storeops::storeops.unit_number', ['number' => $i + 1]) }}
                 </div>
-                <div style="flex: 1; position: relative;">
-                    <input type="text" 
-                           name="items[{{ $index }}][meta][{{ $i }}][serial_number]" 
-                           class="form-control" 
+                <div  class="storeops-inline-142">
+                    <input type="text"
+                           name="items[{{ $index }}][meta][{{ $i }}][serial_number]"
+                           class="form-control storeops-inline-141"
                            aria-label="{{ __('storeops::storeops.unit_number', ['number' => $i + 1]) }} — {{ __('storeops::storeops.serial_required') }}"
                            placeholder="{{ __('storeops::storeops.serial_placeholder') }}"
-                           value="{{ $val }}" 
-                           required 
-                           style="height: 36px; border-radius: 4px; padding-left: 30px; border: 1px solid #cbd5e1;">
-                    <i class="fa fa-barcode" style="position: absolute; left: 10px; top: 11px; color: #94a3b8;"></i>
+                           value="{{ $val }}"
+                           required
+                           >
+                    <i class="fa fa-barcode storeops-inline-140" ></i>
                 </div>
             </div>
         @endfor

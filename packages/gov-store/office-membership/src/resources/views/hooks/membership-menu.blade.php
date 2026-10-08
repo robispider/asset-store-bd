@@ -12,13 +12,13 @@
 <li><a href="{{ route('gov.membership.index') }}"><i class="fas fa-id-badge fa-fw" aria-hidden="true"></i> {{ __('office_membership::member.menu_my_memberships') }}</a></li>
 <li class="dropdown-header">{{ __('office_membership::member.menu_choose_context') }}</li>
 @if($memberUser->isSuperUser())
-<li><form action="{{ route('gov.membership.switch') }}" method="POST" style="padding: 3px 20px">@csrf
+<li><form action="{{ route('gov.membership.switch') }}" method="POST" class="om-inline-3591cfd6">@csrf
     <input type="hidden" name="location_id" value="0">
     <button class="btn btn-link" type="submit">{{ __('office_membership::member.menu_global_overview') }}</button>
 </form></li>
 @endif
 @foreach($menuLocations as $menuOffice)
-<li><form action="{{ route('gov.membership.switch') }}" method="POST" style="padding: 3px 20px">@csrf
+<li><form action="{{ route('gov.membership.switch') }}" method="POST" class="om-inline-3591cfd6">@csrf
     @if($memberUser->isSuperUser())
     <input type="hidden" name="location_id" value="{{ $menuOffice->id }}">
     @else

@@ -2,8 +2,9 @@
 @section('title', __('storeops::storeops.workspace') . ' - ' . $document->getDocumentNumber())
 
 @section('content')
+<div class="storeops-theme">
 <link rel="stylesheet" href="{{ url('css/dist/store-operations.css') }}">
-@php 
+@php
     $isDraft = $document->getStatus() === 'DRAFT' && app(\GovStore\TenantScope\Services\GovAccess::class)->permitsRequest(auth()->user(), 'storeops.documents.draft');
     $isReadOnly = !$isDraft;
     $isPosted = $document->getStatus() === 'POSTED';
@@ -23,10 +24,10 @@
     <form id="workspaceForm" action="{{ route('storeops.documents.post', ['type' => $type, 'id' => $document->id]) }}" method="POST">
         @csrf
         <input type="hidden" name="document_type" value="{{ $document->getDocumentType() }}">
-        
+
         <!-- LEFT COLUMN: The Working Area -->
         <div class="col-md-8">
-            
+
             <!-- SECTION 1: Administrative Details & References -->
             <!-- SECTION 1: Administrative Details & References -->
             <div class="box box-solid">
@@ -34,7 +35,7 @@
                     <h3 class="box-title">{{ __('storeops::storeops.administrative_details') }}</h3>
                 </div>
                 <div class="box-body">
-                    
+
                     @if($document->type === 'transfer')
                     <div class="form-group">
                         <label for="destination_location_id">{{ __('storeops::storeops.destination_office') }}</label>
@@ -55,7 +56,7 @@
                         <p class="help-block">{{ __('storeops::storeops.transfer_save_help') }}</p>
                     </div>
                     @elseif($document->type === 'adjustment')
-                    <div class="row" style="margin-bottom: 15px;">
+                    <div class="row storeops-inline-223" >
                         <div class="col-md-6 form-group">
                             <label>{{ __('storeops::storeops.reason') }}</label>
                             <select name="adjustment_reason" class="form-control" {{ $isReadOnly ? 'disabled' : '' }}>
@@ -75,7 +76,7 @@
                         </div>
                     </div>
                     @elseif($document->type === 'issue')
-                    <div class="row" style="margin-bottom: 15px;">
+                    <div class="row storeops-inline-222" >
                         <div class="col-md-6 form-group">
                             <label>{{ __('storeops::storeops.issue_member') }}</label>
                             <select name="issued_to_user_id" class="form-control" {{ $isReadOnly ? 'disabled' : '' }}>
@@ -91,10 +92,10 @@
                         </div>
                     </div>
                     @else
-                    <div class="row" style="margin-bottom: 15px;">
+                    <div class="row storeops-inline-221" >
                         <div class="col-md-12 form-group">
-                            <label style="color: #475569;">{{ __('storeops::storeops.receiving_source') }}</label>
-                            <select name="purchase_type" class="form-control" {{ $isReadOnly ? 'disabled' : '' }} style="border: 1px solid #cbd5e1; max-width: 300px;">
+                            <label  class="storeops-inline-220">{{ __('storeops::storeops.receiving_source') }}</label>
+                            <select name="purchase_type" class="form-control storeops-inline-219" {{ $isReadOnly ? 'disabled' : '' }} >
                                 <option value="Purchase" {{ $document->purchase_type == 'Purchase' ? 'selected' : '' }}>{{ __('storeops::storeops.standard_purchase') }}</option>
                                 <option value="Transfer" {{ $document->purchase_type == 'Transfer' ? 'selected' : '' }}>{{ __('storeops::storeops.office_transfer') }}</option>
                                 <option value="Donation" {{ $document->purchase_type == 'Donation' ? 'selected' : '' }}>{{ __('storeops::storeops.donation') }}</option>
@@ -129,28 +130,28 @@
                     <div class="row">
                         <!-- 1. Supplier Challan -->
                         <div class="col-md-6">
-                            <div class="form-group" style="background: #f8fafc; padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px;">
-                                <label style="color: #0f172a; font-size: 13px;"><i class="fa fa-truck text-blue" style="margin-right: 5px;"></i> {{ __('storeops::storeops.supplier_challan') }}</label>
-                                <div style="display: flex; gap: 10px; margin-top: 5px;">
+                            <div class="form-group storeops-inline-218" >
+                                <label  class="storeops-inline-217"><i class="fa fa-truck text-blue storeops-inline-216" ></i> {{ __('storeops::storeops.supplier_challan') }}</label>
+                                <div  class="storeops-inline-215">
                                     <input type="hidden" name="references[0][reference_type]" value="Supplier Challan">
                                     <input type="text" name="references[0][reference_number]" class="form-control input-sm" placeholder="{{ __('storeops::storeops.challan_number') }}" value="{{ $challan->reference_number ?? '' }}" {{ $isReadOnly ? 'readonly' : '' }}>
-                                    
+
                                     <!-- FIXED: Changed 'readonly' to 'disabled' to prevent calendar updates on posted documents -->
-                                    <input type="date" name="references[0][reference_date]" class="form-control input-sm" style="max-width: 140px;" value="{{ $challan->reference_date ?? '' }}" {{ $isReadOnly ? 'disabled' : '' }} title="{{ __('storeops::storeops.optional_date') }}">
+                                    <input type="date" name="references[0][reference_date]" class="form-control input-sm storeops-inline-214"  value="{{ $challan->reference_date ?? '' }}" {{ $isReadOnly ? 'disabled' : '' }} title="{{ __('storeops::storeops.optional_date') }}">
                                 </div>
                             </div>
                         </div>
 
                         <!-- 2. Purchase Order / Tender -->
                         <div class="col-md-6">
-                            <div class="form-group" style="background: #f8fafc; padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px;">
-                                <label style="color: #0f172a; font-size: 13px;"><i class="fa fa-file-text-o text-purple" style="margin-right: 5px;"></i> {{ __('storeops::storeops.purchase_order') }}</label>
-                                <div style="display: flex; gap: 10px; margin-top: 5px;">
+                            <div class="form-group storeops-inline-213" >
+                                <label  class="storeops-inline-212"><i class="fa fa-file-text-o text-purple storeops-inline-211" ></i> {{ __('storeops::storeops.purchase_order') }}</label>
+                                <div  class="storeops-inline-210">
                                     <input type="hidden" name="references[1][reference_type]" value="Purchase Order">
                                     <input type="text" name="references[1][reference_number]" class="form-control input-sm" placeholder="{{ __('storeops::storeops.po_number') }}" value="{{ $po->reference_number ?? '' }}" {{ $isReadOnly ? 'readonly' : '' }}>
-                                    
+
                                     <!-- FIXED: Changed 'readonly' to 'disabled' -->
-                                    <input type="date" name="references[1][reference_date]" class="form-control input-sm" style="max-width: 140px;" value="{{ $po->reference_date ?? '' }}" {{ $isReadOnly ? 'disabled' : '' }} title="{{ __('storeops::storeops.optional_date') }}">
+                                    <input type="date" name="references[1][reference_date]" class="form-control input-sm storeops-inline-209"  value="{{ $po->reference_date ?? '' }}" {{ $isReadOnly ? 'disabled' : '' }} title="{{ __('storeops::storeops.optional_date') }}">
                                 </div>
                             </div>
                         </div>
@@ -159,28 +160,28 @@
                     <div class="row">
                         <!-- 3. Nothi / Approval Letter -->
                         <div class="col-md-6">
-                            <div class="form-group" style="background: #f8fafc; padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px;">
-                                <label style="color: #0f172a; font-size: 13px;"><i class="fa fa-check-square-o text-green" style="margin-right: 5px;"></i> {{ __('storeops::storeops.approval_letter') }}</label>
-                                <div style="display: flex; gap: 10px; margin-top: 5px;">
+                            <div class="form-group storeops-inline-208" >
+                                <label  class="storeops-inline-207"><i class="fa fa-check-square-o text-green storeops-inline-206" ></i> {{ __('storeops::storeops.approval_letter') }}</label>
+                                <div  class="storeops-inline-205">
                                     <input type="hidden" name="references[2][reference_type]" value="Nothi / Approval Letter">
                                     <input type="text" name="references[2][reference_number]" class="form-control input-sm" placeholder="Nothi Number" value="{{ $nothi->reference_number ?? '' }}" {{ $isReadOnly ? 'readonly' : '' }}>
-                                    
+
                                     <!-- FIXED: Changed 'readonly' to 'disabled' -->
-                                    <input type="date" name="references[2][reference_date]" class="form-control input-sm" style="max-width: 140px;" value="{{ $nothi->reference_date ?? '' }}" {{ $isReadOnly ? 'disabled' : '' }} title="{{ __('storeops::storeops.optional_date') }}">
+                                    <input type="date" name="references[2][reference_date]" class="form-control input-sm storeops-inline-204"  value="{{ $nothi->reference_date ?? '' }}" {{ $isReadOnly ? 'disabled' : '' }} title="{{ __('storeops::storeops.optional_date') }}">
                                 </div>
                             </div>
                         </div>
 
                         <!-- 4. Special Ministry Allocation -->
                         <div class="col-md-6">
-                            <div class="form-group" style="background: #fdfae8; padding: 15px; border: 1px solid #fef08a; border-radius: 6px;">
-                                <label style="color: #854d0e; font-size: 13px;"><i class="fa fa-star text-yellow" style="margin-right: 5px;"></i> {{ __('storeops::storeops.allocation_code') }}</label>
-                                <div style="display: flex; gap: 10px; margin-top: 5px;">
+                            <div class="form-group storeops-inline-203" >
+                                <label  class="storeops-inline-202"><i class="fa fa-star text-yellow storeops-inline-201" ></i> {{ __('storeops::storeops.allocation_code') }}</label>
+                                <div  class="storeops-inline-200">
                                     <input type="hidden" name="references[3][reference_type]" value="Special Allocation">
-                                    <input type="text" id="tracking_code_input" name="references[3][reference_number]" class="form-control input-sm" placeholder="{{ __('storeops::storeops.tracking_optional') }}" value="{{ $allocation->reference_number ?? '' }}" {{ $isReadOnly ? 'readonly' : '' }} style="border-color: #fde047;">
-                                    
+                                    <input type="text" id="tracking_code_input" name="references[3][reference_number]" class="form-control input-sm storeops-inline-199" placeholder="{{ __('storeops::storeops.tracking_optional') }}" value="{{ $allocation->reference_number ?? '' }}" {{ $isReadOnly ? 'readonly' : '' }} >
+
                                     <!-- FIXED: Changed 'readonly' to 'disabled' -->
-                                    
+
                                 </div>
                                 <!-- HANDSHAKE A1 FEEDBACK CONTAINER -->
                                 <div id="tracking_a1_feedback"></div>
@@ -198,15 +199,15 @@
                     <h3 class="box-title">{{ $lineSectionTitle }}</h3>
                 </div>
                 <div class="box-body table-responsive no-padding">
-                    <table class="table table-bordered" id="itemsGrid">
-                        <thead style="background: #f9fafb;">
+                    <table class="table table-bordered gs-table" id="itemsGrid">
+                        <thead  class="storeops-inline-198">
                             <tr>
-                                <th style="width: 35%;">{{ __('storeops::storeops.item_name') }}</th>
-                                <th style="width: 15%; text-align: center;">{{ __('storeops::storeops.current_stock') }}</th>
-                                <th style="width: 15%;">{{ __('storeops::storeops.quantity') }}</th>
-                                <th style="width: 15%;">{{ __('storeops::storeops.unit_cost') }}</th>
-                                <th style="width: 15%; text-align: center;">{{ __('storeops::storeops.balance_after') }}</th>
-                                @if($isDraft) <th style="width: 5%;"></th> @endif
+                                <th  class="storeops-inline-197">{{ __('storeops::storeops.item_name') }}</th>
+                                <th  class="storeops-inline-196">{{ __('storeops::storeops.current_stock') }}</th>
+                                <th  class="storeops-inline-195">{{ __('storeops::storeops.quantity') }}</th>
+                                <th  class="storeops-inline-194">{{ __('storeops::storeops.unit_cost') }}</th>
+                                <th  class="storeops-inline-193">{{ __('storeops::storeops.balance_after') }}</th>
+                                @if($isDraft) <th  class="storeops-inline-192"></th> @endif
                             </tr>
                         </thead>
                         <tbody id="gridBody">
@@ -214,7 +215,7 @@
                         </tbody>
                     </table>
                     @if($isDraft)
-                    <div style="padding: 10px;">
+                    <div  class="storeops-inline-191">
                         <button type="button" class="btn btn-sm btn-default" id="addRowBtn">
                             <i class="fa fa-plus"></i> {{ __('storeops::storeops.add_row') }}
                         </button>
@@ -230,7 +231,7 @@
                 </div>
                 <div class="box-body">
                     @if($isDraft)
-                        <div class="row" style="margin-bottom: 20px;">
+                        <div class="row storeops-inline-190" >
                             <div class="col-md-5">
                                 <select id="attachmentCategory" class="form-control input-sm">
                                     <option value="Challan">{{ __('storeops::storeops.challan') }}</option>
@@ -253,9 +254,9 @@
 
                     <ul class="list-group list-group-unbordered" id="attachmentsList">
                         @forelse($document->attachments as $file)
-                            <li class="list-group-item attachment-item" data-id="{{ $file->id }}" style="border-bottom: 1px solid #f4f4f4; padding: 10px 0;">
-                                <i class="fa fa-file-text-o text-blue"></i> 
-                                <a href="{{ route('storeops.documents.attachments.download', ['type' => $type, 'id' => $document->id, 'attachmentId' => $file->id]) }}" target="_blank" style="margin-left: 5px;">
+                            <li class="list-group-item attachment-item storeops-inline-189" data-id="{{ $file->id }}" >
+                                <i class="fa fa-file-text-o text-blue"></i>
+                                <a href="{{ route('storeops.documents.attachments.download', ['type' => $type, 'id' => $document->id, 'attachmentId' => $file->id]) }}" target="_blank"  class="storeops-inline-188">
                                     <strong>{{ $file->original_name }}</strong>
                                 </a>
                                 @if($isDraft)
@@ -265,7 +266,7 @@
                                 @endif
                             </li>
                         @empty
-                            <li class="list-group-item text-center text-muted" id="noAttachmentsMsg" style="border:none;">
+                            <li class="list-group-item text-center text-muted storeops-inline-187" id="noAttachmentsMsg" >
                                 {{ __('storeops::storeops.no_attachments') }}
                             </li>
                         @endforelse
@@ -276,15 +277,15 @@
 
         <!-- RIGHT COLUMN: Contextual Panel -->
         <div class="col-md-4">
-            
+
             <div class="box {{ $isPosted ? 'box-success' : 'box-warning' }}">
                 <div class="box-header with-border">
                     <h3 class="box-title">{{ $isPosted ? __('storeops::storeops.posted_document') : __('storeops::storeops.draft_workspace') }}</h3>
                 </div>
                 <div class="box-body">
-                    <h4 class="text-center" style="margin-top:0;"><strong>{{ $document->getDocumentNumber() }}</strong></h4>
-                    
-                    <ul class="list-group list-group-unbordered" style="margin-bottom: 15px;">
+                    <h4 class="text-center storeops-inline-186" ><strong>{{ $document->getDocumentNumber() }}</strong></h4>
+
+                    <ul class="list-group list-group-unbordered storeops-inline-185" >
                         <li class="list-group-item">
                             <b>{{ __('storeops::storeops.total_lines') }}</b> <a class="pull-right" id="sumLines">{{ $document->items->count() }}</a>
                         </li>
@@ -320,20 +321,20 @@
                     <h3 class="box-title">{{ __('storeops::storeops.activity_timeline') }}</h3>
                 </div>
                 <div class="box-body">
-                    <ul class="timeline timeline-inverse" style="margin-top: 10px;">
+                    <ul class="timeline timeline-inverse storeops-inline-184" >
                         @foreach($document->timelines()->orderBy('created_at', 'desc')->get() as $event)
                             <li>
                                 <i class="fa {{ $event->state === 'POSTED' ? 'fa-lock bg-green' : 'fa-edit bg-gray' }}"></i>
                                 <div class="timeline-item">
                                     <span class="time">
-                                        <i class="fa fa-clock-o"></i> 
+                                        <i class="fa fa-clock-o"></i>
                                         {{ \Carbon\Carbon::parse($event->created_at)->format('H:i') }}
                                     </span>
                                     <h3 class="timeline-header no-border">
                                         <strong>{{ __('storeops::storeops.'.strtolower($event->state)) }}</strong> — {{ $event->user?->present()->fullName ?? __('storeops::storeops.system') }}
                                     </h3>
                                     @if($event->notes)
-                                        <div class="timeline-body" style="padding-top:0; color:#666;">{{ $event->notes }}</div>
+                                        <div class="timeline-body storeops-inline-183" >{{ $event->notes }}</div>
                                     @endif
                                 </div>
                             </li>
@@ -392,5 +393,6 @@
 
 @section('moar_scripts')
     @include('storeops::operations.partials.workspace-config')
+</div>
 @endsection
 @endsection

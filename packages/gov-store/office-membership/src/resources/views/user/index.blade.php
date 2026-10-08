@@ -3,6 +3,7 @@
 @section('title', __('office_membership::member.user_page_title'))
 
 @section('content')
+<div class="office-membership-theme">
 @include('govmem::hooks.notices')
 <div class="row">
     <!-- LEFT PANEL: Active Memberships and dynamic Clearance Engine indicators -->
@@ -12,13 +13,13 @@
                 <h3 class="box-title"><i class="fas fa-id-badge"></i> {{ __('office_membership::member.user_active_memberships_title') }}</h3>
             </div>
             <div class="box-body table-responsive">
-                <table class="table table-striped table-hover">
+                <x-gs::table class="table table-striped table-hover">
                     <thead>
                         <tr>
                             <th>{{ __('office_membership::member.user_table_office') }}</th>
                             <th>{{ __('office_membership::member.user_table_status') }}</th>
                             <th>{{ __('office_membership::member.user_table_clearance') }}</th>
-                            <th style="width: 150px;">{{ __('office_membership::member.user_table_action') }}</th>
+                            <th class="om-inline-5a2f1a27">{{ __('office_membership::member.user_table_action') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -32,7 +33,7 @@
                                     <strong>{{ $mem->location->name ?? __('office_membership::member.user_table_office') }}</strong><br>
                                     <small class="text-muted">{{ $mem->location->company->name ?? __('office_membership::member.standalone') }}</small>
                                 </td>
-                                <td style="vertical-align: middle;">
+                                <td class="om-inline-092f0f30">
                                     @if($mem->status === 'active')
                                         <span class="label label-success">{{ __('office_membership::member.user_status_active') }}</span>
                                         @if($mem->is_home_office) <span class="label label-primary"><i class="fas fa-star"></i> {{ __('office_membership::member.user_status_home_base') }}</span> @endif
@@ -42,14 +43,14 @@
                                         <span class="label label-default">{{ __('office_membership::member.user_status_released') }}</span>
                                     @endif
                                 </td>
-                                <td style="vertical-align: middle;">
+                                <td class="om-inline-092f0f30">
                                     @if($mem->status === 'active')
-                                        <ul class="list-unstyled" style="margin-bottom: 0; font-size: 12px; line-height: 1.6;">
+                                        <ul class="list-unstyled om-inline-7fdeb8b8">
                                             @foreach($checks as $name => $result)
                                                 <li class="{{ $result->isPassed ? 'text-success' : 'text-danger' }}">
                                                     <i class="fas {{ $result->isPassed ? 'fa-check-circle' : 'fa-times-circle' }}"></i> {{ $name }}
                                                     @if(!$result->isPassed)
-                                                        <br><small class="text-muted" style="margin-left: 15px;">{{ $result->reason }}</small>
+                                                        <br><small class="text-muted om-inline-3119a226">{{ $result->reason }}</small>
                                                     @endif
                                                 </li>
                                             @endforeach
@@ -58,7 +59,7 @@
                                         <span class="text-muted">{{ __('office_membership::member.user_clearance_na') }}</span>
                                     @endif
                                 </td>
-                                <td style="vertical-align: middle;">
+                                <td class="om-inline-092f0f30">
                                     @if($mem->status === 'active')
                                         <form action="{{ route('gov.membership.request-release', $mem->id) }}" method="POST">
                                             @csrf
@@ -72,10 +73,10 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="4" class="text-center text-muted" style="padding: 30px;">{{ __('office_membership::member.user_no_memberships') }}</td></tr>
+                            <tr><td colspan="4" class="text-center text-muted om-inline-ed0f0aa0">{{ __('office_membership::member.user_no_memberships') }}</td></tr>
                         @endforelse
                     </tbody>
-                </table>
+                </x-gs::table>
             </div>
         </div>
     </div>
@@ -84,26 +85,26 @@
     <div class="col-md-5">
         
         <!-- VERIFICATION CODE GENERATOR WIDGET -->
-        <div class="box box-success" style="border-top: 3px solid #00a65a;">
+        <div class="box box-success om-inline-709ea946">
             <div class="box-header with-border">
                 <h3 class="box-title"><i class="fas fa-qrcode text-success"></i> {{ __('office_membership::member.user_credential_title') }}</h3>
             </div>
-            <div class="box-body text-center" style="padding: 20px;">
-                <p class="text-muted" style="font-size: 13px; margin-bottom: 15px;">
+            <div class="box-body text-center om-inline-6fe3c4ac">
+                <p class="text-muted om-inline-eca5fde5">
                     {{ __('office_membership::member.user_credential_hint') }}
                 </p>
                 
                 @if(isset($activeToken) && $activeToken)
-                    <div style="background: #f4f4f4; border: 1px dashed #ccc; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
-                        <span style="font-size: 12px; color: #777; display: block; text-transform: uppercase;">{{ __('office_membership::member.user_token_active_label') }}</span>
-                        <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #333;">{{ $activeToken->token }}</span>
-                        <span style="display: block; font-size: 11px; color: #a94442; margin-top: 5px;">
+                    <div class="om-inline-20b7438c">
+                        <span class="om-inline-d18dd8b8">{{ __('office_membership::member.user_token_active_label') }}</span>
+                        <span class="om-inline-63a3af60">{{ $activeToken->token }}</span>
+                        <span class="om-inline-5e98ec0d">
                             <i class="fas fa-clock"></i> {{ __('office_membership::member.expires') }}: {{ $activeToken->expires_at->diffForHumans() }}
                         </span>
                     </div>
                 @else
-                    <div style="background: #fafafa; border: 1px solid #eee; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
-                        <span style="font-size: 14px; color: #999;"><i class="fas fa-lock"></i> {{ __('office_membership::member.user_token_no_active') }}</span>
+                    <div class="om-inline-3312350a">
+                        <span class="om-inline-c7560035"><i class="fas fa-lock"></i> {{ __('office_membership::member.user_token_no_active') }}</span>
                     </div>
                 @endif
 
@@ -117,18 +118,18 @@
         </div>
 
         <!-- JOIN OFFICE VIA MASS INVITATION CODE WIDGET -->
-        <div class="box box-primary" style="border-top: 3px solid #3c8dbc;">
+        <div class="box box-primary om-inline-39a594e2">
             <div class="box-header with-border">
                 <h3 class="box-title"><i class="fas fa-building text-primary"></i> {{ __('office_membership::member.user_join_title') }}</h3>
             </div>
             <form action="{{ route('gov.membership.join') }}" method="POST">
                 @csrf
-                <div class="box-body text-center" style="padding: 20px;">
-                    <p class="text-muted" style="font-size: 13px; margin-bottom: 15px;">
+                <div class="box-body text-center om-inline-6fe3c4ac">
+                    <p class="text-muted om-inline-eca5fde5">
                         {{ __('office_membership::member.user_join_hint') }}
                     </p>
                     <div class="form-group">
-                        <input type="text" name="office_code" class="form-control text-center" placeholder="{{ __('office_membership::member.user_join_code_placeholder') }}" required style="font-size: 16px; letter-spacing: 2px; text-transform: uppercase;">
+                        <input class="form-control text-center om-inline-b9a57387" type="text" name="office_code" placeholder="{{ __('office_membership::member.user_join_code_placeholder') }}" required>
                     </div>
                     <button type="submit" class="btn btn-primary btn-sm btn-block">
                         <i class="fas fa-paper-plane"></i> {{ __('office_membership::member.user_join_send_button') }}
@@ -139,21 +140,21 @@
         
         <!-- INCOMING HANDSHAKES PROPOSALS -->
         @if($incomingRequests->count() > 0)
-        <div class="box box-warning" style="border-top: 3px solid #f39c12;">
+        <div class="box box-warning om-inline-ce5e73b6">
             <div class="box-header with-border">
                 <h3 class="box-title"><i class="fas fa-bell text-warning"></i> {{ __('office_membership::member.user_handover_title') }}</h3>
             </div>
             <div class="box-body">
                 @foreach($incomingRequests as $inc)
-                    <div style="padding: 12px; border: 1px solid #faebcc; background: #fffcf5; border-radius: 4px; margin-bottom: 12px;">
+                    <div class="om-inline-f76a3cae">
                         <strong>{{ $inc->outgoingUser ? $inc->outgoingUser->present()->fullName : __('office_membership::member.staff_unknown_employee') }}</strong> {{ __('office_membership::member.user_handover_delegate_text') }} 
-                        <span class="label bg-orange" style="font-size: 11px;">{{ __('office_membership::member.role_'.$inc->role_slug) }}</span> {{ __('office_membership::member.user_handover_role_to_you_for') }} <strong>{{ $inc->location->name ?? __('office_membership::member.staff_claim_hint') }}</strong>.
+                        <span class="label bg-orange om-inline-19b327ae">{{ __('office_membership::member.role_'.$inc->role_slug) }}</span> {{ __('office_membership::member.user_handover_role_to_you_for') }} <strong>{{ $inc->location->name ?? __('office_membership::member.staff_claim_hint') }}</strong>.
                         
-                        <div style="margin-top: 15px; display: flex; gap: 10px;">
-                            <form action="{{ route('gov.membership.handshake.accept', $inc->id) }}" method="POST" style="flex: 1;">
+                        <div class="om-inline-03804ad7">
+                            <form action="{{ route('gov.membership.handshake.accept', $inc->id) }}" method="POST" class="om-inline-7bf38354">
                                 @csrf <button class="btn btn-success btn-sm btn-block" onclick="return confirm('{{ __('office_membership::member.user_handover_accept_confirm') }}')"><i class="fas fa-check"></i> {{ __('office_membership::member.user_handover_accept_button') }}</button>
                             </form>
-                            <form action="{{ route('gov.membership.handshake.reject', $inc->id) }}" method="POST" style="flex: 1;">
+                            <form action="{{ route('gov.membership.handshake.reject', $inc->id) }}" method="POST" class="om-inline-7bf38354">
                                 @csrf <button class="btn btn-danger btn-sm btn-block"><i class="fas fa-times"></i> {{ __('office_membership::member.user_handover_reject_button') }}</button>
                             </form>
                         </div>
@@ -164,32 +165,32 @@
         @endif
 
         <!-- MY ACTIVE RESPONSIBILITIES (DELEGATION CONTROLS) -->
-        <div class="box box-default" style="border-top: 3px solid #d2d6de;">
+        <div class="box box-default om-inline-80472c54">
             <div class="box-header with-border">
                 <h3 class="box-title"><i class="fas fa-user-shield text-muted"></i> {{ __('office_membership::member.user_responsibilities_title') }}</h3>
             </div>
             <div class="box-body">
-                <p class="text-muted" style="font-size: 13px;">{{ __('office_membership::member.user_responsibilities_hint') }}</p>
+                <p class="text-muted om-inline-d75cbef7">{{ __('office_membership::member.user_responsibilities_hint') }}</p>
                 
                 @forelse($myActiveRoles as $locId => $rolesList)
                     @php $locName = $memberships->firstWhere('location_id', $locId)?->location?->name ?? __('office_membership::member.user_table_office'); @endphp
-                    <h5 style="font-weight: bold; margin-top: 15px; border-bottom: 1px solid #f4f4f4; padding-bottom: 6px;">{{ $locName }}</h5>
+                    <h5 class="om-inline-494240c8">{{ $locName }}</h5>
                     
-                    <table class="table table-condensed">
+                    <x-gs::table class="table table-condensed">
                         @foreach($rolesList as $roleType)
                             @php
                                 $pendingOutgoing = $outgoingRequests->where('location_id', $locId)->where('role_slug', $roleType)->first();
                             @endphp
                             <tr>
-                                <td style="vertical-align: middle;">
+                                <td class="om-inline-092f0f30">
                                     <span class="label bg-blue">{{ __('office_membership::member.role_'.$roleType) }}</span>
                                 </td>
-                                <td style="vertical-align: middle; text-align: right;">
+                                <td class="om-inline-b198ccc8">
                                     @if($pendingOutgoing)
-                                        <span class="text-warning" style="font-size: 12px; margin-right: 10px;">
+                                        <span class="text-warning om-inline-cba5f610">
                                             <i class="fas fa-hourglass-half"></i> {{ __('office_membership::member.awaiting', ['name' => $pendingOutgoing->incomingUser?->first_name ?? __('office_membership::member.user_modal_colleague_label')]) }}
                                         </span>
-                                        <form action="{{ route('gov.membership.handshake.cancel', $pendingOutgoing->id) }}" method="POST" style="display:inline;">
+                                        <form action="{{ route('gov.membership.handshake.cancel', $pendingOutgoing->id) }}" method="POST" class="om-inline-f8bef7f8">
                                             @csrf <button type="submit" class="btn btn-xs btn-default text-danger" title="{{ __('office_membership::member.cancel_request') }}"><i class="fas fa-times"></i></button>
                                         </form>
                                     @else
@@ -200,9 +201,9 @@
                                 </td>
                             </tr>
                         @endforeach
-                    </table>
+                    </x-gs::table>
                 @empty
-                    <div class="text-center text-muted" style="padding: 15px; font-size: 13px;">{{ __('office_membership::member.user_no_active_roles') }}</div>
+                    <div class="text-center text-muted om-inline-921a2ecf">{{ __('office_membership::member.user_no_active_roles') }}</div>
                 @endforelse
             </div>
         </div>
@@ -227,7 +228,7 @@
 
                     <div class="form-group">
                         <label for="colleagueSelector">{{ __('office_membership::member.user_modal_colleague_label') }}</label>
-                        <select name="assigned_user_id" id="colleagueSelector" class="form-control" required style="width: 100%;">
+                        <select class="form-control om-inline-442a70a1" name="assigned_user_id" id="colleagueSelector" required>
                             <option value="">{{ __('office_membership::member.user_modal_colleague_placeholder') }}</option>
                         </select>
                     </div>
@@ -239,6 +240,7 @@
             </form>
         </div>
     </div>
+</div>
 </div>
 @endsection
 

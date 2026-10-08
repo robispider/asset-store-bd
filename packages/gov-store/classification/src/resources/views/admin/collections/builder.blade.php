@@ -1,17 +1,18 @@
 @extends('layouts/default')
 @section('title', 'Builder: ' . $collection->name)
 @section('content')
+<div class="classification-theme">
 <div class="row">
     <!-- Left Pane: Search & Add -->
     <div class="col-md-6">
         <div class="box box-primary">
             <div class="box-header with-border"><h3 class="box-title">1. Search Master Catalog</h3></div>
             <div class="box-body">
-                <div class="input-group" style="margin-bottom: 20px;">
+                <div class="input-group classify-inline-b75fad00">
                     <input type="text" id="catalog-search" class="form-control" placeholder="Type keyword or code...">
                     <span class="input-group-btn"><button class="btn btn-default" type="button"><i class="fas fa-search"></i></button></span>
                 </div>
-                <div id="search-results" class="list-group" style="max-height: 500px; overflow-y: auto;">
+                <div class="list-group classify-inline-6f6a6183" id="search-results">
                     <!-- Populated by JS -->
                 </div>
             </div>
@@ -24,8 +25,8 @@
             <div class="box-header with-border">
                 <h3 class="box-title"><i class="{{ $collection->icon }}"></i> 2. Current Members ({{ $collection->nodes->count() }})</h3>
             </div>
-            <div class="box-body no-padding" style="max-height: 600px; overflow-y: auto;">
-                <table class="table table-striped">
+            <div class="box-body no-padding classify-inline-f5ee3d4f">
+                <x-gs::table class="table table-striped">
                     @foreach($collection->nodes as $pivot)
                     <tr>
                         <td><code>{{ $pivot->code }}</code></td>
@@ -39,10 +40,11 @@
                         </td>
                     </tr>
                     @endforeach
-                </table>
+                </x-gs::table>
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection
 
@@ -62,7 +64,7 @@
                     <div class="pull-right">
                         <button class="btn btn-sm btn-primary btn-add-node" data-code="${node.code}"><i class="fas fa-plus"></i> Add</button>
                     </div>
-                    <h5 style="margin:0; font-weight:bold;">${node.text}</h5>
+                    <h5 class="classify-inline-855276ba">${node.text}</h5>
                     <small class="text-muted">${node.code}</small>
                 </div>`;
             });

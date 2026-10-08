@@ -2,20 +2,21 @@
 @section('title', __('storeops::storeops.store_documents_hub'))
 
 @section('content')
+<div class="storeops-theme">
 <div class="row">
     <div class="col-md-12">
         <div class="box box-default">
             <div class="box-header with-border">
                 <h3 class="box-title"><i class="fa fa-cubes"></i> {{ __('storeops::storeops.store_documents_hub') }}</h3>
                 <div class="box-tools pull-right">
-                    <form action="{{ route('storeops.documents.initialize') }}" method="POST" style="display:inline;">@csrf<input type="hidden" name="document_type" value="transfer"><x-gov-action ability="storeops.documents.draft" type="submit" class="btn btn-sm btn-default">{{ __('storeops::storeops.new_transfer') }}</x-gov-action></form>
-                    <form action="{{ route('storeops.documents.initialize') }}" method="POST" style="display:inline;">
+                    <form action="{{ route('storeops.documents.initialize') }}" method="POST"  class="storeops-inline-155">@csrf<input type="hidden" name="document_type" value="transfer"><x-gov-action ability="storeops.documents.draft" type="submit" class="btn btn-sm btn-default">{{ __('storeops::storeops.new_transfer') }}</x-gov-action></form>
+                    <form action="{{ route('storeops.documents.initialize') }}" method="POST"  class="storeops-inline-154">
                         @csrf
                         <input type="hidden" name="document_type" value="receipt">
                         <x-gov-action ability="storeops.documents.draft" type="submit" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i> {{ __('storeops::storeops.new_receipt') }}</x-gov-action>
                     </form>
-                    <form action="{{ route('storeops.documents.initialize') }}" method="POST" style="display:inline;">@csrf<input type="hidden" name="document_type" value="issue"><x-gov-action ability="storeops.documents.draft" type="submit" class="btn btn-sm btn-warning"><i class="fa fa-share"></i> {{ __('storeops::storeops.new_issue') }}</x-gov-action></form>
-                    <form action="{{ route('storeops.documents.initialize') }}" method="POST" style="display:inline;">@csrf<input type="hidden" name="document_type" value="adjustment"><x-gov-action ability="storeops.documents.draft" type="submit" class="btn btn-sm btn-default"><i class="fa fa-sliders"></i> {{ __('storeops::storeops.new_adjustment') }}</x-gov-action></form>
+                    <form action="{{ route('storeops.documents.initialize') }}" method="POST"  class="storeops-inline-153">@csrf<input type="hidden" name="document_type" value="issue"><x-gov-action ability="storeops.documents.draft" type="submit" class="btn btn-sm btn-warning"><i class="fa fa-share"></i> {{ __('storeops::storeops.new_issue') }}</x-gov-action></form>
+                    <form action="{{ route('storeops.documents.initialize') }}" method="POST"  class="storeops-inline-152">@csrf<input type="hidden" name="document_type" value="adjustment"><x-gov-action ability="storeops.documents.draft" type="submit" class="btn btn-sm btn-default"><i class="fa fa-sliders"></i> {{ __('storeops::storeops.new_adjustment') }}</x-gov-action></form>
                 </div>
             </div>
             <div class="box-body">
@@ -33,7 +34,7 @@
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="all">
-                            <table class="table table-striped table-hover">
+                            <table class="table table-striped table-hover gs-table">
                                 <thead>
                                     <tr>
                                         <th>{{ __('storeops::storeops.document_no') }}</th>
@@ -70,5 +71,6 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

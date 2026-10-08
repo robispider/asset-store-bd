@@ -3,7 +3,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header bg-purple">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #fff;">
+                <button class="close classify-inline-f949b42b" type="button" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
                 <h4 class="modal-title" id="collectionModalLabel">
@@ -14,29 +14,29 @@
             <div class="modal-body">
                 <!-- Dropdown Selector -->
                 <div id="collection-modal-content">
-                    <p class="lead" style="font-size: 15px; margin-bottom: 15px;">
+                    <p class="lead classify-inline-67ff41fd">
                         You have selected <strong id="collection-modal-count" class="text-purple">0</strong> items. Select the catalog collection you want to attach them to:
                     </p>
                     
                     <div class="form-group">
                         <label for="collection-select">Target Collection:</label>
-                        <select id="collection-select" class="form-control" style="width: 100%;">
+                        <select class="form-control classify-inline-69d66e5b" id="collection-select">
                             <option value="">-- Loading Collections... --</option>
                         </select>
                     </div>
                 </div>
 
                 <!-- API Loader -->
-                <div id="collection-modal-loader" class="text-center" style="display: none; padding: 20px;">
+                <div class="text-center classify-inline-4209a890" id="collection-modal-loader">
                     <i class="fas fa-spinner fa-spin fa-2x text-purple"></i>
-                    <p class="text-muted" style="margin-top: 10px;">Attaching items to collection...</p>
+                    <p class="text-muted classify-inline-54d32d80">Attaching items to collection...</p>
                 </div>
 
                 <!-- API Error Container -->
-                <div id="collection-modal-error" class="alert alert-danger" style="display: none; margin-top: 10px;"></div>
+                <div class="alert alert-danger classify-inline-09cf2cfe" id="collection-modal-error"></div>
             </div>
 
-            <div class="modal-footer" style="background-color: #f9f9f9;">
+            <div class="modal-footer classify-inline-0e5be659">
                 <button type="button" class="btn btn-default" data-dismiss="modal" id="btn-collection-cancel">Cancel</button>
                 <button type="button" class="btn btn-purple" id="btn-collection-save" disabled>
                     <i class="fas fa-save"></i> Save to Collection
@@ -141,10 +141,3 @@
         });
     });
 </script>
-
-<style>
-    .bg-purple { background-color: #605ca8 !important; color: #fff !important; }
-    .btn-purple { background-color: #605ca8; border-color: #555299; color: #fff; }
-    .btn-purple:hover, .btn-purple:active, .btn-purple:focus { background-color: #555299; color: #fff; }
-    .text-purple { color: #605ca8 !important; }
-</style>

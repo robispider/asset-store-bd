@@ -22,6 +22,7 @@ use GovStore\StoreOperations\Services\NullTrackingCodeVerifier;
 use GovStore\StoreOperations\UI\Tab;
 use GovStore\StoreOperations\UI\TabRegistry;
 use GovStore\TenantScope\Navigation\MenuRegistry;
+use GovStore\Theming\Facades\GsTheme;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
@@ -58,6 +59,11 @@ class StoreOperationsServiceProvider extends ServiceProvider
 
         // 5. Load Views (Case-sensitivity safe)
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'storeops');
+
+        // Register store-operations styles with the shared theme build when available.
+        if ($this->app->bound('gs.theme')) {
+            GsTheme::assets()->css('storeops', __DIR__.'/../resources/css/store-operations.css');
+        }
 
         // 6. Register CLI Commands
         if ($this->app->runningInConsole()) {
@@ -115,7 +121,7 @@ class StoreOperationsServiceProvider extends ServiceProvider
             'id' => 'storeops-register',
             'parent' => 'gov-store',
             'title' => __('storeops::storeops.stock_register_dashboard'),
-            'icon' => 'fa fa-cube text-aqua',
+            'icon' => 'fa fa-cube',
             'route' => 'storeops.register.index',
             'permission' => 'storekeeper',
             'order' => 20,
@@ -127,7 +133,7 @@ class StoreOperationsServiceProvider extends ServiceProvider
             'id' => 'storeops-hub',
             'parent' => 'gov-store',
             'title' => __('storeops::storeops.store_documents_hub'),
-            'icon' => 'fa fa-folder-open text-yellow',
+            'icon' => 'fa fa-folder-open',
             'route' => 'storeops.hub',
             'permission' => 'storekeeper',
             'order' => 30,
@@ -142,7 +148,7 @@ class StoreOperationsServiceProvider extends ServiceProvider
             'id' => 'storeops-admin-rules',
             'parent' => 'gov-store',
             'title' => __('storeops::storeops.product_rules_studio'),
-            'icon' => 'fas fa-cogs text-purple',
+            'icon' => 'fas fa-cogs',
             'route' => 'storeops.admin.rules.index',
             'permission' => 'superuser', // Admin only
             'order' => 90,
@@ -155,8 +161,8 @@ class StoreOperationsServiceProvider extends ServiceProvider
         $kardexTabUrl = '/gov-store/operations/kardex/{type}/{id}';
 
         // Register Kardex to all 3 target counter-based categories
-        $registry->registerTab('consumable', new Tab('govstore-ledger-tab', __('storeops::storeops.stock_card_title'), $kardexTabUrl, 'fa fa-book text-aqua'));
-        $registry->registerTab('accessory', new Tab('govstore-ledger-tab', __('storeops::storeops.stock_card_title'), $kardexTabUrl, 'fa fa-book text-aqua'));
-        $registry->registerTab('component', new Tab('govstore-ledger-tab', __('storeops::storeops.stock_card_title'), $kardexTabUrl, 'fa fa-book text-aqua'));
+        $registry->registerTab('consumable', new Tab('govstore-ledger-tab', __('storeops::storeops.stock_card_title'), $kardexTabUrl, 'fa fa-book'));
+        $registry->registerTab('accessory', new Tab('govstore-ledger-tab', __('storeops::storeops.stock_card_title'), $kardexTabUrl, 'fa fa-book'));
+        $registry->registerTab('component', new Tab('govstore-ledger-tab', __('storeops::storeops.stock_card_title'), $kardexTabUrl, 'fa fa-book'));
     }
 }

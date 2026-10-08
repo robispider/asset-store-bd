@@ -3,20 +3,10 @@
 @section('title', __('organization_labels::orglabel.registry_title'))
 
 @section('content')
+<div class="govorg-theme">
 
 {{-- Registry Custom High-Density Styling --}}
-<style>
-    .filter-bar {
-        background: #fff;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        padding: 15px;
-        margin-bottom: 20px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    .registry-table td { vertical-align: middle !important; }
-    .status-badge-container { line-height: 1.4; }
-</style>
+
 
 <!-- TOP ROLLING ROLLOUT METRICS -->
 <div class="row">
@@ -68,15 +58,15 @@
             <form action="{{ route('gov.org.provisioning.index') }}" method="GET" class="form-inline">
                 
                 <!-- Search term -->
-                <div class="form-group" style="margin-right: 15px;">
-                    <label for="search" style="margin-right: 5px;"><i class="fas fa-search"></i> {{ __('organization_labels::orglabel.registry_search_label') }}</label>
+                <div class="form-group org-inline-00abe7ff">
+                    <label for="search" class="org-inline-ae731390"><i class="fas fa-search"></i> {{ __('organization_labels::orglabel.registry_search_label') }}</label>
                     <input type="text" name="search" id="search" class="form-control input-sm" placeholder="{{ __('organization_labels::orglabel.registry_search_placeholder') }}" value="{{ request('search') }}">
                 </div>
 
                 <!-- Ministry Filter -->
-                <div class="form-group" style="margin-right: 15px;">
-                    <label for="ministry_id" style="margin-right: 5px;"><i class="fas fa-university"></i> {{ __('organization_labels::orglabel.registry_ministry_label') }}</label>
-                    <select name="ministry_id" id="ministry_id" class="form-control input-sm select2" style="min-width: 180px;">
+                <div class="form-group org-inline-00abe7ff">
+                    <label for="ministry_id" class="org-inline-ae731390"><i class="fas fa-university"></i> {{ __('organization_labels::orglabel.registry_ministry_label') }}</label>
+                    <select class="form-control input-sm select2 org-inline-4c3ea102" name="ministry_id" id="ministry_id">
                         <option value="">{{ __('organization_labels::orglabel.registry_all_ministries') }}</option>
                         @foreach($companies ?? [] as $company)
                             <option value="{{ $company->id }}" {{ request('ministry_id') == $company->id ? 'selected' : '' }}>
@@ -87,9 +77,9 @@
                 </div>
 
                 <!-- District Filter -->
-                <div class="form-group" style="margin-right: 15px;">
-                    <label for="district_id" style="margin-right: 5px;"><i class="fas fa-map-marker-alt"></i> {{ __('organization_labels::orglabel.registry_district_label') }}</label>
-                    <select name="district_id" id="district_id" class="form-control input-sm select2" style="min-width: 180px;">
+                <div class="form-group org-inline-00abe7ff">
+                    <label for="district_id" class="org-inline-ae731390"><i class="fas fa-map-marker-alt"></i> {{ __('organization_labels::orglabel.registry_district_label') }}</label>
+                    <select class="form-control input-sm select2 org-inline-4c3ea102" name="district_id" id="district_id">
                         <option value="">{{ __('organization_labels::orglabel.registry_all_districts') }}</option>
                         @foreach($districts ?? [] as $dist)
                             <option value="{{ $dist->GeoAreaId }}" {{ request('district_id') == $dist->GeoAreaId ? 'selected' : '' }}>
@@ -100,8 +90,8 @@
                 </div>
 
                 <!-- Status Filter -->
-                <div class="form-group" style="margin-right: 15px;">
-                    <label for="status" style="margin-right: 5px;"><i class="fas fa-tasks"></i> {{ __('organization_labels::orglabel.registry_status_label') }}</label>
+                <div class="form-group org-inline-00abe7ff">
+                    <label for="status" class="org-inline-ae731390"><i class="fas fa-tasks"></i> {{ __('organization_labels::orglabel.registry_status_label') }}</label>
                     <select name="status" id="status" class="form-control input-sm">
                         <option value="">{{ __('organization_labels::orglabel.registry_all_statuses') }}</option>
                         <option value="operational" {{ request('status') == 'operational' ? 'selected' : '' }}>{{ __('organization_labels::orglabel.registry_status_operational') }}</option>
@@ -116,7 +106,7 @@
 
                 <!-- DUAL ONBOARD & CREATE TRIGGERS -->
                 <div class="pull-right">
-                    <a href="{{ route('gov.org.provisioning.onboard') }}" class="btn btn-sm btn-default" style="margin-right: 5px;">
+                    <a class="btn btn-sm btn-default org-inline-ae731390" href="{{ route('gov.org.provisioning.onboard') }}">
                         <i class="fas fa-plug text-success"></i> {{ __('organization_labels::orglabel.registry_onboard_button') }}
                     </a>
                     <a href="{{ route('gov.org.provisioning.create') }}" class="btn btn-sm btn-primary">
@@ -136,7 +126,7 @@
                 <h3 class="box-title"><i class="fas fa-sitemap"></i> {{ __('organization_labels::orglabel.registry_table_offices_count') }} ({{ isset($offices) ? $offices->total() : 0 }})</h3>
             </div>
             <div class="box-body table-responsive">
-                <table class="table table-striped table-hover registry-table">
+                <x-gs::table class="table table-striped table-hover registry-table">
                     <thead>
                         <tr>
                             <th>{{ __('organization_labels::orglabel.registry_col_office_building') }}</th>
@@ -144,7 +134,7 @@
                             <th>{{ __('organization_labels::orglabel.registry_col_owning_ministry') }}</th>
                             <th>{{ __('organization_labels::orglabel.registry_col_office_administrator') }}</th>
                             <th>{{ __('organization_labels::orglabel.registry_col_readiness_status') }}</th>
-                            <th style="width: 120px;">{{ __('organization_labels::orglabel.registry_col_actions') }}</th>
+                            <th class="org-inline-4df8f436">{{ __('organization_labels::orglabel.registry_col_actions') }}</th>
                         </tr>
                     </thead>
                    <tbody>
@@ -156,7 +146,7 @@
                                 </td>
                                 
                                 <td>
-                                    <span class="text-primary" style="font-weight: bold;"><i class="fas fa-map-marker-alt"></i> {{ $office->geoName }}</span><br>
+                                    <span class="text-primary org-inline-3cdfe113"><i class="fas fa-map-marker-alt"></i> {{ $office->geoName }}</span><br>
                                     <small class="text-muted">Type: {{ $office->geoType }}</small>
                                 </td>
 
@@ -178,7 +168,7 @@
                                             <span class="label label-info"><i class="fas fa-sliders-h"></i> {{ __('organization_labels::orglabel.registry_status_configured_label') }}</span>
                                         @elseif($office->status === 'provisioned')
                                             <span class="label label-warning"><i class="fas fa-building"></i> {{ __('organization_labels::orglabel.registry_status_provisioned_label') }}</span>
-                                            <small class="text-muted" style="display:block; margin-top: 3px;">
+                                            <small class="text-muted org-inline-1ac8bcc9">
                                                 Needs: 
                                                 <span class="{{ $office->hasPrimary ? 'text-success' : 'text-danger' }}">{{ $office->hasPrimary ? '✓' : '✗' }} Primary</span> &bull; 
                                                 <span class="{{ $office->hasStorekeeper ? 'text-success' : 'text-danger' }}">{{ $office->hasStorekeeper ? '✓' : '✗' }} Storekeeper</span>
@@ -189,7 +179,7 @@
                                     </div>
                                 </td>
 
-                                <td style="vertical-align: middle;">
+                                <td class="org-inline-092f0f30">
                                     @if($office->status === 'unconfigured')
                                         <!-- Clean Context-Aware Onboard Link -->
                                         <a href="{{ route('gov.org.provisioning.onboard', ['location_id' => $office->id]) }}" class="btn btn-xs btn-success btn-block" title="Map Geography to this Location">
@@ -205,19 +195,20 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center text-muted" style="padding: 40px;">
+                                <td class="text-center text-muted org-inline-ea7b6b7b" colspan="6">
                                     <i class="fas fa-building fa-2x"></i>
-                                    <p style="margin-top: 10px;">{{ __('organization_labels::orglabel.registry_empty_state') }}</p>
+                                    <p class="org-inline-3225db96">{{ __('organization_labels::orglabel.registry_empty_state') }}</p>
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
-                </table>
+                </x-gs::table>
             </div>
         </div>
     </div>
 </div>
 <div class="row">
     <div class="col-md-12">{{ $offices->links() }}</div>
+</div>
 </div>
 @endsection

@@ -2,11 +2,12 @@
 @section('title', $mode === 'local' ? 'Local Catalog Explorer' : 'Master Catalog Explorer')
 
 @section('content')
+<div class="classification-theme">
 <div class="row">
     <div class="col-md-12">
         
         <!-- Mode Switcher Tabs -->
-        <div class="nav-tabs-custom" style="box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px;">
+        <div class="nav-tabs-custom classify-inline-53934b72">
             <ul class="nav nav-tabs">
                 <li class="{{ $mode === 'master' ? 'active' : '' }}">
                     <a href="{{ route('gov.catalog.discover.explorer', ['mode' => 'master', 'parent' => $parentCode]) }}">
@@ -21,23 +22,23 @@
                 
                 <!-- Cross Navigation back to List View -->
                 <li class="pull-right">
-                    <a href="{{ route('gov.catalog.my_catalog.index') }}" class="text-muted" style="background-color: #f9f9f9; border-left: 1px solid #ddd;">
+                    <a class="text-muted classify-inline-434c3c45" href="{{ route('gov.catalog.my_catalog.index') }}">
                         <i class="fas fa-list"></i> Switch to List View
                     </a>
                 </li>
             </ul>
         </div>
 
-        <div class="box box-solid" style="border-top: 3px solid {{ $mode === 'local' ? '#f39c12' : '#3c8dbc' }};">
+        <div @class(['box', 'box-solid', 'catalog-mode-local' => $mode === 'local', 'catalog-mode-global' => $mode !== 'local'])>
             
             <!-- Breadcrumbs -->
-            <div class="box-header with-border" style="background-color: #fcfcfc;">
-                <h3 class="box-title" style="font-size: 16px;">
+            <div class="box-header with-border classify-inline-074df022">
+                <h3 class="box-title classify-inline-b87efa5b">
                     <a href="{{ route('gov.catalog.discover.explorer', ['mode' => $mode]) }}" class="text-{{ $mode === 'local' ? 'orange' : 'blue' }}">
                         <i class="fas fa-home"></i> {{ $mode === 'local' ? 'My Inventory' : 'Master Catalog' }}
                     </a>
                     @foreach($breadcrumbs as $crumb)
-                        <span class="text-muted" style="margin: 0 5px;">/</span>
+                        <span class="text-muted classify-inline-446e6f7e">/</span>
                         @if(!$loop->last)
                             <a href="{{ route('gov.catalog.discover.explorer', ['parent' => $crumb->code, 'mode' => $mode]) }}" class="text-{{ $mode === 'local' ? 'orange' : 'blue' }}">{{ $crumb->title_en }}</a>
                         @else
@@ -48,11 +49,11 @@
             </div>
 
             <!-- Bulk Action Bar -->
-            <div id="bulk-action-bar" class="box-body" style="background-color: #fffaeb; border-bottom: 1px solid #f4ecd8; display: none; padding: 10px 15px;">
-                <strong id="selected-count" class="text-orange" style="font-size: 15px; margin-right: 15px;">0 Items Selected</strong>
+            <div class="box-body classify-inline-f9a35d90" id="bulk-action-bar">
+                <strong class="text-orange classify-inline-9ac9a993" id="selected-count">0 Items Selected</strong>
                 
                 @if($mode === 'master')
-                    <button type="button" class="btn btn-warning btn-sm" onclick="executeExplorerBulkAdoption()" style="margin-right: 5px;">
+                    <button class="btn btn-warning btn-sm classify-inline-9761b3f7" type="button" onclick="executeExplorerBulkAdoption()">
                         <i class="fas fa-rocket"></i> Bulk Adopt Selected
                     </button>
                 @endif
@@ -66,17 +67,17 @@
 
             <!-- Main Explorer Table -->
             <div class="box-body table-responsive no-padding">
-                <table class="table table-hover table-striped">
-                    <thead style="background-color: #f9f9f9;">
+                <x-gs::table class="table table-hover table-striped">
+                    <thead class="classify-inline-0e5be659">
                         <tr>
-                            <th style="width: 40px; text-align: center;">
+                            <th class="classify-inline-ccddc627">
                                 <input type="checkbox" id="select-all">
                             </th>
-                            <th style="width: 50px;"></th> <!-- Icon -->
-                            <th style="width: 150px;">Code</th>
+                            <th class="classify-inline-5f3eb38a"></th> <!-- Icon -->
+                            <th class="classify-inline-5cb57137">Code</th>
                             <th>Classification Title</th>
-                            <th class="text-center" style="width: 150px;">Status / Source</th>
-                            <th class="text-center" style="width: 80px;">Actions</th>
+                            <th class="text-center classify-inline-5cb57137">Status / Source</th>
+                            <th class="text-center classify-inline-1b3b3079">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -89,7 +90,7 @@
                                 <td></td>
                                 <td class="text-center"><i class="fas fa-level-up-alt text-muted"></i></td>
                                 <td colspan="4">
-                                    <a href="{{ route('gov.catalog.discover.explorer', ['parent' => $upCode, 'mode' => $mode]) }}" class="text-muted" style="font-style: italic;">... Go up one level</a>
+                                    <a href="{{ route('gov.catalog.discover.explorer', ['parent' => $upCode, 'mode' => $mode]) }}" class="text-muted" class="classify-inline-b9963897">... Go up one level</a>
                                 </td>
                             </tr>
                         @endif
@@ -97,41 +98,41 @@
                         <!-- Nodes -->
                         @foreach($nodes as $node)
                             <tr>
-                                <td class="text-center" style="vertical-align: middle;">
+                                <td class="text-center classify-inline-da57c5e8">
                                     @if(!$node->is_folder || $mode === 'master')
                                         <input type="checkbox" class="node-checkbox" value="{{ $node->code }}">
                                     @endif
                                 </td>
-                                <td class="text-center" style="vertical-align: middle; font-size: 18px;">
+                                <td class="text-center classify-inline-a5a1a4ce">
                                     @if($node->is_folder)
                                         <a href="{{ route('gov.catalog.discover.explorer', ['parent' => $node->code, 'mode' => $mode]) }}"><i class="fas fa-folder text-yellow"></i></a>
                                     @else
                                         <i class="fas fa-file-alt text-muted"></i>
                                     @endif
                                 </td>
-                                <td style="vertical-align: middle;"><code>{{ $node->code }}</code></td>
-                                <td style="vertical-align: middle;">
+                                <td class="classify-inline-da57c5e8"><code>{{ $node->code }}</code></td>
+                                <td class="classify-inline-da57c5e8">
                                     @if($node->is_folder)
-                                        <a href="{{ route('gov.catalog.discover.explorer', ['parent' => $node->code, 'mode' => $mode]) }}" style="font-weight: bold; font-size: 14px;">{{ $node->title_en }}</a>
+                                        <a href="{{ route('gov.catalog.discover.explorer', ['parent' => $node->code, 'mode' => $mode]) }}" class="classify-inline-13d744a7">{{ $node->title_en }}</a>
                                     @else
-                                        <span style="font-weight: normal; font-size: 14px;">{{ $node->title_en }}</span>
+                                        <span class="classify-inline-8e1b3505">{{ $node->title_en }}</span>
                                     @endif
                                 </td>
-                                <td class="text-center" style="vertical-align: middle;">
+                                <td class="text-center classify-inline-da57c5e8">
                                     @if($node->is_folder)
-                                        <span class="label label-default" style="font-weight: normal; background-color: #f39c12 !important;">Folder</span>
+                                        <span class="label label-default classify-inline-752b87a9">Folder</span>
                                     @elseif($node->is_global)
                                         <span class="label label-success"><i class="fas fa-globe"></i> Global Std</span>
                                     @elseif($node->is_adopted)
                                         <span class="label label-success"><i class="fas fa-building"></i> Local Adopted</span>
                                     @else
-                                        <span class="label label-default" style="background-color: #ddd; color: #777;">Not Adopted</span>
+                                        <span class="label label-default classify-inline-a5fce76b">Not Adopted</span>
                                     @endif
                                 </td>
-                                <td class="text-center" style="vertical-align: middle;">
+                                <td class="text-center classify-inline-da57c5e8">
                                     <!-- Context Action Menu (⋮ Dropdown) -->
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false" style="padding: 2px 8px;">
+                                        <button class="btn btn-default btn-xs dropdown-toggle classify-inline-ebf01a20" type="button" data-toggle="dropdown" aria-expanded="false">
                                             <i class="fas fa-ellipsis-v"></i>
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-right" role="menu">
@@ -192,8 +193,8 @@
                             </tr>
                         @endforeach
                     </tbody>
-                </table>
-                <div style="padding: 10px;">
+                </x-gs::table>
+                <div class="classify-inline-801160c3">
                     {{ $nodes->appends(['parent' => $parentCode, 'mode' => $mode])->links() }}
                 </div>
             </div>
@@ -205,6 +206,7 @@
 @include('gov-classification::adopt.partials.bulk-preview')
 @include('gov-classification::discover.partials.collection-modal')
 
+</div>
 @endsection
 
 @section('moar_scripts')

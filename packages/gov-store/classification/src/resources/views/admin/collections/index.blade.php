@@ -1,6 +1,7 @@
 @extends('layouts/default')
 @section('title', 'Collection Library')
 @section('content')
+<div class="classification-theme">
 <div class="row">
     <div class="col-md-4">
         <div class="box box-primary">
@@ -29,7 +30,7 @@
         <div class="box box-default">
             <div class="box-header with-border"><h3 class="box-title">Existing Collections</h3></div>
             <div class="box-body table-responsive no-padding">
-                <table class="table table-hover">
+                <x-gs::table class="table table-hover">
                     <tr><th>Icon</th><th>Name</th><th>Nodes</th><th>Actions</th></tr>
                     @foreach($collections as $col)
                     <tr>
@@ -43,9 +44,10 @@
                         </td>
                     </tr>
                     @endforeach
-                </table>
+                </x-gs::table>
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

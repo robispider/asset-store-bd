@@ -3,88 +3,34 @@
 @section('title', __('organization_labels::orglabel.create_title'))
 
 @section('content')
+<div class="govorg-theme">
 
 {{-- Professional Government Workspace Styling --}}
-<style>
-    .onboarding-box {
-        border-radius: 6px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        border: 1px solid #d2d6de;
-        background: #fff;
-    }
-    .form-section-header {
-        font-size: 15px;
-        font-weight: bold;
-        color: var(--main-theme-color, #3c8dbc);
-        border-bottom: 2px solid #f4f4f4;
-        padding-bottom: 8px;
-        margin-top: 30px;
-        margin-bottom: 15px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    .form-section-header:first-of-type {
-        margin-top: 10px;
-    }
-    .form-section-header i {
-        font-size: 17px;
-    }
-    .advisory-box {
-        background: #fafafa;
-        border-left: 4px solid var(--main-theme-color, #3c8dbc);
-        padding: 15px;
-        border-radius: 0 4px 4px 0;
-        margin-bottom: 20px;
-        border-top: 1px solid #eee;
-        border-right: 1px solid #eee;
-        border-bottom: 1px solid #eee;
-    }
-    .duplicate-alert-callout {
-        background: #fffcf5;
-        border-left: 4px solid #f39c12;
-        padding: 15px;
-        border-radius: 0 4px 4px 0;
-        margin-bottom: 25px;
-        border-top: 1px solid #faebcc;
-        border-right: 1px solid #faebcc;
-        border-bottom: 1px solid #faebcc;
-    }
-    .list-group-custom .list-group-item {
-        background: transparent;
-        border-left: none;
-        border-right: none;
-        padding: 10px 0;
-        border-bottom: 1px dashed #ddd;
-    }
-    .list-group-custom .list-group-item:last-child {
-        border-bottom: none;
-    }
-</style>
+
 
 <div class="row">
     <!-- LEFT COLUMN: Step-Guided Provisioning Form -->
     <div class="col-md-7">
-        <div class="box onboarding-box" style="border-top: 3px solid var(--main-theme-color, #3c8dbc);">
-            <div class="box-header with-border" style="padding: 15px 20px;">
-                <h3 class="box-title" style="font-weight: bold; font-size: 16px;">
+        <div class="box onboarding-box org-inline-77cb079a">
+            <div class="box-header with-border org-inline-baa07011">
+                <h3 class="box-title org-inline-7a0ebc26">
                     <i class="fas fa-plus-circle"></i> {{ __('organization_labels::orglabel.create_workspace_title') }}
                 </h3>
             </div>
             
             <form action="{{ route('gov.org.provisioning.store') }}" method="POST">
                 @csrf
-                <div class="box-body" style="padding: 20px 25px;">
+                <div class="box-body org-inline-b9c79929">
                     
                     <!-- SECTION 1: IDENTITY -->
                     <div class="form-section-header">
                         <i class="fas fa-id-card"></i> <span>{{ __('organization_labels::orglabel.create_section_identity') }}</span>
                     </div>
-                    <div class="form-group" style="margin-bottom: 20px;">
+                    <div class="form-group org-inline-19f5c02e">
                         <label for="name">{{ __('organization_labels::orglabel.create_field_office_name') }} <span class="text-danger">*</span></label>
                         <input type="text" name="name" id="name" class="form-control input-lg" placeholder="{{ __('organization_labels::orglabel.create_placeholder_office_name') }}" required value="{{ old('name') }}">
                     </div>
-                    <div class="form-group" style="margin-bottom: 20px;">
+                    <div class="form-group org-inline-19f5c02e">
                         <label for="office_type">{{ __('organization_labels::orglabel.office_type_label') }}</label>
                         <select name="office_type" id="office_type" class="form-control" required>
                             @foreach(['default', 'hospital', 'school', 'ict_office'] as $type)
@@ -95,28 +41,28 @@
 
 
                     <!-- SECTION 2: GEOGRAPHY -->
-                    <div class="form-section-header" style="margin-top: 25px;">
+                    <div class="form-section-header org-inline-f5897d74">
                         <i class="fas fa-map-marked-alt"></i> <span>{{ __('organization_labels::orglabel.create_section_geography') }}</span>
                     </div>
-                    <div class="form-group" style="margin-bottom: 20px;">
+                    <div class="form-group org-inline-19f5c02e">
                         <label for="geoAreaSelector">{{ __('organization_labels::orglabel.create_field_geo_area') }} <span class="text-danger">*</span></label>
-                        <select name="geo_area_id" id="geoAreaSelector" class="form-control" required style="width: 100%;">
+                        <select class="form-control org-inline-442a70a1" name="geo_area_id" id="geoAreaSelector" required>
                             <option value="">{{ __('organization_labels::orglabel.create_placeholder_geo_area') }}</option>
                         </select>
-                        <p class="help-block" style="margin-top: 6px;"><i class="fas fa-info-circle"></i> {{ __('organization_labels::orglabel.create_help_geo_area') }}</p>
+                        <p class="help-block org-inline-a63df2d2"><i class="fas fa-info-circle"></i> {{ __('organization_labels::orglabel.create_help_geo_area') }}</p>
                     </div>
 
 
                     <!-- SECTION 3: ADMINISTRATION & MAPPING -->
-                    <div class="form-section-header" style="margin-top: 35px;">
+                    <div class="form-section-header org-inline-67ef8815">
                         <i class="fas fa-sitemap"></i> <span>{{ __('organization_labels::orglabel.create_section_hierarchy') }}</span>
                     </div>
                     
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group" style="margin-bottom: 20px;">
+                            <div class="form-group org-inline-19f5c02e">
                                 <label for="company_id">{{ __('organization_labels::orglabel.create_field_ministry') }}</label>
-                                <select name="company_id" id="company_id" class="form-control select2" style="width: 100%;">
+                                <select class="form-control select2 org-inline-442a70a1" name="company_id" id="company_id">
                                     <option value="">{{ __('organization_labels::orglabel.create_placeholder_standalone') }}</option>
                                     @foreach($companies as $company)
                                         <option value="{{ $company->id }}">{{ $company->name }}</option>
@@ -125,9 +71,9 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group" style="margin-bottom: 20px;">
+                            <div class="form-group org-inline-19f5c02e">
                                 <label for="parent_id">{{ __('organization_labels::orglabel.create_field_parent_office') }}</label>
-                                <select name="parent_id" id="parent_id" class="form-control select2" style="width: 100%;">
+                                <select class="form-control select2 org-inline-442a70a1" name="parent_id" id="parent_id">
                                     <option value="">{{ __('organization_labels::orglabel.create_placeholder_no_parent') }}</option>
                                     @foreach($offices as $parentLoc)
                                         <option value="{{ $parentLoc->id }}">{{ $parentLoc->name }}</option>
@@ -137,24 +83,24 @@
                         </div>
                     </div>
 
-                    <div class="form-group" style="margin-top: 10px; margin-bottom: 10px;">
+                    <div class="form-group org-inline-2eefb8c4">
                         <label for="office_admin_id">{{ __('organization_labels::orglabel.create_field_delegate_admin') }}</label>
-                        <select id="office_admin_id" class="form-control select2" disabled style="width: 100%;">
+                        <select class="form-control select2 org-inline-442a70a1" id="office_admin_id" disabled>
                             <option value="">{{ __('organization_labels::orglabel.create_placeholder_leave_unassigned') }}</option>
                             @foreach($users as $user)
                                 <option value="{{ $user->id }}">{{ $user->present()->fullName }} ({{ $user->username }})</option>
                             @endforeach
                         </select>
-                        <p class="help-block" style="margin-top: 6px;">{{ __('organization_labels::orglabel.starter_admin_membership') }}</p>
+                        <p class="help-block org-inline-a63df2d2">{{ __('organization_labels::orglabel.starter_admin_membership') }}</p>
                     </div>
 
                 </div>
                 
-                <div class="box-footer" style="padding: 15px 25px; background-color: #fafafa; border-top: 1px solid #f4f4f4;">
-                    <a href="{{ route('gov.org.provisioning.index') }}" class="btn btn-default pull-left" style="padding: 8px 15px;">
+                <div class="box-footer org-inline-57c164f8">
+                    <a class="btn btn-default pull-left org-inline-b28ac730" href="{{ route('gov.org.provisioning.index') }}">
                         <i class="fas fa-arrow-left"></i> {{ __('organization_labels::orglabel.create_button_return_registry') }}
                     </a>
-                    <button type="submit" class="btn btn-primary pull-right" style="padding: 8px 25px; font-weight: bold;">
+                    <button class="btn btn-primary pull-right org-inline-4140e91d" type="submit">
                         <i class="fas fa-building"></i> {{ __('organization_labels::orglabel.create_button_save_provision') }}
                     </button>
                 </div>
@@ -166,33 +112,33 @@
     <div class="col-md-5">
         
         <!-- Live Duplicate Checker Callout Widget -->
-        <div class="duplicate-alert-callout" id="duplicateWidget" style="display: none;">
-            <h4 style="font-weight: bold; margin-top: 0; color: #c0392b !important;">
+        <div class="duplicate-alert-callout org-inline-7a2148b2" id="duplicateWidget">
+            <h4 class="org-inline-3bcec61b">
                 <i class="fas fa-exclamation-triangle text-warning"></i> {{ __('organization_labels::orglabel.create_duplicate_warning_title') }}
             </h4>
-            <p class="text-muted" style="font-size: 13px; line-height: 1.5; margin-bottom: 15px;">
+            <p class="text-muted org-inline-65de619e">
                 {{ __('organization_labels::orglabel.create_duplicate_warning_desc') }}
             </p>
-            <ul id="duplicateList" class="list-group list-group-custom" style="margin-bottom: 10px;"></ul>
-            <p class="text-muted" style="font-size: 11px; margin-bottom: 0; font-style: italic;">
+            <ul class="list-group list-group-custom org-inline-cd0f5d85" id="duplicateList"></ul>
+            <p class="text-muted org-inline-086d17b8">
                 {{ __('organization_labels::orglabel.create_duplicate_note') }}
             </p>
         </div>
 
         <!-- Onboarding Advisory Panel -->
-        <div class="box onboarding-box" style="border-top: 3px solid #d2d6de;">
-            <div class="box-header with-border" style="padding: 15px 20px;">
-                <h3 class="box-title" style="font-weight: bold; font-size: 15px;"><i class="fas fa-info-circle text-muted"></i> {{ __('organization_labels::orglabel.create_guidelines_title') }}</h3>
+        <div class="box onboarding-box org-inline-8c4782bd">
+            <div class="box-header with-border org-inline-baa07011">
+                <h3 class="box-title org-inline-0fcefbc5"><i class="fas fa-info-circle text-muted"></i> {{ __('organization_labels::orglabel.create_guidelines_title') }}</h3>
             </div>
-            <div class="box-body" style="padding: 20px 25px;">
+            <div class="box-body org-inline-b9c79929">
                 <div class="advisory-box">
-                    <p style="margin-bottom: 0; font-size: 13px; font-weight: bold; color: #333;">{{ __('organization_labels::orglabel.create_advisory_spatial_title') }}</p>
-                    <p class="text-muted" style="font-size: 12.5px; line-height: 1.6; margin-top: 5px; margin-bottom: 0;">
+                    <p class="org-inline-65a31ca6">{{ __('organization_labels::orglabel.create_advisory_spatial_title') }}</p>
+                    <p class="text-muted org-inline-52aed2e2">
                         {{ __('organization_labels::orglabel.create_advisory_spatial_desc') }}
                     </p>
                 </div>
 
-                <ul style="padding-left: 20px; line-height: 1.8; color: #555; font-size: 13px;">
+                <ul class="org-inline-632dbc86">
                     <li><strong>{{ __('organization_labels::orglabel.create_step1_label') }}</strong> {{ __('organization_labels::orglabel.create_step1_desc') }}</li>
                     <li><strong>{{ __('organization_labels::orglabel.create_step2_label') }}</strong> {{ __('organization_labels::orglabel.create_step2_desc') }}</li>
                     <li><strong>{{ __('organization_labels::orglabel.create_step3_label') }}</strong> {{ __('organization_labels::orglabel.create_step3_desc') }}</li>
@@ -200,6 +146,7 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection
 

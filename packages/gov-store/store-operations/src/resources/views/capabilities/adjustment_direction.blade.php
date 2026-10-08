@@ -3,9 +3,9 @@
     $existing = $item ? $item->metadata()->where('field_key', 'adjustment_direction')->first()?->value : 'IN';
 @endphp
 
-<div class="col-md-6 form-group" style="margin-top:15px; padding: 0 10px;">
-    <label style="color:#475569; font-weight:bold;"><i class="fa fa-sliders"></i> Adjustment Direction</label>
-    <select name="items[{{ $index }}][meta][0][adjustment_direction]" class="form-control input-sm" style="border: 1px solid #cbd5e1; height: 36px;">
+<div class="col-md-6 form-group storeops-inline-139" >
+    <label  class="storeops-inline-138"><i class="fa fa-sliders"></i> Adjustment Direction</label>
+    <select name="items[{{ $index }}][meta][0][adjustment_direction]" class="form-control input-sm storeops-inline-137" >
         <option value="IN" {{ $existing === 'IN' ? 'selected' : '' }}>Physical Count Found (+ IN)</option>
         <option value="OUT" {{ $existing === 'OUT' ? 'selected' : '' }}>Damaged / Expired / Lost (- OUT)</option>
     </select>

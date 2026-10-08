@@ -16,6 +16,7 @@ use GovStore\OfficeMembership\Services\OfficeMembershipService;
 use GovStore\OfficeMembership\Services\TenantMembershipResolver;
 use GovStore\TenantScope\Contracts\MembershipContextResolver;
 use GovStore\TenantScope\Navigation\MenuRegistry;
+use GovStore\Theming\Facades\GsTheme;
 use Illuminate\Support\ServiceProvider;
 
 class OfficeMembershipServiceProvider extends ServiceProvider
@@ -26,6 +27,10 @@ class OfficeMembershipServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'govmem');
+
+        if ($this->app->bound('gs.theme')) {
+            GsTheme::assets()->css('office-membership', __DIR__.'/../resources/css/office-membership.css');
+        }
 
         // Inject UI Middlewares & Session Context Loader into global routing group
         $router = $this->app['router'];

@@ -3,6 +3,7 @@
 @section('title', __('office_membership::member.staff_title_prefix') . $location->name)
 
 @section('content')
+<div class="office-membership-theme">
 <div class="box box-warning">
     <div class="box-header"><h2 class="box-title">{{ __('office_membership::member.release_signoff_title') }}</h2></div>
     <div class="box-body">
@@ -24,7 +25,7 @@
                 <h3 class="box-title"><i class="fas fa-users"></i> {{ __('office_membership::member.staff_active_label') }} ({{ $activeStaff->count() }})</h3>
             </div>
             <div class="box-body table-responsive">
-                <table class="table table-striped">
+                <x-gs::table class="table table-striped">
                     <thead>
                         <tr><th>{{ __('office_membership::member.staff_table_employee') }}</th><th>{{ __('office_membership::member.staff_table_username') }}</th><th>{{ __('office_membership::member.staff_table_type') }}</th><th>{{ __('office_membership::member.staff_table_status') }}</th></tr>
                     </thead>
@@ -49,7 +50,7 @@
                             <tr><td colspan="4" class="text-center">{{ __('office_membership::member.staff_no_active') }}</td></tr>
                         @endforelse
                     </tbody>
-                </table>
+                </x-gs::table>
             </div>
         </div>
     </div>
@@ -64,13 +65,13 @@
             <div class="box-body no-padding">
                 <ul class="nav nav-stacked">
                     @foreach($pendingMemberships as $req)
-                    <li style="padding: 10px 15px; border-bottom: 1px solid #f4f4f4; display: flex; justify-content: space-between;">
+                    <li class="om-inline-c6345704">
                         <div>
                             <!-- DEFENSIVE CHECK -->
                             <strong>{{ $req->user ? $req->user->present()->fullName : __('office_membership::member.staff_unknown_employee') }}</strong><br>
                             <small class="text-muted">{{ $req->user->username ?? '-' }}</small>
                         </div>
-                        <div style="display: flex; gap: 5px;">
+                        <div class="om-inline-51676ca7">
                             <form action="{{ route('gov.membership.admin.approve', $req->id) }}" method="POST">@csrf <button class="btn btn-xs btn-success" aria-label="{{ __('office_membership::member.admin_membership_approved') }}"><i class="fas fa-check"></i></button></form>
                             <form action="{{ route('gov.membership.admin.reject', $req->id) }}" method="POST">@csrf <button class="btn btn-xs btn-danger" aria-label="{{ __('office_membership::member.admin_membership_rejected') }}"><i class="fas fa-times"></i></button></form>
                         </div>
@@ -87,9 +88,9 @@
             <form action="{{ route('gov.membership.admin.add-employee') }}" method="POST">
                 @csrf
                 <div class="box-body">
-                    <p class="text-muted" style="font-size: 12px;">{{ __('office_membership::member.staff_add_external_hint') }}</p>
+                    <p class="text-muted om-inline-a55a8c40">{{ __('office_membership::member.staff_add_external_hint') }}</p>
                     <div class="form-group"><input type="text" name="username" class="form-control" placeholder="{{ __('office_membership::member.staff_add_username_placeholder') }}" required></div>
-                    <div class="form-group"><input type="text" name="verification_code" class="form-control" placeholder="{{ __('office_membership::member.staff_add_code_placeholder') }}" required maxlength="6" style="text-transform: uppercase;"></div>
+                    <div class="form-group"><input class="form-control om-inline-2ad9dde7" type="text" name="verification_code" placeholder="{{ __('office_membership::member.staff_add_code_placeholder') }}" required maxlength="6"></div>
                 </div>
                 <div class="box-footer"><button type="submit" class="btn btn-success btn-block">{{ __('office_membership::member.staff_add_verify_button') }}</button></div>
             </form>
@@ -100,10 +101,10 @@
             <div class="box-header with-border"><h3 class="box-title"><i class="fas fa-bullhorn text-primary"></i> {{ __('office_membership::member.staff_mass_invite_label') }}</h3></div>
             <div class="box-body text-center">
                 @if($profile->invitation_code && $profile->invitation_code_expires_at->isFuture())
-                    <p class="text-muted" style="font-size: 12px;">{{ __('office_membership::member.staff_share_code_hint') }}</p>
-                    <div style="background: #f4f4f4; border: 1px dashed #ccc; padding: 10px; margin-bottom: 10px;">
-                        <span style="font-size: 24px; font-weight: bold; letter-spacing: 3px;">{{ $profile->invitation_code }}</span><br>
-                        <span class="text-danger" style="font-size: 10px;">{{ __('office_membership::member.expires') }}: {{ $profile->invitation_code_expires_at->format('Y-m-d') }}</span>
+                    <p class="text-muted om-inline-a55a8c40">{{ __('office_membership::member.staff_share_code_hint') }}</p>
+                    <div class="om-inline-3801632f">
+                        <span class="om-inline-b654cc01">{{ $profile->invitation_code }}</span><br>
+                        <span class="text-danger om-inline-0346f018">{{ __('office_membership::member.expires') }}: {{ $profile->invitation_code_expires_at->format('Y-m-d') }}</span>
                     </div>
                 @else
                     <p class="text-warning"><i class="fas fa-exclamation-triangle"></i> {{ __('office_membership::member.staff_no_active_code') }}</p>
@@ -120,9 +121,9 @@
             <form action="{{ route('gov.membership.claim') }}" method="POST">
                 @csrf
                 <div class="box-body">
-                    <p class="text-muted" style="font-size:12px;">{{ __('office_membership::member.staff_claim_hint') }}</p>
+                    <p class="text-muted om-inline-92a5d53a">{{ __('office_membership::member.staff_claim_hint') }}</p>
                     <div class="form-group">
-                        <select name="user_id" class="form-control select2" required style="width: 100%;">
+                        <select class="form-control select2 om-inline-442a70a1" name="user_id" required>
                             <option value="">{{ __('office_membership::member.staff_claim_select_placeholder') }}</option>
                             @foreach($floatingUsers as $u)
                                 <!-- DEFENSIVE OPTIONAL WRAPPER -->
@@ -136,5 +137,6 @@
         </div>
 
     </div>
+</div>
 </div>
 @endsection

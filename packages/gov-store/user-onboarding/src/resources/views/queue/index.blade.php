@@ -1,17 +1,19 @@
 @extends('layouts/default')
 @section('title', __('govonboard::onboard.title'))
 @section('content')
-<div class="box box-primary">
-    <div class="box-header"><h1 class="box-title">{{ __('govonboard::onboard.title') }}</h1></div>
-    <div class="box-body">
+<div class="govonboard-theme">
+    @php
+        $statusTabs = collect(['WAITING', 'COMPLETED', 'CANCELLED'])->map(fn (string $tab): array => [
+            'key' => $tab,
+            'label' => __('govonboard::onboard.'.$tab),
+            'href' => route('gov.onboard.index', ['status' => $tab]),
+        ])->all();
+    @endphp
+    <x-gs::box :title="__('govonboard::onboard.title')" icon="fas fa-user-plus" tone="primary">
         <p>{{ __('govonboard::onboard.intro') }}</p>
-        <nav aria-label="{{ __('govonboard::onboard.status') }}">
-            @foreach(['WAITING','COMPLETED','CANCELLED'] as $tab)
-                <a class="btn {{ $status === $tab ? 'btn-primary' : 'btn-default' }}" href="{{ route('gov.onboard.index', ['status' => $tab]) }}" @if($status === $tab) aria-current="page" @endif>{{ __('govonboard::onboard.'.$tab) }}</a>
-            @endforeach
-        </nav>
+        <x-gs::status-tabs :tabs="$statusTabs" :active="$status" :label="__('govonboard::onboard.status')" />
         @include('govonboard::queue.notices')
-        <div class="table-responsive"><table class="table table-striped">
+        <div class="table-responsive"><x-gs::table class="table table-striped">
             <thead><tr><th scope="col">{{ __('govonboard::onboard.employee') }}</th><th scope="col">{{ __('govonboard::onboard.authority') }}</th><th scope="col">{{ __('govonboard::onboard.actions') }}</th></tr></thead>
             <tbody>
             @forelse($queue as $item)
@@ -62,8 +64,8 @@
                 <tr><td colspan="3">{{ __('govonboard::onboard.empty') }}</td></tr>
             @endforelse
             </tbody>
-        </table></div>
+        </x-gs::table></div>
         {{ $queue->links() }}
-    </div>
+    </x-gs::box>
 </div>
 @endsection

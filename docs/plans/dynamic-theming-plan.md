@@ -965,14 +965,14 @@ Order and status (hex-literal counts are the figure recorded when this plan was 
 
 | Package | R1 at plan time | Status | Migrated |
 |---|---|---|---|
-| store-operations | 274 | not started | — |
+| store-operations | 274 | **done** | **2026-10-08** — all package views use registered token-based CSS and GS tables; compliance baseline entries removed |
 | **tracking** | **225** | **done** | **2026-10-07** — all 13 views, `tracking.css` registered, baseline entries removed |
-| classification | 145 | not started | — |
+| classification | 145 | **done** | **2026-10-08** — package views use registered token-based CSS and GS tables; compliance baseline entries removed |
 | custom-requests | 77 | **done** | **2026-10-08** — all request views use registered token-based package CSS and GS tables; compliance baseline entries removed |
-| organization | 65 | not started | — |
-| office-membership | 30 | not started | — |
+| organization | 65 | **done** | **2026-10-08** — all package views use registered token-based CSS and GS tables; compliance baseline entries removed |
+| office-membership | 30 | **done** | **2026-10-08** — all package views use registered token-based CSS and GS tables; compliance baseline entries removed |
 | tenant-scope | 3 | not started | — |
-| user-onboarding | 1 | not started | — |
+| user-onboarding | 1 | **done** | **2026-10-08** — queue and self-service views use registered token-based CSS and GS components; compliance baseline entries removed |
 
 Within a package, highest-traffic screens first (Store Documents Hub, Goods Receipt workspace, Stock Register Dashboard, Fulfillment Queue).
 
