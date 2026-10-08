@@ -40,6 +40,7 @@ class OperationUnitController extends Controller
 
         $term = $request->input('q');
         $initiative = Initiative::findOrFail($request->input('initiative_id'));
+        $this->authService->authorize($initiative, ['HEAD']);
 
         $users = DB::table('users')
             ->join('company_user', 'users.id', '=', 'company_user.user_id')
@@ -77,6 +78,7 @@ class OperationUnitController extends Controller
 
         $designation = $request->input('designation');
         $userId = $request->input('user_id');
+        abort_unless(DB::table('company_user')->where('user_id', $userId)->where('company_id', $initiative->owner_company_id)->exists(), 404);
 
         if ($designation === 'HEAD') {
             $existingHead = OperationUnit::where('initiative_id', $initiative->id)

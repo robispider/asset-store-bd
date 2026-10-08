@@ -53,8 +53,8 @@ class TrackingMetadataProvider implements MetadataProviderInterface
         return TrackingAssociation::where('associatable_type', 'App\Models\Asset')
             ->where('associatable_id', $assetId)
             ->where('status', 'ACTIVE')
-            ->whereHas('reference.trackingType', function ($query) {
-                $query->whereIn('code', ['GRANT', 'DONOR_GRANT', 'ADP']);
+            ->whereHas('trackingCode.fundingType', function ($query) {
+                $query->whereIn('primary_type', ['ADP', 'OTHER']);
             })
             ->exists();
     }

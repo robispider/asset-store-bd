@@ -9,6 +9,7 @@ use GovStore\Tracking\Models\TrackingFactDelivery;
 use GovStore\Tracking\Models\TrackingTimeline;
 use GovStore\Organization\Models\LocationProfile;
 use Illuminate\Support\Facades\DB;
+use GovStore\Tracking\Services\ProjectionRefresh;
 
 class AssociateInventoryToProgramme
 {
@@ -21,10 +22,38 @@ class AssociateInventoryToProgramme
         // 1. Resolve the active Tracking Code task
         $trackingCode = TrackingCode::where('tracking_code', $event->trackingCode)->first();
         if (!$trackingCode) {
-            return; // Exit gracefully if the code does not exist
+            throw new \InvalidArgumentException('Programme receipt code does not exist.');
         }
 
         DB::transaction(function () use ($event, $trackingCode) {
+            // Serialize fact updates, including nullable dimension combinations.
+            $trackingCode = TrackingCode::whereKey($trackingCode->id)->lockForUpdate()->firstOrFail();
+            $initiative = \GovStore\Tracking\Models\Initiative::withoutGlobalScopes()->whereKey($trackingCode->initiative_id)->lockForUpdate()->firstOrFail();
+            $trackingCode->setRelation('initiative', $initiative);
+            if ($trackingCode->status !== 'ACTIVE' || $initiative->status !== 'Active'
+                || ! app(\GovStore\Tracking\Services\ScopeValidatorService::class)->validateExecutionScope($trackingCode, $event->locationId)['is_valid']) {
+                throw new \InvalidArgumentException('Programme receipt is outside the active execution scope.');
+            }
+            $deliveryKey = hash('sha256', $event->movementId ? 'movement:'.$event->movementId
+                : 'legacy:'.json_encode([$event->trackingCode, $event->grnReference,
+                    $event->categoryId, $event->locationId, $event->associatables]));
+            if (DB::table('gov_tracking_deliveries')->where('delivery_key', $deliveryKey)->exists()) {
+                return;
+            }
+            if ($event->quantity < 1 || $event->categoryId < 1 || $event->locationId < 1) {
+                throw new \InvalidArgumentException('Invalid programme delivery dimensions.');
+            }
+            if ($event->associatables) {
+                $ids = array_unique(array_column($event->associatables, 'id'));
+                if (count($ids) !== $event->quantity || collect($event->associatables)->contains(fn ($item) => $item['type'] !== \App\Models\Asset::class)
+                    || \App\Models\Asset::whereIn('id', $ids)->where('location_id', $event->locationId)
+                        ->whereHas('model', fn ($q) => $q->where('category_id', $event->categoryId))->count() !== $event->quantity) {
+                    throw new \InvalidArgumentException('Programme receipt assets do not match the payload.');
+                }
+            }
+            $deliveryId = DB::table('gov_tracking_deliveries')->insertGetId([
+                'delivery_key' => $deliveryKey, 'tracking_code_id' => $trackingCode->id, 'created_at' => now(),
+            ]);
             $now = now();
 
             // =============================================================
@@ -54,8 +83,8 @@ class AssociateInventoryToProgramme
                     'category_id'       => $event->categoryId,
                     'location_id'       => $event->locationId,
                     'quantity'          => $event->quantity, 
-                    'associatable_type' => 'GovStore\StoreOperations\Models\InventoryMovement', 
-                    'associatable_id'   => 0,
+                    'associatable_type' => \GovStore\Tracking\Models\TrackingDelivery::class,
+                    'associatable_id'   => $deliveryId,
                     'status'            => 'ACTIVE',
                     'created_at'        => $now,
                     'updated_at'        => $now,
@@ -63,7 +92,9 @@ class AssociateInventoryToProgramme
             }
 
             // High-performance bulk insert bypass
-            TrackingAssociation::insertOrIgnore($associationData);
+            if (TrackingAssociation::insertOrIgnore($associationData) !== count($associationData)) {
+                throw new \InvalidArgumentException('Programme assets already belong to another delivery.');
+            }
 
             // =============================================================
             // B. UPDATE/CREATE THE MULTI-DIMENSIONAL FACT ROW (OLAP Cube)
@@ -79,7 +110,8 @@ class AssociateInventoryToProgramme
                 'tracking_code_id' => $trackingCode->id,
                 'location_id'      => $event->locationId,
                 'category_id'      => $event->categoryId,
-                'model_id'         => $event->modelId ?: null,
+                // Bulk stock IDs are not native model IDs.
+                'model_id'         => !empty($event->associatables) ? ($event->modelId ?: null) : null,
                 'manufacturer_id'  => $event->manufacturerId ?: null,
                 'supplier_id'      => $event->supplierId ?: null,
             ]);
@@ -126,6 +158,7 @@ class AssociateInventoryToProgramme
                     'occurred_at'   => $now,
                 ]);
             }
+            ProjectionRefresh::initiative((int) $trackingCode->initiative_id);
         });
     }
 }

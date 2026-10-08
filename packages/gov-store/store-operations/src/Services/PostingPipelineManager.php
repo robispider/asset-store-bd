@@ -115,7 +115,7 @@ class PostingPipelineManager
                     $movementNotes = $document->type === 'adjustment'
                         ? 'Adjustment '.$document->adjustment_reason.'; source '.$document->source_document_id
                         : null;
-                    app(LedgerPostingService::class)->postMovement(
+                    $movement = app(LedgerPostingService::class)->postMovement(
                         $item->product_type, (int) $item->product_id,
                         $direction, (int) $item->quantity,
                         $document, $document->company_id ? (int) $document->company_id : null,
@@ -126,7 +126,7 @@ class PostingPipelineManager
                     // HANDSHAKE B: THE UNIFIED EVENT DISPATCHER (Corrected Signature v3)
                     // ========================================================================
                     // Triggers synchronously if the Tracking Package is installed & code exists
-                    if (! empty($trackingCode) && class_exists('\GovStore\Tracking\Events\InventoryMaterializedAgainstProgramme')) {
+                    if ($document->type === 'receipt' && ! empty($trackingCode) && class_exists('\GovStore\Tracking\Events\InventoryMaterializedAgainstProgramme')) {
 
                         // A. Resolve core category ID dynamically
                         $categoryId = $this->resolveCategoryId($item->product_type, $item->product_id);
@@ -167,7 +167,8 @@ class PostingPipelineManager
                             $userId,           // Argument #9: (int - actorId)
                             $voucherNo,        // Argument #10: (string)
                             $associatables,    // Argument #11: (array)
-                            null               // Argument #12: (string|null)
+                            null,              // Argument #12: (string|null)
+                            (string) $movement->id // Durable delivery identity, distinct for each receipt line
                         ));
                     }
                 }

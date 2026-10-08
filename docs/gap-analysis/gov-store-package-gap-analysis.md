@@ -4,7 +4,7 @@ Original review: 4 October 2026 · @zahid. Reassessed: **7 October 2026 (Asia/Dh
 
 ## Updated scorecard
 
-**35 of the original 64 gaps are mitigated (54.69%); 8 are partially mitigated; 21 remain open.** There are **29 gaps requiring further work**, including the partial rows. The package sections below are arranged in dependency order, with foundations before their consumers.
+**41 of the original 64 gaps are mitigated (64.06%); 9 are partially mitigated; 14 remain open.** There are **23 gaps requiring further work**, including the partial rows. The package sections below are arranged in dependency order, with foundations before their consumers.
 
 Tenant-scope implementation update: **7 October 2026 (Asia/Dhaka), working tree**. The original reassessment revision above remains the baseline for the other packages. See [tenant-scope implementation and verification](../verification/tenant-scope-implementation-2026-10-07.md).
 
@@ -29,22 +29,22 @@ These are implementation statuses, not production closure. Office-role enforceme
 | 5 | user-onboarding | 4 | 4 | 0 | 0 | Deploy history/notices; finish manager UI and historical orphan review |
 | 6 | classification | 7 | 2 | 0 | 5 | Deploy reviewed starter library; queue bulk adoption |
 | 7 | metadata | 4 | 0 | 0 | 4 | Stabilize provider and field-mapping contracts |
-| 8 | tracking | 7 | 0 | 0 | 7 | Fix projection refresh and scoped evaluation |
+| 8 | tracking | 7 | 6 | 1 | 0 | Deploy additive migration; reconcile historical duplicate facts; finish remaining legacy messages |
 | 9 | committee | 2 | 1 | 1 | 0 | Registry delivered; complete consumer integration boundary |
 | 10 | store-operations | 8 | 2 | 3 | 3 | Ledger cut-over, remaining document types and receipt fields |
 | 11 | custom-requests | 6 | 5 | 1 | 0 | Complete item adapters after stock contracts |
 | 12 | experimentation | 4 | 1 | 1 | 2 | Isolated fixture CI, packaging and restore |
-| **Total** | **12 packages** | **64** | **35** | **8** | **21** | **29 still require work** |
+| **Total** | **12 packages** | **64** | **41** | **9** | **14** | **23 still require work** |
 
 Original severities are preserved for reconciliation with the baseline. They are not a new assessment of residual risk.
 
 | Original severity | Original gaps | Mitigated | Partial | Open |
 | --- | --- | --- | --- | --- |
 | Critical | 3 | 3 | 0 | 0 |
-| High | 19 | 12 | 4 | 3 |
-| Medium | 31 | 15 | 4 | 12 |
-| Low | 11 | 5 | 0 | 6 |
-| **Total** | **64** | **35** | **8** | **21** |
+| High | 19 | 14 | 4 | 1 |
+| Medium | 31 | 18 | 5 | 8 |
+| Low | 11 | 6 | 0 | 5 |
+| **Total** | **64** | **41** | **9** | **14** |
 
 ### Counting and evidence
 
@@ -230,19 +230,19 @@ Verification and operational limits are recorded in [the tenant-scope execution 
 
 ## 8. tracking
 
-**0 mitigated, 0 partial, 7 open.** Store Operations now has an in-process fail-closed verifier adapter; this does not close tracking's original projection/event/HTTP gaps.
+**6 mitigated, 1 partial, 0 open.** Updated 8 October 2026 (Asia/Dhaka). See [Tracking implementation and verification](../verification/tracking-implementation-2026-10-08.md). Local implementation does not close historical data reconciliation or deployment/rollout work.
 
 **Internal order:** TR-7 portable registration → TR-1 projection resolution → TR-5 scoped verifier → TR-2 with receipt posting. Upload/spreadsheet/UI work can proceed independently.
 
 | ID | Original severity | Status | Current finding and evidence | Remaining mitigation |
 | --- | --- | --- | --- | --- |
-| TR-1 | High | Open | `TrackingAssociationObserver` still dispatches nonexistent `tracking_reference_id` rather than resolving initiative through `tracking_code_id`. | Resolve initiative and rebuild after commit; cover create/update/delete and bulk-insert listener paths. |
-| TR-2 | High | Open | `AssociateAssetsToProgramme` listens for `AssetsReceivedViaGRN`; serialized receipt creation does not emit it. | Establish payload/transaction handoff, emit after successful receipt and verify associations/projection without duplicate delivery. |
-| TR-3 | Medium | Open | Unrouted `TrackingDocumentController` still references missing `TrackingReference`. | Rebuild on `TrackingCode` with private storage, ownership/download checks and valid routes. |
-| TR-4 | Medium | Open | Spreadsheet round-trip claims lack implementation/library. | Correct `refactor plan2.md` or implement/verify defined import/export. |
-| TR-5 | Medium | Open | Evaluation uses session auth and lacks complete caller-office authorization. Submitted location existence does not confer authority. | Authorize actor/object/scope; share in-process verifier. Token API needs its own authentication/authorization design. |
-| TR-6 | Medium | Open | Inline script/view structure and English text remain package-wide. | Bundle/translate/extract components, preserving existing narrower authorization. |
-| TR-7 | Low | Open | Root registration uses `GovStore\tracking`; declarations use `GovStore\Tracking`; manifest remains `proprietary`. | Correct case everywhere, verify case-sensitive loading and resolve licence. |
+| TR-1 | High | Mitigated | Shared refresh resolves old/new initiative IDs, invalidates inside the transaction and queues rebuild after commit. Targets/tasks and bulk listener paths refresh too. Live progress derives from active associations; rebuild preserves historical delivery facts. | Reconcile the retained two-unit historical fact discrepancy under a reviewed data plan; run cache rebuild after deployment. |
+| TR-2 | High | Mitigated | Serialized receipt posts native assets, registrations, ledger, associations, delivery fact and timeline atomically through the unified event. Durable movement keys reject replay; task locking serializes nullable fact dimensions. Isolated pipeline/rollback tests and MySQL replay/lock exercise pass. | Deploy marker migration and restart workers. Legacy replay keys are compatibility payload hashes; historical facts are retained. |
+| TR-3 | Medium | Mitigated | Nested task evidence routes use private storage, task/initiative/document ownership, narrower team roles and locked draft-state checks. File deletion follows commit. | Historical reference-only evidence is not assigned to tasks by guessing; inventory and map any such records before use. |
+| TR-4 | Medium | Mitigated | `refactor plan2.md` distinguishes delivered clipboard grid editing from proposed workbook import/export, templates and distribution. Unsupported completion claims are removed. | Workbook file import/export remains a future feature, not an advertised delivery. |
+| TR-5 | Medium | Mitigated | Session HTTP and in-process verification share an active working-office/ability/lifecycle/geography/participant check. Supplied foreign office is rejected even in shadow mode. Native admin no longer grants programme-wide access. Nested/body IDs and matrix proposals are validated. | Browser endpoints remain session-authenticated. A token API needs a separate approved authentication design. |
+| TR-6 | Medium | Partial | All 21 views have no executable inline scripts/handlers. Matrix, task and workspace controls are bundled; 407 English/Bangla keys have recursive parity. Saved matrices now render on edit, hidden inputs serialize once, menus exist, and negative quantity blocks save. | Finish remaining legacy controller messages, status/event presentation and broader bilingual/tablet/accessibility review. Stored historical audit text and native catalog names are retained. |
+| TR-7 | Low | Mitigated | Root namespace/provider case matches `GovStore\Tracking`. Manifest uses the user-approved host licence `AGPL-3.0-or-later`; autoload generation and effective route class loading pass. | Confirm Linux CI/deployment; this Windows check is not a Linux execution result. |
 
 ## 9. committee
 

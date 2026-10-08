@@ -13,6 +13,7 @@ class TrackingAssociation extends Model
     protected $fillable = [
         'tracking_code_id',
         'category_id',
+        'location_id',
         'quantity',
         'associatable_type',
         'associatable_id',
@@ -23,6 +24,8 @@ class TrackingAssociation extends Model
     {
         return $this->belongsTo(TrackingCode::class, 'tracking_code_id');
     }
+    public function category(): BelongsTo { return $this->belongsTo(\App\Models\Category::class); }
+    public function location(): BelongsTo { return $this->belongsTo(\App\Models\Location::class); }
 
     public function associatable(): MorphTo
     {

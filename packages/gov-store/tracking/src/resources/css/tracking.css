@@ -207,6 +207,8 @@
     transition: background-color .15s;
 }
 .gs-context-menu ul li:hover { background: var(--gs-color-surface-sunken); }
+.gs-context-menu button { display: block; width: 100%; border: 0; background: transparent; color: inherit; text-align: left; padding: 5px; }
+.gs-context-menu button:focus-visible, .header-name:focus-visible { outline: 2px solid var(--gs-color-primary); }
 .gs-context-menu ul li i { margin-right: 8px; color: var(--gs-color-text-muted); }
 
 .gs-dragging { opacity: .4; border: 2px dashed var(--gs-color-primary) !important; }

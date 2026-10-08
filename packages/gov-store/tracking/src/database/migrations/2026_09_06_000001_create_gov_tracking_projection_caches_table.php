@@ -9,7 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         // Defensively drop the existing table first to prevent migration collisions
-        Schema::dropIfExists('gov_tracking_projection_caches');
+        if (Schema::hasTable('gov_tracking_projection_caches')) {
+            return;
+        }
 
         Schema::create('gov_tracking_projection_caches', function (Blueprint $table) {
             $table->id();

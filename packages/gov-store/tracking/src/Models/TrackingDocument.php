@@ -12,7 +12,7 @@ class TrackingDocument extends Model
     protected $table = 'gov_tracking_documents';
 
     protected $fillable = [
-        'tracking_reference_id',
+        'tracking_code_id',
         'file_name',
         'file_path',
         'file_size',
@@ -20,18 +20,9 @@ class TrackingDocument extends Model
         'uploaded_by',
     ];
 
-    protected static function booted()
+    public function trackingCode(): BelongsTo
     {
-        static::deleting(function (TrackingDocument $document) {
-            if (Storage::disk('local')->exists($document->file_path)) {
-                Storage::disk('local')->delete($document->file_path);
-            }
-        });
-    }
-
-    public function reference(): BelongsTo
-    {
-        return $this->belongsTo(TrackingReference::class, 'tracking_reference_id');
+        return $this->belongsTo(TrackingCode::class, 'tracking_code_id');
     }
 
     public function uploader(): BelongsTo

@@ -94,6 +94,23 @@ class Handler extends ExceptionHandler
                 ? response()->json(['error' => $message, 'reference_id' => $reference], $e->getStatusCode())
                 : response()->view('govscope::access.failure', compact('message', 'reference'), $e->getStatusCode());
         }
+        if ($request->is('gov-store/admin/tracking*', 'gov-store/api/tracking*')
+            && ! $e instanceof AuthenticationException && ! $e instanceof TokenMismatchException) {
+            if (app()->bound('debugbar')) app('debugbar')->disable();
+            if ($e instanceof ValidationException) {
+                return $request->expectsJson()
+                    ? response()->json(['message' => __('govtracking::general.invalid_input'), 'errors' => $e->errors()], 422)
+                    : redirect()->back()->withInput($request->except(['document', 'order_pdf', '_token']))->withErrors($e->errors());
+            }
+            $reference = (string) Str::uuid();
+            $status = $e instanceof ModelNotFoundException ? 404
+                : ($e instanceof HttpExceptionInterface ? $e->getStatusCode() : ($e instanceof AuthorizationException ? 403 : 500));
+            Log::warning('Tracking request failed', ['reference_id' => $reference, 'exception' => $e]);
+            $message = __('govtracking::general.safe_failure', ['reference' => $reference]);
+            return $request->expectsJson()
+                ? response()->json(['message' => $message, 'reference_id' => $reference], $status)
+                : response()->view('govtracking::error', compact('message', 'reference'), $status);
+        }
         // GovStore declares real HTTP failures; preserve Snipe-IT's legacy API contract elsewhere.
         $govAbility = collect($request->route()?->gatherMiddleware() ?? [])
             ->first(fn ($middleware) => is_string($middleware) && str_starts_with($middleware, 'gov.can:'));

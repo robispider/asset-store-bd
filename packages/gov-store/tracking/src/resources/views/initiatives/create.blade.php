@@ -1,38 +1,37 @@
 @extends('layouts/default')
-@section('title', 'Launch New Initiative')
+@section('title', __('govtracking::general.ui.launch_new_initiative'))
 
 @section('content')
 <div class="row">
     <div class="col-md-8 col-md-offset-2">
         <form action="{{ route('gov.tracking.initiatives.store') }}" method="POST">
             @csrf
-            
+
             <!-- Section 1: The Identity -->
             <div class="box box-solid">
-                <div class="box-header with-border"><h3 class="box-title text-aqua">1. Initiative Details</h3></div>
+                <div class="box-header with-border"><h3 class="box-title text-aqua">{{ __('govtracking::general.ui.1_initiative_details') }}</h3></div>
                 <div class="box-body">
                     <div class="form-group">
-                        <label>Initiative Title</label>
-                        <input type="text" name="title" class="form-control input-lg" placeholder="e.g. School ICT Modernization 2027" required>
+                        <label>{{ __('govtracking::general.ui.initiative_title') }}</label>
+                        <input type="text" name="title" class="form-control input-lg" placeholder="{{ __('govtracking::general.ui.extra_e_g_school_ict_modernization_2027') }}" required>
                     </div>
                     <div class="form-group">
-                        <label>Business Purpose / Description</label>
-                        <textarea name="purpose" class="form-control" rows="3" placeholder="What is the operational goal of this umbrella initiative?"></textarea>
+                        <label>{{ __('govtracking::general.ui.business_purpose_description') }}</label>
+                        <textarea name="purpose" class="form-control" rows="3" placeholder="{{ __('govtracking::general.ui.extra_what_is_the_operational_goal_of_this_umbrella_initiative') }}"></textarea>
                     </div>
                     <div class="row">
                         <div class="col-md-6 form-group">
-                            <label>Primary Segment Type</label>
+                            <label>{{ __('govtracking::general.ui.primary_segment_type') }}</label>
                             <select name="primary_funding" class="form-control" required>
-                                <option value="ADP">ADP (Development Budget)</option>
-                                <option value="REVENUE">Revenue Budget (Non-Development)</option>
-                                <option value="OTHER">Other / Autonomous Reserves</option>
+                                <option value="ADP">{{ __('govtracking::general.ui.adp_development_budget') }}</option>
+                                <option value="REVENUE">{{ __('govtracking::general.ui.revenue_budget_non_development') }}</option>
+                                <option value="OTHER">{{ __('govtracking::general.ui.other_autonomous_reserves') }}</option>
                             </select>
                         </div>
                         <div class="col-md-6 form-group">
-                            <label>Initial Lifecycle Status</label>
+                            <label>{{ __('govtracking::general.ui.initial_lifecycle_status') }}</label>
                             <select name="status" class="form-control" required>
-                                <option value="Planning" selected>Planning (Setup Phase)</option>
-                                <option value="Active">Active (Open for Operations)</option>
+                                <option value="Planning" selected>{{ __('govtracking::general.ui.planning_setup_phase') }}</option>
                             </select>
                         </div>
                     </div>
@@ -41,33 +40,33 @@
 
             <!-- Section 2: Natural Language Ownership & Accountability -->
             <div class="box box-solid">
-                <div class="box-header with-border"><h3 class="box-title text-orange">2. Ownership & Accountability</h3></div>
+                <div class="box-header with-border"><h3 class="box-title text-orange">{{ __('govtracking::general.ui.2_ownership_accountability') }}</h3></div>
                 <div class="box-body">
                     <div class="form-group">
-                        <label>Which organization legally owns this initiative?</label>
+                        <label>{{ __('govtracking::general.ui.which_organization_legally_owns_this_initiative') }}</label>
                         <select id="owner_company_id" name="owner_company_id" class="form-control select2" required>
-                            <option value="">-- Select Ministry / Organization --</option>
+                            <option value="">{{ __('govtracking::general.ui.select_ministry_organization') }}</option>
                             @foreach($companies as $company)
                                 <option value="{{ $company->id }}">{{ $company->name }}</option>
                             @endforeach
                         </select>
                     </div>
-                    
-                    <x-gs::alert tone="warning" title="Operation Unit Required">
-                        <p class="text-sm">You must designate an Operation Head and at least one Operation Officer inside the workspace immediately after launching before this Initiative can be activated.</p>
+
+                    <x-gs::alert tone="warning" :title="__('govtracking::general.ui.extra_operation_unit_required')">
+                        <p class="text-sm">{{ __('govtracking::general.ui.you_must_designate_an_operation_head_and_at_least_one_operation_officer_inside_the_workspace_immediately_after_launching_before_this_initiative_can_be_activated') }}</p>
                     </x-gs::alert>
                 </div>
             </div>
 
             <!-- Section 3: Governance Rules -->
             <div class="box box-solid">
-                <div class="box-header with-border"><h3 class="box-title text-green">3. Governance & Execution Rules</h3></div>
+                <div class="box-header with-border"><h3 class="box-title text-green">{{ __('govtracking::general.ui.3_governance_execution_rules') }}</h3></div>
                 <div class="box-body">
                     <div class="form-group">
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" name="require_documents" value="1" checked>
-                                <strong>Require Official Documents:</strong> Ensure a PDF order/document is uploaded when a Tracking Code is created.
+                                <strong>{{ __('govtracking::general.ui.require_official_documents') }}</strong> {{ __('govtracking::general.ui.ensure_a_pdf_order_document_is_uploaded_when_a_tracking_code_is_created') }}
                             </label>
                         </div>
                     </div>
@@ -75,14 +74,14 @@
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" name="allow_overshoot" value="1">
-                                <strong>Allow Target Overshoot:</strong> Allow operations (like GRNs) to exceed planned targets without requiring a formal override justification.
+                                <strong>{{ __('govtracking::general.ui.allow_target_overshoot') }}</strong> {{ __('govtracking::general.ui.allow_operations_like_grns_to_exceed_planned_targets_without_requiring_a_formal_override_justification') }}
                             </label>
                         </div>
                     </div>
                 </div>
                 <div class="box-footer text-right">
-                    <a href="{{ route('gov.tracking.initiatives.index') }}" class="btn btn-default">Cancel</a>
-                    <button type="submit" class="btn btn-success btn-lg">Launch Initiative Workspace</button>
+                    <a href="{{ route('gov.tracking.initiatives.index') }}" class="btn btn-default">{{ __('govtracking::general.task.cancel') }}</a>
+                    <button type="submit" class="btn btn-success btn-lg">{{ __('govtracking::general.ui.launch_initiative_workspace') }}</button>
                 </div>
             </div>
 

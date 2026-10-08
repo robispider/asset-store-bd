@@ -18,7 +18,7 @@ class InitiativeScope implements Scope
     {
         try {
             // 1. CLI / Console Bypass
-            if (app()->runningInConsole()) {
+            if (app()->runningInConsole() && !auth()->check()) {
                 return;
             }
 
@@ -32,25 +32,7 @@ class InitiativeScope implements Scope
             $table = $model->getTable();
 
             // 3. Global Superuser Bypass
-            if ($user->isSuperUser() || ($user->hasAccess('admin') && !$user->company_id)) {
-                return;
-            }
-
-            // Resolve company ID dynamically from the company_user pivot table
-            $resolvedCompanyId = DB::table('company_user')
-                ->where('user_id', $user->id)
-                ->value('company_id');
-
-            if (!$resolvedCompanyId) {
-                $builder->whereRaw('1 = 0');
-                return;
-            }
-
-            // 4. Company Admin (Ministry Overseer) Scope
-            $isCompanyAdmin = $user->hasAccess('admin') || \GovStore\Organization\Models\CompanyAdmin::where('user_id', $user->id)->exists();
-
-            if ($isCompanyAdmin) {
-                $builder->where($table . '.owner_company_id', $resolvedCompanyId);
+            if ($user->isSuperUser()) {
                 return;
             }
 
@@ -59,12 +41,15 @@ class InitiativeScope implements Scope
             $opUnitTable = (new \GovStore\Tracking\Models\OperationUnit)->getTable();
 
             // 5. Standard Project Team Member Scope
-            $builder->where($table . '.owner_company_id', $resolvedCompanyId)
-                ->whereIn($table . '.id', function($query) use ($user, $opUnitTable) {
+            $builder->where(function ($query) use ($table, $user, $opUnitTable) {
+                $query->whereIn($table . '.owner_company_id', function ($q) use ($user) {
+                    $q->select('company_id')->from('gov_company_admins')->where('user_id', $user->id);
+                })->orWhereIn($table . '.id', function($query) use ($user, $opUnitTable) {
                     $query->select('initiative_id')
                           ->from($opUnitTable)
                           ->where('user_id', $user->id);
                 });
+            });
 
         } catch (\Exception $e) {
             // Write the error cleanly to laravel.log on failure

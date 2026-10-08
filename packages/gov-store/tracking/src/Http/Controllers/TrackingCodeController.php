@@ -35,53 +35,11 @@ class TrackingCodeController extends Controller
      */
     public function viewTaskComponent(TrackingCode $trackingCode)
     {
-        $user = auth()->user();
-        if (!$user) {
-            abort(403, 'Unauthenticated.');
-        }
-
-        // 1. Resolve user's operating location ID
-        $locationId = $user->location_id;
-        if (!$locationId) {
-            abort(403, 'Operational Block: Your user account is not currently assigned to any operating office or location.');
-        }
-
-        // 2. Eager load parent initiative along with owning organization and contact rosters
-        $trackingCode->load([
-            'initiative' => function($query) {
-                $query->withoutGlobalScopes()->with(['ownerCompany', 'operationUnits.user']);
-            }
-        ]);
-
+        $context = app(\GovStore\TenantScope\Contexts\TenantContext::class);
+        $locationId = (int) $context->locationId;
+        $trackingCode = app(\GovStore\Tracking\Services\ProgrammeVerifier::class)->resolve($trackingCode->tracking_code, $locationId);
+        $trackingCode->initiative->load(['ownerCompany', 'operationUnits.user']);
         $initiative = $trackingCode->initiative;
-        if (!$initiative) {
-            abort(403, 'Unauthorized. Parent initiative is missing or inaccessible.');
-        }
-
-        // 3. Verify task lifecycle state
-        if ($trackingCode->status !== 'ACTIVE') {
-            abort(403, 'Inactive Task: This tracking code component is not currently in an ACTIVE operational state.');
-        }
-
-        // 4. Verify parent initiative lifecycle state
-        if ($initiative->status !== 'Active') {
-            $statusMsg = '';
-            if ($initiative->status === 'Planning') {
-                $statusMsg = "The initiative '{$initiative->title}' is currently in the Setup (Planning) phase and is not yet open for procurement operations.";
-            } elseif ($initiative->status === 'Closed') {
-                $statusMsg = "The initiative '{$initiative->title}' has been officially Closed. New physical receipts (GRNs) under this budget are suspended.";
-            } else {
-                $statusMsg = "The initiative '{$initiative->title}' has been Archived. All historical records are locked against future ledger transactions.";
-            }
-            abort(403, "Operational Block: {$statusMsg}");
-        }
-
-        // 5. Verify Geographical and Organizational Visibility Scopes
-        $scopeValidator = app(\GovStore\Tracking\Services\ScopeValidatorService::class);
-        $scopeCheck = $scopeValidator->validateExecutionScope($trackingCode, $locationId);
-        if (!$scopeCheck['is_valid']) {
-            abort(403, $scopeCheck['message']);
-        }
 
         // 6. Eager load targets and structural scope parameters
         $trackingCode->load([
@@ -121,6 +79,7 @@ class TrackingCodeController extends Controller
 
     public function create(Initiative $initiative)
     {
+        $this->authService->authorize($initiative, ['HEAD', 'OFFICER']);
         $categories = Category::all();
         $fundingTypes = FundingType::where('primary_type', $initiative->primary_funding)->get();
         $geoAreas = class_exists(GeoArea::class) ? GeoArea::all() : collect();
@@ -130,7 +89,9 @@ class TrackingCodeController extends Controller
 
     public function edit(Initiative $initiative, TrackingCode $trackingCode)
     {
+        $this->assertTask($initiative, $trackingCode);
         $this->authService->authorize($initiative, ['HEAD', 'OFFICER']);
+        abort_unless($trackingCode->status === 'DRAFT', 409);
 
         $categories = Category::all();
         $fundingTypes = FundingType::where('primary_type', $initiative->primary_funding)->get();
@@ -159,17 +120,17 @@ class TrackingCodeController extends Controller
 
     public function searchOffices(Request $request)
     {
-        try {
             $request->validate([
                 'initiative_id'        => 'required|exists:gov_initiatives,id',
                 'geo_override'         => 'required|in:Inherit,GeoArea',
-                'geo_area_id'          => 'required_if:geo_override,GeoArea',
+                'geo_area_id'          => 'nullable|required_if:geo_override,GeoArea|integer|exists:gov_geo_areas,GeoAreaId',
                 'participant_override' => 'required|in:Inherit,CrossTenant',
                 'q'                    => 'nullable|string',
             ]);
 
             $term = $request->input('q');
             $initiative = Initiative::findOrFail($request->input('initiative_id'));
+            $this->authService->authorize($initiative, ['HEAD', 'OFFICER']);
 
             $query = Location::withoutGlobalScopes();
 
@@ -208,21 +169,14 @@ class TrackingCodeController extends Controller
 
             return response()->json(['results' => $results]);
 
-        } catch (\Exception $e) {
-            Log::error('GovStore: searchOffices API Failure: ' . $e->getMessage(), [
-                'exception' => $e,
-                'request'   => $request->all()
-            ]);
-
-            return response()->json(['error' => 'Internal Server Error. ' . $e->getMessage()], 500);
-        }
     }
 
     public function store(Request $request, Initiative $initiative)
     {
         $this->authService->authorize($initiative, ['HEAD', 'OFFICER']);
 
-        Log::info('GovStore: Incoming Tracking Code Save Payload', $request->all());
+        $initiative = Initiative::whereKey($initiative->id)->lockForUpdate()->firstOrFail();
+        abort_unless(in_array($initiative->status, ['Planning', 'Active'], true), 409);
 
         $rules = [
             'tracking_code'     => 'required|string|unique:gov_tracking_codes,tracking_code|max:100',
@@ -241,7 +195,7 @@ class TrackingCodeController extends Controller
             $rules['participant_override']  = 'required|in:Inherit,CrossTenant';
         }
 
-        $request->validate($rules);
+        $this->validateTargets($request, $initiative, $specificity, $rules);
 
         $selectedFund = FundingType::findOrFail($request->input('funding_type_id'));
         if ($selectedFund->primary_type !== $initiative->primary_funding) {
@@ -330,6 +284,7 @@ class TrackingCodeController extends Controller
 
     public function update(Request $request, Initiative $initiative, TrackingCode $trackingCode)
     {
+        $trackingCode = $this->assertTask($initiative, $trackingCode, true);
         $this->authService->authorize($initiative, ['HEAD', 'OFFICER']);
 
         if ($trackingCode->status !== 'DRAFT') {
@@ -350,7 +305,7 @@ class TrackingCodeController extends Controller
             $rules['participant_override']  = 'required|in:Inherit,CrossTenant';
         }
 
-        $request->validate($rules);
+        $this->validateTargets($request, $initiative, $specificity, $rules);
 
         DB::transaction(function () use ($request, $trackingCode, $specificity) {
             $trackingCode->update([
@@ -421,19 +376,27 @@ class TrackingCodeController extends Controller
 
     public function destroy(Initiative $initiative, TrackingCode $trackingCode)
     {
+        $trackingCode = $this->assertTask($initiative, $trackingCode, true);
         $this->authService->authorize($initiative, ['HEAD', 'OFFICER']);
 
         if ($trackingCode->status !== 'DRAFT') {
             return redirect()->back()->with('error', 'Cannot delete active or archived tracking codes.');
         }
 
+        $paths = $trackingCode->documents()->pluck('file_path')->all();
+        $orderPath = $trackingCode->order_pdf_path;
         $trackingCode->delete();
+        DB::afterCommit(function () use ($paths, $orderPath) {
+            foreach ($paths as $path) \Illuminate\Support\Facades\Storage::disk('local')->delete($path);
+            if ($orderPath) \Illuminate\Support\Facades\Storage::disk('local')->delete($orderPath);
+        });
         return redirect()->route('gov.tracking.initiatives.show', $initiative->id)
                          ->with('success', 'Tracking Code deleted.');
     }
 
     public function activate(Initiative $initiative, TrackingCode $trackingCode)
     {
+        $trackingCode = $this->assertTask($initiative, $trackingCode, true);
         $this->authService->authorize($initiative, ['HEAD']);
 
         if ($trackingCode->status !== 'DRAFT') {
@@ -447,6 +410,7 @@ class TrackingCodeController extends Controller
 
     public function archive(Initiative $initiative, TrackingCode $trackingCode)
     {
+        $trackingCode = $this->assertTask($initiative, $trackingCode, true);
         $this->authService->authorize($initiative, ['HEAD']);
 
         if ($trackingCode->status !== 'ACTIVE') {
@@ -460,6 +424,7 @@ class TrackingCodeController extends Controller
 
     public function downloadPdf(TrackingCode $trackingCode)
     {
+        $this->authorizeTaskRead($trackingCode);
         if (!$trackingCode->order_pdf_path || !\Illuminate\Support\Facades\Storage::disk('local')->exists($trackingCode->order_pdf_path)) {
             abort(404, 'PDF Document not found.');
         }
@@ -473,5 +438,63 @@ class TrackingCodeController extends Controller
             ->where('company_id', $initiative->owner_company_id)
             ->orderBy('name')
             ->get();
+    }
+
+    private function assertTask(Initiative $initiative, TrackingCode $task, bool $lock = false): TrackingCode
+    {
+        abort_unless((int) $task->initiative_id === (int) $initiative->id, 404);
+        if ($lock) {
+            $task = TrackingCode::whereKey($task->id)->lockForUpdate()->firstOrFail();
+            $initiative = Initiative::whereKey($initiative->id)->lockForUpdate()->firstOrFail();
+            abort_unless(in_array($initiative->status, ['Planning', 'Active'], true), 409);
+        }
+        return $task;
+    }
+
+    private function authorizeTaskRead(TrackingCode $task): void
+    {
+        $initiative = Initiative::find($task->initiative_id);
+        if ($initiative) {
+            $this->authService->authorize($initiative, ['HEAD', 'OFFICER', 'SUPPORT', 'MONITOR']);
+            return;
+        }
+        $context = app(\GovStore\TenantScope\Contexts\TenantContext::class);
+        app(\GovStore\Tracking\Services\ProgrammeVerifier::class)->resolve($task->tracking_code, (int) $context->locationId);
+    }
+
+    private function validateTargets(Request $request, Initiative $initiative, string $specificity, array $rules): void
+    {
+        $rules['geo_area_id'] = 'nullable|required_if:geo_override,GeoArea|integer|exists:gov_geo_areas,GeoAreaId';
+        if ($specificity === '2_CATEGORY') {
+            $rules += ['targets' => 'required|array|min:1', 'targets.*.category_id' => 'required|integer|distinct|exists:categories,id',
+                'targets.*.planned_qty' => 'required|integer|min:1', 'targets.*.economic_code' => 'nullable|string|max:50'];
+        }
+        if ($specificity === '3_MATRIX') {
+            $rules += ['matrix_categories' => 'required|array|min:1', 'matrix_categories.*' => 'required|integer|distinct|exists:categories,id',
+                'matrix_locations' => 'required|array|min:1', 'matrix_locations.*' => 'required|integer|distinct|exists:locations,id',
+                'matrix_values' => 'required|array', 'matrix_values.*' => 'array', 'matrix_values.*.*' => 'nullable|integer|min:0',
+                'matrix_economic_codes' => 'nullable|array', 'matrix_economic_codes.*' => 'nullable|string|max:50'];
+        }
+        $request->validate($rules);
+        $categoryIds = $specificity === '3_MATRIX' ? $request->input('matrix_categories', [])
+            : array_column($request->input('targets', []), 'category_id');
+        abort_unless(Category::whereIn('id', $categoryIds)->count() === count($categoryIds), 404);
+        $fund = FundingType::findOrFail($request->integer('funding_type_id'));
+        if ($fund->primary_type !== $initiative->primary_funding) {
+            throw ValidationException::withMessages(['funding_type_id' => __('govtracking::general.invalid_input')]);
+        }
+        if ($specificity === '3_MATRIX') {
+            $probe = new TrackingCode;
+            $probe->setRelation('initiative', $initiative);
+            $scopes = collect([
+                new \GovStore\Tracking\Models\TrackingScope(['dimension' => 'GEOGRAPHY', 'target_type' => $request->input('geo_override'), 'target_id' => $request->input('geo_area_id')]),
+                new \GovStore\Tracking\Models\TrackingScope(['dimension' => 'PARTICIPANTS', 'target_type' => $request->input('participant_override')]),
+            ]);
+            foreach ($request->input('matrix_locations') as $id) {
+                $probe->setRelation('scopes', $scopes);
+                $check = app(\GovStore\Tracking\Services\ScopeValidatorService::class)->validateExecutionScope($probe, (int) $id);
+                if (! $check['is_valid']) throw ValidationException::withMessages(['matrix_locations' => $check['message']]);
+            }
+        }
     }
 }

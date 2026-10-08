@@ -62,6 +62,9 @@ class InitiativeController extends Controller
             'owner_company_id'  => 'required|exists:companies,id',
         ]);
 
+        $this->authorizeCompany((int) $validated['owner_company_id']);
+        abort_unless($validated['status'] === 'Planning', 422);
+
         $validated['require_documents'] = $request->has('require_documents');
         $validated['allow_overshoot']   = $request->has('allow_overshoot');
 
@@ -198,6 +201,7 @@ class InitiativeController extends Controller
 
     public function update(Request $request, Initiative $initiative)
     {
+        $initiative = Initiative::whereKey($initiative->id)->lockForUpdate()->firstOrFail();
         // GATED (Centralized): Only HEAD (Operation Head) or Company Admin can update
         $this->authService->authorize($initiative, ['HEAD']);
 
@@ -215,6 +219,9 @@ class InitiativeController extends Controller
         }
 
         $request->validate($rules);
+        if ($initiative->status === 'Planning') {
+            $this->authorizeCompany($request->integer('owner_company_id'));
+        }
 
         if ($initiative->status !== 'Planning') {
             if ($request->filled('primary_funding') && $request->input('primary_funding') !== $initiative->primary_funding) {
@@ -247,6 +254,7 @@ class InitiativeController extends Controller
 
     public function destroy(Initiative $initiative)
     {
+        $initiative = Initiative::whereKey($initiative->id)->lockForUpdate()->firstOrFail();
         // GATED (Centralized): Only HEAD (Operation Head) or Company Admin can delete
         $this->authService->authorize($initiative, ['HEAD']);
 
@@ -254,9 +262,16 @@ class InitiativeController extends Controller
             return redirect()->back()->with('error', 'Cannot delete active, closed, or archived initiatives. You must archive it instead.');
         }
 
+        abort_if($initiative->trackingCodes()->exists(), 409);
         $initiative->delete();
 
         return redirect()->route('gov.tracking.initiatives.index')
                          ->with('success', 'Initiative has been deleted.');
+    }
+
+    private function authorizeCompany(int $companyId): void
+    {
+        $user = auth()->user();
+        abort_unless($user && ($user->isSuperUser() || CompanyAdmin::where('user_id', $user->id)->where('company_id', $companyId)->exists()), 403);
     }
 }

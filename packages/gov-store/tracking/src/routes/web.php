@@ -7,6 +7,7 @@ use GovStore\Tracking\Http\Controllers\TrackingCodeController;
 use GovStore\Tracking\Http\Controllers\TrackingRetrospectiveController;
 use GovStore\Tracking\Http\Controllers\OperationUnitController;
 use GovStore\Tracking\Http\Controllers\Api\TrackingEvaluationController;
+use GovStore\Tracking\Http\Controllers\TrackingDocumentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,4 +52,6 @@ Route::post('initiatives/{initiative}/retrospective', [TrackingRetrospectiveCont
 
 Route::get('tracking-codes/{trackingCode}/view-task', [TrackingCodeController::class, 'viewTaskComponent'])
     ->name('tracking-codes.view-task');
-    
+Route::post('initiatives/{initiative}/tracking-codes/{trackingCode}/documents', [TrackingDocumentController::class, 'store'])->name('documents.store');
+Route::get('initiatives/{initiative}/tracking-codes/{trackingCode}/documents/{document}', [TrackingDocumentController::class, 'download'])->name('documents.download');
+Route::delete('initiatives/{initiative}/tracking-codes/{trackingCode}/documents/{document}', [TrackingDocumentController::class, 'destroy'])->name('documents.destroy');

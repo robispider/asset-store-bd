@@ -20,6 +20,6 @@ class TrackingProjectionCache extends Model
 
     public function reference(): BelongsTo
     {
-        return $this->belongsTo(TrackingReference::class, 'tracking_reference_id');
+        return $this->belongsTo(Initiative::class, 'tracking_reference_id');
     }
 }

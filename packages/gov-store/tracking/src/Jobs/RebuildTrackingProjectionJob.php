@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 
 class RebuildTrackingProjectionJob implements ShouldQueue, \GovStore\TenantScope\Contracts\GlobalTenantMaintenance
 {
@@ -28,22 +29,22 @@ class RebuildTrackingProjectionJob implements ShouldQueue, \GovStore\TenantScope
      */
     public function handle(EloquentTrackingProjectionRepository $liveRepo): void
     {
-        $initiative = Initiative::find($this->initiativeId);
-        
-        if ($initiative) {
-            $metrics = $liveRepo->getLifecycleSummary($initiative);
-
-            TrackingProjectionCache::updateOrCreate(
-                ['tracking_reference_id' => $initiative->id],
-                [
-                    'planned'  => $metrics['planned'],
-                    'ordered'  => $metrics['ordered'],
-                    'received' => $metrics['received'],
-                    'deployed' => $metrics['deployed'],
-                    'disposed' => $metrics['disposed'],
-                    'updated_at' => now(),
-                ]
-            );
-        }
+        DB::transaction(function () use ($liveRepo) {
+            $initiative = Initiative::withoutGlobalScopes()->whereKey($this->initiativeId)->lockForUpdate()->first();
+            if ($initiative) {
+                $metrics = $liveRepo->getLifecycleSummary($initiative);
+                TrackingProjectionCache::updateOrCreate(
+                    ['tracking_reference_id' => $initiative->id],
+                    [
+                        'planned' => $metrics['planned'],
+                        'ordered' => $metrics['ordered'],
+                        'received' => $metrics['received'],
+                        'deployed' => $metrics['deployed'],
+                        'disposed' => $metrics['disposed'],
+                        'updated_at' => now(),
+                    ]
+                );
+            }
+        });
     }
 }

@@ -3,27 +3,20 @@
 namespace GovStore\StoreOperations\Integrations\Tracking;
 
 use GovStore\StoreOperations\Contracts\TrackingCodeVerifier;
-use GovStore\Tracking\Models\TrackingCode;
-use GovStore\Tracking\Services\ScopeValidatorService;
+use GovStore\Tracking\Services\ProgrammeVerifier;
+use Illuminate\Validation\ValidationException;
 
 class TrackingCodeVerifierAdapter implements TrackingCodeVerifier
 {
-    public function __construct(private ScopeValidatorService $scopeValidator) {}
+    public function __construct(private ProgrammeVerifier $verifier) {}
 
     public function failureReason(string $code, int $locationId): ?string
     {
-        $trackingCode = TrackingCode::with(['initiative' => fn ($query) => $query->withoutGlobalScopes()])
-            ->where('tracking_code', $code)->where('status', 'ACTIVE')->first();
-        if (! $trackingCode) {
-            return __('storeops::storeops.tracking_code_invalid');
+        try {
+            $this->verifier->resolve($code, $locationId);
+            return null;
+        } catch (ValidationException $e) {
+            return collect($e->errors())->flatten()->first();
         }
-
-        if (! $trackingCode->initiative || $trackingCode->initiative->status !== 'Active') {
-            return __('storeops::storeops.tracking_initiative_inactive');
-        }
-
-        $result = $this->scopeValidator->validateExecutionScope($trackingCode, $locationId);
-
-        return $result['is_valid'] ? null : ($result['message'] ?: __('storeops::storeops.tracking_code_invalid'));
     }
 }

@@ -9,7 +9,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::dropIfExists('gov_funding_types');
+        if (Schema::hasTable('gov_funding_types')) {
+            return;
+        }
 
         Schema::create('gov_funding_types', function (Blueprint $table) {
             $table->id();

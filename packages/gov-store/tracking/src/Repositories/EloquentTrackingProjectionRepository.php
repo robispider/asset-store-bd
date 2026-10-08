@@ -36,7 +36,7 @@ class EloquentTrackingProjectionRepository implements TrackingProjectionReposito
 
         // 2. RECEIVED (Sum of received quantities directly from the pre-compiled Fact Table!)
         // No SQL joins to core assets or hardware tables required.
-        $received = (int) TrackingFactDelivery::whereIn('tracking_code_id', $trackingCodeIds)->sum('received_qty');
+        $received = (int) TrackingAssociation::whereIn('tracking_code_id', $trackingCodeIds)->where('status', 'ACTIVE')->sum('quantity');
         $summary['received'] = $received;
 
         // 3. Overall Progress Percentage
@@ -52,11 +52,11 @@ class EloquentTrackingProjectionRepository implements TrackingProjectionReposito
 
         if (!empty($associatedAssetIds)) {
             // Retrieve core assets securely using our dynamic table resolver
-            $summary['deployed'] = (int) Asset::whereIn('id', $associatedAssetIds)
+            $summary['deployed'] = (int) Asset::withoutGlobalScopes()->whereIn('id', $associatedAssetIds)
                 ->whereNotNull('assigned_to')
                 ->count();
 
-            $summary['disposed'] = (int) Asset::whereIn('id', $associatedAssetIds)
+            $summary['disposed'] = (int) Asset::withoutGlobalScopes()->whereIn('id', $associatedAssetIds)
                 ->whereHas('status', function ($query) {
                     $query->where('archived', 1);
                 })
@@ -80,9 +80,9 @@ class EloquentTrackingProjectionRepository implements TrackingProjectionReposito
         $planned = $target->planned_qty;
 
         // Query our pre-compiled Fact Table directly, summing received quantities autonomously!
-        $received = (int) TrackingFactDelivery::where('tracking_code_id', $trackingCodeId)
+        $received = (int) TrackingAssociation::where('tracking_code_id', $trackingCodeId)->where('status', 'ACTIVE')
             ->where('category_id', $categoryId)
-            ->sum('received_qty');
+            ->sum('quantity');
 
         $percentage = $planned > 0 ? round(($received / $planned) * 100) : 0;
 
@@ -97,12 +97,13 @@ class EloquentTrackingProjectionRepository implements TrackingProjectionReposito
     public function getMatrixProgress(int $trackingCodeId): array
     {
         // Fetch pre-compiled geographic facts directly from our Delivery Cube
-        $facts = TrackingFactDelivery::with([
+        $facts = TrackingAssociation::with([
             'category',
             'location' => function($query) {
                 $query->withoutGlobalScopes(); // Defensive bypass to prevent empty lists for non-contextual admins
             }
-        ])->where('tracking_code_id', $trackingCodeId)->get();
+        ])->where('tracking_code_id', $trackingCodeId)->where('status', 'ACTIVE')
+            ->selectRaw('category_id, location_id, SUM(quantity) AS received_qty')->groupBy('category_id', 'location_id')->get();
 
         $progressMatrix = [];
 
