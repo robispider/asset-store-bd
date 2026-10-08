@@ -16,7 +16,6 @@
         <x-page-column class="col-md-9 main-panel">
             <x-tabs>
                 <x-slot:tabnav>
-
                     <x-tabs.nav-item
                             name="assigned"
                             icon_type="checkedout"
@@ -26,11 +25,13 @@
 
                     <x-tabs.files-tab :item="$snipe_component" count="{{ $snipe_component->uploads()->count() }}"/>
                     <x-tabs.history-tab count="{{ $snipe_component->history()->count() }}" :model="$snipe_component"/>
+                    @include('storeops::register.native-tab-nav')
                     <x-tabs.upload-tab :item="$snipe_component"/>
 
                 </x-slot:tabnav>
 
                 <x-slot:tabpanes>
+                    @include('storeops::register.native-tab-panes')
 
                     <x-tabs.pane name="assigned">
 

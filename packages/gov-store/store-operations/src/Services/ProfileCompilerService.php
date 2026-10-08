@@ -48,6 +48,19 @@ class ProfileCompilerService
      */
     public function compileItem(string $productType, int $productId): array
     {
+        // Resolve the supplied object before consulting cached rules; a cache is not authority.
+        $hierarchy = $this->resolveItemHierarchy($productType, $productId);
+        return $this->compileResolved($productType, $productId, $hierarchy);
+    }
+
+    /** Admin simulation of a verified office/global context has no fictitious product ID. */
+    public function compileContext(): array
+    {
+        return $this->compileResolved('context', 0, ['is_model' => false, 'category_id' => null]);
+    }
+
+    private function compileResolved(string $productType, int $productId, array $hierarchy): array
+    {
         $cacheKey = "{$this->tenantContext->companyId}_{$this->tenantContext->locationId}_{$productType}_{$productId}";
 
         if (isset(self::$resolvedCache[$cacheKey])) {
@@ -57,7 +70,6 @@ class ProfileCompilerService
         $mergedCapabilities = [];
         
         // 1. Determine the Hierarchy Chain (What categories/models apply to this item?)
-        $hierarchy = $this->resolveItemHierarchy($productType, $productId);
 
         // 2. Define the exact cascading resolution order (Lowest precedence to Highest)
         // Defensive: Only attempt lookup if the scope ID exists (handles Super Admins with no location/company)
@@ -130,14 +142,15 @@ class ProfileCompilerService
 
         if ($isCategory) {
             // If compiling directly for a Category target, the ID IS the category ID
-            $categoryId = $productId;
+            $categoryId = \App\Models\Category::query()->findOrFail($productId)->id;
         } elseif ($isModel) {
-            $categoryId = DB::table('models')->where('id', $productId)->value('category_id');
+            $categoryId = \App\Models\AssetModel::query()->findOrFail($productId)->category_id;
         } else {
-            $modelClass = Relation::getMorphedModel($productType) ?? $productType;
-            if (class_exists($modelClass)) {
-                $categoryId = DB::table((new $modelClass)->getTable())->where('id', $productId)->value('category_id');
-            }
+            $stockType = \GovStore\StoreOperations\Enums\StockableType::fromString($productType);
+            $product = $stockType->value::query()->findOrFail($productId);
+            abort_unless($this->tenantContext->locationId && (int) $product->location_id === $this->tenantContext->locationId
+                && (! $this->tenantContext->companyId || (int) $product->company_id === $this->tenantContext->companyId), 404);
+            $categoryId = $product->category_id;
         }
 
         return [

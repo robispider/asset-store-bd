@@ -318,6 +318,7 @@ class AccessoriesController extends Controller
     public function checkout(AccessoryCheckoutRequest $request, Accessory $accessory)
     {
         $this->authorize('checkout', $accessory);
+        app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->assertNativeMovementAllowed($accessory);
         $target = $this->determineCheckoutTarget();
 
         if ((Setting::getSettings()->full_multiple_companies_support == '1') && (! $target->companies()->where('companies.id', $accessory->company_id)->exists())) {
@@ -388,6 +389,7 @@ class AccessoriesController extends Controller
 
         $accessory = Accessory::find($accessory_checkout->accessory_id);
         $this->authorize('checkin', $accessory);
+        app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->assertNativeMovementAllowed($accessory);
 
         $accessory->logCheckin(User::find($accessory_checkout->assigned_to), $request->input('note'));
 

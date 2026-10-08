@@ -71,9 +71,12 @@ class CreateAssetsCapability implements CapabilityInterface
             $asset->status_id   = $statusId;
             $asset->company_id  = $document->company_id;
             $asset->location_id = $document->location_id;
+            $asset->supplier_id = $document->supplier_id;
+            $asset->created_by = auth()->id() ?? $document->posted_by;
+            $asset->purchase_cost = $item->unit_cost;
             
             // Map Warranty
-            if ($warrantyMonths) {
+            if ($warrantyMonths !== null && $warrantyMonths !== '') {
                 $asset->warranty_months = (int) $warrantyMonths;
             }
 

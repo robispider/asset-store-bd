@@ -10,7 +10,6 @@ use App\Models\Consumable;
 use GovStore\StoreOperations\Console\Commands\ProtectDocumentAttachments;
 use GovStore\StoreOperations\Console\Commands\OpenStoreLedger;
 use GovStore\StoreOperations\Console\Commands\RepairLedgerBalances;
-use GovStore\StoreOperations\Console\Commands\SyncGovStoreFields;
 use GovStore\StoreOperations\Contracts\StockIssuingServiceInterface;
 use GovStore\StoreOperations\Contracts\TrackingCodeVerifier;
 use GovStore\StoreOperations\Events\InventoryMovementCreated;
@@ -46,7 +45,7 @@ class StoreOperationsServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        $this->app['router']->pushMiddlewareToGroup('web', \GovStore\StoreOperations\Http\Middleware\InjectStoreOperationsUi::class);
+        \Illuminate\Support\Facades\View::composer(['consumables/view', 'accessories/view', 'components/view'], \GovStore\StoreOperations\UI\NativeKardexComposer::class);
         \GovStore\StoreOperations\Integrations\Committee\StoreOpsCommitteeRegistrations::register();
         // 0. Load Translations
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'storeops');
@@ -66,7 +65,7 @@ class StoreOperationsServiceProvider extends ServiceProvider
                 ProtectDocumentAttachments::class,
                 OpenStoreLedger::class,
                 RepairLedgerBalances::class,
-                SyncGovStoreFields::class, // <-- ADD THIS LINE
+                \GovStore\StoreOperations\Console\Commands\ReconcileStoreLedger::class,
             ]);
         }
 
@@ -101,6 +100,9 @@ class StoreOperationsServiceProvider extends ServiceProvider
 
         // 12. Register Passive Sync Observer on native Snipe-IT Category Model
         Category::observe(SnipeCategoryObserver::class);
+        foreach ([Consumable::class, Accessory::class, Component::class] as $stockClass) {
+            $stockClass::observe(\GovStore\StoreOperations\Services\LedgerStockGuard::class);
+        }
 
     }
 
@@ -124,7 +126,7 @@ class StoreOperationsServiceProvider extends ServiceProvider
         $registry->register([
             'id' => 'storeops-hub',
             'parent' => 'gov-store',
-            'title' => 'Store Documents Hub', // Fallback if no translation exists yet
+            'title' => __('storeops::storeops.store_documents_hub'),
             'icon' => 'fa fa-folder-open text-yellow',
             'route' => 'storeops.hub',
             'permission' => 'storekeeper',
@@ -139,7 +141,7 @@ class StoreOperationsServiceProvider extends ServiceProvider
         $registry->register([
             'id' => 'storeops-admin-rules',
             'parent' => 'gov-store',
-            'title' => 'Product Rules Studio',
+            'title' => __('storeops::storeops.product_rules_studio'),
             'icon' => 'fas fa-cogs text-purple',
             'route' => 'storeops.admin.rules.index',
             'permission' => 'superuser', // Admin only

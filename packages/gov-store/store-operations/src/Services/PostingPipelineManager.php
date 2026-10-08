@@ -24,6 +24,15 @@ class PostingPipelineManager
             if (! in_array($document->status, ['DRAFT', 'READY'], true)) {
                 throw new Exception('This document has already been posted to the ledger.');
             }
+            if ($document->type === 'transfer') {
+                app(TransferPostingService::class)->post($document, $userId);
+                return;
+            }
+
+            if ($document->type === 'receipt' && (($document->purchase_type === 'Purchase' && ! $document->supplier_id)
+                || ($document->supplier_id && ! \App\Models\Supplier::whereKey($document->supplier_id)->exists()))) {
+                throw \Illuminate\Validation\ValidationException::withMessages(['supplier_id' => __('storeops::storeops.supplier_invalid')]);
+            }
 
             if ($document->type === 'adjustment') {
                 if (! in_array($document->adjustment_reason, ['PHYSICAL_COUNT', 'DAMAGE', 'LOSS', 'EXPIRED', 'CORRECTION'], true)) {

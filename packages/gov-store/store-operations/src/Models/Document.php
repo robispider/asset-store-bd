@@ -25,6 +25,8 @@ class Document extends Model implements StoreDocumentInterface
         'company_id', 'location_id', 'created_by', 'reference_no', 'reference_date', 'purchase_type',
         'drafted_by', 'posted_by', 'posted_at', 'managed_by',
         'source_document_id', 'adjustment_reason', 'issued_to_user_id', 'issue_department',
+        'supplier_id',
+        'destination_location_id', 'transfer_reason',
     ];
 
     protected $casts = [
@@ -51,6 +53,11 @@ class Document extends Model implements StoreDocumentInterface
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function supplier()
+    {
+        return $this->belongsTo(\App\Models\Supplier::class);
     }
 
     public function drafter()

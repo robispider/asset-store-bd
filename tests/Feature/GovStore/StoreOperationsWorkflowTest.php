@@ -72,6 +72,9 @@ class StoreOperationsWorkflowTest extends TestCase
             $table->unsignedInteger('issued_to_user_id')->nullable();
             $table->string('issue_department', 150)->nullable();
             $table->string('purchase_type')->nullable();
+            $table->unsignedInteger('supplier_id')->nullable();
+            $table->unsignedInteger('destination_location_id')->nullable();
+            $table->string('transfer_reason', 500)->nullable();
             $table->timestamps();
         });
         Schema::create('gov_document_items', function (Blueprint $table) {

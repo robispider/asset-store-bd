@@ -52,6 +52,8 @@ class TrackingWorkflowTest extends StoreOperationsWorkflowTest
             $t->increments('id'); $t->integer('model_id'); $t->integer('status_id'); $t->integer('location_id'); $t->integer('company_id');
             $t->integer('assigned_to')->nullable(); $t->string('asset_tag'); $t->string('serial')->nullable();
             $t->integer('supplier_id')->nullable(); $t->decimal('purchase_cost')->nullable(); $t->timestamp('deleted_at')->nullable(); $t->timestamps();
+            $t->integer('created_by')->nullable();
+            $t->integer('warranty_months')->nullable();
         });
         Schema::create('gov_asset_registrations', function (Blueprint $t) { $t->increments('id'); $t->uuid('intake_item_id'); $t->integer('asset_id'); $t->string('asset_tag'); $t->string('serial_number')->nullable(); $t->timestamp('created_at'); });
         Schema::create('gov_geo_areas', function (Blueprint $t) { $t->unsignedInteger('GeoAreaId')->primary(); $t->string('hid'); });
@@ -276,10 +278,13 @@ class TrackingWorkflowTest extends StoreOperationsWorkflowTest
         $receipt = Document::create(['document_number' => 'GRN-SERIAL-TEST', 'type' => 'receipt', 'status' => 'DRAFT',
             'company_id' => 20, 'location_id' => 10, 'created_by' => 1,
             'compiled_profile_snapshot' => ['items' => ['asset_model_1' => ['create_assets' => ['status_id' => 1]]]]]);
+        DB::table('suppliers')->insert(['id' => 7, 'name' => 'Isolated receipt supplier']);
+        $receipt->update(['supplier_id' => 7, 'purchase_type' => 'Purchase']);
         $item = $receipt->items()->create(['product_type' => 'asset_model', 'product_id' => 1, 'quantity' => 2, 'unit_cost' => 30]);
         foreach ([0, 1] as $index) {
             $item->metadata()->create(['field_key' => 'asset_tag', 'value' => 'TR-TEST-'.$index, 'row_index' => $index]);
             $item->metadata()->create(['field_key' => 'serial_number', 'value' => 'TR-SERIAL-'.$index, 'row_index' => $index]);
+            $item->metadata()->create(['field_key' => 'warranty_months', 'value' => $index === 0 ? '0' : '12', 'row_index' => $index]);
         }
         $receipt->references()->create(['reference_type' => 'Special Allocation', 'reference_number' => $task->tracking_code]);
         return $receipt;
@@ -291,6 +296,10 @@ class TrackingWorkflowTest extends StoreOperationsWorkflowTest
         app(PostingPipelineManager::class)->materialize($receipt, 1);
         $this->assertSame('POSTED', $receipt->fresh()->status);
         $this->assertSame(2, Asset::count()); $this->assertSame(2, DB::table('gov_asset_registrations')->count());
+        $this->assertSame([7, 7], Asset::pluck('supplier_id')->map(fn ($id) => (int) $id)->all());
+        $this->assertSame([1, 1], Asset::pluck('created_by')->map(fn ($id) => (int) $id)->all());
+        $this->assertSame([0, 12], Asset::pluck('warranty_months')->map(fn ($months) => (int) $months)->all());
+        $this->assertSame(7, (int) TrackingFactDelivery::value('supplier_id'));
         $this->assertSame(2, TrackingAssociation::count()); $this->assertSame(2, (int) TrackingFactDelivery::sum('received_qty'));
         $this->assertSame(2, (int) TrackingProjectionCache::where('tracking_reference_id', $task->initiative_id)->value('received'));
         try { app(PostingPipelineManager::class)->materialize($receipt, 1); $this->fail('Posting replay must fail'); }

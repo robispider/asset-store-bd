@@ -4,7 +4,7 @@ Original review: 4 October 2026 · @zahid. Reassessed: **7 October 2026 (Asia/Dh
 
 ## Updated scorecard
 
-**41 of the original 64 gaps are mitigated (64.06%); 9 are partially mitigated; 14 remain open.** There are **23 gaps requiring further work**, including the partial rows. The package sections below are arranged in dependency order, with foundations before their consumers.
+**44 of the original 64 gaps are mitigated (68.75%); 9 are partially mitigated; 11 remain open.** There are **20 gaps requiring further work**, including the partial rows. The package sections below are arranged in dependency order, with foundations before their consumers.
 
 Tenant-scope implementation update: **7 October 2026 (Asia/Dhaka), working tree**. The original reassessment revision above remains the baseline for the other packages. See [tenant-scope implementation and verification](../verification/tenant-scope-implementation-2026-10-07.md).
 
@@ -17,6 +17,8 @@ See [organization implementation and verification](../verification/organization-
 Office-membership update: **8 October 2026 (Asia/Dhaka), working tree**. OM-1/2/4/5 join OM-3 as locally mitigated; see [office-membership verification](../verification/office-membership-implementation-2026-10-08.md).
 
 User-onboarding update: **8 October 2026 (Asia/Dhaka), working tree**. UO-1 through UO-4 are locally mitigated; see [user-onboarding verification](../verification/user-onboarding-implementation-2026-10-08.md).
+
+Store-operations update: **8 October 2026 (Asia/Dhaka), working tree**. SO-2/5/6 join SO-1/8 as locally mitigated; SO-3/4/7 remain partial. See [Store Operations implementation and verification](../verification/store-operations-implementation-2026-10-08.md).
 
 These are implementation statuses, not production closure. Office-role enforcement still has outstanding G1 rollout requirements. A package with mitigated rows can also have deployment, historical-data or policy work remaining.
 
@@ -31,20 +33,20 @@ These are implementation statuses, not production closure. Office-role enforceme
 | 7 | metadata | 4 | 0 | 0 | 4 | Stabilize provider and field-mapping contracts |
 | 8 | tracking | 7 | 6 | 1 | 0 | Deploy additive migration; reconcile historical duplicate facts; finish remaining legacy messages |
 | 9 | committee | 2 | 1 | 1 | 0 | Registry delivered; complete consumer integration boundary |
-| 10 | store-operations | 8 | 2 | 3 | 3 | Ledger cut-over, remaining document types and receipt fields |
+| 10 | store-operations | 8 | 5 | 3 | 0 | Reviewed historical repair/cut-over; deferred inspection; remaining localization and serialized custody |
 | 11 | custom-requests | 6 | 5 | 1 | 0 | Complete item adapters after stock contracts |
 | 12 | experimentation | 4 | 1 | 1 | 2 | Isolated fixture CI, packaging and restore |
-| **Total** | **12 packages** | **64** | **41** | **9** | **14** | **23 still require work** |
+| **Total** | **12 packages** | **64** | **44** | **9** | **11** | **20 still require work** |
 
 Original severities are preserved for reconciliation with the baseline. They are not a new assessment of residual risk.
 
 | Original severity | Original gaps | Mitigated | Partial | Open |
 | --- | --- | --- | --- | --- |
 | Critical | 3 | 3 | 0 | 0 |
-| High | 19 | 14 | 4 | 1 |
-| Medium | 31 | 18 | 5 | 8 |
+| High | 19 | 15 | 3 | 1 |
+| Medium | 31 | 20 | 6 | 5 |
 | Low | 11 | 6 | 0 | 5 |
-| **Total** | **64** | **41** | **9** | **14** |
+| **Total** | **64** | **44** | **9** | **11** |
 
 ### Counting and evidence
 
@@ -257,22 +259,22 @@ Verification and operational limits are recorded in [the tenant-scope execution 
 
 ## 10. store-operations
 
-**2 mitigated, 3 partial, 3 open.** The 6 October changes add opening-stock gating, canonical ledger paths, adjustments, draft voiding and improved asset creation; compound gaps remain.
+**5 mitigated, 3 partial, 0 open.** The 8 October implementation adds paired bulk transfers, supplier-linked serialized receipt verification, safe additive profiles, native stock guards, reconciliation, takeover notices and tablet UI improvements. Partial compound gaps and deeper rollout work remain; this is local implementation evidence.
 
 **Internal order:** SO-6 safe ownership → deeper analysis's opening/canonical-history cut-over and stock invariants → remaining SO-2/4 work. SO-3 inspection is explicitly deferred.
 
 | ID | Original severity | Status | Current finding and evidence | Remaining mitigation |
 | --- | --- | --- | --- | --- |
 | SO-1 | Critical | Mitigated | Route abilities, `DocumentPolicy`, atomic locked mutations, server checklist, office/type/state checks, private attachments and safe failures are implemented/tested under G1. | Complete rollout; preserve creator/poster attribution and state rules. |
-| SO-2 | High | Partial | Adjustment documents require a posted source/reason/direction; draft void exists. Inter-office transfer has no supported document workflow. Posted GRN reversal is excluded by current design. | Implement source/destination authorization, locked balances and paired transfer movements. Use adjustments for corrections; reversal needs a changed policy. |
+| SO-2 | High | Mitigated | Adjustments and draft void are supported. Bulk transfers require actual posting authority in both same-company offices, validate matching stock IDs, lock deterministically and commit paired movements/receipt atomically. Replay, revocation in shadow mode and competing MySQL transfers are verified. Receipt reversal remains excluded by design. | Review office openings/history before live transfers. Separate receiving acceptance and serialized transfers remain outside this delivered bulk workflow. |
 | SO-3 | High | Partial | Registry/purposes exist; READY is not inspection evidence. Direct posting remains policy, and the deeper analysis explicitly defers receipt inspection. | Deliver optional submit/inspect/reopen/fallback with panel/outcome snapshots when authorized; required inspection needs policy/observation. |
-| SO-4 | High | Partial | Asset creation uses native tags/validated status and model-level ledger support. Supplier and structured committee reference remain missing; focused tests do not establish complete serialized receipt verification. | Capture/validate supplier; verify serialized receipt end to end. Add dated committee/outcome through deferred consumer workflow, not generic report upload. |
-| SO-5 | Medium | Open | Legacy receipt/issue controllers and create views remain. | Remove proven dead code after dependency/history checks. |
-| SO-6 | Medium | Open | Three profile migrations still overlap; `2024_03_04` and `2024_03_08` drop/recreate profile tables in `up()`. | Establish additive ownership and fresh/installed upgrade compatibility; preserve assignments/lineage and migration identities. |
-| SO-7 | Medium | Open | New bilingual controls exist, but remaining English text and tablet line-grid usability are unfinished. | Localize workspace/rules/register and verify tablet/keyboard behavior. |
+| SO-4 | High | Partial | Purchase requires an active native supplier. Serialized receipts preserve supplier/creator, native tags/status and per-unit warranty; materialization, tracking facts, replay and rollback have focused coverage. Structured committee reference/outcomes remain deferred. | Deliver committee evidence through the authorized inspection consumer workflow; verify real metadata provisioning and complete serialized custody separately. |
+| SO-5 | Medium | Mitigated | Proven unused receipt/issue controllers, create screens, response injection, inline legacy grid/tracking hooks and obsolete sync-fields plumbing were removed. Compatibility models/tables still used by request fulfillment remain. | Preserve historical records; any table retirement needs a separate dependency/data review. |
+| SO-6 | Medium | Mitigated | Overlapping migrations now use additive upgrades rather than dropping core-owned tables. Fresh/legacy tests preserve profile IDs/capability links/definitions; the targeted local upgrade retained 70 profiles and 115 assignments. Legacy profiles are not automatically published nationally. | Deploy the targeted migration after backup/review; do not rerun broad seeding or drop migration identities. |
+| SO-7 | Medium | Partial | External built assets, translated workspace/rules labels, safe text rendering, touch-sized controls and responsive grid are delivered. Bengali 768 × 1024 save/reload, disabled posting and native stock-card rendering were verified. | Finish remaining register/print/rules English fragments and keyboard verification in both locales; admin publishing was not exercised live. |
 | SO-8 | Low | Mitigated | Second assignment route is now `storeops.admin.rules.assign_gpo`; route coverage includes both protected URLs. | Preserve unique names on new routes. |
 
-The [deeper Store Operations analysis](store-operations-package-gap-analysis.md) is required for this package's delivery. Its implementation update coexists with older baseline descriptions: use the 6 October update and inspected source for what changed. Outstanding native-stock bypass, cut-over, supplier/transfer/inspection and UI work is not added to the 64-row denominator. Opening-stock review must precede new ledger posting/fulfillment in an unopened office. Recheck live state using the [local testing guide](../testing/local-live-testing.md) before any authorized data exercise.
+The [deeper Store Operations analysis](store-operations-package-gap-analysis.md) and [8 October execution record](../verification/store-operations-implementation-2026-10-08.md) distinguish implemented controls from historical descriptions. Opened-office native stock mutations are guarded and reconciliation is scheduled. Historical repair/cut-over, serialized issue/custody, deferred inspection and remaining UI work are not added to the 64-row denominator. Local opening markers remain zero and 15 legacy movement aliases remain; no historical normalization or opening was executed. Opening-stock review must precede new ledger posting/fulfillment in an unopened office. Recheck live state using the [local testing guide](../testing/local-live-testing.md) before any authorized data exercise.
 
 ## 11. custom-requests
 

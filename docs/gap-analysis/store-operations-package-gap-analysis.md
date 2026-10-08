@@ -4,6 +4,24 @@ Oct 4, 2026 · @zahid · Reassessed Oct 6, 2026 (Asia/Dhaka)
 
 ## Summary
 
+**Implementation update (8 Oct 2026, working tree):** SO-1/2/5/6/8 are locally mitigated; SO-3/4/7 remain partial. Added atomic paired bulk transfers with actual source/destination authority, active supplier capture and serialized receipt coverage, opened-ledger native stock guards and read-only reconciliation, reasoned takeover notices, additive profile schema upgrades, external workspace/rules assets and server-rendered native stock-card tabs. Selected-office rules previews preserve the shared tenant context. Removed proven dead legacy screens/controllers without dropping compatibility tables. The focused Store Operations/G1/tracking/request run passed 89 tests and 1,704 assertions; the [implementation and verification record](../verification/store-operations-implementation-2026-10-08.md) contains expanded verification, retained cancelled test documents and remaining work. The paragraphs and gap descriptions below are dated baseline evidence, superseded where this update records implementation.
+
+Local `snipeit` retained 70 profiles and 115 assignments after the targeted additive migration. Opening markers remain zero and 15 historical movement aliases remain; no historical repair or cut-over was performed. Isolated MySQL competing transfers passed, and a Bengali tablet receipt save/reload plus native stock-card rendering were verified. Phase 4 inspection remains deferred. Serialized issuing/custody, full localization/keyboard coverage, clean dependency installation and rollout observation remain open or partial; these are not closed by the local checks.
+
+| Deeper gap | Current implementation / remaining work |
+| --- | --- |
+| 3. Native stock bypass | Opened-ledger model/bulk guards and native web/API movement blocks; nightly read-only reconciliation. Privileged raw SQL and historical stock require reviewed maintenance. |
+| 5. Document types | Adjustments, draft void and atomic bulk transfer delivered; receipt reversal remains excluded by design. |
+| 6 / 9. Recipient and serialized assets | Supplier-linked serialized receipts, tracking and per-unit warranty verified; serialized issue/handover/custody remains partial. |
+| 10 / 11. Audit and takeover | Failed native audit writes roll back posting; takeover preserves creator/drafter and records reason plus prior-manager notice. |
+| 14. Warranty | Per-unit UI and integer range validation, including zero months, delivered. |
+| 15. Dead code | Unused controllers/screens/hooks/commands removed; compatibility models/tables deliberately retained. |
+| 16. Destructive schema | Additive fresh/installed upgrade coverage preserves profiles, links and assignments without automatic national publication. |
+| 17 / 20. Scripts and UI | External built assets, safe text rendering, queued saves, bilingual tablet workspace and native tabs delivered; remaining localization/keyboard/admin live coverage stays partial. |
+| 18 / 19. Coverage and cards | Posting/rollback/authorization/migrations/concurrency covered; cards select latest 100 movements deterministically, with complete history pagination still pending. |
+| 21. Dependencies | Required/optional dependencies declared; manifest/lock validation passes, clean solver/install remains unverified. |
+| 22. Inspection | Explicitly deferred; no committee activation or posting-policy change. |
+
 **Implementation update (6 Oct 2026):** The source now includes mitigations for gaps 1, 2, 4, 5 (adjustment and draft void only), 6 (recipient capture only), 7, 8, 9 (asset creation and model-level ledger only), 10, 12, 13, 14, 18, 19 and the numbering portion of 21. The three additive migrations were applied to the authorized local `snipeit` database; all 70 existing profiles received a lineage ID. The new `StoreOperationsWorkflowTest` runs as part of PHPUnit's normal Feature suite and verifies sequence continuation, opening-stock gating, canonical ledger keys, negative-stock rejection, and receipt → issue → adjustment posting. The focused Store Operations, G1 and custom-request fulfillment suites pass, and Blade templates compile. The opening-marker table is currently empty; all 47 offices with historical ledger movements are therefore gated from new ledger posting pending data repair and an authorized office cut-over. Existing ledger data includes 15 class-name aliases (`App\\Models\\Accessory` and `App\\Models\\Consumable`) that need normalization before cut-over. Gaps 3, 11, 15–17, 20 and the remaining portions of 5, 6, 9 and 21 remain open or partial. Historical evidence below describes the reviewed baseline and should be read with this update.
 
 **Phase 4:** receipt inspection using the committee package is explicitly deferred at the user's direction. No committee consumer, inspection workflow or activation policy was changed. Keep gap 22 and its plan as future work.

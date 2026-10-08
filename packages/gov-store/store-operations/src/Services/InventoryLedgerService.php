@@ -22,8 +22,9 @@ class InventoryLedgerService
         return InventoryMovement::with(['document', 'creator'])
             ->whereIn('stockable_type', [$modelClass, $morphKey]) // Query BOTH keys
             ->where('stockable_id', $id)
-            ->orderBy('created_at', 'asc')
+            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
             ->limit($limit)
-            ->get();
+            ->get()->reverse()->values();
     }
 }

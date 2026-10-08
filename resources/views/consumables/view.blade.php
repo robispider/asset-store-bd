@@ -19,7 +19,6 @@
         <x-page-column class="col-md-9 main-panel">
             <x-tabs>
                 <x-slot:tabnav>
-
                     <x-tabs.nav-item
                             name="assigned"
                             class="active"
@@ -30,11 +29,13 @@
 
                     <x-tabs.files-tab :item="$consumable" count="{{ $consumable->uploads()->count() }}"/>
                     <x-tabs.history-tab count="{{ $consumable->history()->count() }}" :model="$consumable"/>
+                    @include('storeops::register.native-tab-nav')
                     <x-tabs.upload-tab :item="$consumable"/>
 
                 </x-slot:tabnav>
 
                 <x-slot:tabpanes>
+                    @include('storeops::register.native-tab-panes')
 
                     <x-tabs.pane name="assigned">
 

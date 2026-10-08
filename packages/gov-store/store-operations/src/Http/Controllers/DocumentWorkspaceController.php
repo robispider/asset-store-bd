@@ -45,20 +45,34 @@ class DocumentWorkspaceController extends Controller
 
     public function post(Request $request, string $type, string $id)
     {
-        $this->document($type, $id, 'post');
+        $candidate = $this->document($type, $id, 'post');
         try {
-            DB::transaction(function () use ($request, $type, $id) {
+            // Verify external programme state before holding the document or ledger locks.
+            // DRAFT references are about to be replaced by the submitted form; READY uses
+            // its saved references because the posted payload cannot edit it.
+            $trackingCode = $candidate->status === 'DRAFT'
+                ? collect($request->input('references', []))->firstWhere('reference_type', 'Special Allocation')['reference_number'] ?? null
+                : $candidate->references()->where('reference_type', 'Special Allocation')->value('reference_number');
+            $trackingErrors = $this->validationService->validateTrackingReference($trackingCode, (int) $candidate->location_id);
+            if ($trackingErrors) {
+                throw ValidationException::withMessages(['items' => collect($trackingErrors)->flatten()->all()]);
+            }
+
+            DB::transaction(function () use ($request, $type, $id, $trackingCode) {
                 $document = $this->document($type, $id, 'post', true);
                 if ($document->status === 'DRAFT') {
                     $this->persistDraft($request, $document);
                 }
                 $document->refresh();
+                // A concurrent edit/READY transition must not substitute an unverified reference.
+                $savedTrackingCode = $document->references()->where('reference_type', 'Special Allocation')->value('reference_number');
+                abort_unless(($savedTrackingCode ?: null) === ($trackingCode ?: null), 409);
                 $completion = $this->validationService->evaluateDocument($document);
                 if (! $document->items()->exists() || ! $completion['is_valid']) {
                     $messages = collect($completion['checklist'])->where('passed', false)->pluck('label')->all();
                     throw ValidationException::withMessages(['items' => $messages ?: [__('tenantops::access.validation_failed')]]);
                 }
-                $errors = $this->validationService->validateDocument($document, $request->all());
+                $errors = $this->validationService->validateDocument($document, $request->all(), false);
                 if ($errors) {
                     throw ValidationException::withMessages(['items' => collect($errors)->flatten()->all()]);
                 }
@@ -77,14 +91,22 @@ class DocumentWorkspaceController extends Controller
 
     public function hub(Request $request)
     {
-        $documents = Document::with('creator')->orderByDesc('created_at')->paginate(20);
+        $filter = $request->validate(['filter' => 'nullable|in:all,drafts,posted'])['filter'] ?? 'all';
+        $documents = Document::with(['creator', 'references'])->when($filter === 'drafts', fn ($query) => $query
+            ->where('status', 'DRAFT')->where('managed_by', auth()->id()))
+            ->when($filter === 'posted', fn ($query) => $query->where('status', 'POSTED'))
+            ->orderByDesc('created_at')->paginate(20)->withQueryString();
+        $notices = DB::table('gov_document_notices as notice')->join('gov_documents as document', 'document.id', '=', 'notice.document_id')
+            ->where('notice.user_id', auth()->id())->where('document.location_id', app(TenantContext::class)->locationId)
+            ->where('document.company_id', app(TenantContext::class)->companyId)
+            ->orderByDesc('notice.id')->limit(20)->get(['document.document_number', 'notice.event_key']);
 
-        return view('storeops::operations.hub', compact('documents'));
+        return view('storeops::operations.hub', compact('documents', 'filter', 'notices'));
     }
 
     public function initialize(Request $request)
     {
-        $data = $request->validate(['document_type' => 'required|in:receipt,issue,adjustment']);
+        $data = $request->validate(['document_type' => 'required|in:receipt,issue,adjustment,transfer']);
         abort_unless(app(TenantContext::class)->locationId, 422);
         try {
             $draft = $this->receiptService->saveDraft([], [], auth()->id(), null, $data['document_type']);
@@ -98,6 +120,7 @@ class DocumentWorkspaceController extends Controller
     public function workspace(string $type, string $id)
     {
         $document = $this->document($type, $id)->load(['items.product', 'items.metadata', 'timelines', 'creator']);
+        $ledgerOpen = DB::table('gov_store_ledger_openings')->where('location_id', $document->location_id)->exists();
         $officeRecipients = collect();
         if ($document->type === 'issue' && Schema::hasTable('gov_office_memberships')) {
             $officeRecipients = DB::table('gov_office_memberships as membership')
@@ -113,7 +136,24 @@ class DocumentWorkspaceController extends Controller
                 ->orderByDesc('posted_at')->get(['id', 'document_number'])
             : collect();
 
-        return view('storeops::operations.workspace', compact('document', 'type', 'officeRecipients', 'adjustmentSources'));
+        $suppliers = $document->type === 'receipt'
+            ? \App\Models\Supplier::orderBy('name')->get(['id', 'name']) : collect();
+
+        $transferOffices = collect();
+        if ($document->type === 'transfer') {
+            foreach (\App\Models\Location::withoutGlobalScopes()->whereNull('deleted_at')
+                ->where('company_id', $document->company_id)->where('id', '!=', $document->location_id)->orderBy('name')->get(['id', 'name']) as $office) {
+                $proposal = clone $document;
+                $proposal->destination_location_id = $office->id;
+                try {
+                    app(\GovStore\StoreOperations\Services\TransferPostingService::class)->atDestination($proposal, auth()->id(), fn () => true);
+                    $transferOffices->push($office);
+                } catch (\Illuminate\Auth\Access\AuthorizationException $exception) {
+                    // Only offices with live destination posting authority are selectable.
+                }
+            }
+        }
+        return view('storeops::operations.workspace', compact('document', 'type', 'officeRecipients', 'adjustmentSources', 'suppliers', 'transferOffices', 'ledgerOpen'));
     }
 
     public function saveDraft(Request $request, string $type, string $id)
@@ -142,8 +182,12 @@ class DocumentWorkspaceController extends Controller
 
     private function persistDraft(Request $request, Document $document): void
     {
-        $request->validate(['items' => 'nullable|array', 'items.*.qty' => 'required|numeric|min:0',
+        $request->validate(['items' => 'nullable|array', 'items.*.qty' => 'required|integer|min:0|max:99999',
             'items.*.unit_cost' => 'nullable|numeric|min:0', 'references' => 'nullable|array',
+            'references.*.reference_type' => 'required|string|max:100',
+            'references.*.reference_number' => 'nullable|string|max:255',
+            'references.*.reference_date' => 'nullable|date',
+            'supplier_id' => ['nullable', 'integer', \Illuminate\Validation\Rule::exists('suppliers', 'id')->whereNull('deleted_at')],
             'issued_to_user_id' => 'nullable|integer|exists:users,id', 'issue_department' => 'nullable|string|max:150']);
         if ($document->type === 'adjustment') {
             $request->validate([
@@ -172,6 +216,11 @@ class DocumentWorkspaceController extends Controller
                     __('storeops::storeops.adjustment_direction_required'));
             }
         }
+        if ($document->type === 'transfer') {
+            $data = $request->validate(['destination_location_id' => 'required|integer', 'transfer_reason' => 'required|string|min:5|max:500']);
+            $document->destination_location_id = $data['destination_location_id'];
+            app(\GovStore\StoreOperations\Services\TransferPostingService::class)->atDestination($document, auth()->id(), fn () => true);
+        }
         $rawLines = [];
         foreach ($request->input('items', []) as $item) {
             if (empty($item['id'])) {
@@ -180,7 +229,14 @@ class DocumentWorkspaceController extends Controller
             [$shortType, $productId] = $this->productId($item['id']);
             $rawLines[] = ['type' => $shortType, 'id' => $productId, 'qty' => $item['qty'], 'unit_cost' => $item['unit_cost'] ?? 0];
         }
-        $this->receiptService->saveDraft($request->only('purchase_type', 'source_document_id', 'adjustment_reason', 'issued_to_user_id', 'issue_department'),
+        $header = $request->only('purchase_type', 'source_document_id', 'adjustment_reason', 'issued_to_user_id', 'issue_department');
+        if ($document->type === 'receipt') {
+            $header['supplier_id'] = $request->input('supplier_id');
+        }
+        if ($document->type === 'transfer') {
+            $header = array_merge($header, $request->only('destination_location_id', 'transfer_reason'));
+        }
+        $this->receiptService->saveDraft($header,
             $rawLines, auth()->id(), $document, $document->type);
         foreach ($request->input('items', []) as $item) {
             if (empty($item['id'])) {
@@ -233,10 +289,25 @@ class DocumentWorkspaceController extends Controller
 
     public function takeover(Request $request, string $type, string $id)
     {
-        DB::transaction(function () use ($type, $id) {
+        $request->validate(['reason' => 'required|string|min:5|max:500']);
+        DB::transaction(function () use ($type, $id, $request) {
             $document = $this->document($type, $id, 'takeover', true);
+            $previousManagerId = $document->managed_by;
             $document->update(['managed_by' => auth()->id()]);
-            $document->timelines()->create(['state' => 'DRAFT', 'user_id' => auth()->id(), 'notes' => __('tenantops::access.takeover_done')]);
+            $document->timelines()->create([
+                'state' => 'DRAFT',
+                'user_id' => auth()->id(),
+                'notes' => __('storeops::storeops.takeover_timeline', [
+                    'previous_manager' => $previousManagerId ?? __('storeops::storeops.no_previous_manager'),
+                    'reason' => $request->input('reason'),
+                ]),
+            ]);
+            if ($previousManagerId && (int) $previousManagerId !== (int) auth()->id()) {
+                DB::table('gov_document_notices')->insert([
+                    'document_id' => $document->id, 'user_id' => $previousManagerId,
+                    'actor_id' => auth()->id(), 'event_key' => 'takeover', 'created_at' => now(),
+                ]);
+            }
         });
 
         return back()->with('success', __('tenantops::access.takeover_done'));
@@ -251,12 +322,17 @@ class DocumentWorkspaceController extends Controller
 
     public function searchProducts(Request $request)
     {
+        $document = $request->filled('document_id') ? Document::findOrFail($request->input('document_id')) : null;
+        if ($document) {
+            $this->policy->check($document, $document->type);
+        }
         $results = $this->productResolver->search($request->input('q', ''))->map(function ($item) {
             $modelClass = $item['type_raw'];
 
             return ['id' => $item['type_raw'].'_'.$item['id'], 'text' => $item['name'].' ('.$item['type_label'].')',
                 'current_stock' => $item['current_stock'], 'category_id' => $item['category_id']];
-        });
+        })->filter(fn ($item) => ! $document || ! in_array($document->type, ['issue', 'adjustment', 'transfer'], true)
+            || ! str_contains($item['id'], 'AssetModel'))->values();
 
         return response()->json(['results' => $results]);
     }
@@ -265,6 +341,8 @@ class DocumentWorkspaceController extends Controller
     {
         try {
             return response()->json(app(ProfileCompilerService::class)->compileItem(strtolower(class_basename($type)), $id));
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException|HttpExceptionInterface $e) {
+            throw $e;
         } catch (\Throwable $e) {
             return $this->failure($request, $e);
         }
@@ -322,6 +400,9 @@ class DocumentWorkspaceController extends Controller
 
     public function renderMeta(Request $request)
     {
+        $request->validate(['product_type' => 'required|string|max:100', 'product_id' => 'required|integer|min:1',
+            'quantity' => 'required|integer|min:1|max:1000', 'row_index' => 'required|integer|min:0|max:499',
+            'document_id' => 'required|uuid']);
         $item = null;
         $normalizedType = strtolower(class_basename($request->input('product_type')));
         if ($id = $request->input('document_id')) {
@@ -336,6 +417,9 @@ class DocumentWorkspaceController extends Controller
             $compiled = app(ProfileCompilerService::class)->compileItem($normalizedType, $request->input('product_id'));
             $html = '';
             foreach ($compiled as $code => $meta) {
+                if (isset($document) && $document->type === 'transfer') {
+                    continue;
+                }
                 if (($meta['enforced'] ?? false) === true) {
                     $html .= CapabilityRegistry::make($code)->renderUI($item,
                         ['config' => $meta['config'] ?? [], 'row_index' => $request->input('row_index', 0), 'quantity' => (int) $request->input('quantity', 1)]);
@@ -348,7 +432,15 @@ class DocumentWorkspaceController extends Controller
                 ])->render();
             }
 
+            if (isset($document) && $document->type === 'transfer' && $document->destination_location_id) {
+                $targets = app(\GovStore\StoreOperations\Services\TransferPostingService::class)->destinationItems(
+                    $document, $normalizedType, (int) $request->input('product_id'), auth()->id());
+                $html .= view('storeops::capabilities.transfer_item', ['item' => $item, 'targets' => $targets,
+                    'rowIndex' => (int) $request->input('row_index', 0), 'isDraft' => $document->status === 'DRAFT'])->render();
+            }
             return response()->json(['html' => $html, 'has_requirements' => $html !== '']);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException|HttpExceptionInterface|\Illuminate\Auth\Access\AuthorizationException $e) {
+            throw $e;
         } catch (\Throwable $e) {
             return $this->failure($request, $e);
         }

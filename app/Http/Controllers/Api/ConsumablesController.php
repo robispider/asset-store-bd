@@ -296,6 +296,7 @@ class ConsumablesController extends Controller
         }
 
         $this->authorize('checkout', $consumable);
+        app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->assertNativeMovementAllowed($consumable);
 
         $consumable->checkout_qty = $request->input('checkout_qty', 1);
 

@@ -38,7 +38,9 @@ class WriteNativeAuditLogs
                                " [Qty: {$movement->quantity}]. Reference Document: {$docNo}. balance after: {$movement->balance_after}".
                                ($movement->notes ? ' '.$movement->notes : '');
 
-            $actionlog->save();
+            if (! $actionlog->save()) {
+                throw new \RuntimeException('Native inventory audit persistence failed.');
+            }
         } catch (Exception $e) {
             Log::error("Failed to write standard Actionlog for Movement ID: {$movement->id}. Error: {$e->getMessage()}");
             throw $e;

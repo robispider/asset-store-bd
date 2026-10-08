@@ -1,19 +1,23 @@
 @extends('layouts/default')
-@section('title', 'Workspace - ' . $document->getDocumentNumber())
+@section('title', __('storeops::storeops.workspace') . ' - ' . $document->getDocumentNumber())
 
 @section('content')
+<link rel="stylesheet" href="{{ url('css/dist/store-operations.css') }}">
 @php 
     $isDraft = $document->getStatus() === 'DRAFT' && app(\GovStore\TenantScope\Services\GovAccess::class)->permitsRequest(auth()->user(), 'storeops.documents.draft');
     $isReadOnly = !$isDraft;
     $isPosted = $document->getStatus() === 'POSTED';
     $mathDirection = $document->getDocumentType() === 'receipt' ? '+' : '-';
-    $lineSectionTitle = match ($document->getDocumentType()) { 'issue' => 'Issued Items', 'adjustment' => 'Adjusted Items', default => 'Received Items' };
+    $lineSectionTitle = match ($document->getDocumentType()) { 'issue' => __('storeops::storeops.issued_items'), 'adjustment' => __('storeops::storeops.adjusted_items'), 'transfer' => __('storeops::storeops.transferred_items'), default => __('storeops::storeops.received_items') };
 @endphp
 
 @if($isReadOnly)
 <div class="alert alert-info" role="status">{{ __('tenantops::access.read_only') }}</div>
 @endif
 <div id="gov-access-inline" class="alert alert-warning" role="alert" hidden></div>
+@if(!$ledgerOpen && in_array($document->status, ['DRAFT', 'READY'], true))
+    <div class="alert alert-info" role="status">{{ __('storeops::storeops.opening_required_help') }}</div>
+@endif
 <div class="row">
     <!-- Main Form: Wraps the workspace for integrated draft saves and posting -->
     <form id="workspaceForm" action="{{ route('storeops.documents.post', ['type' => $type, 'id' => $document->id]) }}" method="POST">
@@ -27,24 +31,43 @@
             <!-- SECTION 1: Administrative Details & References -->
             <div class="box box-solid">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Administrative Details & Approvals</h3>
+                    <h3 class="box-title">{{ __('storeops::storeops.administrative_details') }}</h3>
                 </div>
                 <div class="box-body">
                     
-                    @if($document->type === 'adjustment')
+                    @if($document->type === 'transfer')
+                    <div class="form-group">
+                        <label for="destination_location_id">{{ __('storeops::storeops.destination_office') }}</label>
+                        <select id="destination_location_id" name="destination_location_id" class="form-control" required {{ $isReadOnly ? 'disabled' : '' }}>
+                            <option value="">{{ __('storeops::storeops.select_destination_office') }}</option>
+                            @foreach($transferOffices as $office)
+                                <option value="{{ $office->id }}" @selected((int) $document->destination_location_id === (int) $office->id)>{{ $office->name }}</option>
+                            @endforeach
+                        </select>
+                        <p class="help-block">{{ __('storeops::storeops.transfer_authority_help') }}</p>
+                        @if($transferOffices->isEmpty() && $isDraft)
+                            <p class="alert alert-info" role="status">{{ __('storeops::storeops.no_transfer_offices') }}</p>
+                        @endif
+                    </div>
+                    <div class="form-group">
+                        <label for="transfer_reason">{{ __('storeops::storeops.transfer_reason') }}</label>
+                        <textarea id="transfer_reason" name="transfer_reason" class="form-control" required minlength="5" maxlength="500" {{ $isReadOnly ? 'readonly' : '' }}>{{ $document->transfer_reason }}</textarea>
+                        <p class="help-block">{{ __('storeops::storeops.transfer_save_help') }}</p>
+                    </div>
+                    @elseif($document->type === 'adjustment')
                     <div class="row" style="margin-bottom: 15px;">
                         <div class="col-md-6 form-group">
-                            <label>Reason</label>
+                            <label>{{ __('storeops::storeops.reason') }}</label>
                             <select name="adjustment_reason" class="form-control" {{ $isReadOnly ? 'disabled' : '' }}>
-                                @foreach(['PHYSICAL_COUNT' => 'Physical count', 'DAMAGE' => 'Damage', 'LOSS' => 'Loss', 'EXPIRED' => 'Expired', 'CORRECTION' => 'Correction'] as $key => $label)
+                                @foreach(['PHYSICAL_COUNT' => __('storeops::storeops.physical_count'), 'DAMAGE' => __('storeops::storeops.damage'), 'LOSS' => __('storeops::storeops.loss'), 'EXPIRED' => __('storeops::storeops.expired'), 'CORRECTION' => __('storeops::storeops.correction')] as $key => $label)
                                     <option value="{{ $key }}" @selected($document->adjustment_reason === $key)>{{ $label }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-md-6 form-group">
-                            <label>Source document</label>
+                            <label>{{ __('storeops::storeops.source_document') }}</label>
                             <select name="source_document_id" class="form-control" {{ $isReadOnly ? 'disabled' : '' }}>
-                                <option value="">Select a posted document</option>
+                                <option value="">{{ __('storeops::storeops.select_posted_document') }}</option>
                                 @foreach($adjustmentSources as $source)
                                     <option value="{{ $source->id }}" @selected($document->source_document_id === $source->id)>{{ $source->document_number }}</option>
                                 @endforeach
@@ -54,34 +77,44 @@
                     @elseif($document->type === 'issue')
                     <div class="row" style="margin-bottom: 15px;">
                         <div class="col-md-6 form-group">
-                            <label>Issue to office member</label>
+                            <label>{{ __('storeops::storeops.issue_member') }}</label>
                             <select name="issued_to_user_id" class="form-control" {{ $isReadOnly ? 'disabled' : '' }}>
-                                <option value="">Select an active office member</option>
+                                <option value="">{{ __('storeops::storeops.select_office_member') }}</option>
                                 @foreach($officeRecipients as $recipient)
                                     <option value="{{ $recipient->id }}" @selected((int) $document->issued_to_user_id === (int) $recipient->id)>{{ trim($recipient->first_name.' '.$recipient->last_name) ?: $recipient->username }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-md-6 form-group">
-                            <label>Or department</label>
+                            <label>{{ __('storeops::storeops.or_department') }}</label>
                             <input type="text" name="issue_department" value="{{ $document->issue_department }}" class="form-control" maxlength="150" {{ $isReadOnly ? 'readonly' : '' }}>
                         </div>
                     </div>
                     @else
                     <div class="row" style="margin-bottom: 15px;">
                         <div class="col-md-12 form-group">
-                            <label style="color: #475569;">Receiving Source</label>
+                            <label style="color: #475569;">{{ __('storeops::storeops.receiving_source') }}</label>
                             <select name="purchase_type" class="form-control" {{ $isReadOnly ? 'disabled' : '' }} style="border: 1px solid #cbd5e1; max-width: 300px;">
-                                <option value="Purchase" {{ $document->purchase_type == 'Purchase' ? 'selected' : '' }}>Standard Purchase</option>
-                                <option value="Transfer" {{ $document->purchase_type == 'Transfer' ? 'selected' : '' }}>Office Transfer</option>
-                                <option value="Donation" {{ $document->purchase_type == 'Donation' ? 'selected' : '' }}>Donation / Grant</option>
-                                <option value="Confiscated" {{ $document->purchase_type == 'Confiscated' ? 'selected' : '' }}>Confiscated / Found</option>
+                                <option value="Purchase" {{ $document->purchase_type == 'Purchase' ? 'selected' : '' }}>{{ __('storeops::storeops.standard_purchase') }}</option>
+                                <option value="Transfer" {{ $document->purchase_type == 'Transfer' ? 'selected' : '' }}>{{ __('storeops::storeops.office_transfer') }}</option>
+                                <option value="Donation" {{ $document->purchase_type == 'Donation' ? 'selected' : '' }}>{{ __('storeops::storeops.donation') }}</option>
+                                <option value="Confiscated" {{ $document->purchase_type == 'Confiscated' ? 'selected' : '' }}>{{ __('storeops::storeops.confiscated') }}</option>
                             </select>
                         </div>
                     </div>
                     @endif
 
                     @if($document->type === 'receipt')
+                    <div class="form-group">
+                        <label for="supplier_id">{{ __('storeops::storeops.supplier') }}</label>
+                        <select id="supplier_id" name="supplier_id" class="form-control" {{ $isReadOnly ? 'disabled' : '' }}>
+                            <option value="">{{ __('storeops::storeops.select_supplier') }}</option>
+                            @foreach($suppliers as $supplier)
+                                <option value="{{ $supplier->id }}" @selected((int) $document->supplier_id === (int) $supplier->id)>{{ $supplier->name }}</option>
+                            @endforeach
+                        </select>
+                        <p class="help-block">{{ __('storeops::storeops.supplier_help') }}</p>
+                    </div>
                     @php
                         // Helper to extract existing reference data for the static fields
                         $getRef = function($type) use ($document) {
@@ -97,13 +130,13 @@
                         <!-- 1. Supplier Challan -->
                         <div class="col-md-6">
                             <div class="form-group" style="background: #f8fafc; padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px;">
-                                <label style="color: #0f172a; font-size: 13px;"><i class="fa fa-truck text-blue" style="margin-right: 5px;"></i> Supplier Challan</label>
+                                <label style="color: #0f172a; font-size: 13px;"><i class="fa fa-truck text-blue" style="margin-right: 5px;"></i> {{ __('storeops::storeops.supplier_challan') }}</label>
                                 <div style="display: flex; gap: 10px; margin-top: 5px;">
                                     <input type="hidden" name="references[0][reference_type]" value="Supplier Challan">
-                                    <input type="text" name="references[0][reference_number]" class="form-control input-sm" placeholder="Challan Number" value="{{ $challan->reference_number ?? '' }}" {{ $isReadOnly ? 'readonly' : '' }}>
+                                    <input type="text" name="references[0][reference_number]" class="form-control input-sm" placeholder="{{ __('storeops::storeops.challan_number') }}" value="{{ $challan->reference_number ?? '' }}" {{ $isReadOnly ? 'readonly' : '' }}>
                                     
                                     <!-- FIXED: Changed 'readonly' to 'disabled' to prevent calendar updates on posted documents -->
-                                    <input type="date" name="references[0][reference_date]" class="form-control input-sm" style="max-width: 140px;" value="{{ $challan->reference_date ?? '' }}" {{ $isReadOnly ? 'disabled' : '' }} title="Optional Date">
+                                    <input type="date" name="references[0][reference_date]" class="form-control input-sm" style="max-width: 140px;" value="{{ $challan->reference_date ?? '' }}" {{ $isReadOnly ? 'disabled' : '' }} title="{{ __('storeops::storeops.optional_date') }}">
                                 </div>
                             </div>
                         </div>
@@ -111,13 +144,13 @@
                         <!-- 2. Purchase Order / Tender -->
                         <div class="col-md-6">
                             <div class="form-group" style="background: #f8fafc; padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px;">
-                                <label style="color: #0f172a; font-size: 13px;"><i class="fa fa-file-text-o text-purple" style="margin-right: 5px;"></i> Purchase Order / Tender</label>
+                                <label style="color: #0f172a; font-size: 13px;"><i class="fa fa-file-text-o text-purple" style="margin-right: 5px;"></i> {{ __('storeops::storeops.purchase_order') }}</label>
                                 <div style="display: flex; gap: 10px; margin-top: 5px;">
                                     <input type="hidden" name="references[1][reference_type]" value="Purchase Order">
-                                    <input type="text" name="references[1][reference_number]" class="form-control input-sm" placeholder="PO / Tender Number" value="{{ $po->reference_number ?? '' }}" {{ $isReadOnly ? 'readonly' : '' }}>
+                                    <input type="text" name="references[1][reference_number]" class="form-control input-sm" placeholder="{{ __('storeops::storeops.po_number') }}" value="{{ $po->reference_number ?? '' }}" {{ $isReadOnly ? 'readonly' : '' }}>
                                     
                                     <!-- FIXED: Changed 'readonly' to 'disabled' -->
-                                    <input type="date" name="references[1][reference_date]" class="form-control input-sm" style="max-width: 140px;" value="{{ $po->reference_date ?? '' }}" {{ $isReadOnly ? 'disabled' : '' }} title="Optional Date">
+                                    <input type="date" name="references[1][reference_date]" class="form-control input-sm" style="max-width: 140px;" value="{{ $po->reference_date ?? '' }}" {{ $isReadOnly ? 'disabled' : '' }} title="{{ __('storeops::storeops.optional_date') }}">
                                 </div>
                             </div>
                         </div>
@@ -127,13 +160,13 @@
                         <!-- 3. Nothi / Approval Letter -->
                         <div class="col-md-6">
                             <div class="form-group" style="background: #f8fafc; padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px;">
-                                <label style="color: #0f172a; font-size: 13px;"><i class="fa fa-check-square-o text-green" style="margin-right: 5px;"></i> Nothi / Approval Letter</label>
+                                <label style="color: #0f172a; font-size: 13px;"><i class="fa fa-check-square-o text-green" style="margin-right: 5px;"></i> {{ __('storeops::storeops.approval_letter') }}</label>
                                 <div style="display: flex; gap: 10px; margin-top: 5px;">
                                     <input type="hidden" name="references[2][reference_type]" value="Nothi / Approval Letter">
                                     <input type="text" name="references[2][reference_number]" class="form-control input-sm" placeholder="Nothi Number" value="{{ $nothi->reference_number ?? '' }}" {{ $isReadOnly ? 'readonly' : '' }}>
                                     
                                     <!-- FIXED: Changed 'readonly' to 'disabled' -->
-                                    <input type="date" name="references[2][reference_date]" class="form-control input-sm" style="max-width: 140px;" value="{{ $nothi->reference_date ?? '' }}" {{ $isReadOnly ? 'disabled' : '' }} title="Optional Date">
+                                    <input type="date" name="references[2][reference_date]" class="form-control input-sm" style="max-width: 140px;" value="{{ $nothi->reference_date ?? '' }}" {{ $isReadOnly ? 'disabled' : '' }} title="{{ __('storeops::storeops.optional_date') }}">
                                 </div>
                             </div>
                         </div>
@@ -141,10 +174,10 @@
                         <!-- 4. Special Ministry Allocation -->
                         <div class="col-md-6">
                             <div class="form-group" style="background: #fdfae8; padding: 15px; border: 1px solid #fef08a; border-radius: 6px;">
-                                <label style="color: #854d0e; font-size: 13px;"><i class="fa fa-star text-yellow" style="margin-right: 5px;"></i> Special Project / Allocation Code</label>
+                                <label style="color: #854d0e; font-size: 13px;"><i class="fa fa-star text-yellow" style="margin-right: 5px;"></i> {{ __('storeops::storeops.allocation_code') }}</label>
                                 <div style="display: flex; gap: 10px; margin-top: 5px;">
                                     <input type="hidden" name="references[3][reference_type]" value="Special Allocation">
-                                    <input type="text" id="tracking_code_input" name="references[3][reference_number]" class="form-control input-sm" placeholder="Tracking Code (Optional)" value="{{ $allocation->reference_number ?? '' }}" {{ $isReadOnly ? 'readonly' : '' }} style="border-color: #fde047;">
+                                    <input type="text" id="tracking_code_input" name="references[3][reference_number]" class="form-control input-sm" placeholder="{{ __('storeops::storeops.tracking_optional') }}" value="{{ $allocation->reference_number ?? '' }}" {{ $isReadOnly ? 'readonly' : '' }} style="border-color: #fde047;">
                                     
                                     <!-- FIXED: Changed 'readonly' to 'disabled' -->
                                     
@@ -168,11 +201,11 @@
                     <table class="table table-bordered" id="itemsGrid">
                         <thead style="background: #f9fafb;">
                             <tr>
-                                <th style="width: 35%;">Item Name</th>
-                                <th style="width: 15%; text-align: center;">Current Stock</th>
-                                <th style="width: 15%;">Quantity</th>
-                                <th style="width: 15%;">Unit Cost (৳)</th>
-                                <th style="width: 15%; text-align: center;">Balance After</th>
+                                <th style="width: 35%;">{{ __('storeops::storeops.item_name') }}</th>
+                                <th style="width: 15%; text-align: center;">{{ __('storeops::storeops.current_stock') }}</th>
+                                <th style="width: 15%;">{{ __('storeops::storeops.quantity') }}</th>
+                                <th style="width: 15%;">{{ __('storeops::storeops.unit_cost') }}</th>
+                                <th style="width: 15%; text-align: center;">{{ __('storeops::storeops.balance_after') }}</th>
                                 @if($isDraft) <th style="width: 5%;"></th> @endif
                             </tr>
                         </thead>
@@ -183,7 +216,7 @@
                     @if($isDraft)
                     <div style="padding: 10px;">
                         <button type="button" class="btn btn-sm btn-default" id="addRowBtn">
-                            <i class="fa fa-plus"></i> Add Row
+                            <i class="fa fa-plus"></i> {{ __('storeops::storeops.add_row') }}
                         </button>
                     </div>
                     @endif
@@ -193,18 +226,18 @@
             <!-- SECTION 3: Supporting Documents -->
             <div class="box box-solid">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Supporting Documents (Challan / Nothi / Invoice Scans)</h3>
+                    <h3 class="box-title">{{ __('storeops::storeops.supporting_documents') }}</h3>
                 </div>
                 <div class="box-body">
                     @if($isDraft)
                         <div class="row" style="margin-bottom: 20px;">
                             <div class="col-md-5">
                                 <select id="attachmentCategory" class="form-control input-sm">
-                                    <option value="Challan">Challan (চালান)</option>
-                                    <option value="Invoice">Invoice / Bill (ইনভয়েস)</option>
-                                    <option value="Committee_Report">Committee Acceptance Report</option>
-                                    <option value="Tender_WO">Work Order / Tender Copy</option>
-                                    <option value="Other">Other Supporting Document</option>
+                                    <option value="Challan">{{ __('storeops::storeops.challan') }}</option>
+                                    <option value="Invoice">{{ __('storeops::storeops.invoice') }}</option>
+                                    <option value="Committee_Report">{{ __('storeops::storeops.committee_report') }}</option>
+                                    <option value="Tender_WO">{{ __('storeops::storeops.work_order') }}</option>
+                                    <option value="Other">{{ __('storeops::storeops.other_document') }}</option>
                                 </select>
                             </div>
                             <div class="col-md-5">
@@ -212,7 +245,7 @@
                             </div>
                             <div class="col-md-2">
                                 <button type="button" class="btn btn-sm btn-primary btn-block" id="uploadFileBtn">
-                                    <i class="fa fa-upload"></i> Upload
+                                    <i class="fa fa-upload"></i> {{ __('storeops::storeops.upload') }}
                                 </button>
                             </div>
                         </div>
@@ -233,7 +266,7 @@
                             </li>
                         @empty
                             <li class="list-group-item text-center text-muted" id="noAttachmentsMsg" style="border:none;">
-                                No supporting files attached yet.
+                                {{ __('storeops::storeops.no_attachments') }}
                             </li>
                         @endforelse
                     </ul>
@@ -246,17 +279,17 @@
             
             <div class="box {{ $isPosted ? 'box-success' : 'box-warning' }}">
                 <div class="box-header with-border">
-                    <h3 class="box-title">{{ $isPosted ? 'Posted Document' : 'Draft Workspace' }}</h3>
+                    <h3 class="box-title">{{ $isPosted ? __('storeops::storeops.posted_document') : __('storeops::storeops.draft_workspace') }}</h3>
                 </div>
                 <div class="box-body">
                     <h4 class="text-center" style="margin-top:0;"><strong>{{ $document->getDocumentNumber() }}</strong></h4>
                     
                     <ul class="list-group list-group-unbordered" style="margin-bottom: 15px;">
                         <li class="list-group-item">
-                            <b>Total Lines</b> <a class="pull-right" id="sumLines">{{ $document->items->count() }}</a>
+                            <b>{{ __('storeops::storeops.total_lines') }}</b> <a class="pull-right" id="sumLines">{{ $document->items->count() }}</a>
                         </li>
                         <li class="list-group-item">
-                            <b>Total Quantity</b> <a class="pull-right" id="sumQty">{{ $document->items->sum('quantity') }}</a>
+                            <b>{{ __('storeops::storeops.total_quantity') }}</b> <a class="pull-right" id="sumQty">{{ $document->items->sum('quantity') }}</a>
                         </li>
                     </ul>
 
@@ -265,13 +298,13 @@
 
                         <x-gov-action ability="storeops.documents.draft" class="btn btn-default btn-block" id="saveDraftBtn">{{ __('tenantops::access.save') }}</x-gov-action>
                         <x-gov-action ability="storeops.documents.post" class="btn btn-primary btn-block" id="triggerPostBtn" disabled>{{ __('tenantops::access.post') }}</x-gov-action>
-                        <button type="button" class="btn btn-danger btn-block" data-toggle="modal" data-target="#voidDraftModal">Void draft</button>
+                        <button type="button" class="btn btn-danger btn-block" data-toggle="modal" data-target="#voidDraftModal">{{ __('storeops::storeops.void_draft') }}</button>
                     @else
                         <x-gov-action ability="storeops.documents.draft" :locked="$document->status !== 'DRAFT'" class="btn btn-default btn-block">{{ __('tenantops::access.save') }}</x-gov-action>
                         <x-gov-action ability="storeops.documents.post" :locked="!in_array($document->status, ['DRAFT', 'READY'])" class="btn btn-primary btn-block" id="triggerPostBtn">{{ __('tenantops::access.post') }}</x-gov-action>
-                        <button type="button" class="btn btn-default btn-block" onclick="window.open('{{ route('storeops.documents.print', ['type' => $type, 'id' => $document->id]) }}', '_blank')">
-                            <i class="fa fa-print"></i> Print Official Copy
-                        </button>
+                        <a class="btn btn-default btn-block" href="{{ route('storeops.documents.print', ['type' => $type, 'id' => $document->id]) }}" target="_blank" rel="noopener">
+                            <i class="fa fa-print"></i> {{ __('storeops::storeops.print_copy') }}
+                        </a>
                     @endif
                 </div>
             </div>
@@ -284,7 +317,7 @@
             <!-- Activity Timeline -->
             <div class="box box-solid">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Activity Timeline</h3>
+                    <h3 class="box-title">{{ __('storeops::storeops.activity_timeline') }}</h3>
                 </div>
                 <div class="box-body">
                     <ul class="timeline timeline-inverse" style="margin-top: 10px;">
@@ -297,7 +330,7 @@
                                         {{ \Carbon\Carbon::parse($event->created_at)->format('H:i') }}
                                     </span>
                                     <h3 class="timeline-header no-border">
-                                        <strong>{{ ucfirst(strtolower($event->state)) }}</strong> by {{ $event->user?->present()->fullName ?? 'System' }}
+                                        <strong>{{ __('storeops::storeops.'.strtolower($event->state)) }}</strong> — {{ $event->user?->present()->fullName ?? __('storeops::storeops.system') }}
                                     </h3>
                                     @if($event->notes)
                                         <div class="timeline-body" style="padding-top:0; color:#666;">{{ $event->notes }}</div>
@@ -314,14 +347,20 @@
     </form>
 </div>
 
-<form id="takeoverForm" method="post" action="{{ route('storeops.documents.takeover', ['type' => $type, 'id' => $document->id]) }}">@csrf</form>
+@if($isDraft && (int) $document->managed_by !== (int) auth()->id())
+<form id="takeoverForm" method="post" action="{{ route('storeops.documents.takeover', ['type' => $type, 'id' => $document->id]) }}">
+    @csrf
+    <label for="takeoverReason">{{ __('storeops::storeops.takeover_reason') }}</label>
+    <textarea id="takeoverReason" name="reason" minlength="5" maxlength="500" required class="form-control"></textarea>
+</form>
+@endif
 @if($isDraft)
 <div class="modal fade" id="voidDraftModal" tabindex="-1" role="dialog" aria-labelledby="voidDraftTitle">
     <div class="modal-dialog" role="document"><div class="modal-content">
         <form method="POST" action="{{ route('storeops.documents.void', ['type' => $type, 'id' => $document->id]) }}">@csrf
-            <div class="modal-header"><h4 class="modal-title" id="voidDraftTitle">Void this draft</h4></div>
-            <div class="modal-body"><label for="voidReason">Reason</label><textarea id="voidReason" name="reason" class="form-control" minlength="5" maxlength="500" required></textarea></div>
-            <div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button><button type="submit" class="btn btn-danger">Void draft</button></div>
+            <div class="modal-header"><h4 class="modal-title" id="voidDraftTitle">{{ __('storeops::storeops.void_title') }}</h4></div>
+            <div class="modal-body"><label for="voidReason">{{ __('storeops::storeops.reason') }}</label><textarea id="voidReason" name="reason" class="form-control" minlength="5" maxlength="500" required></textarea></div>
+            <div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">{{ __('storeops::storeops.cancel') }}</button><button type="submit" class="btn btn-danger">{{ __('storeops::storeops.void_draft') }}</button></div>
         </form>
     </div></div>
 </div>
@@ -334,37 +373,24 @@
         <h4 class="modal-title" id="postingModalTitle" lang="bn">{{ trans('tenantops::access.post_confirm', [], 'bn-BD') }}</h4><p lang="en">{{ trans('tenantops::access.post_confirm', [], 'en-US') }}</p>
       </div>
       <div class="modal-body">
-        <p class="lead">You are about to post this document to the immutable inventory ledger.</p>
+        <p class="lead">{{ __('storeops::storeops.post_lead') }}</p>
         <div class="well">
             <strong>{{ $document->getDocumentNumber() }} ({{ $document->type }})</strong><br>{{ __('tenantops::access.office') }}: {{ $document->location_id }}<br><ul id="previewItems"></ul>
-            <span id="previewLines">0</span> Items | <span id="previewQty">0</span> Total Quantity<br>
-            Estimated Value: ৳<span id="previewValue">0.00</span><br>
-            Reference: <span id="previewRef"></span>
+            <span id="previewLines">0</span> {{ __('storeops::storeops.items_label') }} | <span id="previewQty">0</span> {{ __('storeops::storeops.total_quantity') }}<br>
+            {{ __('storeops::storeops.estimated_value') }} ৳<span id="previewValue">0.00</span><br>
+            {{ __('storeops::storeops.reference_label') }} <span id="previewRef"></span>
         </div>
         <div id="postingWarning"><p lang="bn">{{ trans('tenantops::access.post_warning', [], 'bn-BD') }}</p><p lang="en">{{ trans('tenantops::access.post_warning', [], 'en-US') }}</p></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-success" onclick="document.getElementById('workspaceForm').submit();">{{ __('tenantops::access.post') }}</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('storeops::storeops.cancel') }}</button>
+        <button type="button" class="btn btn-success" id="confirmPostBtn">{{ __('tenantops::access.post') }}</button>
       </div>
     </div>
   </div>
 </div>
 
 @section('moar_scripts')
-    @if($document->status === 'READY')
-    <script>document.getElementById('triggerPostBtn').addEventListener('click', function () {
-        $.get(@json(route('storeops.documents.preview', ['type' => $type, 'id' => $document->id]))).done(function (data) {
-            $('#previewLines').text(data.lines); $('#previewQty').text(data.total_qty);
-            $('#previewValue').text(data.total_value); $('#previewRef').text(data.reference);
-            $('#previewItems').empty();
-            (data.items || []).forEach(function (item) { $('<li>').text(item.name + ': ' + item.quantity).appendTo('#previewItems'); });
-            $('#postingModal').modal('show');
-        });
-    });</script>
-    @endif
-    @include('storeops::operations.partials.grid-script', ['existingItems' => $document->items, 'isDraft' => $isDraft])
-    @include('storeops::operations.partials.tracking-handshake', ['document' => $document, 'isDraft' => $isDraft])
-
+    @include('storeops::operations.partials.workspace-config')
 @endsection
 @endsection

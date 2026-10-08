@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
-    <title>{{ $document->getDocumentNumber() }} - Official Government Record</title>
+    <title>{{ $document->getDocumentNumber() }} - {{ __('storeops::storeops.official_record') }}</title>
     <style>
         body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; color: #333; line-height: 1.4; }
         .container { width: 100%; max-width: 800px; margin: 0 auto; padding: 20px; }
@@ -27,8 +27,8 @@
     <div class="container">
         
         <div class="no-print" style="margin-bottom: 20px; text-align: right;">
-            <button onclick="window.print();" style="padding: 8px 16px; cursor: pointer;">Print Document</button>
-            <button onclick="window.close();" style="padding: 8px 16px; cursor: pointer;">Close</button>
+            <button onclick="window.print();" style="padding: 8px 16px; cursor: pointer;">{{ __('storeops::storeops.print_document') }}</button>
+            <button onclick="window.close();" style="padding: 8px 16px; cursor: pointer;">{{ __('storeops::storeops.close') }}</button>
         </div>
 
         <div class="header">
@@ -36,23 +36,23 @@
             <p style="font-size: 20px; font-weight: bold;">{{ trans('tenantops::access.draft_print', [], 'bn-BD') }}<br>{{ trans('tenantops::access.draft_print', [], 'en-US') }}</p>
             @endif
             <h1 class="doc-title">
-                {{ strtoupper($type) }} NOTE
+                {{ __('storeops::storeops.document_types.'.$type) }}
             </h1>
-            <p style="margin: 3px 0; font-weight: bold;">Government of the People's Republic of Bangladesh</p>
-            <p style="margin: 0; font-size: 11px;">Store Operations & Asset Management Subsystem</p>
+            <p style="margin: 3px 0; font-weight: bold;">{{ __('storeops::storeops.government') }}</p>
+            <p style="margin: 0; font-size: 11px;">{{ __('storeops::storeops.subsystem') }}</p>
         </div>
 
         <div class="doc-meta">
             <div class="meta-box">
-                <strong>Document No:</strong> {{ $document->getDocumentNumber() }}<br>
-                <strong>Date Posted:</strong> {{ $document->posted_at ?? '—' }}<br>
+                <strong>{{ __('storeops::storeops.document_no') }}:</strong> {{ $document->getDocumentNumber() }}<br>
+                <strong>{{ __('storeops::storeops.date_posted') }}</strong> {{ $document->posted_at ?? '—' }}<br>
                 <strong>{{ __('tenantops::access.drafted_by') }}:</strong> {{ $document->drafter?->getFullNameAttribute() ?? $document->creator?->getFullNameAttribute() ?? '—' }}<br>
                 <strong>{{ __('tenantops::access.posted_by') }}:</strong> {{ $document->poster?->getFullNameAttribute() ?? '—' }}
             </div>
             <div class="meta-box" style="text-align: right;">
-                <strong>Source:</strong> {{ $document->purchase_type ?? 'Standard' }}<br>
-                <strong>Challan / Nothi No:</strong> {{ $document->reference_no ?? 'N/A' }}<br>
-                <strong>Reference Date:</strong> {{ $document->reference_date ?? 'N/A' }}
+                <strong>{{ __('storeops::storeops.supplier') }}:</strong> {{ $document->supplier?->name ?? '—' }}<br><strong>{{ __('storeops::storeops.source') }}:</strong> {{ $document->purchase_type ? __('storeops::storeops.receiving_sources.'.$document->purchase_type) : __('storeops::storeops.standard') }}<br>
+                <strong>{{ __('storeops::storeops.reference_label') }}</strong> {{ $document->references->map(fn ($ref) => $ref->reference_number)->implode(' / ') ?: '—' }}<br>
+                <strong>{{ __('storeops::storeops.reference_date') }}</strong> {{ $document->reference_date ?? __('storeops::storeops.not_available') }}
             </div>
         </div>
 
@@ -60,10 +60,10 @@
             <thead>
                 <tr>
                     <th style="width: 5%;">SL</th>
-                    <th style="width: 50%;">Item Description</th>
-                    <th style="width: 15%; text-align: center;">Quantity</th>
-                    <th style="width: 15%; text-align: right;">Unit Cost (৳)</th>
-                    <th style="width: 15%; text-align: right;">Total (৳)</th>
+                    <th style="width: 50%;">{{ __('storeops::storeops.item_description') }}</th>
+                    <th style="width: 15%; text-align: center;">{{ __('storeops::storeops.quantity') }}</th>
+                    <th style="width: 15%; text-align: right;">{{ __('storeops::storeops.unit_cost') }}</th>
+                    <th style="width: 15%; text-align: right;">{{ __('storeops::storeops.total') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -80,7 +80,7 @@
                 </tr>
                 @endforeach
                 <tr style="background-color: #fafafa;">
-                    <td colspan="2" style="text-align: right;"><strong>Total:</strong></td>
+                    <td colspan="2" style="text-align: right;"><strong>{{ __('storeops::storeops.total_label') }}</strong></td>
                     <td style="text-align: center;"><strong>{{ $document->items->sum('quantity') }}</strong></td>
                     <td></td>
                     <td style="text-align: right;">
@@ -96,13 +96,13 @@
         </p>
 
         <div class="signatures">
-            <div class="sig-line">Prepared By (Storekeeper)</div>
-            <div class="sig-line">Verified By</div>
-            <div class="sig-line">Approved By</div>
+            <div class="sig-line">{{ __('storeops::storeops.prepared_by') }}</div>
+
+            <div class="sig-line">{{ __('storeops::storeops.posted_by_signature') }}</div>
         </div>
 
         <div class="audit-trail">
-            <strong>System Audit Stamp:</strong> {{ $document->status === 'POSTED' ? 'Document posted to Gov-Store Ledger.' : __('tenantops::access.draft_print') }} <br>
+            <strong>{{ __('storeops::storeops.audit_stamp') }}</strong> {{ $document->status === 'POSTED' ? __('storeops::storeops.ledger_posted') : __('tenantops::access.draft_print') }} <br>
             UUID: {{ $document->id }} | Hash: {{ sha1($document->id . $document->created_at) }}
         </div>
     </div>

@@ -47,7 +47,9 @@ class ThemingServiceProvider extends ServiceProvider
         Blade::precompiler(new LayoutHook);
 
         $this->loadViewsFrom(self::PACKAGE_PATH.'/resources/views', 'gs-theme');
-        Blade::anonymousComponentPath(self::PACKAGE_PATH.'/resources/views/components', 'gs');
+        // Namespace lookup requires the gs:: prefix. Path lookup also considers
+        // unprefixed names and can capture Snipe-IT's tabs, table and container.
+        Blade::anonymousComponentNamespace('gs-theme::components', 'gs');
         $this->loadTranslationsFrom(self::PACKAGE_PATH.'/lang', 'gs-theme');
         $this->loadMigrationsFrom(self::PACKAGE_PATH.'/database/migrations');
         $this->loadRoutesFrom(self::PACKAGE_PATH.'/routes/web.php');

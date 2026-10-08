@@ -34,6 +34,7 @@ class ComponentCheckoutController extends Controller
         if ($component = Component::find($id)) {
 
             $this->authorize('checkout', $component);
+            app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->assertNativeMovementAllowed($component);
 
             // Make sure the category is valid
             if ($component->category) {
@@ -81,6 +82,7 @@ class ComponentCheckoutController extends Controller
         }
 
         $this->authorize('checkout', $component);
+        app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->assertNativeMovementAllowed($component);
 
         $max_to_checkout = $component->numRemaining();
 

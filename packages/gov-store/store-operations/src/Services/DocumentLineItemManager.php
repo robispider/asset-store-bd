@@ -16,8 +16,18 @@ class DocumentLineItemManager
 
         foreach ($rawLines as $line) {
             // Normalize to short key if full namespace string is passed
-            $type = strtolower(class_basename($line['type']));
+            $stockType = \GovStore\StoreOperations\Enums\StockableType::fromString($line['type']);
+            $type = strtolower(class_basename($stockType->value));
             $id = (int) $line['id'];
+            $product = $stockType->value::query()->findOrFail($id);
+            $context = app(\GovStore\TenantScope\Contexts\TenantContext::class);
+            if ($stockType !== \GovStore\StoreOperations\Enums\StockableType::ASSET_MODEL) {
+                abort_unless($context->locationId && (int) $product->location_id === $context->locationId
+                    && (! $context->companyId || (int) $product->company_id === $context->companyId), 404);
+            }
+            if (! is_numeric($line['qty']) || (float) $line['qty'] !== (float) (int) $line['qty'] || (int) $line['qty'] < 0) {
+                throw \Illuminate\Validation\ValidationException::withMessages(['items' => __('storeops::storeops.integer_quantity_required')]);
+            }
             $qty = (int) $line['qty'];
             $cost = $line['unit_cost'] ?? 0.0;
 

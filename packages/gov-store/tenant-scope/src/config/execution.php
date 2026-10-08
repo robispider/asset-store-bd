@@ -6,7 +6,9 @@ return [
     'global_commands' => [
         'gov-store:sync-memberships', 'govstore:metadata-sync-phase2', 'govstore:metadata-health',
         'govstore:metadata-converge', 'govstore:rebuild-projections', 'govstore:tracking-audit',
-        'govstore:repair-ledger', 'govstore:protect-attachments', 'govstore:sync-fields',
+        'govstore:repair-ledger', 'govstore:protect-attachments',
+        // Read-only balance diagnostic; no inherited actor or inventory writes.
+        'govstore:ledger-reconcile',
         // Existing scheduled housekeeping only: expires draft baskets and marks
         // overdue stages; does not grant access or mutate native inventory.
         'gov-requests:maintain',

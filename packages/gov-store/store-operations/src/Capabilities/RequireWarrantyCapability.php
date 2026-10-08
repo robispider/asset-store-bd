@@ -21,7 +21,8 @@ class RequireWarrantyCapability implements CapabilityInterface
     public function validate(array $data, array $config = []): array
     {
         $validator = Validator::make($data, [
-            'warranty_months' => 'required|integer|min:0'
+            'meta' => 'required|array',
+            'meta.*.warranty_months' => 'required|integer|min:0|max:1200',
         ]);
 
         return $validator->fails() ? $validator->errors()->toArray() : [];
@@ -34,6 +35,6 @@ class RequireWarrantyCapability implements CapabilityInterface
 
     public function renderUI(object $item = null, array $config = []): string
     {
-        return '';
+        return view('storeops::capabilities.warranty', compact('item', 'config'))->render();
     }
 }

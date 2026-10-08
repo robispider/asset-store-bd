@@ -1,5 +1,5 @@
 @extends('layouts/default')
-@section('title', 'Rule Studio')
+@section('title', __('storeops::rules.studio'))
 
 @section('content')
 <style>
@@ -180,6 +180,7 @@
     
     .hidden-templates { display: none; }
 </style>
+<link rel="stylesheet" href="{{ url('css/dist/store-operations.css') }}">
 
 <div class="row">
     <div class="col-md-12">
@@ -190,36 +191,36 @@
                 <!-- Sidebar Header: Clicking this takes you back to the home hub dashboard -->
                 <div class="sidebar-header" id="btn_back_to_hub">
                     <h4 style="margin: 0; color: #0f172a; font-weight: bold;">
-                        <i class="fa fa-sliders text-blue"></i> Rule Studio
+                        <i class="fa fa-sliders text-blue"></i> {{ __('storeops::storeops.rules_ui.rule_studio') }}
                     </h4>
-                    <p class="text-muted" style="font-size: 11px; margin: 4px 0 0 0; text-transform: uppercase; letter-spacing: 0.5px;">GPO Console</p>
+                    <p class="text-muted" style="font-size: 11px; margin: 4px 0 0 0; text-transform: uppercase; letter-spacing: 0.5px;">{{ __('storeops::storeops.rules_ui.gpo_console') }}</p>
                 </div>
 
                 <!-- Sidebar Autocomplete Search Container -->
                 <div class="sidebar-search">
-                    <input type="text" id="sidebarSearch" placeholder="🔍 Quick search targets..." autocomplete="off">
+                    <input type="text" id="sidebarSearch" placeholder="🔍 {{ __('storeops::rules.search') }}" autocomplete="off">
                     <div class="search-results-dropdown" id="sidebarDropdown"></div>
                 </div>
 
                 <!-- Quick Entry Directory Directory -->
-                <div class="sidebar-menu-title">Directories</div>
+                <div class="sidebar-menu-title">{{ __('storeops::storeops.rules_ui.directories') }}</div>
                 <ul class="sidebar-menu-list">
                     <li class="sidebar-menu-item">
                         <a href="#" id="sidebar_categories_trigger">
-                            <span><i class="fa fa-cubes"></i> Product Categories</span>
+                            <span><i class="fa fa-cubes"></i> {{ __('storeops::storeops.rules_ui.product_categories') }}</span>
                             <span class="badge bg-blue" style="border-radius: 4px;">{{ $counts['categories'] }}</span>
                         </a>
                     </li>
                     <li class="sidebar-menu-item">
                         <a href="#" id="sidebar_offices_trigger">
-                            <span><i class="fa fa-building-o"></i> Offices / Locations</span>
+                            <span><i class="fa fa-building-o"></i> {{ __('storeops::storeops.rules_ui.offices_locations') }}</span>
                             <span class="badge bg-blue" style="border-radius: 4px;">{{ $counts['locations'] }}</span>
                         </a>
                     </li>
                 </ul>
 
                 <!-- ⭐ Visited Targets List -->
-                <div class="sidebar-menu-title">⭐ Recently Visited</div>
+                <div class="sidebar-menu-title">{{ __('storeops::storeops.rules_ui.recently_visited') }}</div>
                 <ul class="sidebar-menu-list" id="recent_targets_list">
                     <!-- Javascript populates items here in real-time -->
                 </ul>
@@ -232,50 +233,50 @@
                     
                     <!-- Massive Central Search Bar -->
                     <div class="hub-search-box">
-                        <h2 style="font-weight: 800; color: #0f172a; margin-bottom: 25px;">Find and Configure Business Rules</h2>
+                        <h2 style="font-weight: 800; color: #0f172a; margin-bottom: 25px;">{{ __('storeops::storeops.rules_ui.find_and_configure_business_rules') }}</h2>
                         <div class="hub-search-wrapper">
                             <i class="fa fa-search hub-search-icon"></i>
-                            <input type="text" id="centralSearchInput" class="hub-search-input" placeholder="Search for Laptops, Dhaka Office, Active Policies..." autocomplete="off">
+                            <input type="text" id="centralSearchInput" class="hub-search-input" placeholder="{{ __('storeops::rules.search') }}" autocomplete="off">
                             <div class="search-results-dropdown" id="centralDropdown" style="border-radius: 8px;"></div>
                         </div>
                     </div>
 
                     <!-- 1. CREATE NEW RULE SECTION (The Visual Cards Portal) -->
-                    <h4 style="font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 15px; font-size:12.5px; letter-spacing:0.5px;">Create New Business Rule</h4>
+                    <h4 style="font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 15px; font-size:12.5px; letter-spacing:0.5px;">{{ __('storeops::storeops.rules_ui.create_new_business_rule') }}</h4>
                     <div class="hub-grid" style="margin-bottom: 40px;">
                         <a href="{{ route('storeops.admin.rules.policies.create', 'hardware') }}" class="hub-card" style="border-left: 4px solid #3b82f6;">
-                            <div class="hub-card-title"><i class="fa fa-laptop text-blue"></i> Hardware Standard</div>
+                            <div class="hub-card-title"><i class="fa fa-laptop text-blue"></i> {{ __('storeops::storeops.rules_ui.hardware_standard') }}</div>
                             <small class="text-muted" style="display: block; margin-top: 5px; line-height: 1.4;">
-                                Pre-configures unique serial number tracking and automatic individual asset registration.
+                                {{ __('storeops::storeops.rules_ui.pre_configures_unique_serial_number_tracking_and_automatic_indiv') }}
                             </small>
-                            <div style="margin-top: 15px; font-weight: bold; color: #3b82f6; font-size:13px;">Use Template ➔</div>
+                            <div style="margin-top: 15px; font-weight: bold; color: #3b82f6; font-size:13px;">{{ __('storeops::storeops.rules_ui.use_template') }}</div>
                         </a>
                         <a href="{{ route('storeops.admin.rules.policies.create', 'consumable') }}" class="hub-card" style="border-left: 4px solid #10b981;">
-                            <div class="hub-card-title"><i class="fa fa-tint text-green"></i> Consumable Standard</div>
+                            <div class="hub-card-title"><i class="fa fa-tint text-green"></i> {{ __('storeops::storeops.rules_ui.consumable_standard') }}</div>
                             <small class="text-muted" style="display: block; margin-top: 5px; line-height: 1.4;">
-                                Pre-configures bulk quantity entries and direct ledger card posting automations.
+                                {{ __('storeops::storeops.rules_ui.pre_configures_bulk_quantity_entries_and_direct_ledger_card_post') }}
                             </small>
-                            <div style="margin-top: 15px; font-weight: bold; color: #10b981; font-size:13px;">Use Template ➔</div>
+                            <div style="margin-top: 15px; font-weight: bold; color: #10b981; font-size:13px;">{{ __('storeops::storeops.rules_ui.use_template') }}</div>
                         </a>
                         <a href="{{ route('storeops.admin.rules.policies.create', 'blank') }}" class="hub-card" style="border-left: 4px solid #64748b;">
-                            <div class="hub-card-title"><i class="fa fa-file-text-o text-muted"></i> Blank Rule Set</div>
+                            <div class="hub-card-title"><i class="fa fa-file-text-o text-muted"></i> {{ __('storeops::storeops.rules_ui.blank_rule_set') }}</div>
                             <small class="text-muted" style="display: block; margin-top: 5px; line-height: 1.4;">
-                                Start completely from scratch with all toggles set to inherit from parents.
+                                {{ __('storeops::storeops.rules_ui.start_completely_from_scratch_with_all_toggles_set_to_inherit_fr') }}
                             </small>
-                            <div style="margin-top: 15px; font-weight: bold; color: #64748b; font-size:13px;">Start Blank ➔</div>
+                            <div style="margin-top: 15px; font-weight: bold; color: #64748b; font-size:13px;">{{ __('storeops::storeops.rules_ui.start_blank') }}</div>
                         </a>
                     </div>
 
                     <!-- 2. EXISTING LAUNCHED RULES LIBRARY TABLE -->
-                    <h4 style="font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 15px; font-size:12.5px; letter-spacing:0.5px;">Existing Policy Files</h4>
+                    <h4 style="font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 15px; font-size:12.5px; letter-spacing:0.5px;">{{ __('storeops::storeops.rules_ui.existing_policy_files') }}</h4>
                     <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px 25px; margin-bottom: 40px;">
                         <table class="table table-hover" style="margin-bottom: 0;">
                             <thead>
                                 <tr style="color: #64748b; font-size:12px; text-transform: uppercase;">
-                                    <th>Policy Name</th>
-                                    <th>Status</th>
-                                    <th>Version</th>
-                                    <th class="text-right">Actions</th>
+                                    <th>{{ __('storeops::storeops.rules_ui.policy_name') }}</th>
+                                    <th>{{ __('storeops::storeops.rules_ui.status') }}</th>
+                                    <th>{{ __('storeops::storeops.rules_ui.version') }}</th>
+                                    <th class="text-right">{{ __('storeops::storeops.rules_ui.actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -287,11 +288,11 @@
                                         </td>
                                         <td style="vertical-align: middle;">v{{ $profile->version ?? '1.0' }}</td>
                                         <td class="text-right" style="vertical-align: middle;">
-                                            <a href="{{ route('storeops.admin.rules.policies.edit', $profile->id) }}" class="btn btn-xs btn-default"><i class="fa fa-pencil"></i> Open Builder</a>
+                                            <a href="{{ route('storeops.admin.rules.policies.edit', $profile->id) }}" class="btn btn-xs btn-default"><i class="fa fa-pencil"></i> {{ __('storeops::storeops.rules_ui.open_builder') }}</a>
                                             
                                             <form action="{{ route('storeops.admin.rules.policies.duplicate', $profile->id) }}" method="POST" style="display:inline;">
                                                 @csrf
-                                                <button type="submit" class="btn btn-xs btn-default"><i class="fa fa-copy"></i> Duplicate</button>
+                                                <button type="submit" class="btn btn-xs btn-default"><i class="fa fa-copy"></i> {{ __('storeops::storeops.rules_ui.duplicate') }}</button>
                                             </form>
                                         </td>
                                     </tr>
@@ -303,7 +304,7 @@
                     <!-- Widgets Section -->
                     <div class="hub-widgets">
                         <div class="widget-panel">
-                            <div class="widget-title"><i class="fa fa-history"></i> Recent GPO Alignment Changes</div>
+                            <div class="widget-title"><i class="fa fa-history"></i> {{ __('storeops::storeops.rules_ui.recent_gpo_alignment_changes') }}</div>
                             <ul class="timeline timeline-inverse" style="margin-top: 10px; margin-bottom: 0;">
                                 @forelse($recentActivity as $act)
                                     <li>
@@ -311,7 +312,7 @@
                                         <div class="timeline-item" style="box-shadow:none; background:#f8fafc; border: 1px solid #e2e8f0; border-radius: 4px;">
                                             <span class="time"><i class="fa fa-clock-o"></i> {{ $act['date'] }}</span>
                                             <h4 class="timeline-header" style="border:none; font-size:13.5px; padding-bottom:0;">
-                                                Policy <strong>{{ $act['policy_name'] }}</strong> assigned to <strong>{{ $act['target_name'] }}</strong>
+                                                {{ __('storeops::storeops.rules_ui.policy') }} <strong>{{ $act['policy_name'] }}</strong> {{ __('storeops::storeops.rules_ui.assigned_to') }} <strong>{{ $act['target_name'] }}</strong>
                                             </h4>
                                             <div class="timeline-body" style="padding-top:2px; font-size:12px; color:#64748b;">
                                                 Modified by {{ $act['operator'] }}
@@ -319,16 +320,16 @@
                                         </div>
                                     </li>
                                 @empty
-                                    <li class="text-muted" style="font-size: 13px; padding-left: 15px;">No recent assignment changes recorded.</li>
+                                    <li class="text-muted" style="font-size: 13px; padding-left: 15px;">{{ __('storeops::storeops.rules_ui.no_recent_assignment_changes_recorded') }}</li>
                                 @endforelse
                                 <li><i class="fa fa-clock-o bg-gray"></i></li>
                             </ul>
                         </div>
 
                         <div class="widget-panel">
-                            <div class="widget-title"><i class="fa fa-rocket"></i> Actions</div>
+                            <div class="widget-title"><i class="fa fa-rocket"></i> {{ __('storeops::storeops.rules_ui.actions') }}</div>
                             <button class="btn btn-default btn-block text-left" style="margin-bottom:12px; padding: 10px 15px;" onclick="window.location.href='{{ route('storeops.admin.rules.simulator') }}'">
-                                <i class="fa fa-flask text-blue" style="margin-right: 8px;"></i> Launch Policy Simulator
+                                <i class="fa fa-flask text-blue" style="margin-right: 8px;"></i> {{ __('storeops::storeops.rules_ui.launch_policy_simulator') }}
                             </button>
                         </div>
                     </div>
@@ -348,8 +349,8 @@
     <!-- A. PRODUCT CATEGORIES DIRECTORY LIST -->
     <div id="portal_categories_dir">
         <div class="dir-container">
-            <h3 style="margin-top:0; font-weight:800; color:#0f172a;"><i class="fa fa-cubes text-blue"></i> Browse Product Categories</h3>
-            <p class="text-muted">Select a category below to inspect its inherited and localized business rules.</p>
+            <h3 style="margin-top:0; font-weight:800; color:#0f172a;"><i class="fa fa-cubes text-blue"></i> {{ __('storeops::storeops.rules_ui.browse_product_categories') }}</h3>
+            <p class="text-muted">{{ __('storeops::storeops.rules_ui.select_a_category_below_to_inspect_its_inherited_and_localized_b') }}</p>
             
             <div class="dir-grid">
                 @foreach($tree as $group => $items)
@@ -358,7 +359,7 @@
                             <div class="dir-card">
                                 <div class="dir-card-title"><i class="fa {{ $item['icon'] }} text-blue"></i> {{ $item['name'] }}</div>
                                 <button class="btn btn-sm btn-primary btn-block direct-inspect-btn" data-id="{{ $item['id'] }}" data-type="{{ $item['type'] }}" data-name="{{ $item['name'] }}">
-                                    <i class="fa fa-search"></i> Inspect Rules
+                                    <i class="fa fa-search"></i> {{ __('storeops::storeops.rules_ui.inspect_rules') }}
                                 </button>
                             </div>
                         @endif
@@ -371,8 +372,8 @@
     <!-- B. OFFICES / LOCATIONS DIRECTORY LIST -->
     <div id="portal_offices_dir">
         <div class="dir-container">
-            <h3 style="margin-top:0; font-weight:800; color:#0f172a;"><i class="fa fa-building-o text-green"></i> Browse Scoped Offices</h3>
-            <p class="text-muted">Select a localized office below to inspect or configure localized policy overrides.</p>
+            <h3 style="margin-top:0; font-weight:800; color:#0f172a;"><i class="fa fa-building-o text-green"></i> {{ __('storeops::storeops.rules_ui.browse_scoped_offices') }}</h3>
+            <p class="text-muted">{{ __('storeops::storeops.rules_ui.select_a_localized_office_below_to_inspect_or_configure_localize') }}</p>
             
             <div class="dir-grid">
                 @foreach($tree as $group => $items)
@@ -381,7 +382,7 @@
                             <div class="dir-card">
                                 <div class="dir-card-title"><i class="fa {{ $item['icon'] }} text-green"></i> {{ $item['name'] }}</div>
                                 <button class="btn btn-sm btn-success btn-block direct-inspect-btn" data-id="{{ $item['id'] }}" data-type="{{ $item['type'] }}" data-name="{{ $item['name'] }}">
-                                    <i class="fa fa-search"></i> Inspect Rules
+                                    <i class="fa fa-search"></i> {{ __('storeops::storeops.rules_ui.inspect_rules') }}
                                 </button>
                             </div>
                         @endif
@@ -394,186 +395,5 @@
 @endsection
 
 @section('moar_scripts')
-<script>
-$(document).ready(function() {
-    
-    // Cache the original Hub HTML markup so we can easily restore it
-    const hubDashboardHTML = $('#hub_dashboard_wrapper').prop('outerHTML');
-
-    // --- 1. LOCAL STORAGE "RECENT TARGETS" HISTORY ENGINE ---
-    function renderRecentTargets() {
-        let recent = JSON.parse(localStorage.getItem('govstore_recent_targets') || '[]');
-        let $list = $('#recent_targets_list');
-        $list.empty();
-
-        if (recent.length === 0) {
-            $list.append('<li class="text-muted" style="padding: 10px 20px; font-size: 12px; font-style: italic;">No recently visited targets.</li>');
-            return;
-        }
-
-        recent.forEach(function(item) {
-            let icon = item.type === 'CATEGORY' ? 'fa-laptop' : 'fa-building-o';
-            $list.append(`
-                <li class="sidebar-menu-item recent-item" data-id="${item.id}" data-type="${item.type}">
-                    <a href="#" style="padding: 8px 20px;">
-                        <span><i class="fa ${icon}"></i> ${item.name}</span>
-                    </a>
-                </li>
-            `);
-        });
-    }
-
-    function addRecentTarget(id, type, name) {
-        let recent = JSON.parse(localStorage.getItem('govstore_recent_targets') || '[]');
-        recent = recent.filter(item => !(item.id == id && item.type == type));
-        recent.unshift({ id: id, type: type, name: name });
-        if (recent.length > 5) recent.pop();
-
-        localStorage.setItem('govstore_recent_targets', JSON.stringify(recent));
-        renderRecentTargets();
-    }
-
-    renderRecentTargets();
-
-    // --- 2. AJAX TARGET INSPECTOR LOAD ENGINE ---
-    $(document).on('click', '.recent-item, .search-result-row, .direct-inspect-btn', function(e) {
-        e.preventDefault();
-
-        let item = $(this);
-        let id = item.data('id');
-        let type = item.data('type');
-        let name = item.data('name') || item.text().trim();
-
-        $('.search-results-dropdown').hide();
-
-        if (type === 'POLICY') {
-            window.location.href = `/gov-store/operations/settings/product-rules/policies/${id}/edit`;
-            return;
-        }
-
-        addRecentTarget(id, type, name);
-
-        $('#workspace_pane').html(
-            '<div class="text-center" style="margin: auto; padding: 100px;">' +
-            '<i class="fa fa-spinner fa-spin fa-3x text-blue" style="margin-bottom: 15px;"></i>' +
-            '<h4 style="color:#64748b; font-weight: 600; margin: 0;">Compiling Effective Policies...</h4>' +
-            '<p class="text-muted" style="font-size: 12px; margin-top: 5px;">Evaluating GPO Inheritance Tree...</p>' +
-            '</div>'
-        );
-
-        $.get('{{ route("storeops.admin.rules.inspector") }}', { target_id: id, target_type: type }, function(html) {
-            $('#workspace_pane').html(html);
-        });
-    });
-
-    // --- 3. DYNAMIC SEARCH AUTOCOMPLETE OVERLAY ENGINE ---
-    let searchTimer = null;
-
-    function handleSearch($input, $dropdown) {
-        let query = $input.val().trim();
-
-        if (query.length < 2) {
-            $dropdown.empty().hide();
-            return;
-        }
-
-        clearTimeout(searchTimer);
-
-        searchTimer = setTimeout(function() {
-            $.get('{{ route("storeops.admin.rules.search_api") }}', { q: query })
-                .done(function(data) {
-                    $dropdown.empty();
-
-                    let hasResults = false;
-
-                    if (data.categories && data.categories.length > 0) {
-                        hasResults = true;
-                        $dropdown.append('<div class="dropdown-section-title">Product Categories</div>');
-                        data.categories.forEach(item => {
-                            $dropdown.append(`
-                                <a class="search-result-row" data-id="${item.id}" data-type="CATEGORY">
-                                    <i class="fa ${item.icon}"></i> ${item.name}
-                                </a>
-                            `);
-                        });
-                    }
-
-                    if (data.locations && data.locations.length > 0) {
-                        hasResults = true;
-                        $dropdown.append('<div class="dropdown-section-title">Offices / Locations</div>');
-                        data.locations.forEach(item => {
-                            $dropdown.append(`
-                                <a class="search-result-row" data-id="${item.id}" data-type="LOCATION">
-                                    <i class="fa ${item.icon}"></i> ${item.name}
-                                </a>
-                            `);
-                        });
-                    }
-
-                    if (data.policies && data.policies.length > 0) {
-                        hasResults = true;
-                        $dropdown.append('<div class="dropdown-section-title">Policy Templates</div>');
-                        data.policies.forEach(item => {
-                            $dropdown.append(`
-                                <a class="search-result-row" data-id="${item.id}" data-type="POLICY">
-                                    <i class="fa ${item.icon}"></i> ${item.name}
-                                </a>
-                            `);
-                        });
-                    }
-
-                    if (hasResults) {
-                        $dropdown.show();
-                    } else {
-                        $dropdown.empty().append('<div class="text-muted" style="padding: 15px; font-size:13px; text-align:center;">No matching targets or policies found.</div>').show();
-                    }
-                });
-        }, 300);
-    }
-
-    // Bind events to Sidebar Search
-    $('#sidebarSearch').on('input', function() {
-        handleSearch($(this), $('#sidebarDropdown'));
-    });
-
-    // Bind events to Central Dashboard Search
-    $(document).on('input', '#centralSearchInput', function() {
-        handleSearch($(this), $('#centralDropdown'));
-    });
-
-    $(document).click(function(e) {
-        if (!$(e.target).closest('.sidebar-search, .hub-search-wrapper').length) {
-            $('.search-results-dropdown').hide();
-        }
-    });
-
-    // --- 4. BROWSEABLE DIRECTORY PORTALS SWAP ACTIONS (Phase 2 correction) ---
-    // Clicking these renders the flat visual list in the center instantly!
-    
-    // Back to main Hub
-    $('#btn_back_to_hub').click(function() {
-        $('.tree-target-item').removeClass('active');
-        $('#workspace_pane').html(hubDashboardHTML);
-    });
-
-    // Load Categories Directory
-    $(document).on('click', '#sidebar_categories_trigger, #card_categories', function(e) {
-        e.preventDefault();
-        $('.tree-target-item').removeClass('active');
-        
-        let categoriesListHTML = $('#portal_categories_dir').html();
-        $('#workspace_pane').html(categoriesListHTML);
-    });
-
-    // Load Offices Directory
-    $(document).on('click', '#sidebar_offices_trigger, #card_offices', function(e) {
-        e.preventDefault();
-        $('.tree-target-item').removeClass('active');
-        
-        let officesListHTML = $('#portal_offices_dir').html();
-        $('#workspace_pane').html(officesListHTML);
-    });
-
-});
-</script>
+@include('storeops::admin.rules.partials.client-config', ['rulesPage' => 'index'])
 @endsection

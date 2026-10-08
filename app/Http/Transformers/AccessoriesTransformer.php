@@ -75,19 +75,19 @@ class AccessoriesTransformer
         ];
 
         $permissions_array['available_actions'] = [
-            'checkout' => Gate::allows('checkout', Accessory::class),
+            'checkout' => ! app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->manages($accessory) && Gate::allows('checkout', Accessory::class),
             'checkin' => false,
             'update' => Gate::allows('update', Accessory::class),
-            'delete' => $accessory->checkouts_count === 0 && Gate::allows('delete', Accessory::class),
+            'delete' => ! app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->manages($accessory) && $accessory->checkouts_count === 0 && Gate::allows('delete', Accessory::class),
             'clone' => Gate::allows('create', Accessory::class),
             'bulk_selectable' => [
-                'delete' => $accessory->checkouts_count === 0,
+                'delete' => ! app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->manages($accessory) && $accessory->checkouts_count === 0,
             ],
         ];
 
         $permissions_array['user_can_checkout'] = false;
 
-        if (($accessory->qty - $accessory->checkouts_count) > 0) {
+        if (! app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->manages($accessory) && ($accessory->qty - $accessory->checkouts_count) > 0) {
             $permissions_array['user_can_checkout'] = true;
         }
 

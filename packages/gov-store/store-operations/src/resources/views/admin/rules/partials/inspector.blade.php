@@ -84,16 +84,7 @@
 
 <!-- TOP SECTION: CONTEXT BREADCRUMBS -->
 <div class="detail-workspace-header">
-    <div class="breadcrumb-trail">
-        <span>Global Baseline</span> <i class="fa fa-angle-right"></i>
-        <span>ICT Ministry</span> <i class="fa fa-angle-right"></i>
-        @if($targetType === 'LOCATION')
-            <span class="active">{{ $targetName }}</span>
-        @else
-            <span>Dhaka HQ</span> <i class="fa fa-angle-right"></i>
-            <span class="active">{{ $targetName }}</span>
-        @endif
-    </div>
+    <div class="breadcrumb-trail">{{ __('storeops::storeops.rules_ui.global_baseline') }} &rsaquo; {{ $targetName }}</div>
     <h3 style="margin: 0; font-weight: 800; color: #0f172a;">{{ $targetName }}</h3>
 </div>
 
@@ -104,13 +95,7 @@
     <div class="detail-canvas-left">
         @foreach($effectiveRules as $groupName => $rules)
             <div class="behavior-section-title">
-                @if($groupName === 'Receiving Validation' || $groupName === 'Information Requirements')
-                    ⚙️ When Receiving Inbound Goods
-                @elseif($groupName === 'Inventory Automation' || $groupName === 'Execution Automation')
-                    📦 When Posting to Ledger
-                @else
-                    {{ $groupName }}
-                @endif
+                {{ __('storeops::rules.'.strtolower(str_replace(' ', '_', $groupName))) }}
             </div>
 
             @foreach($rules as $code => $data)
@@ -126,18 +111,18 @@
                     if ($behavior === 'ENFORCE') {
                         $badgeClass = 'status-enabled';
                         $icon = '🟢';
-                        $statusText = 'Enabled';
-                        $traceText = $isOverridden ? 'Overridden Here' : 'Inherited from ' . $source;
+                        $statusText = __('storeops::rules.enabled');
+                        $traceText = $isOverridden ? __('storeops::rules.override_here') : __('storeops::rules.from_source', ['source' => $source]);
                     } elseif ($behavior === 'DISABLE') {
                         $badgeClass = 'status-disabled';
                         $icon = '🔴';
-                        $statusText = 'Disabled';
-                        $traceText = $isOverridden ? 'Disabled Here' : 'Blocked by ' . $source;
+                        $statusText = __('storeops::rules.disabled');
+                        $traceText = $isOverridden ? __('storeops::rules.override_here') : __('storeops::rules.from_source', ['source' => $source]);
                     } else {
                         $badgeClass = 'status-optional';
                         $icon = '⚪';
-                        $statusText = 'Optional';
-                        $traceText = 'Default behavior (No active policy)';
+                        $statusText = __('storeops::rules.optional');
+                        $traceText = __('storeops::rules.default_behavior');
                     }
                 @endphp
 
@@ -160,39 +145,39 @@
     <div class="detail-sidebar-right">
         
         <!-- Quick Actions Panel -->
-        <h5 style="font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 15px;">Actions</h5>
+        <h5 style="font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 15px;">{{ __('storeops::storeops.rules_ui.actions') }}</h5>
         <div class="sidebar-widget-card" style="border-left: 4px solid #3b82f6;">
             <button class="btn btn-default btn-block text-left" style="margin-bottom:10px; padding: 8px 12px;" data-toggle="modal" data-target="#assignPolicyModal">
-                <i class="fa fa-plus-circle text-blue" style="margin-right:8px;"></i> Assign Policy File
+                <i class="fa fa-plus-circle text-blue" style="margin-right:8px;"></i> {{ __('storeops::storeops.rules_ui.assign_policy_file') }}
             </button>
             <button class="btn btn-default btn-block text-left" style="padding: 8px 12px;" onclick="window.location.href='{{ route('storeops.admin.rules.simulator') }}'">
-                <i class="fa fa-flask text-green" style="margin-right:8px;"></i> Test in Simulator
+                <i class="fa fa-flask text-green" style="margin-right:8px;"></i> {{ __('storeops::storeops.rules_ui.test_in_simulator') }}
             </button>
         </div>
 
         <!-- Assignments Panel -->
-        <h5 style="font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 15px;">Assigned Standards</h5>
+        <h5 style="font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 15px;">{{ __('storeops::storeops.rules_ui.assigned_standards') }}</h5>
         
         @if($assignments->isEmpty())
             <div class="alert" style="background: #f1f5f9; border: 1px dashed #94a3b8; color: #475569; font-size:12.5px; padding: 15px;">
-                <i class="fa fa-info-circle"></i> No policy assignments exist directly on this node. It inherits all configurations.
+                <i class="fa fa-info-circle"></i> {{ __('storeops::storeops.rules_ui.no_policy_assignments_exist_directly_on_this_node_it_inherits_al') }}
             </div>
         @else
             @foreach($assignments as $assignment)
                 <div class="sidebar-widget-card" style="border-left: 4px solid #10b981; position: relative;">
                     <h5 style="font-weight: bold; color: #0f172a; margin-top: 0; margin-bottom: 5px;">{{ $assignment->profile->name }}</h5>
                     <small class="text-muted" style="display: block; margin-bottom: 15px;">
-                        Version: v{{ $assignment->profile->version ?? '1.0' }} &bull; Since: {{ $assignment->effective_from->format('d M Y') }}
+                        {{ __('storeops::rules.version') }}: v{{ $assignment->profile->version ?? '1.0' }} &bull; {{ __('storeops::rules.since') }}: {{ $assignment->effective_from->format('d M Y') }}
                     </small>
                     
                     <div style="display: flex; gap: 8px;">
                         <a href="{{ route('storeops.admin.rules.policies.edit', $assignment->profile_id) }}" class="btn btn-xs btn-default" style="flex:1;">
-                            <i class="fa fa-pencil"></i> Edit Rules
+                            <i class="fa fa-pencil"></i> {{ __('storeops::storeops.rules_ui.edit_rules') }}
                         </a>
-                        <form action="{{ route('storeops.admin.rules.unassign', $assignment->id) }}" method="POST" style="flex:1;" onsubmit="return confirm('Unassign this policy from this target?');">
+                        <form action="{{ route('storeops.admin.rules.unassign', $assignment->id) }}" method="POST" style="flex:1;" class="storeops-unassign">
                             @csrf
                             <button type="submit" class="btn btn-xs btn-danger btn-block">
-                                <i class="fa fa-times"></i> Unassign
+                                <i class="fa fa-times"></i> {{ __('storeops::storeops.rules_ui.unassign') }}
                             </button>
                         </form>
                     </div>
@@ -209,7 +194,7 @@
         <div class="modal-content" style="border-radius: 6px; overflow: hidden;">
             <div class="modal-header bg-primary" style="background: #3c8dbc; color: #fff;">
                 <button type="button" class="close" data-dismiss="modal" style="color: #fff; opacity: 0.8;">&times;</button>
-                <h4 class="modal-title" style="font-weight: bold;"><i class="fa fa-plus-circle"></i> Assign Policy to Target</h4>
+                <h4 class="modal-title" style="font-weight: bold;"><i class="fa fa-plus-circle"></i> {{ __('storeops::storeops.rules_ui.assign_policy_to_target') }}</h4>
             </div>
             
             <form action="{{ route('storeops.admin.rules.assign') }}" method="POST">
@@ -219,28 +204,28 @@
 
                 <div class="modal-body" style="padding: 25px;">
                     <div class="form-group">
-                        <label style="color: #475569; font-weight: bold; margin-bottom: 8px;">Target Context:</label>
+                        <label style="color: #475569; font-weight: bold; margin-bottom: 8px;">{{ __('storeops::storeops.rules_ui.target_context') }}</label>
                         <input type="text" class="form-control" value="{{ $targetName }}" disabled style="background: #f8fafc; font-weight: bold;">
                     </div>
 
                     <div class="form-group" style="margin-top: 20px;">
-                        <label style="color: #475569; font-weight: bold; margin-bottom: 8px;">Select Published Policy to Apply:</label>
+                        <label style="color: #475569; font-weight: bold; margin-bottom: 8px;">{{ __('storeops::storeops.rules_ui.select_published_policy_to_apply') }}</label>
                         <select name="profile_id" class="form-control" required style="height: 40px; border-radius: 4px;">
-                            <option value="">-- Choose Policy Template --</option>
+                            <option value="">{{ __('storeops::storeops.rules_ui.choose_policy_template') }}</option>
                             @foreach($publishedProfiles as $profile)
                                 <option value="{{ $profile->id }}">{{ $profile->name }} (v{{ $profile->version ?? '1.0' }})</option>
                             @endforeach
                         </select>
                         <p class="help-block" style="font-size: 11.5px; color: #64748b; margin-top: 6px;">
-                            Applying a policy immediately replaces any existing active assignment on this specific target.
+                            {{ __('storeops::storeops.rules_ui.applying_a_policy_immediately_replaces_any_existing_active_assig') }}
                         </p>
                     </div>
                 </div>
 
                 <div class="modal-footer" style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 15px 25px;">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('storeops::storeops.rules_ui.cancel') }}</button>
                     <button type="submit" class="btn btn-primary" style="font-weight: bold;">
-                        Apply Assignment
+                        {{ __('storeops::storeops.rules_ui.apply_assignment') }}
                     </button>
                 </div>
             </form>

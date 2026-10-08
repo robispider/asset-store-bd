@@ -31,6 +31,7 @@ class AccessoryCheckinController extends Controller
 
         $accessory = Accessory::find($accessory_user->accessory_id);
         $this->authorize('checkin', $accessory);
+        app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->assertNativeMovementAllowed($accessory);
 
         // based on what the accessory is checked out to the target redirect option will be displayed accordingly.
         $target_option = match ($accessory_user->assigned_type) {
@@ -61,6 +62,7 @@ class AccessoryCheckinController extends Controller
 
         $accessory = Accessory::find($accessory_checkout->accessory_id);
         $this->authorize('checkin', $accessory);
+        app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->assertNativeMovementAllowed($accessory);
 
         session()->put('checkedInFrom', $accessory_checkout->assigned_to);
         session()->put('checkout_to_type', match ($accessory_checkout->assigned_type) {

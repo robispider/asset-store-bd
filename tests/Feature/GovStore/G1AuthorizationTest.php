@@ -296,6 +296,10 @@ class G1AuthorizationTest extends TestCase
             base_path('packages/gov-store/store-operations/src/resources/views/operations/print.blade.php'),
             base_path('packages/gov-store/classification/src/resources/views/manager/import.blade.php'),
         ]);
+        foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(base_path('packages/gov-store/store-operations/src/resources/views'))) as $template) {
+            if ($template->isFile() && str_ends_with($template->getFilename(), '.blade.php')) $templates[] = $template->getPathname();
+        }
+        $templates = array_unique($templates);
         foreach ($templates as $file) {
             $compiled = app('blade.compiler')->compileString(file_get_contents($file));
             $temporary = tempnam(sys_get_temp_dir(), 'g1_blade_');

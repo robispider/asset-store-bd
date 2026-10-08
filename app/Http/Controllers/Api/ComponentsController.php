@@ -305,6 +305,7 @@ class ComponentsController extends Controller
         }
 
         $this->authorize('checkout', $component);
+        app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->assertNativeMovementAllowed($component);
 
         $validator = Validator::make($request->all(), [
             'assigned_to' => 'required|exists:assets,id',
@@ -387,6 +388,7 @@ class ComponentsController extends Controller
             }
 
             $this->authorize('checkin', $component);
+            app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->assertNativeMovementAllowed($component);
 
             $max_to_checkin = $component_assets->assigned_qty;
 

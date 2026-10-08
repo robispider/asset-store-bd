@@ -6,7 +6,9 @@
 ])
 
 @can('checkout', $item)
-    @if ($item->showCheckoutButton($item) == 'show-active')
+    @if(app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->manages($item))
+        <span class="text-muted">{{ __('storeops::storeops.ledger_managed_stock') }}</span>
+    @elseif ($item->showCheckoutButton($item) == 'show-active')
         <a href="{{ $route  }}" class="btn btn-sm bg-maroon hidden-print" data-tooltip="true"  data-placement="top" data-title="{{ trans('general.checkout') }}">
             <x-icon type="checkout" class="fa-fw" />
             @if ($wide=='true')

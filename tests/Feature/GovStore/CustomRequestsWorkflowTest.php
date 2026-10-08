@@ -275,8 +275,8 @@ class CustomRequestsWorkflowTest extends TestCase
             'created_at' => now(), 'updated_at' => now(),
         ]);
         DB::table('categories')->insert(['id' => 1, 'name' => 'Supplies']);
-        DB::table('consumables')->insert(['id' => 1, 'name' => 'Paper', 'category_id' => 1, 'purchase_cost' => 10]);
-        DB::table('accessories')->insert(['id' => 1, 'name' => 'Keyboard', 'category_id' => 1, 'purchase_cost' => 10]);
+        DB::table('consumables')->insert(['id' => 1, 'name' => 'Paper', 'category_id' => 1, 'purchase_cost' => 10, 'company_id' => 20]);
+        DB::table('accessories')->insert(['id' => 1, 'name' => 'Keyboard', 'category_id' => 1, 'purchase_cost' => 10, 'company_id' => 20]);
     }
 
     private function actor(string $role, int $id = 2): User
