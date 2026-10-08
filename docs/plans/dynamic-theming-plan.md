@@ -968,7 +968,7 @@ Order and status (hex-literal counts are the figure recorded when this plan was 
 | store-operations | 274 | not started | — |
 | **tracking** | **225** | **done** | **2026-10-07** — all 13 views, `tracking.css` registered, baseline entries removed |
 | classification | 145 | not started | — |
-| custom-requests | 77 | not started | — |
+| custom-requests | 77 | **done** | **2026-10-08** — all request views use registered token-based package CSS and GS tables; compliance baseline entries removed |
 | organization | 65 | not started | — |
 | office-membership | 30 | not started | — |
 | tenant-scope | 3 | not started | — |

@@ -1,9 +1,9 @@
-<div class="box box-default">
+<div class="box box-default request-timeline">
     <div class="box-header with-border">
         <h3 class="box-title"><i class="fas fa-history"></i> {{ __('requestlabels::requests.fulfillment_show_header_timeline') ?? 'Audit Timeline' }}</h3>
     </div>
     <div class="box-body">
-        <ul class="timeline">
+        <ul class="timeline request-timeline">
             @forelse($events as $event)
                 <li>
                     @if($event->event_type === 'draft_created')
@@ -22,12 +22,12 @@
                         <i class="fa fa-info bg-gray"></i>
                     @endif
 
-                    <div class="timeline-item" style="box-shadow: none; border: 1px solid #eee; background-color: #fafafa; margin-left: 45px;">
+                    <div class="timeline-item">
                         <span class="time"><i class="far fa-clock"></i> {{ $event->created_at->format('H:i') }}</span>
-                        <h3 class="timeline-header" style="font-size: 13px; font-weight: bold; border-bottom: none; padding: 5px 10px;">
+                        <h3 class="timeline-header">
                             {{ __('requestlabels::requests.event_'.$event->event_type) }}
                         </h3>
-                        <div class="timeline-body" style="padding: 5px 10px; font-size: 12px; color: #555;">
+                        <div class="timeline-body">
                             {{ __('requestlabels::requests.executed_by') }}: <strong>{{ $event->user->display_name ?? __('requestlabels::requests.system') }}</strong>
                             
                             @if($event->event_type === 'item_substituted' && isset($event->details['original']))
@@ -55,7 +55,7 @@
             @empty
                 <li>
                     <i class="fa fa-clock bg-gray"></i>
-                    <div class="timeline-item" style="box-shadow: none; margin-left: 45px; background: transparent;">
+                    <div class="timeline-item">
                         <div class="timeline-body text-muted">{{ __('requestlabels::requests.no_events') }}</div>
                     </div>
                 </li>

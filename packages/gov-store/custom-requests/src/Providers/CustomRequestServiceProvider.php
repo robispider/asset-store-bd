@@ -14,6 +14,7 @@ use GovStore\CustomRequests\Models\BasketItem;
 use GovStore\CustomRequests\Rules\NoPendingRequestsRule;
 use GovStore\OfficeMembership\Services\ClearanceEngine;
 use GovStore\TenantScope\Navigation\MenuRegistry;
+use GovStore\Theming\Facades\GsTheme;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -35,6 +36,12 @@ class CustomRequestServiceProvider extends ServiceProvider
 
         // 3. Load Views
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'govstore');
+
+        // Register package styles with the shared theme build. The package still works
+        // without theming installed, as with other optional GovStore integrations.
+        if ($this->app->bound('gs.theme')) {
+            GsTheme::assets()->css('custom-requests', __DIR__.'/../resources/css/custom-requests.css');
+        }
 
         // Compose only pages using the shared application layout.
         View::composer('layouts/default', function ($view) {

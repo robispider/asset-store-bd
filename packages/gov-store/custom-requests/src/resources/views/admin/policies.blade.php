@@ -3,6 +3,7 @@
 @section('title', __('requestlabels::requests.policies_title'))
 
 @section('content')
+<div class="cr-theme">
 <div class="box box-primary">
     <div class="box-header"><h3 class="box-title">{{ __('requestlabels::requests.item_override') }}</h3></div>
     <form action="{{ route('gov.requests.admin.policies.store') }}" method="POST" class="box-body">
@@ -49,7 +50,7 @@
                 <p class="text-muted" style="margin-top: 5px; margin-bottom: 0;">{{ __('requestlabels::requests.policies_header_description') }}</p>
             </div>
             <div class="box-body table-responsive">
-                <table class="table table-striped table-hover">
+                <table class="gs-table table table-striped table-hover">
                     <thead>
                         <tr>
                             <th style="width: 30%;">{{ __('requestlabels::requests.category') }}</th>
@@ -99,5 +100,6 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

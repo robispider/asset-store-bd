@@ -3,6 +3,7 @@
 @section('title', __('requestlabels::requests.basket_index_title'))
 
 @section('content')
+<div class="cr-theme">
 <div class="row">
     <!-- LEFT COLUMN: Line Items -->
     <div class="col-md-7">
@@ -20,7 +21,7 @@
                         </a>
                     </div>
                 @else
-                    <table class="table table-striped table-hover">
+                    <table class="gs-table table table-striped table-hover">
                         <thead>
                             <tr>
                                 <th>{{ __('requestlabels::requests.item_details') }}</th>
@@ -61,9 +62,8 @@
                                                    class="form-control input-sm text-center basket-qty-input"
                                                    data-item-id="{{ $item->id }}"
                                                    value="{{ $item->requested_qty }}"
-                                                   min="1" max="10000"
-                                                   style="width: 70px; margin: 0 auto; border: 1px solid #ccc; border-radius: 4px;">
-                                            <span class="save-status-indicator" data-item-id="{{ $item->id }}" style="font-size: 11px; color: #555; width: 45px; text-align: left;"></span>
+                                                   min="1" max="10000">
+                                            <span class="save-status-indicator" data-item-id="{{ $item->id }}"></span>
                                         </div>
                                     </td>
                                     <td style="vertical-align: middle;">
@@ -148,8 +148,8 @@
         </div>
     </div>
 </div>
+</div>
 @endsection
-
 @section('moar_scripts')
 
 @endsection

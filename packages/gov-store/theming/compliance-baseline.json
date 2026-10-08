@@ -65,47 +65,6 @@
         "R1": 28,
         "R3": 8
     },
-    "custom-requests/src/resources/views/admin/index.blade.php": {
-        "R1": 1,
-        "R3": 1
-    },
-    "custom-requests/src/resources/views/admin/show.blade.php": {
-        "R1": 4,
-        "R3": 3
-    },
-    "custom-requests/src/resources/views/basket/index.blade.php": {
-        "R1": 2,
-        "R3": 2
-    },
-    "custom-requests/src/resources/views/catalog/index.blade.php": {
-        "R1": 48,
-        "R2": 1,
-        "R3": 1
-    },
-    "custom-requests/src/resources/views/components/timeline-widget.blade.php": {
-        "R1": 3,
-        "R3": 3
-    },
-    "custom-requests/src/resources/views/fulfillment-register/show.blade.php": {
-        "R1": 2,
-        "R3": 1
-    },
-    "custom-requests/src/resources/views/fulfillment/index.blade.php": {
-        "R1": 1,
-        "R3": 1
-    },
-    "custom-requests/src/resources/views/fulfillment/show.blade.php": {
-        "R1": 24,
-        "R2": 1,
-        "R3": 6
-    },
-    "custom-requests/src/resources/views/hooks/basket-widget.blade.php": {
-        "R3": 1
-    },
-    "custom-requests/src/resources/views/user/index.blade.php": {
-        "R1": 1,
-        "R3": 1
-    },
     "office-membership/src/resources/views/admin/override_console.blade.php": {
         "R1": 1
     },

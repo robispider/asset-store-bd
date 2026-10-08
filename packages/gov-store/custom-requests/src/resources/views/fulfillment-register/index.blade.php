@@ -3,6 +3,7 @@
 @section('title', __('requestlabels::requests.fulfillment_register_title'))
 
 @section('content')
+<div class="cr-theme">
 <div class="row">
     <div class="col-md-12">
         <div class="box box-success">
@@ -13,7 +14,7 @@
                 </div>
             </div>
             <div class="box-body table-responsive">
-                <table class="table table-striped table-bordered table-hover dataTable">
+                <table class="gs-table table table-striped table-bordered table-hover dataTable">
                     <thead>
                         <tr>
                             <th>{{ __('requestlabels::requests.request_number') }}</th>
@@ -26,7 +27,7 @@
                     <tbody>
                         @forelse($completedRequests as $req)
                             <tr>
-                                <td><strong>{{ $req->request_number }}</strong></td>
+                                <td><strong class="request-number">{{ $req->request_number }}</strong></td>
                                 <td>{{ $req->requester->present()->fullName ?? __('requestlabels::requests.unknown_user') }}</td>
                               <td>
                                     {{ \Illuminate\Support\Str::limit($req->purpose, 50) }}<br>
@@ -49,5 +50,6 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

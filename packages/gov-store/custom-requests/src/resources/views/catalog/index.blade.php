@@ -3,181 +3,10 @@
 @section('title', __('requestlabels::requests.catalog_title'))
 
 @section('content')
+<div class="cr-theme">
 
 {{-- Clean Employee Portal Styling --}}
-<style>
-    /* Sleek Search Header */
-    .search-section {
-        background: #fff;
-        border: 1px solid #ddd;
-        border-top: 3px solid var(--main-theme-color, #3c8dbc);
-        padding: 15px 20px;
-        border-radius: 4px;
-        margin-bottom: 20px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    .search-section p {
-        margin-bottom: 10px;
-        font-size: 14px;
-        font-weight: bold;
-        color: #555;
-    }
-    .hero-search-wrapper input {
-        border: 1px solid #ccc;
-        padding: 12px 15px;
-        font-size: 15px;
-        border-radius: 4px;
-        width: 100%;
-        color: #333;
-        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    }
-    .hero-search-wrapper input:focus {
-        border-color: var(--main-theme-color, #3c8dbc);
-        outline: 0;
-        box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(60, 141, 188, 0.6);
-    }
-    
-    /* Quick Requests & Tidy Pipeline Layout */
-    .dashboard-panel {
-        min-height: 90px;
-        background: #fff;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        padding: 12px 15px;
-        margin-bottom: 20px;
-    }
-    .dashboard-panel strong {
-        display: block;
-        margin-bottom: 8px;
-        color: #555;
-        font-size: 13px;
-    }
 
-    /* Quick Requests Button */
-    .quick-request-btn {
-        background: #f4f4f4;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        padding: 5px 12px;
-        margin-right: 6px;
-        margin-bottom: 6px;
-        cursor: pointer;
-        display: inline-block;
-        font-size: 12px;
-        color: #333;
-        transition: all 0.15s;
-    }
-    .quick-request-btn:hover {
-        background: var(--main-theme-color, #3c8dbc);
-        color: white;
-        border-color: var(--main-theme-color, #3c8dbc);
-    }
-
-    /* Tidy Pipeline Status Badges */
-    .compact-pipeline-wrapper {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 8px;
-    }
-    .compact-pipeline-card {
-        background: #f9f9f9;
-        border: 1px solid #e3e3e3;
-        border-radius: 4px;
-        padding: 6px 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background 0.15s, border-color 0.15s;
-    }
-    .compact-pipeline-card:hover {
-        background: #f1f1f1;
-        border-color: #ccc;
-    }
-    .compact-pipeline-card .badge {
-        font-size: 11px;
-        padding: 4px 7px;
-    }
-    .compact-pipeline-card span.status-label {
-        font-size: 12px;
-        margin-left: 6px;
-        color: #444;
-        font-weight: 600;
-    }
-    
-    /* Toolbar Controls */
-    .control-bar {
-        background: #fff;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        padding: 10px 15px;
-        margin-bottom: 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-    .view-toggles button {
-        background: #f4f4f4;
-        border: 1px solid #ddd;
-        padding: 5px 10px;
-        cursor: pointer;
-        color: #555;
-        margin-left: 5px;
-    }
-    .view-toggles button.active {
-        background: var(--main-theme-color, #3c8dbc);
-        color: white;
-        border-color: var(--main-theme-color, #3c8dbc);
-    }
-    
-    /* Product Card Base */
-    .catalog-card {
-        background: #fff;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        overflow: hidden;
-        transition: box-shadow 0.2s;
-        margin-bottom: 20px;
-    }
-    .catalog-card:hover {
-        box-shadow: 0 3px 10px rgba(0,0,0,0.06);
-    }
-    
-    /* DEFAULT: LIST VIEW */
-    #catalogContainer.view-list .catalog-item { width: 100%; float: none; padding: 0 15px; }
-    #catalogContainer.view-list .catalog-card { display: flex; flex-direction: row; align-items: stretch; text-align: left; }
-    #catalogContainer.view-list .img-wrapper { width: 140px; padding: 10px; background: #fff; display: flex; align-items: center; justify-content: center; border-right: 1px solid #eee; flex-shrink: 0; }
-    #catalogContainer.view-list .img-wrapper img { max-height: 85px; max-width: 100%; object-fit: contain; }
-    #catalogContainer.view-list .card-body { flex-grow: 1; padding: 15px; display: flex; flex-direction: column; justify-content: center;}
-    #catalogContainer.view-list .details-list { display: block; padding-left: 20px; margin-top: 5px; color: #666; font-size: 13px; }
-    #catalogContainer.view-list .card-footer { width: 220px; padding: 15px; border-top: none; border-left: 1px solid #eee; background: #fafafa; display: flex; flex-direction: column; justify-content: center; align-items: center; flex-shrink: 0; }
-    
-    /* OPTIONAL: GRID VIEW */
-    #catalogContainer.view-grid .catalog-item { width: 25%; float: left; padding: 0 10px; }
-    #catalogContainer.view-grid .catalog-card { display: block; text-align: center; }
-    #catalogContainer.view-grid .img-wrapper { height: 160px; padding: 15px; background: #f9f9f9; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #eee; }
-    #catalogContainer.view-grid .img-wrapper img { max-height: 100%; max-width: 100%; object-fit: contain; }
-    #catalogContainer.view-grid .details-list { display: none; }
-    #catalogContainer.view-grid .card-body { padding: 15px; }
-    #catalogContainer.view-grid .card-footer { padding: 15px; border-top: 1px solid #eee; background: #fafafa; }
-    
-    /* Typography */
-    .item-title { font-size: 15px; font-weight: bold; color: #333; margin-bottom: 3px; }
-    #catalogContainer.view-grid .item-title { height: 38px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-    .item-category { font-size: 12px; color: #777; }
-
-    @media (max-width: 991px) {
-        #catalogContainer.view-grid .catalog-item { width: 50%; }
-    }
-    @media (max-width: 767px) {
-        #catalogContainer.view-grid .catalog-item { width: 100%; }
-        #catalogContainer.view-list .catalog-card { flex-direction: column; }
-        #catalogContainer.view-list .img-wrapper, #catalogContainer.view-list .card-footer { width: 100%; border-right: none; border-left: none; border-top: 1px solid #eee;}
-        .control-bar { flex-direction: column; align-items: stretch; }
-        .control-bar > div { margin-bottom: 10px; }
-    }
-</style>
 
 <!-- CLEAN HERO SECTION -->
 <div class="row">
@@ -294,7 +123,7 @@
                     <div class="catalog-card">
                         <div class="img-wrapper">
                             <img class="catalog-image" src="{{ $item->image_url }}" alt="{{ $item->name }}">
-                            <i class="fas fa-box catalog-image-fallback" aria-hidden="true" style="display:none;font-size:48px;color:#888"></i>
+                            <i class="fas fa-box catalog-image-fallback" aria-hidden="true"></i>
                         </div>
                         
                         <div class="card-body">
@@ -341,4 +170,5 @@
 </div>
 
 {{ $catalogItems->links() }}
+</div>
 @endsection
