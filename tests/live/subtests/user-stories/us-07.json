@@ -1,0 +1,72 @@
+{
+  "execution": {
+    "language": "en-US",
+    "timeoutMs": 60000,
+    "accessMode": "any",
+    "capability": "observe"
+  },
+  "id": "user-stories.us-07",
+  "title": "US-07 — Request items from the catalogue (seeded UI entry check)",
+  "fixtures": {
+    "office": {
+      "requirements": {
+        "operational": true
+      }
+    },
+    "actors": {
+      "employee": {
+        "office": "office",
+        "capabilities": {
+          "allOf": [
+            "requests.submit"
+          ],
+          "noneOf": []
+        },
+        "activeMembership": true
+      }
+    }
+  },
+  "schemaVersion": 1,
+  "cleanup": {
+    "policy": "no-business-records-created"
+  },
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "employee"
+      }
+    },
+    {
+      "as": "pageStatus",
+      "expectStatus": [
+        200
+      ],
+      "action": "probe",
+      "path": "/gov-requests/catalog"
+    },
+    {
+      "url": "/gov-requests/catalog",
+      "action": "goto"
+    },
+    {
+      "test": "visible",
+      "action": "assert",
+      "target": "css=body"
+    },
+    {
+      "contains": "/gov-requests/catalog",
+      "test": "url",
+      "action": "assert"
+    }
+  ],
+  "tags": [
+    "user-story",
+    "seeded",
+    "readonly",
+    "entry-check"
+  ],
+  "features": [
+    "user-story.us-07"
+  ]
+}

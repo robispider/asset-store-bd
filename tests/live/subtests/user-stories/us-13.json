@@ -1,0 +1,72 @@
+{
+  "execution": {
+    "language": "en-US",
+    "timeoutMs": 60000,
+    "accessMode": "any",
+    "capability": "observe"
+  },
+  "id": "user-stories.us-13",
+  "title": "US-13 — Adopt catalogue category for an office (seeded UI entry check)",
+  "fixtures": {
+    "office": {
+      "requirements": {
+        "operational": true
+      }
+    },
+    "actors": {
+      "catalogUser": {
+        "office": "office",
+        "capabilities": {
+          "allOf": [
+            "catalog.view"
+          ],
+          "noneOf": []
+        },
+        "activeMembership": true
+      }
+    }
+  },
+  "schemaVersion": 1,
+  "cleanup": {
+    "policy": "no-business-records-created"
+  },
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "catalogUser"
+      }
+    },
+    {
+      "as": "pageStatus",
+      "expectStatus": [
+        200
+      ],
+      "action": "probe",
+      "path": "/gov-store/operations/catalog/discover/explorer"
+    },
+    {
+      "url": "/gov-store/operations/catalog/discover/explorer",
+      "action": "goto"
+    },
+    {
+      "test": "visible",
+      "action": "assert",
+      "target": "css=body"
+    },
+    {
+      "contains": "/gov-store/operations/catalog/discover/explorer",
+      "test": "url",
+      "action": "assert"
+    }
+  ],
+  "tags": [
+    "user-story",
+    "seeded",
+    "readonly",
+    "entry-check"
+  ],
+  "features": [
+    "user-story.us-13"
+  ]
+}

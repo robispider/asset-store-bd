@@ -1,0 +1,73 @@
+{
+  "execution": {
+    "language": "en-US",
+    "timeoutMs": 60000,
+    "accessMode": "any",
+    "capability": "observe"
+  },
+  "id": "user-stories.us-29",
+  "title": "US-29 — Maintain inventory and asset committees (seeded UI entry check)",
+  "fixtures": {
+    "office": {
+      "requirements": {
+        "operational": true
+      }
+    },
+    "actors": {
+      "registrar": {
+        "office": "office",
+        "capabilities": {
+          "noneOf": [],
+          "allOf": [
+            "committee.manage",
+            "committee.view"
+          ]
+        },
+        "activeMembership": true
+      }
+    }
+  },
+  "schemaVersion": 1,
+  "cleanup": {
+    "policy": "no-business-records-created"
+  },
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "registrar"
+      }
+    },
+    {
+      "as": "pageStatus",
+      "expectStatus": [
+        200
+      ],
+      "action": "probe",
+      "path": "/gov-store/committees"
+    },
+    {
+      "url": "/gov-store/committees",
+      "action": "goto"
+    },
+    {
+      "test": "visible",
+      "action": "assert",
+      "target": "css=body"
+    },
+    {
+      "contains": "/gov-store/committees",
+      "test": "url",
+      "action": "assert"
+    }
+  ],
+  "tags": [
+    "user-story",
+    "seeded",
+    "readonly",
+    "entry-check"
+  ],
+  "features": [
+    "user-story.us-29"
+  ]
+}

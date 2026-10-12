@@ -7,7 +7,9 @@ import path from 'node:path';
  * logs events and classifies failures.
  */
 
-const PROBE_PREFIXES = ['/gov-requests', '/gov-store'];
+// Read-only authenticated probes are limited to GovStore surfaces and the
+// native import/catalog entry points covered by the seeded user-story suite.
+const PROBE_PREFIXES = ['/gov-requests', '/gov-store', '/admin/catalog', '/import', '/directory'];
 const SENSITIVE_FLOWS = new Set(['auth.login']);
 
 export function classifyFailure(message = '') {

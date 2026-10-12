@@ -1,0 +1,74 @@
+{
+  "execution": {
+    "language": "en-US",
+    "timeoutMs": 60000,
+    "accessMode": "any",
+    "capability": "observe"
+  },
+  "id": "user-stories.us-27",
+  "title": "US-27 — Delegate ministry/company administrators (seeded UI entry check)",
+  "fixtures": {
+    "office": {
+      "requirements": {
+        "operational": true
+      }
+    },
+    "actors": {
+      "officeAdmin": {
+        "office": "office",
+        "capabilities": {
+          "allOf": [
+            "organization.office.manage"
+          ],
+          "noneOf": []
+        },
+        "activeMembership": true
+      }
+    }
+  },
+  "schemaVersion": 1,
+  "cleanup": {
+    "policy": "no-business-records-created"
+  },
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "officeAdmin"
+      }
+    },
+    {
+      "as": "accessStatus",
+      "expectStatus": [
+        302,
+        403,
+        404
+      ],
+      "action": "probe",
+      "path": "/gov-store/office/company-admins"
+    },
+    {
+      "url": "/gov-store/office/company-admins",
+      "action": "goto"
+    },
+    {
+      "test": "visible",
+      "action": "assert",
+      "target": "css=body"
+    },
+    {
+      "contains": "/gov-store/office/company-admins",
+      "test": "url",
+      "action": "assert"
+    }
+  ],
+  "tags": [
+    "user-story",
+    "seeded",
+    "readonly",
+    "entry-check"
+  ],
+  "features": [
+    "user-story.us-27"
+  ]
+}

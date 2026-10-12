@@ -14,7 +14,7 @@
 >   Gov-Store package.
 >
 > Companion references: [workflow.md](workflow.md), [business_logic.md](business_logic.md),
-> and [ERD.md](ERD.md).
+> [ERD.md](ERD.md), and the [role-based live-testing plan](docs/testing/user-stories-live-test-plan.md).
 
 ## Test setup
 
@@ -65,6 +65,10 @@ redirect, flash message, table row, or changed Snipe-IT record.
 - [US-25 — Configure tenant-scope policies and mappings](#us-25--configure-tenant-scope-policies-and-mappings)
 - [US-26 — Monitor and repair metadata health](#us-26--monitor-and-repair-metadata-health)
 - [US-27 — Delegate ministry/company administrators](#us-27--delegate-ministrycompany-administrators)
+- [US-28 — Deliver an office starter catalogue](#us-28--deliver-an-office-starter-catalogue)
+- [US-29 — Maintain inventory and asset committees](#us-29--maintain-inventory-and-asset-committees)
+- [US-30 — Choose an application appearance](#us-30--choose-an-application-appearance)
+- [US-31 — Manage an office lifecycle](#us-31--manage-an-office-lifecycle)
 - [Appendix A — Route inventory used by testers](#appendix-a--route-inventory-used-by-testers)
 - [Appendix B — Known gaps and out-of-scope claims](#appendix-b--known-gaps-and-out-of-scope-claims)
 
@@ -338,22 +342,36 @@ unauthorized employee cannot mutate the asset.
 **As an employee**, I want to request release from an office and switch among
 my memberships when permitted.
 
-**Status:** Partially implemented; no complete transfer wizard is exposed.
+**Status:** Implemented for membership release, join, switching, and duty
+handover; a single end-to-end employee transfer wizard is not exposed.
 
 **UI verification**
 
-1. Open `/gov-store/my-memberships`.
-2. Confirm current memberships and their statuses are visible.
-3. Click **Request Release** for an eligible membership and confirm the
-   resulting pending/release-requested state appears after reload.
-4. If two active memberships exist, use **Switch Context** and verify the
-   active office changes on the next scoped page.
-5. Use the membership **Join** form with a valid invite/verification code and
-   confirm the new membership appears.
+1. Open `/gov-store/my-memberships` and confirm current memberships, release
+   clearance, and recent membership notices are visible.
+2. Click **Request Release** for a membership with no outstanding custody or
+   request obligations. Confirm the release request is pending for office
+   sign-off.
+3. Repeat with a membership that has an assigned asset, active responsibility,
+   temporary cover, or unresolved request/return. Confirm the page explains
+   that release is blocked until the obligation is resolved.
+4. As the home-office administrator, review and sign off the eligible release.
+   Confirm the employee receives an in-app notice and the membership state
+   changes after refresh.
+5. If two active memberships exist, use **Switch Context** and verify the
+   active office changes on the next scoped page without changing the native
+   home-office assignment.
+6. Use the membership **Join** form with a valid invite/verification code,
+   complete any required office review, and confirm the membership and notice
+   appear.
+7. Propose a duty handover to an eligible colleague, then accept it as that
+   colleague. Confirm the responsibility changes holder and both participants
+   can see the outcome notice.
 
-**Expected result:** release requests, joining, and switching work through the
-   membership UI. Do not mark this story as a full employee transfer unless a
-   separate return-assets/handover workflow has been added.
+**Expected result:** eligible release, join, switching, and duty handover
+transitions are visible and leave an in-app notice. Clearance checks include
+inventory, active duties/cover, and unresolved requests. This does not combine
+asset return and every duty handover into one employee-transfer wizard.
 
 ## US-13 — Adopt a catalogue category for an office
 
@@ -725,8 +743,7 @@ changing office staff duties.
 
 **UI verification**
 
-1. Open `/gov-store/office/company-admins` as a superadmin or authorized
-   company administrator.
+1. Open `/gov-store/office/company-admins` as a superadmin.
 2. Select a ministry/company and a user in the delegation form.
 3. Submit **Assign/Save** and confirm the administrator appears in the
    assigned-admins table.
@@ -734,11 +751,141 @@ changing office staff duties.
    oversight pages are available according to their permissions.
 5. Remove the assignment using the table action and confirm it disappears
    after refresh.
-6. Sign in as a normal employee and confirm the company-admin management
-   page is unavailable or returns an authorization response.
+6. Sign in as a company administrator or normal employee and confirm the
+   company-admin management page is unavailable or returns an authorization
+   response.
 
 **Expected result:** company-admin assignments are visible, removable, and
 separate from office staff memberships and storekeeper/approver duties.
+
+## US-28 — Deliver an office starter catalogue
+
+**As an organization administrator**, I want a new office to receive the
+reviewed starter catalogue for its office type so that staff can begin with
+the appropriate categories.
+
+**Status:** Partially implemented; delivery depends on a configured, populated
+starter collection and a running application queue worker.
+
+**UI verification**
+
+1. Provision an office with a type that has a reviewed starter collection
+   configured. Complete the office administrator membership setup described
+   in US-02 and US-03.
+2. Open `/gov-store/admin/organization/{id}/hub` and review the **Starter
+   catalog** status.
+3. With a functioning queue worker, confirm the run moves from waiting or
+   queued to completed.
+4. Open the office's **My Catalog** page and confirm the starter categories
+   have been adopted.
+5. If delivery failed, resolve the cause and use **Retry starter catalog**
+   in the office hub. Confirm the retry uses the saved bundle and reports a
+   new status.
+6. If the collection is missing, empty, ambiguous, or changed after the run
+   was saved, confirm delivery fails with a reference/status and does not
+   silently substitute a different collection.
+
+**Expected result:** a configured starter bundle is adopted once for the
+office and its status is visible in the office hub. The current local dataset
+may not contain populated starter collections; do not treat an empty bundle
+configuration as a successful delivery.
+
+## US-29 — Maintain inventory and asset committees
+
+**As an office registrar**, I want to record committee orders, appoint members,
+and track which offices and inventory purposes each committee covers.
+
+**Status:** Implemented, subject to an active committee type and purpose policy
+for the relevant ministry.
+
+**UI verification**
+
+1. Open `/gov-store/committees` and review the desk's attention items, coverage,
+   and recent changes. Open the registry and search for a committee.
+2. Start a new committee from the order-first flow. Enter its memo number,
+   date, signatory, and private order document, then select an available type
+   and term.
+3. Add members from the current office, another verified office, or as an
+   external member. Set their committee roles and confirm the composition
+   panel explains any unmet ministry rule.
+4. Assign the office or offices and inventory purpose the committee serves.
+   Preview the resulting committee and resolve any incomplete composition
+   before activation.
+5. Activate the committee and confirm its status and coverage appear on the
+   desk and registry.
+6. Open the committee history and print view. Confirm changes are grouped
+   under the relevant order and the roster reflects the selected historical
+   date.
+7. From the committee page, test a member replacement or term extension with
+   a new order and preview. For dissolution, confirm impact is shown and the
+   typed committee-number confirmation is required.
+8. Open `/gov-store/committees/mine` as an appointed member and confirm the
+   committee, role, office, and term are shown. Verify order and declaration
+   files are available only to authorized viewers.
+
+**Expected result:** committee composition, appointments, office coverage,
+private orders, and changes are tied to dated records and available through
+authorized registry, personal, history, and print views. National template
+activation and ministry policy setup are prerequisites; inactive templates
+must not be enabled just to make a test pass.
+
+## US-30 — Choose an application appearance
+
+**As a user**, I want to choose a supported theme and light/dark mode so that
+the application remains readable in my preferred setting.
+
+**Status:** Implemented; a theme choice can be locked by an organization,
+ministry, or office assignment.
+
+**UI verification**
+
+1. Open `/gov/appearance` and review the current theme, effective default,
+   and any notice that the theme is set by an administrator.
+2. When personal theme choice is available, choose a shipped theme and light,
+   dark, or system mode. Confirm the preview updates, save, and reload to
+   verify the preference persists.
+3. Reset the personal theme and confirm it follows the current office,
+   ministry, or organization default. Switch working office and confirm the
+   inherited default follows that context when no personal theme is set.
+4. When the theme is enforced, confirm the theme selector is locked while the
+   light/dark mode remains changeable.
+5. As an administrator with a manageable scope, open
+   `/gov/appearance/assignments`, set a default for the permitted scope, and
+   verify its effective theme and enforcement behavior on the appearance
+   page.
+
+**Expected result:** the saved appearance follows personal preference or the
+effective assigned default, and the light/dark mode remains available even
+when the theme is enforced.
+
+## US-31 — Manage an office lifecycle
+
+**As an authorized office administrator**, I want to suspend, resume, or
+relocate an office while preserving its identity and existing records.
+
+**Status:** Implemented for suspension, resumption, and in-territory relocation;
+closure and merger remain unavailable pending clearance workflows.
+
+**UI verification**
+
+1. Open `/gov-store/admin/organization/{id}/hub` for an office you are
+   authorized to manage and review its current lifecycle state.
+2. Suspend the office with a reason and typed `CHANGE` confirmation. Confirm
+   new request intake is paused while existing requests, approvals, and
+   returns remain available.
+3. Resume the office and confirm new request intake is available again.
+4. Relocate the office to an authorized geographic area with a reason and
+   typed confirmation. Confirm the office identity and ministry remain the
+   same and geography verification must be completed again.
+5. Submit a missing reason, incorrect confirmation, stale expected status,
+   or out-of-jurisdiction area and confirm the transition is rejected without
+   partially changing the office.
+6. Confirm closure and merger are not offered as available actions while
+   inventory, membership, request, and committee clearance is incomplete.
+
+**Expected result:** supported lifecycle changes require explicit confirmation
+and preserve the office record; suspension pauses intake without discarding
+existing work. Do not treat closure or merger as implemented.
 
 ---
 
@@ -771,6 +918,12 @@ separate from office staff memberships and storekeeper/approver duties.
 | Tenant-scope mappings | `/gov-store/admin/scope/mappings` |
 | Metadata health | `/gov-store/admin/metadata/health` |
 | Company administrators | `/gov-store/office/company-admins` |
+| Committee desk | `/gov-store/committees` |
+| Committee registry | `/gov-store/committees/registry` |
+| My committees | `/gov-store/committees/mine` |
+| Committee rules | `/gov-store/committees/admin/types` and `/gov-store/committees/admin/purposes` |
+| Appearance preferences | `/gov/appearance` |
+| Appearance assignments | `/gov/appearance/assignments` |
 
 Dynamic `{id}`, `{type}`, and `{template}` segments must be replaced with
 values displayed by the application.
