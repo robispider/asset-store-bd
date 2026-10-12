@@ -22,7 +22,8 @@ class ExperimentVerifier
     public function preflight(): void
     {
         foreach (['gov_geo_areas', 'gov_office_memberships', 'gov_office_responsibilities', 'gov_location_profiles', 'gov_catalog_nodes',
-            'gov_model_metadata_states', 'gov_metadata_field_mappings', 'gov_profile_assignments', 'gov_documents', 'custom_service_requests', 'gov_tracking_codes'] as $table) {
+            'gov_model_metadata_states', 'gov_metadata_field_mappings', 'gov_profile_assignments', 'gov_documents',
+            'gov_store_ledger_openings', 'gov_store_document_sequences', 'custom_service_requests', 'gov_tracking_codes'] as $table) {
             if (! Schema::hasTable($table)) {
                 throw new RuntimeException('Required package schema is missing: '.$table.'. Apply that package\'s existing setup first.');
             }
@@ -43,8 +44,14 @@ class ExperimentVerifier
         }
         $counts = $this->records->counts($run);
         $size = $run->report['profile_counts'] ?? config('govstore-experiments.profiles.'.$run->profile);
+        $expectedReady = $size['offices'] - ($run->profile === 'quick' ? 0 : 4);
+        // Older resumed datasets retain their immutable component receipts and existing extra documents.
+        $retainedDocuments = collect($run->report['units'] ?? [])->filter(fn ($id, $key) => $id
+            && (str_starts_with($key, 'opening-components-') || str_starts_with($key, 'extra-document-')))->count();
+        $size['documents'] = max($size['documents'], $expectedReady * 3 + $retainedDocuments);
         $checks = ['counts' => true, 'ownership' => ! $preview['blockers'], 'home_offices' => true, 'office_roles' => true,
-            'geography' => true, 'requests' => true, 'stock' => true, 'tracking' => true, 'catalog' => true, 'boundaries' => true];
+            'geography' => true, 'requests' => true, 'stock' => true, 'ledger_openings' => true,
+            'tracking' => true, 'catalog' => true, 'boundaries' => true];
         foreach (['locations' => 'offices', 'users' => 'users', 'assets' => 'assets', 'consumables' => 'consumables', 'accessories' => 'accessories',
             'components' => 'components', 'models' => 'models', 'categories' => 'categories', 'licenses' => 'licenses', 'gov_documents' => 'documents',
             'custom_service_requests' => 'requests', 'draft_baskets' => 'baskets', 'gov_initiatives' => 'initiatives', 'gov_tracking_codes' => 'codes', 'maintenances' => 'maintenance'] as $table => $key) {
@@ -62,7 +69,6 @@ class ExperimentVerifier
                 }
             }
         }
-        $expectedReady = $size['offices'] - ($run->profile === 'quick' ? 0 : 4);
         $ready = 0;
         foreach ($offices as $office) {
             $profile = DB::table('gov_location_profiles')->where('location_id', $office->id)->first();
@@ -82,6 +88,15 @@ class ExperimentVerifier
         }
         $checks['office_roles'] = $checks['office_roles'] && $ready === $expectedReady;
         foreach ($offices->take($expectedReady) as $office) {
+            $opening = DB::table('gov_store_ledger_openings')->where('location_id', $office->id)->first();
+            $document = $opening ? DB::table('gov_documents')->where('id', $opening->document_id)->first() : null;
+            if (! $opening || ! $document || $document->type !== 'opening' || $document->status !== 'POSTED'
+                || (int) $document->location_id !== (int) $office->id || (int) $document->company_id !== (int) $office->company_id
+                || (int) $document->posted_by !== (int) $opening->opened_by
+                || ! in_array($opening->opened_by, $users->pluck('id')->all())
+                || ! in_array($document->id, $this->records->ids($run, 'gov_documents'), true)) {
+                $checks['ledger_openings'] = false;
+            }
             foreach (['consumables' => 12, 'accessories' => 8, 'components' => 4] as $table => $minimum) {
                 if (DB::table($table)->whereIn('id', $this->records->ids($run, $table))->where('location_id', $office->id)->where('qty', '>', 0)->count() < $minimum) {
                     $checks['catalog'] = false;

@@ -40,7 +40,6 @@ use GovStore\Organization\Services\OfficeConfigurationService;
 use GovStore\Organization\Services\OfficeProvisioningService;
 use GovStore\StoreOperations\Enums\DocumentState;
 use GovStore\StoreOperations\Models\Document;
-use GovStore\StoreOperations\Models\InventoryMovement;
 use GovStore\StoreOperations\Models\Profile;
 use GovStore\StoreOperations\Models\ProfileAssignment;
 use GovStore\StoreOperations\Models\ProfileCapability;
@@ -285,7 +284,17 @@ class BangladeshScenario
                 $this->create(IctJurisdiction::class, ['user_id' => $person->id, 'geo_area_id' => $division->GeoAreaId], 'jurisdiction-'.$i);
             }
             // Oversight accounts are intentionally not pending ordinary office onboarding.
-            UserOnboarding::whereIn('user_id', array_map(fn ($p) => $p->id, array_slice($this->people, $staffCount, 14)))->delete();
+            $oversightQueue = UserOnboarding::whereIn('user_id', array_map(fn ($p) => $p->id, array_slice($this->people, $staffCount, 14)));
+            $queueIds = (clone $oversightQueue)->pluck('id')->all();
+            // Retain ownership of durable history even when its fictional queue entry is removed.
+            foreach (['gov_onboarding_events', 'gov_onboarding_notices'] as $table) {
+                if (\Illuminate\Support\Facades\Schema::hasTable($table)) {
+                    foreach (DB::table($table)->whereIn('onboarding_id', $queueIds)->get() as $row) {
+                        $this->records->record($this->run, $table, $row);
+                    }
+                }
+            }
+            $oversightQueue->delete();
             $member = $this->officePeople(0)[4];
             app(OfficeMembershipService::class)->grantMembership($member->id, $this->offices[1]->id, false);
 
@@ -499,24 +508,12 @@ class BangladeshScenario
             if (! $this->operational($i)) {
                 continue;
             }
-            $this->unit('opening-components-'.$i, function () use ($i, $office) {
-                $items = array_values(array_filter($this->bulk['components'], fn ($item) => (int) $item->location_id === (int) $office->id));
-                if (! $items) {
-                    return false;
-                }
+            $this->unit('opening-ledger-'.$i, function () use ($i, $office) {
+                $keeper = $this->officePeople($i)[1];
+                $document = app(ExperimentLedgerOpening::class)->open($this->run, $office, $keeper);
+                $this->attachExample($document, $keeper->id);
 
-                // Native Component validation requires an initial quantity of at least one.
-                // Represent that already-existing opening stock without applying its projection twice.
-                return $this->contexts->run($this->officePeople($i)[1], $office, function () use ($items, $office, $i) {
-                    $document = app(GoodsReceiptService::class)->saveDraft(['reference_no' => $this->prefix.'-OPENING-'.$i, 'reference_date' => $this->run->anchor_date->format('Y-m-d')], array_map(fn ($item) => ['type' => 'component', 'id' => $item->id, 'qty' => 1, 'unit_cost' => 0], $items), $this->officePeople($i)[1]->id);
-                    $this->attachExample($document, $this->officePeople($i)[1]->id);
-                    foreach ($items as $item) {
-                        $this->create(InventoryMovement::class, ['stockable_type' => 'component', 'stockable_id' => $item->id, 'movement_type' => 'IN', 'quantity' => 1, 'balance_after' => 1, 'document_type' => Document::class, 'document_id' => $document->id, 'company_id' => $office->company_id, 'location_id' => $office->id, 'created_by' => $this->officePeople($i)[1]->id], 'component-opening-'.$item->id);
-                    }
-                    $document->transitionTo(DocumentState::POSTED, $this->officePeople($i)[1]->id, 'Opening balance for native component fixture');
-
-                    return $document->id;
-                }, 'storekeeper');
+                return $document->id;
             });
             $this->unit('receipt-assets-'.$i, function () use ($i, $office) {
                 $qty = intdiv($this->size['assets'], $this->operationalCount()) + ($i < $this->size['assets'] % $this->operationalCount() ? 1 : 0);
@@ -693,7 +690,8 @@ class BangladeshScenario
                 $slug = ['storekeeper', 'primary_approver', 'final_approver'][$i % 3];
                 $from = $members[1 + $i % 3];
 
-                return app(RoleHandshakeService::class)->proposeHandshake($this->offices[$officeIndex]->id, $slug, $from->id, $members[4]->id)->id;
+                return $this->contexts->run($from, $this->offices[$officeIndex],
+                    fn () => app(RoleHandshakeService::class)->proposeHandshake($this->offices[$officeIndex]->id, $slug, $from->id, $members[4]->id)->id, $slug);
             });
         }
         $typeId = $this->unit('maintenance-type', fn () => $this->create(MaintenanceType::class, ['name' => $this->prefix.' Preventive Service / প্রতিরোধমূলক রক্ষণাবেক্ষণ', 'created_by' => $this->actor->id], 'maintenance-type')->id);

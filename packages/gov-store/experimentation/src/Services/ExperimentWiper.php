@@ -19,6 +19,7 @@ class ExperimentWiper
         'oauth_clients', 'oauth_personal_access_clients', 'oauth_scopes', 'telescope_entries', 'telescope_entries_tags', 'telescope_monitoring',
         'gov_experiment_runs', 'gov_experiment_records', 'gov_experiment_actions', 'gov_experiment_jobs', 'gov_experiment_failed_jobs',
         'custom_request_sequences', // Global counters must survive fixture cleanup to prevent number reuse.
+        'gov_store_document_sequences', // Ledger document numbers must not be reused after cleanup.
     ];
 
     private const COLUMNS = [
@@ -38,9 +39,12 @@ class ExperimentWiper
     // Only these children can become owned through their parent; other links block a scoped wipe.
     private const CHILDREN = [
         'gov_location_profiles' => ['location_id'], 'gov_organization_activity_logs' => ['location_id'],
+        'gov_office_starter_runs' => ['location_id'], 'gov_membership_notices' => ['user_id'],
+        'gov_onboarding_events' => ['onboarding_id'], 'gov_onboarding_notices' => ['onboarding_id'],
         'gov_document_items' => ['document_id'], 'gov_document_item_meta' => ['document_item_id'],
         'gov_document_references' => ['document_id'], 'gov_document_attachments' => ['document_id'],
         'gov_document_timelines' => ['document_id'], 'gov_asset_registrations' => ['intake_item_id', 'asset_id'],
+        'gov_store_ledger_openings' => ['document_id'],
         'gov_goods_receipt_items' => ['goods_receipt_id'], 'gov_goods_issue_items' => ['goods_issue_id'],
         'gov_stock_adjustment_items' => ['stock_adjustment_id'], 'license_seats' => ['license_id'],
         'gov_profile_capabilities' => ['profile_id'], 'gov_profile_assignments' => ['profile_id'],
@@ -50,6 +54,7 @@ class ExperimentWiper
         'gov_tracking_codes' => ['initiative_id'], 'gov_tracking_operation_units' => ['initiative_id'],
         'gov_tracking_targets' => ['tracking_code_id'], 'gov_tracking_allocations' => ['target_id'],
         'gov_tracking_scopes' => ['tracking_code_id'], 'gov_tracking_associations' => ['tracking_code_id'],
+        'gov_tracking_deliveries' => ['tracking_code_id'],
         'gov_tracking_fact_deliveries' => ['initiative_id', 'tracking_code_id'],
         'gov_tracking_timeline' => ['initiative_id'], 'gov_tracking_projection_caches' => ['initiative_id'],
         'gov_tracking_documents' => ['tracking_code_id'], 'users_groups' => ['user_id'], 'company_user' => ['user_id'],
@@ -86,6 +91,10 @@ class ExperimentWiper
         ['custom_service_request_items', 'request_id', 'custom_service_requests', 'id'],
         ['custom_service_request_events', 'request_id', 'custom_service_requests', 'id'],
         ['gov_documents', 'location_id', 'locations', 'id'],
+        ['gov_store_ledger_openings', 'document_id', 'gov_documents', 'id'],
+        ['gov_store_ledger_openings', 'opened_by', 'users', 'id'],
+        ['gov_onboarding_events', 'onboarding_id', 'gov_user_onboardings', 'id'],
+        ['gov_onboarding_notices', 'onboarding_id', 'gov_user_onboardings', 'id'],
         ['gov_goods_issues', 'location_id', 'locations', 'id'],
         ['maintenances', 'asset_id', 'assets', 'id'],
     ];
@@ -170,6 +179,21 @@ class ExperimentWiper
             }
         }
         if ($scope === 'dataset') {
+            $ownedOffices = array_map(fn ($row) => (string) $row->id, $rows['locations'] ?? []);
+            $ownedDocuments = collect($rows['gov_documents'] ?? [])->keyBy('id');
+            foreach (['gov_store_ledger_openings', 'gov_office_starter_runs', 'gov_membership_notices'] as $table) {
+                foreach ($rows[$table] ?? [] as $key => $row) {
+                    if (! in_array((string) $row->location_id, $ownedOffices, true)) {
+                        $blockers[$table.'.'.$key] = $table.': an experiment relationship targets an unrelated office';
+                    }
+                    if ($table === 'gov_store_ledger_openings') {
+                        $document = $ownedDocuments->get($row->document_id);
+                        if (! $document || (int) $document->location_id !== (int) $row->location_id) {
+                            $blockers[$table.'.'.$key] = $table.': opening document and office ownership disagree';
+                        }
+                    }
+                }
+            }
             foreach ($relations as $relation) {
                 [$child, $column, $parent, $parentColumn] = $relation;
                 if (! in_array($child, ['gov_profile_assignments', 'gov_tracking_associations'], true) || ! isset($relation[4])) {
@@ -301,7 +325,9 @@ class ExperimentWiper
                 }
             }
         }
-        foreach (['GovStore\\StoreOperations\\Models\\Document' => 'gov_documents', 'GovStore\\StoreOperations\\Models\\GoodsIssue' => 'gov_goods_issues'] as $type => $parent) {
+        foreach (['GovStore\\StoreOperations\\Models\\Document' => 'gov_documents',
+            'GovStore\\StoreOperations\\Models\\GoodsReceipt' => 'gov_documents',
+            'GovStore\\StoreOperations\\Models\\GoodsIssue' => 'gov_goods_issues'] as $type => $parent) {
             foreach (['gov_document_references', 'gov_document_attachments', 'gov_document_timelines'] as $child) {
                 if (in_array($child, $tables, true)) {
                     $relations[] = [$child, 'document_id', $parent, 'id', 'document_type', $type];

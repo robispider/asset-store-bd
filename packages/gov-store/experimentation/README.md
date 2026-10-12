@@ -13,17 +13,19 @@ php artisan migrate --path=packages/gov-store/experimentation/src/database/migra
 
 Use your installed Composer executable if the phar is elsewhere. Apply only the feature migration path for this setup; the existing broad reset seeders are not used.
 
-Local environment options:
+Local or dedicated staging environment options:
 
 ```dotenv
+APP_ENV=staging
+APP_DEBUG=false
 GOVSTORE_EXPERIMENTS_ENABLED=true
 GOVSTORE_EXPERIMENT_DATABASE_RESET=false
-GOVSTORE_EXPERIMENT_INSTALLATION=my-local-govstore
+GOVSTORE_EXPERIMENT_INSTALLATION=my-staging-govstore
 GOVSTORE_EXPERIMENT_QUEUE_CONNECTION=govstore-experiments
 GOVSTORE_EXPERIMENT_QUEUE=govstore-experiments
 ```
 
-Production is always denied. After changing cached configuration, refresh it using the application's normal configuration deployment process.
+The application environment must accurately identify this deployment as `staging`; the feature is denied when Laravel reports `production`, even for a native superuser. Keep `APP_DEBUG=false` on staging. Do not relabel a live production deployment to expose these controls. Keep the staging database isolated from production, and leave installation reset disabled unless that separately reviewed destructive operation is specifically needed. After changing cached configuration, refresh it using the application's normal configuration deployment process and restart the dedicated experiment worker.
 
 Start the dedicated worker:
 
@@ -53,6 +55,8 @@ Open `/gov-store/admin/experiments` as an active native superuser. The navigatio
 
 Government creates 48 offices, 480 people and 2,400 assets. Its 44 operational offices each have twelve consumable types, eight accessory types and four component types with substantial stock, plus ICT equipment and furniture. Four incomplete offices demonstrate readiness configuration. Supporting stock documents, requests, baskets, maintenance and tracking records are included.
 
+Each operational office's ledger opens automatically after products are created and before receipts or issues are posted. The opening document records the fictional storekeeper as creator, drafter and poster. It reconciles native on-hand stock against existing ledger movements without increasing native quantities again: new component fixtures begin with one, while other unreceived stock begins at zero. Opening records belong to the dataset and are included in its verified wipe; document number sequences survive cleanup.
+
 Every fictional account uses password **`1234567890`**. Login names are the lowercase English full name plus a number, for example `shamimanasrin1658`. The native user ID supplies the suffix; a collision advances the number without changing another account. Bengali display names remain available for human checking. Download the current CSV after updating older datasets; previous downloads contain obsolete logins.
 
 The existing super administrator **Global Overview** currently shows zero office stock: tenant initialization marks the context active/global without an office, while `MinistryLocationScope` requires an office and does not honor the global flag. Licenses lack an office column, so they remain visible; the dashboard counts license seats. This existing package issue is unchanged. Use a downloaded **storekeeper** account to inspect its office's `/hardware`, `/consumables`, `/accessories` and `/components` inventory.
@@ -62,6 +66,8 @@ Components are stocked and visible in the catalog, but excluded from prefilled r
 ## Recovery
 
 Failed population can resume from saved checkpoints. If a worker stops and leaves an active status, use **Release pending or stopped operation**. A live worker holds the installation lock and blocks release. Recovery removes the matching new feature job and makes the run failed; resume population or review a new wipe preview as appropriate.
+
+For a run that failed at stock with “Opening stock must be recorded for this office before ledger posting”, deploy the updated experimentation code, restart the dedicated worker, and resume the existing run. No manual office opening is needed. Previously committed component-opening receipts and movements remain unchanged; the new opening reconciles only any difference, avoiding duplicate stock. Retained legacy documents can increase the document count above the profile target. Missing ledger-opening/number-sequence schema is reported during preflight; apply the existing Store Operations migrations through the normal deployment process before resuming.
 
 If business deletion succeeds but supporting file cleanup fails, the run remains wiped and shows a cleanup error. **Retry supporting file cleanup** retries only the audited owned paths. Dataset documents from rolled-back population units are included in cleanup.
 

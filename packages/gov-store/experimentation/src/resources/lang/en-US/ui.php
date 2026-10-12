@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'check_ledger_openings' => 'Posted opening balances for operational offices',
     'office_inventory_help' => 'To view office assets and stock, sign in with a storekeeper account from this dataset. The current Global Overview can show zero office inventory even when stock is populated; its license count represents seats.',
     'recover' => 'Release pending or stopped operation', 'recover_help' => 'If the worker has stopped, release this operation before resuming or wiping. A running worker keeps this action locked.', 'cleanup' => 'Retry supporting file cleanup',
     'check_catalog' => 'ICT equipment, furniture and 24 stocked inventory types per operational office', 'check_boundaries' => 'Office stock isolation and denied tracking scope',

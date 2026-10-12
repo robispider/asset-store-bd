@@ -21,18 +21,20 @@ class RecordRegistry
         'gov_ministries_directory', 'gov_location_profiles', 'gov_ict_jurisdictions', 'gov_company_admins',
         'gov_organization_activity_logs', 'gov_office_memberships', 'gov_office_responsibilities',
         'gov_role_handshakes', 'gov_role_assignments', 'gov_override_audit_logs', 'gov_employee_verification_tokens',
+        'gov_membership_notices', 'gov_onboarding_events', 'gov_onboarding_notices', 'gov_office_starter_runs',
         'gov_user_onboardings', 'gov_tenant_scope_mappings', 'gov_category_governance', 'gov_catalog_collections',
         'gov_catalog_collection_nodes', 'gov_catalog_snipe_mappings', 'gov_catalog_enrichments', 'gov_catalog_synonyms',
         'gov_model_metadata_states', 'gov_profiles', 'gov_profile_capabilities', 'gov_profile_assignments',
         'gov_documents', 'gov_document_items', 'gov_document_item_meta', 'gov_document_references',
         'gov_document_attachments', 'gov_document_timelines', 'gov_inventory_movements', 'gov_asset_registrations',
+        'gov_store_ledger_openings',
         'gov_goods_receipts', 'gov_goods_receipt_items', 'gov_goods_issues', 'gov_goods_issue_items',
         'gov_stock_adjustments', 'gov_stock_adjustment_items', 'custom_service_requests',
         'custom_service_request_items', 'custom_service_request_events', 'custom_request_notices', 'custom_item_requests', 'gov_approval_policies',
         'draft_baskets', 'draft_basket_items', 'gov_funding_types', 'gov_initiatives',
         'gov_tracking_operation_units', 'gov_tracking_codes', 'gov_tracking_targets', 'gov_tracking_allocations',
         'gov_tracking_scopes', 'gov_tracking_associations', 'gov_tracking_timeline', 'gov_tracking_fact_deliveries',
-        'gov_tracking_projection_caches', 'gov_tracking_documents',
+        'gov_tracking_projection_caches', 'gov_tracking_documents', 'gov_tracking_deliveries',
     ];
 
     public ?ExperimentRun $current = null;

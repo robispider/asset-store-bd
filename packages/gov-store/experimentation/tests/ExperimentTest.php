@@ -4,6 +4,7 @@ namespace Tests\Experimentation;
 
 use App\Models\Asset;
 use App\Models\Company;
+use App\Models\Component;
 use App\Models\Location;
 use App\Models\Setting;
 use App\Models\User;
@@ -14,8 +15,16 @@ use GovStore\Experimentation\Services\ActorContext;
 use GovStore\Experimentation\Services\BangladeshPeople;
 use GovStore\Experimentation\Services\BangladeshScenario;
 use GovStore\Experimentation\Services\ExperimentManager;
+use GovStore\Experimentation\Services\ExperimentLedgerOpening;
 use GovStore\Experimentation\Services\ExperimentWiper;
 use GovStore\Experimentation\Services\RecordRegistry;
+use GovStore\OfficeMembership\Models\OfficeMembership;
+use GovStore\OfficeMembership\Models\OfficeResponsibility;
+use GovStore\StoreOperations\Enums\DocumentState;
+use GovStore\StoreOperations\Models\Document;
+use GovStore\StoreOperations\Models\InventoryMovement;
+use GovStore\StoreOperations\Services\GoodsReceiptService;
+use GovStore\TenantScope\Contexts\TenantContext;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Foundation\Testing\TestCase;
@@ -97,6 +106,29 @@ class ExperimentTest extends TestCase
         $this->assertSame('1234567890', $run->password);
         $this->assertSame(64, count(app(RecordRegistry::class)->ids($run, 'users')));
         $this->assertSame(120, count(app(RecordRegistry::class)->ids($run, 'assets')));
+        $officeIds = app(RecordRegistry::class)->ids($run, 'locations');
+        $openings = DB::table('gov_store_ledger_openings')->whereIn('location_id', $officeIds)->get();
+        $this->assertCount(4, $openings);
+        $this->assertTrue($run->report['verification']['checks']['ledger_openings']);
+        $this->assertSame(4, app(RecordRegistry::class)->counts($run)['gov_store_ledger_openings']);
+        foreach ($openings as $opening) {
+            $document = Document::withoutGlobalScopes()->findOrFail($opening->document_id);
+            $this->assertSame('opening', $document->type);
+            $this->assertSame('POSTED', $document->status);
+            $this->assertEquals($opening->opened_by, $document->created_by);
+            $this->assertEquals($opening->opened_by, $document->drafted_by);
+            $this->assertEquals($opening->opened_by, $document->posted_by);
+            $this->assertTrue(DB::table('gov_office_responsibilities')->where('location_id', $opening->location_id)
+                ->where('user_id', $opening->opened_by)->where('role_slug', 'storekeeper')->exists());
+            $movements = DB::table('gov_inventory_movements')->where('document_id', $document->id)->get();
+            $this->assertCount(4, $movements);
+            foreach ($movements as $movement) {
+                $this->assertSame('component', $movement->stockable_type);
+                $this->assertEquals(1, $movement->quantity);
+                $this->assertEquals(1, $movement->balance_after);
+                $this->assertEquals(101, DB::table('components')->where('id', $movement->stockable_id)->value('qty'));
+            }
+        }
         $employee = User::withoutGlobalScopes()->whereIn('id', app(RecordRegistry::class)->ids($run, 'users'))->whereNotNull('location_id')->firstOrFail();
         $this->assertSame(app(BangladeshPeople::class)->username($employee->getAttributes(), $employee->id), $employee->username);
         $this->assertTrue(Hash::check($run->password, $employee->password));
@@ -110,7 +142,8 @@ class ExperimentTest extends TestCase
             $this->assertTrue($catalog->contains(fn ($item) => str_contains($item->name, 'Desktop Computers')));
             $this->assertFalse(Asset::whereIn('id', app(RecordRegistry::class)->ids($run, 'assets'))->where('location_id', '!=', $employee->location_id)->exists());
         });
-        $this->actingAs($root)->get(route('gov.experiments.show', $run))->assertOk();
+        $this->actingAs($root)->get(route('gov.experiments.show', $run))->assertOk()
+            ->assertSee(__('experiments::ui.check_ledger_openings'));
         $this->actingAs($root)->get(route('gov.experiments.accounts', $run))->assertOk()->assertDownload();
         foreach (app(RecordRegistry::class)->ids($run, 'locations') as $officeId) {
             $this->assertTrue(DB::table('custom_service_requests')->join('custom_service_request_items', 'custom_service_request_items.request_id', '=', 'custom_service_requests.id')
@@ -124,6 +157,7 @@ class ExperimentTest extends TestCase
             }
         }
         $before = app(RecordRegistry::class)->counts($run);
+        $sequences = DB::table('gov_store_document_sequences')->orderBy('prefix')->get()->toArray();
         app(BangladeshScenario::class)->populate($run, $root, $run->password);
         $this->assertSame($before, app(RecordRegistry::class)->counts($run));
         $wiper = app(ExperimentWiper::class);
@@ -135,6 +169,8 @@ class ExperimentTest extends TestCase
         $manager->requestWipe($run, $root, 'dataset', $run->label, $preview['fingerprint']);
         $this->assertSame('wiped', $run->refresh()->status);
         $this->assertSame([], app(RecordRegistry::class)->counts($run));
+        $this->assertFalse(DB::table('gov_store_ledger_openings')->whereIn('location_id', $officeIds)->exists());
+        $this->assertEquals($sequences, DB::table('gov_store_document_sequences')->orderBy('prefix')->get()->toArray());
         $this->assertTrue(DB::table('companies')->where('id', $outside->id)->exists());
         $this->assertTrue(DB::table('users')->where('id', $root->id)->exists());
         $this->assertSame(8, DB::table('gov_geo_areas')->where('GeoLevel', 1)->count());
@@ -278,5 +314,178 @@ class ExperimentTest extends TestCase
         $second = $manager->populate($root, 'quick');
         $this->assertNotSame($run->report['record_prefix'], $second->report['record_prefix']);
         $manager->recover($second, $root);
+    }
+
+    public function test_failed_stock_phase_resumes_with_legacy_component_history_without_double_counting(): void
+    {
+        Storage::fake('local');
+        $root = $this->root();
+        $manager = app(ExperimentManager::class);
+        $run = $manager->populate($root, 'quick');
+        $blockedOpening = \Mockery::mock(ExperimentLedgerOpening::class);
+        $blockedOpening->shouldReceive('open')->once()->andThrow(new \RuntimeException('Simulated stock interruption'));
+        app()->instance(ExperimentLedgerOpening::class, $blockedOpening);
+        try {
+            $manager->dispatch($run, $root);
+            $this->fail('Expected stock phase interruption.');
+        } catch (\RuntimeException $e) {
+            $this->assertSame('Simulated stock interruption', $e->getMessage());
+            $this->assertSame('failed', $run->refresh()->status);
+            $this->assertSame('stock', $run->phase);
+        } finally {
+            app()->forgetInstance(ExperimentLedgerOpening::class);
+        }
+        $office = Location::withoutGlobalScopes()->findOrFail($run->report['units']['office-0']);
+        $keeperId = DB::table('gov_office_responsibilities')->where('location_id', $office->id)->where('role_slug', 'storekeeper')->value('user_id');
+        $keeper = User::withoutGlobalScopes()->findOrFail($keeperId);
+        $components = Component::withoutGlobalScopes()->where('location_id', $office->id)->get();
+        $records = app(RecordRegistry::class);
+        $legacy = app(ActorContext::class)->run($keeper, $office, function () use ($run, $office, $keeper, $components, $records) {
+            $document = app(GoodsReceiptService::class)->saveDraft([
+                'reference_no' => $run->report['record_prefix'].'-OPENING-0', 'reference_date' => $run->anchor_date->format('Y-m-d'),
+            ], $components->map(fn ($item) => ['type' => 'component', 'id' => $item->id, 'qty' => 1, 'unit_cost' => 0])->all(), $keeper->id);
+            $records->record($run, 'gov_documents', $document->getAttributes());
+            foreach ($components as $item) {
+                $movement = InventoryMovement::create(['stockable_type' => 'component', 'stockable_id' => $item->id,
+                    'movement_type' => 'IN', 'quantity' => 1, 'balance_after' => 1, 'document_type' => Document::class,
+                    'document_id' => $document->id, 'company_id' => $office->company_id, 'location_id' => $office->id, 'created_by' => $keeper->id]);
+                $records->record($run, 'gov_inventory_movements', $movement->getAttributes());
+            }
+            $document->transitionTo(DocumentState::POSTED, $keeper->id, 'Legacy component fixture opening');
+
+            return $document;
+        }, 'storekeeper');
+        $legacyAttributes = $legacy->refresh()->getAttributes();
+        $legacyMovements = DB::table('gov_inventory_movements')->where('document_id', $legacy->id)->orderBy('id')->get()->toArray();
+        $report = $run->report;
+        $report['units']['opening-components-0'] = $legacy->id;
+        $run->update(['report' => $report]);
+
+        $manager->resume($run, $root);
+        $this->assertSame('ready', $run->refresh()->status, $run->error ?? json_encode($run->report['verification'] ?? []));
+        $this->assertSame($legacyAttributes, $legacy->refresh()->getAttributes());
+        $this->assertEquals($legacyMovements, DB::table('gov_inventory_movements')->where('document_id', $legacy->id)->orderBy('id')->get()->toArray());
+        $opening = DB::table('gov_store_ledger_openings')->where('location_id', $office->id)->first();
+        $this->assertNotSame($legacy->id, $opening->document_id);
+        $this->assertSame(0, DB::table('gov_inventory_movements')->where('document_id', $opening->document_id)->count());
+        foreach ($components as $component) {
+            $this->assertEquals(101, $component->refresh()->qty);
+            $this->assertEquals(101, DB::table('gov_inventory_movements')->where('stockable_type', 'component')
+                ->where('stockable_id', $component->id)->sum('quantity'));
+        }
+        $this->assertSame(13, $records->counts($run)['gov_documents']);
+        $before = $records->counts($run);
+        app(BangladeshScenario::class)->populate($run, $root, $run->password);
+        $this->assertSame($before, $records->counts($run));
+        $preview = app(ExperimentWiper::class)->preview($run, 'dataset', $root);
+        $this->assertEmpty($preview['blockers'], json_encode($preview['blockers']));
+        $manager->requestWipe($run, $root, 'dataset', $run->label, $preview['fingerprint']);
+        $this->assertSame('wiped', $run->refresh()->status);
+        $this->assertFalse(DB::table('gov_store_ledger_openings')->where('location_id', $office->id)->exists());
+    }
+
+    private function openingFixture(): array
+    {
+        $root = $this->root();
+        $run = app(ExperimentManager::class)->populate($root, 'quick');
+        $run->update(['status' => 'failed']);
+        $company = Company::factory()->create();
+        $office = Location::factory()->create(['company_id' => $company->id]);
+        $keeper = User::factory()->create(['company_id' => $company->id, 'location_id' => $office->id,
+            'activated' => true, 'permissions' => '{}']);
+        $this->actingAs($root);
+        OfficeMembership::create(['user_id' => $keeper->id, 'location_id' => $office->id, 'is_home_office' => true, 'status' => 'active']);
+        OfficeResponsibility::create(['user_id' => $keeper->id, 'location_id' => $office->id, 'role_slug' => 'storekeeper']);
+        foreach ([$company, $office, $keeper] as $model) {
+            app(RecordRegistry::class)->record($run, $model->getTable(), $model->getAttributes());
+        }
+
+        return [$run, $office, $keeper];
+    }
+
+    public function test_zero_opening_is_idempotent_and_preserves_shared_context_and_actor(): void
+    {
+        [$run, $office, $keeper] = $this->openingFixture();
+        $context = app(TenantContext::class);
+        $context->locationId = 987;
+        $context->configs = ['example' => (object) ['value' => 'preserved']];
+        $before = clone $context;
+        $this->actingAs($keeper);
+        $opener = app(ExperimentLedgerOpening::class);
+        $document = $opener->open($run, $office, $keeper);
+        $this->assertSame('opening', $document->type);
+        $this->assertSame(0, $document->items()->count());
+        $this->assertSame(0, DB::table('gov_inventory_movements')->where('document_id', $document->id)->count());
+        $this->assertSame($document->id, $opener->open($run, $office, $keeper)->id);
+        $this->assertSame($context, app(TenantContext::class));
+        $this->assertEquals($before, $context);
+        $this->assertSame($keeper, Auth::user());
+        $foreignOffice = Location::factory()->create(['company_id' => $office->company_id]);
+        DB::table('gov_store_ledger_openings')->where('location_id', $office->id)->update(['location_id' => $foreignOffice->id]);
+        $root = User::withoutGlobalScopes()->findOrFail($run->initiated_by);
+        $preview = app(ExperimentWiper::class)->preview($run, 'dataset', $root);
+        $this->assertContains('gov_store_ledger_openings: opening document and office ownership disagree', $preview['blockers']);
+    }
+
+    public function test_opening_rejects_foreign_offices_unassigned_actors_and_rolls_back_conflicting_stock(): void
+    {
+        [$run, $office, $keeper] = $this->openingFixture();
+        $opener = app(ExperimentLedgerOpening::class);
+        $foreignOffice = Location::factory()->create(['company_id' => $office->company_id]);
+        try {
+            $opener->open($run, $foreignOffice, $keeper);
+            $this->fail('An unowned office was opened.');
+        } catch (\RuntimeException $e) {
+            $this->assertFalse(DB::table('gov_store_ledger_openings')->where('location_id', $foreignOffice->id)->exists());
+        }
+        OfficeResponsibility::where('location_id', $office->id)->delete();
+        try {
+            $opener->open($run, $office, $keeper);
+            $this->fail('An ordinary office member opened the ledger.');
+        } catch (AuthorizationException $e) {
+            $this->assertFalse(DB::table('gov_store_ledger_openings')->where('location_id', $office->id)->exists());
+        }
+        OfficeResponsibility::create(['user_id' => $keeper->id, 'location_id' => $office->id, 'role_slug' => 'storekeeper']);
+        $component = Component::factory()->create(['company_id' => $office->company_id, 'location_id' => $office->id, 'qty' => 1, 'created_by' => $keeper->id]);
+        $conflict = Component::factory()->create(['company_id' => Company::factory()->create()->id, 'location_id' => $office->id, 'qty' => 1, 'created_by' => $keeper->id]);
+        foreach ([$component, $conflict] as $item) {
+            app(RecordRegistry::class)->record($run, 'components', $item->getAttributes());
+        }
+        $before = app(RecordRegistry::class)->counts($run);
+        $auditCount = DB::table('action_logs')->where('item_type', Component::class)->where('item_id', $component->id)->count();
+        try {
+            $opener->open($run, $office, $keeper);
+            $this->fail('Company-conflicting stock was opened.');
+        } catch (\RuntimeException $e) {
+            $this->assertSame('An experiment stock item belongs to another company.', $e->getMessage());
+        }
+        $this->assertSame($before, app(RecordRegistry::class)->counts($run));
+        $this->assertFalse(DB::table('gov_store_ledger_openings')->where('location_id', $office->id)->exists());
+        $this->assertFalse(DB::table('gov_documents')->where('location_id', $office->id)->exists());
+        $this->assertFalse(DB::table('gov_inventory_movements')->where('location_id', $office->id)->exists());
+        $this->assertEquals(1, $component->refresh()->qty);
+        $this->assertSame($auditCount, DB::table('action_logs')->where('item_type', Component::class)->where('item_id', $component->id)->count());
+    }
+
+    public function test_opening_rejects_inconsistent_existing_ledger_without_rewriting_history(): void
+    {
+        [$run, $office, $keeper] = $this->openingFixture();
+        $component = Component::factory()->create(['company_id' => $office->company_id, 'location_id' => $office->id, 'qty' => 1, 'created_by' => $keeper->id]);
+        $records = app(RecordRegistry::class);
+        $records->record($run, 'components', $component->getAttributes());
+        $movement = InventoryMovement::create(['stockable_type' => 'component', 'stockable_id' => $component->id,
+            'movement_type' => 'IN', 'quantity' => 1, 'balance_after' => 2, 'document_type' => Document::class,
+            'document_id' => (string) Str::uuid(), 'company_id' => $office->company_id, 'location_id' => $office->id, 'created_by' => $keeper->id]);
+        $records->record($run, 'gov_inventory_movements', $movement->getAttributes());
+        try {
+            app(ExperimentLedgerOpening::class)->open($run, $office, $keeper);
+            $this->fail('An inconsistent ledger chain was accepted.');
+        } catch (\RuntimeException $e) {
+            $this->assertSame('Review inconsistent experiment ledger balances before opening this office.', $e->getMessage());
+        }
+        $this->assertEquals(2, $movement->refresh()->balance_after);
+        $this->assertEquals(1, $component->refresh()->qty);
+        $this->assertFalse(DB::table('gov_store_ledger_openings')->where('location_id', $office->id)->exists());
+        $this->assertFalse(DB::table('gov_documents')->where('location_id', $office->id)->exists());
     }
 }
