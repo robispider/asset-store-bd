@@ -42,6 +42,7 @@ class ComponentCheckinController extends Controller
                     trans('admin/components/message.not_found'));
             }
             $this->authorize('checkin', $component);
+            app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->assertNativeMovementAllowed($component);
 
             return view('components/checkin', compact('component_assets', 'component', 'asset'))
                 ->with('snipe_component', $component);
@@ -72,6 +73,7 @@ class ComponentCheckinController extends Controller
             }
 
             $this->authorize('checkin', $component);
+            app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->assertNativeMovementAllowed($component);
 
             $max_to_checkin = $component_assets->assigned_qty;
             $validator = Validator::make($request->all(), [

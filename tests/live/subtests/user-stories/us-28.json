@@ -1,0 +1,72 @@
+{
+  "execution": {
+    "language": "en-US",
+    "timeoutMs": 60000,
+    "accessMode": "any",
+    "capability": "observe"
+  },
+  "id": "user-stories.us-28",
+  "title": "US-28 — Deliver an office starter catalogue (seeded UI entry check)",
+  "fixtures": {
+    "office": {
+      "requirements": {
+        "operational": true
+      }
+    },
+    "actors": {
+      "officeAdmin": {
+        "office": "office",
+        "capabilities": {
+          "allOf": [
+            "organization.office.manage"
+          ],
+          "noneOf": []
+        },
+        "activeMembership": true
+      }
+    }
+  },
+  "schemaVersion": 1,
+  "cleanup": {
+    "policy": "no-business-records-created"
+  },
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "officeAdmin"
+      }
+    },
+    {
+      "as": "pageStatus",
+      "expectStatus": [
+        200
+      ],
+      "action": "probe",
+      "path": "/gov-store/admin/organization/${fixtures.office.id}/hub"
+    },
+    {
+      "url": "/gov-store/admin/organization/${fixtures.office.id}/hub",
+      "action": "goto"
+    },
+    {
+      "test": "visible",
+      "action": "assert",
+      "target": "css=body"
+    },
+    {
+      "contains": "/gov-store/admin/organization/${fixtures.office.id}/hub",
+      "test": "url",
+      "action": "assert"
+    }
+  ],
+  "tags": [
+    "user-story",
+    "seeded",
+    "readonly",
+    "entry-check"
+  ],
+  "features": [
+    "user-story.us-28"
+  ]
+}

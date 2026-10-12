@@ -448,7 +448,7 @@ return [
         GovStore\Classification\Providers\ClassificationServiceProvider::class,
         GovStore\UserOnboarding\Providers\UserOnboardingServiceProvider::class,
         GovStore\Metadata\Providers\MetadataServiceProvider::class,
-        GovStore\tracking\Providers\TrackingServiceProvider::class,
+        GovStore\Tracking\Providers\TrackingServiceProvider::class,
         GovStore\Committee\Providers\CommitteeServiceProvider::class,
 
 

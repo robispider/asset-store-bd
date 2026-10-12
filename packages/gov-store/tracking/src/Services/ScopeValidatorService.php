@@ -16,7 +16,7 @@ class ScopeValidatorService
     {
         // Only load scopes. Do NOT reload 'initiative' here, because the controller 
         // has already safely loaded it using withoutGlobalScopes() to prevent tenant lockouts.
-        $trackingCode->load(['scopes']);
+        $trackingCode->loadMissing(['scopes']);
         
         $initiative = $trackingCode->initiative;
 
@@ -25,7 +25,7 @@ class ScopeValidatorService
         }
 
         // Fetch location and its geographical placement
-        $location = Location::find($locationId);
+        $location = Location::withoutGlobalScopes()->find($locationId);
         if (!$location) {
             return ['is_valid' => false, 'message' => 'Invalid location ID provided.'];
         }

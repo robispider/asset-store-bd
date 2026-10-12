@@ -3,6 +3,7 @@
 @section('title', __('classification::texts.external_title'))
 
 @section('content')
+<div class="classification-theme">
 
 <div class="row">
     <div class="col-md-12">
@@ -21,7 +22,7 @@
                     <i class="fas fa-plus"></i> {{ __('classification::texts.external_btn_disabled') }}
                 </button>
 
-                <table class="table table-striped table-bordered" style="margin-top: 15px;">
+                <x-gs::table class="table table-striped table-bordered classify-inline-b62ee557">
                     <thead>
                         <tr>
                             <th>{{ __('classification::texts.external_col_source_scheme') }}</th>
@@ -36,10 +37,11 @@
                             <td colspan="5" class="text-center text-muted">{{ __('classification::texts.external_empty_state') }}</td>
                         </tr>
                     </tbody>
-                </table>
+                </x-gs::table>
             </div>
         </div>
     </div>
 </div>
 
+</div>
 @endsection

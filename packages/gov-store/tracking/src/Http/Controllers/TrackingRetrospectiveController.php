@@ -85,29 +85,37 @@ class TrackingRetrospectiveController extends Controller
         $request->validate([
             'tracking_code_id' => 'required|exists:gov_tracking_codes,id',
             'asset_ids' => 'required|array',
-            'asset_ids.*' => "exists:{$assetsTable},id",
+            'asset_ids.*' => "required|integer|distinct|exists:{$assetsTable},id",
         ]);
 
-        $trackingCode = TrackingCode::findOrFail($request->input('tracking_code_id'));
+        $trackingCode = TrackingCode::whereKey($request->input('tracking_code_id'))->lockForUpdate()->firstOrFail();
 
         if ($trackingCode->initiative_id !== $initiative->id) {
-            abort(403, 'Invalid tracking code association.');
+            abort(404);
         }
 
+        abort_unless($trackingCode->status === 'ACTIVE' && $initiative->status === 'Active', 409);
         $assetIds = $request->input('asset_ids');
+        $assets = Asset::with('model')->whereIn('id', $assetIds)->lockForUpdate()->get();
+        abort_unless($assets->count() === count($assetIds), 404);
         $tagCount = count($assetIds);
         $now = now();
         
-        DB::transaction(function () use ($initiative, $trackingCode, $assetIds, $tagCount, $now) {
+        DB::transaction(function () use ($initiative, $trackingCode, $assets, $tagCount, $now) {
             $associationData = [];
-            foreach ($assetIds as $id) {
+            foreach ($assets as $asset) {
+                $context = app(\GovStore\TenantScope\Contexts\TenantContext::class);
+                abort_unless(auth()->user()->isSuperUser() || ($context->canUseInventoryOffice()
+                    && (int) $asset->location_id === $context->locationId && (int) $asset->company_id === $context->companyId), 404);
+                $check = app(\GovStore\Tracking\Services\ScopeValidatorService::class)->validateExecutionScope($trackingCode, (int) $asset->location_id);
+                abort_unless($check['is_valid'], 403);
                 $associationData[] = [
                     'tracking_code_id'  => $trackingCode->id,
-                    'category_id'       => $trackingCode->targets->first()->category_id ?? 0, // safe-default
-                    'location_id'       => $trackingCode->initiative->manager_location_id ?? 0,
+                    'category_id'       => $asset->model->category_id,
+                    'location_id'       => $asset->location_id,
                     'quantity'          => 1,
                     'associatable_type' => Asset::class,
-                    'associatable_id'   => $id,
+                    'associatable_id'   => $asset->id,
                     'status'            => 'ACTIVE',
                     'created_at'        => $now,
                     'updated_at'        => $now,
@@ -115,6 +123,7 @@ class TrackingRetrospectiveController extends Controller
             }
 
             TrackingAssociation::insertOrIgnore($associationData);
+            \GovStore\Tracking\Services\ProjectionRefresh::initiative((int) $initiative->id);
 
             TrackingTimeline::create([
                 'initiative_id' => $initiative->id,
@@ -136,21 +145,6 @@ class TrackingRetrospectiveController extends Controller
      */
     protected function authorizeManagement(Initiative $initiative, array $allowedDesignations = ['HEAD', 'OFFICER', 'SUPPORT'])
     {
-        $user = auth()->user();
-        if (!$user) abort(403);
-
-        if ($user->isSuperUser()) return; 
-
-        $isCompanyAdmin = $user->company_id === $initiative->owner_company_id && 
-            \GovStore\Organization\Models\CompanyAdmin::where('user_id', $user->id)->exists();
-        
-        $isOperationUnitManager = \GovStore\Tracking\Models\OperationUnit::where('initiative_id', $initiative->id)
-            ->where('user_id', $user->id)
-            ->whereIn('designation', $allowedDesignations)
-            ->exists();
-
-        if (!$isCompanyAdmin && !$isOperationUnitManager) {
-            abort(403, 'Unauthorized. Only members of the Initiative Management Team or Ministry Admins can execute configurations.');
-        }
+        app(\GovStore\Tracking\Services\TrackingAuthorizationService::class)->authorize($initiative, $allowedDesignations);
     }
 }

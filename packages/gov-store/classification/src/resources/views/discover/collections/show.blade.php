@@ -2,15 +2,16 @@
 @section('title', $collection->name)
 
 @section('content')
-<div class="row" style="margin-bottom: 20px;">
+<div class="classification-theme">
+<div class="row classify-inline-b75fad00">
     <div class="col-md-8">
-        <h2 style="margin-top: 0;"><i class="{{ $collection->icon }} text-blue"></i> {{ $collection->name }}</h2>
+        <h2 class="classify-inline-c3122899"><i class="{{ $collection->icon }} text-blue"></i> {{ $collection->name }}</h2>
         <p class="text-muted">{{ $collection->description }}</p>
     </div>
     <div class="col-md-4 text-right">
-        <div class="well well-sm" style="background-color: #fff; border-radius: 8px;">
-            <h4 style="margin: 0 0 10px 0; font-weight: bold;">Adoption Progress</h4>
-            <div class="progress" style="margin-bottom: 5px; height: 10px;">
+        <div class="well well-sm classify-inline-515f4ab4">
+            <h4 class="classify-inline-ccc9ec44">Adoption Progress</h4>
+            <div class="progress classify-inline-f3909943">
                 <div class="progress-bar progress-bar-success" role="progressbar" style="width: {{ $progress }}%"></div>
             </div>
             <small class="text-muted"><strong>{{ $adoptedCount }}</strong> out of <strong>{{ $collection->nodes->count() }}</strong> categories adopted.</small>
@@ -34,7 +35,7 @@
         </div>
     </div>
     <div class="box-body table-responsive no-padding">
-        <table class="table table-striped table-hover">
+        <x-gs::table class="table table-striped table-hover">
             <tr>
                 <th>Code</th>
                 <th>Category Title</th>
@@ -53,13 +54,14 @@
                 </td>
             </tr>
             @endforeach
-        </table>
+        </x-gs::table>
     </div>
 </div>
 
 <!-- Include the Phase 2 Bulk Adoption Modal -->
 @include('gov-classification::adopt.partials.bulk-preview')
 
+</div>
 @endsection
 
 @section('moar_scripts')

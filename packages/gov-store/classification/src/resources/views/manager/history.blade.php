@@ -3,6 +3,7 @@
 @section('title', __('classification::texts.history_title'))
 
 @section('content')
+<div class="classification-theme">
 
 <div class="row">
     <div class="col-md-12">
@@ -12,7 +13,7 @@
             </div>
 
             <div class="box-body">
-                <table class="table table-striped table-bordered">
+                <x-gs::table class="table table-striped table-bordered">
                     <thead>
                         <tr>
                             <th>{{ __('classification::texts.history_col_date') }}</th>
@@ -51,7 +52,7 @@
                         </tr>
                         @endforelse
                     </tbody>
-                </table>
+                </x-gs::table>
 
                 {{ $history->links() }}
             </div>
@@ -59,4 +60,5 @@
     </div>
 </div>
 
+</div>
 @endsection

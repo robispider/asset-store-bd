@@ -4,9 +4,21 @@ Original review: 4 October 2026 · @zahid. Reassessed: **7 October 2026 (Asia/Dh
 
 ## Updated scorecard
 
-**25 of the original 64 gaps are mitigated (39.06%); 8 are partially mitigated; 31 remain open.** There are **39 gaps requiring further work**, including the partial rows. The package sections below are arranged in dependency order, with foundations before their consumers.
+**44 of the original 64 gaps are mitigated (68.75%); 9 are partially mitigated; 11 remain open.** There are **20 gaps requiring further work**, including the partial rows. The package sections below are arranged in dependency order, with foundations before their consumers.
 
 Tenant-scope implementation update: **7 October 2026 (Asia/Dhaka), working tree**. The original reassessment revision above remains the baseline for the other packages. See [tenant-scope implementation and verification](../verification/tenant-scope-implementation-2026-10-07.md).
+
+Organization and starter-consumer update: **8 October 2026 (Asia/Dhaka), working tree**.
+ORG-2/CL-2 have verified local implementation; ORG-1 is partial with suspension,
+resume and geographic relocation delivered. Closure/merge still require complete
+clearance, and live starter delivery requires the missing reviewed collections.
+See [organization implementation and verification](../verification/organization-implementation-2026-10-08.md).
+
+Office-membership update: **8 October 2026 (Asia/Dhaka), working tree**. OM-1/2/4/5 join OM-3 as locally mitigated; see [office-membership verification](../verification/office-membership-implementation-2026-10-08.md).
+
+User-onboarding update: **8 October 2026 (Asia/Dhaka), working tree**. UO-1 through UO-4 are locally mitigated; see [user-onboarding verification](../verification/user-onboarding-implementation-2026-10-08.md).
+
+Store-operations update: **8 October 2026 (Asia/Dhaka), working tree**. SO-2/5/6 join SO-1/8 as locally mitigated; SO-3/4/7 remain partial. See [Store Operations implementation and verification](../verification/store-operations-implementation-2026-10-08.md).
 
 These are implementation statuses, not production closure. Office-role enforcement still has outstanding G1 rollout requirements. A package with mitigated rows can also have deployment, historical-data or policy work remaining.
 
@@ -14,27 +26,27 @@ These are implementation statuses, not production closure. Office-role enforceme
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | tenant-scope | 7 | 7 | 0 | 0 | Deploy resolver/job contracts; retain outstanding G1 rollout gates |
 | 2 | geo-areas | 4 | 3 | 1 | 0 | Verify dataset publisher/license before an upstream refresh |
-| 3 | organization | 6 | 4 | 1 | 1 | Complete office lifecycle only after consumer clearance; verify starter-catalog handoff |
-| 4 | office-membership | 5 | 1 | 0 | 4 | Secure role transfers; complete clearance rules |
-| 5 | user-onboarding | 4 | 0 | 0 | 4 | Queue system-created users using membership services |
-| 6 | classification | 7 | 1 | 0 | 6 | Consume provisioning event; queue bulk adoption |
+| 3 | organization | 6 | 5 | 1 | 0 | Complete closure/merge after consumer clearance; populate reviewed starter library |
+| 4 | office-membership | 5 | 5 | 0 | 0 | Deploy notice outbox; finish admin/recipient live UI and rollout checks |
+| 5 | user-onboarding | 4 | 4 | 0 | 0 | Deploy history/notices; finish manager UI and historical orphan review |
+| 6 | classification | 7 | 2 | 0 | 5 | Deploy reviewed starter library; queue bulk adoption |
 | 7 | metadata | 4 | 0 | 0 | 4 | Stabilize provider and field-mapping contracts |
-| 8 | tracking | 7 | 0 | 0 | 7 | Fix projection refresh and scoped evaluation |
+| 8 | tracking | 7 | 6 | 1 | 0 | Deploy additive migration; reconcile historical duplicate facts; finish remaining legacy messages |
 | 9 | committee | 2 | 1 | 1 | 0 | Registry delivered; complete consumer integration boundary |
-| 10 | store-operations | 8 | 2 | 3 | 3 | Ledger cut-over, remaining document types and receipt fields |
+| 10 | store-operations | 8 | 5 | 3 | 0 | Reviewed historical repair/cut-over; deferred inspection; remaining localization and serialized custody |
 | 11 | custom-requests | 6 | 5 | 1 | 0 | Complete item adapters after stock contracts |
 | 12 | experimentation | 4 | 1 | 1 | 2 | Isolated fixture CI, packaging and restore |
-| **Total** | **12 packages** | **64** | **25** | **8** | **31** | **39 still require work** |
+| **Total** | **12 packages** | **64** | **44** | **9** | **11** | **20 still require work** |
 
 Original severities are preserved for reconciliation with the baseline. They are not a new assessment of residual risk.
 
 | Original severity | Original gaps | Mitigated | Partial | Open |
 | --- | --- | --- | --- | --- |
 | Critical | 3 | 3 | 0 | 0 |
-| High | 19 | 7 | 4 | 8 |
-| Medium | 31 | 10 | 4 | 17 |
-| Low | 11 | 5 | 0 | 6 |
-| **Total** | **64** | **25** | **8** | **31** |
+| High | 19 | 15 | 3 | 1 |
+| Medium | 31 | 20 | 6 | 5 |
+| Low | 11 | 6 | 0 | 5 |
+| **Total** | **64** | **44** | **9** | **11** |
 
 ### Counting and evidence
 
@@ -109,7 +121,7 @@ Arrows show selected handoffs after contract extraction, not every current impor
 | --- | --- | --- |
 | tenant-scope ↔ organization/membership | Resolver contracts and owning-package bindings delivered under TS-3 | Shared-context reset, active membership ownership and immediate role updates verified locally. Consumers must preserve these invariants; other workflow cycles remain separate gaps. |
 | organization ↔ membership clearance | Finish office identity/provisioning and safe ownership | Complete ORG-1 closure after OM-2 and request/committee clearance extensions cover holdings and obligations. |
-| organization → classification | Define office type; emit provisioning event after commit | Close ORG-2/CL-2 with a provisioning-to-starter-catalog test, explicit job context and safe retries. |
+| organization → classification | Office type/event and durable frozen starter bundle delivered | ORG-2/CL-2 verified locally on 8 October: actual provisioning-to-adoption, explicit job context, rollback and duplicate-safe retries. Live delivery still needs reviewed collection contents and workers. |
 | tracking ↔ store-operations | Repair TR-1; establish verifier/event boundary | Close TR-2 only after successful serialized receipt posting updates programme associations/projections once. A listener alone is insufficient. |
 | committee → store-operations | Retain delivered resolver/snapshot/purpose contracts | CM-2, SO-3 and SO-4's committee reference need consumer integration and policy review. Inspection is deferred and does not block other repairs/current direct posting. |
 | store-operations → custom-requests | Review opening stock, canonical identities, stock locks and issuing contract | Verify reservations/issue/return against that ledger before exposing new adapters. Recheck live cut-over state; the 6 October record reports empty opening markers and historical aliases. |
@@ -128,7 +140,7 @@ Run focused isolated checks at each handoff. Address reachable debug/authorizati
 | TS-2 | High | Mitigated | Physical stock reads use separate inventory-office/company bounds. ICT jurisdictions authorize office/user support only and never reveal office stock; an independent inventory responsibility stays within its working office. Model ownership includes original values; bulk updates/deletes/counters, OR predicates and direct inserts cannot escape the working office. [ICT boundary regression verification](../verification/ict-jurisdiction-inventory-boundary-2026-10-07.md). | Native licenses have company ownership without an office column; independently authorized inventory users retain company-bound license reads. Pure ICT support users see no inventory or inventory reports. Do not claim physical-office license ownership. |
 | TS-3 | High | Mitigated | `OrganizationContextResolver` and `MembershipContextResolver` live in tenant-scope, with bindings/adapters in their owners. Initializer, assignment, access and boundary services consume contracts. Context reset stays in place; foreign, inactive, deleted-office and stale memberships fail closed. | This extracts the context dependency cycle; remaining business-workflow cycles belong to their own package gaps. |
 | TS-4 | Medium | Mitigated | `EffectivePermissionSet::merge()` provides an idempotent union while retaining working-role attribution. Company overlay is injected once, preserving local capabilities; native admin never supplies global/company scope. | Maintain role sources and test changes to capability profiles. |
-| TS-5 | Medium | Mitigated | `TenantExecution` validates live actor, office/company target, membership and named ability. All four current GovStore jobs declare scoped execution or explicit global maintenance; bus/queue lifecycle clears context and restores synchronous callers. Commands have a reviewed execution registry; ledger opening additionally uses the scoped actor runner. | Restart long-running workers on deployment. Starter-catalog provisioning/payload gaps (CL-2/CL-5) remain separate; this does not announce queued adoption rollout. |
+| TS-5 | Medium | Mitigated | `TenantExecution` validates live actor, office/company target, membership and named ability. All four current GovStore jobs declare scoped execution or explicit global maintenance; bus/queue lifecycle clears context and restores synchronous callers, including synchronous console delivery after the 8 October correction. Commands have a reviewed execution registry; ledger opening additionally uses the scoped actor runner. | Restart long-running workers on deployment. ORG-2/CL-2 starter delivery is locally verified; queued bulk UI adoption (CL-3) remains separate. |
 | TS-6 | Medium | Mitigated | `SchemaKnowledge` caches columns per connection/database/table. Menu rendering resolves roles once per render. Isolated query checks bound initialization to ≤12 queries, a 30-item menu to ≤5 role queries, and five warm stock counts to exactly five SELECTs. Membership/role/grant checks stay fresh. | No session cache of authorization. Clear schema knowledge/restart workers after schema changes. |
 | TS-7 | Medium | Mitigated | Sidebar, My access and rollout banner render as layout partials; response-body rewriting is removed. `MenuRegistry` still derives named route abilities. Eight tenant-administration routes now declare superuser abilities, with national review/fingerprint/replay controls on mutations. | Other packages retain their own narrower policies; G1 coverage is not proof of every application surface. |
 
@@ -149,14 +161,14 @@ Verification and operational limits are recorded in [the tenant-scope execution 
 
 ## 3. organization
 
-**4 mitigated, 1 partial, 1 open.** `configured` exists alongside provisioned/operational; suspend/merge/closure remain absent. See the [implementation and verification record](../verification/geo-areas-organization-implementation-2026-10-07.md).
+**5 mitigated, 1 partial, 0 open.** Suspend, resume and geographic relocation are authorized and audited; closure/merge remain blocked until full consumer clearance. Starter delivery has an attributable frozen bundle and verified retry/rollback behavior. The current local library has no matching starter collections. See the [8 October implementation and verification record](../verification/organization-implementation-2026-10-08.md); the [7 October record](../verification/geo-areas-organization-implementation-2026-10-07.md) remains historical evidence.
 
 **Internal order:** ORG-3 safe ownership → ORG-2 office type/event → ORG-1 after complete clearance. Localization/cleanup can proceed within the package.
 
 | ID | Original severity | Status | Current finding and evidence | Remaining mitigation |
 | --- | --- | --- | --- | --- |
-| ORG-1 | High | Open | No supported suspend, merge, relocate or close workflow. | Add authorized audited transitions; require complete membership/consumer clearance before closure. |
-| ORG-2 | High | Partial | Office profiles now carry a type and provisioning dispatches a typed event after commit. Starter jobs use an explicit company-scoped office-admin actor and wait for admin assignment. The full provision-to-catalog workflow still needs retry and CL-2 consumer verification. | Verify successful and failed handoff, scoped execution, safe retries and idempotence against the exact starter bundle. |
+| ORG-1 | High | Partial | Office hub provides suspend/resume/geographic relocation with office/territory checks, reason, typed confirmation, locked state/geography rechecks and audit. Suspension pauses new intake/setup; readiness cannot reactivate it. Closure/merge return 409 even for superusers until full clearance exists. | Use delivered OM-2 employee rules and finish office-wide holdings/request/committee clearance before terminal transitions; verify positive live admin flows. |
+| ORG-2 | High | Mitigated | Typed after-commit event is consumed by Classification. Active member/admin assignment triggers a durable, frozen commodity bundle, tenant-scoped job, reference checks, atomic rollback and duplicate-safe retry. Actual provisioning → membership → assignment → adoption and failure cases pass isolated tests. | Populate the currently missing reviewed starter collections, run workers, and verify live delivery. Existing offices are not bulk-adopted automatically. |
 | ORG-3 | Medium | Mitigated | Historical organization migration is non-destructive on rerun. The additive migration backfills valid legacy roles only for active, unexpired memberships; `OfficeResponsibility` is the active owner. Legacy table is retained as an archive; model/relation and live compatibility paths are removed. | Preserve the archive and backfill safeguards. |
 | ORG-4 | Medium | Mitigated | G1 access-request/admin review supplies expiring `gov_access_grants`; request `ApprovalRouting` uses responsibilities and unexpired cover. This replaces unused delegate columns and addresses leave cover. | Preserve expiry/next-request checks. Legacy-column cleanup is ORG-3; rollout/mail setup remain operational. |
 | ORG-5 | Medium | Mitigated | English/Bangla organization keys have parity. Office registry is paginated at 25 rows; counts and company filters derive from the authorized ICT geography, with a regression test. | Retain scoped pagination as registry filters evolve. |
@@ -164,41 +176,41 @@ Verification and operational limits are recorded in [the tenant-scope execution 
 
 ## 4. office-membership
 
-**1 mitigated, 0 partial, 4 open.** G1 access review does not secure every original transfer endpoint.
+**5 mitigated, 0 partial, 0 open** in the original inventory. The 8 October local implementation secures both role-transfer stores, completes employee clearance/release/sign-off/claim, adds durable notices and bilingual layout navigation. See [implementation, tests and operational limits](../verification/office-membership-implementation-2026-10-08.md). This does not close office-wide lifecycle or production rollout work.
 
-**Internal order:** OM-1 → OM-2; retain corrected OM-3 extension boundary. Return to office lifecycle after clearance.
+**Internal order:** OM-1 → OM-2; preserve OM-3 consumer registration. Employee clearance is delivered; organization closure/merge still require office-wide consumer clearance.
 
 | ID | Original severity | Status | Current finding and evidence | Remaining mitigation |
 | --- | --- | --- | --- | --- |
-| OM-1 | High | Open | Controllers lack complete authorization. Participant checks and handshake role checks exist, but `proposeTransfer` does not establish authority over the supplied office/role/recipient. | Check actor/office, recipient active membership, role ownership and state; lock/recheck transitions and test cross-user/cross-office actions on both paths. |
-| OM-2 | High | Open | `NoActiveAssetsRule` checks assets only; complete accessory/component/licence/consumable holding clearance is absent. | Define rules for each holding type and request-return obligations before release/office closure. |
-| OM-3 | Medium | Mitigated | `CustomRequests/Rules/NoPendingRequestsRule` is registered by its provider with `ClearanceEngine`; membership no longer imports it. | Preserve consumer registration; committee likewise registers its own vacancy rule. |
-| OM-4 | Medium | Open | Original handshake/membership/release notification workflows remain incomplete. G1/request notices do not close this broader gap. | Add durable after-commit notices and optional mail without reverse consumer imports. |
-| OM-5 | Medium | Open | Menu localization and breadcrumbs remain unfinished. | Translate titles and add navigation through shared layout. |
+| OM-1 | High | Mitigated | Registered abilities protect all 18 routes. Both transfer paths validate actor, office, supported role, active/unexpired memberships, current ownership and participant/state; locked acceptance rejects stale ownership and replay. Office-admin handover is supported. Isolated tests and concurrent MySQL acceptance checks pass. | Complete disposable admin/recipient browser mutation checks before rollout; preserve narrower ownership checks in all modes. |
+| OM-2 | High | Mitigated | Assets, accessories, carried-asset components, licence seats, roles/cover and consumer request/return obligations are checked before release, sign-off and claim. Transactional reads lock current records. Consumable allocations remain consumption history; unresolved returns require a posted receipt in the releasing office. | Native licences remain company-owned. Office closure/merge still need office-wide inventory and consumer clearance; employee clearance cannot authorize terminal transitions. |
+| OM-3 | Medium | Mitigated | Request and committee rules remain registered by their owning providers; membership has no reverse consumer import. Request return clearance now checks actual receipt office/type independently of working context. | Preserve extension registration and conservative handling of historical obligations. |
+| OM-4 | Medium | Mitigated | Durable transactional notices cover transfer and membership/release transitions; per-user view and optional outbox mail provide committed delivery and retry. Notice failure rolls back role/status/audit; mail failure retains the notice. | Deploy migration. Optional mail is off by default; configure/schedule delivery when intended and account for at-least-once email behavior. |
+| OM-5 | Medium | Mitigated | English/Bangla menu, role, dialog and notice strings; shared-layout context/menu and breadcrumbs replace response rewriting. Blade PHP syntax/key parity pass; live Bengali membership/dialog and staff denial verified without browser errors. | Complete broader admin/recipient usability and accessibility checks; local rendering is not WCAG certification. |
 
 ## 5. user-onboarding
 
-**0 mitigated, 0 partial, 4 open.** Queue pagination exists; the original four gaps remain.
+**4 mitigated, 0 partial, 0 open** in the original inventory. The 8 October local implementation queues system-created accounts, secures manager/office boundaries, adds retained decision history and durable notices, and localizes the queue and personal page. See [implementation, tests and operational limits](../verification/user-onboarding-implementation-2026-10-08.md).
 
-**Internal order:** UO-1/2 after authorized membership assignment; deliver notices/localization with transitions.
+**Internal order:** UO-1/2 delivered through authorized membership services; UO-3/4 delivered with the transitions. Existing memberships still use membership release and transfer.
 
 | ID | Original severity | Status | Current finding and evidence | Remaining mitigation |
 | --- | --- | --- | --- | --- |
-| UO-1 | High | Open | Observer `created()` still returns without an authenticated creator; system-created users can miss the queue. | Queue with existing SYSTEM owner type; test unauthenticated creation without inventing office/admin. |
-| UO-2 | Medium | Open | No supported cancel/reject/reassign transitions consume CANCELLED. | Add authorized state transitions, reason and assignment audit. |
-| UO-3 | Medium | Open | Completion lacks user/admin notices. | Deliver durable after-commit notices for the assigned membership/office. |
-| UO-4 | Medium | Open | No package English/Bangla language files. | Localize queue/transitions and verify parity. |
+| UO-1 | High | Mitigated | Unauthenticated creation produces one SYSTEM WAITING record with nullable creator/owner, without inventing a system user or office. Native first-membership synchronization defers to onboarding. Owned company/ICT/local queues apply explicit live boundaries. | Apply additive migration; review historical missing accounts individually, retaining intentionally excluded oversight accounts. |
+| UO-2 | Medium | Mitigated | Authorized cancel/reject/reassign/reopen transitions retain reasons and actor/state history. Locked first-office completion checks ownership, office/company/geography, lifecycle, memberships and replay; activation/permissions remain unchanged. Concurrent MySQL completion commits once. | Complete disposable manager/recipient browser mutation checks. Completed memberships cannot use onboarding to bypass release/transfer. |
+| UO-3 | Medium | Mitigated | Durable per-recipient in-app notices commit with creation/decision/completion history. Employee, creator/manager and destination office admin receive completion updates. Private reasons remain in the authorized administrative queue. Notice failure rolls back assignment. | Deploy history/notices; integrate their ownership with the pending experiment packaging/cleanup work. No SMTP delivery is claimed. |
+| UO-4 | Medium | Mitigated | English/Bangla queue, status, role, choice, action, history, notice, menu, breadcrumb and denial labels; three Blade PHP checks and key parity pass. Actual queue fragments render and escape reasons; personal page and denial verified live in Bengali. | Complete broader manager/recipient usability/accessibility and rollout checks. |
 
 ## 6. classification
 
-**1 mitigated, 0 partial, 6 open.** G1 controls national changes/adoption; starter provisioning and bulk processing remain incomplete.
+**2 mitigated, 0 partial, 5 open.** G1 controls national changes/adoption, and starter provisioning is locally verified under ORG-2/CL-2. Live starter-library population and queued bulk UI processing remain separate work.
 
 **Internal order:** CL-7 migration compatibility → ORG-2/CL-2 → CL-3 with TS-5 context; CL-4/5/6 can follow.
 
 | ID | Original severity | Status | Current finding and evidence | Remaining mitigation |
 | --- | --- | --- | --- | --- |
 | CL-1 | Critical | Mitigated | Explicit route abilities, national review/reason/typed confirmation, exact supported bundle review and office/company adoption boundaries exist with G1 coverage. | Complete G1 rollout; preserve narrower catalog authorization. |
-| CL-2 | High | Open | `ProvisionStarterCatalog` listens for missing event and still reads `$location->type ?? 'default'`. | Consume ORG-2 after-commit event/profile type; use attributable tenant-aware retry-safe job. |
+| CL-2 | High | Mitigated | `ProvisionStarterCatalog` consumes the typed committed event/profile type. `OfficeStarterCatalog` freezes expanded commodity items with explicit types and persists one run per office; the job validates live actor/context/reference and completes atomically. Actual handoff, failures and retries are verified under ORG-2. | Populate reviewed starter collections on deployment and verify live queued delivery; this does not complete CL-3 bulk UI adoption. |
 | CL-3 | High | Open | `BulkAdoptionController::execute` still runs the service synchronously. | Queue bounded work with validated actor/scope, progress and safe retry; depends on TS-5. |
 | CL-4 | Medium | Open | `compiled_synonyms.csv` contains only its header. | Compile reviewed synonyms, Bangla first, within exact reviewed import bundle. |
 | CL-5 | Medium | Open | Package-wide hard-coded text and mixed Livewire/Blade interaction remain; G1 translations cover only its controls. | Localize views/menus and use consistent keyboard-accessible interactions. |
@@ -220,19 +232,19 @@ Verification and operational limits are recorded in [the tenant-scope execution 
 
 ## 8. tracking
 
-**0 mitigated, 0 partial, 7 open.** Store Operations now has an in-process fail-closed verifier adapter; this does not close tracking's original projection/event/HTTP gaps.
+**6 mitigated, 1 partial, 0 open.** Updated 8 October 2026 (Asia/Dhaka). See [Tracking implementation and verification](../verification/tracking-implementation-2026-10-08.md). Local implementation does not close historical data reconciliation or deployment/rollout work.
 
 **Internal order:** TR-7 portable registration → TR-1 projection resolution → TR-5 scoped verifier → TR-2 with receipt posting. Upload/spreadsheet/UI work can proceed independently.
 
 | ID | Original severity | Status | Current finding and evidence | Remaining mitigation |
 | --- | --- | --- | --- | --- |
-| TR-1 | High | Open | `TrackingAssociationObserver` still dispatches nonexistent `tracking_reference_id` rather than resolving initiative through `tracking_code_id`. | Resolve initiative and rebuild after commit; cover create/update/delete and bulk-insert listener paths. |
-| TR-2 | High | Open | `AssociateAssetsToProgramme` listens for `AssetsReceivedViaGRN`; serialized receipt creation does not emit it. | Establish payload/transaction handoff, emit after successful receipt and verify associations/projection without duplicate delivery. |
-| TR-3 | Medium | Open | Unrouted `TrackingDocumentController` still references missing `TrackingReference`. | Rebuild on `TrackingCode` with private storage, ownership/download checks and valid routes. |
-| TR-4 | Medium | Open | Spreadsheet round-trip claims lack implementation/library. | Correct `refactor plan2.md` or implement/verify defined import/export. |
-| TR-5 | Medium | Open | Evaluation uses session auth and lacks complete caller-office authorization. Submitted location existence does not confer authority. | Authorize actor/object/scope; share in-process verifier. Token API needs its own authentication/authorization design. |
-| TR-6 | Medium | Open | Inline script/view structure and English text remain package-wide. | Bundle/translate/extract components, preserving existing narrower authorization. |
-| TR-7 | Low | Open | Root registration uses `GovStore\tracking`; declarations use `GovStore\Tracking`; manifest remains `proprietary`. | Correct case everywhere, verify case-sensitive loading and resolve licence. |
+| TR-1 | High | Mitigated | Shared refresh resolves old/new initiative IDs, invalidates inside the transaction and queues rebuild after commit. Targets/tasks and bulk listener paths refresh too. Live progress derives from active associations; rebuild preserves historical delivery facts. | Reconcile the retained two-unit historical fact discrepancy under a reviewed data plan; run cache rebuild after deployment. |
+| TR-2 | High | Mitigated | Serialized receipt posts native assets, registrations, ledger, associations, delivery fact and timeline atomically through the unified event. Durable movement keys reject replay; task locking serializes nullable fact dimensions. Isolated pipeline/rollback tests and MySQL replay/lock exercise pass. | Deploy marker migration and restart workers. Legacy replay keys are compatibility payload hashes; historical facts are retained. |
+| TR-3 | Medium | Mitigated | Nested task evidence routes use private storage, task/initiative/document ownership, narrower team roles and locked draft-state checks. File deletion follows commit. | Historical reference-only evidence is not assigned to tasks by guessing; inventory and map any such records before use. |
+| TR-4 | Medium | Mitigated | `refactor plan2.md` distinguishes delivered clipboard grid editing from proposed workbook import/export, templates and distribution. Unsupported completion claims are removed. | Workbook file import/export remains a future feature, not an advertised delivery. |
+| TR-5 | Medium | Mitigated | Session HTTP and in-process verification share an active working-office/ability/lifecycle/geography/participant check. Supplied foreign office is rejected even in shadow mode. Native admin no longer grants programme-wide access. Nested/body IDs and matrix proposals are validated. | Browser endpoints remain session-authenticated. A token API needs a separate approved authentication design. |
+| TR-6 | Medium | Partial | All 21 views have no executable inline scripts/handlers. Matrix, task and workspace controls are bundled; 407 English/Bangla keys have recursive parity. Saved matrices now render on edit, hidden inputs serialize once, menus exist, and negative quantity blocks save. | Finish remaining legacy controller messages, status/event presentation and broader bilingual/tablet/accessibility review. Stored historical audit text and native catalog names are retained. |
+| TR-7 | Low | Mitigated | Root namespace/provider case matches `GovStore\Tracking`. Manifest uses the user-approved host licence `AGPL-3.0-or-later`; autoload generation and effective route class loading pass. | Confirm Linux CI/deployment; this Windows check is not a Linux execution result. |
 
 ## 9. committee
 
@@ -247,22 +259,22 @@ Verification and operational limits are recorded in [the tenant-scope execution 
 
 ## 10. store-operations
 
-**2 mitigated, 3 partial, 3 open.** The 6 October changes add opening-stock gating, canonical ledger paths, adjustments, draft voiding and improved asset creation; compound gaps remain.
+**5 mitigated, 3 partial, 0 open.** The 8 October implementation adds paired bulk transfers, supplier-linked serialized receipt verification, safe additive profiles, native stock guards, reconciliation, takeover notices and tablet UI improvements. Partial compound gaps and deeper rollout work remain; this is local implementation evidence.
 
 **Internal order:** SO-6 safe ownership → deeper analysis's opening/canonical-history cut-over and stock invariants → remaining SO-2/4 work. SO-3 inspection is explicitly deferred.
 
 | ID | Original severity | Status | Current finding and evidence | Remaining mitigation |
 | --- | --- | --- | --- | --- |
 | SO-1 | Critical | Mitigated | Route abilities, `DocumentPolicy`, atomic locked mutations, server checklist, office/type/state checks, private attachments and safe failures are implemented/tested under G1. | Complete rollout; preserve creator/poster attribution and state rules. |
-| SO-2 | High | Partial | Adjustment documents require a posted source/reason/direction; draft void exists. Inter-office transfer has no supported document workflow. Posted GRN reversal is excluded by current design. | Implement source/destination authorization, locked balances and paired transfer movements. Use adjustments for corrections; reversal needs a changed policy. |
+| SO-2 | High | Mitigated | Adjustments and draft void are supported. Bulk transfers require actual posting authority in both same-company offices, validate matching stock IDs, lock deterministically and commit paired movements/receipt atomically. Replay, revocation in shadow mode and competing MySQL transfers are verified. Receipt reversal remains excluded by design. | Review office openings/history before live transfers. Separate receiving acceptance and serialized transfers remain outside this delivered bulk workflow. |
 | SO-3 | High | Partial | Registry/purposes exist; READY is not inspection evidence. Direct posting remains policy, and the deeper analysis explicitly defers receipt inspection. | Deliver optional submit/inspect/reopen/fallback with panel/outcome snapshots when authorized; required inspection needs policy/observation. |
-| SO-4 | High | Partial | Asset creation uses native tags/validated status and model-level ledger support. Supplier and structured committee reference remain missing; focused tests do not establish complete serialized receipt verification. | Capture/validate supplier; verify serialized receipt end to end. Add dated committee/outcome through deferred consumer workflow, not generic report upload. |
-| SO-5 | Medium | Open | Legacy receipt/issue controllers and create views remain. | Remove proven dead code after dependency/history checks. |
-| SO-6 | Medium | Open | Three profile migrations still overlap; `2024_03_04` and `2024_03_08` drop/recreate profile tables in `up()`. | Establish additive ownership and fresh/installed upgrade compatibility; preserve assignments/lineage and migration identities. |
-| SO-7 | Medium | Open | New bilingual controls exist, but remaining English text and tablet line-grid usability are unfinished. | Localize workspace/rules/register and verify tablet/keyboard behavior. |
+| SO-4 | High | Partial | Purchase requires an active native supplier. Serialized receipts preserve supplier/creator, native tags/status and per-unit warranty; materialization, tracking facts, replay and rollback have focused coverage. Structured committee reference/outcomes remain deferred. | Deliver committee evidence through the authorized inspection consumer workflow; verify real metadata provisioning and complete serialized custody separately. |
+| SO-5 | Medium | Mitigated | Proven unused receipt/issue controllers, create screens, response injection, inline legacy grid/tracking hooks and obsolete sync-fields plumbing were removed. Compatibility models/tables still used by request fulfillment remain. | Preserve historical records; any table retirement needs a separate dependency/data review. |
+| SO-6 | Medium | Mitigated | Overlapping migrations now use additive upgrades rather than dropping core-owned tables. Fresh/legacy tests preserve profile IDs/capability links/definitions; the targeted local upgrade retained 70 profiles and 115 assignments. Legacy profiles are not automatically published nationally. | Deploy the targeted migration after backup/review; do not rerun broad seeding or drop migration identities. |
+| SO-7 | Medium | Partial | External built assets, translated workspace/rules labels, safe text rendering, touch-sized controls and responsive grid are delivered. Bengali 768 × 1024 save/reload, disabled posting and native stock-card rendering were verified. | Finish remaining register/print/rules English fragments and keyboard verification in both locales; admin publishing was not exercised live. |
 | SO-8 | Low | Mitigated | Second assignment route is now `storeops.admin.rules.assign_gpo`; route coverage includes both protected URLs. | Preserve unique names on new routes. |
 
-The [deeper Store Operations analysis](store-operations-package-gap-analysis.md) is required for this package's delivery. Its implementation update coexists with older baseline descriptions: use the 6 October update and inspected source for what changed. Outstanding native-stock bypass, cut-over, supplier/transfer/inspection and UI work is not added to the 64-row denominator. Opening-stock review must precede new ledger posting/fulfillment in an unopened office. Recheck live state using the [local testing guide](../testing/local-live-testing.md) before any authorized data exercise.
+The [deeper Store Operations analysis](store-operations-package-gap-analysis.md) and [8 October execution record](../verification/store-operations-implementation-2026-10-08.md) distinguish implemented controls from historical descriptions. Opened-office native stock mutations are guarded and reconciliation is scheduled. Historical repair/cut-over, serialized issue/custody, deferred inspection and remaining UI work are not added to the 64-row denominator. Local opening markers remain zero and 15 legacy movement aliases remain; no historical normalization or opening was executed. Opening-stock review must precede new ledger posting/fulfillment in an unopened office. Recheck live state using the [local testing guide](../testing/local-live-testing.md) before any authorized data exercise.
 
 ## 11. custom-requests
 
@@ -294,7 +306,7 @@ See the [refactor record](../verification/custom-requests-refactor.md) for unres
 | EX-3 | Low | Open | Backups exist; CLI has no restore action or supported restore UI. | Provide verified restore into explicit separate destination with integrity/environment checks. |
 | EX-4 | Low | Mitigated | Current `ui.php` has **59 English and 59 Bangla keys**, with no missing/extra top-level keys. Original seven-key deficit is gone. | Maintain parity; parity alone is not usability verification. |
 
-## Verification performed for this reassessment
+## Verification performed for the 7 October baseline reassessment
 
 Source inspection established statuses and package handoffs. Key comparison confirmed ORG-5's 20 missing Bangla keys and EX-4's complete 59-key parity.
 
@@ -306,6 +318,14 @@ OK (99 tests, 2775 assertions)
 ```
 
 No live HTTP/database inspection, migration, ledger cut-over, catalog re-import or access-mode change was performed for this document update. Linked live records are dated prior evidence. This suite does not cover every original package gap or run experimentation's separate-schema tests.
+
+The **8 October Organization follow-up** ran the eight top-level GovStore test
+files on PHP 8.4.15 with isolated SQLite and a process-local 512 MB limit:
+**146 tests, 3,376 assertions passed**. It also verified compiled Organization
+templates, a local ordinary-user denial, the additive starter-run migration and
+an isolated MySQL profile-lock check. Current live starter collections are missing;
+closure/merge clearance and positive live admin flows remain incomplete. See the
+[new execution record](../verification/organization-implementation-2026-10-08.md).
 
 ## Work remaining outside the mitigation count
 

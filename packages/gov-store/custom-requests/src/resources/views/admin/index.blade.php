@@ -3,6 +3,7 @@
 @section('title', __('requestlabels::requests.admin_index_title'))
 
 @section('content')
+<div class="cr-theme">
 @include('govstore::components.notices')
 <div class="row">
     <!-- PENDING QUEUE -->
@@ -12,7 +13,7 @@
                 <h3 class="box-title"><i class="fas fa-hourglass-half"></i> {{ __('requestlabels::requests.admin_index_header_pending') }}</h3>
             </div>
             <div class="box-body table-responsive">
-                <table class="table table-striped table-hover">
+                <table class="gs-table table table-striped table-hover">
                     <thead>
                         <tr>
                             <th>{{ __('requestlabels::requests.request_number') }}</th>
@@ -27,7 +28,7 @@
                     <tbody>
                         @forelse($pendingRequests as $req)
                             <tr>
-                                <td><strong style="color: #3c8dbc;">{{ $req->request_number }}</strong></td>
+                                <td><strong class="request-number">{{ $req->request_number }}</strong></td>
                                 <td>{{ $req->requester->present()->fullName ?? __('requestlabels::requests.unknown_user') }}</td>
                                 <td><span class="label label-default">{{ __('requestlabels::requests.request_type_'.$req->request_type) }}</span></td>
                                 <td>{{ $req->purpose }}</td>
@@ -59,7 +60,7 @@
                 <h3 class="box-title"><i class="fas fa-history"></i> {{ __('requestlabels::requests.admin_index_header_processed') }}</h3>
             </div>
             <div class="box-body table-responsive">
-                <table class="table table-striped">
+                <table class="gs-table table table-striped">
                     <thead>
                         <tr>
                             <th>{{ __('requestlabels::requests.request_number') }}</th>
@@ -71,7 +72,7 @@
                     <tbody>
                         @forelse($processedRequests as $req)
                             <tr>
-                                <td><strong>{{ $req->request_number }}</strong></td>
+                                <td><strong class="request-number">{{ $req->request_number }}</strong></td>
                                 <td>{{ $req->requester->present()->fullName ?? __('requestlabels::requests.unknown_user') }}</td>
                                <td>
                                     @if($req->approval_status === 'approved')
@@ -98,5 +99,6 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

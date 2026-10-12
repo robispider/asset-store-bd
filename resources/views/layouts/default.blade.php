@@ -1382,6 +1382,8 @@
 
 
 
+                            @includeIf('govstore::hooks.basket-nav', ['draftCount' => $govBasketCount ?? 0])
+
                             <!-- User Account: style can be found in dropdown.less -->
                             @auth
                                 <li class="dropdown user user-menu">
@@ -1480,6 +1482,7 @@
                                         @endcan
                                         
                                         @includeIf('govscope::hooks.my-access')
+                                        @includeIf('govmem::hooks.membership-menu')
                                         <li class="divider"></li>
                                         <li>
                                             <a href="{{ route('logout.get') }}"

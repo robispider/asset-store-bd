@@ -6,6 +6,7 @@ use App\Models\User;
 use GovStore\CustomRequests\Models\Request;
 use GovStore\OfficeMembership\Contracts\IClearanceRule;
 use GovStore\OfficeMembership\Services\ClearanceResult;
+use Illuminate\Support\Facades\DB;
 
 class NoPendingRequestsRule implements IClearanceRule
 {
@@ -21,14 +22,16 @@ class NoPendingRequestsRule implements IClearanceRule
         }
 
         // Checks if they have active requests in progress
-        $pendingCount = Request::where('requested_by', $user->id)
+        $pending = Request::withTrashed()->where('requested_by', $user->id)
             ->where(fn ($q) => $q->where('office_id', $locationId)->orWhereNull('office_id'))
             ->where(fn ($query) => $query
                 ->where(fn ($q) => $q->whereNotIn('approval_status', ['rejected', 'cancelled'])
                     ->whereNotIn('fulfillment_status', ['issued', 'closed', 'cannot_fulfill']))
                 ->orWhere(fn ($q) => $q->whereNotNull('return_requested_at')
-                    ->whereDoesntHave('returnDocument', fn ($document) => $document->where('status', 'POSTED'))))
-            ->count();
+                    ->whereDoesntHave('returnDocument', fn ($document) => $document->withoutGlobalScopes()
+                        ->where('status', 'POSTED')->where('type', 'receipt')->where('location_id', $locationId))));
+        $pendingCount = DB::transactionLevel() > 0
+            ? $pending->lockForUpdate()->get(['custom_service_requests.id'])->count() : $pending->count();
 
         if ($pendingCount > 0) {
             return new ClearanceResult(false, __('office_membership::member.rule_requests_active', ['count' => $pendingCount]));

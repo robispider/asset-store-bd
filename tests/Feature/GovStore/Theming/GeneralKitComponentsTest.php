@@ -9,6 +9,18 @@ use Illuminate\Support\Facades\Blade;
 /** The general-purpose UI kit (§14.2a) and the layout variants added with the Lavender theme. */
 class GeneralKitComponentsTest extends ThemingTestCase
 {
+    public function test_namespaced_theme_components_do_not_capture_native_tabs_or_container(): void
+    {
+        $native = Blade::render('<x-container><x-tabs><x-slot:tabnav>Native navigation</x-slot:tabnav><x-slot:tabpanes>Native stock card</x-slot:tabpanes></x-tabs></x-container>');
+        $this->assertStringContainsString('nav-tabs-custom', $native);
+        $this->assertStringContainsString('Native navigation', $native);
+        $this->assertStringContainsString('Native stock card', $native);
+        $this->assertStringNotContainsString('gs-tabset', $native);
+        $themed = Blade::render('<x-gs::button>Theme content</x-gs::button>');
+        $this->assertStringContainsString('gs-btn', $themed);
+        $this->assertStringContainsString('Theme content', $themed);
+    }
+
     public function test_lavender_uses_the_new_variants_and_writes_them_to_html(): void
     {
         $theme = (new ThemeRepository(base_path('packages/gov-store/theming/themes')))->find('lavender');

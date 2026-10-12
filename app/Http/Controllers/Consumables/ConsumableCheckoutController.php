@@ -32,6 +32,7 @@ class ConsumableCheckoutController extends Controller
         if ($consumable = Consumable::find($id)) {
 
             $this->authorize('checkout', $consumable);
+            app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->assertNativeMovementAllowed($consumable);
 
             // Make sure the category is valid
             if ($consumable->category) {
@@ -76,6 +77,7 @@ class ConsumableCheckoutController extends Controller
         }
 
         $this->authorize('checkout', $consumable);
+        app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->assertNativeMovementAllowed($consumable);
 
         // If the quantity is not present in the request or is not a positive integer, set it to 1
         $quantity = $request->input('checkout_qty');

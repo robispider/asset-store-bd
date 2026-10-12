@@ -2,16 +2,19 @@
 
 namespace GovStore\Organization\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Models\Location;
 use App\Models\User;
 use GovStore\GeoAreas\Models\GeoArea;
+use Illuminate\Database\Eloquent\Model;
 
 class LocationProfile extends Model
 {
     protected $table = 'gov_location_profiles';
 
     protected $fillable = [
+        'invitation_code',
+        'invitation_code_created_at',
+        'invitation_code_expires_at',
         'location_id',
         'geo_area_id',
         'office_type',
@@ -22,6 +25,8 @@ class LocationProfile extends Model
     ];
 
     protected $casts = [
+        'invitation_code_created_at' => 'datetime',
+        'invitation_code_expires_at' => 'datetime',
         'geo_area_verified_at' => 'datetime',
     ];
 
@@ -35,9 +40,9 @@ class LocationProfile extends Model
         return $this->belongsTo(GeoArea::class, 'geo_area_id', 'GeoAreaId');
     }
 
-   public function officeAdmin()
+    public function officeAdmin()
     {
-        return $this->belongsTo(\App\Models\User::class, 'office_admin_id')->withoutGlobalScopes();
+        return $this->belongsTo(User::class, 'office_admin_id')->withoutGlobalScopes();
     }
 
     public function verifier()

@@ -23,6 +23,7 @@ use GovStore\TenantScope\Scopes\MinistryLocationScope;
 use GovStore\TenantScope\Scopes\TenantScope;
 use GovStore\TenantScope\Scopes\UserScope;
 use GovStore\TenantScope\Services\GovAccess;
+use GovStore\Theming\Facades\GsTheme;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -55,7 +56,7 @@ class TenantScopeServiceProvider extends ServiceProvider
         \Illuminate\Support\Facades\Bus::pipeThrough([\GovStore\TenantScope\Http\Middleware\ExecuteTenantJob::class]);
         $lifecycle = $this->app->make(\GovStore\TenantScope\Services\TenantWorkerLifecycle::class);
         $this->app['events']->listen(\Illuminate\Queue\Events\JobProcessing::class,
-            fn ($event) => $lifecycle->begin(str_starts_with($event->job->resolveName(), 'GovStore\\')));
+            fn ($event) => $lifecycle->begin(str_starts_with($event->job->resolveName(), 'GovStore\\'), $event->connectionName === 'sync'));
         foreach ([\Illuminate\Queue\Events\JobProcessed::class, \Illuminate\Queue\Events\JobExceptionOccurred::class] as $event) {
             $this->app['events']->listen($event, fn () => $lifecycle->finish());
         }
@@ -83,6 +84,10 @@ class TenantScopeServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'govscope');
+
+        if ($this->app->bound('gs.theme')) {
+            GsTheme::assets()->css('tenant-scope', __DIR__.'/../resources/css/tenant-scope.css');
+        }
 
         // Publish the configuration so it can be overridden in the root config directory if necessary
         $this->publishes([

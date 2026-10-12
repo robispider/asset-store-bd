@@ -21,6 +21,7 @@ class InventoryMaterializedAgainstProgramme
     public string $grnReference;      // GRN Voucher serial number for audit trail
     public array $associatables;     // Optional polymorphic array of asset/ledger IDs
     public ?string $overrideReason;  // Justification string if target was exceeded
+    public ?string $movementId;
 
     /**
      * Instantiate the multi-dimensional transaction contract payload.
@@ -37,7 +38,8 @@ class InventoryMaterializedAgainstProgramme
         int $actorId,
         string $grnReference,
         array $associatables = [],
-        ?string $overrideReason = null
+        ?string $overrideReason = null,
+        ?string $movementId = null
     ) {
         $this->trackingCode = $trackingCode;
         $this->categoryId = $categoryId;
@@ -51,5 +53,6 @@ class InventoryMaterializedAgainstProgramme
         $this->grnReference = $grnReference;
         $this->associatables = $associatables;
         $this->overrideReason = $overrideReason;
+        $this->movementId = $movementId;
     }
 }

@@ -40,7 +40,10 @@ class GoodsReceiptService
     public function saveDraft(array $headerData, array $rawLines, int $userId, ?Document $document = null, string $type = 'receipt'): Document
     {
         return DB::transaction(function () use ($headerData, $rawLines, $userId, $document, $type) {
-            if (! in_array($type, ['receipt', 'issue', 'adjustment'], true)) {
+            if (! empty($headerData['supplier_id']) && ! \App\Models\Supplier::whereKey($headerData['supplier_id'])->exists()) {
+                throw \Illuminate\Validation\ValidationException::withMessages(['supplier_id' => __('storeops::storeops.supplier_invalid')]);
+            }
+            if (! in_array($type, ['receipt', 'issue', 'adjustment', 'transfer'], true)) {
                 throw new \InvalidArgumentException('Unsupported document type.');
             }
             if ($document) {
@@ -56,7 +59,7 @@ class GoodsReceiptService
 
             // 1. Create or Update Header
             if (! $document) {
-                $prefix = match ($type) { 'receipt' => 'GR', 'issue' => 'GI', 'adjustment' => 'ADJ' };
+                $prefix = match ($type) { 'receipt' => 'GR', 'issue' => 'GI', 'adjustment' => 'ADJ', 'transfer' => 'TR' };
                 $headerData['document_number'] = $this->numberService->generate($prefix, 'gov_documents', 'document_number');
                 $headerData['type'] = $type;
                 $headerData['status'] = DocumentState::DRAFT->value;
@@ -67,7 +70,7 @@ class GoodsReceiptService
                 $headerData['managed_by'] = $userId;
 
                 $document = Document::create($headerData);
-                $document->transitionTo(DocumentState::DRAFT, $userId, 'Document workspace initialized.');
+                $document->transitionTo(DocumentState::DRAFT, $userId, __('storeops::storeops.workspace_initialized'));
             } else {
                 $document->update($headerData);
             }

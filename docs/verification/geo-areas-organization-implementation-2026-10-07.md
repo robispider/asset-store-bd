@@ -3,6 +3,10 @@
 Date: 7 October 2026 (Asia/Dhaka)  
 Branch: `package-gap-mitigation`
 
+Organization follow-up: [8 October implementation and verification](organization-implementation-2026-10-08.md)
+supersedes the organization remaining-work status below. This record preserves
+the 7 October implementation and verification evidence.
+
 ## Implemented
 
 ### Geo Areas

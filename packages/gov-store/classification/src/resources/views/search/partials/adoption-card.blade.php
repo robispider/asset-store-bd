@@ -15,18 +15,18 @@
         <!-- ==============================================
              FOLDER ACTION WORKSPACE (Segments, Families, Classes)
              ============================================== -->
-        <div class="box box-solid" style="margin-top: 20px; border: 1px solid #d2d6de; border-top: 3px solid #f39c12;">
-            <div class="box-body" style="padding: 20px;">
-                <h4 style="margin-top: 0; font-weight: bold;"><i class="fas fa-folder-open text-warning"></i> Folder Actions</h4>
-                <p class="text-muted" style="font-size: 13px;">This reference code is a <strong>Level {{ $node->level }} Folder</strong>. You can perform recursive operations on all descendant commodities under this branch.</p>
+        <div class="box box-solid classify-inline-4412da54">
+            <div class="box-body classify-inline-f8d354e0">
+                <h4 class="classify-inline-7c94f291"><i class="fas fa-folder-open text-warning"></i> Folder Actions</h4>
+                <p class="text-muted classify-inline-eefff2f8">This reference code is a <strong>Level {{ $node->level }} Folder</strong>. You can perform recursive operations on all descendant commodities under this branch.</p>
                 
-                <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
-                    <button class="btn btn-warning btn-block" onclick="triggerBulkAdoption(['{{ $node->code }}'])" style="margin-bottom: 10px; text-align: left; padding: 10px 15px; font-weight: bold;">
+                <div class="classify-inline-2f92a4a1">
+                    <button class="btn btn-warning btn-block" onclick="triggerBulkAdoption(['{{ $node->code }}'])" class="classify-inline-9c510dc4">
                         <i class="fas fa-rocket"></i> Adopt All Descendant Commodities
                     </button>
                     
                     @if($canManageCollections)
-                        <button class="btn btn-purple btn-block" onclick="triggerAddToCollection(['{{ $node->code }}'])" style="text-align: left; padding: 10px 15px; font-weight: bold; color: #fff;">
+                        <button class="btn btn-purple btn-block" onclick="triggerAddToCollection(['{{ $node->code }}'])" class="classify-inline-cb6b1638">
                             <i class="fas fa-boxes"></i> Add All Commodities to Collection
                         </button>
                     @endif
@@ -36,15 +36,15 @@
 
     @elseif(!$currentMapping)
         <!-- STATE 1: No Category Exists -->
-        <div class="box box-solid" style="margin-top: 20px; border: 1px solid #d2d6de; border-top: 3px solid #dd4b39;">
-            <div class="box-body" style="padding: 20px;">
-                <h4 style="margin-top: 0; font-weight: bold;"><i class="fas fa-times-circle text-danger"></i> {{ __('classification::texts.adoption_no_category_exists') }}</h4>
-                <p class="text-muted" style="font-size: 13px;">{{ __('classification::texts.adoption_not_linked_desc') }}</p>
+        <div class="box box-solid classify-inline-86cf9c6b">
+            <div class="box-body classify-inline-f8d354e0">
+                <h4 class="classify-inline-7c94f291"><i class="fas fa-times-circle text-danger"></i> {{ __('classification::texts.adoption_no_category_exists') }}</h4>
+                <p class="text-muted classify-inline-eefff2f8">{{ __('classification::texts.adoption_not_linked_desc') }}</p>
                 
-                <form id="provision-category-form" style="margin-top: 20px;">
+                <form id="provision-category-form" class="classify-inline-5fa693f3">
                     <input type="hidden" id="prov_unspsc_code" value="{{ $node->code }}">
                     
-                    <div class="row" style="margin-bottom: 15px;">
+                    <div class="row classify-inline-4a3180e2">
                         <div class="col-sm-8">
                             <label>{{ __('classification::texts.adoption_label_category_name') }}</label>
                             <input type="text" id="prov_custom_name" class="form-control" value="{{ $node->title_en }}" required>
@@ -63,27 +63,27 @@
 
                     <!-- Super Admin Governance Controls -->
                     @if($isSuperAdmin)
-                        <div class="form-group" style="background: #f9fafb; padding: 15px; border-radius: 4px; border: 1px solid #eee;">
-                            <label style="display: block; margin-bottom: 10px; color: #333;">{{ __('classification::texts.adoption_label_governance_availability') }}</label>
+                        <div class="form-group classify-inline-3ed26cc4">
+                            <label class="classify-inline-7e0142b5">{{ __('classification::texts.adoption_label_governance_availability') }}</label>
                             
                             <div class="radio">
-                                <label style="font-weight: bold;">
+                                <label class="classify-inline-78d7af8b">
                                     <input type="radio" name="governance_type" value="global" checked id="gov-global-radio">
                                     {{ __('classification::texts.adoption_gov_shared_standard') }}
                                 </label>
-                                <p class="text-muted" style="font-size: 12px; margin-left: 20px;">{{ __('classification::texts.adoption_gov_available_globally') }}</p>
+                                <p class="text-muted classify-inline-21cbdd6e">{{ __('classification::texts.adoption_gov_available_globally') }}</p>
                             </div>
                             
-                            <div class="radio" style="margin-top: 15px;">
-                                <label style="font-weight: bold;">
+                            <div class="radio classify-inline-b62ee557">
+                                <label class="classify-inline-78d7af8b">
                                     <input type="radio" name="governance_type" value="company" id="gov-company-radio">
                                     {{ __('classification::texts.adoption_gov_org_private') }}
                                 </label>
-                                <p class="text-muted" style="font-size: 12px; margin-left: 20px;">{{ __('classification::texts.adoption_gov_assign_org') }}</p>
+                                <p class="text-muted classify-inline-21cbdd6e">{{ __('classification::texts.adoption_gov_assign_org') }}</p>
                             </div>
 
-                            <div id="company-assignment-div" style="display: none; margin-top: 10px; margin-left: 20px;">
-                                <select id="prov_target_company" class="form-control input-sm select2" style="width: 100%;">
+                            <div id="company-assignment-div" class="classify-inline-c87077d8">
+                                <select class="form-control input-sm select2 classify-inline-69d66e5b" id="prov_target_company">
                                     <option value="">{{ __('classification::texts.adoption_label_select_company') }}</option>
                                     @foreach(\App\Models\Company::orderBy('name')->get() as $company)
                                         <option value="{{ $company->id }}">{{ $company->name }}</option>
@@ -93,12 +93,12 @@
                         </div>
                     @else
                         <!-- Regular User Transparent Context Notice -->
-                        <div class="alert alert-info" style="font-size: 12px; padding: 10px; background-color: #f4f8fa !important; border-color: #bce8f1 !important; color: #31708f !important;">
+                        <div class="alert alert-info classify-inline-28e75c4e">
                             <i class="fas fa-info-circle"></i> {{ __('classification::texts.adoption_notice_secure_scope') }}
                         </div>
                     @endif
 
-                    <div class="text-right" style="margin-top: 20px;">
+                    <div class="text-right classify-inline-5fa693f3">
                         <button type="submit" class="btn btn-primary" id="btn-provision">
                             <i class="fas fa-plus"></i> {{ __('classification::texts.adoption_btn_create_adopt') }}
                         </button>
@@ -109,14 +109,14 @@
 
     @elseif($isGlobal)
         <!-- STATE 2: Globally Shared Standard -->
-        <div class="box box-solid" style="margin-top: 20px; border: 1px solid #d2d6de; border-top: 3px solid #00c0ef;">
-            <div class="box-body" style="padding: 20px;">
-                <h4 style="margin-top: 0; font-weight: bold;"><i class="fas fa-globe text-aqua"></i> {{ __('classification::texts.adoption_gov_shared_standard') }}</h4>
-                <p class="lead" style="margin-bottom: 5px; color: #333;">{{ $currentMapping->category?->name ?? 'Category' }}</p>
-                <p class="text-muted" style="font-size: 13px;">This official classification is globally available. It is already visible and ready for use in your local office dropdowns.</p>
+        <div class="box box-solid classify-inline-008c14e2">
+            <div class="box-body classify-inline-f8d354e0">
+                <h4 class="classify-inline-7c94f291"><i class="fas fa-globe text-aqua"></i> {{ __('classification::texts.adoption_gov_shared_standard') }}</h4>
+                <p class="lead classify-inline-d298dd06">{{ $currentMapping->category?->name ?? 'Category' }}</p>
+                <p class="text-muted classify-inline-eefff2f8">This official classification is globally available. It is already visible and ready for use in your local office dropdowns.</p>
                 
                 @if($canManageCollections)
-                    <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
+                    <div class="classify-inline-f7c5c400">
                         <button type="button" class="btn btn-purple btn-block" onclick="triggerAddToCollection(['{{ $node->code }}'])">
                             <i class="fas fa-boxes"></i> Add to Collection
                         </button>
@@ -127,15 +127,15 @@
 
     @elseif($isCompanyAdopted)
         <!-- STATE 3: Company Standard -->
-        <div class="box box-solid" style="margin-top: 20px; border: 1px solid #d2d6de; border-top: 3px solid #605ca8;">
-            <div class="box-body" style="padding: 20px;">
-                <h4 style="margin-top: 0; font-weight: bold;"><i class="fas fa-university text-purple"></i> Used by your Ministry / Organization</h4>
-                <p class="lead" style="margin-bottom: 5px; color: #333;">{{ $currentMapping->category?->name ?? 'Category' }}</p>
-                <p class="text-muted" style="font-size: 13px;">Your parent Ministry has adopted this classification. It is already visible and ready for use in your local office.</p>
+        <div class="box box-solid classify-inline-adbdda45">
+            <div class="box-body classify-inline-f8d354e0">
+                <h4 class="classify-inline-7c94f291"><i class="fas fa-university text-purple"></i> Used by your Ministry / Organization</h4>
+                <p class="lead classify-inline-d298dd06">{{ $currentMapping->category?->name ?? 'Category' }}</p>
+                <p class="text-muted classify-inline-eefff2f8">Your parent Ministry has adopted this classification. It is already visible and ready for use in your local office.</p>
                 
-                <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+                <div class="classify-inline-2f92a4a1">
                     @if($isCompanyAdmin)
-                        <button class="btn btn-default btn-abandon btn-block" data-id="{{ $currentMapping->category_id }}" style="margin-bottom: 10px;">
+                        <button class="btn btn-default btn-abandon btn-block" data-id="{{ $currentMapping->category_id }}" class="classify-inline-2d98adf5">
                             <i class="fas fa-times"></i> Stop Using for Ministry
                         </button>
                     @endif
@@ -151,14 +151,14 @@
 
     @elseif($isLocationAdopted)
         <!-- STATE 4: Location Standard -->
-        <div class="box box-solid" style="margin-top: 20px; border: 1px solid #d2d6de; border-top: 3px solid #00a65a;">
-            <div class="box-body" style="padding: 20px;">
-                <h4 style="margin-top: 0; font-weight: bold;"><i class="fas fa-map-marker-alt text-success"></i> Used by your Local Office</h4>
-                <p class="lead" style="margin-bottom: 5px; color: #333;">{{ $currentMapping->category?->name ?? 'Category' }}</p>
-                <p class="text-muted" style="font-size: 13px;">This classification was adopted specifically for your local office building.</p>
+        <div class="box box-solid classify-inline-ee49b19e">
+            <div class="box-body classify-inline-f8d354e0">
+                <h4 class="classify-inline-7c94f291"><i class="fas fa-map-marker-alt text-success"></i> Used by your Local Office</h4>
+                <p class="lead classify-inline-d298dd06">{{ $currentMapping->category?->name ?? 'Category' }}</p>
+                <p class="text-muted classify-inline-eefff2f8">This classification was adopted specifically for your local office building.</p>
 
-                <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
-                    <button class="btn btn-default btn-abandon btn-block" data-id="{{ $currentMapping->category_id }}" style="margin-bottom: 10px;">
+                <div class="classify-inline-2f92a4a1">
+                    <button class="btn btn-default btn-abandon btn-block" data-id="{{ $currentMapping->category_id }}" class="classify-inline-2d98adf5">
                         <i class="fas fa-times"></i> {{ __('classification::texts.adoption_btn_stop_using') }}
                     </button>
                     
@@ -173,14 +173,14 @@
 
     @else
         <!-- STATE 5: Mapped, but NOT Adopted Anywhere Yet -->
-        <div class="box box-solid" style="margin-top: 20px; border: 1px solid #d2d6de; border-top: 3px solid #f39c12;">
-            <div class="box-body" style="padding: 20px;">
-                <h4 style="margin-top: 0; font-weight: bold;"><i class="fas fa-link text-warning"></i> Available for Adoption</h4>
-                <p class="lead" style="margin-bottom: 5px; color: #333;">{{ $currentMapping->category?->name ?? 'Private Category' }}</p>
-                <p class="text-muted" style="font-size: 13px;">This classification is not currently in use by your Ministry or Office.</p>
+        <div class="box box-solid classify-inline-4412da54">
+            <div class="box-body classify-inline-f8d354e0">
+                <h4 class="classify-inline-7c94f291"><i class="fas fa-link text-warning"></i> Available for Adoption</h4>
+                <p class="lead classify-inline-d298dd06">{{ $currentMapping->category?->name ?? 'Private Category' }}</p>
+                <p class="text-muted classify-inline-eefff2f8">This classification is not currently in use by your Ministry or Office.</p>
 
-                <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
-                    <button class="btn btn-success btn-adopt btn-block" data-id="{{ $currentMapping->category_id }}" style="margin-bottom: 10px;">
+                <div class="classify-inline-2f92a4a1">
+                    <button class="btn btn-success btn-adopt btn-block" data-id="{{ $currentMapping->category_id }}" class="classify-inline-2d98adf5">
                         <i class="fas fa-check"></i> {{ $isCompanyAdmin ? 'Adopt for Ministry' : 'Adopt for Local Office' }}
                     </button>
                     

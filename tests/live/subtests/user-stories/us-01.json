@@ -1,0 +1,79 @@
+{
+  "execution": {
+    "language": "en-US",
+    "timeoutMs": 60000,
+    "accessMode": "any",
+    "capability": "observe"
+  },
+  "id": "user-stories.us-01",
+  "title": "US-01 — Office admin is denied national directory and provisioning controls",
+  "fixtures": {
+    "office": {
+      "requirements": {
+        "operational": true
+      }
+    },
+    "actors": {
+      "officeAdmin": {
+        "office": "office",
+        "capabilities": {
+          "allOf": [
+            "organization.office.manage"
+          ],
+          "noneOf": []
+        },
+        "activeMembership": true
+      }
+    }
+  },
+  "schemaVersion": 1,
+  "cleanup": {
+    "policy": "no-business-records-created"
+  },
+  "steps": [
+    {
+      "with": {
+        "actor": "officeAdmin"
+      },
+      "use": "auth.login"
+    },
+    {
+      "as": "denial0",
+      "path": "/directory",
+      "expectStatus": [
+        302,
+        403,
+        404
+      ],
+      "action": "probe"
+    },
+    {
+      "as": "denial1",
+      "path": "/gov-store/admin/organization/create",
+      "expectStatus": [
+        302,
+        403,
+        404
+      ],
+      "action": "probe"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/organization/create"
+    },
+    {
+      "target": "css=body",
+      "test": "visible",
+      "action": "assert"
+    }
+  ],
+  "tags": [
+    "user-story",
+    "seeded",
+    "readonly",
+    "entry-check"
+  ],
+  "features": [
+    "user-story.us-01"
+  ]
+}

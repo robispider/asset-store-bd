@@ -3,20 +3,7 @@
 @section('title', __('office_membership::member.provisioning_registry_title'))
 
 @section('content')
-
-{{-- Registry Custom High-Density Styling --}}
-<style>
-    .filter-bar {
-        background: #fff;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        padding: 15px;
-        margin-bottom: 20px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    .registry-table td { vertical-align: middle !important; }
-    .status-badge-container { line-height: 1.4; }
-</style>
+<div class="office-membership-theme">
 
 <!-- TOP ROLLING ROLLOUT METRICS -->
 <div class="row">
@@ -68,15 +55,15 @@
             <form action="{{ route('gov.org.provisioning.index') }}" method="GET" class="form-inline">
                 
                 <!-- Search term -->
-                <div class="form-group" style="margin-right: 15px;">
-                    <label for="search" style="margin-right: 5px;"><i class="fas fa-search"></i> {{ __('office_membership::member.provisioning_filter_search_label') }}</label>
+                <div class="form-group om-inline-00abe7ff">
+                    <label for="search" class="om-inline-ae731390"><i class="fas fa-search"></i> {{ __('office_membership::member.provisioning_filter_search_label') }}</label>
                     <input type="text" name="search" id="search" class="form-control input-sm" placeholder="{{ __('office_membership::member.provisioning_filter_search_label') }} office name or admin..." value="{{ request('search') }}">
                 </div>
 
                 <!-- Ministry Filter -->
-                <div class="form-group" style="margin-right: 15px;">
-                    <label for="ministry_id" style="margin-right: 5px;"><i class="fas fa-university"></i> {{ __('office_membership::member.provisioning_filter_ministry_label') }}</label>
-                    <select name="ministry_id" id="ministry_id" class="form-control input-sm select2" style="min-width: 180px;">
+                <div class="form-group om-inline-00abe7ff">
+                    <label for="ministry_id" class="om-inline-ae731390"><i class="fas fa-university"></i> {{ __('office_membership::member.provisioning_filter_ministry_label') }}</label>
+                    <select name="ministry_id" id="ministry_id" class="form-control input-sm select2 om-inline-4c3ea102">
                         <option value="">{{ __('office_membership::member.provisioning_filter_all_ministries') }}</option>
                         @foreach($companies ?? [] as $company)
                             <option value="{{ $company->id }}" {{ request('ministry_id') == $company->id ? 'selected' : '' }}>
@@ -87,9 +74,9 @@
                 </div>
 
                 <!-- District Filter -->
-                <div class="form-group" style="margin-right: 15px;">
-                    <label for="district_id" style="margin-right: 5px;"><i class="fas fa-map-marker-alt"></i> {{ __('office_membership::member.provisioning_filter_district_label') }}</label>
-                    <select name="district_id" id="district_id" class="form-control input-sm select2" style="min-width: 180px;">
+                <div class="form-group om-inline-00abe7ff">
+                    <label for="district_id" class="om-inline-ae731390"><i class="fas fa-map-marker-alt"></i> {{ __('office_membership::member.provisioning_filter_district_label') }}</label>
+                    <select name="district_id" id="district_id" class="form-control input-sm select2 om-inline-4c3ea102">
                         <option value="">{{ __('office_membership::member.provisioning_filter_all_districts') }}</option>
                         @foreach($districts ?? [] as $dist)
                             <option value="{{ $dist->GeoAreaId }}" {{ request('district_id') == $dist->GeoAreaId ? 'selected' : '' }}>
@@ -100,8 +87,8 @@
                 </div>
 
                 <!-- Status Filter -->
-                <div class="form-group" style="margin-right: 15px;">
-                    <label for="status" style="margin-right: 5px;"><i class="fas fa-tasks"></i> {{ __('office_membership::member.provisioning_filter_status_label') }}</label>
+                <div class="form-group om-inline-00abe7ff">
+                    <label for="status" class="om-inline-ae731390"><i class="fas fa-tasks"></i> {{ __('office_membership::member.provisioning_filter_status_label') }}</label>
                     <select name="status" id="status" class="form-control input-sm">
                         <option value="">{{ __('office_membership::member.provisioning_filter_all_statuses') }}</option>
                         <option value="operational" {{ request('status') == 'operational' ? 'selected' : '' }}>{{ __('office_membership::member.provisioning_filter_operational') }}</option>
@@ -115,7 +102,7 @@
 
                 <!-- INTEGRATED ONBOARD & CREATE TRIGGERS -->
                 <div class="pull-right">
-                    <a href="{{ route('gov.org.provisioning.onboard') }}" class="btn btn-sm btn-default" style="margin-right: 5px;">
+                    <a href="{{ route('gov.org.provisioning.onboard') }}" class="btn btn-sm btn-default om-inline-ae731390">
                         <i class="fas fa-plug text-success"></i> {{ __('office_membership::member.provisioning_onboard_button') }}
                     </a>
                     <a href="{{ route('gov.org.provisioning.create') }}" class="btn btn-sm btn-primary">
@@ -135,7 +122,7 @@
                 <h3 class="box-title"><i class="fas fa-sitemap"></i> {{ __('office_membership::member.provisioning_grid_title') }} ({{ $offices->count() }})</h3>
             </div>
             <div class="box-body table-responsive">
-                <table class="table table-striped table-hover registry-table">
+                <x-gs::table class="table table-striped table-hover registry-table">
                     <thead>
                         <tr>
                             <th>{{ __('office_membership::member.provisioning_grid_office') }}</th>
@@ -143,7 +130,7 @@
                             <th>{{ __('office_membership::member.provisioning_grid_ministry') }}</th>
                             <th>{{ __('office_membership::member.provisioning_grid_admin') }}</th>
                             <th>{{ __('office_membership::member.provisioning_grid_status') }}</th>
-                            <th>style="width: 120px;">{{ __('office_membership::member.provisioning_grid_actions') }}</th>
+                            <th class="om-inline-aedab6f0">{{ __('office_membership::member.provisioning_grid_actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -167,7 +154,7 @@
                                 </td>
                                 
                                 <td>
-                                    <span class="text-primary" style="font-weight: bold;"><i class="fas fa-map-marker-alt"></i> {{ $geoName }}</span><br>
+                                    <span class="text-primary om-inline-3cdfe113"><i class="fas fa-map-marker-alt"></i> {{ $geoName }}</span><br>
                                     <small class="text-muted">{{ __('office_membership::member.provisioning_grid_type') }}: {{ $geoType }}</small>
                                 </td>
 
@@ -187,7 +174,7 @@
                                             <span class="label label-info"><i class="fas fa-sliders-h"></i> {{ __('office_membership::member.provisioning_status_configured') }}</span>
                                         @elseif($status === 'provisioned')
                                             <span class="label label-warning"><i class="fas fa-building"></i> {{ __('office_membership::member.provisioning_status_provisioned') }}</span>
-                                            <small class="text-muted" style="display:block; margin-top: 3px;">
+                                            <small class="text-muted om-inline-1ac8bcc9">
                                                 {{ __('office_membership::member.provisioning_status_needs') }} 
                                                 <span class="{{ $hasPrimary ? 'text-success' : 'text-danger' }}">{{ $hasPrimary ? '✓' : '✗' }} {{ __('office_membership::member.provisioning_status_primary') }}</span> &bull; 
                                                 <span class="{{ $hasStorekeeper ? 'text-success' : 'text-danger' }}">{{ $hasStorekeeper ? '✓' : '✗' }} {{ __('office_membership::member.provisioning_status_storekeeper') }}</span>
@@ -206,16 +193,17 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center text-muted" style="padding: 40px;">
+                                <td colspan="6" class="text-center text-muted om-inline-ea7b6b7b">
                                     <i class="fas fa-building fa-2x"></i>
-                                    <p style="margin-top: 10px;">{{ __('office_membership::member.provisioning_no_offices') }}</p>
+                                    <p class="om-inline-3225db96">{{ __('office_membership::member.provisioning_no_offices') }}</p>
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
-                </table>
+                </x-gs::table>
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

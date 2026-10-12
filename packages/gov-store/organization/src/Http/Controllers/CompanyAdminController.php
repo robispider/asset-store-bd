@@ -13,7 +13,7 @@ class CompanyAdminController extends Controller
     private function checkSuperadminAccess()
     {
         $user = auth()->user();
-        if (!$user->isSuperUser() && !$user->hasAccess('admin')) {
+        if (!$user->isSuperUser()) {
             abort(403, __('organization_labels::orglabel.company_admin_unauthorized'));
         }
     }
@@ -36,11 +36,12 @@ public function index()
         $this->checkSuperadminAccess();
 
         $request->validate([
-            'user_id' => 'required|integer|exists:users,id',
-            'company_id' => 'required|integer|exists:companies,id',
+            'user_id' => 'required|integer|exists:users,id,deleted_at,NULL',
+            'company_id' => 'required|integer|exists:companies,id,deleted_at,NULL',
         ]);
 
         try {
+            app(\GovStore\Organization\Services\OfficeAdministration::class)->actor((int) $request->user_id);
             // A user can only manage one company. updateOrCreate handles overwriting gracefully.
             CompanyAdmin::updateOrCreate(
                 ['user_id' => $request->user_id],
@@ -49,7 +50,7 @@ public function index()
 
             return redirect()->back()->with('success', __('organization_labels::orglabel.company_admin_assigned_success'));
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
+            throw $e;
         }
     }
 
@@ -61,7 +62,7 @@ public function index()
             CompanyAdmin::findOrFail($id)->delete();
             return redirect()->back()->with('success', __('organization_labels::orglabel.company_admin_revoked_success'));
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
+            throw $e;
         }
     }
 }

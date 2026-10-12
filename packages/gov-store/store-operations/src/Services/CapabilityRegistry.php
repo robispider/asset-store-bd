@@ -82,6 +82,11 @@ class CapabilityRegistry
 
     public static function getDictionary(): array
     {
-        return self::$dictionary;
+        $dictionary = self::$dictionary;
+        foreach ($dictionary as $code => &$entry) {
+            $entry['name'] = __('storeops::rules.'.$code.'_name');
+            $entry['desc'] = __('storeops::rules.'.$code.'_desc');
+        }
+        return $dictionary;
     }
 }

@@ -3,6 +3,7 @@
 @section('title', __('requestlabels::requests.fulfillment_register_show_title_prefix') . $serviceRequest->request_number)
 
 @section('content')
+<div class="cr-theme">
 @if($serviceRequest->return_requested_at)
     <div class="alert alert-info">
         <p>{{ __('requestlabels::requests.return_help') }}</p>
@@ -23,10 +24,10 @@
                 <h3 class="box-title">{{ __('requestlabels::requests.fulfillment_register_show_header_summary') }}</h3>
             </div>
             <div class="box-body">
-                <table class="table table-striped">
+                <table class="gs-table table table-striped">
                     <tr>
                         <th style="width: 200px;">{{ __('requestlabels::requests.request_number') }}</th>
-                        <td><strong class="text-blue">{{ $serviceRequest->request_number }}</strong></td>
+                        <td><strong class="request-number">{{ $serviceRequest->request_number }}</strong></td>
                     </tr>
                     <tr>
                         <th>{{ __('requestlabels::requests.requester') }}</th>
@@ -51,11 +52,11 @@
             <div class="box-body">
                 @forelse($goodsIssues as $issue)
                     <div class="panel panel-default">
-                        <div class="panel-heading" style="background-color: #f9fafc;">
+                        <div class="panel-heading register-panel-heading">
                             <strong>{{ __('requestlabels::requests.fulfillment_register_show_doc_label') }}</strong> <span class="text-green">{{ $issue->issue_no }}</span>
                             <span class="pull-right text-muted">{{ __('requestlabels::requests.executed_by') }}: {{ $issue->creator->first_name ?? __('requestlabels::requests.system') }} — {{ $issue->created_at->format('d M Y') }}</span>
                         </div>
-                        <table class="table table-bordered">
+                        <table class="gs-table table table-bordered">
                             <thead>
                                 <tr>
                                     <th>{{ __('requestlabels::requests.item_type') }}</th>
@@ -85,11 +86,11 @@
                 <h3 class="box-title">{{ __('requestlabels::requests.fulfillment_register_show_header_audit') }}</h3>
             </div>
             <div class="box-body">
-                <ul class="timeline">
+                <ul class="timeline request-timeline">
                     @foreach($serviceRequest->events as $event)
                         <li>
                             <i class="fa fa-info bg-gray"></i>
-                            <div class="timeline-item" style="box-shadow: none; border: 1px solid #eee;">
+                            <div class="timeline-item">
                                 <span class="time"><i class="fa fa-clock"></i> {{ $event->created_at->format('H:i') }}</span>
                                 <h3 class="timeline-header" style="font-size: 13px; font-weight: bold;">
                                     {{ __('requestlabels::requests.event_'.$event->event_type) }}
@@ -108,5 +109,6 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

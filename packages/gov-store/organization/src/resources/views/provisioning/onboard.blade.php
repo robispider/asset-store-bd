@@ -3,38 +3,35 @@
 @section('title', __('organization_labels::orglabel.onboard_title'))
 
 @section('content')
-<style>
-    .onboarding-box { border-radius: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #d2d6de; background: #fff; }
-    .form-section-header { font-size: 15px; font-weight: bold; color: var(--main-theme-color, #3c8dbc); border-bottom: 2px solid #f4f4f4; padding-bottom: 8px; margin-top: 30px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-    .form-section-header:first-of-type { margin-top: 10px; }
-</style>
+<div class="govorg-theme">
+
 
 <div class="row">
     <div class="col-md-7">
-        <div class="box onboarding-box" style="border-top: 3px solid var(--main-theme-color, #3c8dbc);">
-            <div class="box-header with-border" style="padding: 15px 20px;">
-                <h3 class="box-title" style="font-weight: bold; font-size: 16px;">
+        <div class="box onboarding-box org-inline-77cb079a">
+            <div class="box-header with-border org-inline-baa07011">
+                <h3 class="box-title org-inline-7a0ebc26">
                     <i class="fas fa-plug"></i> {{ __('organization_labels::orglabel.onboard_workspace_title') }}
                 </h3>
             </div>
             
             <form action="{{ route('gov.org.provisioning.onboard.store') }}" method="POST">
                 @csrf
-                <div class="box-body" style="padding: 20px 25px;">
+                <div class="box-body org-inline-b9c79929">
                     
                     <!-- SECTION 1: IDENTITY -->
                     <div class="form-section-header">
                         <i class="fas fa-id-card"></i> <span>{{ __('organization_labels::orglabel.onboard_section_mapped_office') }}</span>
                     </div>
-                    <div class="form-group" style="margin-bottom: 20px;">
+                    <div class="form-group org-inline-19f5c02e">
                         <label for="existing_location_id">{{ __('organization_labels::orglabel.onboard_field_select_location_label') }} <span class="text-danger">*</span></label>
                         
                         @if(isset($preselectedLocation) && $preselectedLocation)
                             <!-- Lock selector if pre-selected from row click -->
                             <input type="hidden" name="existing_location_id" value="{{ $preselectedLocation->id }}">
-                            <input type="text" class="form-control input-lg" value="{{ $preselectedLocation->name }}" readonly style="background-color: #fafafa; font-weight: bold; color: #333;">
+                            <input type="text" class="form-control input-lg" value="{{ $preselectedLocation->name }}" readonly class="org-inline-bf6a37fe">
                         @else
-                            <select name="existing_location_id" id="existing_location_id" class="form-control select2" required style="width: 100%;">
+                            <select class="form-control select2 org-inline-442a70a1" name="existing_location_id" id="existing_location_id" required>
                                 <option value="">{{ __('organization_labels::orglabel.onboard_placeholder_choose_unprovisioned') }}</option>
                                 @foreach($unprovisionedLocations as $unmapped)
                                     <option value="{{ $unmapped->id }}">{{ $unmapped->name }}</option>
@@ -43,7 +40,7 @@
                         @endif
                         <p class="help-block">{{ __('organization_labels::orglabel.onboard_help_unprovisioned') }}</p>
                     </div>
-                    <div class="form-group" style="margin-bottom: 20px;">
+                    <div class="form-group org-inline-19f5c02e">
                         <label for="office_type">{{ __('organization_labels::orglabel.office_type_label') }}</label>
                         <select name="office_type" id="office_type" class="form-control" required>
                             @foreach(['default', 'hospital', 'school', 'ict_office'] as $type)
@@ -53,26 +50,26 @@
                     </div>
 
                     <!-- SECTION 2: GEOGRAPHY -->
-                    <div class="form-section-header" style="margin-top: 25px;">
+                    <div class="form-section-header org-inline-f5897d74">
                         <i class="fas fa-map-marked-alt"></i> <span>{{ __('organization_labels::orglabel.onboard_section_geography') }}</span>
                     </div>
-                    <div class="form-group" style="margin-bottom: 20px;">
+                    <div class="form-group org-inline-19f5c02e">
                         <label for="geoAreaSelector">{{ __('organization_labels::orglabel.onboard_field_geo_area_label') }} <span class="text-danger">*</span></label>
-                        <select name="geo_area_id" id="geoAreaSelector" class="form-control" required style="width: 100%;">
+                        <select class="form-control org-inline-442a70a1" name="geo_area_id" id="geoAreaSelector" required>
                             <option value="">{{ __('organization_labels::orglabel.onboard_placeholder_search_geo') }}</option>
                         </select>
                     </div>
 
                     <!-- SECTION 3: ADMINISTRATION & MAPPING -->
-                    <div class="form-section-header" style="margin-top: 35px;">
+                    <div class="form-section-header org-inline-67ef8815">
                         <i class="fas fa-sitemap"></i> <span>{{ __('organization_labels::orglabel.onboard_section_hierarchy') }}</span>
                     </div>
                     
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group" style="margin-bottom: 20px;">
+                            <div class="form-group org-inline-19f5c02e">
                                 <label for="company_id">{{ __('organization_labels::orglabel.onboard_field_ministry_label') }}</label>
-                                <select name="company_id" id="company_id" class="form-control select2" style="width: 100%;">
+                                <select class="form-control select2 org-inline-442a70a1" name="company_id" id="company_id">
                                     <option value="">{{ __('organization_labels::orglabel.onboard_placeholder_standalone') }}</option>
                                     @foreach($companies as $company)
                                         <option value="{{ $company->id }}">{{ $company->name }}</option>
@@ -81,9 +78,9 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group" style="margin-bottom: 20px;">
+                            <div class="form-group org-inline-19f5c02e">
                                 <label for="office_admin_id">{{ __('organization_labels::orglabel.onboard_field_admin_label') }}</label>
-                                <select name="office_admin_id" id="office_admin_id" class="form-control select2" style="width: 100%;">
+                                <select class="form-control select2 org-inline-442a70a1" name="office_admin_id" id="office_admin_id">
                                     <option value="">{{ __('organization_labels::orglabel.onboard_placeholder_leave_unassigned') }}</option>
                                     @foreach($users as $user)
                                         <option value="{{ $user->id }}">{{ $user->present()->fullName }} ({{ $user->username }})</option>
@@ -95,11 +92,11 @@
 
                 </div>
                 
-                <div class="box-footer" style="padding: 15px 25px; background-color: #fafafa; border-top: 1px solid #f4f4f4;">
-                    <a href="{{ route('gov.org.provisioning.index') }}" class="btn btn-default pull-left" style="padding: 8px 15px;">
+                <div class="box-footer org-inline-57c164f8">
+                    <a class="btn btn-default pull-left org-inline-b28ac730" href="{{ route('gov.org.provisioning.index') }}">
                         <i class="fas fa-arrow-left"></i> {{ __('organization_labels::orglabel.onboard_button_return_registry') }}
                     </a>
-                    <button type="submit" class="btn btn-success pull-right" style="padding: 8px 25px; font-weight: bold;">
+                    <button class="btn btn-success pull-right org-inline-4140e91d" type="submit">
                         <i class="fas fa-check-shield"></i> {{ __('organization_labels::orglabel.onboard_button_onboard_map') }}
                     </button>
                 </div>
@@ -109,11 +106,11 @@
 
     <!-- RIGHT COLUMN: Advisory Details -->
     <div class="col-md-5">
-        <div class="box onboarding-box" style="border-top: 3px solid #d2d6de;">
-            <div class="box-header with-border" style="padding: 15px 20px;">
-                <h3 class="box-title" style="font-weight: bold; font-size: 15px;"><i class="fas fa-info-circle text-muted"></i> {{ __('organization_labels::orglabel.onboard_guidelines_title') }}</h3>
+        <div class="box onboarding-box org-inline-8c4782bd">
+            <div class="box-header with-border org-inline-baa07011">
+                <h3 class="box-title org-inline-0fcefbc5"><i class="fas fa-info-circle text-muted"></i> {{ __('organization_labels::orglabel.onboard_guidelines_title') }}</h3>
             </div>
-            <div class="box-body" style="padding: 20px 25px; font-size: 13px; line-height: 1.6; color: #555;">
+            <div class="box-body org-inline-912f7f21">
                 <p>{{ __('organization_labels::orglabel.onboard_guidelines_desc') }}</p>
                 <ul>
                     <li>{{ __('organization_labels::orglabel.onboard_guidelines_point1') }}</li>
@@ -122,6 +119,7 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection
 

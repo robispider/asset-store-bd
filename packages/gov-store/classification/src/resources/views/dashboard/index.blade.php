@@ -2,9 +2,11 @@
 
 @section('title')
     {{ __('admin/general/global_catalog_dashboard') }}
+</div>
 @endsection
 
 @section('content')
+<div class="classification-theme">
 <div class="row">
     <div class="col-md-12">
         <nav aria-label="breadcrumb">

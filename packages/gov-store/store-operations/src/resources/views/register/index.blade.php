@@ -3,6 +3,7 @@
 @section('title', __('storeops::storeops.stock_register_dashboard'))
 
 @section('content')
+<div class="storeops-theme">
 <div class="row">
     <div class="col-md-12">
         <div class="nav-tabs-custom">
@@ -11,12 +12,12 @@
                 <li><a href="#accessories" data-toggle="tab"><i class="fa fa-keyboard-o"></i> {{ __('storeops::storeops.accessories_tab') }}</a></li>
                 <li><a href="#components" data-toggle="tab"><i class="fa fa-microchip"></i> {{ __('storeops::storeops.components_tab') }}</a></li>
             </ul>
-            
+
             <div class="tab-content">
                 <!-- CONSUMABLES TAB -->
                 <div class="tab-pane active" id="consumables">
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover dataTable">
+                        <table class="table table-striped table-hover dataTable gs-table">
                             <thead>
                                 <tr>
                                     <th>{{ __('storeops::storeops.item_name') }}</th>
@@ -51,7 +52,7 @@
                 <!-- ACCESSORIES TAB -->
                 <div class="tab-pane" id="accessories">
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover dataTable">
+                        <table class="table table-striped table-hover dataTable gs-table">
                             <thead>
                                 <tr>
                                     <th>{{ __('storeops::storeops.item_name') }}</th>
@@ -84,7 +85,7 @@
                 <!-- COMPONENTS TAB -->
                 <div class="tab-pane" id="components">
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover dataTable">
+                        <table class="table table-striped table-hover dataTable gs-table">
                             <thead>
                                 <tr>
                                     <th>{{ __('storeops::storeops.item_name') }}</th>
@@ -116,5 +117,6 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

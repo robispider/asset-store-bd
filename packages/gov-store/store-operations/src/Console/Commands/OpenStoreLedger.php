@@ -29,8 +29,13 @@ class OpenStoreLedger extends Command
                 'actor_id' => $actorId, 'scope_type' => 'location', 'scope_id' => $locationId,
                 'ability' => 'storeops.documents.post',
             ], fn () => DB::transaction(function () use ($location, $locationId, $actorId, $numbers, $ledger) {
+                Location::withoutGlobalScopes()->whereKey($locationId)->lockForUpdate()->firstOrFail();
                 if (DB::table('gov_store_ledger_openings')->where('location_id', $locationId)->lockForUpdate()->exists()) {
                     throw new \RuntimeException('This office already has an opening record.');
+                }
+                if (InventoryMovement::withoutGlobalScopes()->where('location_id', $locationId)
+                    ->whereNotIn('stockable_type', ['consumable', 'accessory', 'component', 'assetmodel'])->exists()) {
+                    throw new \RuntimeException('Review and normalize historical type aliases before office cut-over.');
                 }
 
                 $now = now();
@@ -57,7 +62,10 @@ class OpenStoreLedger extends Command
                                 $onHand = $class === AssetModel::class
                                     ? Asset::where('model_id', $item->id)->where('location_id', $locationId)->whereNull('assigned_to')
                                         ->whereHas('status', fn ($query) => $query->where('deployable', 1)->where('archived', 0))->count()
-                                    : max(0, (int) $item->numRemaining());
+                                    : (int) $item->numRemaining();
+                                if ($onHand < 0) {
+                                    throw new \RuntimeException('Native remaining stock is negative. Review historical checkouts before cut-over.');
+                                }
                                 $existingBalance = InventoryMovement::withoutGlobalScopes()
                                     ->where('stockable_type', $morphType)->where('stockable_id', $item->id)
                                     ->where('location_id', $locationId)

@@ -72,15 +72,15 @@ class ConsumablesTransformer
 
         $permissions_array['user_can_checkout'] = false;
 
-        if ($consumable->numRemaining() > 0) {
+        if (! app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->manages($consumable) && $consumable->numRemaining() > 0) {
             $permissions_array['user_can_checkout'] = true;
         }
 
         $permissions_array['available_actions'] = [
-            'checkout' => Gate::allows('checkout', Consumable::class),
-            'checkin' => Gate::allows('checkin', Consumable::class),
+            'checkout' => ! app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->manages($consumable) && Gate::allows('checkout', Consumable::class),
+            'checkin' => ! app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->manages($consumable) && Gate::allows('checkin', Consumable::class),
             'update' => Gate::allows('update', Consumable::class),
-            'delete' => Gate::allows('delete', Consumable::class),
+            'delete' => ! app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->manages($consumable) && Gate::allows('delete', Consumable::class),
             'clone' => (Gate::allows('create', Consumable::class) && ($consumable->deleted_at == '')),
         ];
         $array += $permissions_array;

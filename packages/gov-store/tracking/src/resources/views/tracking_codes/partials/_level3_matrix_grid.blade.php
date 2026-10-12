@@ -1,21 +1,21 @@
 <div id="panel-level3" class="box box-solid" style="display: none;">
     <div class="box-header with-border">
-        <h3 class="box-title text-purple"><i class="fa fa-table"></i> Exact Delivery Schedule Matrix</h3>
+        <h3 class="box-title text-purple"><i class="fa fa-table"></i> {{ __('govtracking::general.matrix.title') }}</h3>
     </div>
     <div class="box-body">
-        <x-gs::alert tone="info" title="Interactive Spreadsheet Matrix:">
+        <x-gs::alert tone="info" :title="__('govtracking::general.matrix.help_title')">
             <ul style="margin-left: 15px; padding-left: 0; list-style-type: square;">
-                <li>Click on any column or row header to trigger action menus (Move, Rename, Delete).</li>
-                <li>Use standard arrow keys or Tab / Enter to navigate the grid cells exactly like Excel.</li>
-                <li>You can copy tabular data from <strong>Excel</strong> or <strong>Google Sheets</strong> and paste it directly!</li>
-                <li>You can **drag and drop** column and row headers to reorder them on-the-fly!</li>
+                <li>{{ __('govtracking::general.matrix.help_menu') }}</li>
+                <li>{{ __('govtracking::general.matrix.help_keys') }}</li>
+                <li>{{ __('govtracking::general.matrix.help_paste') }}</li>
+                <li>{{ __('govtracking::general.matrix.help_drag') }}</li>
             </ul>
         </x-gs::alert>
 
         <!-- Dynamic Spreadsheet Real-Time Status Bar -->
         <div id="matrix-status-bar" class="margin-bottom-15 gs-matrix-status-bar">
-            <span id="matrix-status-text">
-                <span class="text-green"><i class="fa fa-check-circle"></i> <strong>Spreadsheet Status:</strong> Healthy (All allocations conform to planning rules)</span>
+            <span id="matrix-status-text" role="status" aria-live="polite">
+                <span class="text-green"><i class="fa fa-check-circle"></i> {{ __('govtracking::general.matrix.healthy') }}</span>
             </span>
         </div>
 
@@ -36,19 +36,29 @@
 
         <!-- Hidden serialization container populated before submit -->
         <div id="matrix-hidden-inputs"></div>
+        @foreach(['col' => ['left', 'right', 'change', 'delete'], 'row' => ['up', 'down', 'change', 'delete']] as $axis => $actions)
+            <div id="{{ $axis }}-context-menu" class="gs-context-menu">
+                <ul>
+                    @foreach($actions as $action)
+                        <li><button type="button" id="menu-opt-{{ $axis }}-{{ $action }}">{{ __('govtracking::general.matrix.' . $action) }}</button></li>
+                    @endforeach
+                </ul>
+            </div>
+        @endforeach
     </div>
 </div>
 
-<!-- ========================================================================= -->
-<!-- ENCODE DECOUPLED STATE-DRIVEN SCRIPT ENGINES -->
-<!-- ========================================================================= -->
-@include('govtracking::tracking_codes.partials.scripts._matrix_state')
-@include('govtracking::tracking_codes.partials.scripts._matrix_renderer')
-@include('govtracking::tracking_codes.partials.scripts._matrix_spawner')
-@include('govtracking::tracking_codes.partials.scripts._matrix_menus')
-@include('govtracking::tracking_codes.partials.scripts._matrix_keyboard')
-@include('govtracking::tracking_codes.partials.scripts._matrix_clipboard')
-@include('govtracking::tracking_codes.partials.scripts._matrix_drag_drop') <!-- Added Drag & Drop Controller -->
-@include('govtracking::tracking_codes.partials.scripts._matrix_serializer')
-@include('govtracking::tracking_codes.partials.scripts._matrix_validation')
-@include('govtracking::tracking_codes.partials.scripts._matrix_boot')
+@php
+    $matrixData = [
+        'initiativeId' => $initiative->id,
+        'labels' => __('govtracking::general.matrix'),
+        'searchOfficesUrl' => route('gov.tracking.api.search-offices'),
+        'categories' => $categories->map(fn($c) => ['id' => $c->id, 'text' => $c->name])->values(),
+        'savedCategories' => isset($trackingCode) && $trackingCode->specificity_level === '3_MATRIX'
+            ? $trackingCode->targets->map(fn($t) => ['id' => $t->category_id, 'name' => $t->category?->name ?? '', 'econ' => $t->economic_code])->values() : [],
+        'savedLocations' => isset($trackingCode) && $trackingCode->specificity_level === '3_MATRIX'
+            ? $trackingCode->targets->flatMap->allocations->map(fn($a) => ['id' => $a->location_id, 'name' => $a->location?->name ?? ''])->unique('id')->values() : [],
+        'savedValues' => $savedMatrixValues ?? [],
+    ];
+@endphp
+<script type="application/json" id="tracking-matrix-data">@json($matrixData)</script>

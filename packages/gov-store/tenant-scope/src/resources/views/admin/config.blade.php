@@ -1,8 +1,9 @@
-﻿@extends('layouts/default')
+@extends('layouts/default')
 
 @section('title', __('tenantops::ops.config_title'))
 
 @section('content')
+<div class="tenant-scope-theme">
 <div class="row">
     <div class="col-md-10 col-md-offset-1">
         <div class="box box-primary">
@@ -14,9 +15,9 @@
             <form action="{{ route('gov.scope.save-strategy') }}" method="POST">
                 @csrf
                 <div class="box-body table-responsive" style="padding: 0;">
-                    <table class="table table-striped table-hover" style="margin-bottom: 0;">
+                    <x-gs::table class="table table-striped table-hover" style="margin-bottom: 0;">
                         <thead>
-                            <tr style="background-color: #fafafa;">
+                            <tr class="tenant-scope-table-heading">
                                 <th style="padding-left: 20px;">{{ __('tenantops::ops.label_catalog_type') }}</th>
                                 <th style="width: 300px;">{{ __('tenantops::ops.label_isolation_boundary') }}</th>
                                 <th style="width: 150px;" class="text-center">{{ __('tenantops::ops.label_show_only_used') }}</th>
@@ -54,7 +55,7 @@
                                 </tr>
                             @endforeach
                         </tbody>
-                    </table>
+                    </x-gs::table>
                 </div>
                 <div class="box-footer text-right">
                     <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> {{ __('tenantops::ops.btn_save_policies') }}</button>
@@ -62,5 +63,7 @@
             </form>
         </div>
     </div>
+</div>
+
 </div>
 @endsection

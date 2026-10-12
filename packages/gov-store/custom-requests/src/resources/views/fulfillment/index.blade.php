@@ -3,6 +3,7 @@
 @section('title', __('requestlabels::requests.fulfillment_title'))
 
 @section('content')
+<div class="cr-theme">
 @include('govstore::components.notices')
 <div class="row">
     <div class="col-md-12">
@@ -11,7 +12,7 @@
                 <h3 class="box-title"><i class="fas fa-shipping-fast"></i> {{ __('requestlabels::requests.fulfillment_header_title') }}</h3>
             </div>
             <div class="box-body table-responsive">
-                <table class="table table-striped table-hover">
+                <table class="gs-table table table-striped table-hover">
                     <thead>
                         <tr>
                             <th>{{ __('requestlabels::requests.request_number') }}</th>
@@ -25,7 +26,7 @@
                     <tbody>
                         @forelse($activeRequests as $req)
                             <tr>
-                                <td><strong style="color: #3c8dbc;">{{ $req->request_number }}</strong></td>
+                                <td><strong class="request-number">{{ $req->request_number }}</strong></td>
                                 <td>{{ $req->requester->present()->fullName ?? __('requestlabels::requests.unknown_user') }}</td>
                                 <td>
                                     {{ $req->purpose }}<br>
@@ -57,5 +58,6 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

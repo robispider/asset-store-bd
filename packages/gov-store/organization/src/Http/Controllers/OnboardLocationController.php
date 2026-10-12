@@ -16,7 +16,7 @@ class OnboardLocationController extends Controller
     private function checkIctOfficerAccess()
     {
         $user = auth()->user();
-        if ($user->isSuperUser() || $user->hasAccess('admin')) {
+        if ($user->isSuperUser()) {
             return;
         }
 
@@ -36,7 +36,7 @@ class OnboardLocationController extends Controller
         $user = auth()->user();
 
         $restrictToHid = null;
-        if (!$user->isSuperUser() && !$user->hasAccess('admin')) {
+        if (!$user->isSuperUser()) {
             $jurisdiction = IctJurisdiction::with('geoArea')->where('user_id', $user->id)->first();
             $restrictToHid = $jurisdiction && $jurisdiction->geoArea ? $jurisdiction->geoArea->hid : null;
         }
@@ -96,7 +96,7 @@ class OnboardLocationController extends Controller
 
             return redirect()->route('gov.org.provisioning.index')->with('success', 'Existing office successfully onboarded.');
         } catch (\Exception $e) {
-            return redirect()->back()->withInput()->with('error', $e->getMessage());
+            throw $e;
         }
     }
 }

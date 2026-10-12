@@ -3,8 +3,8 @@
 namespace GovStore\OfficeMembership\Providers;
 
 use App\Models\User;
+use GovStore\OfficeMembership\Console\Commands\DeliverMembershipMail;
 use GovStore\OfficeMembership\Console\Commands\SyncInitialMemberships;
-use GovStore\OfficeMembership\Http\Middleware\InjectMembershipUi;
 use GovStore\OfficeMembership\Http\Middleware\SetWorkingContext;
 use GovStore\OfficeMembership\Models\OfficeMembership;
 use GovStore\OfficeMembership\Observers\MembershipActivityLogObserver;
@@ -13,7 +13,10 @@ use GovStore\OfficeMembership\Rules\NoActiveAssetsRule;
 use GovStore\OfficeMembership\Rules\NoActiveRolesRule;
 use GovStore\OfficeMembership\Services\ClearanceEngine;
 use GovStore\OfficeMembership\Services\OfficeMembershipService;
+use GovStore\OfficeMembership\Services\TenantMembershipResolver;
+use GovStore\TenantScope\Contracts\MembershipContextResolver;
 use GovStore\TenantScope\Navigation\MenuRegistry;
+use GovStore\Theming\Facades\GsTheme;
 use Illuminate\Support\ServiceProvider;
 
 class OfficeMembershipServiceProvider extends ServiceProvider
@@ -25,13 +28,16 @@ class OfficeMembershipServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'govmem');
 
+        if ($this->app->bound('gs.theme')) {
+            GsTheme::assets()->css('office-membership', __DIR__.'/../resources/css/office-membership.css');
+        }
+
         // Inject UI Middlewares & Session Context Loader into global routing group
         $router = $this->app['router'];
-        $router->pushMiddlewareToGroup('web', InjectMembershipUi::class);
         $router->pushMiddlewareToGroup('web', SetWorkingContext::class);
 
         if ($this->app->runningInConsole()) {
-            $this->commands([SyncInitialMemberships::class]);
+            $this->commands([SyncInitialMemberships::class, DeliverMembershipMail::class]);
         }
 
         // Register Eloquent Observers for Compliance logging
@@ -57,7 +63,7 @@ class OfficeMembershipServiceProvider extends ServiceProvider
         $registry->register([
             'id' => 'govmem-staff',
             'parent' => 'gov-store',
-            'title' => 'Staff Management',
+            'title' => 'office_membership::member.nav_staff',
             'icon' => 'fas fa-users-cog fa-fw',
             'route' => 'gov.membership.admin.index',
             'permission' => 'office_admin',
@@ -68,18 +74,19 @@ class OfficeMembershipServiceProvider extends ServiceProvider
         $registry->register([
             'id' => 'govmem-override',
             'parent' => 'gov-store',
-            'title' => 'Membership Overrides',
+            'title' => 'office_membership::member.nav_overrides',
             'icon' => 'fas fa-shield-alt fa-fw',
             'route' => 'gov.membership.override.console',
-            'permission' => 'admin',
+            'permission' => 'superuser',
             'order' => 90,
         ]);
     }
 
     public function register()
     {
-        $this->app->bind(\GovStore\TenantScope\Contracts\MembershipContextResolver::class,
-            \GovStore\OfficeMembership\Services\TenantMembershipResolver::class);
+        $this->mergeConfigFrom(__DIR__.'/../config/notices.php', 'membership-notices');
+        $this->app->bind(MembershipContextResolver::class,
+            TenantMembershipResolver::class);
         // Bind the decoupled membership service helper
         $this->app->singleton(OfficeMembershipService::class, function ($app) {
             return new OfficeMembershipService;

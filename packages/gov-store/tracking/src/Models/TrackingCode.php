@@ -22,15 +22,6 @@ class TrackingCode extends Model
         'order_pdf_path',
     ];
 
-    protected static function booted()
-    {
-        static::deleting(function (TrackingCode $code) {
-            if ($code->order_pdf_path && Storage::disk('local')->exists($code->order_pdf_path)) {
-                Storage::disk('local')->delete($code->order_pdf_path);
-            }
-        });
-    }
-
     // ... [Relationships remain unchanged]
     
     public function initiative(): BelongsTo { return $this->belongsTo(Initiative::class, 'initiative_id'); }
@@ -38,4 +29,5 @@ class TrackingCode extends Model
     public function targets(): HasMany { return $this->hasMany(TrackingTarget::class, 'tracking_code_id'); }
     public function scopes(): HasMany { return $this->hasMany(TrackingScope::class, 'tracking_code_id'); }
     public function associations(): HasMany { return $this->hasMany(TrackingAssociation::class, 'tracking_code_id'); }
+    public function documents(): HasMany { return $this->hasMany(TrackingDocument::class, 'tracking_code_id'); }
 }

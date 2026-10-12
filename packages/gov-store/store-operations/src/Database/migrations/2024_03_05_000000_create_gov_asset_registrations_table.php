@@ -13,7 +13,7 @@ return new class extends Migration
             $table->uuid('intake_item_id'); // FK to our generic gov_document_items table
             $table->unsignedInteger('asset_id'); // FK to Snipe-IT's core assets.id
             $table->string('asset_tag');
-            $table->string('serial_number');
+            $table->string('serial_number')->nullable();
             $table->timestamp('created_at')->useCurrent();
 
             $table->foreign('intake_item_id')->references('id')->on('gov_document_items')->onDelete('cascade');

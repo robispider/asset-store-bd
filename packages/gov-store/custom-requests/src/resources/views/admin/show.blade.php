@@ -3,6 +3,7 @@
 @section('title', __('requestlabels::requests.admin_show_title_prefix') . $serviceRequest->request_number)
 
 @section('content')
+<div class="cr-theme">
 <div class="row">
     <!-- LEFT: Line-Item Decision Form -->
     <div class="col-md-8">
@@ -19,7 +20,7 @@
                 <div class="box-body table-responsive">
                     
                     <!-- Metadata Header -->
-                    <table class="table table-bordered" style="background-color: #fafafa; margin-bottom: 25px;">
+                    <table class="gs-table table table-bordered">
                         <tr>
                             <td style="width: 25%;"><strong>{{ __('requestlabels::requests.admin_show_label_purpose') }}</strong></td>
                             <td>{{ $serviceRequest->purpose }}</td>
@@ -38,7 +39,7 @@
                     </table>
 
                     <!-- Line Items Table -->
-                    <table class="table table-striped table-hover">
+                    <table class="gs-table table table-striped table-hover">
                         <thead>
                             <tr>
                                 <th>{{ __('requestlabels::requests.item_details') }}</th>
@@ -104,7 +105,7 @@
                 <h3 class="box-title"><i class="fas fa-history"></i> {{ __('requestlabels::requests.admin_show_header_timeline') }}</h3>
             </div>
             <div class="box-body">
-                <ul class="timeline">
+                <ul class="timeline request-timeline">
                     @foreach($serviceRequest->events as $event)
                         <li>
                             @if($event->event_type === 'draft_created')
@@ -117,12 +118,12 @@
                                 <i class="fa fa-info bg-gray"></i>
                             @endif
 
-                            <div class="timeline-item" style="box-shadow: none; border: 1px solid #eee; background-color: #fafafa; margin-left: 45px;">
+                            <div class="timeline-item">
                                 <span class="time"><i class="fa fa-clock"></i> {{ $event->created_at->format('H:i') }}</span>
-                                <h3 class="timeline-header" style="font-size: 13px; font-weight: bold; border-bottom: none; padding: 5px 10px;">
+                                <h3 class="timeline-header">
                                     {{ __('requestlabels::requests.event_'.$event->event_type) }}
                                 </h3>
-                                <div class="timeline-body" style="padding: 5px 10px; font-size: 12px; color: #555;">
+                                <div class="timeline-body">
                                     {{ __('requestlabels::requests.executed_by') }}: <strong>{{ $event->user->display_name }}</strong>
                                     @if(isset($event->details['message']))
                                         <p style="margin-top: 5px;">{{ $event->details['message'] }}</p>
@@ -137,8 +138,8 @@
         </div>
     </div>
 </div>
+</div>
 @endsection
-
 @section('moar_scripts')
 
 @endsection

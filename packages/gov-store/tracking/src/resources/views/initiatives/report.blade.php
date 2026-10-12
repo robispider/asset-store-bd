@@ -10,8 +10,8 @@
             <div class="col-md-12">
                 <div class="box box-solid box-default hidden-print" style="margin-bottom: 15px;">
                     <div class="box-body text-right">
-                        <a href="{{ route('gov.tracking.initiatives.show', $initiative->id) }}" class="btn btn-default pull-left"><i class="fa fa-arrow-left"></i> Back to Workspace</a>
-                        <button onclick="window.print()" class="btn btn-primary btn-lg"><i class="fa fa-print"></i> Print Executive Report</button>
+                        <a href="{{ route('gov.tracking.initiatives.show', $initiative->id) }}" class="btn btn-default pull-left"><i class="fa fa-arrow-left"></i> {{ __('govtracking::general.task.back') }}</a>
+                        <button data-tracking-print class="btn btn-primary btn-lg"><i class="fa fa-print"></i> {{ __('govtracking::general.ui.print_executive_report') }}</button>
                     </div>
                 </div>
             </div>
@@ -27,8 +27,8 @@
                 <x-gs::key-value :columns="2" :items="[
                     ['label' => __('govtracking::general.programme_project'), 'value' => $initiative->title],
                     ['label' => __('govtracking::general.current_status'), 'value' => strtoupper($initiative->status)],
-                    ['label' => __('govtracking::general.owning_org'), 'value' => $initiative->ownerCompany->name ?? 'Unknown'],
-                    ['label' => __('govtracking::general.reporting_period'), 'value' => !empty($activeFiscalYears) ? 'FY ' . $activeFiscalYears : 'Unbounded'],
+                    ['label' => __('govtracking::general.owning_org'), 'value' => $initiative->ownerCompany->name ?? __('govtracking::general.ui.extra_unknown')],
+                    ['label' => __('govtracking::general.reporting_period'), 'value' => !empty($activeFiscalYears) ? 'FY ' . $activeFiscalYears : __('govtracking::general.ui.extra_unbounded')],
                 ]" />
             </x-slot:meta>
 
@@ -41,7 +41,7 @@
                     foreach ($trackingCodes as $code) {
                         foreach ($code->targets as $target) {
                             $catId = $target->category_id;
-                            $catName = $target->category->name ?? 'Unknown Category';
+                            $catName = $target->category->name ?? __('govtracking::general.ui.extra_unknown_category');
 
                             $prog = $target->progress ?? [
                                 'percentage' => 0,
@@ -125,7 +125,7 @@
                                         $prog = $target->progress ?? ['received' => 0, 'planned' => $target->planned_qty, 'percentage' => 0];
                                     @endphp
                                     ↳ {{ __('govtracking::general.col_economic_code') }}: <strong>{{ $target->economic_code ?? 'N/A' }}</strong><br>
-                                    <span style="padding-left: 15px;">Planned: {{ $prog['planned'] }} {{ $target->category->name ?? 'Unknown Category' }} | Received: {{ $prog['received'] }} {{ $target->category->name ?? 'Unknown Category' }} ({{ $prog['percentage'] }}% Complete)</span><br>
+                                    <span style="padding-left: 15px;">{{ __('govtracking::general.ui.extra_planned') }} {{ $prog['planned'] }} {{ $target->category->name ?? __('govtracking::general.ui.extra_unknown_category') }} | {{ __('govtracking::general.ui.extra_received') }} {{ $prog['received'] }} {{ $target->category->name ?? __('govtracking::general.ui.extra_unknown_category') }} ({{ $prog['percentage'] }}% {{ __('govtracking::general.ui.extra_complete') }})</span><br>
                                 @endforeach
                             </div>
                         </li>
@@ -194,7 +194,7 @@
 
                                             <td><code>{{ $econCode }}</code></td>
                                             <td>{{ $item['category_name'] }}</td>
-                                            <td><strong>{{ $item['received'] }} units</strong></td>
+                                            <td><strong>{{ $item['received'] }} {{ __('govtracking::general.ui.extra_units') }}</strong></td>
                                             <td>Calculating...</td>
                                             <td><strong>{{ $item['percentage'] >= 100 ? '🟢' : '🟡' }}</strong></td>
                                         </tr>
@@ -245,8 +245,8 @@
                                     <td><strong>{{ $geoName }}</strong></td>
                                     <td>{{ $fact->location->name ?? "Office #{$fact->location_id}" }}</td>
                                     <td><code>{{ $econCode }}</code></td>
-                                    <td>{{ $fact->category->name ?? 'Unknown Category' }}</td>
-                                    <td><strong>{{ $fact->received_qty }} units</strong></td>
+                                    <td>{{ $fact->category->name ?? __('govtracking::general.ui.extra_unknown_category') }}</td>
+                                    <td><strong>{{ $fact->received_qty }} {{ __('govtracking::general.ui.extra_units') }}</strong></td>
                                     <td>{{ $avgPrice > 0 ? number_format($avgPrice, 2) . ' BDT' : 'N/A' }}</td>
                                     <td><strong>{{ $fact->transaction_count }}</strong></td>
                                 </tr>

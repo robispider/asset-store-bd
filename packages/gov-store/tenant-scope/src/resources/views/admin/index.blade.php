@@ -1,8 +1,9 @@
-﻿@extends('layouts/default')
+@extends('layouts/default')
 
 @section('title', __('tenantops::ops.index_title'))
 
 @section('content')
+<div class="tenant-scope-theme">
 <div class="row">
     <!-- LEFT: Core Configurator Strategy Matrix -->
     <div class="col-md-7">
@@ -15,7 +16,7 @@
             <form action="{{ route('gov.scope.save-strategy') }}" method="POST">
                 @csrf
                 <div class="box-body table-responsive">
-                    <table class="table table-striped table-hover">
+                    <x-gs::table class="table table-striped table-hover">
                         <thead>
                             <tr>
                                 <th>{{ __('tenantops::ops.label_catalog_type') }}</th>
@@ -56,7 +57,7 @@
                                 </tr>
                             @endforeach
                         </tbody>
-                    </table>
+                    </x-gs::table>
                 </div>
                 <div class="box-footer">
                     <button type="submit" class="btn btn-primary pull-right"><i class="fas fa-save"></i> {{ __('tenantops::ops.btn_save_policies') }}</button>
@@ -70,7 +71,7 @@
                 <h3 class="box-title"><i class="fas fa-user-lock"></i> {{ __('tenantops::ops.index_explicit_map') }} ({{ $mappings->count() }})</h3>
             </div>
             <div class="box-body table-responsive" style="max-height: 350px; overflow-y: auto;">
-                <table class="table table-striped table-hover">
+                <x-gs::table class="table table-striped table-hover">
                     <thead>
                         <tr>
                             <th>{{ __('tenantops::ops.table_reference_item') }}</th>
@@ -118,7 +119,7 @@
                             </tr>
                         @endforelse
                     </tbody>
-                </table>
+                </x-gs::table>
             </div>
         </div>
     </div>
@@ -174,6 +175,8 @@
             </form>
         </div>
     </div>
+</div>
+
 </div>
 @endsection
 

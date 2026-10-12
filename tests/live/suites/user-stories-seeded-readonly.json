@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "id": "user-stories-seeded-readonly",
+  "title": "User stories — all 31 seeded UI entry checks",
+  "description": "One read-only UI entry check for each of US-01 through US-31 using role-matched actors resolved from current seeded data. These checks verify the story's primary page and access boundary; they do not perform workflow mutations. Missing role/data fixtures are reported as blocked. See docs/testing/user-stories-live-test-plan.md for full role journeys and guarded write phases.",
+  "environment": {
+    "target": "http://snipeit.local",
+    "allowlist": [
+      "http://snipeit.local"
+    ]
+  },
+  "journeys": [
+    "user-stories.us-01",
+    "user-stories.us-02",
+    "user-stories.us-03",
+    "user-stories.us-04",
+    "user-stories.us-05",
+    "user-stories.us-06",
+    "user-stories.us-07",
+    "user-stories.us-08",
+    "user-stories.us-09",
+    "user-stories.us-10",
+    "user-stories.us-11",
+    "user-stories.us-12",
+    "user-stories.us-13",
+    "user-stories.us-14",
+    "user-stories.us-15",
+    "user-stories.us-16",
+    "user-stories.us-17",
+    "user-stories.us-18",
+    "user-stories.us-19",
+    "user-stories.us-20",
+    "user-stories.us-21",
+    "user-stories.us-22",
+    "user-stories.us-23",
+    "user-stories.us-24",
+    "user-stories.us-25",
+    "user-stories.us-26",
+    "user-stories.us-27",
+    "user-stories.us-28",
+    "user-stories.us-29",
+    "user-stories.us-30",
+    "user-stories.us-31"
+  ],
+  "defaults": {
+    "language": "en-US",
+    "timeoutMs": 90000
+  }
+}

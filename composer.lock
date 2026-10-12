@@ -2032,6 +2032,19 @@
         {
             "name": "gov-store/store-operations",
             "version": "dev-master",
+            "require": {
+                "gov-store/metadata": "dev-master",
+                "gov-store/tenant-scope": "dev-master",
+                "illuminate/console": "^12.0",
+                "illuminate/database": "^12.0",
+                "illuminate/support": "^12.0",
+                "illuminate/validation": "^12.0",
+                "php": "^8.2"
+            },
+            "suggest": {
+                "gov-store/committee": "Optional committee purpose registry for future receipt inspection",
+                "gov-store/tracking": "Programme verification and atomic receipt delivery integration"
+            },
             "dist": {
                 "type": "path",
                 "url": "./packages/gov-store/store-operations",

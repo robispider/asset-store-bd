@@ -1,8 +1,10 @@
 const mix = require("laravel-mix");
 const fs = require("node:fs");
+mix.js("./resources/assets/js/store-operations.js", "./public/js/dist/store-operations.js").version();
+mix.js("./resources/assets/js/store-operations-rules.js", "./public/js/dist/store-operations-rules.js").version();
+mix.copy("./resources/assets/css/store-operations.css", "./public/css/dist/store-operations.css").version();
 
 mix.js("./resources/assets/js/committee.js", "./public/js/dist/committee.js").version();
-mix.copy("./resources/assets/css/committee.css", "./public/css/dist/committee.css").version();
 
 // This generates a file called app.css, which we use
 // later on to build all.css

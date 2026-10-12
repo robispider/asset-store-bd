@@ -2,63 +2,60 @@
 
 namespace GovStore\UserOnboarding\Http\Controllers;
 
-use Illuminate\Routing\Controller;
-use Illuminate\Http\Request;
 use GovStore\UserOnboarding\Models\UserOnboarding;
+use GovStore\UserOnboarding\Services\OnboardingAccess;
 use GovStore\UserOnboarding\Services\UserOnboardingService;
-use App\Models\User;
-use App\Models\Location;
-use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 
 class UserOnboardingController extends Controller
 {
-    private function checkAccess()
+    public function index(Request $request, OnboardingAccess $access)
     {
-        $user = auth()->user();
-        if ($user->isSuperUser() || $user->hasAccess('admin')) return;
+        $actor = $access->actor();
+        $status = $request->validate(['status' => 'nullable|in:WAITING,COMPLETED,CANCELLED'])['status'] ?? 'WAITING';
+        $queue = $access->queue($actor)->where('status', $status)->with(['user', 'creator', 'geoArea', 'events'])->orderBy('id')->paginate(25)->withQueryString();
+        $managers = $queue->getCollection()->mapWithKeys(fn ($item) => [$item->id => $status === 'WAITING' ? $access->managerChoices($item) : []]);
+        $locations = $access->offices($actor);
+        $notices = $this->notices($actor->id);
 
-        // ICT Officers or Company Admins have access to the onboarding queue
-        $isIctOfficer = \GovStore\Organization\Models\IctJurisdiction::where('user_id', $user->id)->exists();
-        $isCompanyAdmin = \GovStore\Organization\Models\CompanyAdmin::where('user_id', $user->id)->exists();
-
-        if (!$isIctOfficer && !$isCompanyAdmin) {
-            abort(403, 'Unauthorized access to the Onboarding Queue.');
-        }
+        return view('govonboard::queue.index', compact('queue', 'locations', 'status', 'notices', 'managers'));
     }
 
-    public function index()
+    public function mine()
     {
-        $this->checkAccess();
+        $item = UserOnboarding::where('user_id', auth()->id())->with('membership.location')->first();
+        $notices = $this->notices(auth()->id());
 
-        // Query waiting orphans (Bypassing UserScope to let admins see unassigned users in their bounds)
-        $queue = UserOnboarding::where('status', 'WAITING')
-            ->whereIn('user_id', function ($query) {
-                // Let UserScope handle the geographic filter calculation natively
-                $query->select('id')->from('users')->whereNull('location_id');
-            })
-            ->with(['user', 'creator', 'geoArea'])
-            ->paginate(25);
+        // Reasons and other recipients are private administrative history.
+        return view('govonboard::queue.mine', compact('item', 'notices'));
+    }
 
-        // Fetch visible operational locations for assignment
-        $locations = Location::orderBy('name')->get();
-
-        return view('govonboard::queue.index', compact('queue', 'locations'));
+    private function notices(int $id)
+    {
+        return DB::table('gov_onboarding_notices as n')->leftJoin('locations as l', 'l.id', '=', 'n.location_id')
+            ->where('n.user_id', $id)->orderByDesc('n.id')->limit(20)->get(['n.event_key', 'n.created_at', 'l.name as office']);
     }
 
     public function assign(Request $request, UserOnboardingService $service)
     {
-        $this->checkAccess();
+        $data = $request->validate(['onboarding_id' => 'required|integer|min:1', 'location_id' => 'required|integer|min:1']);
+        $service->assignToOffice($data['onboarding_id'], $data['location_id']);
 
-        $request->validate([
-            'onboarding_id' => 'required|integer',
-            'location_id'   => 'required|integer|exists:locations,id',
-        ]);
+        return redirect()->route('gov.onboard.index')->with('success', __('govonboard::onboard.assigned'));
+    }
 
-        try {
-            $service->assignToOffice($request->onboarding_id, $request->location_id);
-            return redirect()->back()->with('success', 'User successfully assigned to office and activated.');
-        } catch (Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
+    public function decide(Request $request, UserOnboardingService $service)
+    {
+        $data = $request->validate(['onboarding_id' => 'required|integer|min:1', 'action' => 'required|in:cancel,reject,reassign,reopen',
+            'reason' => 'required|string|min:5|max:1000', 'owner_id' => 'nullable|integer|min:1', 'owner_type' => 'nullable|in:OFFICE_ADMIN,COMPANY_ADMIN,ICT_OFFICER',
+            'owner_choice' => ['nullable', 'regex:/^(OFFICE_ADMIN|COMPANY_ADMIN|ICT_OFFICER):[1-9][0-9]*$/']]);
+        if (! empty($data['owner_choice'])) {
+            [$data['owner_type'], $data['owner_id']] = explode(':', $data['owner_choice']);
         }
+        $service->decide($data['onboarding_id'], $data['action'], $data['reason'], $data['owner_id'] ?? null, $data['owner_type'] ?? null);
+
+        return redirect()->route('gov.onboard.index')->with('success', __('govonboard::onboard.updated'));
     }
 }

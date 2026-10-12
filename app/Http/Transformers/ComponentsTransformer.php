@@ -69,15 +69,15 @@ class ComponentsTransformer
             ] : null,
             'created_at' => Helper::getFormattedDateObject($component->created_at, 'datetime'),
             'updated_at' => Helper::getFormattedDateObject($component->updated_at, 'datetime'),
-            'user_can_checkout' => ($component->numRemaining() > 0) ? 1 : 0,
+            'user_can_checkout' => (! app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->manages($component) && $component->numRemaining() > 0) ? 1 : 0,
         ];
 
         $permissions_array['available_actions'] = [
-            'checkout' => Gate::allows('checkout', Component::class),
-            'checkin' => Gate::allows('checkin', Component::class),
+            'checkout' => ! app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->manages($component) && Gate::allows('checkout', Component::class),
+            'checkin' => ! app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->manages($component) && Gate::allows('checkin', Component::class),
             'update' => Gate::allows('update', Component::class),
             'clone' => Gate::allows('create', Component::class),
-            'delete' => $component->isDeletable(),
+            'delete' => ! app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->manages($component) && $component->isDeletable(),
         ];
         $array += $permissions_array;
 

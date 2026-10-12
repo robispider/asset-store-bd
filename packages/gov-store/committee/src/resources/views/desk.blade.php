@@ -13,9 +13,9 @@
         @if(isset($item['dismiss']))<form class="cm-command" method="post" action="{{ route('committee.reminder.dismiss',$item['dismiss']) }}">@csrf<x-gov-action ability="committee.manage" type="submit" class="btn btn-default">{{ __('committee::committee.ux.let_end') }}</x-gov-action></form>@endif
     </div></article>@empty<div class="cm-card cm-readiness"><i class="fa fa-check" aria-hidden="true"></i> {{ __('committee::committee.ux.all_clear') }}</div>@endforelse
     </section>
-    <section class="box"><h2>{{ __('committee::committee.ux.coverage') }}</h2><p class="cm-muted">{{ __('committee::committee.ux.coverage_help') }}</p><div class="table-responsive"><table class="table table-hover"><thead><tr><th>{{ __('committee::committee.ux.job') }}</th><th>{{ __('committee::committee.ux.responsible_committee') }}</th><th>{{ __('committee::committee.status') }}</th></tr></thead><tbody>
+    <section class="box"><h2>{{ __('committee::committee.ux.coverage') }}</h2><p class="cm-muted">{{ __('committee::committee.ux.coverage_help') }}</p><div class="table-responsive"><x-gs::table class="table table-hover"><thead><tr><th>{{ __('committee::committee.ux.job') }}</th><th>{{ __('committee::committee.ux.responsible_committee') }}</th><th>{{ __('committee::committee.status') }}</th></tr></thead><tbody>
     @forelse($desk['coverage'] as $row)<tr><td>{{ $row['purpose'] }}</td><td>@if($row['committee'])<a href="{{ route('committee.show',$row['committee']->id) }}">{{ $display::text($row['committee']->nameBn,$row['committee']->nameEn) }}</a><br><small>{{ $display::date($row['committee']->effectiveTo) }}</small>@else{{ __('committee::committee.ux.'.($row['status'] === 'MISSING' ? 'missing' : 'multiple_cover')) }}@endif</td><td>@include('committee::partials/status',['status'=>$row['status']])</td></tr>@empty<tr><td colspan="3">{{ __('committee::committee.ux.select_office') }}</td></tr>@endforelse
-    </tbody></table></div></section>
+    </tbody></x-gs::table></div></section>
 </div><aside class="col-md-4"><section class="box"><h2>{{ __('committee::committee.ux.recent') }}</h2>
     @forelse($desk['recent'] as $entry)<div class="cm-order-row"><div><small>{{ $entry['date'] }} · {{ $entry['actor'] }}</small><p>{{ $entry['sentence'] }}</p></div></div>@empty<p class="cm-muted">{{ __('committee::committee.empty') }}</p>@endforelse
 </section></aside></div>

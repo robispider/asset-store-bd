@@ -2,9 +2,7 @@
 
 namespace GovStore\Tracking\Providers;
 
-use App\Models\Asset;
 use GovStore\Tracking\Models\TrackingAssociation;
-use GovStore\Tracking\Observers\AssetObserver;
 use GovStore\Tracking\Observers\TrackingAssociationObserver;
 use GovStore\Tracking\Repositories\TrackingProjectionRepositoryInterface;
 use GovStore\Tracking\Repositories\CachedTrackingProjectionRepository;
@@ -57,7 +55,7 @@ class TrackingServiceProvider extends ServiceProvider
 
         // Crash-proof Web UI Routes Loader
         if (file_exists($webRoutePath)) {
-            Route::middleware(['web', 'auth'])
+            Route::middleware(['web', 'auth', \GovStore\Tracking\Http\Middleware\SafeTrackingResponse::class])
                 ->prefix('gov-store/admin/tracking')
                 ->name('gov.tracking.')
                 ->group($webRoutePath);
@@ -68,7 +66,7 @@ class TrackingServiceProvider extends ServiceProvider
         // This allows browser AJAX calls to seamlessly authenticate using the 
         // storekeeper's session cookies, completely resolving the 403 Forbidden errors!
         if (file_exists($apiRoutePath)) {
-            Route::middleware(['web', 'auth'])
+            Route::middleware(['web', 'auth', \GovStore\Tracking\Http\Middleware\SafeTrackingResponse::class])
                 ->prefix('gov-store/api/tracking')
                 ->name('gov.tracking.api.')
                 ->group($apiRoutePath);
@@ -95,6 +93,9 @@ class TrackingServiceProvider extends ServiceProvider
     {
         if ($this->app->bound('gs.theme')) {
             GsTheme::assets()->css('tracking', __DIR__.'/../resources/css/tracking.css');
+            GsTheme::assets()->js('tracking', __DIR__.'/../resources/js/matrix.js');
+            GsTheme::assets()->js('tracking', __DIR__.'/../resources/js/task-form.js');
+            GsTheme::assets()->js('tracking', __DIR__.'/../resources/js/workspace.js');
         }
     }
 
@@ -106,8 +107,9 @@ class TrackingServiceProvider extends ServiceProvider
 
     protected function registerObservers(): void
     {
-        Asset::observe(AssetObserver::class);
         TrackingAssociation::observe(TrackingAssociationObserver::class);
+        \GovStore\Tracking\Models\TrackingCode::observe(\GovStore\Tracking\Observers\ProjectionSourceObserver::class);
+        \GovStore\Tracking\Models\TrackingTarget::observe(\GovStore\Tracking\Observers\ProjectionSourceObserver::class);
     }
 
    protected function registerConsoleCommands(): void
@@ -135,7 +137,7 @@ class TrackingServiceProvider extends ServiceProvider
         // 1. ROOT CATEGORY
         $registry->register([
             'id'    => 'gov-tracking-root',
-            'title' => 'Programme Tracking',
+            'title' => 'govtracking::general.module_title',
             'icon'  => 'fas fa-map-signs text-orange',
             'order' => 35,
             'permission' => ['admin', 'company_admin',  'project_member'], // Added project_member
@@ -145,7 +147,7 @@ class TrackingServiceProvider extends ServiceProvider
         $registry->register([
             'id'         => 'gov-tracking-initiatives',
             'parent'     => 'gov-tracking-root',
-            'title'      => 'Active Initiatives',
+            'title'      => 'govtracking::general.active_initiatives',
             'icon'       => 'fas fa-folder-open text-aqua',
             'route'      => 'gov.tracking.initiatives.index',
             'order'      => 10,
@@ -157,7 +159,7 @@ class TrackingServiceProvider extends ServiceProvider
         $registry->register([
             'id'         => 'gov-tracking-config',
             'parent'     => 'gov-tracking-root',
-            'title'      => 'System Configuration',
+            'title'      => 'govtracking::general.system_config',
             'icon'       => 'fas fa-cog text-yellow',
             'route'      => 'gov.tracking.funding-types.index',
             'order'      => 40,

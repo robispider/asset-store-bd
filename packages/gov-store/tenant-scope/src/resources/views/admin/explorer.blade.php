@@ -1,8 +1,9 @@
-﻿@extends('layouts/default')
+@extends('layouts/default')
 
 @section('title', __('tenantops::ops.explorer_title'))
 
 @section('content')
+<div class="tenant-scope-theme">
 <div class="row" style="margin-bottom: 15px;">
     <div class="col-md-12 text-right">
         <!-- Assign Trigger Button -->
@@ -15,7 +16,7 @@
 <div class="row">
     <!-- Filter Sidebar Panel -->
     <div class="col-md-3">
-        <div class="box box-solid box-default" style="border: 1px solid #d2d6de;">
+        <div class="box box-solid box-default" class="tenant-scope-surface-border">
             <div class="box-header with-border">
                 <h3 class="box-title"><i class="fas fa-filter"></i> {{ __('tenantops::ops.filter_header') }}</h3>
             </div>
@@ -53,9 +54,9 @@
     <div class="col-md-9">
         <div class="box box-primary">
             <div class="box-body table-responsive" style="padding: 0;">
-                <table class="table table-striped table-hover" style="margin-bottom: 0;">
+                <x-gs::table class="table table-striped table-hover" style="margin-bottom: 0;">
                     <thead>
-                        <tr style="background-color: #fcfcfc;">
+                        <tr class="tenant-scope-table-heading">
                             <th style="padding-left: 15px;">{{ __('tenantops::ops.table_reference_item') }}</th>
                             <th>{{ __('tenantops::ops.table_scoped_boundary') }}</th>
                             <th class="text-center" style="width: 100px;">{{ __('tenantops::ops.table_action') }}</th>
@@ -100,7 +101,7 @@
                             </tr>
                         @endforelse
                     </tbody>
-                </table>
+                </x-gs::table>
             </div>
             <div class="box-footer text-right" style="padding: 10px 15px 0 15px;">
                 {{ $mappings->links() }}
@@ -161,6 +162,8 @@
             </form>
         </div>
     </div>
+</div>
+
 </div>
 @endsection
 

@@ -10,7 +10,7 @@
 
         <!-- Suggestions Dropdown -->
         @if(count($suggestions) > 0)
-        <div class="catalog-suggestions list-group" style="margin-top: 5px;">
+        <div class="catalog-suggestions list-group classify-inline-49e4866e">
             @foreach($suggestions as $index => $item)
                 <button type="button" 
                         class="list-group-item list-group-item-action"

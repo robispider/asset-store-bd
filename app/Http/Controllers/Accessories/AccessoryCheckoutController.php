@@ -32,6 +32,7 @@ class AccessoryCheckoutController extends Controller
     {
 
         $this->authorize('checkout', $accessory);
+        app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->assertNativeMovementAllowed($accessory);
 
         if ($accessory->category) {
             // Make sure there is at least one available to checkout
@@ -63,6 +64,7 @@ class AccessoryCheckoutController extends Controller
     {
 
         $this->authorize('checkout', $accessory);
+        app(\GovStore\StoreOperations\Services\LedgerStockGuard::class)->assertNativeMovementAllowed($accessory);
 
         $target = $this->determineCheckoutTarget();
         session()->put(['checkout_to_type' => $target]);

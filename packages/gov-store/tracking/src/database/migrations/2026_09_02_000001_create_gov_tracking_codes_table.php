@@ -8,7 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::dropIfExists('gov_tracking_codes');
+        if (Schema::hasTable('gov_tracking_codes')) {
+            return;
+        }
 
         Schema::create('gov_tracking_codes', function (Blueprint $table) {
             $table->id();

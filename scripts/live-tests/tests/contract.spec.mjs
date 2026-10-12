@@ -140,6 +140,12 @@ async function runContractTests() {
       return;
     }
 
+    if (['/admin/catalog/import', '/admin/catalog/collections', '/import', '/directory'].includes(req.url)) {
+      res.writeHead(403, { 'Content-Type': 'text/plain' });
+      res.end('Forbidden');
+      return;
+    }
+
     if (req.url === '/form') {
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.end('<!DOCTYPE html><html><body><input id="note" name="note" required /></body></html>');
@@ -283,8 +289,15 @@ async function runContractTests() {
   }, new VariableContext(), testBaseUrl);
   assert.equal(badPath.status, 'failed');
   assert(/outside the allowlist/.test(badPath.error));
+  for (const path of ['/admin/catalog/import', '/admin/catalog/collections', '/import', '/directory']) {
+    const allowedReadonlyPath = await multiInterpreter.executeJourney(probePage, {
+      journeyId: `contract.probe-allowed-${path.replace(/[^a-z0-9]+/gi, '-')}`,
+      steps: [{ action: 'probe', path, expectStatus: [403] }]
+    }, new VariableContext(), testBaseUrl);
+    assert.equal(allowedReadonlyPath.status, 'passed', `Read-only admin probe should be allowlisted: ${path}`);
+  }
   await probePage.close();
-  console.log('   [PASS] Wrong probe expectation and non-allowlisted path fail.');
+  console.log('   [PASS] Wrong probe expectation fails; only the explicit read-only admin roots are allowlisted.');
 
   // Test Case E: cleanup failure converts an otherwise passing journey into a failure
   console.log('   Running cleanup-failure journey...');

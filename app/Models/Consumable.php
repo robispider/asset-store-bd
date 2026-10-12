@@ -20,6 +20,10 @@ use Watson\Validating\ValidatingTrait;
 class Consumable extends SnipeModel
 {
     use \GovStore\TenantScope\Concerns\UsesOfficeInventoryBuilder;
+    public function newEloquentBuilder($query)
+    {
+        return new \GovStore\StoreOperations\Services\StoreInventoryBuilder($query);
+    }
     use HasFactory;
 
     protected $presenter = ConsumablePresenter::class;

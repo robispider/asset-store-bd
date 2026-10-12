@@ -3,17 +3,17 @@
 namespace GovStore\Tracking\Observers;
 
 use GovStore\Tracking\Models\TrackingAssociation;
-use GovStore\Tracking\Jobs\RebuildTrackingProjectionJob;
+use GovStore\Tracking\Services\ProjectionRefresh;
 
 class TrackingAssociationObserver
 {
     public function saved(TrackingAssociation $association): void
     {
-        RebuildTrackingProjectionJob::dispatch($association->tracking_reference_id);
+        ProjectionRefresh::codes([$association->tracking_code_id, $association->getOriginal('tracking_code_id')]);
     }
 
     public function deleted(TrackingAssociation $association): void
     {
-        RebuildTrackingProjectionJob::dispatch($association->tracking_reference_id);
+        ProjectionRefresh::codes([$association->tracking_code_id]);
     }
 }

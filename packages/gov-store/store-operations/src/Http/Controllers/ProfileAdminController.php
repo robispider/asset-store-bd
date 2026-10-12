@@ -69,6 +69,7 @@ class ProfileAdminController extends Controller
      */
     public function inspector(Request $request, ProfileCompilerService $compiler)
     {
+        $request->validate(['target_type' => 'required|in:GLOBAL,LOCATION,CATEGORY', 'target_id' => 'required']);
         $targetId = $request->input('target_id');
         $targetType = $request->input('target_type'); // GLOBAL, LOCATION, CATEGORY
 
@@ -97,7 +98,15 @@ class ProfileAdminController extends Controller
             })
             ->get();
 
-        $rawCompiledRules = $compiler->compileItem($productClass, $productId);
+        $previewContext = clone app(\GovStore\TenantScope\Contexts\TenantContext::class);
+        if ($targetType === 'LOCATION') {
+            $previewContext->locationId = (int) $loc->id;
+            $previewContext->companyId = $loc->company_id ? (int) $loc->company_id : null;
+        } elseif ($targetType === 'GLOBAL') {
+            $previewContext->locationId = $previewContext->companyId = null;
+        }
+        $previewCompiler = new ProfileCompilerService($previewContext);
+        $rawCompiledRules = $targetType === 'CATEGORY' ? $previewCompiler->compileItem($productClass, $productId) : $previewCompiler->compileContext();
 
         $dictionary = CapabilityRegistry::getDictionary();
         $effectiveRules = [];
@@ -251,15 +260,17 @@ class ProfileAdminController extends Controller
      */
     public function runSimulation(Request $request, ProfileCompilerService $compiler)
     {
+        $request->validate(['location_id' => 'required|integer|min:1', 'category_id' => 'required|integer|min:1']);
         $locationId = $request->input('location_id');
         $categoryId = $request->input('category_id');
 
-        $location = Location::find($locationId);
-        $category = Category::find($categoryId);
+        $location = Location::findOrFail($locationId);
+        $category = Category::findOrFail($categoryId);
 
-        // NOTE: In a production environment, you would briefly swap the TenantContext location
-        // to $locationId before calling compileItem, then swap it back, to simulate another office.
-        $rawCompiledRules = $compiler->compileItem('App\Models\Category', $categoryId);
+        $previewContext = clone app(\GovStore\TenantScope\Contexts\TenantContext::class);
+        $previewContext->locationId = (int) $location->id;
+        $previewContext->companyId = $location->company_id ? (int) $location->company_id : null;
+        $rawCompiledRules = (new ProfileCompilerService($previewContext))->compileItem('App\Models\Category', (int) $categoryId);
 
         $dictionary = CapabilityRegistry::getDictionary();
         $simulatedUI = [];
@@ -454,18 +465,15 @@ class ProfileAdminController extends Controller
         // Define what rules will be visually previewed in Step 3 based on template type
         $previewRules = match ($template) {
             'hardware' => [
-                'Require Quantity Enforcements' => '🟢 Enabled (Standard Baseline)',
-                'Require Unique Serial Numbers' => '🟢 Enabled (Standard Baseline)',
-                'Register Serialized Units as Individual Assets' => '🟢 Enabled (Standard Baseline)',
-                'Allow Bulk Inventory Entries' => '🔴 Disabled (Explicitly Blocked)',
+                'require_quantity' => 'enabled',
+                'require_serial' => 'enabled',
+                'create_assets' => 'enabled',
             ],
             'consumable' => [
-                'Require Quantity Enforcements' => '🟢 Enabled (Standard Baseline)',
-                'Write Quantities directly to Stock Ledger' => '🟢 Enabled (Standard Baseline)',
+                'require_quantity' => 'enabled',
+                'post_inventory' => 'enabled',
             ],
-            'blank' => [
-                'All capabilities will be set to: Not Configured (Inherit)' => '⚪ Inherited',
-            ]
+            'blank' => []
         };
 
         return view('storeops::admin.rules.create', compact('template', 'previewRules'));
@@ -479,7 +487,7 @@ class ProfileAdminController extends Controller
         $request->validate([
             'name' => 'required|string|max:100|unique:gov_profiles,name',
             'description' => 'nullable|string|max:250',
-            'template' => 'required|string',
+            'template' => 'required|in:hardware,consumable,blank',
         ]);
 
         $policy = \DB::transaction(function () use ($request) {

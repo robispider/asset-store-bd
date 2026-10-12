@@ -1,8 +1,8 @@
 <!-- TAB C: LOCAL STAFF DIRECTORY -->
                 <div class="tab-pane" id="tab_employees">
-                    <div class="row" style="padding: 15px 0;">
+                    <div class="row om-inline-c2cf9d67">
                         <div class="col-md-8">
-                            <table class="table table-striped table-hover">
+                            <x-gs::table class="table table-striped table-hover">
                                 <thead>
                                     <tr><th>{{ __('office_membership::member.hub_table_employee_name') }}</th><th>{{ __('office_membership::member.hub_table_username') }}</th><th>{{ __('office_membership::member.hub_table_email') }}</th><th>{{ __('office_membership::member.hub_table_job_title') }}</th></tr>
                                 </thead>
@@ -15,10 +15,10 @@
                                             <td>{{ $user->jobtitle ?: '-' }}</td>
                                         </tr>
                                     @empty
-                                        <tr><td colspan="4" class="text-center text-muted" style="padding: 30px;">{{ __('office_membership::member.hub_no_employees') }}</td></tr>
+                                        <tr><td colspan="4" class="text-center text-muted om-inline-ed0f0aa0">{{ __('office_membership::member.hub_no_employees') }}</td></tr>
                                     @endforelse
                                 </tbody>
-                            </table>
+                            </x-gs::table>
                         </div>
 
                         <!-- CLAIM EMPLOYEE WIDGET -->
@@ -28,9 +28,9 @@
                                 <form action="{{ route('gov.membership.claim', $location->id) }}" method="POST">
                                     @csrf
                                     <div class="box-body">
-                                        <p class="text-muted" style="font-size:12px;">{{ __('office_membership::member.hub_claim_hint') }}</p>
+                                        <p class="text-muted om-inline-92a5d53a">{{ __('office_membership::member.hub_claim_hint') }}</p>
                                         <div class="form-group">
-                                            <select name="user_id" class="form-control select2" required style="width: 100%;">
+                                            <select class="form-control select2 om-inline-442a70a1" name="user_id" required>
                                                 <option value="">{{ __('office_membership::member.hub_claim_select_placeholder') }}</option>
                                                 @foreach(\App\Models\User::whereHas('memberships', function($q) { $q->whereIn('status', ['release_requested', 'released']); })->get() as $u)
                                                     <option value="{{ $u->id }}">{{ $u->present()->fullName }} ({{ $u->location->name ?? 'Floating' }})</option>

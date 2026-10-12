@@ -98,6 +98,9 @@ class BasketService
         }
 
         return DB::transaction(function () use ($requester, $metadata, $context) {
+            app(\GovStore\Organization\Services\OfficeRequestIntake::class)->assertOpen([
+                $context->locationId, (int) ($metadata['delivery_location_id'] ?? $context->locationId),
+            ], true);
             User::whereKey($requester->id)->lockForUpdate()->firstOrFail();
             $basket = DraftBasket::where('user_id', $requester->id)->where('status', 'draft')
                 ->where(fn ($q) => $q->whereNull('expires_at')->orWhere('expires_at', '>', now()))->lockForUpdate()->firstOrFail();

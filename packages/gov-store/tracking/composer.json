@@ -2,7 +2,7 @@
     "name": "gov-store/tracking",
     "description": "Operational Reference Tracking Subsystem for GovStore",
     "type": "library",
-    "license": "proprietary",
+    "license": "AGPL-3.0-or-later",
     "authors": [
         {
             "name": "GovStore Team"

@@ -25,6 +25,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('backup:clean')->daily();
         $schedule->command('auth:clear-resets')->everyFifteenMinutes();
         $schedule->command('gov-requests:maintain')->hourly()->withoutOverlapping();
+        $schedule->command('govstore:ledger-reconcile')->dailyAt('02:00')->withoutOverlapping();
         $schedule->command('saml:clear_expired_nonces')->weekly();
     }
 

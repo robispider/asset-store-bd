@@ -16,7 +16,7 @@ class MinistryDirectoryController extends Controller
     public function index()
     {
         $user = auth()->user();
-        if (!$user->isSuperUser() && !$user->hasAccess('admin')) {
+        if (!$user->isSuperUser()) {
             abort(403, 'Unauthorized access to the Government Directory Configurator.');
         }
 
@@ -32,18 +32,14 @@ class MinistryDirectoryController extends Controller
     public function import(Request $request, MinistryDirectoryImporter $importer)
     {
         $user = auth()->user();
-        if (!$user->isSuperUser() && !$user->hasAccess('admin')) {
+        if (!$user->isSuperUser()) {
             abort(403, 'Unauthorized.');
         }
 
         try {
             $csvPath = __DIR__ . '/../../database/data/bangladesh_ministries_bilingual.csv';
 
-            // If a custom file is uploaded, use its path instead
-            if ($request->hasFile('csv_file')) {
-                $request->validate(['csv_file' => 'required|file|mimes:csv,txt']);
-                $csvPath = $request->file('csv_file')->getRealPath();
-            }
+            abort_if($request->hasFile('csv_file'), 422);
 
             $result = $importer->import($csvPath);
 
@@ -56,7 +52,7 @@ class MinistryDirectoryController extends Controller
 
             return redirect()->back()->with('success', $msg);
         } catch (Exception $e) {
-            return redirect()->back()->with('error', 'Import failed: ' . $e->getMessage());
+            throw $e;
         }
     }
 }

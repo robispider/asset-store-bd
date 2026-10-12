@@ -3,6 +3,7 @@
 @section('title', __('requestlabels::requests.user_index_title'))
 
 @section('content')
+<div class="cr-theme">
 @include('govstore::components.notices')
 <div class="row">
     <div class="col-md-12">
@@ -14,7 +15,7 @@
                 </div>
             </div>
             <div class="box-body table-responsive">
-                <table class="table table-striped table-hover">
+                <table class="gs-table table table-striped table-hover">
                     <thead>
                         <tr>
                             <th>{{ __('requestlabels::requests.request_number') }}</th>
@@ -28,7 +29,7 @@
                     <tbody>
                         @forelse($requests as $req)
                             <tr>
-                                <td><strong style="color: #3c8dbc;">{{ $req->request_number }}</strong></td>
+                                <td><strong class="request-number">{{ $req->request_number }}</strong></td>
                                 <td><span class="label label-default">{{ __('requestlabels::requests.request_type_'.$req->request_type) }}</span></td>
                                 <td>{{ $req->purpose }}</td>
                                 <td>{{ $req->submitted_at ? $req->submitted_at->format('Y-m-d H:i') : '-' }}</td>
@@ -96,5 +97,6 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

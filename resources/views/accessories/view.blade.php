@@ -27,10 +27,12 @@
                     <x-tabs.checkedout-tab :item="$accessory" count="{{ $accessory->checkouts_count }}" />
                     <x-tabs.files-tab :item="$accessory" count="{{ $accessory->uploads()->count() }}"/>
                     <x-tabs.history-tab count="{{ $accessory->history()->count() }}" :model="$accessory"/>
+                    @include('storeops::register.native-tab-nav')
                     <x-tabs.upload-tab :item="$accessory"/>
                 </x-slot:tabnav>
 
                 <x-slot:tabpanes>
+                    @include('storeops::register.native-tab-panes')
 
                     <!-- start assigned tab pane -->
                     <x-tabs.pane name="assigned">

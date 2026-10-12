@@ -1,0 +1,163 @@
+/* Tenant Scope screens use the shared GovStore theme tokens. */
+.tenant-scope-theme {
+    color: var(--gs-color-text);
+}
+
+.tenant-scope-theme .box,
+.tenant-scope-theme .modal-content {
+    color: var(--gs-color-text) !important;
+    background-color: var(--gs-color-surface) !important;
+    border-color: var(--gs-color-border) !important;
+}
+
+.tenant-scope-theme .box-header,
+.tenant-scope-theme .box-footer,
+.tenant-scope-theme .modal-header,
+.tenant-scope-theme .modal-footer {
+    color: var(--gs-color-text) !important;
+    background-color: var(--gs-color-surface-sunken) !important;
+    border-color: var(--gs-color-border) !important;
+}
+
+.tenant-scope-theme .box-title,
+.tenant-scope-theme .modal-title,
+.tenant-scope-theme label,
+.tenant-scope-theme th {
+    color: var(--gs-color-text) !important;
+}
+
+.tenant-scope-theme .text-muted,
+.tenant-scope-theme small.text-muted {
+    color: var(--gs-color-text-muted) !important;
+}
+
+.tenant-scope-theme .table,
+.tenant-scope-theme table.gs-table {
+    color: var(--gs-color-text) !important;
+    background-color: var(--gs-color-surface) !important;
+    border-color: var(--gs-table-border) !important;
+}
+
+.tenant-scope-theme .table > thead > tr > th,
+.tenant-scope-theme .table > tbody > tr > th,
+.tenant-scope-theme .table > tfoot > tr > th,
+.tenant-scope-theme .table > thead > tr > td,
+.tenant-scope-theme .table > tbody > tr > td,
+.tenant-scope-theme .table > tfoot > tr > td {
+    border-color: var(--gs-table-border) !important;
+}
+
+.tenant-scope-theme .table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: var(--gs-table-row-alt) !important;
+}
+
+.tenant-scope-theme .table-hover > tbody > tr:hover {
+    background-color: var(--gs-table-row-hover) !important;
+}
+
+.tenant-scope-theme .alert-info {
+    color: var(--gs-color-on-info) !important;
+    background-color: var(--gs-color-info-subtle) !important;
+    border-color: var(--gs-color-info) !important;
+}
+
+.tenant-scope-theme .alert-danger,
+.tenant-scope-theme .box-warning {
+    border-color: var(--gs-color-danger) !important;
+}
+
+.tenant-scope-theme .small-box.bg-aqua,
+.tenant-scope-theme .small-box.bg-blue {
+    color: var(--gs-color-on-info) !important;
+    background-color: var(--gs-color-info) !important;
+}
+
+.tenant-scope-theme .small-box.bg-green {
+    color: var(--gs-color-on-success) !important;
+    background-color: var(--gs-color-success) !important;
+}
+
+.tenant-scope-theme .small-box.bg-purple {
+    color: var(--gs-color-on-primary) !important;
+    background-color: var(--gs-color-primary) !important;
+}
+
+.tenant-scope-theme .small-box-footer {
+    color: inherit !important;
+    background-color: var(--gs-color-surface-sunken);
+}
+
+.tenant-scope-theme .btn-primary,
+.tenant-scope-theme .btn-success,
+.tenant-scope-theme .btn-danger,
+.tenant-scope-theme .btn-warning {
+    color: var(--gs-color-on-primary) !important;
+    background-color: var(--gs-color-primary) !important;
+    border-color: var(--gs-color-primary) !important;
+}
+
+.tenant-scope-theme .btn-danger {
+    color: var(--gs-color-on-danger) !important;
+    background-color: var(--gs-color-danger) !important;
+    border-color: var(--gs-color-danger) !important;
+}
+
+.tenant-scope-theme .btn-success {
+    color: var(--gs-color-on-success) !important;
+    background-color: var(--gs-color-success) !important;
+    border-color: var(--gs-color-success) !important;
+}
+
+.tenant-scope-theme .btn-default {
+    color: var(--gs-color-text) !important;
+    background-color: var(--gs-color-surface) !important;
+    border-color: var(--gs-color-border) !important;
+}
+
+.tenant-scope-theme .label,
+.tenant-scope-theme .label.bg-purple,
+.tenant-scope-theme .label.bg-blue {
+    color: var(--gs-color-on-primary) !important;
+    background-color: var(--gs-color-primary) !important;
+}
+
+.tenant-scope-theme .tenant-scope-table-heading {
+    background-color: var(--gs-table-row-alt) !important;
+}
+
+.tenant-scope-theme .tenant-scope-table-cell {
+    vertical-align: middle;
+}
+
+.tenant-scope-theme .tenant-scope-table-cell--indented {
+    padding-left: 1.25rem;
+}
+
+.tenant-scope-theme .tenant-scope-empty-cell {
+    padding: 1.875rem;
+}
+
+.tenant-scope-theme .tenant-scope-filter-row {
+    margin-bottom: 1rem;
+}
+
+.tenant-scope-theme .tenant-scope-surface-border {
+    border: 1px solid var(--gs-color-border) !important;
+}
+
+.tenant-scope-theme .tenant-scope-compact-form {
+    margin: 0;
+}
+
+.tenant-scope-theme .tenant-scope-modal-spaced {
+    margin-top: 1.25rem;
+}
+
+.tenant-scope-theme .tenant-scope-wide-control {
+    width: 100%;
+}
+
+.tenant-scope-theme .tenant-scope-scroll-region {
+    max-height: 350px;
+    overflow-y: auto;
+}
