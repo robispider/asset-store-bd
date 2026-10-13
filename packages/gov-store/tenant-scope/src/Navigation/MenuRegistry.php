@@ -63,6 +63,26 @@ class MenuRegistry
     }
 
     /**
+     * Visible leaves of one configured group on the current page (after pruning and collapse),
+     * from the shared snapshot — e.g. the navbar inbox reads 'gov-queues'.
+     *
+     * @return MenuItem[]
+     */
+    public function groupItems(string $group): array
+    {
+        foreach ($this->zone(config("govstore-navigation.groups.{$group}.zone", 'work')) as $item) {
+            if ($item->id === $group) {
+                return $item->children;
+            }
+            if ($item->parent === $group) {
+                return [$item];
+            }
+        }
+
+        return [];
+    }
+
+    /**
      * Compiles the sorted, permission-filtered hierarchical tree.
      * Configured groups without a visible child are pruned; a group with one visible child
      * renders as that child.

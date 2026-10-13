@@ -76,6 +76,20 @@
         "draftItems"
       ]
     },
+    "request.queues": {
+      "description": "Counts behind the navbar inbox and sidebar queue badges for one user in one office: requests awaiting primary or final approval (not their own) and approved requests awaiting fulfilment",
+      "parameters": {
+        "userId": "integer",
+        "officeId": "integer"
+      },
+      "outputFields": [
+        "user_id",
+        "office_id",
+        "pendingPrimary",
+        "pendingFinal",
+        "awaitingFulfilment"
+      ]
+    },
     "audit.outcome": {
       "description": "Read-only projection of recent audit log entries for a record",
       "parameters": {

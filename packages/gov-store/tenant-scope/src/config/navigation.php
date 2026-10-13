@@ -13,7 +13,10 @@
 |   work   – sidebar, after Snipe-IT's Dashboard and before Assets (daily gov work)
 |   admin  – sidebar, after Snipe-IT's Settings and Reports (configuration)
 |   user   – top-right user menu, before Logout (personal settings)
-|   topbar – navbar, before the user menu
+|   context – navbar, left, after the logo (the working-office chip)
+|   actions – navbar "＋ New" menu, in place of Snipe-IT's "Create New" (gov verbs:
+|             receive, issue, request). Items with 'form' => [...] submit a POST.
+|   topbar – navbar, before the user menu (inbox, basket)
 |   content, scripts, body-end – page slots for package hooks (no menu markup)
 |
 | Order guide: frequency and audience — my work, my queues, operations, then admin.
@@ -40,5 +43,23 @@ return [
     ],
 
     'max_group_size' => 7,
+
+    /*
+    | Snipe-IT navbar adjustments, applied by NavigationHook at compile time but decided
+    | here at render time (no view:clear needed to flip them).
+    */
+    'topbar' => [
+        // Snipe-IT's "Create New" bypasses the store ledger; stock enters through a goods receipt.
+        'replace_core_create' => env('GOVSTORE_NAV_REPLACE_CORE_CREATE', true),
+        // Icon-only Assets / Licenses / … / Users shortcuts duplicate the sidebar.
+        'hide_core_shortcuts' => env('GOVSTORE_NAV_HIDE_CORE_SHORTCUTS', true),
+        // Floating navbar (sticky on desktop, hide-on-scroll on phones).
+        'sticky' => env('GOVSTORE_NAV_STICKY_HEADER', true),
+    ],
+
+    'user_menu' => [
+        // Snipe-IT's own "Requested assets" — replaced by the gov request flow (My requests).
+        'hide_core_requested' => env('GOVSTORE_NAV_HIDE_CORE_REQUESTED', true),
+    ],
 
 ];

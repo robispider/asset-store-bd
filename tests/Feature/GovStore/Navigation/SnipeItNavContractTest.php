@@ -38,7 +38,7 @@ class SnipeItNavContractTest extends NavigationTestCase
     {
         $out = NavigationHook::apply($this->layout());
         $at = fn (string $zone) => strpos($out, "['zone' => '{$zone}']");
-        foreach (['work', 'admin', 'user', 'topbar', 'content', 'scripts', 'body-end'] as $zone) {
+        foreach (['work', 'admin', 'user', 'context', 'actions', 'topbar', 'content', 'scripts', 'body-end'] as $zone) {
             $this->assertSame(1, substr_count($out, "['zone' => '{$zone}']"), $zone);
         }
         $sidebar = strpos($out, '<ul class="sidebar-menu"');
@@ -52,6 +52,51 @@ class SnipeItNavContractTest extends NavigationTestCase
         $this->assertLessThan(strpos($out, "route('logout.get')"), $at('user'));
         $this->assertGreaterThan(strpos($out, "route('profile')"), $at('user'));
         $this->assertLessThan(strrpos($out, '</body>'), $at('body-end'));
+        // Navbar: the office chip sits after the logo, ＋ New where "Create New" was, and the
+        // topbar zone (inbox, basket) before the user menu.
+        $navbarRight = strpos($out, '<!-- Navbar Right Menu -->');
+        $this->assertGreaterThan(strpos($out, 'left-navblock'), $at('context'));
+        $this->assertLessThan($navbarRight, $at('context'));
+        $this->assertGreaterThan(strpos($out, 'id="tagSearch"'), $at('actions'));
+        $this->assertLessThan($at('topbar'), $at('actions'));
+        $this->assertLessThan(strpos($out, '<!-- User Account:'), $at('topbar'));
+    }
+
+    public static function rewrites(): array
+    {
+        return array_map(fn ($name) => [$name], array_keys(NavigationHook::REWRITES));
+    }
+
+    #[\PHPUnit\Framework\Attributes\DataProvider('rewrites')]
+    public function test_each_rewritten_core_block_matches_upstream_exactly_once(string $name): void
+    {
+        [$pattern] = NavigationHook::REWRITES[$name];
+        $this->assertSame(1, preg_match_all($pattern, $this->layout()), "Core block '{$name}' moved upstream; update NavigationHook::REWRITES");
+    }
+
+    public function test_rewrites_switch_core_blocks_at_render_time_without_deleting_them(): void
+    {
+        $layout = $this->layout();
+        $out = NavigationHook::apply($layout);
+        foreach (NavigationHook::REWRITES as [$pattern, $mode, $flag]) {
+            preg_match($pattern, $layout, $match);
+            // The stock markup survives verbatim behind its config flag, so turning the flag off
+            // restores upstream Snipe-IT without recompiling the view.
+            $this->assertStringContainsString($match[0], $out);
+            $guard = $mode === 'replace' ? "@if(config('{$flag}', true))" : "@unless(config('{$flag}', true))";
+            $this->assertStringContainsString($guard, $out);
+            $this->assertLessThan(strpos($out, $match[0]), strpos($out, $guard));
+        }
+        // "Create New" (Asset, License, …) is no longer the default branch.
+        $this->assertMatchesRegularExpression("/@include\('govscope::nav\.zone', \['zone' => 'actions'\]\)\s*@else\s*@can\('admin'\)/", $out);
+    }
+
+    public function test_a_moved_core_block_is_left_as_stock_markup(): void
+    {
+        $moved = str_replace("trans('general.create')", "trans('general.create_new')", $this->layout());
+        $out = NavigationHook::apply($moved);
+        $this->assertStringNotContainsString("['zone' => 'actions']", $out);
+        $this->assertStringContainsString("trans('general.create_new')", $out);
     }
 
     public function test_compiles_alongside_the_theming_hook(): void
@@ -59,7 +104,7 @@ class SnipeItNavContractTest extends NavigationTestCase
         $path = resource_path('views/layouts/default.blade.php');
         Blade::setPath($path);
         $compiled = Blade::compileString($this->layout());
-        $this->assertSame(7, substr_count($compiled, 'govscope::nav.zone'));
+        $this->assertSame(9, substr_count($compiled, 'govscope::nav.zone'));
         $this->assertStringContainsString('/* '.NavigationHook::VERSION.' */', $compiled);
         if (class_exists(\GovStore\Theming\Compiler\LayoutHook::class)) {
             $this->assertStringStartsWith('<?php /* '.\GovStore\Theming\Compiler\LayoutHook::VERSION.' */ ?>', $compiled);

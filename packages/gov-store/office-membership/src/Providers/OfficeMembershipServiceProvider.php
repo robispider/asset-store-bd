@@ -66,8 +66,16 @@ class OfficeMembershipServiceProvider extends ServiceProvider
             'label' => 'office_membership::member.nav_overrides', 'icon' => 'fas fa-shield-alt',
             'route' => 'gov.membership.override.console', 'match' => ['gov.membership.override.*']]);
 
-        // User menu: my memberships and the working-office switcher.
-        $registry->register(['id' => 'govmem-context', 'zone' => 'user', 'order' => 90, 'view' => 'govmem::hooks.membership-menu']);
+        // Navbar: the working-office chip, which shows and switches the working office.
+        $registry->register(['id' => 'govmem-office-chip', 'zone' => 'context', 'view' => 'govmem::hooks.office-chip']);
+        // User menu: my memberships.
+        $registry->register(['id' => 'govmem-memberships', 'zone' => 'user', 'order' => 90,
+            'label' => 'office_membership::member.menu_my_memberships', 'icon' => 'fas fa-id-badge',
+            'route' => 'gov.membership.index']);
+        // ＋ New: add a staff member to the working office (staff hub, invitation code or token).
+        $registry->register(['id' => 'govmem-add-staff', 'zone' => 'actions', 'order' => 50,
+            'label' => 'office_membership::member.nav_add_staff', 'icon' => 'fas fa-user-plus',
+            'route' => 'gov.membership.admin.index']);
     }
 
     public function register()

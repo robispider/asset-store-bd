@@ -21,7 +21,9 @@ const server = http.createServer(async (req, res) => {
   const actor = (req.headers.cookie || '').match(/actor=([^;]+)/)?.[1];
   const html = content => { res.writeHead(200, { 'content-type': 'text/html' }); res.end(content); };
   const redirect = (location, extra = {}) => { res.writeHead(302, { location, ...extra }); res.end(); };
-  const menu = '<li class="user-menu"><a>Account</a></li>';
+  // Snipe-IT header, with a gov dropdown beside the account menu (the login wait must not be ambiguous).
+  const menu = '<header class="main-header"><div class="navbar-custom-menu"><ul><li class="dropdown notifications-menu"><a href="#" class="dropdown-toggle">Inbox</a></li>'
+    + '<li class="dropdown user user-menu"><a href="#" class="dropdown-toggle">Account</a></li></ul></div></header>';
   if (req.url === '/login' && req.method === 'GET') return html('<form method="post" action="/login"><input name="username"><input name="password" type="password"><button type="submit">Login</button></form>');
   if (req.url === '/login') {
     let body = ''; for await (const chunk of req) body += chunk;

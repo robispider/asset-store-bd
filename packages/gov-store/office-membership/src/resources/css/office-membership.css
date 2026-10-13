@@ -35,7 +35,6 @@
 
 .om-inline-442a70a1 { width: 100%; }
 
-.om-inline-3591cfd6 { padding: 3px 20px; }
 
 .om-inline-c2cf9d67 { padding: 15px 0; }
 
@@ -144,10 +143,3 @@
 .om-inline-921a2ecf { padding: 15px; font-size: 13px; }
 
 .om-inline-442a70a1 { width: 100%; }
-
-
-
-/* Long working-office switcher in the user menu: type to filter, list scrolls. */
-.om-office-filter { padding: 3px 20px 6px; }
-.om-office-list { max-height: 50vh; overflow-y: auto; margin: 0; padding: 0; }
-.om-office-option[hidden] { display: none; }

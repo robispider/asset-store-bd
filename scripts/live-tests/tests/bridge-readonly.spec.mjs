@@ -46,6 +46,8 @@ const pair = await bridge.resolveContext({
 assert.notEqual(pair.actors.a.id, pair.actors.b.id, 'actors must be distinct users');
 
 await bridge.observe('request.progress', { id: resolved.actors.employee.id });
+const queues = await bridge.observe('request.queues', { userId: resolved.actors.employee.id, officeId: resolved.office.id });
+assert(queues.pendingPrimary >= 0 && queues.pendingFinal >= 0 && queues.awaitingFulfilment >= 0, 'queue projection must expose numeric counts');
 const committeeContext = await bridge.resolveContext({
   office: { requirements: { operational: true } },
   actors: { registrar: { capabilities: { allOf: ['committee.manage', 'committee.view'], noneOf: ['committee.types.manage'] } } },

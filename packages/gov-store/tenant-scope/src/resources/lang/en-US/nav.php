@@ -29,4 +29,9 @@ return [
     'boundaries' => 'Data boundaries',
     'boundary_policy' => 'Boundary policy',
     'boundary_explorer' => 'Boundary explorer',
+
+    // Navbar
+    'new' => 'New',
+    'inbox_label' => 'Waiting for me: :count',
+    'inbox_empty' => 'Nothing is waiting for you',
 ];

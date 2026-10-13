@@ -257,7 +257,7 @@ All decisions in §6 were accepted as recommended on 2026-10-13. Phases 0–3 ar
 ### Phase 4 — Enhancements
 - [x] Count badges on "Waiting for me" (Approvals, To fulfil). They are lazy and computed once per render. **Changed:** no 60 s cache, because the counts must reflect revocation immediately and each is a single indexed `count()`.
 - [x] **Changed:** instead of select2, the switcher has a type-to-filter box and a scrolling list once a user has more than 8 offices (A9). It needs no endpoint and works without JavaScript (the list simply isn't filtered).
-- [ ] Current-office indicator at the top of the sidebar. Not done; the user menu already marks the working office with `aria-current`.
+- [x] **Changed:** the current-office indicator is the navbar office chip, which shows the working office on every page and switches it. See `docs/plans/topbar-navigation-plan.md`.
 
 ### Adding a menu entry (developers)
 

@@ -98,6 +98,11 @@ class CustomRequestServiceProvider extends ServiceProvider
             'label' => 'requestlabels::requests.nav_request_policies', 'icon' => 'fas fa-tags',
             'route' => 'gov.requests.admin.policies.index', 'match' => ['gov.requests.admin.policies.*']]);
 
+        // ＋ New: start a request from the catalogue.
+        $registry->register(['id' => 'gov-requests-new', 'zone' => 'actions', 'order' => 40,
+            'label' => 'requestlabels::requests.nav_request_items', 'icon' => 'fas fa-store',
+            'route' => 'gov.requests.catalog']);
+
         // Top bar basket and its page widget.
         $registry->register(['id' => 'gov-requests-basket-nav', 'zone' => 'topbar', 'view' => 'govstore::hooks.basket-nav']);
         $registry->register(['id' => 'gov-requests-basket-widget', 'zone' => 'body-end', 'view' => 'govstore::hooks.basket-widget']);

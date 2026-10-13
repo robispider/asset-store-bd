@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "id": "navigation.storekeeper-new-menu-store",
+  "title": "A storekeeper gets the ＋ New menu with receipt, issue and adjustment (in place of Snipe-IT's Create New), a To-fulfil inbox matching the database, and a working Store sidebar group",
+  "features": ["navigation.topbar", "navigation.sidebar", "navigation.inbox", "navigation.actions"],
+  "tags": ["seeded", "readonly", "navigation"],
+  "execution": { "capability": "observe", "language": "en-US", "timeoutMs": 90000, "accessMode": "any" },
+  "fixtures": {
+    "office": { "requirements": { "operational": true } },
+    "actors": {
+      "storekeeper": {
+        "capabilities": {
+          "allOf": ["storeops.documents.draft", "storeops.documents.view", "requests.fulfill", "requests.submit"],
+          "noneOf": ["requests.approve", "access.manage", "onboarding.manage", "membership.manage"]
+        },
+        "office": "office",
+        "activeMembership": true
+      }
+    }
+  },
+  "steps": [
+    { "action": "observe", "check": "request.queues", "args": { "userId": "${actors.storekeeper.id}", "officeId": "${fixtures.office.id}" }, "as": "queues" },
+    { "use": "auth.login", "with": { "actor": "storekeeper" } },
+    { "action": "goto", "url": "/" },
+
+    { "action": "assert", "target": "navigation.coreCreate", "test": "count", "equals": 0, "note": "Stock enters through a goods receipt, not Snipe-IT Create New" },
+    { "action": "assert", "target": "navigation.actionsSingle", "test": "count", "equals": 0 },
+    { "action": "assert", "target": "navigation.actionsMenu", "test": "visible" },
+    { "action": "click", "target": "navigation.actionsMenu" },
+    { "action": "assert", "target": "navigation.actionNewReceipt", "test": "visible" },
+    { "action": "assert", "target": "navigation.actionNewIssue", "test": "visible" },
+    { "action": "assert", "target": "navigation.actionNewAdjustment", "test": "visible" },
+    { "action": "assert", "target": "navigation.actionRequestItems", "test": "visible" },
+    { "action": "assert", "target": "navigation.actionsAddStaff", "test": "count", "equals": 0, "note": "No membership.manage, so no Add staff member" },
+    { "action": "keyboard", "key": "Escape" },
+
+    { "action": "capture", "target": "navigation.inbox", "attribute": "aria-label", "as": "inboxLabel" },
+    { "action": "compare", "actual": "${captured.inboxLabel}", "equals": "Waiting for me: ${observed.queues.awaitingFulfilment}", "note": "Inbox total = approved requests the office store still has to issue (database)" },
+    { "action": "click", "target": "navigation.inbox" },
+    { "action": "assert", "target": "navigation.inboxFulfil", "test": "visible" },
+    { "action": "assert", "target": "navigation.inboxApprovals", "test": "count", "equals": 0 },
+    { "action": "click", "target": "navigation.inboxFulfil" },
+    { "action": "wait", "target": "navigation.fulfilLeafActive", "state": "attached" },
+    { "action": "assert", "test": "url", "contains": "/gov-requests/fulfillment" },
+
+    { "action": "goto", "url": "/account/menu", "query": { "state": "open" }, "note": "Snipe-IT's own sidebar preference (session only); the toggle saves it with an unawaited request, which races navigation" },
+    { "action": "goto", "url": "/gov-requests/fulfillment" },
+    { "action": "wait", "target": "navigation.sidebarExpanded", "state": "visible" },
+    { "action": "click", "target": "navigation.storeOpsGroup" },
+    { "action": "wait", "target": "navigation.stockRegisterLeaf", "state": "visible" },
+    { "action": "assert", "target": "navigation.storeHubLeaf", "test": "visible" },
+    { "action": "click", "target": "navigation.stockRegisterLeaf" },
+    { "action": "wait", "target": "navigation.stockRegisterLeafActive", "state": "attached" },
+    { "action": "assert", "test": "url", "contains": "/gov-store/operations/register" },
+    { "action": "assert", "target": "navigation.storeOpsOpen", "test": "count", "equals": 1, "note": "The group of the current page renders open" },
+    { "action": "assert", "target": "navigation.officeChipName", "test": "text", "equals": "${fixtures.office.name}" }
+  ],
+  "cleanup": { "policy": "no-business-records-created" }
+}

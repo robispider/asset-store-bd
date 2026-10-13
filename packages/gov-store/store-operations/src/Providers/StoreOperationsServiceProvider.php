@@ -31,6 +31,9 @@ class StoreOperationsServiceProvider extends ServiceProvider
 {
     public function register()
     {
+        $this->mergeConfigFrom(__DIR__.'/../config/intake.php', 'govstore-intake');
+        $this->app->singleton(\GovStore\StoreOperations\Services\IntakePolicy::class);
+
         // 1. Register Tab Registry Singleton
         $this->app->singleton(TabRegistry::class, function () {
             return new TabRegistry;
@@ -110,6 +113,15 @@ class StoreOperationsServiceProvider extends ServiceProvider
             $stockClass::observe(\GovStore\StoreOperations\Services\LedgerStockGuard::class);
         }
 
+        // 13. GRN-only intake: guard Snipe-IT's create paths by route name (super users included)
+        // and check stock imports row by row while one runs. See config/intake.php.
+        $router = $this->app['router'];
+        $router->pushMiddlewareToGroup('web', \GovStore\StoreOperations\Http\Middleware\EnforceGrnIntake::class);
+        $router->pushMiddlewareToGroup('api', \GovStore\StoreOperations\Http\Middleware\EnforceGrnIntake::class);
+        foreach ([\App\Models\Asset::class, \App\Models\License::class, Consumable::class, Accessory::class, Component::class] as $stockClass) {
+            $stockClass::saving(fn ($record) => app(\GovStore\StoreOperations\Services\IntakePolicy::class)->checkImportedRecord($record));
+        }
+
     }
 
     protected function registerNavigationMenus(): void
@@ -123,6 +135,19 @@ class StoreOperationsServiceProvider extends ServiceProvider
         $registry->register(['id' => 'storeops-register', 'group' => 'gov-store-ops', 'order' => 20,
             'label' => 'storeops::storeops.nav_stock_register', 'icon' => 'fas fa-cube',
             'route' => 'storeops.register.index', 'match' => ['storeops.register.*', 'gov-store/operations/kardex/*']]);
+
+        // ＋ New (navbar): start a store document in the working office. Visibility follows the
+        // initialize route's gov.can ability; a working office is required to draft.
+        foreach ([
+            ['receipt', 10, 'storeops::storeops.new_receipt', 'fas fa-truck-loading'],
+            ['issue', 20, 'storeops::storeops.new_issue', 'fas fa-share'],
+            ['adjustment', 30, 'storeops::storeops.new_adjustment', 'fas fa-sliders-h'],
+        ] as [$type, $order, $label, $icon]) {
+            $registry->register(['id' => "storeops-new-{$type}", 'zone' => 'actions', 'order' => $order,
+                'label' => $label, 'icon' => $icon, 'route' => 'storeops.documents.initialize',
+                'form' => ['document_type' => $type],
+                'visible' => fn () => (bool) app(\GovStore\TenantScope\Contexts\TenantContext::class)->locationId]);
+        }
 
         // Rules & settings.
         $registry->register(['id' => 'storeops-admin-rules', 'group' => 'gov-rules', 'order' => 20,

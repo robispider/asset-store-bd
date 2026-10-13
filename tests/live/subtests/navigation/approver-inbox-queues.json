@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "id": "navigation.approver-inbox-queues",
+  "title": "A primary approver sees the navbar inbox and the sidebar Approvals queue with the database count, and both lead to the approvals page",
+  "features": ["navigation.topbar", "navigation.sidebar", "navigation.inbox"],
+  "tags": ["seeded", "readonly", "navigation"],
+  "execution": { "capability": "observe", "language": "en-US", "timeoutMs": 90000, "accessMode": "any" },
+  "fixtures": {
+    "office": { "requirements": { "operational": true } },
+    "actors": {
+      "approver": {
+        "capabilities": {
+          "allOf": ["requests.approve.primary"],
+          "noneOf": ["requests.approve.final", "requests.fulfill", "access.manage", "onboarding.manage"]
+        },
+        "office": "office",
+        "activeMembership": true
+      }
+    }
+  },
+  "steps": [
+    { "action": "observe", "check": "request.queues", "args": { "userId": "${actors.approver.id}", "officeId": "${fixtures.office.id}" }, "as": "queues" },
+    { "use": "auth.login", "with": { "actor": "approver" } },
+    { "action": "goto", "url": "/" },
+
+    { "action": "assert", "target": "navigation.inbox", "test": "visible" },
+    { "action": "capture", "target": "navigation.inbox", "attribute": "aria-label", "as": "inboxLabel" },
+    { "action": "compare", "actual": "${captured.inboxLabel}", "equals": "Waiting for me: ${observed.queues.pendingPrimary}", "note": "Inbox total = approvals awaiting this primary approver (database)" },
+    { "action": "click", "target": "navigation.inbox" },
+    { "action": "assert", "target": "navigation.inboxApprovals", "test": "visible" },
+    { "action": "assert", "target": "navigation.inboxFulfil", "test": "count", "equals": 0, "note": "No requests.fulfill, so no To-fulfil queue" },
+    { "action": "click", "target": "navigation.inboxApprovals" },
+    { "action": "wait", "target": "navigation.approvalsLeafActive", "state": "attached", "note": "Destination page loaded: the sidebar marks Approvals as current" },
+    { "action": "assert", "test": "url", "contains": "/gov-requests/admin" },
+
+    { "action": "assert", "target": "navigation.workHeader", "test": "count", "equals": 1 },
+    { "action": "assert", "target": "navigation.queuesGroup", "test": "count", "equals": 0, "note": "A group with one visible leaf renders as that leaf" },
+    { "action": "assert", "target": "navigation.approvalsTopLevel", "test": "count", "equals": 1 },
+    { "action": "assert", "target": "navigation.fulfilLeaf", "test": "count", "equals": 0 },
+
+    { "action": "goto", "url": "/account/menu", "query": { "state": "open" }, "note": "Snipe-IT's own sidebar preference (session only); the toggle saves it with an unawaited request, which races navigation" },
+    { "action": "goto", "url": "/gov-requests/admin" },
+    { "action": "wait", "target": "navigation.sidebarExpanded", "state": "visible" },
+    { "action": "assert", "target": "navigation.approvalsTopLevel", "test": "visible" },
+    { "action": "click", "target": "navigation.workspaceGroup" },
+    { "action": "wait", "target": "navigation.myRequestsLeaf", "state": "visible" },
+    { "action": "click", "target": "navigation.myRequestsLeaf" },
+    { "action": "wait", "target": "navigation.myRequestsLeafActive", "state": "attached" },
+    { "action": "assert", "target": "navigation.approvalsLeafActive", "test": "count", "equals": 0, "note": "Only the current page is marked" },
+    { "action": "click", "target": "navigation.approvalsTopLevelLink" },
+    { "action": "wait", "target": "navigation.approvalsLeafActive", "state": "attached" },
+    { "action": "assert", "test": "url", "contains": "/gov-requests/admin" },
+
+    { "action": "assert", "target": "navigation.coreCreate", "test": "count", "equals": 0 },
+    { "action": "assert", "target": "navigation.coreShortcuts", "test": "count", "equals": 0 },
+    { "action": "assert", "target": "navigation.officeChipName", "test": "text", "equals": "${fixtures.office.name}" }
+  ],
+  "cleanup": { "policy": "no-business-records-created" }
+}

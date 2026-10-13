@@ -227,6 +227,16 @@ return [
     'menu_global_overview' => 'গ্লোবাল ওভারভিউ (সব কার্যালয়)',
     'menu_choose_context' => 'ওয়ার্কিং কনটেক্সট নির্বাচন করুন',
     'menu_filter_offices' => 'কার্যালয়ের নাম লিখে খুঁজুন',
+    'menu_working_office' => 'কর্মরত কার্যালয়: :office',
+    'menu_all_offices' => 'সব কার্যালয়',
+    'menu_no_office' => 'কার্যালয় নির্বাচন করুন',
+    'menu_recent_offices' => 'সাম্প্রতিক কার্যালয়',
+    'menu_search_hint' => 'কার্যালয়ের নামের অন্তত ২টি অক্ষর লিখুন',
+    'menu_searching' => 'খোঁজা হচ্ছে…',
+    'menu_search_none' => 'কোনো কার্যালয় পাওয়া যায়নি',
+    'menu_search_more' => 'আরও কার্যালয় মিলেছে। তালিকা ছোট করতে আরও লিখুন।',
+    'menu_search_failed' => 'খোঁজা যায়নি। আবার চেষ্টা করুন।',
+    'nav_add_staff' => 'কর্মী যুক্ত করুন',
 
     // =========================================================================
     // Origin: MembershipController.php

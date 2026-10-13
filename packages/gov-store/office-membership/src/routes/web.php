@@ -15,6 +15,7 @@ Route::group(['middleware' => ['web', 'auth']], function () {
         Route::get('/', [MembershipController::class, 'index'])->name('gov.membership.index')->breadcrumbs(fn (Trail $trail) => $trail->parent('home')->push(__('office_membership::member.user_page_title'), route('gov.membership.index')));
         Route::post('/{id}/request-release', [MembershipController::class, 'requestRelease'])->name('gov.membership.request-release');
         Route::post('/switch', [MembershipController::class, 'switchContext'])->name('gov.membership.switch');
+        Route::get('/offices', [MembershipController::class, 'offices'])->name('gov.membership.offices');
 
         // Token Generation & Joining
         Route::post('/token/generate', [MembershipController::class, 'generateVerificationToken'])->name('gov.membership.token.generate');

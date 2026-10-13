@@ -43,7 +43,7 @@ class NavigationRegistryTest extends NavigationTestCase
     public function test_every_entry_targets_a_known_group_route_or_view(): void
     {
         $groups = config('govstore-navigation.groups');
-        $zones = ['work', 'admin', 'user', 'topbar', 'content', 'scripts', 'body-end'];
+        $zones = ['work', 'admin', 'user', 'context', 'actions', 'topbar', 'content', 'scripts', 'body-end'];
         $sizes = [];
         foreach (app(MenuRegistry::class)->all() as $item) {
             if ($item->parent) {

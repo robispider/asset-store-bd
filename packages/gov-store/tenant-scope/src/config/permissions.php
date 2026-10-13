@@ -38,7 +38,8 @@ return [
             
             // --- NATIVE SNIPE-IT ASSETS ---
             'assets.view',
-            'assets.create',
+            // 'assets.create' is deliberately absent: assets are created by posting a goods
+            // receipt (GRN), never by Snipe-IT's own create form (govstore-intake, grn_only).
             'assets.edit',
             'assets.checkout',
             'assets.checkin',
@@ -187,6 +188,9 @@ return [
             'office.onboard',
             'jurisdictions.manage',
 
+            // Personal API keys (integrations); no longer granted to every employee.
+            'self.api',
+
             // --- NATIVE SNIPE-IT SETUP CONTROLS ---
             'users.view',
             'users.create',
@@ -220,7 +224,8 @@ return [
             'self.checkout_assets',
             'self.edit_location',
             'self.two_factor',
-            'self.api',
+            // 'self.api' is deliberately absent: personal API keys are for ICT staff, not every
+            // employee (it showed "Manage API keys" in everyone's user menu).
             'self.view_purchase_cost',
             'user-self-accounts',
         ],

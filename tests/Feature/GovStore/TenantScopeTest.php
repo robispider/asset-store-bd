@@ -827,7 +827,7 @@ class TenantScopeTest extends TestCase
                 Blade::setPath($file);
                 $compiled = app('blade.compiler')->compileString(file_get_contents($file));
                 if ($file === $layoutPath) {
-                    $this->assertSame(7, substr_count($compiled, 'govscope::nav.zone'));
+                    $this->assertSame(9, substr_count($compiled, 'govscope::nav.zone'));
                 }
                 file_put_contents($temporary, $compiled);
                 $process = proc_open([PHP_BINARY, '-l', $temporary], [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);

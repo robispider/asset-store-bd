@@ -29,7 +29,7 @@ class MenuItem
 
     public bool $strict = false;
 
-    /** work | admin | user | topbar | content | scripts | body-end; null inherits from the group. */
+    /** work | admin | user | context | actions | topbar | content | scripts | body-end; null inherits from the group. */
     public ?string $zone;
 
     public bool $isGroup = false;
@@ -40,6 +40,9 @@ class MenuItem
     public ?Closure $badge;
 
     public ?Closure $visible;
+
+    /** POST fields: the entry renders as a one-button form to its route (e.g. "New goods receipt"). */
+    public ?array $form;
 
     public function __construct(array $data)
     {
@@ -57,6 +60,7 @@ class MenuItem
         $this->view = $data['view'] ?? null;
         $this->badge = $data['badge'] ?? null;
         $this->visible = $data['visible'] ?? null;
+        $this->form = $data['form'] ?? null;
     }
 
     /**

@@ -205,7 +205,8 @@
 
         // "Appearance" in the user menu, next to Snipe-IT's dark-mode toggle (no core view edit).
         var toggle = document.querySelector('.user-menu [data-theme-toggle]');
-        if (toggle && config.appearanceUrl && !document.querySelector('[data-gs-appearance-link]')) {
+        // Skipped when the navigation registry already renders it in the user zone.
+        if (toggle && config.appearanceUrl && !document.querySelector('[data-gs-appearance-link], #menu-gs-theme-appearance')) {
             var li = document.createElement('li');
             var link = document.createElement('a');
             link.href = config.appearanceUrl;

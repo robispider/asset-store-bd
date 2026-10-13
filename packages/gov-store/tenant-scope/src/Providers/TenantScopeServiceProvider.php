@@ -91,6 +91,9 @@ class TenantScopeServiceProvider extends ServiceProvider
 
         if ($this->app->bound('gs.theme')) {
             GsTheme::assets()->css('tenant-scope', __DIR__.'/../resources/css/tenant-scope.css');
+            // Floating navbar and the navbar zones (office chip, ＋ New, inbox).
+            GsTheme::assets()->css('tenant-scope', __DIR__.'/../resources/css/topbar.css');
+            GsTheme::assets()->js('tenant-scope', __DIR__.'/../resources/js/topbar.js');
         }
 
         // Publish the configuration so it can be overridden in the root config directory if necessary
@@ -183,6 +186,10 @@ class TenantScopeServiceProvider extends ServiceProvider
             $registry->register(['id' => $id, 'group' => 'gov-access-security', 'order' => $order,
                 'label' => $label, 'icon' => $icon, 'route' => $route]);
         }
+
+        // Navbar inbox: the "Waiting for me" queues and their counts, visible even when the
+        // sidebar is collapsed (the default).
+        $registry->register(['id' => 'gov-nav-inbox', 'zone' => 'topbar', 'order' => 10, 'view' => 'govscope::nav.inbox']);
 
         // Page slots.
         $registry->register(['id' => 'gov-access-rollout', 'zone' => 'content', 'view' => 'govscope::hooks.rollout']);

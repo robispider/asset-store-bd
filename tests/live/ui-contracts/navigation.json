@@ -1,0 +1,218 @@
+{
+  "schemaVersion": 1,
+  "id": "navigation",
+  "locators": {
+    "sidebarExpanded": {
+      "css": "body:not(.sidebar-collapse) .main-sidebar",
+      "description": "The sidebar once it is expanded"
+    },
+    "workHeader": {
+      "css": "#gov-nav-work-header",
+      "description": "Sidebar header of the gov work zone (attached by NavigationHook)"
+    },
+    "adminHeader": {
+      "css": "#gov-nav-admin-header",
+      "description": "Sidebar header of the gov admin zone"
+    },
+    "assetsHeader": {
+      "css": "#gov-nav-assets-header",
+      "description": "Sidebar header that introduces Snipe-IT's own asset sections"
+    },
+    "workspaceGroup": {
+      "css": "#menu-gov-workspace.treeview > a",
+      "description": "My workspace group (treeview) in the sidebar"
+    },
+    "workspaceOpen": {
+      "css": "#menu-gov-workspace.treeview.menu-open",
+      "description": "My workspace group while expanded"
+    },
+    "catalogLeaf": {
+      "css": "#menu-gov-requests-catalog > a",
+      "description": "Sidebar: Request items"
+    },
+    "catalogLeafActive": {
+      "css": "#menu-gov-requests-catalog.active > a[aria-current='page']",
+      "description": "Sidebar: Request items marked as the current page"
+    },
+    "myRequestsLeaf": {
+      "css": "#menu-gov-requests-my-requests > a",
+      "description": "Sidebar: My requests"
+    },
+    "myRequestsLeafActive": {
+      "css": "#menu-gov-requests-my-requests.active > a[aria-current='page']",
+      "description": "Sidebar: My requests marked as the current page"
+    },
+    "queuesGroup": {
+      "css": "#menu-gov-queues",
+      "description": "Waiting-for-me group in the sidebar"
+    },
+    "approvalsLeaf": {
+      "css": ".main-sidebar #menu-gov-requests-approvals",
+      "description": "Sidebar: Approvals queue (as group child or single leaf)"
+    },
+    "fulfilLeaf": {
+      "css": ".main-sidebar #menu-gov-requests-fulfillment-queue",
+      "description": "Sidebar: To-fulfil queue"
+    },
+    "storeOpsGroup": {
+      "css": "#menu-gov-store-ops.treeview > a",
+      "description": "Store group (treeview) in the sidebar"
+    },
+    "stockRegisterLeaf": {
+      "css": "#menu-storeops-register > a",
+      "description": "Sidebar: Stock register"
+    },
+    "stockRegisterLeafActive": {
+      "css": "#menu-storeops-register.active > a[aria-current='page']",
+      "description": "Sidebar: Stock register marked as the current page"
+    },
+    "officeChip": {
+      "css": "#gov-office-chip > a.dropdown-toggle",
+      "description": "Navbar working-office chip (context zone)"
+    },
+    "officeChipName": {
+      "css": "#gov-office-chip .gs-office-chip-name",
+      "description": "Working office name shown on the chip"
+    },
+    "officePicker": {
+      "css": "#gov-office-chip .gs-office-picker",
+      "description": "Office picker dropdown of the chip"
+    },
+    "officePickerCurrent": {
+      "css": "#gov-office-chip .gs-office-picker button[aria-current='true']",
+      "description": "The picker option for the current working office"
+    },
+    "officePickerMemberships": {
+      "css": "#gov-office-chip .gs-office-picker a[href$='/gov-store/my-memberships']",
+      "description": "My memberships link at the bottom of the picker"
+    },
+    "officeSwitchForm": {
+      "css": "#gov-office-chip form#gs-office-switch",
+      "description": "The single office switch form (never one form per office)"
+    },
+    "actionsSingle": {
+      "css": "#gov-nav-actions[data-gs-action='gov-requests-new'] > a",
+      "description": "Navbar one-entry action button: Request items"
+    },
+    "actionsMenu": {
+      "css": "#gov-nav-actions.dropdown > a.dropdown-toggle",
+      "description": "Navbar ＋ New dropdown toggle"
+    },
+    "actionsAny": {
+      "css": "#gov-nav-actions",
+      "description": "Navbar gov actions slot, whatever its form"
+    },
+    "actionNewReceipt": {
+      "css": "#gov-nav-actions #menu-storeops-new-receipt button[type='submit']",
+      "description": "＋ New → New goods receipt (POST form)"
+    },
+    "actionNewIssue": {
+      "css": "#gov-nav-actions #menu-storeops-new-issue button[type='submit']",
+      "description": "＋ New → New issue (POST form)"
+    },
+    "actionNewAdjustment": {
+      "css": "#gov-nav-actions #menu-storeops-new-adjustment button[type='submit']",
+      "description": "＋ New → New adjustment (POST form)"
+    },
+    "actionRequestItems": {
+      "css": "#gov-nav-actions #menu-gov-requests-new > a",
+      "description": "＋ New → Request items"
+    },
+    "inbox": {
+      "css": "#gov-nav-inbox > a.dropdown-toggle",
+      "description": "Navbar inbox (Waiting for me) toggle"
+    },
+    "inboxAny": {
+      "css": "#gov-nav-inbox",
+      "description": "Navbar inbox slot"
+    },
+    "inboxApprovals": {
+      "css": "#gov-nav-inbox #inbox-gov-requests-approvals > a",
+      "description": "Inbox → Approvals"
+    },
+    "inboxFulfil": {
+      "css": "#gov-nav-inbox #inbox-gov-requests-fulfillment-queue > a",
+      "description": "Inbox → To fulfil"
+    },
+    "basket": {
+      "css": "header.main-header a#nav-basket-btn[href$='/gov-requests/basket']",
+      "description": "Navbar request basket link"
+    },
+    "basketCount": {
+      "css": "header.main-header a#nav-basket-btn [data-basket-count]",
+      "description": "Navbar basket line counter"
+    },
+    "userMenu": {
+      "css": "header.main-header li.dropdown.user.user-menu > a.dropdown-toggle",
+      "description": "Navbar user account dropdown toggle"
+    },
+    "userMenuMyAccess": {
+      "css": "header.main-header li.user-menu #menu-gov-access-my_access > a[href$='/gov-store/access']",
+      "description": "User menu → My access (gov user zone)"
+    },
+    "userMenuMyAccessActive": {
+      "css": "header.main-header li.user-menu #menu-gov-access-my_access.active > a[aria-current='page']",
+      "description": "User menu → My access marked as the current page"
+    },
+    "userMenuMemberships": {
+      "css": "header.main-header li.user-menu #menu-govmem-memberships > a[href$='/gov-store/my-memberships']",
+      "description": "User menu → My memberships (gov user zone)"
+    },
+    "userMenuLogout": {
+      "css": "header.main-header li.user-menu a[href$='/logout']",
+      "description": "User menu → Logout"
+    },
+    "coreCreate": {
+      "css": "header.main-header li.dropdown.user-menu[aria-hidden='true']",
+      "description": "Snipe-IT's own navbar Create New dropdown (must be replaced by gov ＋ New)"
+    },
+    "coreShortcuts": {
+      "css": "header.main-header li[aria-hidden='true'] > a[data-tooltip='true'][tabindex='-1']",
+      "description": "Snipe-IT's icon-only navbar shortcuts (Assets … Users), hidden for gov"
+    },
+    "coreRequested": {
+      "css": "header.main-header a[href$='/account/requested']",
+      "description": "Snipe-IT's user-menu Requested assets entry (replaced by My requests)"
+    },
+    "coreSettingsCog": {
+      "css": "header.main-header a[href$='/admin']",
+      "description": "Snipe-IT's superadmin settings cog"
+    },
+    "stickyHeader": {
+      "css": "html[data-gs-sticky-header]",
+      "description": "Floating navbar flag set while the header parses"
+    },
+    "approvalsTopLevel": {
+      "css": "ul.sidebar-menu > li#menu-gov-requests-approvals",
+      "description": "Sidebar: Approvals as a top-level leaf (its group has one visible leaf)"
+    },
+    "approvalsTopLevelLink": {
+      "css": "ul.sidebar-menu > li#menu-gov-requests-approvals > a",
+      "description": "Sidebar: Approvals top-level link"
+    },
+    "approvalsLeafActive": {
+      "css": ".main-sidebar #menu-gov-requests-approvals.active > a[aria-current='page']",
+      "description": "Sidebar: Approvals marked as the current page"
+    },
+    "fulfilLeafActive": {
+      "css": ".main-sidebar #menu-gov-requests-fulfillment-queue.active > a[aria-current='page']",
+      "description": "Sidebar: To fulfil marked as the current page"
+    },
+    "storeOpsOpen": {
+      "css": "#menu-gov-store-ops.treeview.menu-open",
+      "description": "Store group while expanded"
+    },
+    "storeHubLeaf": {
+      "css": "#menu-storeops-hub > a",
+      "description": "Sidebar: Receipts & issues (document hub)"
+    },
+    "actionsAddStaff": {
+      "css": "#gov-nav-actions #menu-govmem-add-staff",
+      "description": "＋ New → Add staff member"
+    }
+  },
+  "labels": {
+    "en-US": {},
+    "bn-BD": {}
+  }
+}

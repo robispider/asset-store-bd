@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "id": "navigation.employee-topbar-sidebar",
+  "title": "An ordinary employee gets the gov top bar (office chip, Request items, basket, user menu) and a working sidebar, with Snipe-IT's Create New, shortcuts and Requested assets removed",
+  "features": ["navigation.topbar", "navigation.sidebar"],
+  "tags": ["seeded", "readonly", "navigation"],
+  "execution": { "capability": "observe", "language": "en-US", "timeoutMs": 90000, "accessMode": "any" },
+  "fixtures": {
+    "office": { "requirements": { "operational": true } },
+    "actors": {
+      "employee": {
+        "capabilities": {
+          "allOf": ["requests.submit"],
+          "noneOf": ["requests.approve", "requests.fulfill", "access.manage", "onboarding.manage", "membership.manage", "storeops.documents.draft", "storeops.documents.view"]
+        },
+        "office": "office",
+        "activeMembership": true
+      }
+    }
+  },
+  "steps": [
+    { "action": "observe", "check": "office.context", "args": { "id": "${fixtures.office.id}" }, "as": "office" },
+    { "use": "auth.login", "with": { "actor": "employee" } },
+    { "action": "goto", "url": "/" },
+
+    { "action": "assert", "target": "navigation.stickyHeader", "test": "count", "equals": 1, "note": "config topbar.sticky defaults to true" },
+
+    { "action": "assert", "target": "navigation.officeChip", "test": "visible" },
+    { "action": "assert", "target": "navigation.officeChipName", "test": "text", "equals": "${observed.office.name}", "note": "Working office = the actor's office (database), not a value read from the page" },
+    { "action": "click", "target": "navigation.officeChip" },
+    { "action": "assert", "target": "navigation.officePicker", "test": "visible" },
+    { "action": "assert", "target": "navigation.officePickerCurrent", "test": "text", "contains": "${observed.office.name}" },
+    { "action": "assert", "target": "navigation.officePickerMemberships", "test": "visible" },
+    { "action": "assert", "target": "navigation.officeSwitchForm", "test": "count", "equals": 1, "note": "One switch form, never one form per office" },
+    { "action": "keyboard", "key": "Escape" },
+
+    { "action": "assert", "target": "navigation.coreCreate", "test": "count", "equals": 0, "note": "Snipe-IT Create New is replaced (GRN-only intake)" },
+    { "action": "assert", "target": "navigation.coreShortcuts", "test": "count", "equals": 0, "note": "Icon-only Snipe-IT shortcuts are hidden" },
+    { "action": "assert", "target": "navigation.coreSettingsCog", "test": "count", "equals": 0, "note": "Settings cog is superadmin only" },
+    { "action": "assert", "target": "navigation.inboxAny", "test": "count", "equals": 0, "note": "No queue ability, so no inbox" },
+    { "action": "assert", "target": "navigation.basket", "test": "visible" },
+
+    { "action": "assert", "target": "navigation.actionsSingle", "test": "visible", "note": "Only Request items is allowed, so ＋ New is a single button" },
+    { "action": "assert", "target": "navigation.actionsMenu", "test": "count", "equals": 0 },
+    { "action": "click", "target": "navigation.actionsSingle" },
+    { "action": "wait", "target": "navigation.catalogLeafActive", "state": "attached", "note": "Destination page loaded: its sidebar marks Request items as current" },
+    { "action": "assert", "test": "url", "contains": "/gov-requests/catalog" },
+
+    { "action": "click", "target": "navigation.userMenu" },
+    { "action": "assert", "target": "navigation.userMenuMyAccess", "test": "visible" },
+    { "action": "assert", "target": "navigation.userMenuMemberships", "test": "visible" },
+    { "action": "assert", "target": "navigation.userMenuLogout", "test": "visible" },
+    { "action": "assert", "target": "navigation.coreRequested", "test": "count", "equals": 0, "note": "Snipe-IT Requested assets is hidden; gov uses My requests" },
+    { "action": "click", "target": "navigation.userMenuMyAccess" },
+    { "action": "wait", "target": "navigation.userMenuMyAccessActive", "state": "attached" },
+    { "action": "assert", "test": "url", "contains": "/gov-store/access" },
+
+    { "action": "assert", "target": "navigation.workHeader", "test": "count", "equals": 1 },
+    { "action": "assert", "target": "navigation.queuesGroup", "test": "count", "equals": 0 },
+    { "action": "assert", "target": "navigation.approvalsLeaf", "test": "count", "equals": 0 },
+    { "action": "assert", "target": "navigation.fulfilLeaf", "test": "count", "equals": 0 },
+    { "action": "assert", "target": "navigation.stockRegisterLeaf", "test": "count", "equals": 0 },
+
+    { "action": "goto", "url": "/account/menu", "query": { "state": "open" }, "note": "Snipe-IT's own sidebar preference (session only); the toggle saves it with an unawaited request, which races navigation" },
+    { "action": "goto", "url": "/gov-store/access" },
+    { "action": "wait", "target": "navigation.sidebarExpanded", "state": "visible" },
+    { "action": "assert", "target": "navigation.workHeader", "test": "visible" },
+    { "action": "click", "target": "navigation.workspaceGroup" },
+    { "action": "wait", "target": "navigation.catalogLeaf", "state": "visible" },
+    { "action": "assert", "target": "navigation.workspaceOpen", "test": "count", "equals": 1 },
+    { "action": "assert", "target": "navigation.myRequestsLeaf", "test": "visible" },
+    { "action": "click", "target": "navigation.myRequestsLeaf" },
+    { "action": "wait", "target": "navigation.myRequestsLeafActive", "state": "attached", "note": "The current page is marked in the sidebar" },
+    { "action": "assert", "test": "url", "contains": "/gov-requests/my-requests" },
+    { "action": "assert", "target": "navigation.workspaceOpen", "test": "count", "equals": 1, "note": "The group of the current page renders open" },
+    { "action": "wait", "target": "navigation.catalogLeaf", "state": "visible", "note": "The open group shows its leaves" },
+    { "action": "click", "target": "navigation.catalogLeaf" },
+    { "action": "wait", "target": "navigation.catalogLeafActive", "state": "attached" },
+    { "action": "assert", "test": "url", "contains": "/gov-requests/catalog" }
+  ],
+  "cleanup": { "policy": "no-business-records-created" }
+}

@@ -30,4 +30,9 @@ return [
     'boundaries' => 'তথ্যের সীমানা',
     'boundary_policy' => 'সীমানা নীতি',
     'boundary_explorer' => 'সীমানা অনুসন্ধান',
+
+    // নেভবার
+    'new' => 'নতুন',
+    'inbox_label' => 'আমার অপেক্ষমাণ কাজ: :count',
+    'inbox_empty' => 'আপনার জন্য কোনো কাজ অপেক্ষমাণ নেই',
 ];
