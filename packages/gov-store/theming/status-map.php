@@ -25,4 +25,11 @@ return [
     'warning' => ['tone' => 'warning', 'icon' => 'fa-triangle-exclamation'],
     'danger' => ['tone' => 'danger', 'icon' => 'fa-circle-exclamation'],
     'info' => ['tone' => 'info', 'icon' => 'fa-circle-info'],
+
+    // Office lifecycle (keys are lifecycle_status values; labels say what the office needs next)
+    'office_unconfigured' => ['tone' => 'status-archived', 'icon' => 'fa-map-location-dot'],
+    'office_provisioned' => ['tone' => 'status-pending', 'icon' => 'fa-user-plus'],
+    'office_configured' => ['tone' => 'info', 'icon' => 'fa-list-check'],
+    'office_operational' => ['tone' => 'status-ready', 'icon' => 'fa-circle-check'],
+    'office_suspended' => ['tone' => 'status-undeployable', 'icon' => 'fa-circle-pause'],
 ];

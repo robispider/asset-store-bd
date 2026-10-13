@@ -106,6 +106,11 @@ return [
         'pending' => 'Pending',
         'undeployable' => 'Undeployable',
         'archived' => 'Archived',
+        'office_unconfigured' => 'Not onboarded',
+        'office_provisioned' => 'Needs administrator',
+        'office_configured' => 'Setting up',
+        'office_operational' => 'Live',
+        'office_suspended' => 'Paused',
     ],
 
     'kit' => [
@@ -130,5 +135,10 @@ return [
         'loading' => 'Loading…',
         'doc_no' => 'No.',
         'date' => 'Date',
+        'readiness_count' => ':done of :total done',
+        'readiness_done' => 'done',
+        'readiness_todo' => 'To do',
+        'needed' => 'Needed',
+        'optional' => 'Optional',
     ],
 ];

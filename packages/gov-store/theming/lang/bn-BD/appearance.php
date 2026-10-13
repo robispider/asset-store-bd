@@ -106,6 +106,11 @@ return [
         'pending' => 'অপেক্ষমাণ',
         'undeployable' => 'অব্যবহারযোগ্য',
         'archived' => 'সংরক্ষণাগারে',
+        'office_unconfigured' => 'যুক্ত হয়নি',
+        'office_provisioned' => 'প্রশাসক প্রয়োজন',
+        'office_configured' => 'সেটআপ চলছে',
+        'office_operational' => 'চালু',
+        'office_suspended' => 'স্থগিত',
     ],
 
     'kit' => [
@@ -130,5 +135,10 @@ return [
         'loading' => 'লোড হচ্ছে…',
         'doc_no' => 'নং',
         'date' => 'তারিখ',
+        'readiness_count' => ':total টির মধ্যে :done টি সম্পন্ন',
+        'readiness_done' => 'সম্পন্ন',
+        'readiness_todo' => 'বাকি',
+        'needed' => 'প্রয়োজন',
+        'optional' => 'ঐচ্ছিক',
     ],
 ];

@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Offices registry</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/40008be14305f8813d984e23623f924e">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Source+Serif+4:wght@400;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.app{min-height:100%;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:var(--gs-font-sans);font-size:14px;line-height:1.5}
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 20px;background:var(--gs-header-bg);color:var(--gs-header-fg);border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.top a{color:var(--gs-header-fg)}
+.shell{display:flex;flex-wrap:wrap;align-items:stretch}
+.side{flex:1 1 220px;max-width:240px;background:var(--gs-sidebar-bg);color:var(--gs-sidebar-fg);padding:12px 0;box-sizing:border-box}
+.side a{display:flex;align-items:center;gap:10px;min-height:42px;padding:0 18px;color:var(--gs-sidebar-fg);text-decoration:none;font-size:14px}
+.side a[aria-current]{background:var(--gs-sidebar-active-bg);color:var(--gs-sidebar-active-fg);box-shadow:inset 3px 0 0 var(--gs-sidebar-active-marker)}
+.main{flex:999 1 560px;min-width:0;box-sizing:border-box;padding:24px 28px 56px;display:flex;flex-direction:column;gap:18px}
+.ico{width:1em;height:1em;flex:none}
+.bn{font-family:var(--gs-font-bengali)}
+.muted{color:var(--gs-color-text-muted)}
+.lang{display:inline-flex;border:var(--gs-border-width) solid var(--gs-color-border-strong);border-radius:var(--gs-radius-sm);overflow:hidden}
+.lang button{min-height:32px;padding:0 10px;border:0;background:transparent;color:inherit;font:inherit;font-weight:600;cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--gs-color-primary);color:var(--gs-color-on-primary)}
+.secnav{display:flex;gap:4px;flex-wrap:wrap;border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.secnav a{display:inline-flex;align-items:center;min-height:42px;padding:0 12px;color:var(--gs-color-text-muted);text-decoration:none;font-weight:600;border-bottom:2px solid transparent}
+.secnav a[aria-current]{color:var(--gs-color-primary);border-bottom-color:var(--gs-color-primary)}
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.ctl{box-sizing:border-box;min-height:var(--gs-size-control-h);padding:0 10px;border:var(--gs-border-width) solid var(--gs-color-border-strong);border-radius:var(--gs-radius-sm);background:var(--gs-color-surface);color:var(--gs-color-text);font:inherit}
+.next{font-size:13px;font-weight:600}
+.next--todo{color:var(--gs-color-warning)}
+.next--paused{color:var(--gs-color-danger)}
+.office{font-weight:700;color:var(--gs-color-text);text-decoration:none}
+.office:hover{color:var(--gs-color-link);text-decoration:underline}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</helmet>
+<div class="app" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-table="{{ v.table }}" data-gs-controls="{{ v.controls }}" data-gs-type="{{ v.type }}" data-gs-header="{{ v.header }}">
+
+<div class="top">
+<strong style="font-size: 16px; flex: 1 1 auto">National Asset Register</strong>
+<div class="lang" role="group" aria-label="Language"><button type="button" aria-pressed="true">EN</button><button type="button" aria-pressed="false" class="bn">বাংলা</button></div>
+<span class="gs-avatar gs-avatar--sm gs-tone-primary" role="img" aria-label="Signed in as Nusrat Jahan">NJ</span>
+</div>
+
+<div class="shell">
+<nav class="side" aria-label="Main">
+<a href="#">Dashboard</a><a href="#">Assets</a><a href="#">Requests</a><a href="#" aria-current="page">Organization</a><a href="#">Reports</a><a href="#">Settings</a>
+</nav>
+
+<main class="main">
+<header class="gs-page-header">
+<div class="gs-page-header__text">
+<h1 class="gs-page-header__title">Offices <span class="gs-page-header__bn" lang="bn">অফিসসমূহ</span></h1>
+<p class="gs-page-header__subtitle">Every office in Dhaka Division you can manage. Open one to finish its setup.</p>
+</div>
+<div class="gs-page-header__actions">
+<button type="button" class="gs-btn gs-btn--light gs-btn--outline">Export</button>
+<a class="gs-btn gs-btn--primary" href="AddOffice.dc.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg>Add office</a>
+</div>
+</header>
+
+<nav class="secnav" aria-label="Organization sections">
+<a href="#" aria-current="page">Offices</a><a href="Access.dc.html">Administrators</a><a href="#">Government directory</a>
+</nav>
+
+<sc-if value="{{ hasAttention }}" hint-placeholder-val="{{ true }}">
+<div class="gs-alert gs-alert--warning" role="status">
+<svg class="ico gs-alert__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m21.7 18-8-14a2 2 0 0 0-3.5 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3"></path><path d="M12 9v4M12 17h.01"></path></svg>
+<div class="gs-alert__body" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; flex: 1 1 auto"><span style="flex: 1 1 320px"><strong>4 offices are waiting on you.</strong> Most need just one more person assigned before staff can start ordering.</span><button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" onClick="{{ showAction }}">Show them</button></div>
+</div>
+</sc-if>
+
+<section class="gs-box">
+<div class="gs-box__body" style="display: flex; flex-direction: column; gap: 12px">
+<nav class="gs-status-tabs" aria-label="Filter by status">
+<ul class="gs-tabs">
+<sc-for list="{{ tabs }}" as="t" hint-placeholder-count="6">
+<li class="gs-tabs__item"><a class="gs-tabs__link" href="#" aria-current="{{ t.current }}" onClick="{{ t.pick }}"><span>{{ t.label }}</span><span class="gs-tabs__count">{{ t.count }}</span></a></li>
+</sc-for>
+</ul>
+</nav>
+<div class="filters" role="search">
+<label class="sr" for="rg-q">Search offices</label>
+<input id="rg-q" class="ctl" type="search" placeholder="Search by office, area or ministry, in English or বাংলা" value="{{ q }}" onChange="{{ onSearch }}" style="flex: 1 1 320px">
+<label class="sr" for="rg-m">Ministry</label>
+<select id="rg-m" class="ctl" style="flex: 0 1 220px"><option>All ministries</option><option>Health and Family Welfare</option><option>Education</option></select>
+<label class="sr" for="rg-d">District</label>
+<select id="rg-d" class="ctl" style="flex: 0 1 180px"><option>All districts</option><option>Dhaka</option><option>Gazipur</option></select>
+<button type="button" class="gs-btn gs-btn--light gs-btn--outline" onClick="{{ clear }}">Clear</button>
+</div>
+<p class="muted" style="margin: 0; font-size: 13px" aria-live="polite">Showing {{ shown }} of 8 offices</p>
+<div class="gs-table-wrap" style="overflow-x: auto">
+<table class="gs-table" style="min-width: 980px">
+<caption class="sr">Offices</caption>
+<thead><tr><th scope="col">Office</th><th scope="col">Area</th><th scope="col">Ministry</th><th scope="col">Setup</th><th scope="col">Status</th></tr></thead>
+<tbody>
+<tr hidden="{{ h.r1 }}"><td><a class="office" href="OfficeHub.dc.html">Upazila Health Complex, Savar</a><div class="bn muted">উপজেলা স্বাস্থ্য কমপ্লেক্স, সাভার</div></td><td>Savar Upazila<div class="muted">Dhaka District</div></td><td>Health and Family Welfare</td><td><div class="gs-progress gs-progress--sm gs-tone-primary" style="margin: 0 0 4px; max-width: 180px"><div class="gs-progress__track" role="progressbar" aria-valuemin="0" aria-valuemax="4" aria-valuenow="3" aria-label="3 of 4 done"><span class="gs-progress__bar" style="width: 75%"></span></div></div><span class="next next--todo">3/4 · Next: choose a storekeeper</span></td><td><span class="gs-badge" data-tone="info"><svg class="ico gs-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m3 7 2 2 4-4M3 17l2 2 4-4M13 6h8M13 12h8M13 18h8"></path></svg><span class="gs-badge__label">Setting up</span></span></td></tr>
+<tr hidden="{{ h.r2 }}"><td><a class="office" href="OfficeHub.dc.html">Deputy Commissioner's Office, Gazipur</a><div class="bn muted">জেলা প্রশাসকের কার্যালয়, গাজীপুর</div></td><td>Gazipur Sadar<div class="muted">Gazipur District</div></td><td>Cabinet Division</td><td><div class="gs-progress gs-progress--sm gs-tone-success" style="margin: 0 0 4px; max-width: 180px"><div class="gs-progress__track" role="progressbar" aria-valuemin="0" aria-valuemax="4" aria-valuenow="4" aria-label="4 of 4 done"><span class="gs-progress__bar" style="width: 100%"></span></div></div><span class="next muted">Ready, staff are ordering</span></td><td><span class="gs-badge" data-tone="status-ready"><svg class="ico gs-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 3 3 5-6"></path></svg><span class="gs-badge__label">Live</span></span></td></tr>
+<tr hidden="{{ h.r3 }}"><td><a class="office" href="OfficeHub.dc.html">Government Boys' High School, Tangail</a><div class="bn muted">সরকারি বালক উচ্চ বিদ্যালয়, টাঙ্গাইল</div></td><td>Tangail Sadar<div class="muted">Tangail District</div></td><td>Secondary and Higher Education</td><td><div class="gs-progress gs-progress--sm gs-tone-primary" style="margin: 0 0 4px; max-width: 180px"><div class="gs-progress__track" role="progressbar" aria-valuemin="0" aria-valuemax="4" aria-valuenow="1" aria-label="1 of 4 done"><span class="gs-progress__bar" style="width: 25%"></span></div></div><span class="next next--todo">1/4 · Next: choose an administrator</span></td><td><span class="gs-badge" data-tone="status-pending"><svg class="ico gs-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10" cy="8" r="4"></circle><path d="M3 21a7 7 0 0 1 14 0M19 8v6M22 11h-6"></path></svg><span class="gs-badge__label">Needs administrator</span></span></td></tr>
+<tr hidden="{{ h.r4 }}"><td><a class="office" href="OfficeHub.dc.html">Upazila ICT Office, Keraniganj</a><div class="bn muted">উপজেলা আইসিটি অফিস, কেরানীগঞ্জ</div></td><td>Keraniganj Upazila<div class="muted">Dhaka District</div></td><td>ICT Division</td><td><div class="gs-progress gs-progress--sm gs-tone-success" style="margin: 0 0 4px; max-width: 180px"><div class="gs-progress__track" role="progressbar" aria-valuemin="0" aria-valuemax="4" aria-valuenow="4" aria-label="4 of 4 done"><span class="gs-progress__bar" style="width: 100%"></span></div></div><span class="next muted">Ready, staff are ordering</span></td><td><span class="gs-badge" data-tone="status-ready"><svg class="ico gs-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 3 3 5-6"></path></svg><span class="gs-badge__label">Live</span></span></td></tr>
+<tr hidden="{{ h.r5 }}"><td><a class="office" href="AddOffice.dc.html">Union Digital Centre, Kaliakair</a><div class="bn muted">ইউনিয়ন ডিজিটাল সেন্টার, কালিয়াকৈর</div></td><td class="muted">Not placed yet<div>Gazipur District</div></td><td class="muted">Not linked</td><td><div class="gs-progress gs-progress--sm gs-tone-primary" style="margin: 0 0 4px; max-width: 180px"><div class="gs-progress__track" role="progressbar" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0" aria-label="0 of 4 done"><span class="gs-progress__bar" style="width: 0%"></span></div></div><span class="next next--todo">0/4 · Next: place it on the map</span></td><td><span class="gs-badge" data-tone="status-archived"><svg class="ico gs-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke-dasharray="3.5 3"></circle></svg><span class="gs-badge__label">Not onboarded</span></span></td></tr>
+<tr hidden="{{ h.r6 }}"><td><a class="office" href="OfficeHub.dc.html">District Hospital, Narayanganj</a><div class="bn muted">জেলা হাসপাতাল, নারায়ণগঞ্জ</div></td><td>Narayanganj Sadar<div class="muted">Narayanganj District</div></td><td>Health and Family Welfare</td><td><div class="gs-progress gs-progress--sm gs-tone-danger" style="margin: 0 0 4px; max-width: 180px"><div class="gs-progress__track" role="progressbar" aria-valuemin="0" aria-valuemax="4" aria-valuenow="4" aria-label="4 of 4 done"><span class="gs-progress__bar" style="width: 100%"></span></div></div><span class="next next--paused">Paused 12 Oct: renovation</span></td><td><span class="gs-badge" data-tone="status-undeployable"><svg class="ico gs-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M10 15V9M14 15V9"></path></svg><span class="gs-badge__label">Paused</span></span></td></tr>
+<tr hidden="{{ h.r7 }}"><td><a class="office" href="OfficeHub.dc.html">Upazila Education Office, Mirzapur</a><div class="bn muted">উপজেলা শিক্ষা অফিস, মির্জাপুর</div></td><td>Mirzapur Upazila<div class="muted">Tangail District</div></td><td>Primary and Mass Education</td><td><div class="gs-progress gs-progress--sm gs-tone-primary" style="margin: 0 0 4px; max-width: 180px"><div class="gs-progress__track" role="progressbar" aria-valuemin="0" aria-valuemax="4" aria-valuenow="2" aria-label="2 of 4 done"><span class="gs-progress__bar" style="width: 50%"></span></div></div><span class="next next--todo">2/4 · Next: choose an approver</span></td><td><span class="gs-badge" data-tone="info"><svg class="ico gs-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m3 7 2 2 4-4M3 17l2 2 4-4M13 6h8M13 12h8M13 18h8"></path></svg><span class="gs-badge__label">Setting up</span></span></td></tr>
+<tr hidden="{{ h.r8 }}"><td><a class="office" href="OfficeHub.dc.html">Civil Surgeon's Office, Manikganj</a><div class="bn muted">সিভিল সার্জনের কার্যালয়, মানিকগঞ্জ</div></td><td>Manikganj Sadar<div class="muted">Manikganj District</div></td><td>Health and Family Welfare</td><td><div class="gs-progress gs-progress--sm gs-tone-success" style="margin: 0 0 4px; max-width: 180px"><div class="gs-progress__track" role="progressbar" aria-valuemin="0" aria-valuemax="4" aria-valuenow="4" aria-label="4 of 4 done"><span class="gs-progress__bar" style="width: 100%"></span></div></div><span class="next muted">Ready, staff are ordering</span></td><td><span class="gs-badge" data-tone="status-ready"><svg class="ico gs-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 3 3 5-6"></path></svg><span class="gs-badge__label">Live</span></span></td></tr>
+</tbody>
+</table>
+</div>
+<sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
+<div class="gs-empty"><h3 class="gs-empty__title">No offices match</h3><div>Try a shorter search, or the name in বাংলা.</div><div class="gs-empty__actions"><button type="button" class="gs-btn gs-btn--light gs-btn--outline" onClick="{{ clear }}">Clear search and filters</button></div></div>
+</sc-if>
+</div>
+</section>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"$preview":{"width":1440,"height":1400}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { tab: 'all', q: '' };
+}
+renderVals() {
+const V = {
+'civic-ledger': { header: 'neutral', density: 'regular', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { header: 'brand', density: 'regular', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { header: 'dark', density: 'compact', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { header: 'dark', density: 'comfortable', table: 'ledger', surfaces: 'flat', controls: 'outlined', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { header: 'brand', density: 'compact', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { header: 'floating', density: 'regular', table: 'rules', surfaces: 'elevated', controls: 'filled', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+const rows = [
+{ id: 'r1', s: 'setup', text: 'upazila health complex savar সাভার dhaka health' },
+{ id: 'r2', s: 'live', text: "deputy commissioner's office gazipur গাজীপুর cabinet" },
+{ id: 'r3', s: 'attn', text: "government boys' high school tangail টাঙ্গাইল education" },
+{ id: 'r4', s: 'live', text: 'upazila ict office keraniganj কেরানীগঞ্জ dhaka ict' },
+{ id: 'r5', s: 'none', text: 'union digital centre kaliakair কালিয়াকৈর gazipur' },
+{ id: 'r6', s: 'paused', text: 'district hospital narayanganj নারায়ণগঞ্জ health' },
+{ id: 'r7', s: 'setup', text: 'upazila education office mirzapur মির্জাপুর tangail education' },
+{ id: 'r8', s: 'live', text: "civil surgeon's office manikganj মানিকগঞ্জ health" }
+];
+const action = (r) => r.s === 'setup' || r.s === 'attn' || r.s === 'none';
+const defs = [
+{ id: 'all', label: 'All', test: () => true },
+{ id: 'action', label: 'Needs your action', test: action },
+{ id: 'setup', label: 'Setting up', test: (r) => r.s === 'setup' || r.s === 'attn' },
+{ id: 'live', label: 'Live', test: (r) => r.s === 'live' },
+{ id: 'paused', label: 'Paused', test: (r) => r.s === 'paused' },
+{ id: 'none', label: 'Not onboarded', test: (r) => r.s === 'none' }
+];
+const def = defs.find((d) => d.id === this.state.tab) || defs[0];
+const q = (this.state.q || '').toLowerCase().trim();
+const h = {};
+let shown = 0;
+rows.forEach((r) => {
+const visible = def.test(r) && (!q || r.text.includes(q));
+h[r.id] = !visible;
+if (visible) shown += 1;
+});
+return {
+skin, mode, v: V[skin], h, shown, q: this.state.q,
+empty: shown === 0,
+hasAttention: this.state.tab !== 'action',
+tabs: defs.map((d) => ({ label: d.label, count: rows.filter(d.test).length, current: d.id === def.id ? 'page' : 'false', pick: (e) => { if (e) e.preventDefault(); this.setState({ tab: d.id }); } })),
+onSearch: (e) => this.setState({ q: e.target.value }),
+showAction: () => this.setState({ tab: 'action' }),
+clear: () => this.setState({ tab: 'all', q: '' })
+};
+}
+}
+</script>
+</body>
+</html>

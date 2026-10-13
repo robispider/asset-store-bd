@@ -1,0 +1,86 @@
+/*
+ * Workflow kit (@layer gs-components): readiness checklist, role slot, action row, choice card and
+ * hierarchy trail, for setup and administration flows where the screen should say what to do next.
+ * Only .gs-* classes and --gs-* tokens; every component follows the active theme and mode.
+ */
+@layer gs-components {
+
+    /* ---------- readiness checklist ---------- */
+    .gs-readiness { display: flex; flex-direction: column; gap: var(--gs-space-3); }
+    .gs-readiness .gs-progress { margin-bottom: 0; }
+    .gs-readiness__head { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--gs-space-3); flex-wrap: wrap; }
+    .gs-readiness__title { font-size: 1.1em; color: var(--gs-color-text); }
+    .gs-readiness__caption { margin: var(--gs-space-1) 0 0 !important; color: var(--gs-color-text-muted) !important; font-size: var(--gs-font-size-sm); }
+    .gs-readiness__count { color: var(--gs-color-text-muted); font-size: var(--gs-font-size-sm); font-weight: 600; font-variant-numeric: tabular-nums; }
+    .gs-readiness__list { list-style: none; margin: 0; padding: 0; }
+    .gs-readiness__item {
+        display: flex; align-items: center; gap: var(--gs-space-3);
+        min-height: var(--gs-size-row-h); padding: var(--gs-cell-pad-y, 6px) 0;
+        border-top: var(--gs-border-width) solid var(--gs-color-border);
+    }
+    .gs-readiness__item:first-child { border-top: 0; }
+    .gs-readiness__icon { font-size: 1.15em; color: var(--gs-color-warning); flex: 0 0 auto; }
+    .gs-readiness__item--done .gs-readiness__icon { color: var(--gs-color-success); }
+    .gs-readiness__item--optional:not(.gs-readiness__item--done) .gs-readiness__icon { color: var(--gs-color-text-subtle); }
+    .gs-readiness__label { flex: 1 1 auto; min-width: 0; color: var(--gs-color-text); }
+    .gs-readiness__todo { color: var(--gs-color-warning); font-size: var(--gs-font-size-sm); font-weight: 600; }
+    .gs-readiness--compact { gap: 0; }
+    .gs-readiness--compact .gs-progress__head { margin-bottom: 2px; }
+
+    /* ---------- role slot ---------- */
+    .gs-roles { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--gs-space-3); }
+    .gs-role {
+        display: flex; flex-direction: column; gap: var(--gs-space-2);
+        padding: var(--gs-space-4); border: var(--gs-border-width) solid var(--gs-color-border);
+        border-radius: var(--gs-radius-md); background: var(--gs-color-surface);
+    }
+    .gs-role--empty { border-style: dashed; border-color: var(--gs-color-border-strong); background: var(--gs-color-surface-sunken); }
+    .gs-role--required { border-color: var(--gs-color-warning); background: var(--gs-color-warning-subtle); }
+    .gs-role__head { display: flex; align-items: baseline; gap: var(--gs-space-2); flex-wrap: wrap; }
+    .gs-role__name { color: var(--gs-color-text); }
+    .gs-role__flag { font-size: var(--gs-font-size-sm); font-weight: 600; color: var(--gs-color-warning); }
+    .gs-role__flag--muted { color: var(--gs-color-text-muted); font-weight: 500; }
+    .gs-role__description { margin: 0 !important; color: var(--gs-color-text-muted) !important; font-size: var(--gs-font-size-sm); }
+    .gs-role__body { display: flex; align-items: center; gap: var(--gs-space-3); margin-top: var(--gs-space-1); }
+    .gs-role__person { display: flex; flex-direction: column; min-width: 0; flex: 1 1 auto; }
+    .gs-role__person-name { font-weight: 600; color: var(--gs-color-text); }
+    .gs-role__person-meta { color: var(--gs-color-text-muted); font-size: var(--gs-font-size-sm); }
+    .gs-role__actions { margin-left: auto; display: flex; gap: var(--gs-space-2); }
+    .gs-role--empty .gs-role__actions { margin-left: 0; }
+
+    /* ---------- action row (settings, danger zone) ---------- */
+    .gs-action-row {
+        display: flex; align-items: center; gap: var(--gs-space-4); flex-wrap: wrap;
+        padding: var(--gs-space-4) 0; border-top: var(--gs-border-width) solid var(--gs-color-border);
+    }
+    .gs-action-row:first-child { border-top: 0; }
+    .gs-action-row__text { flex: 1 1 320px; min-width: 0; }
+    .gs-action-row__title { color: var(--gs-color-text); }
+    .gs-action-row__description, .gs-action-row__why { margin: var(--gs-space-1) 0 0 !important; font-size: var(--gs-font-size-sm); color: var(--gs-color-text-muted) !important; }
+    .gs-action-row__why { font-weight: 600; }
+    .gs-action-row--unavailable .gs-action-row__title { color: var(--gs-color-text-muted); }
+    .gs-action-row__actions { display: flex; gap: var(--gs-space-2); flex-wrap: wrap; }
+
+    /* ---------- choice card ---------- */
+    .gs-choice {
+        display: flex; align-items: flex-start; gap: var(--gs-space-3); margin: 0;
+        padding: var(--gs-space-3) var(--gs-space-4); min-height: 44px;
+        border: var(--gs-border-width) solid var(--gs-color-border-strong); border-radius: var(--gs-radius-md);
+        background: var(--gs-color-surface); color: var(--gs-color-text); font-weight: 400; cursor: pointer;
+    }
+    .gs-choice:hover { border-color: var(--gs-color-primary); }
+    .gs-choice:has(.gs-choice__input:checked) { border-color: var(--gs-color-primary); background: var(--gs-color-primary-subtle); box-shadow: inset 0 0 0 1px var(--gs-color-primary); }
+    .gs-choice:has(.gs-choice__input:focus-visible) { outline: 3px solid var(--gs-color-focus-ring); outline-offset: 2px; }
+    .gs-choice__input { margin: .2em 0 0 !important; accent-color: var(--gs-color-primary); width: 1.1em; height: 1.1em; flex: 0 0 auto; }
+    .gs-choice__icon { color: var(--gs-color-primary); margin-top: .15em; }
+    .gs-choice__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .gs-choice__label { font-weight: 600; }
+    .gs-choice__description { color: var(--gs-color-text-muted); font-size: var(--gs-font-size-sm); line-height: 1.4; }
+    .gs-choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--gs-space-2); }
+
+    /* ---------- hierarchy trail ---------- */
+    .gs-trail { display: inline-flex; align-items: baseline; flex-wrap: wrap; gap: 0 var(--gs-space-1); color: var(--gs-color-text-muted); font-size: var(--gs-font-size-sm); }
+    .gs-trail__sep { font-size: .8em; color: var(--gs-color-text-subtle); }
+    .gs-trail__part:last-child { color: var(--gs-color-text); }
+    .gs-trail__bn { color: var(--gs-color-text-muted); }
+}

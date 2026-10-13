@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Add office</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/40008be14305f8813d984e23623f924e">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Source+Serif+4:wght@400;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.app{min-height:100%;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:var(--gs-font-sans);font-size:14px;line-height:1.5}
+.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:10px 20px;background:var(--gs-header-bg);color:var(--gs-header-fg);border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.wrap{box-sizing:border-box;max-width:1200px;margin:0 auto;padding:28px 24px 64px;display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start}
+.steps{flex:1 1 220px;max-width:250px}
+.panel{flex:999 1 560px;min-width:0}
+.aside{flex:1 1 240px;max-width:300px}
+.ico{width:1em;height:1em;flex:none}
+.bn{font-family:var(--gs-font-bengali)}
+.muted{color:var(--gs-color-text-muted)}
+.h1{margin:0;font-family:var(--gs-font-display);font-size:26px;font-weight:800}
+.stepno{margin:0;font-size:13px;font-weight:600;color:var(--gs-color-text-muted)}
+.ctl{box-sizing:border-box;width:100%;min-height:var(--gs-size-control-h);padding:0 10px;border:var(--gs-border-width) solid var(--gs-color-border-strong);border-radius:var(--gs-radius-sm);background:var(--gs-color-surface);color:var(--gs-color-text);font:inherit}
+.results{border:var(--gs-border-width) solid var(--gs-color-border);border-radius:var(--gs-radius-md);overflow:hidden}
+.result{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:var(--gs-border-width) solid var(--gs-color-border);flex-wrap:wrap}
+.result:first-child{border-top:0}
+.result--on{background:var(--gs-color-primary-subtle)}
+.result__main{flex:1 1 240px;min-width:0}
+.navbar{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:16px;border-top:var(--gs-border-width) solid var(--gs-color-border)}
+.stack{display:flex;flex-direction:column;gap:16px}
+</style>
+</helmet>
+<div class="app" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-table="{{ v.table }}" data-gs-controls="{{ v.controls }}" data-gs-type="{{ v.type }}" data-gs-header="{{ v.header }}">
+<div class="top">
+<a class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" href="Registry.dc.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7M19 12H5"></path></svg>Offices</a>
+<strong style="font-size: 16px; flex: 1 1 auto">Add an office <span class="bn" style="font-weight: 500">· অফিস যোগ করুন</span></strong>
+<span class="muted" style="font-size: 13px">Saved as a draft as you go</span>
+</div>
+<div class="wrap">
+
+<nav class="steps" aria-label="Steps">
+<ol class="gs-stepper gs-stepper--vertical" aria-label="Progress">
+<sc-for list="{{ steps }}" as="s" hint-placeholder-count="5">
+<li class="{{ s.cls }}" aria-current="{{ s.current }}"><span class="gs-step__marker" aria-hidden="true">{{ s.mark }}</span><span class="gs-step__label">{{ s.label }}</span></li>
+</sc-for>
+</ol>
+</nav>
+
+<section class="gs-box panel">
+<div class="gs-box__body stack" style="padding: 24px">
+
+<sc-if value="{{ is0 }}" hint-placeholder-val="{{ true }}">
+<div class="stack">
+<div><p class="stepno">Step 1 of 5</p><h1 class="h1">Is this office already in GovStore?</h1><p class="muted" style="margin: 4px 0 0">Many offices were added as plain locations before. Search first so you don't create a duplicate.</p></div>
+<div class="gs-form-row"><label class="gs-form-row__label" for="ao-find">Office name</label><div class="gs-form-row__control"><input class="ctl" id="ao-find" type="search" value="Kaliakair"></div></div>
+<div class="results">
+<div class="result"><div class="result__main"><strong>Union Digital Centre, Kaliakair</strong><div class="muted">Existing location · not set up yet</div></div><span class="gs-badge" data-tone="status-archived"><span class="gs-badge__label">Not onboarded</span></span><button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" onClick="{{ next }}">Set up this one</button></div>
+<div class="result"><div class="result__main"><strong>Upazila Land Office, Kaliakair</strong><div class="muted">Already set up</div></div><span class="gs-badge" data-tone="status-ready"><span class="gs-badge__label">Live</span></span><a class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" href="OfficeHub.dc.html">Open</a></div>
+</div>
+<div class="gs-alert gs-alert--info" role="status"><svg class="ico gs-alert__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg><div class="gs-alert__body" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; flex: 1 1 auto"><span style="flex: 1 1 260px">Not listed? Create it as a new office.</span><button type="button" class="gs-btn gs-btn--primary gs-btn--sm" onClick="{{ next }}">Create a new office</button></div></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ is1 }}" hint-placeholder-val="{{ false }}">
+<div class="stack">
+<div><p class="stepno">Step 2 of 5</p><h1 class="h1">About the office</h1></div>
+<div class="gs-form-row"><label class="gs-form-row__label" for="ao-name">Name in English<span class="gs-form-row__required" aria-hidden="true">*</span></label><div class="gs-form-row__control"><input class="ctl" id="ao-name" value="Upazila Health Complex, Savar" aria-describedby="ao-name-help"><p class="gs-form-row__help" id="ao-name-help">Use the name on the signboard.</p></div></div>
+<div class="gs-form-row"><label class="gs-form-row__label" for="ao-bn">Name in Bangla <span class="gs-bn gs-muted" lang="bn">(বাংলা নাম)</span></label><div class="gs-form-row__control"><input class="ctl bn" id="ao-bn" value="উপজেলা স্বাস্থ্য কমপ্লেক্স, সাভার"><p class="gs-form-row__help">Recommended. Staff can then search in either language.</p></div></div>
+<fieldset style="border: 0; margin: 0; padding: 0"><legend style="font-weight: 600; margin-bottom: 8px">What kind of office is it?</legend>
+<div class="gs-choices">
+<sc-for list="{{ types }}" as="t" hint-placeholder-count="4">
+<label class="gs-choice" for="{{ t.id }}"><input class="gs-choice__input" type="radio" id="{{ t.id }}" name="office_type" value="{{ t.value }}" checked="{{ t.checked }}" onChange="{{ t.pick }}"><span class="gs-choice__text"><span class="gs-choice__label">{{ t.label }}</span><span class="gs-choice__description">{{ t.desc }}</span></span></label>
+</sc-for>
+</div>
+</fieldset>
+</div>
+</sc-if>
+
+<sc-if value="{{ is2 }}" hint-placeholder-val="{{ false }}">
+<div class="stack">
+<div><p class="stepno">Step 3 of 5</p><h1 class="h1">Where is it?</h1><p class="muted" style="margin: 4px 0 0">Pick the smallest area that contains the office. You can choose areas inside Dhaka Division, your assigned area.</p></div>
+<div class="gs-form-row"><label class="gs-form-row__label" for="ao-area">Area<span class="gs-form-row__required" aria-hidden="true">*</span></label><div class="gs-form-row__control"><input class="ctl" id="ao-area" type="search" value="Savar"></div></div>
+<div class="results" role="listbox" aria-label="Matching areas">
+<div class="result result--on" role="option" aria-selected="true"><div class="result__main"><strong>Savar Upazila</strong> <span class="bn">সাভার উপজেলা</span><div><span class="gs-trail"><span class="gs-trail__part">Dhaka Division</span><svg class="ico gs-trail__sep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg><span class="gs-trail__part">Dhaka District</span></span></div></div><span class="gs-badge" data-tone="status-ready"><span class="gs-badge__label">Selected</span></span></div>
+<div class="result" role="option" aria-selected="false"><div class="result__main"><strong>Savar Union</strong> <span class="bn">সাভার ইউনিয়ন</span><div><span class="gs-trail"><span class="gs-trail__part">Dhaka District</span><svg class="ico gs-trail__sep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg><span class="gs-trail__part">Savar Upazila</span></span></div></div></div>
+</div>
+<div class="gs-alert gs-alert--warning" role="alert"><svg class="ico gs-alert__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m21.7 18-8-14a2 2 0 0 0-3.5 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3"></path><path d="M12 9v4M12 17h.01"></path></svg><div class="gs-alert__body"><strong>A similar office already exists in Savar Upazila:</strong> "Upazila Health Complex, Savar" (Health and Family Welfare, Live).<div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px"><a class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" href="OfficeHub.dc.html">Open that office instead</a><button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" onClick="{{ next }}">This is a different office</button></div></div></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ is3 }}" hint-placeholder-val="{{ false }}">
+<div class="stack">
+<div><p class="stepno">Step 4 of 5</p><h1 class="h1">Who does it report to?</h1><p class="muted" style="margin: 4px 0 0">Both are optional now and can be set later. Linking a ministry lets the starter catalog arrive automatically.</p></div>
+<div class="gs-form-row"><label class="gs-form-row__label" for="ao-min">Ministry or division</label><div class="gs-form-row__control"><select class="ctl" id="ao-min"><option>Ministry of Health and Family Welfare</option><option>Not linked yet</option></select></div></div>
+<div class="gs-form-row"><label class="gs-form-row__label" for="ao-par">Parent office</label><div class="gs-form-row__control"><select class="ctl" id="ao-par" aria-describedby="ao-par-help"><option>Civil Surgeon's Office, Dhaka</option><option>No parent office</option></select><p class="gs-form-row__help" id="ao-par-help">The office it reports to, for example the district Civil Surgeon's Office.</p></div></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ is4 }}" hint-placeholder-val="{{ false }}">
+<div class="stack">
+<div><p class="stepno">Step 5 of 5</p><h1 class="h1">Check and create</h1></div>
+<dl class="gs-kv" style="--gs-kv-columns: 1">
+<div class="gs-kv__item"><dt class="gs-kv__label">Office</dt><dd class="gs-kv__value">Upazila Health Complex, Savar · <span class="bn">উপজেলা স্বাস্থ্য কমপ্লেক্স, সাভার</span> · {{ typeLabel }} <button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" onClick="{{ go1 }}">Change</button></dd></div>
+<div class="gs-kv__item"><dt class="gs-kv__label">Area</dt><dd class="gs-kv__value">Savar Upazila, Dhaka District, Dhaka Division <button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" onClick="{{ go2 }}">Change</button></dd></div>
+<div class="gs-kv__item"><dt class="gs-kv__label">Reports to</dt><dd class="gs-kv__value">Health and Family Welfare · Civil Surgeon's Office, Dhaka <button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" onClick="{{ go3 }}">Change</button></dd></div>
+</dl>
+<div class="gs-alert gs-alert--info" role="status"><svg class="ico gs-alert__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg><div class="gs-alert__body"><strong>What happens next</strong><ol style="margin: 6px 0 0; padding-left: 18px"><li>The office appears in your list as <strong>Needs administrator</strong>.</li><li>You add its staff, then choose an administrator, approver and storekeeper.</li><li>When all four are done it goes <strong>Live</strong> on its own.</li></ol></div></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ is5 }}" hint-placeholder-val="{{ false }}">
+<div class="gs-empty">
+<svg class="ico gs-empty__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width: 40px; height: 40px"><circle cx="12" cy="12" r="10"></circle><path d="m8 12 3 3 5-6"></path></svg>
+<h3 class="gs-empty__title">Upazila Health Complex, Savar is created</h3>
+<div>Next, add the people who work there. You'll choose its administrator from that list.</div>
+<div class="gs-empty__actions"><a class="gs-btn gs-btn--primary" href="OfficeHub.dc.html">Add staff</a><a class="gs-btn gs-btn--light gs-btn--outline" href="OfficeHub.dc.html">Open office page</a></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ showNav }}" hint-placeholder-val="{{ false }}">
+<div class="navbar"><button type="button" class="gs-btn gs-btn--light gs-btn--outline" onClick="{{ back }}">Back</button><button type="button" class="gs-btn gs-btn--primary" onClick="{{ next }}">{{ nextLabel }}</button></div>
+</sc-if>
+</div>
+</section>
+
+<aside class="aside">
+<section class="gs-box"><header class="gs-box__header"><h2 class="gs-box__title">Need help?</h2></header><div class="gs-box__body"><p style="margin: 0 0 8px" class="muted">Not sure about the ministry or parent office? Leave them out. The office won't go live until someone fills them in, so nothing breaks.</p><a href="#">Read the office setup guide</a></div></section>
+</aside>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"$preview":{"width":1440,"height":1250}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { step: 0, type: 'hospital' };
+}
+renderVals() {
+const V = {
+'civic-ledger': { header: 'neutral', density: 'regular', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { header: 'brand', density: 'regular', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { header: 'dark', density: 'compact', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { header: 'dark', density: 'comfortable', table: 'ledger', surfaces: 'flat', controls: 'outlined', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { header: 'brand', density: 'compact', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { header: 'floating', density: 'regular', table: 'rules', surfaces: 'elevated', controls: 'filled', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+const step = this.state.step;
+const names = ['Find existing', 'About the office', 'Location', 'Reports to', 'Check and create'];
+const steps = names.map((label, i) => {
+const state = i < step ? 'done' : (i === step ? 'current' : 'upcoming');
+return { label, cls: 'gs-step gs-step--' + state, mark: state === 'done' ? '✓' : String(i + 1), current: state === 'current' ? 'step' : 'false' };
+});
+const defs = [
+{ value: 'default', label: 'General office', desc: 'Administrative offices and directorates' },
+{ value: 'hospital', label: 'Hospital or clinic', desc: 'Health complexes, district hospitals, clinics' },
+{ value: 'school', label: 'School or college', desc: 'Educational institutions of any level' },
+{ value: 'ict_office', label: 'ICT office', desc: 'Upazila and district ICT offices' }
+];
+const types = defs.map((t) => ({ ...t, id: 'ao-type-' + t.value, checked: this.state.type === t.value, pick: () => this.setState({ type: t.value }) }));
+const go = (n) => () => this.setState({ step: n });
+return {
+skin, mode, v: V[skin], steps, types,
+typeLabel: (defs.find((t) => t.value === this.state.type) || defs[0]).label,
+is0: step === 0, is1: step === 1, is2: step === 2, is3: step === 3, is4: step === 4, is5: step === 5,
+showNav: step > 0 && step < 5,
+nextLabel: step === 4 ? 'Create office' : 'Continue',
+next: () => this.setState({ step: Math.min(step + 1, 5) }),
+back: () => this.setState({ step: Math.max(step - 1, 0) }),
+go1: go(1), go2: go(2), go3: go(3)
+};
+}
+}
+</script>
+</body>
+</html>

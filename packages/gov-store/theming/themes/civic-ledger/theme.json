@@ -1,0 +1,27 @@
+{
+    "key": "civic-ledger",
+    "version": "1.0.0",
+    "status": "draft",
+    "extends": "default",
+    "label": { "en-US": "Civic Ledger", "bn-BD": "নাগরিক খতিয়ান" },
+    "description": {
+        "en-US": "Calm, legible and bilingual by default: quiet green on paper for people who use the register every day.",
+        "bn-BD": "শান্ত, সহজপাঠ্য ও স্বভাবতই দ্বিভাষিক: প্রতিদিনের ব্যবহারকারীদের জন্য কাগজের ওপর স্নিগ্ধ সবুজ।"
+    },
+    "authors": ["UI/UX Team"],
+    "fonts": { "sans": "noto-sans", "bengali": "noto-sans-bengali", "mono": "ibm-plex-mono" },
+    "variants": {
+        "header": "neutral",
+        "sidebar": "dark",
+        "nav_icons": "shown",
+        "nav_style": "bar",
+        "density": "regular",
+        "table": "rules",
+        "surfaces": "card",
+        "controls": "outlined",
+        "radius": "lg",
+        "type": "sans",
+        "status_style": "tinted"
+    },
+    "swatches": ["#0B5E45", "#1D4F91", "#A3261B", "#F5F6F3", "#15201B"]
+}

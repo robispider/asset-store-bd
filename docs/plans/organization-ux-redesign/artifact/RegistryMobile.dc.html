@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<title>Registry on a phone, in Bangla</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/40008be14305f8813d984e23623f924e">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Inter:wght@400;600&amp;family=Nunito:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.phone{width:390px;height:1300px;box-sizing:border-box;overflow:hidden;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:var(--gs-font-bengali);font-size:15px;line-height:1.65;display:flex;flex-direction:column}
+.top{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--gs-header-bg);color:var(--gs-header-fg);border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.iconbtn{width:44px;height:44px;border:0;background:transparent;color:inherit;border-radius:var(--gs-radius-sm);display:inline-flex;align-items:center;justify-content:center}
+.lang{display:inline-flex;border:var(--gs-border-width) solid var(--gs-color-border-strong);border-radius:var(--gs-radius-sm);overflow:hidden}
+.lang button{min-height:36px;padding:0 10px;border:0;background:transparent;color:inherit;font:inherit;font-size:13px;font-weight:600}
+.lang button[aria-pressed="true"]{background:var(--gs-color-primary);color:var(--gs-color-on-primary)}
+.main{padding:18px 14px;display:flex;flex-direction:column;gap:14px}
+.ctl{box-sizing:border-box;width:100%;min-height:48px;padding:0 12px;border:var(--gs-border-width) solid var(--gs-color-border-strong);border-radius:var(--gs-radius-md);background:var(--gs-color-surface);color:var(--gs-color-text);font:inherit}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.chip{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border-radius:999px;border:var(--gs-border-width) solid var(--gs-color-border-strong);background:var(--gs-color-surface);color:var(--gs-color-text);font:inherit;font-size:14px;font-weight:600;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--gs-color-primary);border-color:var(--gs-color-primary);color:var(--gs-color-on-primary)}
+.card{display:flex;flex-direction:column;gap:8px;padding:14px;background:var(--gs-color-surface);border:var(--gs-border-width) solid var(--gs-color-border);border-radius:var(--gs-radius-lg);text-decoration:none;color:var(--gs-color-text)}
+.en{font-family:var(--gs-font-sans);font-size:13px;color:var(--gs-color-text-muted)}
+.muted{color:var(--gs-color-text-muted)}
+.next{font-size:14px;font-weight:600;color:var(--gs-color-warning)}
+.line{display:flex;align-items:center;gap:10px}
+.ico{width:1em;height:1em;flex:none}
+</style>
+</helmet>
+<div class="phone" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-type="{{ v.type }}" data-gs-header="{{ v.header }}">
+<header class="top">
+<button type="button" class="iconbtn" aria-label="মেনু খুলুন"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+<strong style="flex: 1 1 auto; font-size: 16px">জাতীয় সম্পদ নিবন্ধন</strong>
+<div class="lang" role="group" aria-label="ভাষা"><button type="button" aria-pressed="false" style="font-family: var(--gs-font-sans)">EN</button><button type="button" aria-pressed="true">বাংলা</button></div>
+</header>
+<main class="main">
+<div><h1 style="margin: 0; font-size: 26px; line-height: 1.35">অফিসসমূহ</h1><p class="muted" style="margin: 0">৮টি অফিস · ৪টিতে আপনার কাজ বাকি</p></div>
+<a class="gs-btn gs-btn--primary" href="AddOffice.dc.html" style="min-height: 48px; font-size: 16px"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg>অফিস যোগ করুন</a>
+<label for="m-q" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">অফিস খুঁজুন</label>
+<input id="m-q" class="ctl" type="search" placeholder="অফিস, এলাকা বা মন্ত্রণালয় খুঁজুন">
+<div class="chips"><button type="button" class="chip" aria-pressed="false">সব ৮</button><button type="button" class="chip" aria-pressed="true">কাজ বাকি ৪</button><button type="button" class="chip" aria-pressed="false">চালু ৩</button><button type="button" class="chip" aria-pressed="false">স্থগিত ১</button></div>
+
+<a class="card" href="OfficeHub.dc.html">
+<strong style="font-size: 17px; line-height: 1.45">উপজেলা স্বাস্থ্য কমপ্লেক্স, সাভার</strong>
+<span class="en">Upazila Health Complex, Savar · Hospital</span>
+<span class="muted">সাভার উপজেলা, ঢাকা জেলা</span>
+<div class="line"><span class="gs-badge" data-tone="info"><span class="gs-badge__label">সেটআপ চলছে</span></span><div class="gs-progress gs-progress--sm gs-tone-primary" style="flex: 1 1 auto; margin: 0"><div class="gs-progress__track" role="progressbar" aria-valuemin="0" aria-valuemax="4" aria-valuenow="3" aria-label="৪টির মধ্যে ৩টি সম্পন্ন"><span class="gs-progress__bar" style="width: 75%"></span></div></div><strong style="font-size: 13px">৩/৪</strong></div>
+<span class="next">পরবর্তী: স্টোরকিপার নির্বাচন করুন</span>
+</a>
+
+<a class="card" href="OfficeHub.dc.html">
+<strong style="font-size: 17px; line-height: 1.45">সরকারি বালক উচ্চ বিদ্যালয়, টাঙ্গাইল</strong>
+<span class="en">Government Boys' High School, Tangail · School</span>
+<span class="muted">টাঙ্গাইল সদর, টাঙ্গাইল জেলা</span>
+<div class="line"><span class="gs-badge" data-tone="status-pending"><span class="gs-badge__label">প্রশাসক প্রয়োজন</span></span><div class="gs-progress gs-progress--sm gs-tone-primary" style="flex: 1 1 auto; margin: 0"><div class="gs-progress__track" role="progressbar" aria-valuemin="0" aria-valuemax="4" aria-valuenow="1" aria-label="৪টির মধ্যে ১টি সম্পন্ন"><span class="gs-progress__bar" style="width: 25%"></span></div></div><strong style="font-size: 13px">১/৪</strong></div>
+<span class="next">পরবর্তী: একজন প্রশাসক নির্বাচন করুন</span>
+</a>
+
+<a class="card" href="OfficeHub.dc.html">
+<strong style="font-size: 17px; line-height: 1.45">উপজেলা শিক্ষা অফিস, মির্জাপুর</strong>
+<span class="en">Upazila Education Office, Mirzapur · General office</span>
+<span class="muted">মির্জাপুর উপজেলা, টাঙ্গাইল জেলা</span>
+<div class="line"><span class="gs-badge" data-tone="info"><span class="gs-badge__label">সেটআপ চলছে</span></span><div class="gs-progress gs-progress--sm gs-tone-primary" style="flex: 1 1 auto; margin: 0"><div class="gs-progress__track" role="progressbar" aria-valuemin="0" aria-valuemax="4" aria-valuenow="2" aria-label="৪টির মধ্যে ২টি সম্পন্ন"><span class="gs-progress__bar" style="width: 50%"></span></div></div><strong style="font-size: 13px">২/৪</strong></div>
+<span class="next">পরবর্তী: অনুমোদনকারী নির্বাচন করুন</span>
+</a>
+
+<a class="card" href="AddOffice.dc.html">
+<strong style="font-size: 17px; line-height: 1.45">ইউনিয়ন ডিজিটাল সেন্টার, কালিয়াকৈর</strong>
+<span class="en">Union Digital Centre, Kaliakair · General office</span>
+<span class="muted">এখনও মানচিত্রে যুক্ত হয়নি</span>
+<div class="line"><span class="gs-badge" data-tone="status-archived"><span class="gs-badge__label">যুক্ত হয়নি</span></span><div class="gs-progress gs-progress--sm gs-tone-primary" style="flex: 1 1 auto; margin: 0"><div class="gs-progress__track" role="progressbar" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0" aria-label="৪টির মধ্যে ০টি সম্পন্ন"><span class="gs-progress__bar" style="width: 0%"></span></div></div><strong style="font-size: 13px">০/৪</strong></div>
+<span class="next">পরবর্তী: মানচিত্রে এলাকা নির্ধারণ করুন</span>
+</a>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"$preview":{"width":390,"height":1300}}'>
+class Component extends DCLogic {
+renderVals() {
+const V = {
+'civic-ledger': { header: 'neutral', density: 'regular', surfaces: 'card', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { header: 'brand', density: 'regular', surfaces: 'card', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { header: 'dark', density: 'compact', surfaces: 'card', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { header: 'dark', density: 'comfortable', surfaces: 'flat', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { header: 'brand', density: 'compact', surfaces: 'card', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { header: 'floating', density: 'regular', surfaces: 'elevated', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+return { skin, mode, v: V[skin] };
+}
+}
+</script>
+</body>
+</html>

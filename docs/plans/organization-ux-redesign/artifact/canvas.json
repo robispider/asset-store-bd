@@ -1,0 +1,26 @@
+{
+  "v": 3,
+  "createdOnFiles": {"v": 1, "at": "2026-10-14T09:00:00Z"},
+  "title": "Organization UX Redesign",
+  "launch": {"view": "canvas"},
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {"x": 0, "y": 0, "w": 1440, "h": 2700, "title": "1 · UX audit of the current package", "expand": "fill"},
+    "Foundations.dc.html": {"x": 1520, "y": 0, "w": 1440, "h": 2300, "title": "2 · Design foundations", "expand": "fill"},
+    "Registry.dc.html": {"x": 0, "y": 3070, "w": 1440, "h": 1400, "title": "3 · Offices registry", "expand": "fill", "is_interactive": true},
+    "RegistryMobile.dc.html": {"x": 1520, "y": 3070, "w": 390, "h": 1300, "title": "3b · Registry on a phone"},
+    "AddOffice.dc.html": {"x": 1990, "y": 3070, "w": 1440, "h": 1250, "title": "4 · Add office (guided)", "expand": "fill", "is_interactive": true},
+    "OfficeHub.dc.html": {"x": 0, "y": 4840, "w": 1440, "h": 1900, "title": "5 · Office hub", "expand": "fill"},
+    "Dialogs.dc.html": {"x": 1520, "y": 4840, "w": 1440, "h": 1150, "title": "6 · Pause & relocate dialogs", "expand": "fill"},
+    "Access.dc.html": {"x": 0, "y": 7110, "w": 1440, "h": 1300, "title": "7 · Administrators & access", "expand": "fill"},
+    "StaffStates.dc.html": {"x": 1520, "y": 7110, "w": 1440, "h": 1150, "title": "8 · What staff see before go-live", "expand": "fill"}
+  },
+  "order": ["Main.dc.html", "Foundations.dc.html", "Registry.dc.html", "RegistryMobile.dc.html", "AddOffice.dc.html", "OfficeHub.dc.html", "Dialogs.dc.html", "Access.dc.html", "StaffStates.dc.html"],
+  "notes": {
+    "rowAudit": {"x": 0, "y": -280, "text": "Where we are, and the system we'll build with", "kind": "title1", "maxW": 2960},
+    "rowFind": {"x": 0, "y": 2790, "text": "Find and add offices", "kind": "title1", "maxW": 3430},
+    "rowHub": {"x": 0, "y": 4560, "text": "Run one office", "kind": "title1", "maxW": 2960},
+    "rowAccess": {"x": 0, "y": 6830, "text": "Who can do what, and what staff see", "kind": "title1", "maxW": 2960}
+  },
+  "designSystems": []
+}

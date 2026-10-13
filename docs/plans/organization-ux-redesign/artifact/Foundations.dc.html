@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Civic Ledger theme and workflow kit</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/40008be14305f8813d984e23623f924e">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Source+Serif+4:wght@400;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.app{min-height:100%;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:var(--gs-font-sans);font-size:15px;line-height:1.55}
+.wrap{box-sizing:border-box;max-width:1280px;margin:0 auto;padding:56px 24px 96px;display:flex;flex-direction:column;gap:40px}
+.eyebrow{margin:0;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gs-color-text-muted)}
+.h1{margin:0;font-family:var(--gs-font-display);font-size:42px;line-height:1.1;font-weight:800;letter-spacing:-.02em}
+.h2{margin:0;font-family:var(--gs-font-display);font-size:22px;font-weight:700}
+.lead{margin:0;font-size:17px;line-height:1.6;color:var(--gs-color-text-muted);max-width:860px}
+.muted{color:var(--gs-color-text-muted)}
+.code{font-family:var(--gs-font-mono);font-size:12px;color:var(--gs-color-text-muted);background:var(--gs-color-surface-sunken);border:var(--gs-border-width) solid var(--gs-color-border);border-radius:var(--gs-radius-sm);padding:2px 6px;white-space:nowrap}
+.panel{background:var(--gs-color-surface);border:var(--gs-border-width) solid var(--gs-color-border);border-radius:var(--gs-radius-lg);padding:24px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.row{display:flex;flex-wrap:wrap;gap:24px}
+.sw{height:72px;border-radius:var(--gs-radius-md);border:var(--gs-border-width) solid var(--gs-color-border)}
+.swl{font-size:13px;font-weight:600;margin-top:6px}
+.ico{width:1em;height:1em;flex:none}
+.bn{font-family:var(--gs-font-bengali)}
+.kv{display:grid;grid-template-columns:200px minmax(0,1fr);gap:10px 16px;align-items:center}
+</style>
+</helmet>
+<div class="app" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-table="{{ v.table }}" data-gs-controls="{{ v.controls }}" data-gs-type="{{ v.type }}" data-gs-header="{{ v.header }}">
+<div class="wrap">
+
+<header style="display: flex; flex-direction: column; gap: 14px">
+<p class="eyebrow">GovStore theme · themes/civic-ledger · v1.0.0 draft · showing: {{ themeLabel }}, {{ mode }}</p>
+<h1 class="h1">Civic Ledger: calm, legible, bilingual by default</h1>
+<p class="lead">Now a real theme in packages/gov-store/theming. It has light and dark modes and validates with 3 warnings, fewer than any shipped theme. A new workflow kit sits beside the existing &lt;x-gs::*&gt; components. Everything on this board is drawn with the production kit CSS, so switching the theme in Tweaks repaints it exactly as the app would.</p>
+</header>
+
+<section class="panel">
+<h2 class="h2">Theme tokens</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px">
+<div><div class="sw" style="background: var(--gs-color-primary)"></div><div class="swl">Primary</div><span class="code">color-primary</span></div>
+<div><div class="sw" style="background: var(--gs-color-accent)"></div><div class="swl">Accent · info</div><span class="code">color-accent</span></div>
+<div><div class="sw" style="background: var(--gs-color-text)"></div><div class="swl">Ink</div><span class="code">color-text</span></div>
+<div><div class="sw" style="background: var(--gs-color-text-muted)"></div><div class="swl">Ink muted</div><span class="code">color-text-muted</span></div>
+<div><div class="sw" style="background: var(--gs-color-bg)"></div><div class="swl">Ground</div><span class="code">color-bg</span></div>
+<div><div class="sw" style="background: var(--gs-color-surface-sunken)"></div><div class="swl">Sunken</div><span class="code">color-surface-sunken</span></div>
+<div><div class="sw" style="background: var(--gs-color-focus-ring)"></div><div class="swl">Focus ring</div><span class="code">color-focus-ring</span></div>
+<div><div class="sw" style="background: var(--gs-color-danger)"></div><div class="swl">Danger</div><span class="code">color-danger</span></div>
+</div>
+<div class="kv" style="border-top: var(--gs-border-width) solid var(--gs-color-border); padding-top: 14px">
+<span class="muted">Variants</span><span><span class="code">header {{ v.header }}</span> <span class="code">density {{ v.density }}</span> <span class="code">table {{ v.table }}</span> <span class="code">surfaces {{ v.surfaces }}</span> <span class="code">radius {{ v.radius }}</span> <span class="code">status {{ v.status_style }}</span></span>
+<span class="muted">Fonts</span><span>Noto Sans · <span class="bn">নোটো সান্স বাংলা</span> · <span style="font-family: var(--gs-font-mono)">IBM Plex Mono</span></span>
+</div>
+</section>
+
+<div class="row">
+<section class="panel" style="flex: 1 1 520px">
+<h2 class="h2">Office status · status-map.php</h2>
+<p class="muted" style="margin: 0">Five new entries keyed by lifecycle_status. Each badge pairs an icon with a word, so colour is never the only signal. The labels say what the office needs next.</p>
+<div style="display: flex; flex-direction: column">
+<div class="kv" style="padding: 10px 0; border-bottom: var(--gs-border-width) solid var(--gs-color-border)"><span><span class="gs-badge" data-tone="status-archived"><svg class="ico gs-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke-dasharray="3.5 3"></circle></svg><span class="gs-badge__label">Not onboarded</span></span></span><span><span class="code">office_unconfigured</span> <span class="muted">· next: place it on the map ·</span> <span class="bn">যুক্ত হয়নি</span></span></div>
+<div class="kv" style="padding: 10px 0; border-bottom: var(--gs-border-width) solid var(--gs-color-border)"><span><span class="gs-badge" data-tone="status-pending"><svg class="ico gs-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10" cy="8" r="4"></circle><path d="M3 21a7 7 0 0 1 14 0M19 8v6M22 11h-6"></path></svg><span class="gs-badge__label">Needs administrator</span></span></span><span><span class="code">office_provisioned</span> <span class="muted">· next: choose an admin ·</span> <span class="bn">প্রশাসক প্রয়োজন</span></span></div>
+<div class="kv" style="padding: 10px 0; border-bottom: var(--gs-border-width) solid var(--gs-color-border)"><span><span class="gs-badge" data-tone="info"><svg class="ico gs-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m3 7 2 2 4-4M3 17l2 2 4-4M13 6h8M13 12h8M13 18h8"></path></svg><span class="gs-badge__label">Setting up</span></span></span><span><span class="code">office_configured</span> <span class="muted">· next: first missing role ·</span> <span class="bn">সেটআপ চলছে</span></span></div>
+<div class="kv" style="padding: 10px 0; border-bottom: var(--gs-border-width) solid var(--gs-color-border)"><span><span class="gs-badge" data-tone="status-ready"><svg class="ico gs-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 3 3 5-6"></path></svg><span class="gs-badge__label">Live</span></span></span><span><span class="code">office_operational</span> <span class="muted">· nothing to do ·</span> <span class="bn">চালু</span></span></div>
+<div class="kv" style="padding: 10px 0"><span><span class="gs-badge" data-tone="status-undeployable"><svg class="ico gs-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M10 15V9M14 15V9"></path></svg><span class="gs-badge__label">Paused</span></span></span><span><span class="code">office_suspended</span> <span class="muted">· next: resume when ready ·</span> <span class="bn">স্থগিত</span></span></div>
+</div>
+</section>
+
+<section class="panel" style="flex: 1 1 420px">
+<h2 class="h2">Buttons · &lt;x-gs::button&gt;</h2>
+<div style="display: flex; gap: 10px; flex-wrap: wrap">
+<button type="button" class="gs-btn gs-btn--primary">Assign storekeeper</button>
+<button type="button" class="gs-btn gs-btn--light gs-btn--outline">Export</button>
+<button type="button" class="gs-btn gs-btn--danger">Pause requests</button>
+<button type="button" class="gs-btn gs-btn--light gs-btn--outline" disabled>Close…</button>
+</div>
+<h2 class="h2" style="margin-top: 8px">Form row · &lt;x-gs::form-row&gt;</h2>
+<p class="muted" style="margin: 0">Renders $errors for its field on its own. Switching the organisation views to it fixes the "invisible errors" finding outright.</p>
+<div class="gs-form-row"><label class="gs-form-row__label" for="fd-name">Office name <span class="gs-bn gs-muted" lang="bn">(অফিসের নাম)</span><span class="gs-form-row__required" aria-hidden="true">*</span></label><div class="gs-form-row__control"><input class="form-control" id="fd-name" value="Upazila Health Complex, Savar" style="box-sizing: border-box; width: 100%; min-height: var(--gs-size-control-h); padding: 0 10px; border: var(--gs-border-width) solid var(--gs-color-border-strong); border-radius: var(--gs-radius-sm); background: var(--gs-color-surface); color: var(--gs-color-text); font: inherit"><p class="gs-form-row__help">Use the name on the signboard.</p></div></div>
+<div class="gs-form-row gs-form-row--error"><label class="gs-form-row__label" for="fd-area">Area<span class="gs-form-row__required" aria-hidden="true">*</span></label><div class="gs-form-row__control"><input class="form-control" id="fd-area" placeholder="Search upazila, district or union" aria-invalid="true" style="box-sizing: border-box; width: 100%; min-height: var(--gs-size-control-h); padding: 0 10px; border: var(--gs-border-width) solid var(--gs-color-danger); border-radius: var(--gs-radius-sm); background: var(--gs-color-surface); color: var(--gs-color-text); font: inherit"><p class="gs-form-row__error" role="alert">Choose the area where this office is located.</p></div></div>
+</section>
+</div>
+
+<section style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap"><h2 class="h2" style="font-size: 28px">New workflow kit</h2><span class="code">components/16-workflow.css</span><span class="muted">5 components · 8 tests · Theme Lab section 7</span></div>
+<div class="row">
+<div class="panel" style="flex: 1 1 520px">
+<span class="code" style="align-self: flex-start">&lt;x-gs::readiness :items title caption compact readonly /&gt;</span>
+<section class="gs-readiness">
+<div class="gs-readiness__head"><div class="gs-readiness__text"><strong class="gs-readiness__title">One step left before staff can order</strong><p class="gs-readiness__caption">Goes live on its own when every required item is done.</p></div><span class="gs-readiness__count">3 of 4 done</span></div>
+<div class="gs-progress gs-progress--md gs-tone-primary"><div class="gs-progress__track" role="progressbar" aria-valuemin="0" aria-valuemax="4" aria-valuenow="3" aria-label="Progress"><span class="gs-progress__bar" style="width: 75%"></span></div></div>
+<ul class="gs-readiness__list">
+<li class="gs-readiness__item gs-readiness__item--done"><svg class="ico gs-readiness__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.2 14.2-4-4 1.4-1.4 2.6 2.6 5.4-5.4 1.4 1.4-6.8 6.8Z"></path></svg><span class="gs-readiness__label">Staff added: <strong>12 people</strong></span></li>
+<li class="gs-readiness__item gs-readiness__item--done"><svg class="ico gs-readiness__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.2 14.2-4-4 1.4-1.4 2.6 2.6 5.4-5.4 1.4 1.4-6.8 6.8Z"></path></svg><span class="gs-readiness__label">Office administrator: <strong>Mahbub Alam</strong></span></li>
+<li class="gs-readiness__item gs-readiness__item--done"><svg class="ico gs-readiness__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.2 14.2-4-4 1.4-1.4 2.6 2.6 5.4-5.4 1.4 1.4-6.8 6.8Z"></path></svg><span class="gs-readiness__label">Approver: <strong>Farhana Akter</strong></span></li>
+<li class="gs-readiness__item"><svg class="ico gs-readiness__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle></svg><span class="gs-readiness__label">Storekeeper</span><a class="gs-btn gs-btn--primary gs-btn--sm" href="#">Choose</a></li>
+<li class="gs-readiness__item gs-readiness__item--optional"><svg class="ico gs-readiness__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle></svg><span class="gs-readiness__label">Second approver</span></li>
+</ul>
+</section>
+</div>
+
+<div class="panel" style="flex: 1 1 520px">
+<span class="code" style="align-self: flex-start">&lt;x-gs::role-slot role description person meta required optional … /&gt;</span>
+<div class="gs-roles">
+<div class="gs-role"><div class="gs-role__head"><strong class="gs-role__name">Approver</strong></div><p class="gs-role__description">Reviews staff requests first.</p><div class="gs-role__body"><span class="gs-avatar gs-avatar--md gs-tone-primary" aria-hidden="true">FA</span><div class="gs-role__person"><span class="gs-role__person-name">Farhana Akter</span><span class="gs-role__person-meta">Resident Medical Officer</span></div><div class="gs-role__actions"><a class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" href="#">Change</a></div></div></div>
+<div class="gs-role gs-role--empty gs-role--required"><div class="gs-role__head"><strong class="gs-role__name">Storekeeper</strong><span class="gs-role__flag">Needed</span></div><p class="gs-role__description">Hands out approved items and keeps stock records.</p><div class="gs-role__body"><div class="gs-role__actions"><a class="gs-btn gs-btn--primary gs-btn--sm" href="#">Choose from 12 staff</a></div></div></div>
+</div>
+<span class="code" style="align-self: flex-start">&lt;x-gs::trail :items /&gt;</span>
+<span class="gs-trail"><span class="gs-trail__part">Dhaka Division <span class="gs-bn gs-trail__bn" lang="bn">ঢাকা বিভাগ</span></span><svg class="ico gs-trail__sep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg><span class="gs-trail__part">Dhaka District</span><svg class="ico gs-trail__sep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg><span class="gs-trail__part">Savar Upazila</span></span>
+</div>
+</div>
+
+<div class="row">
+<div class="panel" style="flex: 1 1 520px">
+<span class="code" style="align-self: flex-start">&lt;x-gs::choice-card name value label description icon checked /&gt;</span>
+<div class="gs-choices">
+<label class="gs-choice" for="fc-default"><input class="gs-choice__input" type="radio" id="fc-default" name="fc-type" value="default"><span class="gs-choice__text"><span class="gs-choice__label">General office</span><span class="gs-choice__description">Administrative offices and directorates</span></span></label>
+<label class="gs-choice" for="fc-hospital"><input class="gs-choice__input" type="radio" id="fc-hospital" name="fc-type" value="hospital" checked><span class="gs-choice__text"><span class="gs-choice__label">Hospital or clinic</span><span class="gs-choice__description">Health complexes and district hospitals</span></span></label>
+<label class="gs-choice" for="fc-school"><input class="gs-choice__input" type="radio" id="fc-school" name="fc-type" value="school"><span class="gs-choice__text"><span class="gs-choice__label">School or college</span><span class="gs-choice__description">Educational institutions of any level</span></span></label>
+<label class="gs-choice" for="fc-ict"><input class="gs-choice__input" type="radio" id="fc-ict" name="fc-type" value="ict_office"><span class="gs-choice__text"><span class="gs-choice__label">ICT office</span><span class="gs-choice__description">Upazila and district ICT offices</span></span></label>
+</div>
+</div>
+<div class="panel" style="flex: 1 1 520px">
+<span class="code" style="align-self: flex-start">&lt;x-gs::action-row title description unavailable&gt;</span>
+<div>
+<div class="gs-action-row"><div class="gs-action-row__text"><strong class="gs-action-row__title">Pause new requests</strong><p class="gs-action-row__description">Staff can't send new requests. Requests in progress, approvals and returns continue.</p></div><div class="gs-action-row__actions"><button type="button" class="gs-btn gs-btn--light gs-btn--outline">Pause…</button></div></div>
+<div class="gs-action-row gs-action-row--unavailable" id="fd-close"><div class="gs-action-row__text"><strong class="gs-action-row__title">Close or merge this office</strong><p class="gs-action-row__why" id="fd-close-why">Available once 12 memberships, 48 held items and 3 open requests are cleared.</p></div><div class="gs-action-row__actions"><button type="button" class="gs-btn gs-btn--light gs-btn--outline" disabled aria-describedby="fd-close-why">Close…</button></div></div>
+</div>
+</div>
+</div>
+
+<div class="row">
+<div class="panel" style="flex: 1 1 520px">
+<span class="code" style="align-self: flex-start">&lt;x-gs::alert tone title&gt; (existing)</span>
+<div class="gs-alert gs-alert--info" role="status"><svg class="ico gs-alert__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg><div class="gs-alert__body"><strong>Starter items are on their way.</strong> The first catalog usually appears within a few minutes.</div></div>
+<div class="gs-alert gs-alert--warning" role="alert"><svg class="ico gs-alert__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m21.7 18-8-14a2 2 0 0 0-3.5 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3"></path><path d="M12 9v4M12 17h.01"></path></svg><div class="gs-alert__body"><strong>A similar office already exists in Savar Upazila.</strong> <a href="#">Open it instead</a></div></div>
+</div>
+<div class="panel" style="flex: 1 1 520px">
+<span class="code" style="align-self: flex-start">&lt;x-gs::empty-state icon title&gt; (existing)</span>
+<div class="gs-empty"><svg class="ico gs-empty__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true" style="width: 32px; height: 32px"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M19 8v6M22 11h-6"></path></svg><h3 class="gs-empty__title">No staff in this office yet</h3><div>Roles can only go to people who work here.</div><div class="gs-empty__actions"><button type="button" class="gs-btn gs-btn--primary">Add staff</button></div></div>
+</div>
+</div>
+</section>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"$preview":{"width":1440,"height":2300}}'>
+class Component extends DCLogic {
+renderVals() {
+const V = {
+'civic-ledger': { label: 'Civic Ledger', header: 'neutral', density: 'regular', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { label: 'Snipe-IT Classic', header: 'brand', density: 'regular', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { label: 'Digital Blue', header: 'dark', density: 'compact', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { label: 'Executive Neutral', header: 'dark', density: 'comfortable', table: 'ledger', surfaces: 'flat', controls: 'outlined', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { label: 'Institutional Green', header: 'brand', density: 'compact', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { label: 'Lavender', header: 'floating', density: 'regular', table: 'rules', surfaces: 'elevated', controls: 'filled', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+return { skin, mode, v: V[skin], themeLabel: V[skin].label };
+}
+}
+</script>
+</body>
+</html>

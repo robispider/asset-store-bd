@@ -106,4 +106,21 @@ final class LabFixtures
     {
         return 'National Asset Register — clear, dependable and easy for daily work.';
     }
+
+    /** Office setup checklist for the workflow kit: three of four required items done. */
+    public function readiness(): array
+    {
+        return [
+            ['label' => 'Staff added', 'value' => '12 people', 'done' => true],
+            ['label' => 'Office administrator', 'value' => 'Mahbub Alam', 'done' => true],
+            ['label' => 'Approver', 'value' => 'Farhana Akter', 'done' => true],
+            ['label' => 'Storekeeper', 'done' => false, 'action' => ['label' => 'Choose', 'href' => '#storekeeper']],
+            ['label' => 'Second approver', 'done' => false, 'optional' => true],
+        ];
+    }
+
+    public function officeStatuses(): array
+    {
+        return ['office_unconfigured', 'office_provisioned', 'office_configured', 'office_operational', 'office_suspended'];
+    }
 }

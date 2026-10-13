@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Organization UX audit</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F5F6F3;color:#15201B;font-family:'Public Sans','Noto Sans Bengali',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#0B5E45}a:hover{color:#084A36}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+.card{background:#FFFFFF;border:1px solid #DADFD8;border-radius:14px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#5A6560;margin:0}
+.sev{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.02em}
+.sev-c{background:#A3261B;color:#FFFFFF}
+.sev-h{background:#FBEEDC;color:#7A4100}
+.sev-m{background:#E4ECF7;color:#1D4F91}
+.bar{height:10px;border-radius:99px;background:#E3E7E3;overflow:hidden;flex:1 1 auto}
+.bar>span{display:block;height:100%;border-radius:99px}
+.evid{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#4A5650;background:#EEF0EC;border-radius:6px;padding:6px 8px;line-height:1.5}
+.fix{font-size:14px;line-height:1.5;color:#0B5E45;font-weight:600;margin:0}
+</style>
+</helmet>
+<main style="box-sizing: border-box; width: 100%; padding: 64px 24px 96px; display: flex; justify-content: center">
+<div style="width: 100%; max-width: 1280px; display: flex; flex-direction: column; gap: 56px">
+
+<header style="display: flex; flex-direction: column; gap: 16px; max-width: 900px">
+<p class="eyebrow">UX evaluation · packages/gov-store/organization · 14 Oct 2026</p>
+<h1 style="margin: 0; font-size: 48px; line-height: 1.08; font-weight: 800; letter-spacing: -0.02em">The Organization package works. It just asks people to think like the database.</h1>
+<p style="margin: 0; font-size: 18px; line-height: 1.6; color: #3E4A44">I reviewed all 11 Blade screens: registry, create, onboard, office hub, lifecycle, configuration, ICT jurisdictions, ministry admins, directory import, and the two pages staff see before go-live. Each was checked against ten usability heuristics, with extra weight on Bangla use and on the three groups who do this work: area ICT officers, office administrators and front-line staff.</p>
+</header>
+
+<section style="display: flex; flex-wrap: wrap; gap: 24px; align-items: stretch">
+<div class="card" style="flex: 1 1 340px; padding: 32px; display: flex; flex-direction: column; gap: 20px; background: #15201B; border-color: #15201B; color: #FFFFFF">
+<p class="eyebrow" style="color: #A9B8B0">Human-centred score</p>
+<div style="display: flex; align-items: baseline; gap: 10px">
+<span style="font-size: 112px; line-height: .9; font-weight: 800; letter-spacing: -0.04em">42</span>
+<span style="font-size: 28px; font-weight: 600; color: #A9B8B0">/ 100</span>
+</div>
+<p style="margin: 0; font-size: 17px; line-height: 1.55; color: #DCE5E0">The data model and safety rails are solid. Language, feedback and flow are where people get lost. Most fixes are presentation-only and can ship without touching the services.</p>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<span class="sev" style="background: #3A1512; color: #FFC9C2">2 critical</span>
+<span class="sev" style="background: #3A2A12; color: #FFD9A8">5 high</span>
+<span class="sev" style="background: #142A44; color: #BBD3F5">5 medium</span>
+</div>
+</div>
+
+<div class="card" style="flex: 2 1 560px; min-width: 0; padding: 32px; display: flex; flex-direction: column; gap: 14px">
+<p class="eyebrow">Heuristic breakdown (out of 10)</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); column-gap: 40px; row-gap: 14px">
+<div style="display: flex; align-items: center; gap: 12px"><span style="width: 190px; font-size: 14px">Status is visible</span><div class="bar"><span style="width: 60%; background: #0B5E45"></span></div><span style="width: 24px; text-align: right; font-weight: 700">6</span></div>
+<div style="display: flex; align-items: center; gap: 12px"><span style="width: 190px; font-size: 14px">Error prevention</span><div class="bar"><span style="width: 60%; background: #0B5E45"></span></div><span style="width: 24px; text-align: right; font-weight: 700">6</span></div>
+<div style="display: flex; align-items: center; gap: 12px"><span style="width: 190px; font-size: 14px">Recognition over recall</span><div class="bar"><span style="width: 50%; background: #5B7F70"></span></div><span style="width: 24px; text-align: right; font-weight: 700">5</span></div>
+<div style="display: flex; align-items: center; gap: 12px"><span style="width: 190px; font-size: 14px">Focused layout</span><div class="bar"><span style="width: 50%; background: #5B7F70"></span></div><span style="width: 24px; text-align: right; font-weight: 700">5</span></div>
+<div style="display: flex; align-items: center; gap: 12px"><span style="width: 190px; font-size: 14px">Control and undo</span><div class="bar"><span style="width: 40%; background: #B4580A"></span></div><span style="width: 24px; text-align: right; font-weight: 700">4</span></div>
+<div style="display: flex; align-items: center; gap: 12px"><span style="width: 190px; font-size: 14px">Consistency</span><div class="bar"><span style="width: 40%; background: #B4580A"></span></div><span style="width: 24px; text-align: right; font-weight: 700">4</span></div>
+<div style="display: flex; align-items: center; gap: 12px"><span style="width: 190px; font-size: 14px">Speed for daily users</span><div class="bar"><span style="width: 40%; background: #B4580A"></span></div><span style="width: 24px; text-align: right; font-weight: 700">4</span></div>
+<div style="display: flex; align-items: center; gap: 12px"><span style="width: 190px; font-size: 14px">Plain language (EN + বাংলা)</span><div class="bar"><span style="width: 30%; background: #A3261B"></span></div><span style="width: 24px; text-align: right; font-weight: 700">3</span></div>
+<div style="display: flex; align-items: center; gap: 12px"><span style="width: 190px; font-size: 14px">Accessibility</span><div class="bar"><span style="width: 30%; background: #A3261B"></span></div><span style="width: 24px; text-align: right; font-weight: 700">3</span></div>
+<div style="display: flex; align-items: center; gap: 12px"><span style="width: 190px; font-size: 14px">Error messages and recovery</span><div class="bar"><span style="width: 20%; background: #A3261B"></span></div><span style="width: 24px; text-align: right; font-weight: 700">2</span></div>
+</div>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 20px">
+<h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.01em">What already works (keep it)</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px">
+<div class="card" style="padding: 22px; display: flex; flex-direction: column; gap: 8px"><strong style="font-size: 16px">The readiness model</strong><p style="margin: 0; font-size: 14px; line-height: 1.55; color: #4A5650">"An office goes live when 4 things are true" is the right mental model. The redesign puts it at the centre.</p></div>
+<div class="card" style="padding: 22px; display: flex; flex-direction: column; gap: 8px"><strong style="font-size: 16px">Live duplicate check</strong><p style="margin: 0; font-size: 14px; line-height: 1.55; color: #4A5650">Warns before a second office is created in the same area and ministry. It needs to link to the match, though.</p></div>
+<div class="card" style="padding: 22px; display: flex; flex-direction: column; gap: 8px"><strong style="font-size: 16px">Scoped area search</strong><p style="margin: 0; font-size: 14px; line-height: 1.55; color: #4A5650">ICT officers only see areas inside their jurisdiction, so they can't make the wrong choice at all.</p></div>
+<div class="card" style="padding: 22px; display: flex; flex-direction: column; gap: 8px"><strong style="font-size: 16px">Safe lifecycle changes</strong><p style="margin: 0; font-size: 14px; line-height: 1.55; color: #4A5650">Typed confirmation, a required reason and expected-status concurrency guards are solid foundations.</p></div>
+<div class="card" style="padding: 22px; display: flex; flex-direction: column; gap: 8px"><strong style="font-size: 16px">Bilingual groundwork</strong><p style="margin: 0; font-size: 14px; line-height: 1.55; color: #4A5650">en-US and bn-BD both have 409 keys, and the shared --gs tokens and &lt;x-gs::*&gt; kit cover 6 themes in both modes.</p></div>
+<div class="card" style="padding: 22px; display: flex; flex-direction: column; gap: 8px"><strong style="font-size: 16px">Per-office audit trail</strong><p style="margin: 0; font-size: 14px; line-height: 1.55; color: #4A5650">Every change is logged. It just needs to be written as sentences instead of event codes.</p></div>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap">
+<h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.01em">Findings, most severe first</h2>
+<p style="margin: 0; font-size: 14px; color: #5A6560">Each one names the file it comes from and the fix the redesign applies.</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 16px">
+
+<article class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; gap: 10px; align-items: center"><span class="sev sev-c">Critical</span><span style="font-size: 13px; color: #5A6560">Error recovery</span></div>
+<h3 style="margin: 0; font-size: 19px; line-height: 1.3">Form errors are invisible, and a failed save wipes choices</h3>
+<p style="margin: 0; font-size: 14px; line-height: 1.55; color: #3E4A44">None of the 11 views uses @error or $errors. The ministry, parent and area selects never call old(), so after a validation failure the user re-enters everything without being told what was wrong.</p>
+<div class="evid">provisioning/create.blade.php · onboard.blade.php · hub.blade.php</div>
+<p class="fix">Fix: use &lt;x-gs::form-row&gt;, which already renders $errors under each field, add an error summary at the top, and keep every value with old().</p>
+</article>
+
+<article class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; gap: 10px; align-items: center"><span class="sev sev-c">Critical</span><span style="font-size: 13px; color: #5A6560">Language</span></div>
+<h3 style="margin: 0; font-size: 19px; line-height: 1.3">Bangla users hit English walls mid-task</h3>
+<p style="margin: 0; font-size: 14px; line-height: 1.55; color: #3E4A44">About 40 strings skip translation: the hub role labels, "Operational Readiness Checklist", "Needs: ✓ Primary", "View Hub", "Executed by", both readiness pages in full, and the select2 placeholders. "Type CHANGE to confirm" makes people type an English word.</p>
+<div class="evid">hub.blade.php · readiness/*.blade.php · jurisdictions.blade.php · lifecycle.blade.php</div>
+<p class="fix">Fix: every string goes through orglabel, and confirmation uses a checkbox or the office's own name.</p>
+</article>
+
+<article class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; gap: 10px; align-items: center"><span class="sev sev-h">High</span><span style="font-size: 13px; color: #5A6560">Theming · consistency</span></div>
+<h3 style="margin: 0; font-size: 19px; line-height: 1.3">The package bypasses the GovStore theming kit</h3>
+<p style="margin: 0; font-size: 14px; line-height: 1.55; color: #3E4A44">The theming package ships 6 themes, light and dark, variants and an &lt;x-gs::*&gt; kit. The organisation views use only &lt;x-gs::table&gt;. Everything else is AdminLTE boxes, label-* badges and 88 one-off org-inline-* classes, repainted by 61 !important declarations in organization.css. Office status ignores the status_style variant, and density and radius never apply.</p>
+<div class="evid">organization/src/resources/css/organization.css · every view</div>
+<p class="fix">Fix: rebuild on the kit: page-header, status-badge (5 new office states), status-tabs, form-row, alert, empty-state and timeline, plus the new readiness, role-slot, action-row, choice-card and trail components.</p>
+</article>
+
+<article class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; gap: 10px; align-items: center"><span class="sev sev-h">High</span><span style="font-size: 13px; color: #5A6560">Language · status</span></div>
+<h3 style="margin: 0; font-size: 19px; line-height: 1.3">Status words describe the database, not the work</h3>
+<p style="margin: 0; font-size: 14px; line-height: 1.55; color: #3E4A44">"Unconfigured → Provisioned → Configured → Operational" doesn't say what to do next. "Configured" really means "has an admin, roles still missing". The configuration page prints strtoupper(lifecycle_status).</p>
+<div class="evid">OfficeReadinessService.php:51 · configuration/index.blade.php</div>
+<p class="fix">Fix: Not onboarded · Needs administrator · Setting up · Live · Paused, each shown with its next step.</p>
+</article>
+
+<article class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; gap: 10px; align-items: center"><span class="sev sev-h">High</span><span style="font-size: 13px; color: #5A6560">Trust</span></div>
+<h3 style="margin: 0; font-size: 19px; line-height: 1.3">The waiting page tells staff something untrue</h3>
+<p style="margin: 0; font-size: 14px; line-height: 1.55; color: #3E4A44">"Office Administrator Designated: Completed" is hard-coded no matter what the real state is. The unassigned page tells staff to fix things "inside Snipe-IT", a product name they've never seen.</p>
+<div class="evid">readiness/waiting.blade.php · readiness/unassigned.blade.php</div>
+<p class="fix">Fix: build the page from the readiness checklist, name a real person to contact, and give one clear thing to ask for.</p>
+</article>
+
+<article class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; gap: 10px; align-items: center"><span class="sev sev-h">High</span><span style="font-size: 13px; color: #5A6560">Control</span></div>
+<h3 style="margin: 0; font-size: 19px; line-height: 1.3">Risky actions sit in the open, unexplained</h3>
+<p style="margin: 0; font-size: 14px; line-height: 1.55; color: #3E4A44">The lifecycle form is always visible under the hub tabs. One dropdown mixes Suspend, Resume and Relocate, and the area field shows even when it doesn't apply. Every revoke is a full-width red button guarded only by a browser confirm(), with no undo.</p>
+<div class="evid">provisioning/lifecycle.blade.php · jurisdictions.blade.php · company-admins.blade.php</div>
+<p class="fix">Fix: put each action under Settings with its own explained dialog, use quiet row menus, and offer an undo toast.</p>
+</article>
+
+<article class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; gap: 10px; align-items: center"><span class="sev sev-h">High</span><span style="font-size: 13px; color: #5A6560">Flow</span></div>
+<h3 style="margin: 0; font-size: 19px; line-height: 1.3">"Create" or "Onboard" is a technical decision made too early</h3>
+<p style="margin: 0; font-size: 14px; line-height: 1.55; color: #3E4A44">Two buttons side by side make people know, before they start, whether a legacy location record exists. A wrong guess means a duplicate office or a dead end.</p>
+<div class="evid">provisioning/index.blade.php:55–62</div>
+<p class="fix">Fix: one "Add office" button. Search existing locations first, then offer "create new".</p>
+</article>
+
+<article class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; gap: 10px; align-items: center"><span class="sev sev-m">Medium</span><span style="font-size: 13px; color: #5A6560">Clarity</span></div>
+<h3 style="margin: 0; font-size: 19px; line-height: 1.3">Read-only fields dressed up as inputs</h3>
+<p style="margin: 0; font-size: 14px; line-height: 1.55; color: #3E4A44">In the hub, ministry, parent and area show as disabled selects with no reason and no way to change them. The create form shows a "Delegate admin" select that is always disabled.</p>
+<div class="evid">hub.blade.php:45–75 · create.blade.php:60–66</div>
+<p class="fix">Fix: show them as plain text with "Why can't I change this?" and a link to the right action.</p>
+</article>
+
+<article class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; gap: 10px; align-items: center"><span class="sev sev-m">Medium</span><span style="font-size: 13px; color: #5A6560">Consistency</span></div>
+<h3 style="margin: 0; font-size: 19px; line-height: 1.3">Three checklists, three vocabularies</h3>
+<p style="margin: 0; font-size: 14px; line-height: 1.55; color: #3E4A44">The readiness checklist is built three times (hub Roles tab, configuration page, waiting page), labelled Ready/Missing, Configured/Missing and Assigned/Awaiting setup. None of the items links to its fix.</p>
+<div class="evid">hub.blade.php · configuration/index.blade.php · readiness/waiting.blade.php</div>
+<p class="fix">Fix: one shared readiness component where every item is a button to its fix.</p>
+</article>
+
+<article class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; gap: 10px; align-items: center"><span class="sev sev-m">Medium</span><span style="font-size: 13px; color: #5A6560">Language</span></div>
+<h3 style="margin: 0; font-size: 19px; line-height: 1.3">Jargon and internals leak into the UI</h3>
+<p style="margin: 0; font-size: 14px; line-height: 1.55; color: #3E4A44">"Spatial-First Principle", the table name gov_geo_areas, raw hierarchy codes, "Snipe-IT's core catalog", "Apply office transition", "Starter catalog", "Executed by".</p>
+<div class="evid">orglabel.php · hub.blade.php (Geography tab)</div>
+<p class="fix">Fix: rewrite in plain language and move IDs behind "Technical details".</p>
+</article>
+
+<article class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; gap: 10px; align-items: center"><span class="sev sev-m">Medium</span><span style="font-size: 13px; color: #5A6560">Efficiency</span></div>
+<h3 style="margin: 0; font-size: 19px; line-height: 1.3">The registry is slow for the people who use it daily</h3>
+<p style="margin: 0; font-size: 14px; line-height: 1.55; color: #3E4A44">The KPI tiles aren't filters. Filters wait for a Filter click, and the status filter has no "Not onboarded" option. Actions are 22px btn-xs buttons, rows aren't clickable, and what's missing is shown only as coloured ✓/✗ marks.</p>
+<div class="evid">provisioning/index.blade.php</div>
+<p class="fix">Fix: status tabs with counts, instant filters, the whole row as a link, and a "Next step" column.</p>
+</article>
+
+<article class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; gap: 10px; align-items: center"><span class="sev sev-m">Medium</span><span style="font-size: 13px; color: #5A6560">Accessibility</span></div>
+<h3 style="margin: 0; font-size: 19px; line-height: 1.3">Accessibility basics are missing</h3>
+<p style="margin: 0; font-size: 14px; line-height: 1.55; color: #3E4A44">There are no aria attributes, screen readers announce decorative icons, some signals rely on colour alone, tables have no captions, focus states aren't designed, and most tap targets are under 44px.</p>
+<div class="evid">all views · organization.css</div>
+<p class="fix">Fix: build WCAG 2.2 AA into the shared components (Foundations board).</p>
+</article>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 20px">
+<h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.01em">Journey today: from nothing to a live office</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px">
+<div class="card" style="padding: 18px; display: flex; flex-direction: column; gap: 10px"><span class="eyebrow">1 · Add</span><strong style="font-size: 15px">Find or add the office</strong><p style="margin: 0; font-size: 14px; line-height: 1.5; color: #8A2A1F">"Create or Onboard? I don't know which one I need."</p></div>
+<div class="card" style="padding: 18px; display: flex; flex-direction: column; gap: 10px"><span class="eyebrow">2 · Place</span><strong style="font-size: 15px">Put it on the map</strong><p style="margin: 0; font-size: 14px; line-height: 1.5; color: #8A2A1F">"I typed Savar and got three results. Which one is mine?"</p></div>
+<div class="card" style="padding: 18px; display: flex; flex-direction: column; gap: 10px"><span class="eyebrow">3 · Lead</span><strong style="font-size: 15px">Name an administrator</strong><p style="margin: 0; font-size: 14px; line-height: 1.5; color: #8A2A1F">"The admin field is greyed out. Why?"</p></div>
+<div class="card" style="padding: 18px; display: flex; flex-direction: column; gap: 10px"><span class="eyebrow">4 · Roles</span><strong style="font-size: 15px">Approver and storekeeper</strong><p style="margin: 0; font-size: 14px; line-height: 1.5; color: #8A2A1F">"The dropdown is empty. Nobody's been added yet."</p></div>
+<div class="card" style="padding: 18px; display: flex; flex-direction: column; gap: 10px"><span class="eyebrow">5 · Staff</span><strong style="font-size: 15px">Staff log in</strong><p style="margin: 0; font-size: 14px; line-height: 1.5; color: #8A2A1F">"It says the admin step is done, but I still can't order anything."</p></div>
+<div class="card" style="padding: 18px; display: flex; flex-direction: column; gap: 10px"><span class="eyebrow">6 · Live</span><strong style="font-size: 15px">Goes live</strong><p style="margin: 0; font-size: 14px; line-height: 1.5; color: #8A2A1F">"Nothing told me it worked. I'm still not sure."</p></div>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 20px">
+<h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.01em">Five principles for the redesign</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px">
+<div class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 10px; border-top: 4px solid #0B5E45"><span style="font-size: 32px; font-weight: 800; color: #0B5E45">01</span><strong style="font-size: 17px">Tell people what's next</strong><p style="margin: 0; font-size: 14px; line-height: 1.55; color: #4A5650">Every screen answers "what do I do now?" before "what is the data?".</p></div>
+<div class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 10px; border-top: 4px solid #0B5E45"><span style="font-size: 32px; font-weight: 800; color: #0B5E45">02</span><strong style="font-size: 17px">Two languages, one experience</strong><p style="margin: 0; font-size: 14px; line-height: 1.55; color: #4A5650">Every word, number and confirmation works the same in বাংলা as in English.</p></div>
+<div class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 10px; border-top: 4px solid #0B5E45"><span style="font-size: 32px; font-weight: 800; color: #0B5E45">03</span><strong style="font-size: 17px">Fix it where you see it</strong><p style="margin: 0; font-size: 14px; line-height: 1.55; color: #4A5650">A missing role, an unverified area, an empty staff list: each comes with its own button, right there.</p></div>
+<div class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 10px; border-top: 4px solid #0B5E45"><span style="font-size: 32px; font-weight: 800; color: #0B5E45">04</span><strong style="font-size: 17px">Make risky actions calm</strong><p style="margin: 0; font-size: 14px; line-height: 1.55; color: #4A5650">Explain consequences in plain words, ask once, and offer undo where possible.</p></div>
+<div class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 10px; border-top: 4px solid #0B5E45"><span style="font-size: 32px; font-weight: 800; color: #0B5E45">05</span><strong style="font-size: 17px">Respect the daily user</strong><p style="margin: 0; font-size: 14px; line-height: 1.55; color: #4A5650">Instant filters, keyboard-friendly, dense where it helps, never cluttered.</p></div>
+</div>
+</section>
+
+</div>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2700}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>
