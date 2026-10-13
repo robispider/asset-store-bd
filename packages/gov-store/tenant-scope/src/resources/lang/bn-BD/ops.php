@@ -100,12 +100,6 @@ return [
     // ==========================================
     // SIDEBAR / MENU LABELS
     // ==========================================
-    'sidebar_tenant_scoping'      => 'টেন্যান্ট স্কোপিং',
-    'menu_gov_store'              => 'সরকারি স্টোর',
-    'menu_multitenant_admin'      => 'মাল্টি-টেন্যান্ট অ্যাডমিনিস্ট্রেশন',
-    'menu_scoping_dashboard'      => 'স্কোপিং ড্যাশবোর্ড',
-    'menu_policy_configurator'    => 'পলিসি কনফিগারেটর',
-    'menu_boundary_explorer'      => 'বাউন্ডারি এক্সপ্লোরার',
 
     // ==========================================
     // SERVICE EXCEPTION MESSAGES (user-facing)

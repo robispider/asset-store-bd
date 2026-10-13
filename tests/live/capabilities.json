@@ -46,6 +46,18 @@
     },
     "inventory.assets.view": {
       "native": "hardware.view"
+    },
+    "requests.approve": {
+      "ability": "requests.approve"
+    },
+    "access.manage": {
+      "ability": "access.manage"
+    },
+    "onboarding.manage": {
+      "ability": "onboarding.manage"
+    },
+    "membership.manage": {
+      "ability": "membership.manage"
     }
   }
 }

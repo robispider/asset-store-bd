@@ -1382,8 +1382,6 @@
 
 
 
-                            @includeIf('govstore::hooks.basket-nav', ['draftCount' => $govBasketCount ?? 0])
-
                             <!-- User Account: style can be found in dropdown.less -->
                             @auth
                                 <li class="dropdown user user-menu">
@@ -1423,21 +1421,6 @@
                                                     {{ trans('general.requested_assets_menu') }}
                                                 </a></li>
                                         @endcan
-                                        {{-- GOV-STORE: User Requests Link --}}
-                                        <li {!! (request()->is('gov-requests/my-requests') ? ' class="active"' : '') !!}>
-                                            <a href="{{ route('gov.requests.user.index') }}">
-                                                <i class="fas fa-hand-paper fa-fw"></i>
-                                                My Gov-Requests
-                                            </a>
-                                        </li>
-                                        {{-- GOV-STORE: Unified Catalog & Requests --}}
-                                        <li {!! (request()->is('gov-requests/catalog') ? ' class="active"' : '') !!}>
-                                            <a href="{{ route('gov.requests.catalog') }}">
-                                                <i class="fas fa-store fa-fw"></i>
-                                                Browse Item Catalog
-                                            </a>
-                                        </li>
-                                        
 
                                         @can('self.profile')
                                         <li {!! (request()->is('account/accept') ? ' class="active"' : '') !!}>
@@ -1481,8 +1464,6 @@
                                             </li>
                                         @endcan
                                         
-                                        @includeIf('govscope::hooks.my-access')
-                                        @includeIf('govmem::hooks.membership-menu')
                                         <li class="divider"></li>
                                         <li>
                                             <a href="{{ route('logout.get') }}"
@@ -1531,8 +1512,6 @@
                                 </a>
                             </li>
                         @endcan
-                           
-
                         @can('index', \App\Models\Asset::class)
                             <li class="treeview{{ ((request()->is('statuslabels/*') || request()->is(['hardware*', 'maintenances*'])) ? ' active' : '') }}">
                                 <a href="#">
@@ -1949,7 +1928,8 @@
                                 </a>
                             </li>
                         @endcan
-                        @includeIf('govscope::hooks.sidebar')
+
+
                     </ul>
                 </section>
                 <!-- /.sidebar -->
@@ -2038,7 +2018,6 @@
 
                 <section class="content" id="main" tabindex="-1" style="padding-top: 0px;">
 
-                    @includeIf('govscope::hooks.rollout')
                     <!-- Notifications -->
                     <div class="row">
                         @if (config('app.lock_passwords'))
@@ -2182,7 +2161,6 @@
         <script src="{{ url('js/select2/i18n/'.Helper::mapBackToLegacyLocale(app()->getLocale()).'.js') }}"></script>
 
         {{-- Page level javascript --}}
-        @includeIf('govscope::hooks.unified-menu')
         @stack('js')
 
         @section('moar_scripts')
@@ -2637,8 +2615,5 @@
             </script>
         @endif
 
-        @auth
-    @include('govstore::hooks.basket-widget', ['draftCount' => $govBasketCount ?? 0])
-@endauth
-</body>
+        </body>
 </html>

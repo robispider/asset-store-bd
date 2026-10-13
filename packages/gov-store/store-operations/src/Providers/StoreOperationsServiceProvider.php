@@ -31,6 +31,9 @@ class StoreOperationsServiceProvider extends ServiceProvider
 {
     public function register()
     {
+        $this->mergeConfigFrom(__DIR__.'/../config/intake.php', 'govstore-intake');
+        $this->app->singleton(\GovStore\StoreOperations\Services\IntakePolicy::class);
+
         // 1. Register Tab Registry Singleton
         $this->app->singleton(TabRegistry::class, function () {
             return new TabRegistry;
@@ -110,49 +113,46 @@ class StoreOperationsServiceProvider extends ServiceProvider
             $stockClass::observe(\GovStore\StoreOperations\Services\LedgerStockGuard::class);
         }
 
+        // 13. GRN-only intake: guard Snipe-IT's create paths by route name (super users included)
+        // and check stock imports row by row while one runs. See config/intake.php.
+        $router = $this->app['router'];
+        $router->pushMiddlewareToGroup('web', \GovStore\StoreOperations\Http\Middleware\EnforceGrnIntake::class);
+        $router->pushMiddlewareToGroup('api', \GovStore\StoreOperations\Http\Middleware\EnforceGrnIntake::class);
+        foreach ([\App\Models\Asset::class, \App\Models\License::class, Consumable::class, Accessory::class, Component::class] as $stockClass) {
+            $stockClass::saving(fn ($record) => app(\GovStore\StoreOperations\Services\IntakePolicy::class)->checkImportedRecord($record));
+        }
+
     }
 
     protected function registerNavigationMenus(): void
     {
         $registry = $this->app->make(MenuRegistry::class);
 
-        // 1. Immutable Ledger / Stock Register Dashboard
-        $registry->register([
-            'id' => 'storeops-register',
-            'parent' => 'gov-store',
-            'title' => __('storeops::storeops.stock_register_dashboard'),
-            'icon' => 'fa fa-cube',
-            'route' => 'storeops.register.index',
-            'permission' => 'storekeeper',
-            'order' => 20,
-            'active_patterns' => ['gov-store/operations/kardex/*'],
-        ]);
+        // Store: the document hub covers every receipt, issue and other store document workspace.
+        $registry->register(['id' => 'storeops-hub', 'group' => 'gov-store-ops', 'order' => 10,
+            'label' => 'storeops::storeops.nav_receipts_issues', 'icon' => 'fas fa-folder-open',
+            'route' => 'storeops.hub', 'match' => ['storeops.documents.*', 'gov-store/operations/documents/*']]);
+        $registry->register(['id' => 'storeops-register', 'group' => 'gov-store-ops', 'order' => 20,
+            'label' => 'storeops::storeops.nav_stock_register', 'icon' => 'fas fa-cube',
+            'route' => 'storeops.register.index', 'match' => ['storeops.register.*', 'gov-store/operations/kardex/*']]);
 
-        // 2. The Unified Document Operations Hub (Replaces separate Receipt/Issue links)
-        $registry->register([
-            'id' => 'storeops-hub',
-            'parent' => 'gov-store',
-            'title' => __('storeops::storeops.store_documents_hub'),
-            'icon' => 'fa fa-folder-open',
-            'route' => 'storeops.hub',
-            'permission' => 'storekeeper',
-            'order' => 30,
-            // Keeps the sidebar active when inside ANY document workspace (Receipt, Issue, etc.)
-            'active_patterns' => [
-                'gov-store/operations/hub',
-                'gov-store/operations/documents/*',
-            ],
-        ]);
+        // ＋ New (navbar): start a store document in the working office. Visibility follows the
+        // initialize route's gov.can ability; a working office is required to draft.
+        foreach ([
+            ['receipt', 10, 'storeops::storeops.new_receipt', 'fas fa-truck-loading'],
+            ['issue', 20, 'storeops::storeops.new_issue', 'fas fa-share'],
+            ['adjustment', 30, 'storeops::storeops.new_adjustment', 'fas fa-sliders-h'],
+        ] as [$type, $order, $label, $icon]) {
+            $registry->register(['id' => "storeops-new-{$type}", 'zone' => 'actions', 'order' => $order,
+                'label' => $label, 'icon' => $icon, 'route' => 'storeops.documents.initialize',
+                'form' => ['document_type' => $type],
+                'visible' => fn () => (bool) app(\GovStore\TenantScope\Contexts\TenantContext::class)->locationId]);
+        }
 
-        $registry->register([
-            'id' => 'storeops-admin-rules',
-            'parent' => 'gov-store',
-            'title' => __('storeops::storeops.product_rules_studio'),
-            'icon' => 'fas fa-cogs',
-            'route' => 'storeops.admin.rules.index',
-            'permission' => 'superuser', // Admin only
-            'order' => 90,
-        ]);
+        // Rules & settings.
+        $registry->register(['id' => 'storeops-admin-rules', 'group' => 'gov-rules', 'order' => 20,
+            'label' => 'storeops::storeops.nav_product_rules', 'icon' => 'fas fa-cogs',
+            'route' => 'storeops.admin.rules.index', 'match' => ['storeops.admin.rules.*']]);
     }
 
     protected function registerKardexTabs()
@@ -161,8 +161,8 @@ class StoreOperationsServiceProvider extends ServiceProvider
         $kardexTabUrl = '/gov-store/operations/kardex/{type}/{id}';
 
         // Register Kardex to all 3 target counter-based categories
-        $registry->registerTab('consumable', new Tab('govstore-ledger-tab', __('storeops::storeops.stock_card_title'), $kardexTabUrl, 'fa fa-book'));
-        $registry->registerTab('accessory', new Tab('govstore-ledger-tab', __('storeops::storeops.stock_card_title'), $kardexTabUrl, 'fa fa-book'));
-        $registry->registerTab('component', new Tab('govstore-ledger-tab', __('storeops::storeops.stock_card_title'), $kardexTabUrl, 'fa fa-book'));
+        $registry->registerTab('consumable', new Tab('govstore-ledger-tab', 'storeops::storeops.stock_card_title', $kardexTabUrl, 'fa fa-book'));
+        $registry->registerTab('accessory', new Tab('govstore-ledger-tab', 'storeops::storeops.stock_card_title', $kardexTabUrl, 'fa fa-book'));
+        $registry->registerTab('component', new Tab('govstore-ledger-tab', 'storeops::storeops.stock_card_title', $kardexTabUrl, 'fa fa-book'));
     }
 }

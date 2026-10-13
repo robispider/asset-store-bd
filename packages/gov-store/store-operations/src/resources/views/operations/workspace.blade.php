@@ -219,6 +219,28 @@
                         <button type="button" class="btn btn-sm btn-default" id="addRowBtn">
                             <i class="fa fa-plus"></i> {{ __('storeops::storeops.add_row') }}
                         </button>
+                        {{-- GRN-only intake: a receipt posts into an existing stock item (or creates assets
+                             from an asset model), so new items are defined here, at quantity 0. --}}
+                        @php($newStockItems = $document->getDocumentType() === 'receipt' ? array_filter([
+                            [\App\Models\AssetModel::class, 'models.create', 'general.asset_model'],
+                            [\App\Models\Consumable::class, 'consumables.create', 'general.consumable'],
+                            [\App\Models\Accessory::class, 'accessories.create', 'general.accessory'],
+                            [\App\Models\Component::class, 'components.create', 'general.component'],
+                        ], fn ($stockItem) => auth()->user()->can('create', $stockItem[0])) : [])
+                        @if($newStockItems)
+                            <span class="dropdown storeops-add-stock-item">
+                                <span class="text-muted">{{ __('storeops::intake.item_not_listed') }}</span>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                    {{ __('storeops::intake.add_stock_item') }} <span class="caret" aria-hidden="true"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li class="dropdown-header">{{ __('storeops::intake.add_stock_item_help') }}</li>
+                                    @foreach($newStockItems as [$stockClass, $stockRoute, $stockLabel])
+                                        <li><a href="{{ route($stockRoute) }}" target="_blank" rel="noopener">{{ trans($stockLabel) }}</a></li>
+                                    @endforeach
+                                </ul>
+                            </span>
+                        @endif
                     </div>
                     @endif
                 </div>

@@ -12,7 +12,6 @@ use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Notifications\Events\NotificationSending;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class ExperimentationServiceProvider extends ServiceProvider
@@ -46,14 +45,10 @@ class ExperimentationServiceProvider extends ServiceProvider
         foreach ([NotificationSending::class, MessageSending::class] as $event) {
             Event::listen($event, fn () => app(RecordRegistry::class)->current ? false : null);
         }
-        $registered = false;
-        View::composer('*', function () use (&$registered) {
-            if (! $registered && config('govstore-experiments.enabled') && ! app()->environment('production') && auth()->check() && auth()->user()->isSuperUser()) {
-                app(MenuRegistry::class)->register(['id' => 'gov-experiments', 'parent' => 'gov-tenantscope-root', 'title' => __('experiments::ui.title'),
-                    'icon' => 'fas fa-flask fa-fw', 'route' => 'gov.experiments.index', 'order' => 95]);
-                $registered = true;
-            }
-        });
+        app(MenuRegistry::class)->register(['id' => 'gov-experiments', 'group' => 'gov-system', 'order' => 30,
+            'label' => 'experiments::ui.title', 'icon' => 'fas fa-vial', 'route' => 'gov.experiments.index',
+            'match' => ['gov.experiments.*'], 'permission' => 'superuser',
+            'visible' => fn () => config('govstore-experiments.enabled') && ! app()->environment('production')]);
         if ($this->app->runningInConsole()) {
             $this->commands([ExperimentCommand::class, ExperimentWorkerCommand::class]);
         }

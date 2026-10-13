@@ -58,6 +58,7 @@ class MetadataServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
         $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'govmeta');
+        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'govmeta');
 
         $registry = $this->app->make(MetadataRegistry::class);
         $registry->register(new GovStoreBaselineProvider());
@@ -75,12 +76,12 @@ class MetadataServiceProvider extends ServiceProvider
             $menuRegistry = $this->app->make(MenuRegistry::class);
             $menuRegistry->register([
                 'id'         => 'gov-metadata-health',
-                'parent'     => 'gov-tenantscope-root',
-                'title'      => 'Metadata Health Diagnostics',
-                'icon'       => 'fas fa-heartbeat text-red',
+                'group'      => 'gov-system',
+                'label'      => 'govmeta::metadata.nav_health',
+                'icon'       => 'fas fa-heartbeat',
                 'route'      => 'gov.meta.health',
                 'permission' => 'admin',
-                'order'      => 40,
+                'order'      => 10,
             ]);
         }
 

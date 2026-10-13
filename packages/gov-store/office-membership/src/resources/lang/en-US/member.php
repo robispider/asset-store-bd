@@ -226,6 +226,17 @@ return [
     'menu_working_as' => 'Working As:',
     'menu_global_overview' => 'Global Overview (All Offices)',
     'menu_choose_context' => 'CHOOSE WORKING CONTEXT',
+    'menu_filter_offices' => 'Type to find an office',
+    'menu_working_office' => 'Working office: :office',
+    'menu_all_offices' => 'All offices',
+    'menu_no_office' => 'Choose an office',
+    'menu_recent_offices' => 'Recent offices',
+    'menu_search_hint' => 'Type at least 2 letters of the office name',
+    'menu_searching' => 'Searching…',
+    'menu_search_none' => 'No office found',
+    'menu_search_more' => 'More offices match. Keep typing to narrow the list.',
+    'menu_search_failed' => 'The search failed. Please try again.',
+    'nav_add_staff' => 'Add staff member',
 
     // =========================================================================
     // Origin: MembershipController.php

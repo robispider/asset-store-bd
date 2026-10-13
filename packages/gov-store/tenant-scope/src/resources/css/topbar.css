@@ -1,0 +1,169 @@
+/*
+ * Floating navbar (docs/plans/topbar-navigation-plan.md §4.5).
+ * Active only when the navbar's context zone set html[data-gs-sticky-header]
+ * (config govstore-navigation.topbar.sticky). Sticky, not AdminLTE's .fixed layout: the bar
+ * stays in normal flow, so a header that wraps to two lines still pushes the content down.
+ * Package CSS is bundled inside a cascade layer; !important there beats Snipe-IT's unlayered
+ * `.main-header { position: relative }`.
+ */
+html[data-gs-sticky-header] {
+    /* In-page anchors and the skip link land below the bar, not under it. */
+    scroll-padding-top: var(--gs-header-h, 50px);
+}
+
+/* AdminLTE's .wrapper is `overflow-x: hidden; overflow-y: auto`, which makes it a scroll
+   container that never scrolls, so the bar would stick to it instead of the window.
+   `clip` still hides sideways overflow (the off-canvas sidebar) without that side effect. */
+html[data-gs-sticky-header] .wrapper {
+    overflow-x: clip !important;
+    overflow-y: visible !important;
+}
+
+html[data-gs-sticky-header] .main-header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1030 !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+html[data-gs-sticky-header][data-gs-scrolled] .main-header {
+    box-shadow: var(--gs-shadow-2);
+}
+
+/* A dropdown can no longer be scrolled into view with the page: cap it to the viewport. */
+html[data-gs-sticky-header] .main-header .navbar-nav > li > .dropdown-menu {
+    max-height: calc(100vh - var(--gs-header-h, 50px) - 16px);
+    overflow-y: auto;
+}
+
+/* Phones: hide on scroll-down, show again on scroll-up (topbar.js sets the attribute). */
+@media (max-width: 767px) {
+    html[data-gs-sticky-header][data-gs-header-hidden] .main-header {
+        transform: translateY(-100%);
+        box-shadow: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html[data-gs-sticky-header] .main-header {
+        transition: none;
+    }
+}
+
+/* ---------- Navbar zones ---------- */
+/* Package CSS sits in a cascade layer, so Bootstrap's unlayered `.nav > li > a` and `.btn`
+   rules would win; !important here (as in theming's adapter) keeps these layouts intact. */
+
+
+/* Working-office chip, left of the navbar. */
+.gs-context-nav .gs-office-chip > .dropdown-toggle {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    max-width: 280px !important;
+}
+
+/* Keep the bar on one row at laptop widths; the full name is in the chip's tooltip. */
+@media (min-width: 768px) and (max-width: 1199px) {
+    .gs-context-nav .gs-office-chip > .dropdown-toggle {
+        max-width: 170px !important;
+    }
+}
+
+/* Inbox and basket keep their icon and count (and aria-label); the text label goes until
+   there is room for it (Bangla labels are long). */
+@media (min-width: 768px) and (max-width: 1365px) {
+    .gs-nav-inbox > .dropdown-toggle > .hidden-sm,
+    .cr-nav-basket > a > .hidden-sm {
+        display: none !important;
+    }
+}
+
+.gs-context-nav .gs-office-chip-name {
+    display: inline-block !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+.gs-office-picker {
+    width: 340px !important;
+    max-width: calc(100vw - 16px) !important;
+    padding: 0 !important;
+}
+
+.gs-office-picker .gs-office-picker-search {
+    padding: 8px 12px !important;
+}
+
+.gs-office-picker .gs-office-picker-results {
+    list-style: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-height: 50vh !important;
+    overflow-y: auto !important;
+}
+
+.gs-office-picker .gs-office-picker-results > li > .btn-link,
+.gs-nav-actions .gs-nav-action-button {
+    display: block !important;
+    width: 100% !important;
+    padding: 6px 20px !important;
+    text-align: left !important;
+    white-space: normal !important;
+    color: inherit !important;
+}
+
+.gs-office-picker .gs-office-picker-results > li > .btn-link[aria-current="true"] {
+    font-weight: 600 !important;
+}
+
+.gs-office-picker .gs-office-picker-sub {
+    display: block !important;
+    font-size: 12px !important;
+    opacity: 0.75 !important;
+}
+
+.gs-office-picker .gs-office-picker-status {
+    padding: 6px 20px !important;
+    font-size: 12px !important;
+    opacity: 0.75 !important;
+}
+
+.gs-nav-actions .gs-nav-action-form {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+/* A one-entry "＋ New" renders as a single navbar button; match the navbar links. */
+.gs-nav-actions .gs-nav-action-single {
+    padding: 15px !important;
+    line-height: 20px !important;
+    color: inherit !important;
+    text-decoration: none !important;
+}
+
+.gs-nav-inbox .menu > li > a {
+    white-space: normal !important;
+}
+
+@media (max-width: 767px) {
+    .gs-context-nav {
+        float: left !important;
+        margin: 0 !important;
+    }
+
+    .gs-context-nav .gs-office-chip > .dropdown-toggle {
+        max-width: 160px !important;
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+    }
+
+    .gs-context-nav .gs-office-chip > .dropdown-menu {
+        position: absolute !important;
+        background-color: var(--gs-color-surface) !important;
+    }
+}

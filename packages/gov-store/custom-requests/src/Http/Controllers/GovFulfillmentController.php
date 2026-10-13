@@ -6,6 +6,7 @@ use App\Models\Asset;
 use GovStore\CustomRequests\Models\Request as ServiceRequest;
 use GovStore\CustomRequests\Services\FulfillmentService;
 use GovStore\CustomRequests\Services\RequestInventory;
+use GovStore\CustomRequests\Services\RequestQueues;
 use GovStore\TenantScope\Contexts\TenantContext;
 use GovStore\TenantScope\Services\ActionFailure;
 use GovStore\TenantScope\Services\GovAccess;
@@ -27,14 +28,7 @@ class GovFulfillmentController extends Controller
         $this->checkStorekeeperAccess();
         $user = auth()->user();
 
-        $query = ServiceRequest::with(['requester', 'items'])
-            ->whereIn('approval_status', ['approved', 'partially_approved'])
-            ->whereNotIn('fulfillment_status', ['closed', 'issued']);
-
-        if (! $user->isSuperUser()) {
-            $myLocationIds = [app(TenantContext::class)->locationId];
-            $query->whereIn('office_id', $myLocationIds);
-        }
+        $query = app(RequestQueues::class)->awaitingFulfilment($user)->with(['requester', 'items']);
 
         $activeRequests = $query->orderBy('approved_at', 'asc')->get();
 

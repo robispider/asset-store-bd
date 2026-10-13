@@ -28,21 +28,14 @@ class UserOnboardingServiceProvider extends ServiceProvider
         // Register the Observer to intercept core User creations
         User::observe(SnipeUserOnboardingObserver::class);
 
-        // Register menu item in Central Sidebar Registry
+        // Register leaves in the GovStore navigation groups.
         $this->app->booted(function () {
             $registry = $this->app->make(MenuRegistry::class);
 
-            $registry->register([
-                'id' => 'gov-onboard-queue',
-                'parent' => 'gov-org', // Placed under the Office Provisioning parent directory
-                'title' => 'govonboard::onboard.title',
-                'icon' => 'fas fa-user-plus',
-                'route' => 'gov.onboard.index',
-                'permission' => 'onboarding.manage',
-                'order' => 35,
-            ]);
-            $registry->register(['id' => 'gov-onboard-mine', 'title' => 'govonboard::onboard.my_title',
-                'icon' => 'fas fa-user-plus', 'route' => 'gov.onboard.mine', 'permission' => 'onboarding.self', 'order' => 36]);
+            $registry->register(['id' => 'gov-onboard-queue', 'group' => 'gov-queues', 'order' => 30,
+                'label' => 'govonboard::onboard.nav_onboarding_requests', 'icon' => 'fas fa-user-plus', 'route' => 'gov.onboard.index']);
+            $registry->register(['id' => 'gov-onboard-mine', 'group' => 'gov-workspace', 'order' => 40,
+                'label' => 'govonboard::onboard.my_title', 'icon' => 'fas fa-user-plus', 'route' => 'gov.onboard.mine']);
         });
     }
 }

@@ -394,16 +394,16 @@ return [
     // ==========================================
     // Sidebar / Menu Integration
     // ==========================================
-    'menu_provisioning_root'   => 'কার্যালয় প্রোভিশনিং',
-    'menu_office_registry'     => 'কার্যালয় রেজিস্ট্রি',
-    'menu_ict_jurisdictions'   => 'আইসিটি ভৌগোলিক সীমানা',
-    'menu_company_admins'      => 'কোম্পানি অ্যাডমিন নিয়োগ',
-    'menu_office_setup'        => 'আমার কার্যালয় সেটআপ',
-    'menu_gov_directory'       => 'সরকারি ডিরেক্টরি',
     'office_type_label' => 'কার্যালয়ের ধরন',
     'office_type_default' => 'সাধারণ কার্যালয়',
     'office_type_hospital' => 'হাসপাতাল',
     'office_type_school' => 'বিদ্যালয়',
     'office_type_ict_office' => 'আইসিটি কার্যালয়',
 
+    // Navigation (tenant-scope MenuRegistry)
+    'nav_office_setup' => 'আমার কার্যালয় সেটআপ',
+    'nav_office_registry' => 'কার্যালয় তালিকা',
+    'nav_ministry_admins' => 'মন্ত্রণালয় প্রশাসক',
+    'nav_ict_jurisdictions' => 'আইসিটি অধিক্ষেত্র',
+    'nav_directory_import' => 'সরকারি ডিরেক্টরি ইমপোর্ট',
 ];

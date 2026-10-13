@@ -217,4 +217,10 @@ return [
         'PENDING'=>'জমা বাকি',
         'NOT_REQUIRED'=>'প্রয়োজন নেই',
     ],
+    // Navigation (tenant-scope MenuRegistry)
+    'nav_overview'=>'সারসংক্ষেপ',
+    'nav_register'=>'কমিটি রেজিস্টার',
+    'nav_transfers'=>'সদস্য বদলি',
+    'nav_types'=>'কমিটির ধরন',
+    'nav_purposes'=>'কমিটির উদ্দেশ্য',
 ];

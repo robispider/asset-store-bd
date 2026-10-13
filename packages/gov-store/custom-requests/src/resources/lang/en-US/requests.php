@@ -15,11 +15,12 @@ return [
     // Origin: CustomRequestServiceProvider.php
     // Navigation menu titles registered in MenuRegistry
     // =========================================================================
-    'serviceprovider_menu_browse_catalog' => 'Browse Catalog',
-    'serviceprovider_menu_track_my_requests' => 'Track My Requests',
-    'serviceprovider_menu_gov_approvals' => 'Gov Approvals',
-    'serviceprovider_menu_fulfillment_queue' => 'Fulfillment Queue',
-    'serviceprovider_menu_fulfillment_register' => 'Fulfillment Register',
+    'nav_request_items' => 'Request items',
+    'nav_my_requests' => 'My requests',
+    'nav_approvals' => 'Approvals',
+    'nav_to_fulfil' => 'To fulfil',
+    'nav_fulfilment_register' => 'Fulfilment register',
+    'nav_request_policies' => 'Request policies',
 
     // =========================================================================
     // Origin: BasketController.php

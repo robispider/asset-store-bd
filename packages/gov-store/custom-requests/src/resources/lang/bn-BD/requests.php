@@ -15,11 +15,12 @@ return [
     // Origin: CustomRequestServiceProvider.php
     // Navigation menu titles registered in MenuRegistry
     // =========================================================================
-    'serviceprovider_menu_browse_catalog' => 'ক্যাটালগ দেখুন',
-    'serviceprovider_menu_track_my_requests' => 'আমার রিকোয়েস্ট ট্র্যাক করুন',
-    'serviceprovider_menu_gov_approvals' => 'সরকারি অনুমোদন',
-    'serviceprovider_menu_fulfillment_queue' => 'ফুলফিলমেন্ট কিউ',
-    'serviceprovider_menu_fulfillment_register' => 'ফুলফিলমেন্ট রেজিস্টার',
+    'nav_request_items' => 'চাহিদাপত্র দিন',
+    'nav_my_requests' => 'আমার চাহিদাপত্র',
+    'nav_approvals' => 'অনুমোদন',
+    'nav_to_fulfil' => 'সরবরাহের অপেক্ষায়',
+    'nav_fulfilment_register' => 'সরবরাহ রেজিস্টার',
+    'nav_request_policies' => 'চাহিদাপত্র নীতিমালা',
 
     // =========================================================================
     // Origin: BasketController.php

@@ -476,6 +476,21 @@ try {
                         'draftItems' => $draftItems,
                     ]);
 
+                case 'request.queues':
+                    // Independent restatement of the queue rules behind the navbar inbox and sidebar badges.
+                    $uid = (int) ($args['userId'] ?? 0);
+                    $officeId = (int) ($args['officeId'] ?? 0);
+                    $office = fn () => DB::table('custom_service_requests')->where('office_id', $officeId)->whereNull('deleted_at');
+                    jsonResponse([
+                        'user_id' => $uid,
+                        'office_id' => $officeId,
+                        'pendingPrimary' => $office()->where('approval_status', 'pending_primary')->where('requested_by', '!=', $uid)->count(),
+                        'pendingFinal' => $office()->where('approval_status', 'pending_final')->where('requested_by', '!=', $uid)
+                            ->where(fn ($q) => $q->whereNull('primary_decided_by')->orWhere('primary_decided_by', '!=', $uid))->count(),
+                        'awaitingFulfilment' => $office()->whereIn('approval_status', ['approved', 'partially_approved'])
+                            ->whereNotIn('fulfillment_status', ['closed', 'issued'])->count(),
+                    ]);
+
                 case 'basket.line':
                     $uid = (int) ($args['userId'] ?? 0);
                     $qty = DB::table('draft_basket_items as i')

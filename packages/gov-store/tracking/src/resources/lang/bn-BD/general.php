@@ -385,7 +385,6 @@ return [
     // 1. Navigation & Workspace Headers
     'module_title' => 'কর্মসূচী ট্র্যাকিং',
     'active_initiatives' => 'সক্রিয় কর্মসূচীসমূহ',
-    'system_config' => 'সিস্টেম কনফিগারেশন',
     'launch_initiative' => 'নতুন কর্মসূচী শুরু করুন',
     'workspace_title' => 'কার্যক্ষেত্র: :title',
     'status' => 'অবস্থা',
@@ -428,4 +427,8 @@ return [
     'msg_no_tasks' => 'এই কর্মসূচীর অধীনে কোনো সক্রিয় ট্র্যাকিং কোড পাওয়া যায়নি।',
     'msg_no_deliveries' => 'কোনো মালামাল এখনও সরবরাহ বা গ্রহণ করা হয়নি।',
     'msg_general_mode' => 'সাধারণ বণ্টন মোড: এই কর্মসূচীর সক্রিয় কাজগুলো সাধারণ বা ক্যাটাগরিভিত্তিক লক্ষ্যমাত্রা হিসেবে কনফিগার করা হয়েছে। ভৌগোলিক সীমানার ভেতরের সকল কার্যালয় চাহিদামাফিক মালামাল গ্রহণ করতে পারবে।',
+
+    // Navigation (tenant-scope MenuRegistry)
+    'nav_initiatives' => 'কর্মসূচিসমূহ',
+    'nav_tracking_settings' => 'ট্র্যাকিং সেটিংস',
 ];

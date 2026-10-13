@@ -295,4 +295,13 @@ return [
 
     // ImportHistory model
     'history_model_seconds_suffix' => 'সেকেন্ড',
+
+    // Navigation (tenant-scope MenuRegistry)
+    'nav_search' => 'অনুসন্ধান',
+    'nav_collections' => 'পণ্য সংকলন',
+    'nav_browse_category' => 'শ্রেণি অনুযায়ী দেখুন',
+    'nav_office_catalogue' => 'কার্যালয়ের ক্যাটালগ',
+    'nav_collection_library' => 'সংকলন লাইব্রেরি',
+    'nav_governance' => 'পরিচালন নীতি',
+    'nav_import' => 'ইমপোর্ট',
 ];

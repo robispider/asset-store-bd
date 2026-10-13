@@ -11,6 +11,7 @@ use GovStore\OfficeMembership\Models\RoleHandshake;
 use GovStore\OfficeMembership\Services\ClearanceEngine;
 use GovStore\OfficeMembership\Services\MembershipNotices;
 use GovStore\OfficeMembership\Services\MembershipWorkflow;
+use GovStore\OfficeMembership\Services\OfficePicker;
 use GovStore\Organization\Models\LocationProfile;
 use GovStore\TenantScope\Scopes\UserScope;
 use Illuminate\Http\Request;
@@ -128,6 +129,7 @@ class MembershipController extends Controller
             $locId = Location::withoutGlobalScopes()->findOrFail($request->input('location_id'))->id;
             // Mock a temporary membership in session for the admin
             session()->put('gov_working_membership_id', 'ADMIN_MOCK_'.$locId);
+            app(OfficePicker::class)->remember((int) $user->id, (int) $locId);
 
             return redirect()->back()->with('success', __('office_membership::member.membership_context_switched'));
         }
@@ -141,8 +143,20 @@ class MembershipController extends Controller
             ->firstOrFail();
 
         session()->put('gov_working_membership_id', $membership->id);
+        app(OfficePicker::class)->remember((int) $user->id, (int) $membership->location_id);
 
         return redirect()->back()->with('success', str_replace(':office', $membership->location->name ?? __('office_membership::member.staff_claim_hint'), __('office_membership::member.membership_context_switched_to')));
+    }
+
+    /**
+     * Office search for the navbar office chip (JSON). Members search their own active
+     * memberships; super users search every office with a profile. Paged, never the full list.
+     */
+    public function offices(Request $request, OfficePicker $picker)
+    {
+        $request->validate(['q' => 'nullable|string|max:100', 'page' => 'nullable|integer|min:1|max:1000']);
+
+        return response()->json($picker->search(auth()->user(), (string) $request->input('q', ''), (int) $request->input('page', 1)));
     }
 
     /**

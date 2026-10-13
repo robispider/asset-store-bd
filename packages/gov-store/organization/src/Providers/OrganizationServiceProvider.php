@@ -40,77 +40,23 @@ class OrganizationServiceProvider extends ServiceProvider
         $this->registerNavigationMenus();
     }
 
-   protected function registerNavigationMenus(): void
+    protected function registerNavigationMenus(): void
     {
         $registry = $this->app->make(MenuRegistry::class);
 
-        // 1. Root Folder: Office Provisioning
-        $registry->register([
-            'id' => 'gov-org',
-            'title' => __('organization_labels::orglabel.menu_provisioning_root'),
-            'icon' => 'fas fa-sitemap fa-fw text-aqua',
-            // Added company_admin so Ministry Administrators can see the provisioning folder
-            'permission' => ['office_admin', 'ict_officer', 'company_admin'],
-            'order' => 50,
-        ]);
-
-        // 2. Office Registry
-        $registry->register([
-            'id' => 'gov-org-registry',
-            'parent' => 'gov-org',
-            'title' => __('organization_labels::orglabel.menu_office_registry'),
-            'icon' => 'fas fa-building fa-fw',
-            'route' => 'gov.org.provisioning.index',
-            // Added company_admin so Ministry Administrators can oversee all offices in their bounds
-            'permission' => ['ict_officer', 'company_admin'],
-            'order' => 10,
-        ]);
-
-        // 3. ICT Jurisdictions (Superadmin Only)
-        $registry->register([
-            'id' => 'gov-org-jurisdictions',
-            'parent' => 'gov-org',
-            'title' => __('organization_labels::orglabel.menu_ict_jurisdictions'),
-            'icon' => 'fas fa-shield-alt fa-fw',
-            'route' => 'gov.org.jurisdictions.index',
-            'permission' => 'admin',
-            'order' => 20,
-        ]);
-
-        // 4. Local Office Setup Checklist
-        $registry->register([
-            'id' => 'gov-org-setup',
-            'parent' => 'gov-org',
-            'title' => __('organization_labels::orglabel.menu_office_setup'),
-            'icon' => 'fas fa-hotel fa-fw',
-            'route' => 'gov.org.config.index',
-            // Keep this scoped to office_admin only (Company admins oversee, but local admins configure their own staff)
-            'permission' => 'office_admin',
-            'order' => 30,
-            'strict' => true,
-        ]);
-
-        // 5. Government Directory
-        $registry->register([
-            'id' => 'gov-org-directory',
-            'parent' => 'gov-org',
-            'title' => __('organization_labels::orglabel.menu_gov_directory'),
-            'icon' => 'fas fa-cloud-download-alt fa-fw text-green',
-            'route' => 'gov.org.directory.index',
-            'permission' => 'admin',
-            'order' => 40,
-        ]);
-
-        // 6. Company Admins (Superadmin Only)
-        $registry->register([
-            'id' => 'gov-org-company-admins',
-            'parent' => 'gov-org',
-            'title' => __('organization_labels::orglabel.menu_company_admins'),
-            'icon' => 'fas fa-university fa-fw text-purple',
-            'route' => 'gov.org.company_admins.index',
-            'permission' => 'admin',
-            'order' => 25, 
-        ]);
+        // Offices & staff. Visibility comes from each route's gov.can ability (menu = gate).
+        // My office setup stays strict: local admins configure their own office, super admins don't.
+        $registry->register(['id' => 'gov-org-setup', 'group' => 'gov-offices', 'order' => 10, 'strict' => true,
+            'label' => 'organization_labels::orglabel.nav_office_setup', 'icon' => 'fas fa-hotel', 'route' => 'gov.org.config.index']);
+        foreach ([
+            ['gov-org-registry', 30, 'nav_office_registry', 'fas fa-building', 'gov.org.provisioning.index', ['gov.org.provisioning.*', 'gov.org.hub.*']],
+            ['gov-org-company-admins', 40, 'nav_ministry_admins', 'fas fa-university', 'gov.org.company_admins.index', []],
+            ['gov-org-jurisdictions', 50, 'nav_ict_jurisdictions', 'fas fa-shield-alt', 'gov.org.jurisdictions.index', []],
+            ['gov-org-directory', 60, 'nav_directory_import', 'fas fa-cloud-download-alt', 'gov.org.directory.index', []],
+        ] as [$id, $order, $label, $icon, $route, $match]) {
+            $registry->register(['id' => $id, 'group' => 'gov-offices', 'order' => $order,
+                'label' => 'organization_labels::orglabel.'.$label, 'icon' => $icon, 'route' => $route, 'match' => $match]);
+        }
     }
 
     public function register()

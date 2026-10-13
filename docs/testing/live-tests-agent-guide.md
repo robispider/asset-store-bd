@@ -127,7 +127,7 @@ Use `target: "requests.basketPurpose"`. Locator kinds: `testId`, `role`+`name`, 
 ## 8. Observations, independence and mutation rules
 
 - **Expected values must be independent of the page.** Compare the UI with a database `observe`, a declared input (`${data.qty}`) or a business rule — never with a value captured from the same page you are testing.
-- Available observations: `inventory.consumable`, `office.context`, `actor.assignments`, `request.progress`, `request.state`, `basket.line`. Register new ones in `contracts.json` **and** implement them (read-only, parameterized) in `live-test-adapter.php`.
+- Available observations: `inventory.consumable`, `office.context`, `actor.assignments`, `request.progress`, `request.queues` (inbox / queue badge counts), `request.state`, `basket.line`. Register new ones in `contracts.json` **and** implement them (read-only, parameterized) in `live-test-adapter.php`.
 - Seeded observation journeys must not create anything. Write journeys:
   - need `"capability": "write-fixtures"` and a `cleanup` policy;
   - capture the created identity from the UI (e.g. request number via the generated purpose) and `ledger` it;
@@ -137,6 +137,7 @@ Use `target: "requests.basketPurpose"`. Locator kinds: `testId`, `role`+`name`, 
   - add a precondition (e.g. `basket.line` quantity 0) so a dirty fixture fails clearly instead of corrupting the test.
 - Shadow vs enforce: in shadow mode some screens load for everyone but show no actionable data. State both outcomes with `expectStatusByMode` / `modes`, as in `requests.authorization-boundaries`.
 - Waiting: use `waitObserve`, `waitForResponse` and assertions — not fixed sleeps.
+- A `click` on a link does not wait for the next page. Follow it with a `wait` (`state: "attached"`) on something only the destination renders — the menu examples wait for the current page's `.active` sidebar item — before any `count` assertion, or the count reads the old page.
 - Never touch real users, passwords, permissions or settings. Do not call population, wipe or account-update commands.
 
 ## 9. When code changes are needed
@@ -157,6 +158,7 @@ Every code extension needs a contract test against the miniature app (`npm run t
 - Authorization/negative, shadow vs enforce: `requests.authorization-boundaries`.
 - Validation without creating a request, with cleanup: `requests.basket-validation`.
 - Multi-actor mutation with captured identity: `requests.submit-approve`.
+- Top bar and sidebar per role, inbox count vs database: `navigation.*` (suite `navigation`). Run it after any change to navigation, `NavigationHook`, theming or `layouts/default`.
 
 ## 11. Suite template
 

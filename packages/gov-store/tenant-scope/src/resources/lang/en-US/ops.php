@@ -100,12 +100,6 @@ return [
     // ==========================================
     // SIDEBAR / MENU LABELS
     // ==========================================
-    'sidebar_tenant_scoping'      => 'Tenant Scoping',
-    'menu_gov_store'              => 'Government Store',
-    'menu_multitenant_admin'      => 'Multitenant Administration',
-    'menu_scoping_dashboard'      => 'Scoping Dashboard',
-    'menu_policy_configurator'    => 'Policy Configurator',
-    'menu_boundary_explorer'      => 'Boundary Explorer',
 
     // ==========================================
     // SERVICE EXCEPTION MESSAGES (user-facing)

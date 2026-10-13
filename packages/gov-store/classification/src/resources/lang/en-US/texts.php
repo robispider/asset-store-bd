@@ -295,4 +295,13 @@ return [
 
     // ImportHistory model
     'history_model_seconds_suffix' => 's',
+
+    // Navigation (tenant-scope MenuRegistry)
+    'nav_search' => 'Search',
+    'nav_collections' => 'Collections',
+    'nav_browse_category' => 'Browse by category',
+    'nav_office_catalogue' => 'Office catalogue',
+    'nav_collection_library' => 'Collection library',
+    'nav_governance' => 'Governance',
+    'nav_import' => 'Import',
 ];

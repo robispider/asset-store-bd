@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "navigation",
+  "title": "Top bar and sidebar navigation",
+  "description": "Read-only checks that the gov top bar (office chip, ＋ New, inbox, basket, user menu) and sidebar (work zone groups, queues, active page) render for each role, that Snipe-IT's Create New, icon shortcuts and Requested assets stay removed, and that menu links reach their pages. Inbox counts are compared with the database. Run after any change to navigation, NavigationHook, theming or layouts/default.",
+  "environment": { "target": "http://snipeit.local", "allowlist": ["http://snipeit.local"] },
+  "journeys": [
+    "navigation.employee-topbar-sidebar",
+    "navigation.approver-inbox-queues",
+    "navigation.storekeeper-new-menu-store"
+  ],
+  "defaults": { "language": "en-US", "timeoutMs": 90000 }
+}

@@ -485,7 +485,7 @@ class OfficeMembershipWorkflowTest extends TestCase
         $en = require base_path('packages/gov-store/office-membership/src/resources/lang/en-US/member.php');
         $bn = require base_path('packages/gov-store/office-membership/src/resources/lang/bn-BD/member.php');
         $this->assertSame(array_keys($en), array_keys($bn));
-        foreach (['user.index', 'admin.staff', 'admin.override_console', 'hooks.membership-menu', 'hooks.notices'] as $view) {
+        foreach (['user.index', 'admin.staff', 'admin.override_console', 'hooks.office-chip', 'hooks.notices'] as $view) {
             $source = app('view')->getFinder()->find('govmem::'.$view);
             $compiled = app('blade.compiler')->compileString(file_get_contents($source));
             $temp = tempnam(sys_get_temp_dir(), 'membership-blade-');

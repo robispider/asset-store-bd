@@ -47,11 +47,11 @@ logs a warning and falls back to stock styling. Override with `GS_THEME_DEV_ASSE
 
 ## Pages and access
 
-| Page | Route | Who |
-|---|---|---|
-| Appearance | `/gov/appearance` | every user (theme unless enforced; Light / Dark / System always) |
-| Theme defaults | `/gov/appearance/assignments` | office admin → working office, company admin → own company, super admin → organisation and any scope |
-| Theme Lab | `/gov/theme-lab`, `/gov/theme-lab/{theme}` | super admin (`theming.lab.view`, no permission path) |
+| Page | Route | Menu | Who |
+|---|---|---|---|
+| Appearance | `/gov/appearance` | user menu | every user (theme unless enforced; Light / Dark / System always) |
+| Theme defaults | `/gov/appearance/assignments` | Administration → Rules & settings | office admin → working office, company admin → own company, super admin → organisation and any scope |
+| Theme Lab | `/gov/theme-lab`, `/gov/theme-lab/{theme}` | Administration → System tools | super admin (`theming.lab.view`, no permission path) |
 
 Abilities `theming.*` are merged into tenant-scope's `govstore-abilities`; `theming.assign.office` /
 `theming.assign.company` are also granted through the `office_operations` / `company_operations`

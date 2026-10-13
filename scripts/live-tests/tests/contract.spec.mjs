@@ -127,7 +127,10 @@ async function runContractTests() {
         <!DOCTYPE html>
         <html>
           <body>
-            <ul><li id="user-menu" class="user-menu"><a href="#">Profile</a></li></ul>
+            <header class="main-header"><div class="navbar-custom-menu"><ul>
+              <li class="dropdown notifications-menu"><a href="#" class="dropdown-toggle">Inbox</a></li>
+              <li id="user-menu" class="dropdown user user-menu"><a href="#" class="dropdown-toggle">Profile</a></li>
+            </ul></div></header>
             <h1>Dashboard</h1>
           </body>
         </html>

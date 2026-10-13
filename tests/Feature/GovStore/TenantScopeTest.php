@@ -38,6 +38,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\TestCase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -810,19 +811,25 @@ class TenantScopeTest extends TestCase
         $registry->register(['id' => 'access', 'parent' => 'root', 'title' => 'My access', 'route' => 'gov.access.index']);
         $registry->register(['id' => 'blocked', 'parent' => 'root', 'title' => 'National', 'permission' => 'catalog.master.manage']);
         app()->instance(MenuRegistry::class, $registry);
-        $html = view('govscope::hooks.sidebar')->render();
+        $html = view('govscope::nav.zone', ['zone' => 'work'])->render();
         $this->assertStringContainsString('Office &lt;safe&gt;', $html);
         $this->assertStringContainsString('menu-access', $html);
         $this->assertStringNotContainsString('menu-blocked', $html);
         $this->assertStringNotContainsString('<script', $html);
-        $layout = file_get_contents(resource_path('views/layouts/default.blade.php'));
-        $this->assertStringContainsString("@includeIf('govscope::hooks.sidebar')", $layout);
+        // Snipe-IT's layout carries no GovStore edits; NavigationHook attaches the zones when Blade compiles it.
+        $layoutPath = resource_path('views/layouts/default.blade.php');
+        $this->assertDoesNotMatchRegularExpression('/gov(scope|store|mem)::|gov\.requests\./', file_get_contents($layoutPath));
         $this->assertNotContains(InjectTenantScopeUi::class, app('router')->getMiddlewareGroups()['web']);
-        $files = array_merge(glob(base_path('packages/gov-store/tenant-scope/src/resources/views/hooks/*.blade.php')), [resource_path('views/layouts/default.blade.php')]);
+        $files = array_merge(glob(base_path('packages/gov-store/tenant-scope/src/resources/views/{hooks,nav}/*.blade.php'), GLOB_BRACE), [$layoutPath]);
         foreach ($files as $file) {
             $temporary = tempnam(sys_get_temp_dir(), 'tenant_blade_');
             try {
-                file_put_contents($temporary, app('blade.compiler')->compileString(file_get_contents($file)));
+                Blade::setPath($file);
+                $compiled = app('blade.compiler')->compileString(file_get_contents($file));
+                if ($file === $layoutPath) {
+                    $this->assertSame(9, substr_count($compiled, 'govscope::nav.zone'));
+                }
+                file_put_contents($temporary, $compiled);
                 $process = proc_open([PHP_BINARY, '-l', $temporary], [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
                 $output = stream_get_contents($pipes[1]).stream_get_contents($pipes[2]);
                 fclose($pipes[1]);
@@ -830,6 +837,82 @@ class TenantScopeTest extends TestCase
                 $this->assertSame(0, proc_close($process), $file.': '.$output);
             } finally {
                 unlink($temporary);
+            }
+        }
+    }
+
+    public function test_navigation_groups_prune_empty_collapse_single_child_and_sort_deterministically(): void
+    {
+        $this->actor();
+        config(['govstore-navigation.groups' => [
+            'g-empty' => ['zone' => 'work', 'order' => 5, 'label' => 'Empty'],
+            'g-one' => ['zone' => 'work', 'order' => 20, 'label' => 'One'],
+            'g-many' => ['zone' => 'admin', 'order' => 10, 'label' => 'Many'],
+        ]]);
+        $registry = new MenuRegistry;
+        $registry->register(['id' => 'hidden', 'group' => 'g-empty', 'label' => 'Hidden', 'permission' => 'catalog.master.manage']);
+        $registry->register(['id' => 'only', 'group' => 'g-one', 'label' => 'Only', 'order' => 99]);
+        $registry->register(['id' => 'b', 'group' => 'g-many', 'label' => 'B', 'order' => 10]);
+        $registry->register(['id' => 'a', 'group' => 'g-many', 'label' => 'A', 'order' => 10]);
+        $registry->register(['id' => 'off', 'group' => 'g-many', 'label' => 'Off', 'visible' => fn () => false]);
+        $registry->register(['id' => 'mine', 'zone' => 'user', 'label' => 'Mine', 'icon' => 'fas fa-key text-red']);
+
+        // An empty group disappears; a one-leaf group renders as that leaf in the group's place.
+        $work = $registry->tree('work');
+        $this->assertSame(['only'], array_map(fn ($item) => $item->id, $work));
+        $this->assertSame(20, $work[0]->order);
+        [$many] = $registry->tree('admin');
+        $this->assertSame('g-many', $many->id);
+        $this->assertSame(['a', 'b'], array_map(fn ($item) => $item->id, $many->children));
+        // The theme owns colour: AdminLTE colour utilities are dropped, icons are fixed-width.
+        $this->assertSame('fas fa-key fa-fw', $registry->tree('user')[0]->icon);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $registry->register(['id' => 'stray', 'group' => 'missing', 'label' => 'Stray']);
+    }
+
+    public function test_navigation_labels_follow_the_request_locale_badges_count_and_zones_share_one_snapshot(): void
+    {
+        $this->actor();
+        $registry = new MenuRegistry;
+        $registry->register(['id' => 'mine', 'zone' => 'user', 'order' => 10, 'label' => 'tenantops::nav.workspace']);
+        $registry->register(['id' => 'broken', 'zone' => 'user', 'order' => 20, 'label' => 'tenantops::nav.system', 'badge' => fn () => throw new \RuntimeException('down')]);
+        $registry->register(['id' => 'queue', 'group' => 'gov-queues', 'label' => 'tenantops::nav.queues', 'badge' => fn () => 3]);
+
+        app()->setLocale('bn-BD');
+        $this->assertSame('আমার কাজ', $registry->tree('user')[0]->label());
+        app()->setLocale('en-US');
+        $this->assertSame('My workspace', $registry->tree('user')[0]->label());
+        $this->assertSame(3, $registry->tree('work')[0]->badgeCount());
+        $this->assertNull($registry->tree('user')[1]->badgeCount(), 'a failing counter must never break the page');
+
+        DB::enableQueryLog();
+        DB::flushQueryLog();
+        $registry->zone('work');
+        $first = count(DB::getQueryLog());
+        $registry->zone('user');
+        $registry->zone('admin');
+        $this->assertSame($first, count(DB::getQueryLog()));
+    }
+
+    public function test_real_navigation_renders_entirely_in_the_users_language(): void
+    {
+        $this->actor(true);
+        foreach (['en-US' => false, 'bn-BD' => true] as $locale => $bengali) {
+            app()->setLocale($locale);
+            $labels = [];
+            foreach (app(MenuRegistry::class)->tree() as $item) {
+                if ($item->view) {
+                    continue; // page slots render package views, not labels
+                }
+                $labels[] = $item->label();
+                foreach ($item->children as $child) {
+                    $labels[] = $child->label();
+                }
+            }
+            $this->assertGreaterThan(30, count($labels));
+            foreach ($labels as $label) {
+                $this->assertSame($bengali, (bool) preg_match('/\p{Bengali}/u', $label), "{$locale}: {$label}");
             }
         }
     }
