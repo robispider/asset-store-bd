@@ -14,7 +14,6 @@ use GovStore\Theming\Themes\ThemeRepository;
 use GovStore\Theming\Themes\ThemeResolver;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
-use Throwable;
 
 class ThemingServiceProvider extends ServiceProvider
 {
@@ -89,39 +88,35 @@ class ThemingServiceProvider extends ServiceProvider
             return;
         }
         $registry = $this->app->make(MenuRegistry::class);
-        try {
-            $registry->register([
-                'id' => 'gs-theme-appearance',
-                'parent' => 'gov-store',
-                'title' => __('gs-theme::appearance.menu_appearance'),
-                'icon' => 'fas fa-palette',
-                'route' => 'gs-theme.appearance',
-                'permission' => 'theming.appearance.self',
-                'order' => 96,
-            ]);
-            $registry->register([
-                'id' => 'gs-theme-assignments',
-                'parent' => 'gov-store',
-                'title' => __('gs-theme::appearance.menu_assignments'),
-                'icon' => 'fas fa-swatchbook',
-                'route' => 'gs-theme.assignments',
-                'permission' => ['theming.assign.organization', 'theming.assign.company', 'theming.assign.office', 'office_admin', 'company_admin'],
-                'order' => 97,
-            ]);
-            if (config('gs-theme.lab_enabled')) {
-                $registry->register([
-                    'id' => 'gs-theme-lab',
-                    'parent' => 'gov-tenantscope-root',
-                    'title' => __('gs-theme::appearance.menu_lab'),
-                    'icon' => 'fas fa-flask',
-                    'route' => 'gs-theme.lab',
-                    'permission' => 'theming.lab.view',
-                    'strict' => false,
-                    'order' => 90,
-                ]);
-            }
-        } catch (Throwable) {
-            // Already registered (e.g. provider booted twice in tests).
-        }
+        // Personal setting: top-right user menu.
+        $registry->register([
+            'id' => 'gs-theme-appearance',
+            'zone' => 'user',
+            'label' => 'gs-theme::appearance.menu_appearance',
+            'icon' => 'fas fa-palette',
+            'route' => 'gs-theme.appearance',
+            'permission' => 'theming.appearance.self',
+            'order' => 20,
+        ]);
+        $registry->register([
+            'id' => 'gs-theme-assignments',
+            'group' => 'gov-rules',
+            'label' => 'gs-theme::appearance.menu_assignments',
+            'icon' => 'fas fa-swatchbook',
+            'route' => 'gs-theme.assignments',
+            'permission' => ['theming.assign.organization', 'theming.assign.company', 'theming.assign.office', 'office_admin', 'company_admin'],
+            'order' => 60,
+        ]);
+        $registry->register([
+            'id' => 'gs-theme-lab',
+            'group' => 'gov-system',
+            'label' => 'gs-theme::appearance.menu_lab',
+            'icon' => 'fas fa-flask',
+            'route' => 'gs-theme.lab',
+            'match' => ['gs-theme.lab*'],
+            'permission' => 'theming.lab.view',
+            'visible' => fn () => (bool) config('gs-theme.lab_enabled'),
+            'order' => 20,
+        ]);
     }
 }

@@ -226,6 +226,7 @@ return [
     'menu_working_as' => 'Working As:',
     'menu_global_overview' => 'Global Overview (All Offices)',
     'menu_choose_context' => 'CHOOSE WORKING CONTEXT',
+    'menu_filter_offices' => 'Type to find an office',
 
     // =========================================================================
     // Origin: MembershipController.php

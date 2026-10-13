@@ -14,4 +14,7 @@ return [
     'notices' => 'Onboarding updates', 'no_notices' => 'No onboarding updates yet.', 'no_record' => 'There is no office onboarding record for your account.',
     'event_queued' => 'Account queued for office onboarding.', 'event_assigned' => 'First home office assigned.', 'event_cancel' => 'Onboarding cancelled.', 'event_reject' => 'Onboarding request rejected.', 'event_reassign' => 'Managing authority changed.', 'event_reopen' => 'Onboarding reopened for review.',
     'self_help' => 'Contact your managing authority about pending or cancelled onboarding. Office assignment does not activate a disabled account.',
+
+    // Navigation (tenant-scope MenuRegistry)
+    'nav_onboarding_requests' => 'Onboarding requests',
 ];

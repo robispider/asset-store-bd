@@ -14,6 +14,7 @@ use App\Models\Location;
 use App\Models\Manufacturer;
 use App\Models\Supplier;
 use App\Models\User;
+use GovStore\TenantScope\Compiler\NavigationHook;
 use GovStore\TenantScope\Contexts\TenantContext;
 use GovStore\TenantScope\Http\Middleware\InitializeTenantContext;
 use GovStore\TenantScope\Http\Middleware\RequireGovAbility;
@@ -34,6 +35,7 @@ class TenantScopeServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/abilities.php', 'govstore-abilities');
         $this->mergeConfigFrom(__DIR__.'/../config/execution.php', 'govstore-execution');
+        $this->mergeConfigFrom(__DIR__.'/../config/navigation.php', 'govstore-navigation');
         $this->app->singleton(\GovStore\TenantScope\Services\SchemaKnowledge::class);
         $this->app->singleton(\GovStore\TenantScope\Services\TenantWorkerLifecycle::class);
         // Register the Central Navigation Registry as a shared singleton across all packages
@@ -77,6 +79,8 @@ class TenantScopeServiceProvider extends ServiceProvider
             Gate::define($ability, fn ($user) => app(GovAccess::class)->decide($user, $ability)->toGateResponse());
         }
         Blade::component('govscope::components.action', 'gov-action');
+        // Attaches the navigation zones to Snipe-IT's layout at compile time (no core edits).
+        Blade::precompiler(new NavigationHook);
         $this->loadRoutesFrom(__DIR__.'/../routes/access.php');
         // 0. Load Translations
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'tenantops');
@@ -151,66 +155,37 @@ class TenantScopeServiceProvider extends ServiceProvider
     }
 
     /**
-     * Seeds the Central Menu Registry with the base Government Store structure,
-     * and the flat, two-level Multitenant Administration dashboard items.
+     * Tenant-scope's own leaves and page slots. Groups are declared in config/navigation.php.
+     * Labels are translation keys, resolved at render time in the user's language.
      */
     protected function registerBaseMenuStructure(): void
     {
         $registry = $this->app->make(MenuRegistry::class);
-        foreach (['index' => 'my_access', 'requests.index' => 'requests', 'matrix' => 'matrix', 'shadow' => 'shadow', 'audit' => 'audit'] as $route => $label) {
-            $registry->register(['id' => 'gov-access-'.$label, 'parent' => 'gov-store', 'title' => __('tenantops::access.'.$label),
-                'route' => 'gov.access.'.$route, 'order' => 95, 'permission' => 'access.view']);
+
+        // Personal: top-right user menu.
+        $registry->register(['id' => 'gov-access-my_access', 'zone' => 'user', 'order' => 10,
+            'label' => 'tenantops::access.my_access', 'icon' => 'fas fa-key', 'route' => 'gov.access.index']);
+
+        // Work queue.
+        $registry->register(['id' => 'gov-access-requests', 'group' => 'gov-queues', 'order' => 40,
+            'label' => 'tenantops::access.requests', 'icon' => 'fas fa-user-clock', 'route' => 'gov.access.requests.index',
+            'match' => ['gov.access.requests.*', 'gov.access.national-review']]);
+
+        // Access & security.
+        foreach ([
+            ['gov-access-matrix', 10, 'tenantops::access.matrix', 'fas fa-table', 'gov.access.matrix'],
+            ['gov-access-audit', 20, 'tenantops::access.audit', 'fas fa-history', 'gov.access.audit'],
+            ['gov-access-shadow', 30, 'tenantops::nav.enforcement_preview', 'fas fa-eye', 'gov.access.shadow'],
+            ['gov-tenantscope-dashboard', 50, 'tenantops::nav.boundaries', 'fas fa-tachometer-alt', 'gov.scope.dashboard'],
+            ['gov-tenantscope-config', 60, 'tenantops::nav.boundary_policy', 'fas fa-sliders-h', 'gov.scope.config'],
+            ['gov-tenantscope-mappings', 70, 'tenantops::nav.boundary_explorer', 'fas fa-search-plus', 'gov.scope.mappings'],
+        ] as [$id, $order, $label, $icon, $route]) {
+            $registry->register(['id' => $id, 'group' => 'gov-access-security', 'order' => $order,
+                'label' => $label, 'icon' => $icon, 'route' => $route]);
         }
 
-        // 1. ROOT FOLDER: Government Store (For standard operational modules)
-        $registry->register([
-            'id' => 'gov-store',
-            'title' => __('tenantops::ops.menu_gov_store'),
-            'icon' => 'fas fa-shopping-cart text-aqua',
-            'order' => 10,
-        ]);
-
-        // 2. ROOT FOLDER: Multitenant Administration (Gated strictly to Superadmins)
-        $registry->register([
-            'id' => 'gov-tenantscope-root',
-            'title' => __('tenantops::ops.menu_multitenant_admin'),
-            'icon' => 'fas fa-user-shield text-red',
-            'permission' => 'tenant.scope.view',
-            'order' => 60,
-            'active_patterns' => ['gov-store/admin/scope*'],
-        ]);
-
-        // 3. Child 1: Scoping Dashboard (Nested directly under Multitenant Administration)
-        $registry->register([
-            'id' => 'gov-tenantscope-dashboard',
-            'parent' => 'gov-tenantscope-root',
-            'title' => __('tenantops::ops.menu_scoping_dashboard'),
-            'icon' => 'fas fa-tachometer-alt text-aqua',
-            'route' => 'gov.scope.dashboard',
-            'permission' => 'tenant.scope.view',
-            'order' => 10,
-        ]);
-
-        // 4. Child 2: Policy Configurator (Nested directly under Multitenant Administration)
-        $registry->register([
-            'id' => 'gov-tenantscope-config',
-            'parent' => 'gov-tenantscope-root',
-            'title' => __('tenantops::ops.menu_policy_configurator'),
-            'icon' => 'fas fa-sliders-h text-orange',
-            'route' => 'gov.scope.config',
-            'permission' => 'tenant.scope.view',
-            'order' => 20,
-        ]);
-
-        // 5. Child 3: Boundary Explorer Grid (Nested directly under Multitenant Administration)
-        $registry->register([
-            'id' => 'gov-tenantscope-mappings',
-            'parent' => 'gov-tenantscope-root',
-            'title' => __('tenantops::ops.menu_boundary_explorer'),
-            'icon' => 'fas fa-search-plus text-green',
-            'route' => 'gov.scope.mappings',
-            'permission' => 'tenant.scope.view',
-            'order' => 30,
-        ]);
+        // Page slots.
+        $registry->register(['id' => 'gov-access-rollout', 'zone' => 'content', 'view' => 'govscope::hooks.rollout']);
+        $registry->register(['id' => 'gov-access-inline-denials', 'zone' => 'scripts', 'view' => 'govscope::hooks.unified-menu']);
     }
 }

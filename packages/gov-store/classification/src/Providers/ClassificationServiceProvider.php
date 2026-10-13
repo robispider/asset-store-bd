@@ -58,102 +58,34 @@ class ClassificationServiceProvider extends ServiceProvider
             __DIR__.'/../resources/views' => resource_path('views/vendor/gov-classification'),
         ], 'gov-classification-views');
 
-        // Register in GovStore Navigation Menu Registry (Strictly 2-Level Compatible)
+        // Register leaves in the GovStore navigation groups (config/navigation.php in tenant-scope).
         $this->app->booted(function () {
             $registry = $this->app->make(MenuRegistry::class);
 
-            // ==========================================
-            // LEVEL 1: MASTER ROOT FOLDER (No Route)
-            // ==========================================
-            $registry->register([
-                'id' => 'gov-catalog-root',
-                'title' => 'Global Catalog',
-                'icon' => 'fas fa-globe',
-                'permission' => 'catalog.view',
-                'order' => 40,
-                'active_patterns' => ['admin/catalog*', 'gov-store/operations/catalog*'],
-            ]);
+            // Catalogue: discovery for everyone with catalogue access.
+            foreach ([
+                ['gov-catalog-search', 10, 'nav_search', 'fas fa-search', 'gov.catalog.search', ['gov.catalog.search*']],
+                ['gov-catalog-collections', 20, 'nav_collections', 'fas fa-layer-group', 'gov.catalog.discover.collections', ['gov.catalog.discover.collections*']],
+                ['gov-catalog-explorer', 30, 'nav_browse_category', 'fas fa-folder-tree', 'gov.catalog.discover.explorer', []],
+            ] as [$id, $order, $label, $icon, $route, $match]) {
+                $registry->register(['id' => $id, 'group' => 'gov-catalogue', 'order' => $order,
+                    'label' => 'classification::texts.'.$label, 'icon' => $icon, 'route' => $route, 'match' => $match]);
+            }
 
-            // ==========================================
-            // LEVEL 2: DIRECT LEAF LINKS (Under Master Root)
-            // ==========================================
+            // Store: the office's adopted catalogue.
+            $registry->register(['id' => 'storeops-my-catalog', 'group' => 'gov-store-ops', 'order' => 40,
+                'label' => 'classification::texts.nav_office_catalogue', 'icon' => 'fas fa-book',
+                'route' => 'gov.catalog.my_catalog.index', 'match' => ['gov.catalog.my_catalog.*', 'gov.catalog.adopt.*']]);
 
-            // 1. Discover: Collections
-            $registry->register([
-                'id' => 'gov-catalog-collections',
-                'parent' => 'gov-catalog-root',
-                'title' => 'Discover Collections',
-                'icon' => 'fas fa-layer-group',
-                'route' => 'gov.catalog.discover.collections',
-                'permission' => ['storekeeper', 'office_admin', 'admin', 'ict_officer'],
-                'order' => 10,
-            ]);
-
-            // 2. Discover: Explorer
-            $registry->register([
-                'id' => 'gov-catalog-explorer',
-                'parent' => 'gov-catalog-root',
-                'title' => 'Catalog Explorer',
-                'icon' => 'fas fa-folder-tree',
-                'route' => 'gov.catalog.discover.explorer',
-                'permission' => ['storekeeper', 'office_admin', 'admin', 'ict_officer'],
-                'order' => 20,
-            ]);
-
-            // 3. Discover: Universal Search
-            $registry->register([
-                'id' => 'gov-catalog-search',
-                'parent' => 'gov-catalog-root',
-                'title' => 'Universal Search',
-                'icon' => 'fas fa-search',
-                'route' => 'gov.catalog.search',
-                'permission' => ['storekeeper', 'office_admin', 'admin', 'ict_officer'],
-                'order' => 30,
-            ]);
-
-            // 4. Operations: My Organization Catalog
-            $registry->register([
-                'id' => 'storeops-my-catalog',
-                'parent' => 'gov-catalog-root',
-                'title' => 'My Organization Catalog',
-                'icon' => 'fas fa-book',
-                'route' => 'gov.catalog.my_catalog.index',
-                'permission' => ['storekeeper', 'office_admin', 'admin'],
-                'order' => 40,
-            ]);
-
-            // 5. Admin: Collection Library (Gated)
-            $registry->register([
-                'id' => 'gov-catalog-builder',
-                'parent' => 'gov-catalog-root',
-                'title' => 'Collection Library',
-                'icon' => 'fas fa-boxes',
-                'route' => 'gov.catalog.collections.index',
-                'permission' => 'admin',
-                'order' => 50,
-            ]);
-
-            // 6. Admin: Governance Registry (Gated)
-            $registry->register([
-                'id' => 'gov-catalog-governance',
-                'parent' => 'gov-catalog-root',
-                'title' => 'Governance Registry',
-                'icon' => 'fas fa-landmark',
-                'route' => 'gov.catalog.governance.index',
-                'permission' => 'admin',
-                'order' => 60,
-            ]);
-
-            // 7. Admin: Catalog Import (Gated)
-            $registry->register([
-                'id' => 'gov-catalog-import',
-                'parent' => 'gov-catalog-root',
-                'title' => 'Catalog Import',
-                'icon' => 'fas fa-upload',
-                'route' => 'gov.catalog.import',
-                'permission' => 'admin',
-                'order' => 70,
-            ]);
+            // Catalogue master data: national administration.
+            foreach ([
+                ['gov-catalog-builder', 10, 'nav_collection_library', 'fas fa-boxes', 'gov.catalog.collections.index', ['gov.catalog.collections.*']],
+                ['gov-catalog-governance', 20, 'nav_governance', 'fas fa-landmark', 'gov.catalog.governance.index', ['gov.catalog.governance.*']],
+                ['gov-catalog-import', 30, 'nav_import', 'fas fa-upload', 'gov.catalog.import', ['gov.catalog.history']],
+            ] as [$id, $order, $label, $icon, $route, $match]) {
+                $registry->register(['id' => $id, 'group' => 'gov-catalogue-master', 'order' => $order,
+                    'label' => 'classification::texts.'.$label, 'icon' => $icon, 'route' => $route, 'match' => $match]);
+            }
         });
     }
 }

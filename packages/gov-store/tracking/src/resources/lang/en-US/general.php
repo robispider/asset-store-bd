@@ -385,7 +385,6 @@ return [
     // 1. Navigation & Workspace Headers
     'module_title' => 'Programme Tracking',
     'active_initiatives' => 'Active Initiatives',
-    'system_config' => 'System Configuration',
     'launch_initiative' => 'Launch New Initiative',
     'workspace_title' => 'Workspace: :title',
     'status' => 'Status',
@@ -428,4 +427,8 @@ return [
     'msg_no_tasks' => 'No active tracking tasks registered under this initiative.',
     'msg_no_deliveries' => 'No physical delivery transactions have been materialized yet.',
     'msg_general_mode' => 'General Distribution Mode: This Initiative\'s active tasks are configured as Blanket or Category targets. Participating offices within geographical coverage are authorized to receive stock on demand.',
+
+    // Navigation (tenant-scope MenuRegistry)
+    'nav_initiatives' => 'Initiatives',
+    'nav_tracking_settings' => 'Tracking settings',
 ];

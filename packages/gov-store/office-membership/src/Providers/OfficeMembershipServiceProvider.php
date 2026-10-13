@@ -59,27 +59,15 @@ class OfficeMembershipServiceProvider extends ServiceProvider
     {
         $registry = $this->app->make(MenuRegistry::class);
 
-        // 1. Staff Management (Visible to active Office Admins, placed inside the core root folder)
-        $registry->register([
-            'id' => 'govmem-staff',
-            'parent' => 'gov-store',
-            'title' => 'office_membership::member.nav_staff',
-            'icon' => 'fas fa-users-cog fa-fw',
-            'route' => 'gov.membership.admin.index',
-            'permission' => 'office_admin',
-            'order' => 25, // Appears cleanly alongside operational menus
-        ]);
+        $registry->register(['id' => 'govmem-staff', 'group' => 'gov-offices', 'order' => 20,
+            'label' => 'office_membership::member.nav_staff', 'icon' => 'fas fa-users-cog',
+            'route' => 'gov.membership.admin.index', 'match' => ['gov.membership.admin.*']]);
+        $registry->register(['id' => 'govmem-override', 'group' => 'gov-access-security', 'order' => 40,
+            'label' => 'office_membership::member.nav_overrides', 'icon' => 'fas fa-shield-alt',
+            'route' => 'gov.membership.override.console', 'match' => ['gov.membership.override.*']]);
 
-        // 2. Emergency Membership Overrides Console (Superadmin Only)
-        $registry->register([
-            'id' => 'govmem-override',
-            'parent' => 'gov-store',
-            'title' => 'office_membership::member.nav_overrides',
-            'icon' => 'fas fa-shield-alt fa-fw',
-            'route' => 'gov.membership.override.console',
-            'permission' => 'superuser',
-            'order' => 90,
-        ]);
+        // User menu: my memberships and the working-office switcher.
+        $registry->register(['id' => 'govmem-context', 'zone' => 'user', 'order' => 90, 'view' => 'govmem::hooks.membership-menu']);
     }
 
     public function register()

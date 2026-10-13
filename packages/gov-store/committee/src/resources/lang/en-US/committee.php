@@ -217,4 +217,10 @@ return [
         'PENDING'=>'Pending',
         'NOT_REQUIRED'=>'Not required',
     ],
+    // Navigation (tenant-scope MenuRegistry)
+    'nav_overview'=>'Overview',
+    'nav_register'=>'Committee register',
+    'nav_transfers'=>'Member transfers',
+    'nav_types'=>'Committee types',
+    'nav_purposes'=>'Committee purposes',
 ];

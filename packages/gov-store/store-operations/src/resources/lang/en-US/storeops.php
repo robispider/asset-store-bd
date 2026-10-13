@@ -22,6 +22,9 @@ return [
     'no_previous_manager' => 'unassigned',
     'store_documents_hub' => 'Store Documents Hub',
     'product_rules_studio' => 'Product Rules Studio',
+    'nav_receipts_issues' => 'Receipts & issues',
+    'nav_stock_register' => 'Stock register',
+    'nav_product_rules' => 'Product rules',
 
     // ── Goods Issue (Outbound) Views ──────────────────────────────
     'issue_goods_title' => 'Issue Goods',

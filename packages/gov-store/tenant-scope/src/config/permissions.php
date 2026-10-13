@@ -213,7 +213,10 @@ return [
             'catalog.request',
             
             // --- NATIVE SNIPE-IT SELF-SERVICE KEYS ---
-            'assets.view.requestable',
+            // 'assets.view.requestable' is deliberately absent: employees request items through
+            // the GovStore request flow (My workspace → Request items), not Snipe-IT's own
+            // Requestable / Requested assets pages. SnipePermissionAdapter replaces native group
+            // grants with these profiles, so re-adding it here is the only way to restore it.
             'self.checkout_assets',
             'self.edit_location',
             'self.two_factor',

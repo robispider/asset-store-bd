@@ -22,6 +22,9 @@ return [
     'no_previous_manager' => 'নির্ধারিত ছিল না',
     'store_documents_hub' => 'স্টোর নথি হাব',
     'product_rules_studio' => 'পণ্য বিধিমালা স্টুডিও',
+    'nav_receipts_issues' => 'গ্রহণ ও বিতরণ',
+    'nav_stock_register' => 'স্টক রেজিস্টার',
+    'nav_product_rules' => 'পণ্যের নিয়মাবলি',
 
     // ── Goods Issue (Outbound) Views ──────────────────────────────
     'issue_goods_title' => 'পণ্য প্রদান',

@@ -41,14 +41,15 @@ class CommitteeServiceProvider extends ServiceProvider
         foreach (['office','store','ministry'] as $key) { $registry->register($key,new CoreScopeResolver($key)); }
         $menus = $this->app->make(MenuRegistry::class);
         foreach ([
-            ['committee','committee.dashboard','title','committee.view',40],
-            ['committee-registry','committee.registry','registry','committee.view',41],
-            ['committee-transfers','committee.transfers','transfers','committee.manage',42],
-            ['committee-types','committee.types','types','committee.types.view',43],
-            ['committee-purposes','committee.purposes','purposes','committee.purposes.view',44],
-            ['committee-mine','committee.mine','mine','committee.self',45],
-        ] as [$id,$route,$label,$ability,$order]) {
-            $menus->register(['id'=>$id,'parent'=>'gov-store','title'=>__('committee::committee.'.$label),'icon'=>'fas fa-users fa-fw','route'=>$route,'permission'=>$ability,'order'=>$order]);
+            ['committee', 'gov-committees', 10, 'nav_overview', 'committee.dashboard', 'fas fa-users', ['committee.show', 'committee.history', 'committee.print', 'committee.reconstitute', 'committee.new', 'committee.search']],
+            ['committee-registry', 'gov-committees', 20, 'nav_register', 'committee.registry', 'fas fa-list-alt', []],
+            ['committee-transfers', 'gov-committees', 30, 'nav_transfers', 'committee.transfers', 'fas fa-exchange-alt', []],
+            ['committee-mine', 'gov-workspace', 30, 'mine', 'committee.mine', 'fas fa-user-friends', []],
+            ['committee-types', 'gov-rules', 30, 'nav_types', 'committee.types', 'fas fa-shapes', []],
+            ['committee-purposes', 'gov-rules', 40, 'nav_purposes', 'committee.purposes', 'fas fa-bullseye', []],
+        ] as [$id, $group, $order, $label, $route, $icon, $match]) {
+            $menus->register(['id' => $id, 'group' => $group, 'order' => $order, 'label' => 'committee::committee.'.$label,
+                'icon' => $icon, 'route' => $route, 'match' => $match]);
         }
         if ($this->app->runningInConsole()) {
             $this->commands([\GovStore\Committee\Console\Commands\CommitteeHealthCommand::class,\GovStore\Committee\Console\Commands\CommitteeExpireCommand::class,\GovStore\Committee\Console\Commands\CommitteeLedgerVerifyCommand::class]);

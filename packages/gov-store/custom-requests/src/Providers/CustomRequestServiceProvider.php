@@ -12,6 +12,7 @@ use GovStore\CustomRequests\Console\Commands\MaintainRequests;
 use GovStore\CustomRequests\Console\Commands\RequestReconciliation;
 use GovStore\CustomRequests\Models\BasketItem;
 use GovStore\CustomRequests\Rules\NoPendingRequestsRule;
+use GovStore\CustomRequests\Services\RequestQueues;
 use GovStore\OfficeMembership\Services\ClearanceEngine;
 use GovStore\TenantScope\Navigation\MenuRegistry;
 use GovStore\Theming\Facades\GsTheme;
@@ -67,63 +68,39 @@ class CustomRequestServiceProvider extends ServiceProvider
     protected function registerNavigationMenus(): void
     {
         $registry = $this->app->make(MenuRegistry::class);
+        $queues = fn () => app(RequestQueues::class);
 
-        $registry->register(['id' => 'gov-requests-policies', 'parent' => 'gov-store',
-            'title' => __('requestlabels::requests.policies_title'), 'icon' => 'fas fa-tags',
-            'route' => 'gov.requests.admin.policies.index', 'permission' => 'requests.configure', 'order' => 37]);
+        // My workspace — every employee who may request items.
+        $registry->register(['id' => 'gov-requests-catalog', 'group' => 'gov-workspace', 'order' => 10,
+            'label' => 'requestlabels::requests.nav_request_items', 'icon' => 'fas fa-store',
+            'route' => 'gov.requests.catalog', 'match' => ['gov.requests.catalog*', 'gov.requests.basket.*']]);
+        $registry->register(['id' => 'gov-requests-my-requests', 'group' => 'gov-workspace', 'order' => 20,
+            'label' => 'requestlabels::requests.nav_my_requests', 'icon' => 'fas fa-clipboard-list',
+            'route' => 'gov.requests.user.index', 'match' => ['gov.requests.user.*']]);
 
-        // 1. Public — available to all authenticated employees
-        $registry->register([
-            'id' => 'gov-requests-catalog',
-            'parent' => 'gov-store',
-            'title' => __('requestlabels::requests.serviceprovider_menu_browse_catalog'),
-            'icon' => 'fas fa-store text-green',
-            'route' => 'gov.requests.catalog',
-            'order' => 5,
-        ]);
+        // Waiting for me — counted queues.
+        $registry->register(['id' => 'gov-requests-approvals', 'group' => 'gov-queues', 'order' => 10,
+            'label' => 'requestlabels::requests.nav_approvals', 'icon' => 'fas fa-clipboard-check',
+            'route' => 'gov.requests.admin.index', 'match' => ['gov.requests.admin.show'],
+            'badge' => fn () => $queues()->awaitingApproval(auth()->user())->count()]);
+        $registry->register(['id' => 'gov-requests-fulfillment-queue', 'group' => 'gov-queues', 'order' => 20,
+            'label' => 'requestlabels::requests.nav_to_fulfil', 'icon' => 'fas fa-shipping-fast',
+            'route' => 'gov.requests.fulfillment.index', 'match' => ['gov.requests.fulfillment.*'],
+            'badge' => fn () => $queues()->awaitingFulfilment(auth()->user())->count()]);
 
-        // 2. Public — track own submitted requests
-        $registry->register([
-            'id' => 'gov-requests-my-requests',
-            'parent' => 'gov-store',
-            'title' => __('requestlabels::requests.serviceprovider_menu_track_my_requests'),
-            'icon' => 'fas fa-clipboard-list text-blue',
-            'route' => 'gov.requests.user.index',
-            'order' => 8,
-        ]);
+        // Store.
+        $registry->register(['id' => 'gov-requests-fulfillment-register', 'group' => 'gov-store-ops', 'order' => 30,
+            'label' => 'requestlabels::requests.nav_fulfilment_register', 'icon' => 'fas fa-archive',
+            'route' => 'gov.requests.fulfillment_register.index', 'match' => ['gov.requests.fulfillment_register.*']]);
 
-        // 3. RESTORED — approval queue, gated to approver role in active office
-        $registry->register([
-            'id' => 'gov-requests-approvals',
-            'parent' => 'gov-store',
-            'title' => __('requestlabels::requests.serviceprovider_menu_gov_approvals'),
-            'icon' => 'fas fa-clipboard-check text-yellow',
-            'route' => 'gov.requests.admin.index',
-            'permission' => 'approver',
-            'order' => 15,
-        ]);
+        // Rules & settings.
+        $registry->register(['id' => 'gov-requests-policies', 'group' => 'gov-rules', 'order' => 10,
+            'label' => 'requestlabels::requests.nav_request_policies', 'icon' => 'fas fa-tags',
+            'route' => 'gov.requests.admin.policies.index', 'match' => ['gov.requests.admin.policies.*']]);
 
-        // 4. Storekeeper — fulfillment queue
-        $registry->register([
-            'id' => 'gov-requests-fulfillment-queue',
-            'parent' => 'gov-store',
-            'title' => __('requestlabels::requests.serviceprovider_menu_fulfillment_queue'),
-            'icon' => 'fas fa-shipping-fast text-red',
-            'route' => 'gov.requests.fulfillment.index',
-            'permission' => 'storekeeper',
-            'order' => 35,
-        ]);
-
-        // 5. Fulfillment Register — visible to Storekeepers, Approvers, and Office Admins
-        $registry->register([
-            'id' => 'gov-requests-fulfillment-register',
-            'parent' => 'gov-store',
-            'title' => __('requestlabels::requests.serviceprovider_menu_fulfillment_register'),
-            'icon' => 'fas fa-archive text-green',
-            'route' => 'gov.requests.fulfillment_register.index',
-            'permission' => ['storekeeper', 'approver', 'office_admin'],
-            'order' => 36,
-        ]);
+        // Top bar basket and its page widget.
+        $registry->register(['id' => 'gov-requests-basket-nav', 'zone' => 'topbar', 'view' => 'govstore::hooks.basket-nav']);
+        $registry->register(['id' => 'gov-requests-basket-widget', 'zone' => 'body-end', 'view' => 'govstore::hooks.basket-widget']);
     }
 
     public function register()

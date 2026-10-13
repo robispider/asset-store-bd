@@ -130,42 +130,33 @@ class TrackingServiceProvider extends ServiceProvider
         }
     }
 
-   protected function registerTrackingMenuStructure(): void
+    protected function registerTrackingMenuStructure(): void
     {
-        $registry = $this->app->make(\GovStore\TenantScope\Navigation\MenuRegistry::class);
+        $registry = $this->app->make(MenuRegistry::class);
 
-        // 1. ROOT CATEGORY
+        // Programme tracking: assigned team members enter and manage their initiative workspaces.
         $registry->register([
-            'id'    => 'gov-tracking-root',
-            'title' => 'govtracking::general.module_title',
-            'icon'  => 'fas fa-map-signs text-orange',
-            'order' => 35,
-            'permission' => ['admin', 'company_admin',  'project_member'], // Added project_member
+            'id' => 'gov-tracking-initiatives',
+            'group' => 'gov-tracking',
+            'label' => 'govtracking::general.nav_initiatives',
+            'icon' => 'fas fa-folder-open',
+            'route' => 'gov.tracking.initiatives.index',
+            'order' => 10,
+            'permission' => ['admin', 'company_admin', 'project_member'],
+            'match' => ['gov.tracking.initiatives.*', 'gov.tracking.tracking-codes.*', 'gov-store/admin/tracking/initiatives*'],
         ]);
 
-        // 2. ACTIVE INITIATIVES (The Workspace Entry)
+        // Rules & settings: tracking dictionaries.
         $registry->register([
-            'id'         => 'gov-tracking-initiatives',
-            'parent'     => 'gov-tracking-root',
-            'title'      => 'govtracking::general.active_initiatives',
-            'icon'       => 'fas fa-folder-open text-aqua',
-            'route'      => 'gov.tracking.initiatives.index',
-            'order'      => 10,
-            'permission' => ['admin', 'company_admin', 'project_member'], // Added project_member: allows assigned team members to enter and manage their workspaces
-            'active_patterns' => ['gov-store/admin/tracking/initiatives*'],
-        ]);
-
-        // 3. SYSTEM CONFIGURATION (Dictionaries)
-        $registry->register([
-            'id'         => 'gov-tracking-config',
-            'parent'     => 'gov-tracking-root',
-            'title'      => 'govtracking::general.system_config',
-            'icon'       => 'fas fa-cog text-yellow',
-            'route'      => 'gov.tracking.funding-types.index',
-            'order'      => 40,
+            'id' => 'gov-tracking-config',
+            'group' => 'gov-rules',
+            'label' => 'govtracking::general.nav_tracking_settings',
+            'icon' => 'fas fa-cog',
+            'route' => 'gov.tracking.funding-types.index',
+            'order' => 50,
             'permission' => 'admin',
-            'strict'     => true,
-            'active_patterns' => ['gov-store/admin/tracking/funding-types*'],
+            'strict' => true,
+            'match' => ['gov.tracking.funding-types.*', 'gov-store/admin/tracking/funding-types*'],
         ]);
     }
 }

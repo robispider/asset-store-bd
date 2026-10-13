@@ -226,6 +226,7 @@ return [
     'menu_working_as' => 'কাজ করছেন হিসেবে:',
     'menu_global_overview' => 'গ্লোবাল ওভারভিউ (সব কার্যালয়)',
     'menu_choose_context' => 'ওয়ার্কিং কনটেক্সট নির্বাচন করুন',
+    'menu_filter_offices' => 'কার্যালয়ের নাম লিখে খুঁজুন',
 
     // =========================================================================
     // Origin: MembershipController.php

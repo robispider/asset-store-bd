@@ -146,3 +146,8 @@
 .om-inline-442a70a1 { width: 100%; }
 
 
+
+/* Long working-office switcher in the user menu: type to filter, list scrolls. */
+.om-office-filter { padding: 3px 20px 6px; }
+.om-office-list { max-height: 50vh; overflow-y: auto; margin: 0; padding: 0; }
+.om-office-option[hidden] { display: none; }

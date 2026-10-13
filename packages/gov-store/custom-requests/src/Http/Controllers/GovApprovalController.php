@@ -7,6 +7,7 @@ use GovStore\CustomRequests\Models\ApprovalPolicy;
 use GovStore\CustomRequests\Models\Request as ServiceRequest;
 use GovStore\CustomRequests\Services\ApprovalService;
 use GovStore\CustomRequests\Services\RequestInventory;
+use GovStore\CustomRequests\Services\RequestQueues;
 use GovStore\TenantScope\Contexts\TenantContext;
 use GovStore\TenantScope\Services\ActionFailure;
 use GovStore\TenantScope\Services\GovAccess;
@@ -34,30 +35,14 @@ class GovApprovalController extends Controller
         $this->checkApproverAccess();
         $user = auth()->user();
 
-        $pendingQuery = ServiceRequest::with(['requester', 'items'])->whereIn('approval_status', ['pending_primary', 'pending_final']);
+        $pendingQuery = app(RequestQueues::class)->awaitingApproval($user)->with(['requester', 'items']);
         $processedQuery = ServiceRequest::with(['requester'])->whereNotIn('approval_status', ['draft', 'submitted', 'under_review', 'pending_primary', 'pending_final']);
 
         if (! $user->isSuperUser()) {
             // Use the working office, including responsibilities granted as cover.
-            $myLocationIds = [app(TenantContext::class)->locationId];
-
-            $pendingQuery->whereIn('office_id', $myLocationIds);
-            $processedQuery->whereIn('office_id', $myLocationIds)
+            $processedQuery->whereIn('office_id', [app(TenantContext::class)->locationId])
                 ->where(fn ($q) => $q->where('decided_by', $user->id)->orWhere('primary_decided_by', $user->id));
         }
-
-        $access = app(GovAccess::class);
-        $pendingQuery->where('requested_by', '!=', $user->id)->whereNotNull('office_id')
-            ->where(function ($q) use ($user, $access) {
-                $q->whereRaw('1 = 0');
-                if ($access->decide($user, 'requests.approve.primary')->allowed) {
-                    $q->orWhere('approval_status', 'pending_primary');
-                }
-                if ($access->decide($user, 'requests.approve.final')->allowed) {
-                    $q->orWhere(fn ($final) => $final->where('approval_status', 'pending_final')
-                        ->where(fn ($actor) => $actor->whereNull('primary_decided_by')->orWhere('primary_decided_by', '!=', $user->id)));
-                }
-            });
 
         $pendingRequests = $pendingQuery->orderBy('created_at', 'desc')->get();
         $processedRequests = $processedQuery->orderBy('updated_at', 'desc')->limit(10)->get();

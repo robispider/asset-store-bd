@@ -394,16 +394,16 @@ return [
     // ==========================================
     // Sidebar / Menu Integration
     // ==========================================
-    'menu_provisioning_root'   => 'Office Provisioning',
-    'menu_office_registry'     => 'Office Registry',
-    'menu_ict_jurisdictions'   => 'ICT Jurisdictions',
-    'menu_company_admins'      => 'Assign Company Admins',
-    'menu_office_setup'        => 'My Office Setup',
-    'menu_gov_directory'       => 'Government Directory',
     'office_type_label' => 'Office type',
     'office_type_default' => 'General office',
     'office_type_hospital' => 'Hospital',
     'office_type_school' => 'School',
     'office_type_ict_office' => 'ICT office',
 
+    // Navigation (tenant-scope MenuRegistry)
+    'nav_office_setup' => 'My office setup',
+    'nav_office_registry' => 'Office registry',
+    'nav_ministry_admins' => 'Ministry administrators',
+    'nav_ict_jurisdictions' => 'ICT jurisdictions',
+    'nav_directory_import' => 'Government directory import',
 ];

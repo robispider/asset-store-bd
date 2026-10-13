@@ -17,8 +17,15 @@
     <button class="btn btn-link" type="submit">{{ __('office_membership::member.menu_global_overview') }}</button>
 </form></li>
 @endif
+@php($longSwitcher = $menuLocations->count() > 8)
+@if($longSwitcher)
+<li class="om-office-filter"><input type="search" class="form-control input-sm" id="om-office-filter" autocomplete="off"
+    placeholder="{{ __('office_membership::member.menu_filter_offices') }}" aria-label="{{ __('office_membership::member.menu_filter_offices') }}"
+    aria-controls="om-office-list"></li>
+<li><ul class="list-unstyled om-office-list" id="om-office-list">
+@endif
 @foreach($menuLocations as $menuOffice)
-<li><form action="{{ route('gov.membership.switch') }}" method="POST" class="om-inline-3591cfd6">@csrf
+<li class="om-office-option"><form action="{{ route('gov.membership.switch') }}" method="POST" class="om-inline-3591cfd6">@csrf
     @if($memberUser->isSuperUser())
     <input type="hidden" name="location_id" value="{{ $menuOffice->id }}">
     @else
@@ -27,4 +34,21 @@
     <button class="btn btn-link" type="submit" @if((int) $memberContext->locationId === (int) $menuOffice->id) aria-current="true" @endif>{{ $menuOffice->name }}</button>
 </form></li>
 @endforeach
+@if($longSwitcher)
+</ul></li>
+<script nonce="{{ csrf_token() }}">
+document.addEventListener('DOMContentLoaded', function () {
+    var filter = document.getElementById('om-office-filter');
+    if (!filter) return;
+    // Typing inside a Bootstrap dropdown must not close it.
+    ['click', 'keydown'].forEach(function (type) { filter.addEventListener(type, function (event) { event.stopPropagation(); }); });
+    filter.addEventListener('input', function () {
+        var needle = filter.value.trim().toLocaleLowerCase();
+        document.querySelectorAll('#om-office-list .om-office-option').forEach(function (option) {
+            option.hidden = needle !== '' && option.textContent.toLocaleLowerCase().indexOf(needle) === -1;
+        });
+    });
+});
+</script>
+@endif
 @endauth
