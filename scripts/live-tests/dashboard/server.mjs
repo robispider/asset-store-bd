@@ -6,6 +6,7 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { TestLoader } from '../core/loader.mjs';
 import { redactObject } from '../reporters/redaction.mjs';
+import { loadTargets, publicTargets } from '../core/targets.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const LOCAL_HOST = /^(localhost|127\.0\.0\.1|\[::1\]|[a-z0-9-]+\.(local|localhost|test))$/i;
@@ -14,7 +15,7 @@ const LOCAL_HOST = /^(localhost|127\.0\.0\.1|\[::1\]|[a-z0-9-]+\.(local|localhos
  * Local-only operator dashboard. Binds to 127.0.0.1, requires a random per-start token on every request,
  * checks the Host header, and only ever launches this repository's CLI with validated arguments.
  */
-export async function startDashboard({ baseDir, port = 4780 }) {
+export async function startDashboard({ baseDir, port = 4780, quiet = false }) {
   const token = crypto.randomBytes(18).toString('hex');
   const runsDir = path.join(baseDir, 'storage', 'app', 'private', 'live-tests');
   const loader = new TestLoader(baseDir);
@@ -45,6 +46,9 @@ export async function startDashboard({ baseDir, port = 4780 }) {
   function launch(opts) {
     if (active) throw Object.assign(new Error('A run is already in progress'), { status: 409 });
     const args = [path.join(baseDir, 'scripts', 'live-tests', 'cli.mjs'), 'run'];
+    const target = opts.targetId ? loadTargets(baseDir).find(target => target.id === opts.targetId) : null;
+    if (opts.targetId && !target) throw Object.assign(new Error('Unknown configured target'), { status: 400 });
+    if (target) args.push('--target', target.id);
     const known = [...loader.listSuites().map(s => s.id)];
     const journeys = loader.listJourneys().map(j => j.id);
     if (Array.isArray(opts.tests)) {
@@ -64,7 +68,10 @@ export async function startDashboard({ baseDir, port = 4780 }) {
       try { u = new URL(opts.baseUrl); } catch { throw Object.assign(new Error('Invalid server URL'), { status: 400 }); }
       if (!/^https?:$/.test(u.protocol)) throw Object.assign(new Error('URL must be http(s)'), { status: 400 });
       const extra = (process.env.LIVE_TEST_ALLOWED_HOSTS || '').split(',').map(h => h.trim().toLowerCase()).filter(Boolean);
-      if (!LOCAL_HOST.test(u.hostname) && !extra.includes(u.hostname.toLowerCase())) {
+      if (target && u.origin !== new URL(target.baseUrl).origin) {
+        throw Object.assign(new Error('The server URL must match the selected target configuration.'), { status: 400 });
+      }
+      if (!target && !LOCAL_HOST.test(u.hostname) && !extra.includes(u.hostname.toLowerCase())) {
         throw Object.assign(new Error(`Host '${u.hostname}' is not allowed. Local hosts are allowed; for another server set LIVE_TEST_ALLOWED_HOSTS before starting the dashboard (the server must use the same database the PHP bridge reads).`), { status: 400 });
       }
       args.push('--baseUrl', u.origin);
@@ -111,7 +118,8 @@ export async function startDashboard({ baseDir, port = 4780 }) {
           journeys: loader.listJourneys().map(j => ({ id: j.id, title: j.title, capability: j.capability })),
           runs: listRuns(),
           active: active ? { runId: active.runId, startedAt: active.startedAt } : null,
-          defaultBaseUrl: 'http://snipeit.local'
+          defaultBaseUrl: 'http://snipeit.local',
+          targets: publicTargets(loadTargets(baseDir))
         });
       }
       if (url.pathname === '/api/run' && req.method === 'POST') {
@@ -165,5 +173,7 @@ export async function startDashboard({ baseDir, port = 4780 }) {
   });
 
   await new Promise(resolve => server.listen(port, '127.0.0.1', resolve));
-  console.log(`\nLive test dashboard (local only): http://127.0.0.1:${port}/?t=${token}\nPress Ctrl+C to stop.\n`);
+  const url = `http://127.0.0.1:${server.address().port}/?t=${token}`;
+  if (!quiet) console.log(`\nLive test dashboard (local only): ${url}\nPress Ctrl+C to stop.\n`);
+  return { server, token, url };
 }

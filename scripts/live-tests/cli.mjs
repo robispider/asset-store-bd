@@ -33,6 +33,10 @@ import { renderHtmlReport } from './reporters/html.mjs';
 import { spawnSync } from 'node:child_process';
 import { PhpBridge } from './bridge/php-bridge.mjs';
 import { DeterministicRandom, resolveData } from './core/generators.mjs';
+import { assertMatchingTarget } from './core/target.mjs';
+import { loadTargets } from './core/targets.mjs';
+import { BrowserBridge, browserJourneyBlock } from './bridge/browser-bridge.mjs';
+import { redactString } from './reporters/redaction.mjs';
 
 const LOCAL_HOST_PATTERN = /^(localhost|127\.0\.0\.1|\[::1\]|[a-z0-9-]+\.(local|localhost|test))$/i;
 
@@ -220,13 +224,18 @@ async function main() {
       const suiteId = options.suite || 'smoke';
       const testId = options.test;
       const datasetOverride = options.dataset;
+      const targets = loadTargets(baseDir, options['targets-file']);
+      const selectedTarget = options.target ? targets.find(target => target.id === options.target) : null;
+      if (options.target && !selectedTarget) throw new Error('The selected target is not defined in the private target file.');
       const seed = options.seed ? parseInt(options.seed, 10) : 20261006;
-      const baseUrl = options.baseUrl || 'http://snipeit.local';
+      const baseUrl = options.baseUrl || selectedTarget?.baseUrl || 'http://snipeit.local';
       const headless = !options.headed;
       const slowMo = options['slow-mo'] ? Math.min(parseInt(options['slow-mo'], 10) || 0, 2000) : 0;
 
       try {
-        assertLocalTarget(baseUrl);
+        // A configured target explicitly identifies the authorized installation; ad-hoc URLs still use the allowlist.
+        if (selectedTarget) assertMatchingTarget(baseUrl, { appUrl: selectedTarget.baseUrl });
+        else assertLocalTarget(baseUrl);
       } catch (err) {
         console.error(err.message);
         process.exit(2);
@@ -274,6 +283,8 @@ async function main() {
         runtime: { node: process.version, platform: process.platform, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, os: os.release() },
         selectedContexts: []
       };
+      provenance.targetId = selectedTarget?.id || null;
+      provenance.fixtureSource = selectedTarget ? 'target-browser' : 'local-database';
       const writePrivate = (name, data) => fs.writeFileSync(path.join(runDir, name), JSON.stringify(data, null, 2), 'utf8');
 
       // Determine list of journeys to run
@@ -293,25 +304,58 @@ async function main() {
       }
 
       // Environment preflight: nonproduction, effective database/mode/mail/queue, ready datasets.
+      let browser;
+      let fixtureBridge = phpBridge;
+      const blockRun = async (code, message) => {
+        console.error(`[BLOCKED] ${code}: ${message}`);
+        for (const journeyId of journeyIds) {
+          resultsReporter.recordTestResult({ journeyId, status: 'blocked', code, error: message });
+        }
+        eventLogger.log('run_blocked', { runId, code, error: message });
+        provenance.finishedAt = new Date().toISOString();
+        provenance.blocked = { code, error: message };
+        resultsReporter.save();
+        writePrivate('provenance.json', provenance);
+        cleanup.retained = ownership.filter(entry => entry.cleanup !== 'removed');
+        cleanup.policy = ownership.length ? 'supported-workflow-or-retain' : 'no-business-records-created';
+        cleanup.status = ownership.length ? 'retained-records' : 'not-required';
+        writePrivate('ownership.json', ownership);
+        writePrivate('cleanup.json', cleanup);
+        writeHtml(runDir);
+        resultsReporter.printSummary();
+        await fixtureBridge.close?.().catch(() => {});
+        await browser?.close().catch(() => {});
+        process.exit(2);
+      };
       let preflight;
       try {
-        preflight = await phpBridge.preflight();
+        if (selectedTarget) {
+          browser = await chromium.launch({ headless, slowMo });
+          const aliases = JSON.parse(fs.readFileSync(path.join(baseDir, 'tests/live/capabilities.json'), 'utf8')).capabilities;
+          fixtureBridge = new BrowserBridge({ browser, baseUrl, profile: selectedTarget, aliases,
+            allowWrites: Boolean(options['allow-writes']), ownership, eventLogger,
+            databaseBridge: selectedTarget.database ? new PhpBridge({ target: selectedTarget }) : null });
+        }
+        preflight = await fixtureBridge.preflight();
       } catch (err) {
-        console.error(`Preflight failed: ${err.message}`);
-        process.exit(2);
-      }
-      if (preflight.production) {
-        console.error('Refusing to run: application reports a production environment');
-        process.exit(2);
+        await blockRun(err.code || 'preflight.bridge-failed', `Preflight failed: ${redactString(err.message)}`);
       }
       provenance.preflight = { ...preflight, status: undefined };
+      if (preflight.production) {
+        await blockRun('preflight.production', 'Refusing to run: application reports a production environment');
+      }
+      try {
+        provenance.targetCheck = assertMatchingTarget(baseUrl, preflight);
+      } catch (err) {
+        await blockRun(err.code, err.message);
+      }
       const allowWrites = Boolean(options['allow-writes']);
       const retryReadonly = options['retry-readonly'] ? Math.min(parseInt(options['retry-readonly'], 10) || 0, 3) : 0;
       const allowExternalMail = Boolean(options['allow-external-mail']);
       const sinkSafe = allowExternalMail || ['log', 'array', 'null', 'mailpit', 'smtp-local'].includes(String(preflight.mailer));
       provenance.mailPolicy = { mailer: preflight.mailer, externalMailOverride: allowExternalMail, note: allowExternalMail ? 'Operator accepted external mail driver; seeded actors use undeliverable example.invalid addresses; delivery is not tested.' : 'local sink required' };
 
-      const browser = await chromium.launch({ headless, slowMo });
+      browser ||= await chromium.launch({ headless, slowMo });
       const artifactsDir = path.join(runDir, 'artifacts');
 
       try {
@@ -332,6 +376,10 @@ async function main() {
             valErrors.forEach(e => console.error(`  - ${e}`));
             block('schema.invalid', `Validation failed: ${valErrors.join('; ')}`);
             continue;
+          }
+          if (selectedTarget) {
+            const missing = browserJourneyBlock(journey, planner.planJourney(journey), preflight.accessMode, Boolean(selectedTarget.database));
+            if (missing) { block(...missing); continue; }
           }
 
           const capability = journey.execution?.capability || 'observe';
@@ -354,7 +402,7 @@ async function main() {
           console.log(`  Resolving matching seeded context...`);
           let resolved = null;
           try {
-            resolved = await phpBridge.resolveContext(journey.fixtures, datasetOverride);
+            resolved = await fixtureBridge.resolveContext(journey.fixtures, datasetOverride);
           } catch (err) {
             console.error(`  [SETUP ERROR] Fixture resolution failed: ${err.message}`);
             resultsReporter.recordTestResult({
@@ -372,13 +420,18 @@ async function main() {
             journeyId: jId,
             dataset: resolved.run?.id,
             office: resolved.office.id,
-            actors: Object.fromEntries(Object.entries(resolved.actors).map(([k, v]) => [k, v.id])),
+            actors: Object.fromEntries(Object.entries(resolved.actors).map(([k, v]) => [k, v.id ?? v.username])),
             records: Object.fromEntries(Object.entries(resolved.records || {}).map(([k, v]) => [k, v.id])),
             search: resolved.search
           };
           provenance.selectedContexts.push(pinned);
 
           const plan = planner.planJourney(journey);
+          if (selectedTarget && Object.entries(resolved.actors).some(([alias, actor]) => !actor.id
+            && JSON.stringify(plan).includes('${actors.' + alias + '.id}'))) {
+            block('fixtures.user-id-required', 'This journey requires a numeric user ID that the target My access page did not identify. Deploy the current My access view or configure the matching database.');
+            continue;
+          }
           const activeLanguage = journey.execution?.language || 'en-US';
 
           for (let caseIndex = 0; caseIndex < plan.cases.length; caseIndex++) {
@@ -415,18 +468,18 @@ async function main() {
               const locators = new LocatorResolver(loader, activeLanguage);
               const browserActions = new BrowserActionEngine(new AssertionEngine(), new CaptureEngine(), locators);
               const caseContexts = [];
-              const interpreter = new StepInterpreter(browserActions, phpBridge, eventLogger, {
+              const interpreter = new StepInterpreter(browserActions, fixtureBridge, eventLogger, {
                 ledger: ownership,
                 accessMode: preflight.accessMode,
                 artifactsDir,
                 newPage: async () => {
-                  const c = await browser.newContext();
+                  const c = selectedTarget ? await fixtureBridge.newContext() : await browser.newContext();
                   caseContexts.push(c);
                   return await c.newPage();
                 }
               });
 
-              const context = await browser.newContext();
+              const context = selectedTarget ? await fixtureBridge.newContext() : await browser.newContext();
               caseContexts.push(context);
               const page = await context.newPage();
 
@@ -455,10 +508,12 @@ async function main() {
           }
         }
       } finally {
+        await fixtureBridge.close?.();
         await browser.close();
       }
 
       cleanup.policy = ownership.length ? 'supported-workflow-or-retain' : 'no-business-records-created';
+      cleanup.retained = ownership.filter(entry => entry.cleanup !== 'removed');
       cleanup.status = !ownership.length ? 'not-required' : cleanup.retained.length ? 'retained-records' : 'clean';
 
       const finalPayload = resultsReporter.save();
@@ -515,6 +570,8 @@ async function main() {
       let worst = 0;
       for (const id of ids) {
         const args = [path.join(baseDir, 'scripts', 'live-tests', 'cli.mjs'), 'run', '--test', id, '--seed', String(prov.seed), '--baseUrl', prov.baseUrl];
+        if (prov.targetId) args.push('--target', prov.targetId);
+        if (options['targets-file']) args.push('--targets-file', options['targets-file']);
         if (prov.datasetOverride) args.push('--dataset', prov.datasetOverride);
         if (loader.loadJourneyByIdOrPath(id).execution?.capability === 'write-fixtures') {
           if (!options['allow-writes']) { console.log('Skipping ' + id + ': replaying a write journey needs --allow-writes (fresh fixtures and baseline are used)'); continue; }
@@ -569,6 +626,7 @@ Commands:
   discover                          Discover seeded datasets via read-only PHP bridge
   plan --suite <id> | --test <id>   View expanded execution plan without browser mutations
   run [--suite <id>] [--test <id>] [--tests a,b,c] [--baseUrl <url>] [--headed] [--slow-mo ms]  Run live browser journeys
+      [--target <id>] [--targets-file <private-file>]  Use a configured server, bootstrap account and optional database
   dashboard [--port 4780]           Local dashboard: start runs, watch progress, pick server URL
   report --run <runId> [--html]    View results, or write report.html
   replay --run <runId> [--failed-only] [--allow-writes]  Re-run journeys with fresh fixtures
@@ -579,6 +637,6 @@ Commands:
 }
 
 main().catch(err => {
-  console.error(`Fatal error: ${err.message}`);
+  console.error(`Fatal error: ${redactString(err.message)}`);
   process.exit(1);
 });

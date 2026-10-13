@@ -1,0 +1,23 @@
+{
+  "targets": [
+    {
+      "id": "staging",
+      "label": "GovStore staging",
+      "baseUrl": "http://staging.example.test:8051",
+      "environment": "staging",
+      "accessMode": "shadow",
+      "bootstrap": {
+        "username": "REPLACE_WITH_TARGET_SUPERADMIN_LOGIN",
+        "password": "REPLACE_PRIVATELY"
+      },
+      "database": {
+        "driver": "mysql",
+        "host": "REPLACE_WITH_DB_HOST_OR_TUNNEL_HOST",
+        "port": 3306,
+        "database": "REPLACE_WITH_TARGET_DATABASE",
+        "username": "REPLACE_WITH_READ_ONLY_DB_USER",
+        "password": "REPLACE_PRIVATELY"
+      }
+    }
+  ]
+}

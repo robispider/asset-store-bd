@@ -17,6 +17,7 @@ export function renderHtmlReport({ results, provenance = {}, cleanup = {}, owner
 <h1>Live journey report</h1>
 <p>Run <code>${esc(provenance.runId)}</code> against <code>${esc(provenance.baseUrl)}</code> at revision <code>${esc(provenance.application?.revision)}</code> (${esc(provenance.application?.dirtyFiles)} dirty files). Access mode <code>${esc(provenance.preflight?.accessMode)}</code>, seed <code>${esc(provenance.seed)}</code>, unique suffix <code>${esc(provenance.uniqueSuffix)}</code>.</p>
 <p>Total ${esc(s.total)} &middot; passed ${esc(s.passed)} &middot; failed ${esc(s.failed)} &middot; blocked ${esc(s.blocked)} &middot; interrupted ${esc(s.interrupted ?? 0)}. A pass means its explicit assertions passed on this revision, environment and fixture state only.</p>
+<p>Target <code>${esc(provenance.targetId || 'local')}</code>; fixtures from <code>${esc(provenance.fixtureSource || 'local-database')}</code>; independent database observations <code>${esc(provenance.preflight?.independentDatabaseObservations === false ? 'unavailable' : 'available')}</code>. Configured-target environment and access mode are operator declarations; fixture accounts and working office are checked on the target UI.</p>
 <table><thead><tr><th>Journey</th><th>Status</th><th>Class/code</th><th>ms</th><th>Cleanup</th><th>Error</th></tr></thead><tbody>${rows}</tbody></table>
 <h2>Cleanup and retained records</h2><p>Status <code>${esc(cleanup.status)}</code>; ledger entries ${ownership.length}.</p><ul>${retained}</ul>
 </body></html>`;

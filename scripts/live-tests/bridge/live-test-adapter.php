@@ -11,9 +11,39 @@ error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('display_errors', '0');
 
 require __DIR__.'/../../../vendor/autoload.php';
+$action = $argv[1] ?? 'help';
+$rawInput = '{}';
+if (in_array('--stdin', $argv, true)) {
+    $rawInput = stream_get_contents(STDIN) ?: '{}';
+} elseif (isset($argv[2])) {
+    $decoded = base64_decode($argv[2], true);
+    $rawInput = ($decoded !== false && json_validate($decoded)) ? $decoded : $argv[2];
+}
+$input = json_decode($rawInput, true) ?: [];
+$target = $input['_target'] ?? null;
+if ($target && (! in_array($target['environment'] ?? '', ['local', 'staging', 'testing'], true)
+    || ! isset($target['database']['host'], $target['database']['database'], $target['database']['username'])
+    || ($target['database']['driver'] ?? 'mysql') !== 'mysql')) {
+    echo json_encode(['status' => 'error', 'code' => 'preflight.target-config', 'message' => 'Invalid nonproduction target database configuration.']);
+    exit(1);
+}
 $app = require_once __DIR__.'/../../../bootstrap/app.php';
 $kernel = $app->make(\Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
+if ($target) {
+    $db = $target['database'];
+    $options = [];
+    if (! empty($db['sslCa'])) {
+        $options[PDO::MYSQL_ATTR_SSL_CA] = $db['sslCa'];
+        $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = true;
+    }
+    config(['database.default' => 'live_target', 'database.connections.live_target' => [
+        'driver' => 'mysql', 'url' => null, 'host' => $db['host'], 'port' => $db['port'] ?? 3306,
+        'database' => $db['database'], 'username' => $db['username'], 'password' => $db['password'] ?? '',
+        'unix_socket' => '', 'charset' => 'utf8mb4', 'collation' => 'utf8mb4_unicode_ci',
+        'prefix' => '', 'strict' => true, 'engine' => null, 'options' => $options,
+    ]]);
+}
 
 use App\Models\Consumable;
 use App\Models\Location;
@@ -81,16 +111,6 @@ function jsonResponseError(string $message, string $code, array $extra): void {
     exit(1);
 }
 
-$action = $argv[1] ?? 'help';
-$rawInput = '{}';
-if (isset($argv[2])) {
-    $decoded = base64_decode($argv[2], true);
-    $rawInput = ($decoded !== false && json_validate($decoded)) ? $decoded : $argv[2];
-} elseif (in_array('--stdin', $argv, true)) {
-    $rawInput = stream_get_contents(STDIN) ?: '{}';
-}
-$input = json_decode($rawInput, true) ?: [];
-
 function jsonResponse(array $data, int $status = 0): void {
     echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit($status);
@@ -136,15 +156,33 @@ try {
             $runs = DB::table('gov_experiment_runs')->where('status', 'ready')->whereNull('wiped_at')->count();
             jsonResponse([
                 'status' => 'success',
-                'environment' => app()->environment(),
+                'environment' => $target['environment'] ?? app()->environment(),
                 'production' => app()->isProduction(),
-                'appUrl' => config('app.url'),
+                'appUrl' => $target['baseUrl'] ?? config('app.url'),
                 'database' => $dbName,
-                'accessMode' => config('govstore-access.mode'),
-                'mailer' => config('mail.default'),
-                'queue' => config('queue.default'),
+                'accessMode' => $target ? ($target['accessMode'] ?? 'unknown') : config('govstore-access.mode'),
+                'mailer' => $target ? 'unknown' : config('mail.default'),
+                'queue' => $target ? 'unknown' : config('queue.default'),
+                'configurationSource' => $target ? 'selected-target-file' : 'local-application',
                 'readyDatasets' => $runs,
             ]);
+
+        case 'verifyAccount':
+            $userQuery = User::withoutGlobalScopes()->where('activated', true)->whereNull('deleted_at');
+            if (isset($input['userId'])) {
+                $userId = filter_var($input['userId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+                if (! $userId) jsonError('A valid supplied user ID is required.', 'credentials.invalid-user-id');
+                $userQuery->whereKey($userId);
+                if (! empty($input['username'])) $userQuery->where('username', $input['username']);
+            } else {
+                $userQuery->where('username', $input['username'] ?? '');
+            }
+            $user = $userQuery->first();
+            if (! $user || ! is_string($input['password'] ?? null) || ! Hash::check($input['password'], $user->password)) {
+                jsonError('The supplied account is not active or its credentials do not match this target database.', 'credentials.target-database-mismatch');
+            }
+            jsonResponse(['status' => 'success', 'id' => (int) $user->id,
+                'username' => $user->username, 'isSuperuser' => $user->isSuperUser()]);
 
         case 'resolveContext':
             $datasetId = $input['datasetId'] ?? null;
@@ -221,7 +259,9 @@ try {
                         ->join('gov_office_memberships as m', 'm.user_id', '=', 'u.id')
                         ->where('m.location_id', $officeId)
                         ->where('m.status', 'active')
+                        ->where(fn ($q) => $q->whereNull('m.valid_until')->orWhere('m.valid_until', '>=', today()->toDateString()))
                         ->whereIn('u.id', $ownedUserIds)
+                        ->where('u.activated', true)
                         ->whereNull('u.deleted_at')
                         ->select('u.id', 'u.username', 'u.first_name', 'u.last_name', 'u.display_name', 'u.password', 'u.permissions');
 
@@ -281,11 +321,15 @@ try {
 
                         // Verify credential privately
                         $verifiedPassword = null;
-                        if (Hash::check(BangladeshPeople::PASSWORD, $candUser->password)) {
+                        $targetPassword = $input['fixtureCredentials'][$candUser->username] ?? null;
+                        if (is_string($targetPassword) && Hash::check($targetPassword, $candUser->password)) {
+                            $verifiedPassword = $targetPassword;
+                        }
+                        if (! $target && ! $verifiedPassword && Hash::check(BangladeshPeople::PASSWORD, $candUser->password)) {
                             $verifiedPassword = BangladeshPeople::PASSWORD;
                         }
 
-                        if (! $verifiedPassword && isset($run->password)) {
+                        if (! $target && ! $verifiedPassword && isset($run->password)) {
                             try {
                                 $decrypted = decrypt($run->password);
                                 if (Hash::check($decrypted, $candUser->password)) {

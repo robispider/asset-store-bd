@@ -16,6 +16,7 @@ import { PhpBridge } from '../bridge/php-bridge.mjs';
 import { redactObject } from '../reporters/redaction.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
+import { assertMatchingTarget } from '../core/target.mjs';
 
 async function runContractTests() {
   console.log('=== Running GovStore Live Test Runner Contract Tests ===\n');
@@ -23,6 +24,20 @@ async function runContractTests() {
   const baseDir = process.cwd();
   const loader = new TestLoader(baseDir);
   const validator = new TestValidator(loader);
+  assert.deepEqual(assertMatchingTarget('http://snipeit.local/', { appUrl: 'http://snipeit.local' }), {
+    browserOrigin: 'http://snipeit.local', bridgeOrigin: 'http://snipeit.local'
+  });
+  assertMatchingTarget('http://localhost:80', { appUrl: 'http://localhost' });
+  for (const [target, appUrl] of [
+    ['http://118.179.221.116:8051', 'http://snipeit.local'],
+    ['http://localhost:8051', 'http://localhost'],
+    ['https://snipeit.local', 'http://snipeit.local'],
+    ['http://snipeit.local', undefined],
+    ['http://snipeit.local', 'file:///app'],
+    ['http://name:secret@snipeit.local', 'http://snipeit.local']
+  ]) {
+    assert.throws(() => assertMatchingTarget(target, { appUrl }), err => err.code === 'preflight.target-mismatch');
+  }
 
   // 1. Validator Tests: Unknown action rejected
   console.log('1. Testing validation rejection of unknown action...');

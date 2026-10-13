@@ -488,4 +488,52 @@ class ExperimentTest extends TestCase
         $this->assertFalse(DB::table('gov_store_ledger_openings')->where('location_id', $office->id)->exists());
         $this->assertFalse(DB::table('gov_documents')->where('location_id', $office->id)->exists());
     }
+
+    public function test_live_bridge_uses_selected_database_exported_credentials_and_active_membership_without_writes(): void
+    {
+        [$run, $office, $keeper] = $this->openingFixture();
+        $run->update(['status' => 'ready']);
+        $connection = DB::connection()->getConfig();
+        $target = ['baseUrl' => 'http://target.example.test', 'environment' => 'testing', 'accessMode' => 'enforce',
+            'database' => ['driver' => 'mysql', 'host' => $connection['host'], 'port' => $connection['port'],
+                'database' => DB::connection()->getDatabaseName(), 'username' => $connection['username'], 'password' => $connection['password']]];
+        $password = 'Isolated-Target-Bridge-Canary';
+        $keeper->forceFill(['password' => Hash::make($password)])->saveQuietly();
+        $call = function (string $action, array $input = []) use ($target): array {
+            $process = new \Symfony\Component\Process\Process([PHP_BINARY, '-d', 'xdebug.mode=off',
+                base_path('scripts/live-tests/bridge/live-test-adapter.php'), $action, '--stdin']);
+            $process->setInput(json_encode([...$input, '_target' => $target]));
+            $process->run();
+            $result = json_decode($process->getOutput(), true);
+            $this->assertIsArray($result, 'The adapter did not return a JSON response. Raw output withheld.');
+
+            return $result;
+        };
+        $preflight = $call('preflight');
+        $this->assertSame($target['database']['database'], $preflight['database']);
+        $this->assertSame('http://target.example.test', $preflight['appUrl']);
+        $this->assertSame('selected-target-file', $preflight['configurationSource']);
+        $before = $call('fingerprint');
+        $definition = ['datasetId' => $run->id, 'office' => ['id' => $office->id],
+            'actors' => ['keeper' => ['capabilities' => ['allOf' => ['storeops.documents.view']]]],
+            'fixtureCredentials' => [$keeper->username => $password]];
+        $resolved = $call('resolveContext', $definition);
+        $this->assertSame('success', $resolved['status']);
+        $this->assertSame($keeper->id, $resolved['actors']['keeper']['id']);
+        $this->assertSame($office->id, $resolved['office']['id']);
+        $identity = $call('verifyAccount', ['username' => $keeper->username, 'password' => $password]);
+        $this->assertSame($keeper->id, $identity['id']);
+        $this->assertFalse($identity['isSuperuser']);
+        $this->assertSame($keeper->id, $call('verifyAccount', ['userId' => $keeper->id, 'password' => $password])['id']);
+        $this->assertSame('credentials.invalid-user-id', $call('verifyAccount', ['userId' => 0, 'password' => $password])['code']);
+        $definition['fixtureCredentials'][$keeper->username] = 'Incorrect-Target-Canary';
+        $this->assertSame('fixtures.unsatisfied-requirements', $call('resolveContext', $definition)['code']);
+        $definition['fixtureCredentials'][$keeper->username] = $password;
+        $definition['datasetId'] = (string) Str::uuid();
+        $this->assertSame('fixtures.unsatisfied-requirements', $call('resolveContext', $definition)['code']);
+        $this->assertSame($before, $call('fingerprint'));
+        $definition['datasetId'] = $run->id;
+        OfficeMembership::where('user_id', $keeper->id)->where('location_id', $office->id)->update(['valid_until' => today()->subDay()]);
+        $this->assertSame('fixtures.unsatisfied-requirements', $call('resolveContext', $definition)['code']);
+    }
 }

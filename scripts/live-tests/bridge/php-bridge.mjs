@@ -1,6 +1,7 @@
 import { execFile } from 'node:child_process';
 import path from 'node:path';
 import fs from 'node:fs';
+import { registerSecret, redactString } from '../reporters/redaction.mjs';
 
 const WAMP_PHP = 'C:/wamp64/bin/php/php8.4.15/php.exe';
 
@@ -20,6 +21,11 @@ export class PhpBridge {
     this.adapterPath = options.adapterPath || path.resolve(process.cwd(), 'scripts/live-tests/bridge/live-test-adapter.php');
     this.mockMode = Boolean(options.mockMode);
     this.mockData = options.mockData || {};
+    this.target = options.target ? {
+      id: options.target.id, baseUrl: options.target.baseUrl, environment: options.target.environment,
+      accessMode: options.target.accessMode, database: options.target.database
+    } : null;
+    registerSecret(this.target?.database?.password);
   }
 
   async runAction(action, payload = {}) {
@@ -55,35 +61,37 @@ export class PhpBridge {
       return { status: 'success' };
     }
 
-    const json = JSON.stringify(payload);
-    const b64 = Buffer.from(json, 'utf8').toString('base64');
-    const args = ['-d', 'xdebug.mode=off', this.adapterPath, action, b64];
+    const json = JSON.stringify({ ...payload, ...(this.target ? { _target: this.target } : {}) });
+    const args = ['-d', 'xdebug.mode=off', this.adapterPath, action, '--stdin'];
 
     return new Promise((resolve, reject) => {
-      execFile(this.phpPath, args, { encoding: 'utf8', timeout: 30000 }, (error, stdout, stderr) => {
+      const child = execFile(this.phpPath, args, { encoding: 'utf8', timeout: 30000, maxBuffer: 5_000_000 }, (error, stdout, stderr) => {
         const trimmed0 = (stdout || '').trim();
         if (error && !trimmed0.startsWith('{')) {
-          return reject(new Error(`PHP Bridge execution failed: ${error.message} - ${stderr || stdout}`));
+          return reject(new Error(redactString(`PHP Bridge execution failed: ${error.message}`)));
         }
 
         const trimmed = (stdout || '').trim();
         if (!trimmed) {
-          return reject(new Error(`PHP Bridge returned empty output. Stderr: ${stderr}`));
+          return reject(new Error('PHP Bridge returned empty output. Check its runtime and connection configuration.'));
         }
 
         try {
           const response = JSON.parse(trimmed);
           if (response.status === 'error') {
-            const err = new Error(`PHP Bridge error (${response.code || 'UNKNOWN'}): ${response.message}`);
+            const err = new Error(redactString(`PHP Bridge error (${response.code || 'UNKNOWN'}): ${response.message}`));
             err.code = response.code;
             err.search = response.search;
             return reject(err);
           }
+          for (const actor of Object.values(response.actors || {})) registerSecret(actor.password);
           resolve(response);
         } catch (e) {
-          reject(new Error(`Failed to parse PHP Bridge response: "${trimmed}" - Error: ${e.message}`));
+          reject(new Error(redactString(`Failed to parse PHP Bridge response: ${e.code ? e.message : 'Invalid response; raw output was withheld.'}`)));
         }
       });
+      child.stdin.on('error', () => {});
+      child.stdin.end(json);
     });
   }
 
@@ -92,12 +100,13 @@ export class PhpBridge {
     return res.datasets || [];
   }
 
-  async resolveContext(fixturesDef, datasetId = null) {
+  async resolveContext(fixturesDef, datasetId = null, extra = {}) {
     const payload = {
       datasetId,
       office: fixturesDef?.office || {},
       actors: fixturesDef?.actors || {},
-      records: fixturesDef?.records || {}
+      records: fixturesDef?.records || {},
+      ...extra
     };
     return await this.runAction('resolveContext', payload);
   }
@@ -112,5 +121,10 @@ export class PhpBridge {
 
   async observe(check, args = {}) {
     return await this.runAction('observe', { check, args });
+  }
+
+  async verifyAccount(account) {
+    registerSecret(account.password);
+    return await this.runAction('verifyAccount', { username: account.username, userId: account.userId, password: account.password });
   }
 }

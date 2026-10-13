@@ -63,7 +63,7 @@ You normally write **JSON only**. The runner (`scripts/live-tests/`) executes it
 
 ## 4. Fixtures: declare requirements, never identities
 
-The runner finds a complete matching office, users and records in a ready seeded dataset, checks passwords privately, and pins the result. Do **not** put usernames, ids, passwords or dataset ids in JSON.
+The runner finds a complete matching office, users and records in a ready seeded dataset, checks passwords privately, and pins the result. Do **not** put usernames, ids, passwords or dataset ids in journey JSON. Configured-target mode starts from a private operator-supplied superadmin login, obtains that server's exports through the UI, verifies My access, and optionally binds database observations to that entry's database connection. See the [target configuration guide](live-tests-user-guide.md#configure-selectable-target-servers). A privileged journey must explicitly request `role: "superuser"` and `allowSuperuser: true`; it must not replace ordinary-role coverage. Unsupported browser-only observations/record discovery and office-bound privileged context are reported as blocked, never inferred as passed.
 
 Actor fields:
 

@@ -42,6 +42,18 @@ php -d xdebug.mode=off artisan govstore:experiment-worker --stop-when-empty
 
 The command handles only the feature queue, uses its own failure table/log, a process-local array cache, 512 MB memory and a one-hour job timeout. The configured dedicated database queue retries reservations after 3,900 seconds. Run one such worker as a local background process or use your normal process supervisor. Restart it after changing feature code. The local UI verification worker PID is recorded in ignored `storage/logs/govstore-experiment-worker.pid`; its output/error logs are alongside it. Stop that process after checking that the recorded PID still belongs to this PHP worker.
 
+### Why a UI click does not start the worker
+
+With the dedicated database queue configured above, clicking **Populate**, **Resume population**, or confirming a wipe saves the operation and queues its job. The web request does not launch a worker process. Processing follows this sequence:
+
+**UI click → save operation → queue job → running experiment worker picks it up.**
+
+If no worker is running, a population remains `pending` and a wipe remains `wipe_pending`. Enabling the feature or installing its migrations does not start a worker. A worker listening only to another queue will not process these jobs.
+
+`--once` processes one queued job and then exits. `--stop-when-empty` processes the current backlog and exits when the queue is empty. Neither keeps a worker available for future UI clicks. Run `govstore:experiment-worker` without these options for continuous processing; a foreground terminal process must remain running.
+
+For automatic processing on a dedicated staging server, configure one persistent worker under **Supervisor or systemd**. Use the installed PHP executable and this application's directory to run `php artisan govstore:experiment-worker`, enable startup at server boot, and configure restart when the process exits. Worker service setup is a separate deployment step. Once that service is running, queued UI operations are processed automatically without a manual command for each click. Restart the dedicated service after deploying worker code changes.
+
 ## UI
 
 Open `/gov-store/admin/experiments` as an active native superuser. The navigation entry is in the current administration/context menu. Ordinary native administrators cannot open these controls.
@@ -112,3 +124,5 @@ The test boot guard accepts only the exact database in the marker with the `govs
 Detailed implementation, package coverage, profiles and validation: `docs/plans/super-admin-experiment-data-plan.md`.
 
 For agents testing any package or feature against the local app and database, read `docs/testing/local-live-testing.md`. It includes current actor discovery, scope checks, isolated test setup and cleanup; recheck its dated fixture examples before using them.
+
+For live browser testing against selectable local or staging servers, see [the target configuration guide](../../../docs/testing/live-tests-user-guide.md#configure-selectable-target-servers). Each private target entry supplies its server URL, superadmin login and optional read-only database connection. The tester discovers seeded accounts from that server's protected download; selecting a browser URL alone does not redirect the local database bridge.

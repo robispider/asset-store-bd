@@ -63,9 +63,12 @@
         <button type="button" id="selInvert">Invert</button>
       </div>
       <div id="journeyList" class="jlist"></div>
+      <label for="target">Target server</label>
+      <select id="target"><option value="">Local app and database bridge</option></select>
+      <div class="hint" id="targetHint">Add server accounts and database connections in the private target configuration file.</div>
       <label for="baseUrl">Server URL</label>
       <input id="baseUrl" type="text" placeholder="http://snipeit.local">
-      <div class="hint">Local hosts only (<code>*.local</code>, <code>*.test</code>, <code>localhost</code>). Another host needs <code>LIVE_TEST_ALLOWED_HOSTS</code> set when starting the dashboard, and must use the database the PHP bridge reads.</div>
+      <div class="hint">A configured target uses its own accounts and optional database connection. The local bridge option requires the matching local app URL.</div>
       <label class="check"><input id="headed" type="checkbox"><span>Show the browser while it runs<br><span class="hint">Opens a visible Chromium window on this computer.</span></span></label>
       <div id="slowWrap" style="display:none"><label for="slowMo">Slow motion (ms per action)</label><input id="slowMo" type="number" min="0" max="2000" value="300"></div>
       <label class="check"><input id="retry" type="checkbox"><span>Retry failed read-only journeys once<br><span class="hint">A retried pass is shown as flaky.</span></span></label>
@@ -104,6 +107,9 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt
 
 async function loadState() {
   state = await api('/api/state');
+  const targetValue = $('target').value;
+  $('target').innerHTML = '<option value="">Local app and database bridge</option>' + (state.targets || []).map(t => `<option value="${esc(t.id)}">${esc(t.label)} — ${t.hasDatabase ? 'browser + database' : 'browser only'}</option>`).join('');
+  if ((state.targets || []).some(t => t.id === targetValue)) $('target').value = targetValue;
   if (!$('suite').options.length) {
     $('suite').innerHTML = '<option value="*">All journeys</option>' + state.suites.map(s => `<option value="${esc(s.id)}">${esc(s.id)} (${s.journeys.length}) — ${esc(s.title || '')}</option>`).join('');
     $('baseUrl').value = state.defaultBaseUrl;
@@ -188,11 +194,17 @@ async function refresh() {
 }
 
 $('headed').onchange = () => { $('slowWrap').style.display = $('headed').checked ? 'block' : 'none'; };
+$('target').onchange = () => {
+  const target = state.targets.find(target => target.id === $('target').value);
+  $('baseUrl').value = target?.baseUrl || state.defaultBaseUrl;
+  $('baseUrl').readOnly = Boolean(target);
+  $('targetHint').textContent = target ? `${target.environment}: ${target.hasDatabase ? 'target browser and configured database' : 'target browser; database checks will be blocked'}` : 'Add server accounts and database connections in the private target configuration file.';
+};
 $('start').onclick = async () => {
   $('formErr').textContent = '';
   const tests = boxes().filter(b => b.checked).map(b => b.value);
   try {
-    const body = { baseUrl: $('baseUrl').value.trim(), headed: $('headed').checked, slowMo: $('slowMo').value, retryReadonly: $('retry').checked ? 1 : 0, allowWrites: $('writes').checked, allowExternalMail: $('mail').checked, seed: $('seed').value };
+    const body = { targetId: $('target').value || null, baseUrl: $('baseUrl').value.trim(), headed: $('headed').checked, slowMo: $('slowMo').value, retryReadonly: $('retry').checked ? 1 : 0, allowWrites: $('writes').checked, allowExternalMail: $('mail').checked, seed: $('seed').value };
     body.tests = tests;
     const r = await api('/api/run', { method: 'POST', body: JSON.stringify(body) });
     selected = r.runId; await loadState(); refresh();
@@ -200,8 +212,8 @@ $('start').onclick = async () => {
 };
 $('stop').onclick = () => api('/api/stop', { method: 'POST', body: '{}' }).then(loadState);
 
-loadState().catch(e => { document.body.innerHTML = '<p style="padding:20px">Dashboard token invalid. Use the URL printed by the dashboard command.</p>'; });
-setInterval(() => { loadState().catch(() => {}); refresh(); }, 1200);
+loadState().catch(e => { $('formErr').textContent = e.message; });
+setInterval(() => { loadState().catch(e => { $('formErr').textContent = e.message; }); refresh(); }, 1200);
 </script>
 </body>
 </html>
