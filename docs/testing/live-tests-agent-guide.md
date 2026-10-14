@@ -161,7 +161,7 @@ Every code extension needs a contract test against the miniature app (`npm run t
 - Multi-actor mutation with captured identity: `requests.submit-approve`.
 - Top bar and sidebar per role, inbox count vs database: `navigation.*` (suite `navigation`). Run it after any change to navigation, `NavigationHook`, theming or `layouts/default`.
 - Area-scoped actor, status tabs vs database, a dialog checked and cancelled without submitting, server validation that creates nothing: `organization.*` (suite `organization`). Run it after any change to `packages/gov-store/organization` or the theming workflow kit.
-- My offices, Join, Leave, Staff and Emergency changes, a refused form that keeps typed values, and a two-actor handover declined with a reason (write): `membership.*` (suite `office-membership`; the write journey is in suite `journeys`). Run it after any change to `packages/gov-store/office-membership`.
+- My offices, Join, Leave, Staff and Emergency changes, a refused form that keeps typed values, and a two-actor handover declined with a reason (write): `membership.*` (suite `office-membership`; the write journey is in suite `journeys`). Run it after any change to `packages/gov-store/office-membership`, with `--target local` so Emergency changes gets the target's super-admin login (the seeded dataset has no super user). Assert super-admin pages by structure, not wording: that login may read them in Bangla.
 
 ## 11. Suite template
 

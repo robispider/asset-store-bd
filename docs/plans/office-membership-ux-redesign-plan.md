@@ -126,11 +126,11 @@ Mode tweaks), WCAG 2.2 AA. Status vocabulary, glossary and IA are on board 2. Hi
 - **Live tests (2026-10-14).** Suite `office-membership` (`tests/live/subtests/membership/`, run with
   `npm run test:live -- run --suite office-membership`): My offices, Join validation, Leave readiness, Staff tabs and a
   refused Add staff, and role boundaries pass twice on the seeded dataset, compared with the database through five new
-  read-only bridge checks (`membership.*`). `membership.emergency-changes-observation` is blocked (no super user in the
-  dataset). The write journey `membership.handover-decline` (suite `journeys`) is blocked by the runner's mail-sink
+  read-only bridge checks (`membership.*`). `membership.emergency-changes-observation` needs a super user (none in the
+  dataset): it passes with `--target local`, which signs in with the target's super-admin login. The write journey `membership.handover-decline` (suite `journeys`) is blocked by the runner's mail-sink
   preflight on this installation (SMTP), although membership mail is disabled and unscheduled.
 - **Pending:** visual check in a signed-in browser in all 6 themes × light/dark and at phone width, axe pass, live
-  write journeys (join → approve; leave → sign off → welcome), live-test suite updates, bn-BD copy review (D5).
+  write journeys (join → approve; leave → sign off → welcome), bn-BD copy review (D5).
   Not built from the boards: undo after approving a join (use End access), "Remind" buttons, printing the office code.
 
 ### Original phases
