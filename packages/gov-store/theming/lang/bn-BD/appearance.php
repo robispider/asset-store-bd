@@ -111,6 +111,15 @@ return [
         'office_configured' => 'সেটআপ চলছে',
         'office_operational' => 'চালু',
         'office_suspended' => 'স্থগিত',
+        'membership_pending' => 'অনুমোদনের অপেক্ষায়',
+        'membership_active' => 'সক্রিয়',
+        'membership_release_requested' => 'ছাড়পত্রের অপেক্ষায়',
+        'membership_released_home' => 'বদলির জন্য প্রস্তুত',
+        'membership_released' => 'ছেড়ে গেছেন',
+        'membership_rejected' => 'অনুমোদিত হয়নি',
+        'membership_suspended' => 'স্থগিত',
+        'membership_inactive' => 'শেষ হয়েছে',
+        'membership_cancelled' => 'অনুরোধ বাতিল',
     ],
 
     'kit' => [

@@ -1,0 +1,28 @@
+{
+  "v": 3,
+  "createdOnFiles": {"v": 1, "at": "2026-10-14T12:00:00Z"},
+  "title": "Office Membership UX Redesign",
+  "launch": {"view": "canvas"},
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {"x": 0, "y": 0, "w": 1440, "h": 3000, "title": "1 · UX audit of the current package", "expand": "fill"},
+    "Vocabulary.dc.html": {"x": 1520, "y": 0, "w": 1440, "h": 2000, "title": "2 · Statuses, words and structure", "expand": "fill"},
+    "MyOffices.dc.html": {"x": 0, "y": 3340, "w": 1440, "h": 1750, "title": "3 · My offices (employee home)", "expand": "fill", "is_interactive": true},
+    "MyOfficesMobile.dc.html": {"x": 1520, "y": 3340, "w": 390, "h": 1600, "title": "3b · My offices on a phone, in Bangla"},
+    "JoinOffice.dc.html": {"x": 1990, "y": 3340, "w": 1440, "h": 1150, "title": "4 · Join another office", "expand": "fill", "is_interactive": true},
+    "LeaveOffice.dc.html": {"x": 0, "y": 5430, "w": 1440, "h": 1350, "title": "5 · Leave an office (guided)", "expand": "fill", "is_interactive": true},
+    "Handover.dc.html": {"x": 1520, "y": 5430, "w": 1440, "h": 1200, "title": "6 · Hand over a role", "expand": "fill"},
+    "StaffHub.dc.html": {"x": 0, "y": 7120, "w": 1440, "h": 1650, "title": "7 · Office staff (administrator)", "expand": "fill", "is_interactive": true},
+    "StaffDialogs.dc.html": {"x": 1520, "y": 7120, "w": 1440, "h": 1250, "title": "8 · Add, sign off and welcome staff", "expand": "fill"},
+    "Override.dc.html": {"x": 0, "y": 9110, "w": 1440, "h": 1700, "title": "9 · Emergency changes (national ICT)", "expand": "fill", "is_interactive": true}
+  },
+  "order": ["Main.dc.html", "Vocabulary.dc.html", "MyOffices.dc.html", "MyOfficesMobile.dc.html", "JoinOffice.dc.html", "LeaveOffice.dc.html", "Handover.dc.html", "StaffHub.dc.html", "StaffDialogs.dc.html", "Override.dc.html"],
+  "notes": {
+    "rowAudit": {"x": 0, "y": -280, "text": "Where we are, and the words we'll use", "kind": "title1", "maxW": 2960},
+    "rowEmployee": {"x": 0, "y": 3060, "text": "An employee and their offices", "kind": "title1", "maxW": 3430},
+    "rowLeave": {"x": 0, "y": 5150, "text": "Leaving an office and handing over", "kind": "title1", "maxW": 2960},
+    "rowAdmin": {"x": 0, "y": 6840, "text": "The office administrator", "kind": "title1", "maxW": 2960},
+    "rowNational": {"x": 0, "y": 8830, "text": "When the normal path is blocked", "kind": "title1", "maxW": 1440}
+  },
+  "designSystems": []
+}

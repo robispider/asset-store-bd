@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<title>আমার অফিস (ফোন)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/818ad3bee488823df6a430cb763aba33">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Source+Serif+4:wght@400;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.app{width:390px;min-height:1600px;box-sizing:border-box;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:var(--gs-font-bengali);font-size:16px;line-height:1.7}
+.top{display:flex;align-items:center;gap:10px;padding:8px 16px;background:var(--gs-header-bg);color:var(--gs-header-fg);border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.menu{width:44px;height:44px;border:0;background:transparent;color:inherit;border-radius:var(--gs-radius-sm);display:inline-flex;align-items:center;justify-content:center}
+.chip{flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:8px;min-height:44px;padding:0 12px;border-radius:var(--gs-radius-sm);border:var(--gs-border-width) solid var(--gs-color-border);background:transparent;color:inherit;font:inherit;font-size:14px;text-align:left}
+.chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.page{padding:16px;display:flex;flex-direction:column;gap:16px}
+.h1{margin:0;font-size:26px;line-height:1.35;font-weight:700}
+.muted{color:var(--gs-color-text-muted)}
+.card{background:var(--gs-color-surface);border:var(--gs-border-width) solid var(--gs-color-border);border-radius:var(--gs-radius-lg);padding:16px;display:flex;flex-direction:column;gap:12px}
+.card--focus{border-color:var(--gs-color-primary);box-shadow:inset 0 3px 0 var(--gs-color-primary)}
+.label{margin:0;font-size:13px;font-weight:700;color:var(--gs-color-text-muted)}
+.name{margin:0;font-size:17px;font-weight:700;line-height:1.45}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.stack{display:flex;flex-direction:column;gap:8px}
+.stack .gs-btn{width:100%;justify-content:center;min-height:44px}
+.ico{width:1em;height:1em;flex:none}
+.leave{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:var(--gs-radius-md);background:var(--gs-color-surface-sunken);font-size:15px}
+.sheet{margin-top:8px;background:var(--gs-color-surface);border-radius:var(--gs-radius-lg) var(--gs-radius-lg) 0 0;box-shadow:var(--gs-shadow-2);padding:12px 16px 20px;display:flex;flex-direction:column;gap:6px}
+.grab{width:40px;height:4px;border-radius:2px;background:var(--gs-color-border-strong);align-self:center;margin-bottom:6px}
+.opt{display:flex;align-items:center;gap:12px;min-height:56px;padding:6px 12px;border-radius:var(--gs-radius-md);border:0;background:transparent;color:inherit;font:inherit;text-align:left;width:100%}
+.opt[aria-current]{background:var(--gs-color-primary-subtle);box-shadow:inset 3px 0 0 var(--gs-color-primary)}
+.opt small{display:block;color:var(--gs-color-text-muted);font-size:13px}
+</style>
+</helmet>
+<div class="app" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-table="{{ v.table }}" data-gs-controls="{{ v.controls }}" data-gs-type="{{ v.type }}" data-gs-header="{{ v.header }}">
+<div class="top">
+<button type="button" class="menu" aria-label="মেনু খুলুন"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+<button type="button" class="chip" aria-haspopup="true" aria-expanded="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg><span>উপজেলা স্বাস্থ্য কমপ্লেক্স, সাভার</span></button>
+</div>
+<div class="page">
+<div><h1 class="h1">আমার অফিস</h1><p class="muted" style="margin: 0">রোকেয়া হক · সিনিয়র স্টাফ নার্স</p></div>
+
+<section class="card card--focus" aria-labelledby="m-wait">
+<p class="label" id="m-wait">আপনার জন্য অপেক্ষা করছে</p>
+<p style="margin: 0"><strong>তানভীর কবির</strong> সিভিল সার্জনের কার্যালয়, ঢাকা-এর <strong>অনুমোদনকারী</strong> দায়িত্ব আপনাকে হস্তান্তর করতে চান।</p>
+<p class="muted" style="margin: 0; font-size: 14px">গ্রহণ করলে সেখানে কর্মীদের অনুরোধ আপনি প্রথমে পর্যালোচনা করবেন। এখন ৪টি অপেক্ষায়।</p>
+<div class="stack"><button type="button" class="gs-btn gs-btn--primary">দায়িত্ব গ্রহণ করুন</button><button type="button" class="gs-btn gs-btn--light gs-btn--outline">প্রত্যাখ্যান…</button></div>
+</section>
+
+<section class="card" aria-labelledby="m-o1">
+<div class="tags"><span class="gs-tag gs-tag--primary gs-tag--outline">মূল অফিস</span><span class="gs-badge" data-tone="status-ready"><span class="gs-badge__label">সক্রিয়</span></span></div>
+<p class="name" id="m-o1">উপজেলা স্বাস্থ্য কমপ্লেক্স, সাভার</p>
+<p class="muted" style="margin: 0; font-size: 14px">আপনার দায়িত্ব: স্টোরকিপার · এখন এখানে কাজ করছেন</p>
+<div class="leave"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="color: var(--gs-color-warning); margin-top: 6px"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg><span>ছাড়ার আগে: <strong>২টি জিনিস</strong> ফেরত দিন এবং <strong>১টি দায়িত্ব</strong> হস্তান্তর করুন।</span></div>
+<div class="stack"><a class="gs-btn gs-btn--light gs-btn--outline" href="#">কী কী লাগবে দেখুন</a></div>
+</section>
+
+<section class="card" aria-labelledby="m-o2">
+<div class="tags"><span class="gs-tag gs-tag--light gs-tag--outline">অতিরিক্ত অফিস</span><span class="gs-badge" data-tone="status-ready"><span class="gs-badge__label">৩১ ডিসেম্বর পর্যন্ত সক্রিয়</span></span></div>
+<p class="name" id="m-o2">সিভিল সার্জনের কার্যালয়, ঢাকা</p>
+<div class="stack"><button type="button" class="gs-btn gs-btn--primary">এই অফিসে কাজ করুন</button></div>
+</section>
+
+<section class="card" aria-labelledby="m-o3">
+<div class="tags"><span class="gs-badge" data-tone="status-pending"><span class="gs-badge__label">অনুমোদনের অপেক্ষায়</span></span></div>
+<p class="name" id="m-o3">জেলা হাসপাতাল, মানিকগঞ্জ</p>
+<p class="muted" style="margin: 0; font-size: 14px">২ দিন আগে অনুরোধ পাঠিয়েছেন · ডা. আব্দুল করিম পর্যালোচনা করবেন</p>
+<div class="stack"><button type="button" class="gs-btn gs-btn--light gs-btn--outline">অনুরোধ বাতিল করুন</button></div>
+</section>
+
+<a class="gs-btn gs-btn--light gs-btn--outline" href="#" style="justify-content: center; min-height: 44px">অন্য অফিসে যোগ দিন</a>
+
+<p class="label" style="margin-top: 8px">অফিস চিপ খুললে (নিচ থেকে শিট)</p>
+<div class="sheet" role="dialog" aria-label="কাজের অফিস বেছে নিন">
+<span class="grab" aria-hidden="true"></span>
+<strong style="font-size: 15px">কোন অফিসে কাজ করবেন?</strong>
+<button type="button" class="opt" aria-current="true"><span style="flex: 1 1 auto">উপজেলা স্বাস্থ্য কমপ্লেক্স, সাভার<small>মূল অফিস · স্টোরকিপার</small></span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" style="color: var(--gs-color-primary)"><path d="m5 12 5 5L20 7"></path></svg></button>
+<button type="button" class="opt"><span style="flex: 1 1 auto">সিভিল সার্জনের কার্যালয়, ঢাকা<small>অতিরিক্ত অফিস · ৩১ ডিসেম্বর পর্যন্ত</small></span></button>
+<a class="opt" href="#" style="text-decoration: none; color: var(--gs-color-link)">আমার অফিস পরিচালনা করুন</a>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"$preview":{"width":390,"height":1600}}'>
+class Component extends DCLogic {
+renderVals() {
+const V = {
+'civic-ledger': { header: 'neutral', density: 'regular', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { header: 'brand', density: 'regular', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { header: 'dark', density: 'compact', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { header: 'dark', density: 'comfortable', table: 'ledger', surfaces: 'flat', controls: 'outlined', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { header: 'brand', density: 'compact', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { header: 'floating', density: 'regular', table: 'rules', surfaces: 'elevated', controls: 'filled', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+return { skin, mode, v: V[skin] };
+}
+}
+</script>
+</body>
+</html>

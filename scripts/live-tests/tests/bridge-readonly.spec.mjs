@@ -79,6 +79,26 @@ const office = await bridge.observe('organization.office', { id: registry.sample
 assert(office.done >= 0 && office.done <= 4 && office.badgeStatus === `office_${office.status}`, 'office readiness projection must be consistent');
 await bridge.observe('organization.national', {});
 assert.equal((await bridge.observe('organization.location', { name: 'LIVE-NO-SUCH-LOCATION' })).count, 0);
+// Office membership projections (read-only) for the membership journeys.
+const member = await bridge.resolveContext({
+  office: {},
+  actors: {
+    storekeeper: { role: 'storekeeper', capabilities: { allOf: ['membership.self'], noneOf: ['membership.manage'] } },
+    admin: { role: 'office_admin', capabilities: { allOf: ['membership.manage'] } }
+  },
+  records: {}
+});
+const person = await bridge.observe('membership.person', { userId: member.actors.storekeeper.id });
+assert(person.current >= 1 && person.roles >= 1, 'a storekeeper has a current office and at least one role');
+assert.equal(person.handoverButtons + person.pendingOutgoing, person.roles, 'every role shows either Hand over or Cancel');
+assert.notEqual(person.foreignMembershipId, person.homeMembershipId, 'the foreign membership belongs to someone else');
+const staffTabs = await bridge.observe('membership.staff', { officeId: member.office.id });
+assert.equal(staffTabs.adminId, member.actors.admin.id, 'the resolved administrator runs the office');
+assert.equal(staffTabs.waitTotal, staffTabs.waiting + staffTabs.leaving + staffTabs.expected, 'the banner counts what waits on the administrator');
+const handover = await bridge.observe('membership.handover', { officeId: member.office.id, role: 'storekeeper', fromUserId: member.actors.storekeeper.id });
+assert.equal(handover.fromHolds, true, 'the storekeeper holds the storekeeper role');
+assert.equal((await bridge.observe('membership.code', { code: 'zz-live 0' })).offices, 0);
+assert((await bridge.observe('membership.overrides', {})).count >= 0);
 await bridge.preflight();
 
 const after = await bridge.fingerprint();

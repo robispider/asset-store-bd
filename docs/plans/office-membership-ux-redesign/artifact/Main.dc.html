@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Office Membership UX audit</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/818ad3bee488823df6a430cb763aba33">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Source+Serif+4:wght@400;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.app{min-height:100%;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:var(--gs-font-sans);font-size:15px;line-height:1.55}
+.wrap{box-sizing:border-box;max-width:1280px;margin:0 auto;padding:64px 24px 96px;display:flex;flex-direction:column;gap:56px}
+.card{background:var(--gs-color-surface);border:var(--gs-border-width) solid var(--gs-color-border);border-radius:var(--gs-radius-lg);box-sizing:border-box}
+.eyebrow{margin:0;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gs-color-text-muted)}
+.h1{margin:0;font-family:var(--gs-font-display);font-size:46px;line-height:1.1;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+.h2{margin:0;font-family:var(--gs-font-display);font-size:26px;line-height:1.25;font-weight:700;text-wrap:balance}
+.lead{margin:0;font-size:18px;line-height:1.6;color:var(--gs-color-text-muted);max-width:880px}
+.muted{color:var(--gs-color-text-muted)}
+.score{background:var(--gs-color-primary);color:var(--gs-color-on-primary);border:0}
+.score .eyebrow{color:var(--gs-color-on-primary);opacity:.8}
+.big{font-size:112px;line-height:.9;font-weight:800;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.bar{height:10px;border-radius:99px;background:var(--gs-color-surface-sunken);overflow:hidden;flex:1 1 auto}
+.bar>span{display:block;height:100%;border-radius:99px}
+.b-hi{background:var(--gs-color-primary)}
+.b-mid{background:var(--gs-color-info)}
+.b-lo{background:var(--gs-color-warning)}
+.b-crit{background:var(--gs-color-danger)}
+.hrow{display:flex;align-items:center;gap:12px}
+.hrow>span:first-child{width:200px;font-size:14px}
+.hrow>b{width:24px;text-align:right;font-variant-numeric:tabular-nums}
+.evid{font-family:var(--gs-font-mono);font-size:12px;color:var(--gs-color-text-muted);background:var(--gs-color-surface-sunken);border-radius:var(--gs-radius-sm);padding:6px 8px;line-height:1.5;display:block}
+.fix{margin:0;font-size:14px;line-height:1.5;font-weight:600;color:var(--gs-color-primary)}
+.ftable td,.ftable th{vertical-align:top}
+.ftable td:first-child{white-space:nowrap}
+.stage{flex:1 1 180px;min-width:0;display:flex;flex-direction:column;gap:10px;padding:18px;border-radius:var(--gs-radius-md);background:var(--gs-color-surface);border:var(--gs-border-width) solid var(--gs-color-border)}
+.stage__n{font-family:var(--gs-font-mono);font-size:12px;color:var(--gs-color-text-muted)}
+.quote{margin:0;font-size:15px;line-height:1.5}
+.who{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--gs-color-text-muted)}
+.keep{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:12px}
+.keep li{display:flex;gap:10px;align-items:flex-start;padding:14px;border-radius:var(--gs-radius-md);background:var(--gs-color-surface-sunken)}
+.ico{width:18px;height:18px;flex:none;margin-top:2px}
+.ok{color:var(--gs-color-success)}
+.prin{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:16px}
+.prin>div{display:flex;flex-direction:column;gap:6px;padding:20px;border-top:3px solid var(--gs-color-primary);background:var(--gs-color-surface)}
+.prin strong{font-size:16px}
+.prin p{margin:0;color:var(--gs-color-text-muted);font-size:14px}
+</style>
+</helmet>
+<div class="app" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-table="{{ v.table }}" data-gs-controls="{{ v.controls }}" data-gs-type="{{ v.type }}" data-gs-header="{{ v.header }}">
+<main class="wrap">
+
+<header style="display: flex; flex-direction: column; gap: 16px">
+<p class="eyebrow">UX evaluation · packages/gov-store/office-membership · 14 Oct 2026</p>
+<h1 class="h1">Office Membership is safe underneath. On screen, nobody can tell what happens next.</h1>
+<p class="lead">I reviewed every screen the package renders: My office memberships, Staff management, the Emergency override console, the membership notices and the navbar office chip. I also traced its five workflows end to end: join with an office code, add with a personal code, hand over a role, leave and transfer, and the emergency override. Each screen was scored against ten usability heuristics, weighted for Bangla use and for the three people who do this work: front-line staff, office administrators and national ICT officers.</p>
+</header>
+
+<section style="display: flex; flex-wrap: wrap; gap: 24px; align-items: stretch">
+<div class="card score" style="flex: 1 1 340px; padding: 32px; display: flex; flex-direction: column; gap: 20px">
+<p class="eyebrow">Human-centred score</p>
+<div style="display: flex; align-items: baseline; gap: 10px"><span class="big">35</span><span style="font-size: 28px; font-weight: 600; opacity: .8">/ 100</span></div>
+<p style="margin: 0; font-size: 17px; line-height: 1.55">The rules engine, locking and audit trail are solid. What fails is feedback: blank statuses, error pages with no words, and a transfer that disappears after one click. Most fixes are presentation and controller changes. The services stay as they are.</p>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<span class="gs-tag gs-tag--light">2 critical</span><span class="gs-tag gs-tag--light">5 high</span><span class="gs-tag gs-tag--light">5 medium</span>
+</div>
+</div>
+<div class="card" style="flex: 2 1 560px; min-width: 0; padding: 32px; display: flex; flex-direction: column; gap: 14px">
+<p class="eyebrow">Heuristic breakdown (out of 10)</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); column-gap: 40px; row-gap: 14px">
+<div class="hrow"><span>Speed for daily users</span><div class="bar"><span class="b-mid" style="width: 50%"></span></div><b>5</b></div>
+<div class="hrow"><span>Error prevention</span><div class="bar"><span class="b-mid" style="width: 50%"></span></div><b>5</b></div>
+<div class="hrow"><span>Status is visible</span><div class="bar"><span class="b-lo" style="width: 40%"></span></div><b>4</b></div>
+<div class="hrow"><span>Recognition over recall</span><div class="bar"><span class="b-lo" style="width: 40%"></span></div><b>4</b></div>
+<div class="hrow"><span>Focused layout</span><div class="bar"><span class="b-lo" style="width: 40%"></span></div><b>4</b></div>
+<div class="hrow"><span>Control and undo</span><div class="bar"><span class="b-lo" style="width: 30%"></span></div><b>3</b></div>
+<div class="hrow"><span>Consistency</span><div class="bar"><span class="b-lo" style="width: 30%"></span></div><b>3</b></div>
+<div class="hrow"><span>Plain language (EN + বাংলা)</span><div class="bar"><span class="b-lo" style="width: 30%"></span></div><b>3</b></div>
+<div class="hrow"><span>Accessibility</span><div class="bar"><span class="b-lo" style="width: 30%"></span></div><b>3</b></div>
+<div class="hrow"><span>Error messages and recovery</span><div class="bar"><span class="b-crit" style="width: 10%"></span></div><b>1</b></div>
+</div>
+<p class="muted" style="margin: 0; font-size: 13px">For comparison, Organization scored 42 before its redesign.</p>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 16px">
+<h2 class="h2">Keep these</h2>
+<ul class="keep">
+<li><svg class="ico ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"></path></svg><span><strong>The clearance engine.</strong> Pluggable rules that count real holdings (assets, accessories, components, licence seats, nested assets) and roles.</span></li>
+<li><svg class="ico ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"></path></svg><span><strong>Handovers need consent.</strong> A role moves only when the colleague accepts, inside a locked transaction.</span></li>
+<li><svg class="ico ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"></path></svg><span><strong>Clearance is checked three times:</strong> on request, at sign-off and at claim, so a stale screen can't release someone who still holds stock.</span></li>
+<li><svg class="ico ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"></path></svg><span><strong>The office chip.</strong> Search, recent offices, aria-current, and it never renders the full office list.</span></li>
+<li><svg class="ico ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"></path></svg><span><strong>Notices outbox and override audit log.</strong> Mail survives outages; every override is on record with its reason.</span></li>
+<li><svg class="ico ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"></path></svg><span><strong>Key parity.</strong> en-US and bn-BD each have 266 keys.</span></li>
+</ul>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 16px">
+<h2 class="h2">Findings</h2>
+<p class="muted" style="margin: 0">Severity: <strong>Critical</strong> = people lose work, get stuck, or cause harm · <strong>High</strong> = visibly wrong or risky · <strong>Medium</strong> = friction. Board numbers point to the redesign on this canvas.</p>
+<div class="card" style="padding: 8px 8px 0">
+<div class="gs-table-wrap"><table class="gs-table ftable">
+<caption class="gs-sr-only">Twelve findings with severity, evidence and fix</caption>
+<thead><tr><th scope="col">#</th><th scope="col">Severity</th><th scope="col" style="width: 34%">Finding</th><th scope="col" style="width: 28%">Evidence</th><th scope="col">Fix</th></tr></thead>
+<tbody>
+<tr><td>F1</td><td><span class="gs-badge" data-tone="danger"><span class="gs-badge__label">Critical</span></span></td><td><strong>Errors are dead ends.</strong> A wrong or expired office code, a used personal code, "already a member", a stale handover: each ends on a bare 404, 409 or 422 page. The translated messages for these cases exist and are never shown.</td><td><span class="evid">MembershipWorkflow::join / addByToken / decide / claim use firstOrFail and abort(409|422) · keys membership_invalid_code, membership_already_member, admin_invalid_code unused</span></td><td><p class="fix">Typed workflow exceptions → redirect back with the message under the field and the input kept (boards 4, 8)</p></td></tr>
+<tr><td>F2</td><td><span class="gs-badge" data-tone="danger"><span class="gs-badge__label">Critical</span></span></td><td><strong>The override console is dangerous by default.</strong> "Force strip all operational roles" is preselected. The person picker renders every user in the system. Nothing shows what will change, and Force release ends <em>all</em> of a person's memberships. Only a browser confirm() stands in the way.</td><td><span class="evid">override_console.blade.php · overrideConsole(): User::orderBy('first_name')-&gt;get() · forceOverride(): OfficeMembership::where('user_id')-&gt;update(released)</span></td><td><p class="fix">Find person → see their offices, roles and holdings → choose one action, nothing preselected → reason + acknowledgement (board 9)</p></td></tr>
+<tr><td>F3</td><td><span class="gs-badge" data-tone="warning"><span class="gs-badge__label">High</span></span></td><td><strong>The package bypasses the theming kit.</strong> AdminLTE boxes, hand-built label ladders, 88 one-off om-inline-* uses (66 rules). Status style, density and radius never apply. Three dead provisioning views copy old Organization screens, with hard-coded English and a query inside the view.</td><td><span class="evid">office-membership.css · views/provisioning/{index,onboard,hub} (no controller renders them)</span></td><td><p class="fix">Rebuild on &lt;x-gs::*&gt;; delete the dead views and their ~70 keys (all boards)</p></td></tr>
+<tr><td>F4</td><td><span class="gs-badge" data-tone="warning"><span class="gs-badge__label">High</span></span></td><td><strong>Some statuses render as nothing.</strong> The badge ladder handles active, release_requested and released only. A person waiting for approval, declined, paused or ended sees a blank cell and a "Locked" button. Time-limited access (valid_until) is never shown, so it expires without warning.</td><td><span class="evid">user/index.blade.php status @if ladder · OfficeMembership.valid_until</span></td><td><p class="fix">membership_* entries in status-map.php + &lt;x-gs::status-badge&gt;; "Until 31 Dec" shown (boards 2, 3)</p></td></tr>
+<tr><td>F5</td><td><span class="gs-badge" data-tone="warning"><span class="gs-badge__label">High</span></span></td><td><strong>Two codes that look alike.</strong> A personal "verification code" (6 characters, 24 hours) and an office "invitation code" (8 characters, 30 days) sit in look-alike boxes on both pages. The hint shows OFF-ABCD-1234, a format the system never generates.</td><td><span class="evid">user_join_code_placeholder · generateInviteCode(): Str::random(8) · generateVerificationToken(): Str::random(6)</span></td><td><p class="fix">One "Join another office" flow that asks which one you have; distinct names and shapes (board 4)</p></td></tr>
+<tr><td>F6</td><td><span class="gs-badge" data-tone="warning"><span class="gs-badge__label">High</span></span></td><td><strong>A transfer vanishes after one click.</strong> After "Request release", nobody is told the next two steps (sign-off here, claim there). The sign-off box is an unstyled form at the top of Staff management. The receiving admin picks a name from a dropdown with no context, and the claim is permanent with no summary.</td><td><span class="evid">admin/staff.blade.php release box · staff_claim_* · requestRelease() flash only</span></td><td><p class="fix">A three-step transfer tracker for everyone involved; sign-off and welcome dialogs (boards 5, 7, 8)</p></td></tr>
+<tr><td>F7</td><td><span class="gs-badge" data-tone="warning"><span class="gs-badge__label">High</span></span></td><td><strong>Handover sentences are stitched from fragments.</strong> "wishes to delegate the" + role + "role to you for" + office breaks Bangla word order. Accepting warns that it "updates active database roles". Declining asks nothing and the proposer isn't told why.</td><td><span class="evid">user_handover_delegate_text · user_handover_role_to_you_for · user_handover_accept_confirm</span></td><td><p class="fix">Whole-sentence keys with :name :role :office; plain consequence text; optional decline reason (board 6)</p></td></tr>
+<tr><td>F8</td><td><span class="gs-badge" data-tone="info"><span class="gs-badge__label">Medium</span></span></td><td><strong>No way back.</strong> You can't cancel your own join request or withdraw a release request. An administrator can't end someone's additional access.</td><td><span class="evid">routes/web.php has no withdraw, cancel-join or end-access routes</span></td><td><p class="fix">Three small routes reusing MembershipWorkflow locks (boards 3, 5, 7)</p></td></tr>
+<tr><td>F9</td><td><span class="gs-badge" data-tone="info"><span class="gs-badge__label">Medium</span></span></td><td><strong>Clearance can't be acted on.</strong> Rule names are nouns ("Physical Inventory Check"). Reasons say "assets 2, accessories 0, components 0, licence seats 0". Nothing links to the items or to the handover. The release button is red even when it is the expected next step.</td><td><span class="evid">rule_*_name · holdings_blocked · user/index clearance column</span></td><td><p class="fix">&lt;x-gs::readiness&gt; with only the non-zero holdings, each with its fix (board 5)</p></td></tr>
+<tr><td>F10</td><td><span class="gs-badge" data-tone="info"><span class="gs-badge__label">Medium</span></span></td><td><strong>The page leads with the least useful thing.</strong> "Membership updates" is always first, even when empty, with raw timestamps. Four unrelated widgets stack in the right column. A handover waiting for you sits below the fold.</td><td><span class="evid">hooks/notices.blade.php (created_at printed raw) · user/index right column</span></td><td><p class="fix">"Waiting for you" first, offices second, history last as sentences (board 3)</p></td></tr>
+<tr><td>F11</td><td><span class="gs-badge" data-tone="info"><span class="gs-badge__label">Medium</span></span></td><td><strong>Structure and words describe the system.</strong> Staff management and the override console sit under "My office memberships" in the breadcrumb. Titles are concatenated ("Staff Management: " + name). Jargon: Home base, Floating, Claim, Executor, Target user, raw strip_roles codes, a radiation icon. Bangla borrows the English (মেম্বারশিপ, হ্যান্ডওভার, মুক্তির অনুরোধ).</td><td><span class="evid">routes/web.php breadcrumbs · staff_title_prefix · bn-BD/member.php</span></td><td><p class="fix">Glossary and structure on board 2; native Bangla review</p></td></tr>
+<tr><td>F12</td><td><span class="gs-badge" data-tone="info"><span class="gs-badge__label">Medium</span></span></td><td><strong>Accessibility.</strong> Approve and decline are icon-only btn-xs whose aria-label is a past-tense success message ("…request approved."). Cancel handover is an X with a title only. Clearance is colour-led. Tables have no captions or scope.</td><td><span class="evid">admin/staff.blade.php pending list · user/index outgoing handover</span></td><td><p class="fix">Labelled buttons, 44 px targets, captions; WCAG 2.2 AA via the kit (all boards)</p></td></tr>
+</tbody></table></div>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 16px">
+<h2 class="h2">The transfer journey today</h2>
+<p class="muted" style="margin: 0">Rokeya, a senior staff nurse, moves from Upazila Health Complex, Savar to Dhamrai. She holds a laptop, a pulse oximeter and the storekeeper role. The quotes are illustrative, written from what each screen shows.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 12px">
+<div class="stage"><span class="stage__n">1 · Start</span><span class="who">Rokeya</span><p class="quote">"Where do I even start a transfer? I see 'Request release' and it's greyed out."</p></div>
+<div class="stage"><span class="stage__n">2 · Clear</span><span class="who">Rokeya</span><p class="quote">"'Assets 2, accessories 0, components 0.' Which two? Where do I return them?"</p></div>
+<div class="stage"><span class="stage__n">3 · Hand over</span><span class="who">Shafiqul</span><p class="quote">"'Rokeya wishes to delegate the Storekeeper role to you for…' What does that commit me to?"</p></div>
+<div class="stage"><span class="stage__n">4 · Request</span><span class="who">Rokeya</span><p class="quote">"I clicked it. 'Release Requested'. Now what? Who do I tell?"</p></div>
+<div class="stage"><span class="stage__n">5 · Sign off</span><span class="who">Mahbub, Savar admin</span><p class="quote">"There's a button at the top of my staff page. Did it work? Is she cleared?"</p></div>
+<div class="stage"><span class="stage__n">6 · Arrive</span><span class="who">Dr. Selina, Dhamrai admin</span><p class="quote">"Approve Transfer &amp; Claim… an error page with 409. What did I do wrong?"</p></div>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 16px">
+<h2 class="h2">Principles for the redesign</h2>
+<div class="prin">
+<div><strong>Say what's next, and who does it.</strong><p>Every status comes with its next step and the name of the person it waits on.</p></div>
+<div><strong>Errors speak, and keep your input.</strong><p>Every refusal is a sentence under the field it concerns. No bare error pages.</p></div>
+<div><strong>Fix it where you see it.</strong><p>A held laptop links to the return. A role links to its handover. A blocked button says why.</p></div>
+<div><strong>Risky actions show their reach.</strong><p>Before an override, release or transfer, show exactly who and what it changes.</p></div>
+<div><strong>Whole sentences, both languages.</strong><p>No stitched fragments. বাংলা reads as written, not translated.</p></div>
+</div>
+</section>
+
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"$preview":{"width":1440,"height":3000}}'>
+class Component extends DCLogic {
+renderVals() {
+const V = {
+'civic-ledger': { header: 'neutral', density: 'regular', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { header: 'brand', density: 'regular', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { header: 'dark', density: 'compact', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { header: 'dark', density: 'comfortable', table: 'ledger', surfaces: 'flat', controls: 'outlined', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { header: 'brand', density: 'compact', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { header: 'floating', density: 'regular', table: 'rules', surfaces: 'elevated', controls: 'filled', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+return { skin, mode, v: V[skin] };
+}
+}
+</script>
+</body>
+</html>

@@ -28,10 +28,9 @@ class NoActiveRolesRule implements IClearanceRule
             ->where('user_id', $user->id)->where('expires_at', '>', now()));
 
         if ($activeResponsibilitiesCount > 0) {
-            return new ClearanceResult(
-                false,
-                __('office_membership::member.rule_roles_held', ['count' => $activeResponsibilitiesCount])
-            );
+            return new ClearanceResult(false,
+                trans_choice('office_membership::member.rule_roles_held', $activeResponsibilitiesCount, ['count' => $activeResponsibilitiesCount]),
+                [['count' => $activeResponsibilitiesCount, 'label' => trans_choice('office_membership::member.holding_roles', $activeResponsibilitiesCount, ['count' => $activeResponsibilitiesCount])]]);
         }
 
         return new ClearanceResult(true, __('office_membership::member.rule_no_blocking_roles'));

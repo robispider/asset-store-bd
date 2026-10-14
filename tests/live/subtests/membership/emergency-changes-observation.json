@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "id": "membership.emergency-changes-observation",
+  "title": "A super user finds a person by search (no list of every user), sees their offices, roles and holdings, finds nothing preselected, and sees one radio per open office with 'also remove their roles' ticked once Release is chosen; nothing is submitted",
+  "features": ["membership.emergency-changes"],
+  "tags": ["seeded", "readonly", "membership", "national"],
+  "execution": { "capability": "observe", "language": "en-US", "timeoutMs": 90000, "accessMode": "any" },
+  "fixtures": {
+    "office": { "requirements": { "operational": true } },
+    "actors": {
+      "superuser": { "role": "superuser", "allowSuperuser": true, "activeMembership": false, "capabilities": { "allOf": ["membership.override"] } },
+      "target": { "role": "storekeeper", "capabilities": { "allOf": ["membership.self"] }, "office": "office", "activeMembership": true }
+    }
+  },
+  "steps": [
+    { "action": "observe", "check": "membership.person", "args": { "userId": "${actors.target.id}" }, "as": "person" },
+    { "action": "observe", "check": "membership.overrides", "args": {}, "as": "before" },
+    { "use": "auth.login", "with": { "actor": "superuser" } },
+
+    { "action": "goto", "url": "/gov-store/admin/memberships/override/console" },
+    { "action": "assert", "test": "url", "contains": "/gov-store/admin/memberships/override/console" },
+    { "action": "assert", "target": "membership.pageTitle", "test": "count", "equals": 1, "note": "Language-independent: the super-admin login may read the page in Bangla, and the runner cannot switch a session's language" },
+    { "action": "assert", "target": "membership.historyCount", "test": "number", "equals": "${observed.before.count}" },
+    { "action": "assert", "target": "membership.fullUserList", "test": "count", "equals": 0, "note": "The page never renders every user" },
+
+    { "action": "fill", "target": "membership.personSearch", "value": "${actors.target.username}" },
+    { "action": "submitForm", "target": "membership.personSearchSubmit" },
+    { "action": "wait", "target": "membership.chooseTarget", "state": "visible" },
+    { "action": "click", "target": "membership.chooseTarget" },
+    { "action": "wait", "target": "membership.chooseRelease", "state": "attached" },
+    { "action": "assert", "target": "membership.typeRadios", "test": "count", "equals": 2 },
+    { "action": "assert", "target": "membership.typeChecked", "test": "count", "equals": 0, "note": "Nothing is chosen for the administrator" },
+    { "action": "assert", "target": "membership.releaseSection", "test": "hidden" },
+    { "action": "assert", "target": "membership.overrideReason", "test": "invalid", "note": "A reason is required" },
+    { "action": "assert", "target": "membership.askAck", "test": "invalid", "note": "So is the authorisation acknowledgement" },
+
+    { "action": "click", "target": "membership.chooseRelease" },
+    { "action": "assert", "target": "membership.releaseSection", "test": "visible" },
+    { "action": "assert", "target": "membership.officeRadios", "test": "count", "equals": "${observed.person.openOffices}", "note": "One office at a time (plan D1)" },
+    { "action": "assert", "target": "membership.alsoRoles", "test": "checked", "note": "Also remove their roles there, ticked by default (plan D2)" },
+
+    { "action": "observe", "check": "membership.overrides", "args": {}, "as": "after" },
+    { "action": "compare", "actual": "${observed.after.count}", "equals": "${observed.before.count}", "note": "Nothing was submitted" }
+  ],
+  "cleanup": { "policy": "no-business-records-created" }
+}

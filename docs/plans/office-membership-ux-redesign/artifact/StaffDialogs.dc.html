@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Add, sign off and welcome staff</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/818ad3bee488823df6a430cb763aba33">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Source+Serif+4:wght@400;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.app{min-height:100%;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:var(--gs-font-sans);font-size:14px;line-height:1.5}
+.scrim{min-height:1250px;box-sizing:border-box;background:var(--gs-color-overlay);padding:56px 24px;display:flex;flex-wrap:wrap;gap:32px;justify-content:center;align-items:flex-start}
+.dialog{flex:1 1 440px;max-width:600px;box-sizing:border-box;background:var(--gs-color-surface);color:var(--gs-color-text);border-radius:var(--gs-radius-lg);box-shadow:var(--gs-shadow-2);display:flex;flex-direction:column}
+.dh{display:flex;gap:12px;align-items:flex-start;padding:22px 24px 6px}
+.dt{margin:0;flex:1 1 auto;font-family:var(--gs-font-display);font-size:20px;line-height:1.3;font-weight:700}
+.db{padding:8px 24px 20px;display:flex;flex-direction:column;gap:16px}
+.df{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;padding:16px 24px;border-top:var(--gs-border-width) solid var(--gs-color-border);background:var(--gs-color-surface-sunken);border-radius:0 0 var(--gs-radius-lg) var(--gs-radius-lg)}
+.x{width:44px;height:44px;border:0;background:transparent;color:var(--gs-color-text-muted);border-radius:var(--gs-radius-sm);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.ico{width:18px;height:18px;flex:none}
+.muted{color:var(--gs-color-text-muted)}
+.ctl{box-sizing:border-box;width:100%;min-height:var(--gs-size-control-h);padding:8px 10px;border:var(--gs-border-width) solid var(--gs-color-border-strong);border-radius:var(--gs-radius-sm);background:var(--gs-color-surface);color:var(--gs-color-text);font:inherit}
+.ctl--code{font-family:var(--gs-font-mono);letter-spacing:.18em;text-transform:uppercase}
+.gs-form-row--error .ctl{border-color:var(--gs-color-danger)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:12px}
+.code{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;padding:16px;border-radius:var(--gs-radius-md);background:var(--gs-color-surface-sunken)}
+.code__val{font-family:var(--gs-font-mono);font-size:28px;font-weight:600;letter-spacing:.16em}
+.effects{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.effects li{display:flex;gap:10px;align-items:flex-start}
+.e-stop{color:var(--gs-color-danger)}
+.e-ok{color:var(--gs-color-success)}
+.e-info{color:var(--gs-color-info)}
+.col{flex:1 1 440px;max-width:560px;display:flex;flex-direction:column;gap:32px}
+</style>
+</helmet>
+<div class="app" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-table="{{ v.table }}" data-gs-controls="{{ v.controls }}" data-gs-type="{{ v.type }}" data-gs-header="{{ v.header }}">
+<div class="scrim">
+
+<section class="dialog" role="dialog" aria-modal="true" aria-labelledby="a-t">
+<div class="dh"><h2 class="dt" id="a-t">Add staff to Savar</h2><button type="button" class="x" aria-label="Close"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button></div>
+<div class="db">
+<div class="gs-choices" role="radiogroup" aria-label="How are they joining?" style="display: flex; flex-direction: column; gap: 8px">
+<label class="gs-choice" for="w1"><input class="gs-choice__input" type="radio" name="way" id="w1" checked="" aria-describedby="w1-d"><span class="gs-choice__text"><span class="gs-choice__label">They gave me their personal code</span><span class="gs-choice__description" id="w1-d">Adds them now, as an additional office. Their home office stays the same.</span></span></label>
+<label class="gs-choice" for="w2"><input class="gs-choice__input" type="radio" name="way" id="w2" aria-describedby="w2-d"><span class="gs-choice__text"><span class="gs-choice__label">Several people need to join</span><span class="gs-choice__description" id="w2-d">Share the office code. They ask to join and you approve each one.</span></span></label>
+<label class="gs-choice" for="w3"><input class="gs-choice__input" type="radio" name="way" id="w3" aria-describedby="w3-d"><span class="gs-choice__text"><span class="gs-choice__label">They're transferring here for good</span><span class="gs-choice__description" id="w3-d">Their old office signs them off first. Then you welcome them from the Arriving tab.</span></span></label>
+</div>
+<div class="two">
+<div class="gs-form-row"><label class="gs-form-row__label" for="un">Username</label><div class="gs-form-row__control"><input class="ctl" id="un" value="arif.h" autocomplete="off"></div></div>
+<div class="gs-form-row gs-form-row--error"><label class="gs-form-row__label" for="pc">Personal code</label><div class="gs-form-row__control"><input class="ctl ctl--code" id="pc" value="7HQ2PL" maxlength="6" aria-invalid="true" aria-describedby="pc-error"><p class="gs-form-row__error" id="pc-error" role="alert"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 15h-2v-2h2v2Zm0-4h-2V7h2v6Z"></path></svg> This code has been used already. Ask Arif to make a new one on his My offices page.</p></div></div>
+</div>
+<p class="muted" style="margin: 0; font-size: 13px">Only people in Health and Family Welfare can be added. Typed values stay after an error.</p>
+</div>
+<div class="df"><button type="button" class="gs-btn gs-btn--light gs-btn--outline">Cancel</button><button type="button" class="gs-btn gs-btn--primary">Add Arif to Savar</button></div>
+</section>
+
+<div class="col">
+<section class="dialog" role="dialog" aria-modal="true" aria-labelledby="c-t" style="max-width: none">
+<div class="dh"><h2 class="dt" id="c-t">Office code for Savar</h2></div>
+<div class="db">
+<div class="code"><span class="code__val" aria-label="Office code K 7 Q 2 M 9 X D">K7Q2 M9XD</span><span class="muted">Works until 13 Nov 2026<br>4 people have used it</span></div>
+<p style="margin: 0">Put it on the notice board or read it out at a meeting. Everyone who uses it lands in Waiting for approval.</p>
+</div>
+<div class="df"><button type="button" class="gs-btn gs-btn--light gs-btn--outline">Make a new code</button><button type="button" class="gs-btn gs-btn--light gs-btn--outline">Print a notice</button><button type="button" class="gs-btn gs-btn--primary">Copy code</button></div>
+</section>
+
+<section class="dialog" role="dialog" aria-modal="true" aria-labelledby="s-t" style="max-width: none">
+<div class="dh"><h2 class="dt" id="s-t">Sign off Rokeya Haque</h2></div>
+<div class="db">
+<section class="gs-readiness gs-readiness--compact"><div class="gs-readiness__head"><div class="gs-readiness__text"><strong class="gs-readiness__title">Checked again just now</strong></div><span class="gs-readiness__count">All clear</span></div><ul class="gs-readiness__list">
+<li class="gs-readiness__item gs-readiness__item--done"><svg class="ico gs-readiness__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.2 14.2-4-4 1.4-1.4 2.6 2.6 5.4-5.4 1.4 1.4-6.8 6.8Z"></path></svg><span class="gs-readiness__label">No items from Savar with her</span></li>
+<li class="gs-readiness__item gs-readiness__item--done"><svg class="ico gs-readiness__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.2 14.2-4-4 1.4-1.4 2.6 2.6 5.4-5.4 1.4 1.4-6.8 6.8Z"></path></svg><span class="gs-readiness__label">No roles: Storekeeper is now Nazma Akter</span></li>
+</ul></section>
+<ul class="effects">
+<li><svg class="ico e-stop" style="margin-top: 1px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8 12h8"></path></svg><span>Rokeya stops working in Savar. Her past requests stay in Savar's records.</span></li>
+<li><svg class="ico e-info" style="margin-top: 1px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h13l-3-3M17 17H4l3 3"></path></svg><span>Upazila Health Complex, Dhamrai can then welcome her. She and Dr. Selina Parvin are told.</span></li>
+</ul>
+</div>
+<div class="df"><button type="button" class="gs-btn gs-btn--light gs-btn--outline">Not yet</button><button type="button" class="gs-btn gs-btn--primary">Sign off Rokeya</button></div>
+</section>
+</div>
+
+<section class="dialog" role="dialog" aria-modal="true" aria-labelledby="w-t">
+<div class="dh"><h2 class="dt" id="w-t">Welcome Jahid Hasan to Savar</h2></div>
+<div class="db">
+<dl class="gs-kv" style="--gs-kv-columns: 2">
+<div class="gs-kv__item"><dt class="gs-kv__label">Coming from</dt><dd class="gs-kv__value">Upazila Health Complex, Keraniganj<br><span class="muted">Signed off on 10 Oct by Md. Rafiq Uddin</span></dd></div>
+<div class="gs-kv__item"><dt class="gs-kv__label">Job title</dt><dd class="gs-kv__value">Medical Technologist</dd></div>
+<div class="gs-kv__item"><dt class="gs-kv__label">Checked again just now</dt><dd class="gs-kv__value">No items or roles left at Keraniganj</dd></div>
+<div class="gs-kv__item"><dt class="gs-kv__label">Username</dt><dd class="gs-kv__value" style="font-family: var(--gs-font-mono)">jahid.h</dd></div>
+</dl>
+<ul class="effects">
+<li><svg class="ico e-ok" style="margin-top: 1px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="m5 12 5 5L20 7"></path></svg><span>Savar becomes Jahid's home office. He can order from today.</span></li>
+<li><svg class="ico e-info" style="margin-top: 1px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8h.01M11 12h1v5h1"></path></svg><span>His location in the asset register changes to Savar, so items given to him belong to Savar.</span></li>
+<li><svg class="ico e-info" style="margin-top: 1px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8h.01M11 12h1v5h1"></path></svg><span>This can't be undone from here. Moving him again needs a new transfer.</span></li>
+</ul>
+<label class="ack" for="ack" style="display: flex; gap: 10px; align-items: flex-start; padding: 12px; border-radius: var(--gs-radius-md); background: var(--gs-color-surface-sunken); cursor: pointer"><input type="checkbox" id="ack" style="width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--gs-color-primary)"><span>Jahid has reported for work at Savar.</span></label>
+</div>
+<div class="df"><button type="button" class="gs-btn gs-btn--light gs-btn--outline">Cancel</button><button type="button" class="gs-btn gs-btn--primary">Welcome Jahid to Savar</button></div>
+</section>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"$preview":{"width":1440,"height":1250}}'>
+class Component extends DCLogic {
+renderVals() {
+const V = {
+'civic-ledger': { header: 'neutral', density: 'regular', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { header: 'brand', density: 'regular', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { header: 'dark', density: 'compact', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { header: 'dark', density: 'comfortable', table: 'ledger', surfaces: 'flat', controls: 'outlined', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { header: 'brand', density: 'compact', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { header: 'floating', density: 'regular', table: 'rules', surfaces: 'elevated', controls: 'filled', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+return { skin, mode, v: V[skin] };
+}
+}
+</script>
+</body>
+</html>

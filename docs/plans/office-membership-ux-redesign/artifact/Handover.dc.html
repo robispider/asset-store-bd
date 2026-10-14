@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Hand over a role</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/818ad3bee488823df6a430cb763aba33">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Source+Serif+4:wght@400;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.app{min-height:100%;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:var(--gs-font-sans);font-size:14px;line-height:1.5}
+.scrim{min-height:1200px;box-sizing:border-box;background:var(--gs-color-overlay);padding:56px 24px;display:flex;flex-wrap:wrap;gap:32px;justify-content:center;align-items:flex-start}
+.dialog{flex:1 1 440px;max-width:580px;box-sizing:border-box;background:var(--gs-color-surface);color:var(--gs-color-text);border-radius:var(--gs-radius-lg);box-shadow:var(--gs-shadow-2);display:flex;flex-direction:column}
+.dialog--sm{max-width:460px}
+.dh{display:flex;gap:12px;align-items:flex-start;padding:22px 24px 6px}
+.dt{margin:0;flex:1 1 auto;font-family:var(--gs-font-display);font-size:20px;line-height:1.3;font-weight:700}
+.db{padding:8px 24px 20px;display:flex;flex-direction:column;gap:16px}
+.df{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;padding:16px 24px;border-top:var(--gs-border-width) solid var(--gs-color-border);background:var(--gs-color-surface-sunken);border-radius:0 0 var(--gs-radius-lg) var(--gs-radius-lg)}
+.x{width:44px;height:44px;border:0;background:transparent;color:var(--gs-color-text-muted);border-radius:var(--gs-radius-sm);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.ico{width:18px;height:18px;flex:none}
+.muted{color:var(--gs-color-text-muted)}
+.ctl{box-sizing:border-box;width:100%;min-height:var(--gs-size-control-h);padding:8px 10px 8px 34px;border:var(--gs-border-width) solid var(--gs-color-border-strong);border-radius:var(--gs-radius-sm);background:var(--gs-color-surface);color:var(--gs-color-text);font:inherit}
+.search{position:relative}
+.search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--gs-color-text-muted)}
+.people{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;max-height:300px;overflow:auto}
+.person{display:flex;gap:12px;align-items:center;min-height:56px;padding:8px 12px;border-radius:var(--gs-radius-md);border:var(--gs-border-width) solid var(--gs-color-border);cursor:pointer}
+.person input{width:18px;height:18px;margin:0;accent-color:var(--gs-color-primary)}
+.person--on{border-color:var(--gs-color-primary);background:var(--gs-color-primary-subtle)}
+.person--off{opacity:.75;cursor:not-allowed}
+.person__text{flex:1 1 auto;min-width:0}
+.person__text small{display:block;color:var(--gs-color-text-muted)}
+.next{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.field{display:flex;flex-direction:column;gap:6px}
+.lbl{font-weight:600}
+.txt{box-sizing:border-box;width:100%;padding:8px 10px;border:var(--gs-border-width) solid var(--gs-color-border-strong);border-radius:var(--gs-radius-sm);background:var(--gs-color-surface);color:var(--gs-color-text);font:inherit}
+.wait{display:inline-flex;align-items:center;gap:6px;color:var(--gs-color-status-pending);font-weight:600}
+</style>
+</helmet>
+<div class="app" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-table="{{ v.table }}" data-gs-controls="{{ v.controls }}" data-gs-type="{{ v.type }}" data-gs-header="{{ v.header }}">
+<div class="scrim">
+
+<section class="dialog" role="dialog" aria-modal="true" aria-labelledby="h-t">
+<div class="dh"><h2 class="dt" id="h-t">Hand over the Storekeeper role</h2><button type="button" class="x" aria-label="Close"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button></div>
+<div class="db">
+<p class="muted" style="margin: 0">Upazila Health Complex, Savar. The storekeeper hands out approved items, checks returns in and keeps stock records.</p>
+<div class="field"><label class="lbl" for="who">Who should take it?</label><div class="search"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input class="ctl" id="who" type="search" placeholder="Search 11 colleagues in Savar" aria-controls="people"></div></div>
+<ul class="people" id="people" role="radiogroup" aria-label="Colleagues">
+<li><label class="person person--on" for="p1"><input type="radio" name="person" id="p1" checked=""><span class="gs-avatar gs-avatar--md gs-tone-primary" aria-hidden="true">NA</span><span class="person__text"><strong>Nazma Akter</strong><small>Store Assistant · nazma.akter · no roles yet</small></span></label></li>
+<li><label class="person" for="p2"><input type="radio" name="person" id="p2"><span class="gs-avatar gs-avatar--md gs-tone-primary" aria-hidden="true">SI</span><span class="person__text"><strong>Shafiqul Islam</strong><small>Pharmacist · shafiqul.i · already Approver here</small></span></label></li>
+<li><label class="person" for="p3"><input type="radio" name="person" id="p3"><span class="gs-avatar gs-avatar--md gs-tone-primary" aria-hidden="true">TK</span><span class="person__text"><strong>Tanvir Kabir</strong><small>Office Assistant · tanvir.k</small></span></label></li>
+<li><label class="person person--off" for="p4"><input type="radio" name="person" id="p4" disabled="" aria-describedby="p4-why"><span class="gs-avatar gs-avatar--md gs-tone-muted" aria-hidden="true">FR</span><span class="person__text"><strong>Farhan Rahman</strong><small id="p4-why">Leaving this office · can't take new roles</small></span></label></li>
+</ul>
+<div class="field"><label class="lbl" for="note">Note for Nazma <span class="muted" style="font-weight: 400">(optional)</span></label><textarea class="txt" id="note" rows="2">The stock register is in the blue cabinet. I'm here until Thursday if you have questions.</textarea></div>
+<div><strong>What happens next</strong><ol class="next" style="margin-top: 6px"><li>Nazma gets a request on her My offices page and by email.</li><li>The role stays yours until she accepts. You can cancel before then.</li><li>When she accepts, you're both told and your leaving checklist updates.</li></ol></div>
+</div>
+<div class="df"><button type="button" class="gs-btn gs-btn--light gs-btn--outline">Cancel</button><button type="button" class="gs-btn gs-btn--primary">Send request to Nazma</button></div>
+</section>
+
+<div style="flex: 1 1 400px; max-width: 460px; display: flex; flex-direction: column; gap: 32px">
+<section class="dialog dialog--sm" aria-labelledby="s-t" style="max-width: none">
+<div class="dh"><h2 class="dt" id="s-t">After sending: the role slot</h2></div>
+<div class="db">
+<div class="gs-role"><div class="gs-role__head"><strong class="gs-role__name">Storekeeper</strong></div><p class="gs-role__description">Upazila Health Complex, Savar</p><div class="gs-role__body"><span class="gs-avatar gs-avatar--md gs-tone-primary" aria-hidden="true">RH</span><div class="gs-role__person"><span class="gs-role__person-name">You, until Nazma accepts</span><span class="gs-role__person-meta"><span class="wait"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Waiting for Nazma Akter since 10:12</span></span></div><div class="gs-role__actions"><button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm">Remind</button><button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm">Cancel request</button></div></div></div>
+<p class="muted" style="margin: 0; font-size: 13px">Replaces today's "Awaiting Nazma" text and the unlabelled × button.</p>
+</div>
+</section>
+
+<section class="dialog dialog--sm" role="alertdialog" aria-labelledby="e-t" aria-describedby="e-d" style="max-width: none">
+<div class="dh"><span style="color: var(--gs-color-warning); margin-top: 3px"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 2 21h20L12 3Z"></path><path d="M12 10v4M12 17h.01"></path></svg></span><h2 class="dt" id="e-t">This role changed while you were choosing</h2></div>
+<div class="db"><p id="e-d" style="margin: 0">Mahbub Alam made <strong>Shafiqul Islam</strong> storekeeper at 10:03, so there's nothing for you to hand over. Nothing was sent to Nazma.</p><p class="muted" style="margin: 0; font-size: 13px">Today this case ends on a "409" error page.</p></div>
+<div class="df"><button type="button" class="gs-btn gs-btn--primary">Back to my leaving checklist</button></div>
+</section>
+</div>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"$preview":{"width":1440,"height":1200}}'>
+class Component extends DCLogic {
+renderVals() {
+const V = {
+'civic-ledger': { header: 'neutral', density: 'regular', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { header: 'brand', density: 'regular', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { header: 'dark', density: 'compact', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { header: 'dark', density: 'comfortable', table: 'ledger', surfaces: 'flat', controls: 'outlined', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { header: 'brand', density: 'compact', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { header: 'floating', density: 'regular', table: 'rules', surfaces: 'elevated', controls: 'filled', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+return { skin, mode, v: V[skin] };
+}
+}
+</script>
+</body>
+</html>

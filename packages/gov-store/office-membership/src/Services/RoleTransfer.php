@@ -4,6 +4,7 @@ namespace GovStore\OfficeMembership\Services;
 
 use App\Models\Location;
 use App\Models\User;
+use GovStore\OfficeMembership\Exceptions\MembershipRefused;
 use GovStore\OfficeMembership\Models\OfficeMembership;
 use GovStore\OfficeMembership\Models\OfficeResponsibility;
 use GovStore\OfficeMembership\Models\RoleAssignment;
@@ -49,44 +50,45 @@ class RoleTransfer
         abort_unless(in_array($role, self::ROLES, true), 422);
         $owns = $role === 'office_admin' ? (int) $profile->office_admin_id === $user
             : (bool) OfficeResponsibility::where('location_id', $profile->location_id)->where('user_id', $user)->where('role_slug', $role)->lockForUpdate()->first();
-        abort_unless($owns, 409, __('office_membership::member.transfer_stale'));
+        MembershipRefused::unless($owns, 409, 'transfer_stale');
     }
 
-    public function propose(string $model, int $office, string $role, int $from, int $to)
+    public function propose(string $model, int $office, string $role, int $from, int $to, ?string $note = null)
     {
         $this->columns($model);
         abort_unless((int) auth()->id() === $from, 403);
-        abort_if($from === $to, 422);
+        MembershipRefused::when($from === $to, 422, 'handshake_self_delegate_error', 'assigned_user_id');
 
-        return DB::transaction(function () use ($model, $office, $role, $from, $to) {
+        return DB::transaction(function () use ($model, $office, $role, $from, $to, $note) {
             $profile = $this->lockOffice($office);
             foreach (array_unique([min($from, $to), max($from, $to)]) as $user) {
                 $this->activeMember($user, $office);
             }
             $this->owner($profile, $role, $from);
             foreach ([RoleHandshake::class, RoleAssignment::class] as $type) {
-                abort_if($type::where('location_id', $office)->where('role_type', $role)->where('status', 'pending')->exists(), 409);
+                MembershipRefused::when($type::where('location_id', $office)->where('role_type', $role)->where('status', 'pending')->exists(), 409, 'handshake_pending_exists');
             }
             [$sender, $recipient] = $this->columns($model);
             $proposal = $model::create(['location_id' => $office, 'role_type' => $role, $sender => $from, $recipient => $to, 'status' => 'pending']);
-            app(MembershipNotices::class)->record('transfer_proposed', $office, [$from, $to], ['role' => $role]);
+            app(MembershipNotices::class)->record('transfer_proposed', $office, [$from, $to],
+                array_filter(['role' => $role, 'note' => $note !== null && trim($note) !== '' ? mb_substr(trim($note), 0, 500) : null]));
 
             return $proposal;
         });
     }
 
-    public function transition(string $model, int $id, int $actor, string $action): void
+    public function transition(string $model, int $id, int $actor, string $action, ?string $reason = null): void
     {
         abort_unless(in_array($action, ['accept', 'reject', 'cancel'], true), 422);
         abort_unless((int) auth()->id() === $actor, 403);
-        DB::transaction(function () use ($model, $id, $actor, $action) {
+        DB::transaction(function () use ($model, $id, $actor, $action, $reason) {
             [$sender, $recipient] = $this->columns($model);
             $column = $action === 'cancel' ? $sender : $recipient;
             // Bound lookup before locking prevents unrelated users learning proposal details.
             $initial = $model::where($column, $actor)->findOrFail($id);
             $profile = $this->lockOffice($initial->location_id, $action === 'accept');
             $proposal = $model::where($column, $actor)->lockForUpdate()->findOrFail($id);
-            abort_unless($proposal->status === 'pending', 409);
+            MembershipRefused::unless($proposal->status === 'pending', 409, 'handshake_already_answered');
             $from = (int) $proposal->$sender;
             $to = (int) $proposal->$recipient;
             if ($action === 'accept') {
@@ -110,7 +112,8 @@ class RoleTransfer
                 'accept' => $model === RoleHandshake::class ? 'accepted' : 'completed', 'reject' => 'rejected', 'cancel' => 'cancelled'
             };
             $proposal->update(['status' => $status]);
-            app(MembershipNotices::class)->record('transfer_'.$status, $proposal->location_id, [$from, $to], ['role' => $proposal->role_type]);
+            app(MembershipNotices::class)->record('transfer_'.$status, $proposal->location_id, [$from, $to], array_filter(['role' => $proposal->role_type,
+                'reason' => $action === 'reject' && $reason !== null && trim($reason) !== '' ? mb_substr(trim($reason), 0, 500) : null]));
         });
     }
 

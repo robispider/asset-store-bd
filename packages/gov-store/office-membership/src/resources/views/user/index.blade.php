@@ -2,268 +2,244 @@
 
 @section('title', __('office_membership::member.user_page_title'))
 
+{{--
+    My offices (plan board 3): what waits for the person first, then each office with its status and next
+    step, their roles, history as sentences and the personal code. Expects the data from MembershipController::index.
+--}}
+@php
+    $m = 'office_membership::member.';
+    $date = fn ($value) => $value ? $value->translatedFormat('j M Y') : '';
+@endphp
+
 @section('content')
-<div class="office-membership-theme">
-@include('govmem::hooks.notices')
-<div class="row">
-    <!-- LEFT PANEL: Active Memberships and dynamic Clearance Engine indicators -->
-    <div class="col-md-7">
-        <div class="box box-primary">
-            <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-id-badge"></i> {{ __('office_membership::member.user_active_memberships_title') }}</h3>
-            </div>
-            <div class="box-body table-responsive">
-                <x-gs::table class="table table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>{{ __('office_membership::member.user_table_office') }}</th>
-                            <th>{{ __('office_membership::member.user_table_status') }}</th>
-                            <th>{{ __('office_membership::member.user_table_clearance') }}</th>
-                            <th class="om-inline-5a2f1a27">{{ __('office_membership::member.user_table_action') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($memberships as $mem)
-                            @php
-                                $checks = $clearanceMatrix[$mem->id] ?? [];
-                                $isCleared = isset($engine) ? $engine->isCleared($checks) : false;
-                            @endphp
-                            <tr>
-                                <td>
-                                    <strong>{{ $mem->location->name ?? __('office_membership::member.user_table_office') }}</strong><br>
-                                    <small class="text-muted">{{ $mem->location->company->name ?? __('office_membership::member.standalone') }}</small>
-                                </td>
-                                <td class="om-inline-092f0f30">
-                                    @if($mem->status === 'active')
-                                        <span class="label label-success">{{ __('office_membership::member.user_status_active') }}</span>
-                                        @if($mem->is_home_office) <span class="label label-primary"><i class="fas fa-star"></i> {{ __('office_membership::member.user_status_home_base') }}</span> @endif
-                                    @elseif($mem->status === 'release_requested')
-                                        <span class="label bg-orange">{{ __('office_membership::member.user_status_release_requested') }}</span>
-                                    @elseif($mem->status === 'released')
-                                        <span class="label label-default">{{ __('office_membership::member.user_status_released') }}</span>
-                                    @endif
-                                </td>
-                                <td class="om-inline-092f0f30">
-                                    @if($mem->status === 'active')
-                                        <ul class="list-unstyled om-inline-7fdeb8b8">
-                                            @foreach($checks as $name => $result)
-                                                <li class="{{ $result->isPassed ? 'text-success' : 'text-danger' }}">
-                                                    <i class="fas {{ $result->isPassed ? 'fa-check-circle' : 'fa-times-circle' }}"></i> {{ $name }}
-                                                    @if(!$result->isPassed)
-                                                        <br><small class="text-muted om-inline-3119a226">{{ $result->reason }}</small>
-                                                    @endif
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                    @else
-                                        <span class="text-muted">{{ __('office_membership::member.user_clearance_na') }}</span>
-                                    @endif
-                                </td>
-                                <td class="om-inline-092f0f30">
-                                    @if($mem->status === 'active')
-                                        <form action="{{ route('gov.membership.request-release', $mem->id) }}" method="POST">
-                                            @csrf
-                                            <button type="submit" class="btn btn-sm btn-block {{ $isCleared ? 'btn-danger' : 'btn-default' }}" @if(!$isCleared) disabled title="{{ __('office_membership::member.clearance_blocks') }}" @endif onclick="return confirm('{{ __('office_membership::member.user_request_release_confirm') }}')">
-                                                <i class="fas fa-sign-out-alt"></i> {{ __('office_membership::member.user_request_release_button') }}
-                                            </button>
-                                        </form>
-                                    @else
-                                        <button class="btn btn-sm btn-block btn-default" disabled><i class="fas fa-lock"></i> {{ __('office_membership::member.user_locked_button') }}</button>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="4" class="text-center text-muted om-inline-ed0f0aa0">{{ __('office_membership::member.user_no_memberships') }}</td></tr>
-                        @endforelse
-                    </tbody>
-                </x-gs::table>
-            </div>
-        </div>
-    </div>
+<div class="govmem">
+    <x-gs::page-header :title="__($m.'user_page_title')"
+        :subtitle="collect([$user->present()->fullName, $user->jobtitle, $user->username])->filter()->implode(' · ')">
+        <x-slot:actions>
+            <x-gs::button :href="route('gov.membership.join.form')" icon="fa-plus">{{ __($m.'join_title') }}</x-gs::button>
+        </x-slot:actions>
+    </x-gs::page-header>
 
-    <!-- RIGHT PANEL: Handshakes & Handovers -->
-    <div class="col-md-5">
-        
-        <!-- VERIFICATION CODE GENERATOR WIDGET -->
-        <div class="box box-success om-inline-709ea946">
-            <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-qrcode text-success"></i> {{ __('office_membership::member.user_credential_title') }}</h3>
-            </div>
-            <div class="box-body text-center om-inline-6fe3c4ac">
-                <p class="text-muted om-inline-eca5fde5">
-                    {{ __('office_membership::member.user_credential_hint') }}
-                </p>
-                
-                @if(isset($activeToken) && $activeToken)
-                    <div class="om-inline-20b7438c">
-                        <span class="om-inline-d18dd8b8">{{ __('office_membership::member.user_token_active_label') }}</span>
-                        <span class="om-inline-63a3af60">{{ $activeToken->token }}</span>
-                        <span class="om-inline-5e98ec0d">
-                            <i class="fas fa-clock"></i> {{ __('office_membership::member.expires') }}: {{ $activeToken->expires_at->diffForHumans() }}
-                        </span>
-                    </div>
-                @else
-                    <div class="om-inline-3312350a">
-                        <span class="om-inline-c7560035"><i class="fas fa-lock"></i> {{ __('office_membership::member.user_token_no_active') }}</span>
-                    </div>
-                @endif
+    @include('govmem::partials.errors')
 
-                <form action="{{ route('gov.membership.token.generate') }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn btn-success btn-sm btn-block">
-                        <i class="fas fa-sync-alt"></i> {{ isset($activeToken) && $activeToken ? __('office_membership::member.user_token_regenerate') : __('office_membership::member.user_token_generate') }}
-                    </button>
-                </form>
-            </div>
-        </div>
-
-        <!-- JOIN OFFICE VIA MASS INVITATION CODE WIDGET -->
-        <div class="box box-primary om-inline-39a594e2">
-            <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-building text-primary"></i> {{ __('office_membership::member.user_join_title') }}</h3>
-            </div>
-            <form action="{{ route('gov.membership.join') }}" method="POST">
-                @csrf
-                <div class="box-body text-center om-inline-6fe3c4ac">
-                    <p class="text-muted om-inline-eca5fde5">
-                        {{ __('office_membership::member.user_join_hint') }}
-                    </p>
-                    <div class="form-group">
-                        <input class="form-control text-center om-inline-b9a57387" type="text" name="office_code" placeholder="{{ __('office_membership::member.user_join_code_placeholder') }}" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-sm btn-block">
-                        <i class="fas fa-paper-plane"></i> {{ __('office_membership::member.user_join_send_button') }}
-                    </button>
-                </div>
-            </form>
-        </div>
-        
-        <!-- INCOMING HANDSHAKES PROPOSALS -->
-        @if($incomingRequests->count() > 0)
-        <div class="box box-warning om-inline-ce5e73b6">
-            <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-bell text-warning"></i> {{ __('office_membership::member.user_handover_title') }}</h3>
-            </div>
-            <div class="box-body">
-                @foreach($incomingRequests as $inc)
-                    <div class="om-inline-f76a3cae">
-                        <strong>{{ $inc->outgoingUser ? $inc->outgoingUser->present()->fullName : __('office_membership::member.staff_unknown_employee') }}</strong> {{ __('office_membership::member.user_handover_delegate_text') }} 
-                        <span class="label bg-orange om-inline-19b327ae">{{ __('office_membership::member.role_'.$inc->role_slug) }}</span> {{ __('office_membership::member.user_handover_role_to_you_for') }} <strong>{{ $inc->location->name ?? __('office_membership::member.staff_claim_hint') }}</strong>.
-                        
-                        <div class="om-inline-03804ad7">
-                            <form action="{{ route('gov.membership.handshake.accept', $inc->id) }}" method="POST" class="om-inline-7bf38354">
-                                @csrf <button class="btn btn-success btn-sm btn-block" onclick="return confirm('{{ __('office_membership::member.user_handover_accept_confirm') }}')"><i class="fas fa-check"></i> {{ __('office_membership::member.user_handover_accept_button') }}</button>
-                            </form>
-                            <form action="{{ route('gov.membership.handshake.reject', $inc->id) }}" method="POST" class="om-inline-7bf38354">
-                                @csrf <button class="btn btn-danger btn-sm btn-block"><i class="fas fa-times"></i> {{ __('office_membership::member.user_handover_reject_button') }}</button>
-                            </form>
+    @if ($incoming->isNotEmpty())
+        <x-gs::box :title="__($m.'waiting_for_you')" tone="primary" id="waiting-for-you">
+            <x-slot:tools><x-gs::badge tone="primary" pill>{{ $incoming->count() }}</x-gs::badge></x-slot:tools>
+            <div class="govmem-stack">
+                @foreach ($incoming as $request)
+                    @php
+                        $from = $request->outgoingUser?->present()->fullName ?? __($m.'unknown_person');
+                        $officeName = $request->location->name ?? __($m.'unknown_office');
+                    @endphp
+                    <article class="govmem-request" aria-labelledby="handover-{{ $request->id }}">
+                        <x-gs::avatar :name="$from" />
+                        <div class="govmem-request__body govmem-stack">
+                            <p class="govmem-flush" id="handover-{{ $request->id }}">
+                                {{ __($m.'handover_incoming', ['name' => $from, 'role' => __($m.'role_'.$request->role_type), 'office' => $officeName]) }}
+                            </p>
+                            <p class="govmem-meta govmem-flush">{{ __($m.'sent_ago', ['time' => $request->created_at?->diffForHumans()]) }}</p>
+                            <div>
+                                <strong>{{ __($m.'handover_if_accept') }}</strong>
+                                <ul class="govmem-effects">
+                                    <li><i class="fas fa-briefcase" aria-hidden="true"></i><span>{{ __($m.'role_desc_'.$request->role_type) }}</span></li>
+                                    <li><i class="fas fa-id-badge" aria-hidden="true"></i><span>{{ __($m.'handover_if_named', ['office' => $officeName]) }}</span></li>
+                                    <li><i class="fas fa-right-left" aria-hidden="true"></i><span>{{ __($m.'handover_if_again') }}</span></li>
+                                </ul>
+                            </div>
+                            <div class="govmem-toolbar">
+                                <form method="POST" action="{{ route('gov.membership.handshake.accept', $request->id) }}" class="govmem-inline-form">
+                                    @csrf
+                                    <x-gs::button type="submit" icon="fa-check">{{ __($m.'handover_accept') }}</x-gs::button>
+                                </form>
+                                <details class="govmem-decline">
+                                    <summary class="gs-btn gs-btn--light gs-btn--outline">{{ __($m.'handover_decline_open') }}</summary>
+                                    <form method="POST" action="{{ route('gov.membership.handshake.reject', $request->id) }}" class="govmem-stack">
+                                        @csrf
+                                        <x-gs::form-row for="reason-{{ $request->id }}" :label="__($m.'handover_decline_reason', ['name' => $request->outgoingUser?->first_name ?? ''])"
+                                            :help="__($m.'handover_decline_help', ['name' => $request->outgoingUser?->first_name ?? ''])">
+                                            <textarea class="form-control" id="reason-{{ $request->id }}" name="reason" rows="2" maxlength="500" aria-describedby="reason-{{ $request->id }}-help"></textarea>
+                                        </x-gs::form-row>
+                                        <div><x-gs::button type="submit" tone="light" outline>{{ __($m.'handover_decline') }}</x-gs::button></div>
+                                    </form>
+                                </details>
+                            </div>
                         </div>
-                    </div>
+                    </article>
                 @endforeach
             </div>
-        </div>
-        @endif
+        </x-gs::box>
+    @endif
 
-        <!-- MY ACTIVE RESPONSIBILITIES (DELEGATION CONTROLS) -->
-        <div class="box box-default om-inline-80472c54">
-            <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-user-shield text-muted"></i> {{ __('office_membership::member.user_responsibilities_title') }}</h3>
-            </div>
-            <div class="box-body">
-                <p class="text-muted om-inline-d75cbef7">{{ __('office_membership::member.user_responsibilities_hint') }}</p>
-                
-                @forelse($myActiveRoles as $locId => $rolesList)
-                    @php $locName = $memberships->firstWhere('location_id', $locId)?->location?->name ?? __('office_membership::member.user_table_office'); @endphp
-                    <h5 class="om-inline-494240c8">{{ $locName }}</h5>
-                    
-                    <x-gs::table class="table table-condensed">
-                        @foreach($rolesList as $roleType)
-                            @php
-                                $pendingOutgoing = $outgoingRequests->where('location_id', $locId)->where('role_slug', $roleType)->first();
-                            @endphp
-                            <tr>
-                                <td class="om-inline-092f0f30">
-                                    <span class="label bg-blue">{{ __('office_membership::member.role_'.$roleType) }}</span>
-                                </td>
-                                <td class="om-inline-b198ccc8">
-                                    @if($pendingOutgoing)
-                                        <span class="text-warning om-inline-cba5f610">
-                                            <i class="fas fa-hourglass-half"></i> {{ __('office_membership::member.awaiting', ['name' => $pendingOutgoing->incomingUser?->first_name ?? __('office_membership::member.user_modal_colleague_label')]) }}
-                                        </span>
-                                        <form action="{{ route('gov.membership.handshake.cancel', $pendingOutgoing->id) }}" method="POST" class="om-inline-f8bef7f8">
-                                            @csrf <button type="submit" class="btn btn-xs btn-default text-danger" title="{{ __('office_membership::member.cancel_request') }}"><i class="fas fa-times"></i></button>
-                                        </form>
-                                    @else
-                                        <button class="btn btn-xs btn-default" data-location="{{ $locId }}" data-role="{{ $roleType }}" data-role-name="{{ __('office_membership::member.role_'.$roleType) }}" onclick="openDelegateModal(this.dataset.location, this.dataset.role, this.dataset.roleName)">
-                                            <i class="fas fa-exchange-alt"></i> {{ __('office_membership::member.delegate') }}
-                                        </button>
+    <div class="govmem-layout">
+        <div class="govmem-layout__main govmem-stack">
+            <section aria-labelledby="your-offices" class="govmem-stack">
+                <h2 class="govmem-heading" id="your-offices">{{ __($m.'offices_title') }} <span class="govmem-muted">{{ $current->count() }}</span></h2>
+
+                @forelse ($current as $membership)
+                    @php
+                        $office = (int) $membership->location_id;
+                        $officeName = $membership->location->name ?? __($m.'unknown_office');
+                        $admin = $admins[$office] ?? null;
+                        $adminName = $admin?->present()->fullName ?? __($m.'the_office_admin');
+                        $officeRoles = $roles[$office] ?? [];
+                        $checks = $readiness[$membership->id] ?? [];
+                        $open = collect($checks)->reject(fn ($r) => $r->isPassed);
+                        $live = $membership->isLive();
+                    @endphp
+                    <article class="gs-card govmem-office" id="office-{{ $membership->id }}">
+                        <div class="gs-card__body govmem-stack">
+                            <div class="govmem-office__head">
+                                <div>
+                                    <h3 class="govmem-office__name">{{ $officeName }}</h3>
+                                    <span class="govmem-meta">{{ $membership->location->company->name ?? __($m.'standalone') }}</span>
+                                </div>
+                                <div class="govmem-toolbar">
+                                    <x-gs::status-badge :status="$membership->statusKey()"
+                                        :label="$membership->status === 'active' && $membership->valid_until ? __($m.'active_until', ['date' => $date($membership->valid_until)]) : null" />
+                                    <x-gs::badge :tone="$membership->is_home_office ? 'primary' : 'secondary'" outline>
+                                        {{ __($m.($membership->is_home_office ? 'home_office' : 'additional_office')) }}
+                                    </x-gs::badge>
+                                    @if ($live && $office === $workingOffice)
+                                        <x-gs::badge tone="success" outline>{{ __($m.'working_here_now') }}</x-gs::badge>
                                     @endif
-                                </td>
-                            </tr>
-                        @endforeach
-                    </x-gs::table>
+                                </div>
+                            </div>
+
+                            <p class="govmem-flush">
+                                    @if ($membership->status === 'pending')
+                                        {{ __($m.'office_pending', ['time' => $membership->updated_at?->diffForHumans(), 'admin' => $adminName]) }}
+                                    @elseif ($membership->status === 'release_requested')
+                                        {{ __($m.'office_leaving', ['time' => $membership->updated_at?->diffForHumans(), 'admin' => $adminName]) }}
+                                    @elseif ($membership->status === 'released')
+                                        {{ $membership->destination
+                                            ? __($m.'office_ready_to', ['office' => $membership->destination->name])
+                                            : __($m.'office_ready') }}
+                                    @elseif ($membership->status === 'suspended')
+                                        {{ __($m.'office_paused', ['admin' => $adminName]) }}
+                                    @else
+                                        {{ $membership->approver
+                                            ? __($m.'office_since_by', ['date' => $date($membership->approved_at ?? $membership->created_at), 'name' => $membership->approver->present()->fullName])
+                                            : __($m.'office_since', ['date' => $date($membership->approved_at ?? $membership->created_at)]) }}
+                                        @if ($membership->status === 'active' && ! $live)
+                                            {{ __($m.'office_expired') }}
+                                        @elseif ($membership->valid_until)
+                                            {{ __($m.'office_ends_on_own', ['date' => $date($membership->valid_until)]) }}
+                                        @endif
+                                @endif
+                            </p>
+
+                            @if ($officeRoles)
+                                <p class="govmem-flush">{{ __($m.'office_your_roles', ['roles' => collect($officeRoles)->map(fn ($r) => __($m.'role_'.$r))->implode(', ')]) }}</p>
+                            @endif
+
+                            @if ($membership->status === 'active' && $live)
+                                <p class="govmem-flush govmem-small">
+                                    @if ($open->isEmpty())
+                                        <i class="fas fa-circle-check govmem-ok" aria-hidden="true"></i> {{ __($m.'office_free_to_leave') }}
+                                    @else
+                                        <i class="fas fa-list-check" aria-hidden="true"></i>
+                                        {{ __($m.'office_before_leave', ['items' => $open->map(fn ($r) => $r->summary())->implode('; ')]) }}
+                                        <a href="{{ route('gov.membership.leave', $membership->id) }}">{{ __($m.'office_see_needed') }}</a>
+                                    @endif
+                                </p>
+                            @endif
+                        </div>
+                        <div class="gs-card__actions govmem-toolbar">
+                            @if ($membership->status === 'active')
+                                @if ($live && $office !== $workingOffice)
+                                    <form method="POST" action="{{ route('gov.membership.switch') }}" class="govmem-inline-form">
+                                        @csrf
+                                        <input type="hidden" name="membership_id" value="{{ $membership->id }}">
+                                        <x-gs::button type="submit" size="sm" icon="fa-location-dot">{{ __($m.'work_here') }}</x-gs::button>
+                                    </form>
+                                @endif
+                                <x-gs::button :href="route('gov.membership.leave', $membership->id)" tone="light" outline size="sm">{{ __($m.'leave_button') }}</x-gs::button>
+                            @elseif ($membership->status === 'pending')
+                                <form method="POST" action="{{ route('gov.membership.cancel-join', $membership->id) }}" class="govmem-inline-form">
+                                    @csrf
+                                    <x-gs::button type="submit" tone="light" outline size="sm">{{ __($m.'join_cancel') }}</x-gs::button>
+                                </form>
+                            @elseif (in_array($membership->status, ['release_requested', 'released'], true))
+                                <x-gs::button :href="route('gov.membership.leave', $membership->id)" size="sm" icon="fa-route">{{ __($m.'transfer_see') }}</x-gs::button>
+                                @if ($membership->status === 'release_requested')
+                                    <form method="POST" action="{{ route('gov.membership.withdraw-release', $membership->id) }}" class="govmem-inline-form">
+                                        @csrf
+                                        <x-gs::button type="submit" tone="light" outline size="sm">{{ __($m.'leave_withdraw') }}</x-gs::button>
+                                    </form>
+                                @endif
+                            @endif
+                        </div>
+                    </article>
                 @empty
-                    <div class="text-center text-muted om-inline-921a2ecf">{{ __('office_membership::member.user_no_active_roles') }}</div>
+                    <x-gs::empty-state icon="fa-building" :title="__($m.'offices_none_title')">
+                        {{ __($m.'offices_none_body') }}
+                        <x-slot:actions><x-gs::button :href="route('gov.membership.join.form')">{{ __($m.'join_title') }}</x-gs::button></x-slot:actions>
+                    </x-gs::empty-state>
                 @endforelse
-            </div>
+
+                @if ($past->isNotEmpty())
+                    <details class="govmem-past">
+                        <summary>{{ __($m.'past_offices', ['count' => $past->count()]) }}</summary>
+                        <ul class="govmem-sentences">
+                            @foreach ($past as $membership)
+                                @php $pastName = $membership->location->name ?? __($m.'unknown_office'); @endphp
+                                <li>
+                                    <x-gs::status-badge :status="$membership->statusKey()" />
+                                    {{ __($m.'past_'.(in_array($membership->status, ['released', 'rejected', 'inactive', 'cancelled'], true) ? $membership->status : 'inactive'),
+                                        ['office' => $pastName, 'date' => $date($membership->updated_at)]) }}
+                                    @if ($membership->status === 'rejected' && $membership->approval_note)
+                                        <q class="govmem-quote">{{ $membership->approval_note }}</q>
+                                    @endif
+                                </li>
+                            @endforeach
+                        </ul>
+                    </details>
+                @endif
+            </section>
+
+            <x-gs::box :title="__($m.'notices_title')" id="what-changed">
+                @if ($notices->isEmpty())
+                    <p class="govmem-muted govmem-flush">{{ __($m.'no_notices') }}</p>
+                @else
+                    <ul class="govmem-feed">
+                        @foreach ($notices as $notice)
+                            <li>
+                                <i class="fas {{ $notice['icon'] }} govmem-feed__icon" aria-hidden="true"></i>
+                                <div>
+                                    <span>{{ $notice['text'] }}</span>
+                                    @if ($notice['quote'])<q class="govmem-quote">{{ $notice['quote'] }}</q>@endif
+                                    <time class="govmem-meta" title="{{ $notice['when'] }}">{{ $notice['at'] }}</time>
+                                </div>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </x-gs::box>
         </div>
+
+        <aside class="govmem-layout__aside govmem-stack">
+            <x-gs::box :title="__($m.'roles_title')" id="your-roles">
+                @php $anyRole = false; @endphp
+                @foreach ($current->filter(fn ($mem) => isset($roles[(int) $mem->location_id]) || isset($cover[(int) $mem->location_id])) as $membership)
+                    @php $anyRole = true; @endphp
+                    @include('govmem::partials.role-slots', ['office' => (int) $membership->location_id, 'officeName' => $membership->location->name ?? '',
+                        'officeRoles' => $roles[(int) $membership->location_id] ?? [], 'officeCover' => $cover[(int) $membership->location_id] ?? []])
+                @endforeach
+                @if ($anyRole)
+                    <p class="govmem-muted govmem-small govmem-flush">{{ __($m.'roles_hint') }}</p>
+                @else
+                    <p class="govmem-muted govmem-flush">{{ __($m.'roles_none') }}</p>
+                @endif
+            </x-gs::box>
+
+            @include('govmem::partials.personal-code')
+        </aside>
     </div>
 </div>
 
-<!-- DELEGATION HANDSHAKE MODAL -->
-<div class="modal fade" id="delegateModal" tabindex="-1" role="dialog" aria-labelledby="delegateModalTitle">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <form action="{{ route('gov.membership.handshake.propose') }}" method="POST">
-                @csrf
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title" id="delegateModalTitle"><i class="fas fa-exchange-alt"></i> {{ __('office_membership::member.user_modal_title') }}</h4>
-                </div>
-                <div class="modal-body">
-                    <p>{{ __('office_membership::member.delegate_hint') }} <strong id="modalRoleName"></strong></p>
-                    
-                    <input type="hidden" name="location_id" id="modalLocId">
-                    <input type="hidden" name="role_type" id="modalRoleType">
-
-                    <div class="form-group">
-                        <label for="colleagueSelector">{{ __('office_membership::member.user_modal_colleague_label') }}</label>
-                        <select class="form-control om-inline-442a70a1" name="assigned_user_id" id="colleagueSelector" required>
-                            <option value="">{{ __('office_membership::member.user_modal_colleague_placeholder') }}</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">{{ __('office_membership::member.user_modal_cancel_button') }}</button>
-                    <button type="submit" class="btn btn-primary">{{ __('office_membership::member.user_modal_propose_button') }}</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-</div>
+@include('govmem::partials.handover-dialog')
 @endsection
 
 @section('moar_scripts')
-<script>
-    var colleagues = @json($eligibleColleagues);
-    var modalColleaguePlaceholder = @json(__('office_membership::member.user_modal_colleague_placeholder'));
-
-    function openDelegateModal(locId, roleType, roleName) {
-        $('#modalLocId').val(locId);
-        $('#modalRoleType').val(roleType);
-        $('#modalRoleName').text(roleName);
-        
-        var select = $('#colleagueSelector');
-        select.empty().append(new Option(modalColleaguePlaceholder, ''));
-        
-        if (colleagues[locId]) {
-            colleagues[locId].forEach(function(user) {
-                select.append(new Option(user.first_name + ' ' + (user.last_name || '') + ' (' + user.username + ')', user.id));
-            });
-        }
-        
-        $('#delegateModal').modal('show');
-    }
-</script>
+@include('govmem::partials.script')
 @endsection

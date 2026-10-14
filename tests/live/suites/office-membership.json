@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "office-membership",
+  "title": "Office membership (My offices, join, leave, staff, emergency changes)",
+  "description": "Read-only checks of the redesigned office membership screens (docs/plans/office-membership-ux-redesign-plan.md): My offices for a storekeeper (statuses, home tag, roles with Hand over or a labelled Cancel, handovers waiting, updates); Join another office refusing an unknown code under the field without creating a request; the guided Leave page blocked by a held role; the Staff page's five tab counts and a refused Add staff that keeps the typed values and adds nobody; employee and administrator boundaries; and Emergency changes (needs a super user, so it is blocked on the seeded dataset). Counts are compared with the database. The write journey membership.handover-decline is in the journeys suite. Run after any change to packages/gov-store/office-membership or the theming workflow kit.",
+  "environment": {
+    "target": "http://snipeit.local",
+    "allowlist": [
+      "http://snipeit.local"
+    ]
+  },
+  "journeys": [
+    "membership.my-offices-observation",
+    "membership.join-validation",
+    "membership.leave-readiness",
+    "membership.staff-observation",
+    "membership.authorization-boundaries",
+    "membership.emergency-changes-observation"
+  ],
+  "defaults": {
+    "language": "en-US",
+    "timeoutMs": 90000
+  }
+}

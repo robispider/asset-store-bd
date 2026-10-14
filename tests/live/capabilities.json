@@ -67,6 +67,12 @@
     },
     "access.matrix": {
       "ability": "access.matrix"
+    },
+    "membership.self": {
+      "ability": "membership.self"
+    },
+    "membership.override": {
+      "ability": "membership.override"
     }
   }
 }

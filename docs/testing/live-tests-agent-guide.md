@@ -128,7 +128,7 @@ Use `target: "requests.basketPurpose"`. Locator kinds: `testId`, `role`+`name`, 
 ## 8. Observations, independence and mutation rules
 
 - **Expected values must be independent of the page.** Compare the UI with a database `observe`, a declared input (`${data.qty}`) or a business rule — never with a value captured from the same page you are testing.
-- Available observations: `inventory.consumable`, `office.context`, `actor.assignments`, `request.progress`, `request.queues` (inbox / queue badge counts), `request.state`, `basket.line`, `organization.registry` (area scope and status-tab counts), `organization.office` (readiness, next step, administrator), `organization.national`, `organization.location` (and the committee checks in `contracts.json`). Register new ones in `contracts.json` **and** implement them (read-only, parameterized) in `live-test-adapter.php`.
+- Available observations: `inventory.consumable`, `office.context`, `actor.assignments`, `request.progress`, `request.queues` (inbox / queue badge counts), `request.state`, `basket.line`, `organization.registry` (area scope and status-tab counts), `organization.office` (readiness, next step, administrator), `organization.national`, `organization.location`, `membership.person` (My offices for one person), `membership.staff` (Staff tab counts), `membership.handover`, `membership.code`, `membership.overrides` (and the committee checks in `contracts.json`). Register new ones in `contracts.json` **and** implement them (read-only, parameterized) in `live-test-adapter.php`.
 - Seeded observation journeys must not create anything. Write journeys:
   - need `"capability": "write-fixtures"` and a `cleanup` policy;
   - capture the created identity from the UI (e.g. request number via the generated purpose) and `ledger` it;
@@ -161,6 +161,7 @@ Every code extension needs a contract test against the miniature app (`npm run t
 - Multi-actor mutation with captured identity: `requests.submit-approve`.
 - Top bar and sidebar per role, inbox count vs database: `navigation.*` (suite `navigation`). Run it after any change to navigation, `NavigationHook`, theming or `layouts/default`.
 - Area-scoped actor, status tabs vs database, a dialog checked and cancelled without submitting, server validation that creates nothing: `organization.*` (suite `organization`). Run it after any change to `packages/gov-store/organization` or the theming workflow kit.
+- My offices, Join, Leave, Staff and Emergency changes, a refused form that keeps typed values, and a two-actor handover declined with a reason (write): `membership.*` (suite `office-membership`; the write journey is in suite `journeys`). Run it after any change to `packages/gov-store/office-membership`.
 
 ## 11. Suite template
 

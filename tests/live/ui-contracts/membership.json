@@ -1,0 +1,402 @@
+{
+  "schemaVersion": 1,
+  "id": "membership",
+  "locators": {
+    "pageTitle": {
+      "css": ".govmem .gs-page-header__title",
+      "description": "Page header title (h1) of an office membership screen"
+    },
+    "pageSubtitle": {
+      "css": ".govmem .gs-page-header__subtitle",
+      "description": "Page header subtitle"
+    },
+    "errorSummary": {
+      "css": ".govmem .gs-alert--danger",
+      "description": "Error summary (refusals and validation)"
+    },
+    "successFlash": {
+      "css": ".alert-success, .gs-alert--success",
+      "description": "Success message after an action"
+    },
+    "joinButton": {
+      "css": ".govmem .gs-page-header__actions a[href$=\"/gov-store/my-memberships/join\"]",
+      "description": "My offices: Join another office"
+    },
+    "officeCards": {
+      "css": ".govmem .govmem-office",
+      "description": "My offices: one card per current office"
+    },
+    "activeBadges": {
+      "css": ".govmem .govmem-office .gs-badge[data-status=\"membership_active\"]",
+      "description": "Office cards whose status badge is Active"
+    },
+    "homeTags": {
+      "css": ".govmem .govmem-office .gs-tag--primary",
+      "description": "Home office tags on office cards"
+    },
+    "homeLeaveLink": {
+      "css": ".govmem .govmem-office a.gs-btn[href$=\"/gov-store/my-memberships/${observed.person.homeMembershipId}/leave\"]",
+      "description": "Leave this office… button on the home office card"
+    },
+    "waitingBox": {
+      "css": "#waiting-for-you",
+      "description": "My offices: Waiting for you"
+    },
+    "incomingRequests": {
+      "css": "#waiting-for-you .govmem-request",
+      "description": "Handover requests waiting for this person"
+    },
+    "incomingAccept": {
+      "css": "#waiting-for-you form[action*=\"/handshake/\"][action$=\"/accept\"] button[type=\"submit\"]",
+      "description": "Accept the role buttons"
+    },
+    "incomingDeclineOpen": {
+      "css": "#waiting-for-you details.govmem-decline > summary",
+      "description": "Decline… toggles"
+    },
+    "roleSlots": {
+      "css": "#your-roles .gs-role",
+      "description": "Your roles: one slot per role"
+    },
+    "handoverButtons": {
+      "css": "#your-roles button[data-govmem-handover]",
+      "description": "Hand over… buttons"
+    },
+    "handoverCancels": {
+      "css": "#your-roles form[action*=\"/handshake/\"][action$=\"/cancel\"] button[type=\"submit\"]",
+      "description": "Labelled Cancel request on roles waiting for a colleague"
+    },
+    "unlabelledButtons": {
+      "css": ".govmem .btn-xs",
+      "description": "Tiny icon-only buttons of the old screens (must be gone)"
+    },
+    "feedItems": {
+      "css": "#what-changed .govmem-feed > li",
+      "description": "What changed entries"
+    },
+    "feedEmpty": {
+      "css": "#what-changed p.govmem-muted",
+      "description": "What changed: nothing yet"
+    },
+    "personalCode": {
+      "css": "#personal-code",
+      "description": "Personal code box"
+    },
+    "inlineConfirm": {
+      "css": ".govmem [onclick*=\"confirm(\"], .govmem [onsubmit*=\"confirm(\"]",
+      "description": "Browser confirm() handlers (must be gone)"
+    },
+    "approverHandover": {
+      "css": "#your-roles button[data-govmem-handover][data-office=\"${fixtures.office.id}\"][data-role=\"primary_approver\"]",
+      "description": "Hand over… for the approver role at the fixture office"
+    },
+    "handoverDialog": {
+      "css": "#govmem-handover",
+      "description": "Hand over a role dialog"
+    },
+    "handoverPeople": {
+      "css": "#govmem-handover fieldset[data-govmem-office=\"${fixtures.office.id}\"] input[name=\"assigned_user_id\"]",
+      "description": "Colleagues offered for the fixture office"
+    },
+    "handoverPeopleOff": {
+      "css": "#govmem-handover fieldset[data-govmem-office=\"${fixtures.office.id}\"] input[name=\"assigned_user_id\"]:disabled",
+      "description": "Colleagues who are leaving (cannot take a role)"
+    },
+    "handoverColleague": {
+      "css": "#govmem-handover input[name=\"assigned_user_id\"][value=\"${actors.colleague.id}\"]",
+      "description": "The colleague fixture in the picker"
+    },
+    "handoverNote": {
+      "css": "#handover-note",
+      "description": "Note for the colleague"
+    },
+    "handoverNext": {
+      "css": "#govmem-handover .govmem-effects li",
+      "description": "What happens next"
+    },
+    "handoverSend": {
+      "css": "#govmem-handover .modal-footer button[type=\"submit\"]",
+      "description": "Send request"
+    },
+    "handoverClose": {
+      "css": "#govmem-handover .modal-footer button[data-dismiss=\"modal\"]",
+      "description": "Cancel the dialog"
+    },
+    "pendingSlotCancel": {
+      "css": "#your-roles form[action$=\"/handshake/${observed.proposed.id}/cancel\"] button[type=\"submit\"]",
+      "description": "Cancel request on the role just handed over"
+    },
+    "pendingSlotMeta": {
+      "css": "#your-roles .gs-role:has(form[action$=\"/handshake/${observed.proposed.id}/cancel\"]) .gs-role__person-meta",
+      "description": "Who the role is waiting for"
+    },
+    "proposedRequest": {
+      "css": "#waiting-for-you .govmem-request:has(form[action$=\"/handshake/${observed.proposed.id}/reject\"])",
+      "description": "The colleague's view of the request"
+    },
+    "proposedSentence": {
+      "css": "#handover-${observed.proposed.id}",
+      "description": "Whole-sentence description of the request"
+    },
+    "proposedDeclineOpen": {
+      "css": "#waiting-for-you .govmem-request:has(form[action$=\"/handshake/${observed.proposed.id}/reject\"]) details.govmem-decline > summary",
+      "description": "Decline… for that request"
+    },
+    "proposedReason": {
+      "css": "#reason-${observed.proposed.id}",
+      "description": "Reason for declining"
+    },
+    "proposedDecline": {
+      "css": "#waiting-for-you form[action$=\"/handshake/${observed.proposed.id}/reject\"] button[type=\"submit\"]",
+      "description": "Decline the role"
+    },
+    "feedQuote": {
+      "css": "#what-changed .govmem-feed q.govmem-quote:text-is(\"${data.reason}\")",
+      "description": "The decline reason quoted under What changed"
+    },
+    "wayOffice": {
+      "css": "input[type=\"radio\"][name=\"way\"][value=\"office\"]",
+      "description": "Join: I have an office code"
+    },
+    "wayPersonal": {
+      "css": "label[for=\"way-personal\"]",
+      "description": "Join: the administrator will add me (card label)"
+    },
+    "officeSection": {
+      "css": "section[data-govmem-when=\"way=office\"]",
+      "description": "Join: office code section"
+    },
+    "personalSection": {
+      "css": "section[data-govmem-when=\"way=personal\"]",
+      "description": "Join: personal code section"
+    },
+    "codeInput": {
+      "css": "#code",
+      "description": "Join: office code field"
+    },
+    "codeCheck": {
+      "css": "form[method=\"GET\"]:has(#code) button[type=\"submit\"]",
+      "description": "Join: Check code"
+    },
+    "codeError": {
+      "css": "#code-error",
+      "description": "Join: message under the code field"
+    },
+    "sendRequest": {
+      "css": "form[method=\"POST\"][action$=\"/gov-store/my-memberships/join\"] button[type=\"submit\"]",
+      "description": "Join: Send request to join (only for a valid code)"
+    },
+    "transferBox": {
+      "css": ".govmem .govmem-layout__aside .gs-box",
+      "description": "Join: Moving offices for good?"
+    },
+    "steps": {
+      "css": ".govmem .gs-stepper .gs-step",
+      "description": "Leave: steps"
+    },
+    "currentStep": {
+      "css": ".govmem .gs-stepper .gs-step[aria-current=\"step\"]",
+      "description": "Leave: current step"
+    },
+    "readinessItems": {
+      "css": "#before-you-leave .gs-readiness__item",
+      "description": "Leave: readiness rows"
+    },
+    "rolesItemOpen": {
+      "css": "#before-you-leave .gs-readiness__item:not(.gs-readiness__item--done):has-text(\"Hand over your roles here\")",
+      "description": "Leave: the open hand-over item"
+    },
+    "leaveRoleSlots": {
+      "css": ".govmem .govmem-layout__main .govmem-roles .gs-role",
+      "description": "Leave: roles to hand over"
+    },
+    "askButton": {
+      "css": "#ask-to-leave button[type=\"submit\"]",
+      "description": "Leave: Ask to leave"
+    },
+    "askWhy": {
+      "css": "#ask-to-leave-why",
+      "description": "Leave: why Ask to leave is unavailable"
+    },
+    "askAck": {
+      "css": "#acknowledged",
+      "description": "Leave and emergency changes: I understand / I'm authorised"
+    },
+    "askEffects": {
+      "css": "#ask-to-leave .govmem-effects li",
+      "description": "Leave: what leaving means"
+    },
+    "destination": {
+      "css": "#destination_location_id",
+      "description": "Leave: Where are you going?"
+    },
+    "withdraw": {
+      "css": ".govmem form[action$=\"/withdraw-release\"]",
+      "description": "Withdraw request (only while leaving)"
+    },
+    "tabStaffCount": {
+      "css": ".govmem .gs-status-tabs a[href$=\"tab=staff\"] .gs-tabs__count",
+      "description": "Staff tab count: Staff"
+    },
+    "tabWaitingCount": {
+      "css": ".govmem .gs-status-tabs a[href$=\"tab=waiting\"] .gs-tabs__count",
+      "description": "Staff tab count: Waiting for approval"
+    },
+    "tabLeavingCount": {
+      "css": ".govmem .gs-status-tabs a[href$=\"tab=leaving\"] .gs-tabs__count",
+      "description": "Staff tab count: Leaving"
+    },
+    "tabArrivingCount": {
+      "css": ".govmem .gs-status-tabs a[href$=\"tab=arriving\"] .gs-tabs__count",
+      "description": "Staff tab count: Arriving"
+    },
+    "tabPastCount": {
+      "css": ".govmem .gs-status-tabs a[href$=\"tab=past\"] .gs-tabs__count",
+      "description": "Staff tab count: Past staff"
+    },
+    "tabWaiting": {
+      "css": ".govmem .gs-status-tabs a[href$=\"tab=waiting\"]",
+      "description": "Staff tab: Waiting for approval"
+    },
+    "tabWaitingCurrent": {
+      "css": ".govmem .gs-status-tabs a[href$=\"tab=waiting\"][aria-current=\"page\"]",
+      "description": "Waiting tab marked current"
+    },
+    "tabCurrent": {
+      "css": ".govmem .gs-status-tabs a[aria-current=\"page\"]",
+      "description": "Current staff tab"
+    },
+    "waitBanner": {
+      "css": ".govmem > .gs-alert--info",
+      "description": "Staff: N things wait on you"
+    },
+    "staffRows": {
+      "css": ".govmem table tbody tr",
+      "description": "Staff table rows"
+    },
+    "youRow": {
+      "css": ".govmem table tbody tr:has(.govmem-muted:text-is(\"(you)\"))",
+      "description": "The administrator's own row"
+    },
+    "youRowEnd": {
+      "css": ".govmem table tbody tr:has(.govmem-muted:text-is(\"(you)\")) button[data-govmem-dialog=\"#govmem-end\"]",
+      "description": "End access on the administrator's own row (must not exist)"
+    },
+    "endButtons": {
+      "css": ".govmem table tbody button[data-govmem-dialog=\"#govmem-end\"]",
+      "description": "End access… buttons (additional staff only)"
+    },
+    "emptyTitle": {
+      "css": ".govmem .gs-empty__title",
+      "description": "Empty tab message"
+    },
+    "officeCodeButton": {
+      "css": ".govmem .gs-page-header__actions button[data-target=\"#govmem-code\"]",
+      "description": "Staff: Office code"
+    },
+    "codeDialog": {
+      "css": "#govmem-code",
+      "description": "Office code dialog"
+    },
+    "codeDialogClose": {
+      "css": "#govmem-code .modal-header button.close",
+      "description": "Close the office code dialog"
+    },
+    "addStaffButton": {
+      "css": ".govmem .gs-page-header__actions button[data-target=\"#govmem-add\"]",
+      "description": "Staff: Add staff"
+    },
+    "addDialog": {
+      "css": "#govmem-add",
+      "description": "Add staff dialog"
+    },
+    "addWays": {
+      "css": "#govmem-add input[name=\"add_way\"]",
+      "description": "Add staff: three ways"
+    },
+    "addWayPersonal": {
+      "css": "#govmem-add label[for=\"add-way-personal\"]",
+      "description": "Add staff: They gave me their personal code"
+    },
+    "addWayPersonalInput": {
+      "css": "#add-way-personal",
+      "description": "Add staff: personal code way (radio)"
+    },
+    "addUsername": {
+      "css": "#govmem-add #username",
+      "description": "Add staff: username"
+    },
+    "addCode": {
+      "css": "#govmem-add #verification_code",
+      "description": "Add staff: personal code"
+    },
+    "addSubmit": {
+      "css": "#govmem-add .modal-footer button[type=\"submit\"]",
+      "description": "Add staff: Add to this office"
+    },
+    "addUsernameError": {
+      "css": "#govmem-add #username-error",
+      "description": "Add staff: message under the username"
+    },
+    "historyCount": {
+      "css": ".govmem .gs-status-tabs a[href$=\"tab=history\"] .gs-tabs__count",
+      "description": "Emergency changes: Change history count"
+    },
+    "personSearch": {
+      "css": "#person-search",
+      "description": "Emergency changes: person search"
+    },
+    "personSearchSubmit": {
+      "css": "form:has(#person-search) button[type=\"submit\"]",
+      "description": "Emergency changes: Search"
+    },
+    "chooseTarget": {
+      "css": ".govmem .gs-list a[href$=\"?user=${actors.target.id}\"]",
+      "description": "Choose the target person from the results"
+    },
+    "fullUserList": {
+      "css": ".govmem select[name=\"user_id\"] option",
+      "description": "A dropdown of every user (must be gone)"
+    },
+    "reachRows": {
+      "css": ".govmem .govmem-reach .govmem-reach__row",
+      "description": "Reach preview rows"
+    },
+    "typeRadios": {
+      "css": "input[name=\"override_type\"]",
+      "description": "Emergency changes: action choices"
+    },
+    "typeChecked": {
+      "css": "input[name=\"override_type\"]:checked",
+      "description": "A preselected action (must be none)"
+    },
+    "releaseSection": {
+      "css": "[data-govmem-when=\"override_type=force_release\"]",
+      "description": "Release: which office and its effects"
+    },
+    "chooseRelease": {
+      "css": "label[for=\"override_type-force-release\"]",
+      "description": "Choose Release them from one office"
+    },
+    "officeRadios": {
+      "css": "input[name=\"location_id\"]",
+      "description": "Release: one radio per open office"
+    },
+    "alsoRoles": {
+      "css": "#also_remove_roles",
+      "description": "Release: Also remove their roles (pre-ticked)"
+    },
+    "overrideReason": {
+      "css": "#reason",
+      "description": "Emergency changes: reason"
+    },
+    "overrideContinue": {
+      "css": "form[action$=\"/override/force\"] button[type=\"submit\"]",
+      "description": "Continue to review"
+    }
+  },
+  "labels": {
+    "en-US": {},
+    "bn-BD": {}
+  }
+}

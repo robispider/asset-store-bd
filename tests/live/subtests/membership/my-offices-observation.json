@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "membership.my-offices-observation",
+  "title": "A storekeeper's My offices page shows each current office with its status and home tag, their roles with Hand over or a labelled Cancel, handovers waiting for them and their updates, exactly as stored, with no browser confirm() and no icon-only buttons",
+  "features": ["membership.my-offices"],
+  "tags": ["seeded", "readonly", "membership"],
+  "execution": { "capability": "observe", "language": "en-US", "timeoutMs": 90000, "accessMode": "any" },
+  "fixtures": {
+    "office": { "requirements": { "operational": true } },
+    "actors": {
+      "storekeeper": { "role": "storekeeper", "capabilities": { "allOf": ["membership.self"], "noneOf": ["membership.manage"] }, "office": "office", "activeMembership": true }
+    }
+  },
+  "steps": [
+    { "action": "observe", "check": "membership.person", "args": { "userId": "${actors.storekeeper.id}" }, "as": "person" },
+    { "action": "compare", "actual": "${observed.person.homeOfficeId}", "equals": "${fixtures.office.id}", "note": "The fixture office is the storekeeper's home office" },
+    { "use": "auth.login", "with": { "actor": "storekeeper" } },
+
+    { "action": "goto", "url": "/gov-store/my-memberships" },
+    { "action": "assert", "target": "membership.pageTitle", "test": "text", "equals": "My offices" },
+    { "action": "assert", "target": "membership.joinButton", "test": "visible" },
+    { "action": "assert", "target": "membership.officeCards", "test": "count", "equals": "${observed.person.current}", "note": "Waiting, active, leaving, paused and signed-off home offices are current" },
+    { "action": "assert", "target": "membership.activeBadges", "test": "count", "equals": "${observed.person.active}", "note": "Status badge = persisted status" },
+    { "action": "assert", "target": "membership.homeTags", "test": "count", "equals": "${observed.person.homeTags}" },
+    { "action": "assert", "target": "membership.homeLeaveLink", "test": "count", "equals": 1, "note": "Leaving goes through the guided page, not a one-click button" },
+
+    { "action": "assert", "target": "membership.waitingBox", "test": "count", "equals": "${observed.person.incomingBox}", "note": "Waiting for you appears only when a handover waits for this person" },
+    { "action": "assert", "target": "membership.incomingRequests", "test": "count", "equals": "${observed.person.incoming}" },
+    { "action": "assert", "target": "membership.roleSlots", "test": "count", "equals": "${observed.person.roles}", "note": "Responsibilities plus office administrator, where the person works or is leaving" },
+    { "action": "assert", "target": "membership.handoverButtons", "test": "count", "equals": "${observed.person.handoverButtons}" },
+    { "action": "assert", "target": "membership.handoverCancels", "test": "count", "equals": "${observed.person.pendingOutgoing}", "note": "A role waiting for a colleague shows a labelled Cancel request, not an unlabelled ×" },
+    { "action": "assert", "target": "membership.feedItems", "test": "count", "equals": "${observed.person.notices}", "note": "Latest 20 updates, as sentences" },
+    { "action": "assert", "target": "membership.personalCode", "test": "visible" },
+    { "action": "assert", "target": "membership.handoverDialog", "test": "hidden" },
+    { "action": "assert", "target": "membership.inlineConfirm", "test": "count", "equals": 0 },
+    { "action": "assert", "target": "membership.unlabelledButtons", "test": "count", "equals": 0 },
+
+    { "action": "observe", "check": "membership.person", "args": { "userId": "${actors.storekeeper.id}" }, "as": "after" },
+    { "action": "compare", "actual": "${observed.after.current}", "equals": "${observed.person.current}", "note": "Opening the page changed nothing" }
+  ],
+  "cleanup": { "policy": "no-business-records-created" }
+}

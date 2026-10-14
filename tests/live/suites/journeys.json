@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "journeys",
   "title": "Controlled mutation journeys",
-  "description": "Creates identifiable test requests. Requires --allow-writes; retained records are reported.",
+  "description": "Creates identifiable test records (requests; a declined role handover). Requires --allow-writes; retained records are reported.",
   "environment": {
     "target": "http://snipeit.local",
     "allowlist": [
@@ -11,7 +11,8 @@
   },
   "journeys": [
     "requests.basket-validation",
-    "requests.submit-approve"
+    "requests.submit-approve",
+    "membership.handover-decline"
   ],
   "defaults": {
     "language": "en-US",

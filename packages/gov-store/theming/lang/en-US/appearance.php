@@ -111,6 +111,15 @@ return [
         'office_configured' => 'Setting up',
         'office_operational' => 'Live',
         'office_suspended' => 'Paused',
+        'membership_pending' => 'Waiting for approval',
+        'membership_active' => 'Active',
+        'membership_release_requested' => 'Leaving · awaiting sign-off',
+        'membership_released_home' => 'Ready to transfer',
+        'membership_released' => 'Left',
+        'membership_rejected' => 'Not approved',
+        'membership_suspended' => 'Paused',
+        'membership_inactive' => 'Ended',
+        'membership_cancelled' => 'Request cancelled',
     ],
 
     'kit' => [

@@ -69,6 +69,7 @@
                     <li><button type="submit" form="gs-office-switch" name="membership_id" value="{{ $chipMembership->id }}" class="btn btn-link"
                         @if((int) $chipMembership->location_id === $chipLocationId) aria-current="true" @endif>
                         {{ $chipMembership->location->name }}
+                        @if ($chipMembership->is_home_office)<span class="gs-office-picker-sub">{{ __('office_membership::member.home_office') }}</span>@endif
                     </button></li>
                 @endforeach
             </ul></li>

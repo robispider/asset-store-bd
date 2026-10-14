@@ -783,6 +783,125 @@ try {
                         'count' => DB::table('locations')->where('name', $name)->count(),
                     ]);
 
+                case 'membership.person':
+                    // My offices restated from the membership rules: current = waiting, active, leaving, paused or a
+                    // signed-off home office; roles count where the person is live or leaving; a role with a pending
+                    // outgoing handover shows Cancel instead of Hand over.
+                    $uid = (int) ($args['userId'] ?? 0);
+                    $today = now()->toDateString();
+                    $rows = DB::table('gov_office_memberships')->where('user_id', $uid)->get();
+                    if ($rows->isEmpty()) {
+                        jsonError("User {$uid} has no office memberships", 'observation.not-found');
+                    }
+                    $isLive = fn ($m) => $m->status === 'active' && (! $m->valid_until || $m->valid_until >= $today);
+                    $current = $rows->filter(fn ($m) => in_array($m->status, ['pending', 'active', 'release_requested', 'suspended'], true)
+                        || ($m->status === 'released' && (bool) $m->is_home_office));
+                    $home = $rows->first(fn ($m) => (bool) $m->is_home_office && $isLive($m));
+                    $roleOffices = $current->filter(fn ($m) => $isLive($m) || $m->status === 'release_requested')->pluck('location_id')->map(fn ($v) => (int) $v)->all();
+                    $roles = DB::table('gov_office_responsibilities')->where('user_id', $uid)->whereIn('location_id', $roleOffices ?: [0])
+                        ->get(['location_id', 'role_slug'])->map(fn ($r) => [(int) $r->location_id, $r->role_slug])->all();
+                    foreach (DB::table('gov_location_profiles')->where('office_admin_id', $uid)->whereIn('location_id', $roleOffices ?: [0])->pluck('location_id') as $office) {
+                        $roles[] = [(int) $office, 'office_admin'];
+                    }
+                    $outgoing = DB::table('gov_role_handshakes')->where('outgoing_user_id', $uid)->where('status', 'pending')->get(['location_id', 'role_type']);
+                    $waiting = array_filter($roles, fn ($r) => $outgoing->contains(fn ($h) => (int) $h->location_id === $r[0] && $h->role_type === $r[1]));
+                    $homeOffice = $home ? (int) $home->location_id : null;
+                    $colleagues = $homeOffice ? DB::table('gov_office_memberships as m')->join('users as u', 'u.id', '=', 'm.user_id')
+                        ->where('m.location_id', $homeOffice)->where('m.user_id', '!=', $uid)->whereIn('m.status', ['active', 'release_requested'])
+                        ->where(fn ($q) => $q->whereNull('m.valid_until')->orWhere('m.valid_until', '>=', $today))
+                        ->where('u.activated', true)->whereNull('u.deleted_at')->pluck('m.status') : collect();
+                    jsonResponse([
+                        'user_id' => $uid,
+                        'current' => $current->count(),
+                        'past' => $rows->count() - $current->count(),
+                        'active' => $current->where('status', 'active')->count(),
+                        'pending' => $rows->where('status', 'pending')->count(),
+                        'homeTags' => $current->filter(fn ($m) => (bool) $m->is_home_office)->count(),
+                        'homeMembershipId' => $home ? (int) $home->id : null,
+                        'homeOfficeId' => $homeOffice,
+                        'homeOfficeName' => $homeOffice ? DB::table('locations')->where('id', $homeOffice)->value('name') : null,
+                        'roles' => count($roles),
+                        'homeRoles' => count(array_filter($roles, fn ($r) => $r[0] === $homeOffice)),
+                        'handoverButtons' => count($roles) - count($waiting),
+                        'pendingOutgoing' => count($waiting),
+                        'incoming' => DB::table('gov_role_handshakes')->where('incoming_user_id', $uid)->where('status', 'pending')->count(),
+                        'incomingBox' => DB::table('gov_role_handshakes')->where('incoming_user_id', $uid)->where('status', 'pending')->exists() ? 1 : 0,
+                        'openOffices' => $rows->whereIn('status', ['active', 'pending', 'release_requested', 'suspended'])->count(),
+                        'notices' => min(20, DB::table('gov_membership_notices')->where('user_id', $uid)->count()),
+                        'personalCode' => DB::table('gov_employee_verification_tokens')->where('user_id', $uid)->whereNull('used_at')->where('expires_at', '>', now())->exists(),
+                        'colleagues' => $colleagues->count(),
+                        'leavingColleagues' => $colleagues->filter(fn ($s) => $s === 'release_requested')->count(),
+                        'foreignMembershipId' => (int) DB::table('gov_office_memberships')->where('user_id', '!=', $uid)->orderBy('id')->value('id'),
+                    ]);
+
+                case 'membership.staff':
+                    // The Staff page's five tab counts restated for one office (a signed-off home office elsewhere in
+                    // the same ministry is "arriving"; past staff = left in the last 12 months).
+                    $id = (int) ($args['officeId'] ?? 0);
+                    $loc = DB::table('locations')->where('id', $id)->first();
+                    if (! $loc) {
+                        jsonError("Office {$id} not found", 'observation.not-found');
+                    }
+                    $here = fn () => DB::table('gov_office_memberships')->where('location_id', $id);
+                    $arriving = fn () => DB::table('gov_office_memberships as m')->join('users as u', 'u.id', '=', 'm.user_id')
+                        ->where('m.is_home_office', true)->where('m.status', 'released')->where('m.location_id', '!=', $id)
+                        ->where('u.company_id', $loc->company_id)->where('u.activated', true)->whereNull('u.deleted_at');
+                    $staff = $here()->whereIn('status', ['active', 'suspended'])->count();
+                    $waiting = $here()->where('status', 'pending')->count();
+                    $leaving = $here()->where('status', 'release_requested')->count();
+                    $expected = $arriving()->where('m.destination_location_id', $id)->count();
+                    $profile = DB::table('gov_location_profiles')->where('location_id', $id)->first();
+                    jsonResponse([
+                        'officeId' => $id,
+                        'name' => $loc->name,
+                        'status' => $profile->lifecycle_status ?? null,
+                        'adminId' => $profile && $profile->office_admin_id ? (int) $profile->office_admin_id : null,
+                        'staff' => $staff,
+                        'waiting' => $waiting,
+                        'leaving' => $leaving,
+                        'arriving' => $arriving()->count(),
+                        'past' => $here()->whereIn('status', ['released', 'inactive', 'rejected'])
+                            ->where(fn ($q) => $q->where('is_home_office', false)->orWhere('status', '!=', 'released'))
+                            ->where('updated_at', '>=', now()->subYear())->count(),
+                        'expected' => $expected,
+                        'waitTotal' => $waiting + $leaving + $expected,
+                        'staffRows' => min(25, $staff),
+                        'waitingRows' => min(25, $waiting),
+                        'waitBanner' => $waiting + $leaving + $expected > 0 ? 1 : 0,
+                        'additionalStaff' => $here()->where('status', 'active')->where('is_home_office', false)->count(),
+                        'codeLive' => (bool) ($profile && $profile->invitation_code && $profile->invitation_code_expires_at > now()),
+                    ]);
+
+                case 'membership.handover':
+                    // The latest handover of one role at one office from one person, and who holds the role now.
+                    $office = (int) ($args['officeId'] ?? 0);
+                    $role = (string) ($args['role'] ?? '');
+                    $from = (int) ($args['fromUserId'] ?? 0);
+                    $latest = DB::table('gov_role_handshakes')->where('location_id', $office)->where('role_type', $role)
+                        ->where('outgoing_user_id', $from)->orderByDesc('id')->first();
+                    $holders = DB::table('gov_office_responsibilities')->where('location_id', $office)->where('role_slug', $role)
+                        ->pluck('user_id')->map(fn ($v) => (int) $v)->all();
+                    $notice = $latest ? DB::table('gov_membership_notices')->where('user_id', $from)->where('location_id', $office)
+                        ->where('event_key', 'transfer_'.$latest->status)->where('created_at', '>=', $latest->created_at)->orderByDesc('id')->first() : null;
+                    jsonResponse([
+                        'pendingForRole' => DB::table('gov_role_handshakes')->where('location_id', $office)->where('role_type', $role)->where('status', 'pending')->count(),
+                        'id' => $latest ? (int) $latest->id : null,
+                        'status' => $latest->status ?? null,
+                        'incomingUserId' => $latest ? (int) $latest->incoming_user_id : null,
+                        'fromHolds' => in_array($from, $holders, true),
+                        'holders' => count($holders),
+                        'noticeReason' => $notice ? (json_decode((string) $notice->details, true)['reason'] ?? null) : null,
+                    ]);
+
+                case 'membership.code':
+                    // How many offices use this office code (normalised the way people may type it).
+                    $code = strtoupper((string) preg_replace('/[^A-Za-z0-9]/', '', (string) ($args['code'] ?? '')));
+                    jsonResponse(['code' => $code, 'offices' => $code === '' ? 0 : DB::table('gov_location_profiles')->where('invitation_code', $code)->count()]);
+
+                case 'membership.overrides':
+                    // Emergency change history size (the Change history tab count).
+                    jsonResponse(['count' => DB::table('gov_override_audit_logs')->count()]);
+
                 default:
                     jsonError("Unsupported observation check: '{$check}'", 'observation.unsupported');
             }

@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Membership statuses and words</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/818ad3bee488823df6a430cb763aba33">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Source+Serif+4:wght@400;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.app{min-height:100%;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:var(--gs-font-sans);font-size:15px;line-height:1.55}
+.wrap{box-sizing:border-box;max-width:1280px;margin:0 auto;padding:64px 24px 96px;display:flex;flex-direction:column;gap:48px}
+.eyebrow{margin:0;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gs-color-text-muted)}
+.h1{margin:0;font-family:var(--gs-font-display);font-size:40px;line-height:1.12;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+.h2{margin:0;font-family:var(--gs-font-display);font-size:24px;line-height:1.25;font-weight:700}
+.muted{color:var(--gs-color-text-muted)}
+.bn{font-family:var(--gs-font-bengali)}
+.mono{font-family:var(--gs-font-mono);font-size:13px}
+.panel{background:var(--gs-color-surface);border:var(--gs-border-width) solid var(--gs-color-border);border-radius:var(--gs-radius-lg);padding:8px 8px 0}
+.ico{width:1em;height:1em;flex:none}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:16px}
+.ia{display:flex;flex-direction:column;gap:12px;padding:22px;background:var(--gs-color-surface);border:var(--gs-border-width) solid var(--gs-color-border);border-radius:var(--gs-radius-lg)}
+.ia h3{margin:0;font-size:17px}
+.ia ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.ia li{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:var(--gs-radius-md);background:var(--gs-color-surface-sunken)}
+.ia li span{font-size:13px;color:var(--gs-color-text-muted)}
+.code{margin:0;padding:18px;border-radius:var(--gs-radius-md);background:var(--gs-color-surface-sunken);font-family:var(--gs-font-mono);font-size:12.5px;line-height:1.6;overflow-x:auto;white-space:pre}
+.ba{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr));gap:16px}
+.ba>div{display:flex;flex-direction:column;gap:10px;padding:20px;border-radius:var(--gs-radius-lg);background:var(--gs-color-surface);border:var(--gs-border-width) solid var(--gs-color-border)}
+.strike{text-decoration:line-through;text-decoration-color:var(--gs-color-danger)}
+</style>
+</helmet>
+<div class="app" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-table="{{ v.table }}" data-gs-controls="{{ v.controls }}" data-gs-type="{{ v.type }}" data-gs-header="{{ v.header }}">
+<main class="wrap">
+
+<header style="display: flex; flex-direction: column; gap: 12px; max-width: 880px">
+<p class="eyebrow">Foundations · built on gov-store/theming</p>
+<h1 class="h1">Seven statuses, one set of words, three places to work</h1>
+<p class="muted" style="margin: 0; font-size: 17px">Every badge below is the real <span class="mono">.gs-badge</span> markup that <span class="mono">&lt;x-gs::status-badge&gt;</span> renders, so it follows each theme's status style. Use the Theme and Mode tweaks to check them.</p>
+</header>
+
+<section style="display: flex; flex-direction: column; gap: 14px">
+<h2 class="h2">Membership statuses</h2>
+<p class="muted" style="margin: 0">Each status says what is happening and what comes next. "Home office" is a separate tag, because it is a flag on an active membership, not a status.</p>
+<div class="panel"><div class="gs-table-wrap"><table class="gs-table">
+<caption class="gs-sr-only">Membership statuses with labels in English and Bangla and the next step</caption>
+<thead><tr><th scope="col">status value</th><th scope="col">Shown today</th><th scope="col">New badge</th><th scope="col">বাংলা (draft)</th><th scope="col">Next step shown to the employee</th><th scope="col">Next step shown to the administrator</th></tr></thead>
+<tbody>
+<tr><td class="mono">pending</td><td class="muted">(blank) + "Locked"</td><td><span class="gs-badge" data-tone="status-pending"><svg class="ico gs-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><span class="gs-badge__label">Waiting for approval</span></span></td><td class="bn">অনুমোদনের অপেক্ষায়</td><td>Mahbub Alam reviews it. Cancel request.</td><td>Approve or decline</td></tr>
+<tr><td class="mono">active</td><td>Active</td><td><span class="gs-badge" data-tone="status-ready"><svg class="ico gs-badge__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.2 14.2-4-4 1.4-1.4 2.6 2.6 5.4-5.4 1.4 1.4-6.8 6.8Z"></path></svg><span class="gs-badge__label">Active</span></span> <span class="gs-tag gs-tag--primary gs-tag--outline">Home office</span></td><td class="bn">সক্রিয় · মূল অফিস</td><td>Work here. Leave this office.</td><td>End access (additional offices only)</td></tr>
+<tr><td class="mono">active + valid_until</td><td>Active (date hidden)</td><td><span class="gs-badge" data-tone="status-ready"><svg class="ico gs-badge__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.2 14.2-4-4 1.4-1.4 2.6 2.6 5.4-5.4 1.4 1.4-6.8 6.8Z"></path></svg><span class="gs-badge__label">Active until 31 Dec</span></span></td><td class="bn">৩১ ডিসেম্বর পর্যন্ত সক্রিয়</td><td>Ends on its own on that date.</td><td>Extend or end</td></tr>
+<tr><td class="mono">release_requested</td><td>Release Requested</td><td><span class="gs-badge" data-tone="warning"><svg class="ico gs-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h5v16h-5M10 12h9M7 9l-3 3 3 3"></path></svg><span class="gs-badge__label">Leaving · awaiting sign-off</span></span></td><td class="bn">ছাড়পত্রের অপেক্ষায়</td><td>Mahbub Alam signs you off. Withdraw request.</td><td>Sign off</td></tr>
+<tr><td class="mono">released (home)</td><td>Released / "Floating"</td><td><span class="gs-badge" data-tone="info"><svg class="ico gs-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h13l-3-3M17 17H4l3 3"></path></svg><span class="gs-badge__label">Ready to transfer</span></span></td><td class="bn">বদলির জন্য প্রস্তুত</td><td>Report to your new office. Their administrator adds you.</td><td>(new office) Welcome to this office</td></tr>
+<tr><td class="mono">released (additional)</td><td>Released</td><td><span class="gs-badge" data-tone="status-archived"><svg class="ico gs-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"></path></svg><span class="gs-badge__label">Left</span></span></td><td class="bn">ছেড়ে গেছেন</td><td>(in history only)</td><td>—</td></tr>
+<tr><td class="mono">rejected</td><td class="muted">(blank)</td><td><span class="gs-badge" data-tone="doc-rejected"><svg class="ico gs-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m9 9 6 6M15 9l-6 6"></path></svg><span class="gs-badge__label">Not approved</span></span></td><td class="bn">অনুমোদিত হয়নি</td><td>Ask Mahbub Alam why, or try another office.</td><td>—</td></tr>
+<tr><td class="mono">suspended</td><td class="muted">(blank)</td><td><span class="gs-badge" data-tone="status-undeployable"><svg class="ico gs-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M10 9v6M14 9v6"></path></svg><span class="gs-badge__label">Paused</span></span></td><td class="bn">স্থগিত</td><td>Contact the office administrator.</td><td>Resume</td></tr>
+<tr><td class="mono">inactive</td><td class="muted">(blank)</td><td><span class="gs-badge" data-tone="status-archived"><svg class="ico gs-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"></path></svg><span class="gs-badge__label">Ended</span></span></td><td class="bn">শেষ হয়েছে</td><td>(in history only)</td><td>—</td></tr>
+</tbody></table></div></div>
+<pre class="code">// theming/status-map.php — new entries (labels in gs-theme::appearance.status.membership_*)
+'membership_pending'           =&gt; ['tone' =&gt; 'status-pending',      'icon' =&gt; 'fa-hourglass-half'],
+'membership_active'            =&gt; ['tone' =&gt; 'status-ready',        'icon' =&gt; 'fa-circle-check'],
+'membership_release_requested' =&gt; ['tone' =&gt; 'warning',             'icon' =&gt; 'fa-door-open'],
+'membership_released_home'     =&gt; ['tone' =&gt; 'info',                'icon' =&gt; 'fa-right-left'],
+'membership_released'          =&gt; ['tone' =&gt; 'status-archived',     'icon' =&gt; 'fa-minus'],
+'membership_rejected'          =&gt; ['tone' =&gt; 'doc-rejected',        'icon' =&gt; 'fa-circle-xmark'],
+'membership_suspended'         =&gt; ['tone' =&gt; 'status-undeployable', 'icon' =&gt; 'fa-circle-pause'],
+'membership_inactive'          =&gt; ['tone' =&gt; 'status-archived',     'icon' =&gt; 'fa-minus'],</pre>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 14px">
+<h2 class="h2">Glossary</h2>
+<p class="muted" style="margin: 0">Bangla terms are drafts for a native reviewer (shared with Organization decision D5). Bangla stays Bangla: no borrowed English where a plain word exists.</p>
+<div class="panel"><div class="gs-table-wrap"><table class="gs-table">
+<caption class="gs-sr-only">Glossary of replaced terms</caption>
+<thead><tr><th scope="col">Today (en)</th><th scope="col">Today (bn)</th><th scope="col">Use instead</th><th scope="col">বাংলা (draft)</th></tr></thead>
+<tbody>
+<tr><td>My Office Memberships &amp; Handovers</td><td class="bn">আমার কার্যালয় মেম্বারশিপ এবং হ্যান্ডওভার</td><td><strong>My offices</strong></td><td class="bn">আমার অফিস</td></tr>
+<tr><td>Home Base</td><td class="bn">হোম বেস</td><td><strong>Home office</strong></td><td class="bn">মূল অফিস</td></tr>
+<tr><td>Secondary</td><td class="bn">সেকেন্ডারি</td><td><strong>Additional office</strong></td><td class="bn">অতিরিক্ত অফিস</td></tr>
+<tr><td>Request Release</td><td class="bn">মুক্তির অনুরোধ করুন</td><td><strong>Leave this office</strong></td><td class="bn">এই অফিস ছাড়ুন</td></tr>
+<tr><td>Released / Floating</td><td class="bn">মুক্ত</td><td><strong>Ready to transfer</strong></td><td class="bn">বদলির জন্য প্রস্তুত</td></tr>
+<tr><td>Office Join Credential · Verification Code</td><td class="bn">ভেরিফিকেশন কোড</td><td><strong>Personal code</strong> (6 characters, 24 hours)</td><td class="bn">ব্যক্তিগত কোড</td></tr>
+<tr><td>Mass Invitation Code · Office Invitation Code</td><td class="bn">ইনভাইটেশন কোড</td><td><strong>Office code</strong> (8 characters, 30 days)</td><td class="bn">অফিস কোড</td></tr>
+<tr><td>Delegate · Propose Role Delegation Handshake</td><td class="bn">হ্যান্ডওভার</td><td><strong>Hand over</strong></td><td class="bn">দায়িত্ব হস্তান্তর</td></tr>
+<tr><td>Claim Transferred Employee · Approve Transfer &amp; Claim</td><td class="bn">দাবি করুন</td><td><strong>Welcome a transferred employee</strong> · <strong>Add to this office</strong></td><td class="bn">বদলি হয়ে আসা কর্মী যোগ করুন</td></tr>
+<tr><td>Check clearance and release</td><td class="bn">—</td><td><strong>Sign off</strong></td><td class="bn">ছাড়পত্র দিন</td></tr>
+<tr><td>Clearance Rules · Physical Inventory Check</td><td class="bn">ক্লিয়ারেন্স</td><td><strong>Before you can leave</strong> · <strong>Items you hold</strong></td><td class="bn">ছাড়ার আগে · আপনার কাছে থাকা জিনিস</td></tr>
+<tr><td>Emergency Override Console · Execute Override</td><td class="bn">ইমারজেন্সি ওভাররাইড কনসোল</td><td><strong>Emergency changes</strong> · <strong>Apply change</strong></td><td class="bn">জরুরি পরিবর্তন</td></tr>
+<tr><td>Executor · Target User · Justification</td><td class="bn">—</td><td><strong>By</strong> · <strong>Person</strong> · <strong>Reason</strong></td><td class="bn">যিনি করেছেন · ব্যক্তি · কারণ</td></tr>
+<tr><td>Working context · Working As</td><td class="bn">—</td><td><strong>Working in</strong></td><td class="bn">কাজ করছেন</td></tr>
+</tbody></table></div></div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 14px">
+<h2 class="h2">Whole sentences, not fragments</h2>
+<div class="ba">
+<div><span class="eyebrow">Today · 4 keys stitched together</span><p style="margin: 0"><span class="strike">Rokeya Haque</span> + <span class="mono">user_handover_delegate_text</span> + <span class="strike">Storekeeper</span> + <span class="mono">user_handover_role_to_you_for</span> + <span class="strike">Savar</span></p><p class="bn" style="margin: 0">রোকেয়া হক হ্যান্ডওভার করতে ইচ্ছুক স্টোরকিপার রোলটি আপনার কাছে হস্তান্তর করতে চান সাভার।</p></div>
+<div><span class="eyebrow">New · one key with placeholders</span><p class="mono" style="margin: 0">'handover_incoming' =&gt; ':name wants to hand over the :role role at :office to you.'</p><p class="bn" style="margin: 0">'handover_incoming' =&gt; ':name :office-এর :role দায়িত্ব আপনাকে হস্তান্তর করতে চান।'</p></div>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 14px">
+<h2 class="h2">Where each person works</h2>
+<p class="muted" style="margin: 0">Today, Staff management and the override console sit under "My office memberships" in the breadcrumb. Each moves to where its user already looks.</p>
+<div class="cols">
+<div class="ia"><h3>Every employee</h3><ul>
+<li><strong>Office chip → "My offices"</strong><span>Navbar. Unchanged switcher; adds a home-office marker.</span></li>
+<li><strong>My offices</strong><span>Home › My offices · user menu. Waiting for you, your offices, roles, history.</span></li>
+<li><strong>Join another office</strong><span>Home › My offices › Join. Office code or personal code.</span></li>
+<li><strong>Leave an office</strong><span>Home › My offices › Savar › Leave. Guided, with a transfer tracker.</span></li>
+</ul></div>
+<div class="ia"><h3>Office administrator</h3><ul>
+<li><strong>Office › Staff</strong><span>Home › My office › Staff. Same page the Organization hub links to as "Manage staff".</span></li>
+<li><strong>Tabs: Staff · Waiting · Leaving · Arriving</strong><span>Counts on every tab; the badge on the sidebar counts what waits on you.</span></li>
+<li><strong>＋ New › Add staff</strong><span>Existing menu entry. Opens the add-staff dialog.</span></li>
+</ul></div>
+<div class="ia"><h3>National ICT officer</h3><ul>
+<li><strong>Access and security › Emergency changes</strong><span>Home › Access and security › Emergency changes.</span></li>
+<li><strong>Change history</strong><span>A tab on the same page, filterable, written as sentences.</span></li>
+</ul></div>
+</div>
+</section>
+
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"$preview":{"width":1440,"height":2000}}'>
+class Component extends DCLogic {
+renderVals() {
+const V = {
+'civic-ledger': { header: 'neutral', density: 'regular', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { header: 'brand', density: 'regular', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { header: 'dark', density: 'compact', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { header: 'dark', density: 'comfortable', table: 'ledger', surfaces: 'flat', controls: 'outlined', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { header: 'brand', density: 'compact', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { header: 'floating', density: 'regular', table: 'rules', surfaces: 'elevated', controls: 'filled', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+return { skin, mode, v: V[skin] };
+}
+}
+</script>
+</body>
+</html>

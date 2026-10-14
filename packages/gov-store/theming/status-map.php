@@ -32,4 +32,15 @@ return [
     'office_configured' => ['tone' => 'info', 'icon' => 'fa-list-check'],
     'office_operational' => ['tone' => 'status-ready', 'icon' => 'fa-circle-check'],
     'office_suspended' => ['tone' => 'status-undeployable', 'icon' => 'fa-circle-pause'],
+
+    // Office membership (keys are membership_<status>; a released home office is "released_home")
+    'membership_pending' => ['tone' => 'status-pending', 'icon' => 'fa-hourglass-half'],
+    'membership_active' => ['tone' => 'status-ready', 'icon' => 'fa-circle-check'],
+    'membership_release_requested' => ['tone' => 'warning', 'icon' => 'fa-door-open'],
+    'membership_released_home' => ['tone' => 'info', 'icon' => 'fa-right-left'],
+    'membership_released' => ['tone' => 'status-archived', 'icon' => 'fa-minus'],
+    'membership_rejected' => ['tone' => 'doc-rejected', 'icon' => 'fa-circle-xmark'],
+    'membership_suspended' => ['tone' => 'status-undeployable', 'icon' => 'fa-circle-pause'],
+    'membership_inactive' => ['tone' => 'status-archived', 'icon' => 'fa-minus'],
+    'membership_cancelled' => ['tone' => 'status-archived', 'icon' => 'fa-ban'],
 ];

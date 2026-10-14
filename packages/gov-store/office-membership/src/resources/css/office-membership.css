@@ -1,145 +1,113 @@
-/* Office Membership package styles use the shared GovStore theme tokens. */
-.office-membership-theme .onboarding-box { border-radius: var(--gs-radius-md); box-shadow: var(--gs-shadow-1); border: 1px solid var(--gs-color-border); background: var(--gs-color-surface); }
-.office-membership-theme .form-section-header { font-size: 15px; font-weight: bold; color: var(--gs-color-primary); border-bottom: 2px solid var(--gs-color-border); padding-bottom: 8px; margin-top: 30px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-.office-membership-theme .form-section-header:first-of-type { margin-top: 10px; }
-.office-membership-theme .filter-bar { background: var(--gs-color-surface); border: 1px solid var(--gs-color-border); border-radius: var(--gs-radius-sm); padding: 15px; margin-bottom: 20px; box-shadow: var(--gs-shadow-1); }
-.office-membership-theme .registry-table td { vertical-align: middle !important; }
-.office-membership-theme .status-badge-container { line-height: 1.4; }
-.office-membership-theme .om-inline-aedab6f0 { width: 120px; }
-.office-membership-theme .om-accent-success { border-top: 3px solid var(--gs-color-success); }
-.office-membership-theme .om-accent-primary { border-top: 3px solid var(--gs-color-primary); }
-.office-membership-theme .om-accent-warning { border-top: 3px solid var(--gs-color-warning); }
-.office-membership-theme .om-accent-neutral { border-top: 3px solid var(--gs-color-border-strong); }
-.office-membership-theme .om-accent-danger { border-top: 3px solid var(--gs-color-danger); }
-.office-membership-theme table.gs-table { color: var(--gs-color-text); border-color: var(--gs-table-border); }
-
-.om-inline-ca3519f9 { border-top: 3px solid var(--gs-color-danger); }
-
-.om-inline-8147ff4b { width:100%; }
-
-.om-inline-c6345704 { padding: 10px 15px; border-bottom: 1px solid var(--gs-color-border); display: flex; justify-content: space-between; }
-
-.om-inline-51676ca7 { display: flex; gap: 5px; }
-
-.om-inline-a55a8c40 { font-size: 12px; }
-
-.om-inline-2ad9dde7 { text-transform: uppercase; }
-
-.om-inline-3801632f { background: var(--gs-color-surface-sunken); border: 1px dashed var(--gs-color-border-strong); padding: 10px; margin-bottom: 10px; }
-
-.om-inline-b654cc01 { font-size: 24px; font-weight: bold; letter-spacing: 3px; }
-
-.om-inline-0346f018 { font-size: 10px; }
-
-.om-inline-92a5d53a { font-size:12px; }
-
-.om-inline-442a70a1 { width: 100%; }
-
-
-.om-inline-c2cf9d67 { padding: 15px 0; }
-
-.om-inline-ed0f0aa0 { padding: 30px; }
-
-.om-inline-92a5d53a { font-size:12px; }
-
-.om-inline-442a70a1 { width: 100%; }
-
-.om-inline-00abe7ff { margin-right: 15px; }
-
-.om-inline-ae731390 { margin-right: 5px; }
-
-.om-inline-4c3ea102 { min-width: 180px; }
-
-.om-inline-3cdfe113 { font-weight: bold; }
-
-.om-inline-1ac8bcc9 { display:block; margin-top: 3px; }
-
-.om-inline-ea7b6b7b { padding: 40px; }
-
-.om-inline-3225db96 { margin-top: 10px; }
-
-.om-inline-670de20b { border-top: 3px solid var(--gs-color-primary); }
-
-.om-inline-baa07011 { padding: 15px 20px; }
-
-.om-inline-7a0ebc26 { font-weight: bold; font-size: 16px; }
-
-.om-inline-b9c79929 { padding: 20px 25px; }
-
-.om-inline-19f5c02e { margin-bottom: 20px; }
-
-.om-inline-442a70a1 { width: 100%; }
-
-.om-inline-f5897d74 { margin-top: 25px; }
-
-.om-inline-67ef8815 { margin-top: 35px; }
-
-.om-inline-81063683 { padding: 15px 25px; background-color: var(--gs-color-surface-sunken); border-top: 1px solid var(--gs-color-bg); }
-
-.om-inline-b28ac730 { padding: 8px 15px; }
-
-.om-inline-4140e91d { padding: 8px 25px; font-weight: bold; }
-
-.om-inline-80472c54 { border-top: 3px solid var(--gs-color-border); }
-
-.om-inline-0fcefbc5 { font-weight: bold; font-size: 15px; }
-
-.om-inline-ca9b09af { padding: 20px 25px; font-size: 13px; line-height: 1.6; color: var(--gs-color-text-muted); }
-
-.om-inline-5a2f1a27 { width: 150px; }
-
-.om-inline-092f0f30 { vertical-align: middle; }
-
-.om-inline-7fdeb8b8 { margin-bottom: 0; font-size: 12px; line-height: 1.6; }
-
-.om-inline-3119a226 { margin-left: 15px; }
-
-.om-inline-ed0f0aa0 { padding: 30px; }
-
-.om-inline-709ea946 { border-top: 3px solid var(--gs-color-success); }
-
-.om-inline-6fe3c4ac { padding: 20px; }
-
-.om-inline-eca5fde5 { font-size: 13px; margin-bottom: 15px; }
-
-.om-inline-20b7438c { background: var(--gs-color-surface-sunken); border: 1px dashed var(--gs-color-border-strong); padding: 15px; border-radius: 6px; margin-bottom: 15px; }
-
-.om-inline-d18dd8b8 { font-size: 12px; color: var(--gs-color-text-muted); display: block; text-transform: uppercase; }
-
-.om-inline-63a3af60 { font-size: 32px; font-weight: bold; letter-spacing: 5px; color: var(--gs-color-text); }
-
-.om-inline-5e98ec0d { display: block; font-size: 11px; color: var(--gs-color-danger); margin-top: 5px; }
-
-.om-inline-3312350a { background: var(--gs-color-surface-sunken); border: 1px solid var(--gs-color-border); padding: 15px; border-radius: 6px; margin-bottom: 15px; }
-
-.om-inline-c7560035 { font-size: 14px; color: var(--gs-color-text-muted); }
-
-.om-inline-39a594e2 { border-top: 3px solid var(--gs-color-primary); }
-
-.om-inline-b9a57387 { font-size: 16px; letter-spacing: 2px; text-transform: uppercase; }
-
-.om-inline-ce5e73b6 { border-top: 3px solid var(--gs-color-warning); }
-
-.om-inline-f76a3cae { padding: 12px; border: 1px solid var(--gs-color-warning-subtle); background: var(--gs-color-warning-subtle); border-radius: 4px; margin-bottom: 12px; }
-
-.om-inline-19b327ae { font-size: 11px; }
-
-.om-inline-03804ad7 { margin-top: 15px; display: flex; gap: 10px; }
-
-.om-inline-7bf38354 { flex: 1; }
-
-.om-inline-80472c54 { border-top: 3px solid var(--gs-color-border); }
-
-.om-inline-d75cbef7 { font-size: 13px; }
-
-.om-inline-494240c8 { font-weight: bold; margin-top: 15px; border-bottom: 1px solid var(--gs-color-border); padding-bottom: 6px; }
-
-.om-inline-b198ccc8 { vertical-align: middle; text-align: right; }
-
-.om-inline-cba5f610 { font-size: 12px; margin-right: 10px; }
-
-.om-inline-f8bef7f8 { display:inline; }
-
-.om-inline-921a2ecf { padding: 15px; font-size: 13px; }
-
-.om-inline-442a70a1 { width: 100%; }
+/*
+ * Office membership layout (registered into @layer gs-packages).
+ * Visual design comes from the <x-gs::*> kit and theme tokens; this file only arranges it.
+ * !important is used only to reset Bootstrap's unlayered element margins, which beat layered rules.
+ */
+
+.govmem { display: flex; flex-direction: column; gap: var(--gs-space-4); }
+.govmem-stack { display: flex; flex-direction: column; gap: var(--gs-space-3); }
+.govmem-muted { color: var(--gs-color-text-muted); }
+.govmem-small { font-size: var(--gs-font-size-sm); }
+.govmem-meta { display: block; color: var(--gs-color-text-muted); font-size: var(--gs-font-size-sm); }
+.govmem-mono { font-family: var(--gs-font-mono); }
+.govmem-flush { margin: 0 !important; }
+.govmem-full { flex-basis: 100%; text-align: end; }
+.govmem-ok { color: var(--gs-color-success); }
+.govmem-inline-form { display: inline; margin: 0; }
+.govmem-toolbar { display: flex; flex-wrap: wrap; gap: var(--gs-space-2); align-items: center; }
+.govmem-heading { margin: 0 !important; font-size: 1.15em; font-weight: 700; }
+.govmem-legend { margin: 0 0 var(--gs-space-2) !important; border: 0; font-size: 1em; font-weight: 700; width: auto; }
+.govmem-quote { display: block; margin-top: var(--gs-space-1); color: var(--gs-color-text-muted); font-style: italic; }
+
+/* ---------- two-column work layout ---------- */
+.govmem-layout { display: flex; flex-wrap: wrap; gap: var(--gs-space-4); align-items: flex-start; }
+.govmem-layout__main { flex: 999 1 560px; min-width: 0; }
+.govmem-layout__aside { flex: 1 1 280px; max-width: 400px; min-width: 0; }
+@media (max-width: 767px) { .govmem-layout__aside { max-width: none; } }
+
+.govmem-filters { display: flex; flex-wrap: wrap; gap: var(--gs-space-2); align-items: center; margin: 0; }
+.govmem-filters__search { flex: 1 1 260px; min-width: 0; }
+.govmem-filters__select { flex: 0 1 220px; min-width: 160px; }
+
+/* ---------- requests waiting for the person ---------- */
+.govmem-request { display: flex; gap: var(--gs-space-3); align-items: flex-start; }
+.govmem-request + .govmem-request { padding-top: var(--gs-space-3); border-top: var(--gs-border-width) solid var(--gs-color-border); }
+.govmem-request__body { flex: 1 1 auto; min-width: 0; }
+.govmem-decline > summary { list-style: none; cursor: pointer; }
+.govmem-decline > summary::-webkit-details-marker { display: none; }
+.govmem-decline[open] { flex-basis: 100%; }
+.govmem-decline[open] > summary { margin-bottom: var(--gs-space-2); }
+
+/* ---------- office cards ---------- */
+.govmem-office__head { display: flex; flex-wrap: wrap; gap: var(--gs-space-2); justify-content: space-between; align-items: flex-start; }
+.govmem-office__name { margin: 0 !important; font-size: 1.1em; font-weight: 700; }
+.govmem-past > summary { cursor: pointer; font-weight: 600; min-height: 32px; }
+.govmem-sentences { list-style: none; margin: var(--gs-space-2) 0 0 !important; padding: 0; display: flex; flex-direction: column; gap: var(--gs-space-2); }
+
+/* ---------- feeds: what changed, change history ---------- */
+.govmem-feed { list-style: none; margin: 0 !important; padding: 0; display: flex; flex-direction: column; }
+.govmem-feed > li { display: flex; gap: var(--gs-space-3); padding: var(--gs-space-2) 0; border-top: var(--gs-border-width) solid var(--gs-color-border); }
+.govmem-feed > li:first-child { border-top: 0; }
+.govmem-feed--boxed { padding: 0 var(--gs-space-3); border: var(--gs-border-width) solid var(--gs-color-border); border-radius: var(--gs-radius-md); background: var(--gs-color-surface); }
+.govmem-feed__icon { flex: none; width: 1.25em; margin-top: .2em; color: var(--gs-color-text-muted); text-align: center; }
+
+/* ---------- roles and people pickers ---------- */
+.govmem-roles { display: flex; flex-direction: column; gap: var(--gs-space-3); margin-bottom: var(--gs-space-3); }
+.govmem-pick { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-direction: column; gap: var(--gs-space-2); }
+.govmem-people { list-style: none; margin: 0 !important; padding: 0; max-height: 320px; overflow-y: auto; border: var(--gs-border-width) solid var(--gs-color-border); border-radius: var(--gs-radius-md); }
+.govmem-people > li + li { border-top: var(--gs-border-width) solid var(--gs-color-border); }
+.govmem-person { display: flex; gap: var(--gs-space-3); align-items: center; margin: 0 !important; padding: var(--gs-space-2) var(--gs-space-3); min-height: 48px; font-weight: 400; cursor: pointer; }
+.govmem-person:hover { background: var(--gs-color-surface-sunken); }
+.govmem-person input { flex: none; margin: 0 !important; accent-color: var(--gs-color-primary); }
+.govmem-person--off { cursor: not-allowed; opacity: .6; }
+.govmem-person__text { min-width: 0; }
+.govmem-radio { display: flex; gap: var(--gs-space-2); align-items: flex-start; margin: 0 0 var(--gs-space-2) !important; font-weight: 400; cursor: pointer; }
+.govmem-radio input { margin: .25em 0 0 !important; flex: none; accent-color: var(--gs-color-primary); }
+
+/* ---------- codes ---------- */
+.govmem-code { margin: 0 !important; padding: var(--gs-space-3); border-radius: var(--gs-radius-md); background: var(--gs-color-surface-sunken); text-align: center; font-size: 1.8em; font-weight: 700; letter-spacing: .12em; }
+.govmem-code-input { font-family: var(--gs-font-mono); letter-spacing: .1em; text-transform: uppercase; max-width: 16em; }
+.govmem-steps { margin: 0 !important; padding-left: 1.3em; display: flex; flex-direction: column; gap: var(--gs-space-1); }
+
+/* ---------- dialogs: consequences and acknowledgements ---------- */
+.govmem-effects { list-style: none; margin: var(--gs-space-2) 0 0 !important; padding: 0; display: flex; flex-direction: column; gap: var(--gs-space-2); }
+.govmem-effects li { display: flex; gap: var(--gs-space-2); align-items: baseline; }
+.govmem-effects li > i { flex: none; width: 1.1em; text-align: center; color: var(--gs-color-text-muted); }
+.govmem-effect--stop > i { color: var(--gs-color-danger) !important; }
+.govmem-effect--ok > i { color: var(--gs-color-success) !important; }
+.govmem-effect--info > i { color: var(--gs-color-info) !important; }
+.govmem-ack {
+    display: flex; gap: var(--gs-space-2); align-items: flex-start; margin: 0 !important; padding: var(--gs-space-3);
+    border-radius: var(--gs-radius-md); background: var(--gs-color-surface-sunken); font-weight: 400; cursor: pointer;
+}
+.govmem-ack input { margin: .2em 0 0 !important; accent-color: var(--gs-color-primary); flex: none; }
+[id^="govmem-"] .modal-footer { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--gs-space-2); }
+[id^="govmem-"] .modal-footer > * { margin: 0 !important; }
+
+/* ---------- transfer tracker ---------- */
+.govmem-track { list-style: none; margin: 0 0 var(--gs-space-3) !important; padding: 0; counter-reset: govmem-step; }
+.govmem-track__step { position: relative; padding: 0 0 var(--gs-space-4) 2.75em; counter-increment: govmem-step; }
+.govmem-track__step::before {
+    content: counter(govmem-step); position: absolute; left: 0; top: 0; display: grid; place-items: center; width: 2em; height: 2em;
+    border-radius: 50%; border: 2px solid var(--gs-color-border-strong); background: var(--gs-color-surface); font-weight: 700; font-size: .9em;
+}
+.govmem-track__step:not(:last-child)::after { content: ''; position: absolute; left: calc(1em - 1px); top: 2.2em; bottom: .2em; border-left: 2px solid var(--gs-color-border); }
+.govmem-track__step--done::before { content: '\2713'; border-color: var(--gs-color-success); background: var(--gs-color-success); color: var(--gs-color-on-success, var(--gs-color-surface)); }
+.govmem-track__step--current::before { border-color: var(--gs-color-primary); color: var(--gs-color-primary); }
+
+/* ---------- emergency changes ---------- */
+.govmem-person-card { display: flex; flex-wrap: wrap; gap: var(--gs-space-3); align-items: center; margin-bottom: var(--gs-space-3); }
+.govmem-person-card > div { flex: 1 1 200px; min-width: 0; }
+.govmem-reach { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--gs-space-3); margin: 0 !important; }
+.govmem-reach dt { font-size: var(--gs-font-size-sm); color: var(--gs-color-text-muted); font-weight: 600; }
+.govmem-reach dd { margin: 0 !important; }
+.govmem-reach__row { display: flex; flex-wrap: wrap; gap: var(--gs-space-1); align-items: center; margin-bottom: var(--gs-space-1); }
+
+/* ---------- phones: tables become stacked cards ---------- */
+@media (max-width: 767px) {
+    .govmem .gs-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    .govmem .gs-table, .govmem .gs-table tbody, .govmem .gs-table tr, .govmem .gs-table td { display: block; width: 100%; }
+    .govmem .gs-table tr { padding: var(--gs-space-2) 0; border-bottom: var(--gs-border-width) solid var(--gs-color-border); }
+    .govmem .gs-table td { border: 0 !important; padding: var(--gs-space-1) var(--gs-space-2) !important; }
+    .govmem-office__head { flex-direction: column; }
+}

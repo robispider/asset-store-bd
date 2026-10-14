@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "id": "membership.staff-observation",
+  "title": "An office administrator's Staff page shows the five status tabs with database counts and their own row without End access; Add staff with an unknown username is refused under the field inside the reopened dialog, keeping what was typed and adding nobody",
+  "features": ["membership.staff"],
+  "tags": ["seeded", "validation", "membership"],
+  "execution": { "capability": "observe", "language": "en-US", "timeoutMs": 90000, "accessMode": "any" },
+  "fixtures": {
+    "office": { "requirements": { "operational": true } },
+    "actors": {
+      "officeAdmin": { "role": "office_admin", "capabilities": { "allOf": ["membership.manage"], "noneOf": ["access.matrix", "organization.national.manage"] }, "office": "office", "activeMembership": true }
+    }
+  },
+  "data": {
+    "username": { "generate": "markedText", "prefix": "LIVE-NOUSER", "length": 6 }
+  },
+  "steps": [
+    { "action": "observe", "check": "membership.staff", "args": { "officeId": "${fixtures.office.id}" }, "as": "staff" },
+    { "action": "compare", "actual": "${observed.staff.adminId}", "equals": "${actors.officeAdmin.id}", "note": "The fixture actor administers this office" },
+    { "use": "auth.login", "with": { "actor": "officeAdmin" } },
+
+    { "action": "goto", "url": "/gov-store/office/staff" },
+    { "action": "assert", "target": "membership.pageTitle", "test": "text", "equals": "Staff" },
+    { "action": "assert", "target": "membership.pageSubtitle", "test": "text", "contains": "${observed.staff.name}" },
+    { "action": "assert", "target": "membership.tabStaffCount", "test": "number", "equals": "${observed.staff.staff}" },
+    { "action": "assert", "target": "membership.tabWaitingCount", "test": "number", "equals": "${observed.staff.waiting}" },
+    { "action": "assert", "target": "membership.tabLeavingCount", "test": "number", "equals": "${observed.staff.leaving}" },
+    { "action": "assert", "target": "membership.tabArrivingCount", "test": "number", "equals": "${observed.staff.arriving}", "note": "Signed-off home offices elsewhere in the ministry" },
+    { "action": "assert", "target": "membership.tabPastCount", "test": "number", "equals": "${observed.staff.past}" },
+    { "action": "assert", "target": "membership.waitBanner", "test": "count", "equals": "${observed.staff.waitBanner}" },
+    { "action": "assert", "target": "membership.staffRows", "test": "count", "equals": "${observed.staff.staffRows}" },
+    { "action": "assert", "target": "membership.youRow", "test": "count", "equals": 1 },
+    { "action": "assert", "target": "membership.youRowEnd", "test": "count", "equals": 0, "note": "Nobody ends their own access, and a home office is left through sign-off" },
+    { "action": "assert", "target": "membership.endButtons", "test": "count", "equals": "${observed.staff.additionalStaff}", "note": "End access is offered only for additional offices" },
+    { "action": "assert", "target": "membership.unlabelledButtons", "test": "count", "equals": 0 },
+
+    { "action": "click", "target": "membership.tabWaiting" },
+    { "action": "wait", "target": "membership.tabWaitingCurrent", "state": "attached" },
+    { "action": "assert", "target": "membership.staffRows", "test": "count", "equals": "${observed.staff.waitingRows}" },
+
+    { "action": "click", "target": "membership.officeCodeButton" },
+    { "action": "wait", "target": "membership.codeDialog", "state": "visible" },
+    { "action": "click", "target": "membership.codeDialogClose" },
+    { "action": "wait", "target": "membership.codeDialog", "state": "hidden" },
+
+    { "action": "click", "target": "membership.addStaffButton" },
+    { "action": "wait", "target": "membership.addDialog", "state": "visible" },
+    { "action": "assert", "target": "membership.addWays", "test": "count", "equals": 3, "note": "Personal code · office code · transfer" },
+    { "action": "assert", "target": "membership.addUsername", "test": "hidden", "note": "Fields appear only for the chosen way" },
+    { "action": "click", "target": "membership.addWayPersonal" },
+    { "action": "fill", "target": "membership.addUsername", "value": "${data.username}" },
+    { "action": "fill", "target": "membership.addCode", "value": "ZZZZZZ" },
+    { "action": "submitForm", "target": "membership.addSubmit" },
+    { "action": "wait", "target": "membership.addUsernameError", "state": "visible" },
+    { "action": "assert", "target": "membership.addUsernameError", "test": "text", "contains": "Nobody active in this ministry has that username." },
+    { "action": "assert", "target": "membership.addUsername", "test": "value", "equals": "${data.username}", "note": "The dialog reopens with what was typed" },
+    { "action": "assert", "target": "membership.addWayPersonalInput", "test": "checked" },
+    { "action": "assert", "target": "membership.errorSummary", "test": "visible" },
+
+    { "action": "observe", "check": "membership.staff", "args": { "officeId": "${fixtures.office.id}" }, "as": "after" },
+    { "action": "compare", "actual": "${observed.after.staff}", "equals": "${observed.staff.staff}", "note": "The refused add created no membership" }
+  ],
+  "cleanup": { "policy": "no-business-records-created" }
+}

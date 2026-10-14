@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Emergency changes</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/818ad3bee488823df6a430cb763aba33">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Source+Serif+4:wght@400;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.app{min-height:100%;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:var(--gs-font-sans);font-size:14px;line-height:1.5}
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 20px;background:var(--gs-header-bg);color:var(--gs-header-fg);border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.shell{display:flex;flex-wrap:wrap;align-items:stretch}
+.side{flex:1 1 220px;max-width:240px;background:var(--gs-sidebar-bg);color:var(--gs-sidebar-fg);padding:12px 0;box-sizing:border-box}
+.side a{display:flex;align-items:center;min-height:42px;padding:0 18px;color:var(--gs-sidebar-fg);text-decoration:none}
+.side a[aria-current]{background:var(--gs-sidebar-active-bg);color:var(--gs-sidebar-active-fg);box-shadow:inset 3px 0 0 var(--gs-sidebar-active-marker)}
+.side .sub{padding-left:34px}
+.main{flex:999 1 560px;min-width:0;box-sizing:border-box;padding:20px 28px 56px;display:flex;flex-direction:column;gap:18px;max-width:1100px}
+.crumb{font-size:13px;color:var(--gs-color-text-muted)}
+.ico{width:1em;height:1em;flex:none}
+.muted{color:var(--gs-color-text-muted)}
+.mono{font-family:var(--gs-font-mono);font-size:13px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.step{display:flex;gap:10px;align-items:center;margin:0;font-size:16px}
+.num{width:28px;height:28px;border-radius:50%;flex:none;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;background:var(--gs-color-primary-subtle);color:var(--gs-color-primary)}
+.ctl{box-sizing:border-box;width:100%;min-height:var(--gs-size-control-h);padding:8px 10px;border:var(--gs-border-width) solid var(--gs-color-border-strong);border-radius:var(--gs-radius-sm);background:var(--gs-color-surface);color:var(--gs-color-text);font:inherit}
+.search{position:relative;max-width:520px}
+.search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--gs-color-text-muted)}
+.search .ctl{padding-left:34px}
+.person{display:flex;flex-wrap:wrap;gap:16px 28px;padding:16px;border-radius:var(--gs-radius-md);border:var(--gs-border-width) solid var(--gs-color-primary);background:var(--gs-color-primary-subtle)}
+.person__id{display:flex;gap:12px;align-items:center;flex:1 1 240px;min-width:0}
+.facts{flex:2 1 420px;min-width:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr));gap:10px 20px;margin:0}
+.facts dt{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--gs-color-text-muted)}
+.facts dd{margin:2px 0 0}
+.reach{padding:14px 16px;border-radius:var(--gs-radius-md);background:var(--gs-color-surface-sunken);display:flex;flex-direction:column;gap:8px}
+.effects{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.effects li{display:flex;gap:10px;align-items:flex-start}
+.e-stop{color:var(--gs-color-danger)}
+.e-warn{color:var(--gs-color-warning)}
+.e-info{color:var(--gs-color-info)}
+.ack{display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:var(--gs-radius-md);background:var(--gs-color-surface-sunken);cursor:pointer}
+.ack input,.inl input{width:18px;height:18px;margin:2px 0 0;accent-color:var(--gs-color-primary)}
+.inl{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:14px}
+.count{font-size:13px;color:var(--gs-color-text-muted)}
+</style>
+</helmet>
+<div class="app" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-table="{{ v.table }}" data-gs-controls="{{ v.controls }}" data-gs-type="{{ v.type }}" data-gs-header="{{ v.header }}">
+<div class="top"><strong style="font-size: 16px; flex: 1 1 auto">National Asset Register</strong><span class="gs-avatar gs-avatar--sm gs-tone-primary" role="img" aria-label="Signed in as Nusrat Jahan">NJ</span></div>
+<div class="shell">
+<nav class="side" aria-label="Main"><a href="#">Dashboard</a><a href="#">Organization</a><a href="#">Access and security</a><a class="sub" href="#">Area access</a><a class="sub" href="#" aria-current="page">Emergency changes</a><a href="#">Reports</a></nav>
+<main class="main">
+<nav class="crumb" aria-label="Breadcrumb"><a href="#">Home</a> / <a href="#">Access and security</a> / Emergency changes</nav>
+<header class="gs-page-header"><div class="gs-page-header__text"><h1 class="gs-page-header__title">Emergency changes</h1><p class="gs-page-header__subtitle">For when the normal path is blocked: someone left without handing over, or was dismissed. Every change is recorded with your name and reason, and the people affected are told.</p></div></header>
+
+<nav class="gs-status-tabs" aria-label="Emergency changes">
+<ul class="gs-tabs">
+<li class="gs-tabs__item"><a class="gs-tabs__link" href="#" aria-current="{{ cMake }}" onClick="{{ goMake }}"><span>Make a change</span></a></li>
+<li class="gs-tabs__item"><a class="gs-tabs__link" href="#" aria-current="{{ cHist }}" onClick="{{ goHist }}"><span>Change history</span><span class="gs-tabs__count">{{ histCount }}</span></a></li>
+</ul>
+</nav>
+
+<sc-if value="{{ tMake }}" hint-placeholder-val="{{ true }}">
+<sc-if value="{{ notApplied }}" hint-placeholder-val="{{ true }}">
+<section class="gs-box" aria-labelledby="s1">
+<div class="gs-box__body" style="display: flex; flex-direction: column; gap: 14px">
+<h2 class="step" id="s1"><span class="num" aria-hidden="true">1</span>Who is it about?</h2>
+<label class="search" for="who"><span class="gs-sr-only">Search by name or username</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input class="ctl" id="who" type="search" value="abdul mannan" autocomplete="off"></label>
+<div class="person">
+<div class="person__id"><span class="gs-avatar gs-avatar--lg gs-tone-primary" aria-hidden="true">AM</span><div><strong style="font-size: 16px">Abdul Mannan</strong><br><span class="muted">Store Keeper · <span class="mono">abdul.mannan</span></span><br><span class="muted">Last signed in 41 days ago</span></div></div>
+<dl class="facts">
+<div><dt>Offices</dt><dd>Upazila Health Complex, Dhamrai <span class="gs-tag gs-tag--primary gs-tag--outline">Home</span><br>Civil Surgeon's Office, Dhaka <span class="gs-tag gs-tag--light gs-tag--outline">Additional</span></dd></div>
+<div><dt>Roles</dt><dd>Storekeeper, Dhamrai</dd></div>
+<div><dt>Holds</dt><dd>3 items from Dhamrai</dd></div>
+<div><dt>Open requests</dt><dd>None</dd></div>
+</dl>
+</div>
+</div>
+</section>
+
+<section class="gs-box" aria-labelledby="s2">
+<div class="gs-box__body" style="display: flex; flex-direction: column; gap: 14px">
+<h2 class="step" id="s2"><span class="num" aria-hidden="true">2</span>What needs to change?</h2>
+<div class="gs-choices" role="radiogroup" aria-labelledby="s2" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 12px">
+<label class="gs-choice" for="c-roles"><input class="gs-choice__input" type="radio" name="change" id="c-roles" checked="{{ isRoles }}" onChange="{{ pickRoles }}" aria-describedby="c-roles-d"><span class="gs-choice__text"><span class="gs-choice__label">Remove all their roles</span><span class="gs-choice__description" id="c-roles-d">They stay a member of their offices. Use when someone is away and their role blocks work.</span></span></label>
+<label class="gs-choice" for="c-rel"><input class="gs-choice__input" type="radio" name="change" id="c-rel" checked="{{ isRelease }}" onChange="{{ pickRelease }}" aria-describedby="c-rel-d"><span class="gs-choice__text"><span class="gs-choice__label">Release them from one office</span><span class="gs-choice__description" id="c-rel-d">Skips the leaving checks. Use when someone has left and can't do it themselves.</span></span></label>
+</div>
+<sc-if value="{{ noChoice }}" hint-placeholder-val="{{ true }}"><p class="muted" style="margin: 0">Nothing is chosen for you. Pick one to see exactly what it changes.</p></sc-if>
+<sc-if value="{{ isRelease }}" hint-placeholder-val="{{ false }}">
+<div class="two">
+<div class="gs-form-row"><label class="gs-form-row__label" for="office">Which office?</label><div class="gs-form-row__control"><select class="ctl" id="office"><option>Upazila Health Complex, Dhamrai (home)</option><option>Civil Surgeon's Office, Dhaka (additional)</option></select></div></div>
+<label class="inl" for="alsoroles" style="align-self: end; padding-bottom: 10px"><input type="checkbox" id="alsoroles" checked=""><span>Also remove their roles at this office <span class="muted">(recommended)</span></span></label>
+</div>
+</sc-if>
+<sc-if value="{{ hasChoice }}" hint-placeholder-val="{{ false }}">
+<div class="reach" aria-live="polite">
+<strong>What this changes</strong>
+<ul class="effects">
+<li><svg class="ico e-stop" style="margin-top: 3px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8 12h8"></path></svg><span>Dhamrai has <strong>no storekeeper</strong> until someone is chosen. Approved items can't be handed out there. Dr. Selina Parvin is asked to choose one.</span></li>
+<sc-if value="{{ isRelease }}" hint-placeholder-val="{{ false }}"><li><svg class="ico e-stop" style="margin-top: 3px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8 12h8"></path></svg><span>Abdul stops working in Dhamrai. It is no longer his home office.</span></li><li><svg class="ico e-warn" style="margin-top: 3px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 2 21h20L12 3Z"></path><path d="M12 10v4M12 17h.01"></path></svg><span>The <strong>3 items</strong> stay recorded against him and are flagged for Dhamrai to recover.</span></li></sc-if>
+<li><svg class="ico e-info" style="margin-top: 3px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8h.01M11 12h1v5h1"></path></svg><span>Civil Surgeon's Office, Dhaka is not affected.</span></li>
+</ul>
+</div>
+</sc-if>
+</div>
+</section>
+
+<section class="gs-box" aria-labelledby="s3">
+<div class="gs-box__body" style="display: flex; flex-direction: column; gap: 14px">
+<h2 class="step" id="s3"><span class="num" aria-hidden="true">3</span>Why?</h2>
+<div class="two">
+<div class="gs-form-row"><label class="gs-form-row__label" for="reason">Reason<span class="gs-form-row__required" aria-hidden="true">*</span><span class="gs-sr-only">required</span></label><div class="gs-form-row__control"><textarea class="ctl" id="reason" rows="3" aria-describedby="reason-count">Absent without leave since 3 Sep; storekeeper role is blocking all issues at Dhamrai.</textarea><p class="count" id="reason-count">87 characters · at least 10</p></div></div>
+<div class="gs-form-row"><label class="gs-form-row__label" for="ref">Order or letter number <span class="gs-muted">(optional)</span></label><div class="gs-form-row__control"><input class="ctl" id="ref" value="DGHS/Admin/2026/1142"><p class="gs-form-row__help">Shown in the history next to your reason.</p></div></div>
+</div>
+<label class="ack" for="ack"><input type="checkbox" id="ack" checked="{{ ack }}" onChange="{{ toggleAck }}"><span>I'm authorised to make this change, and the office has been told.</span></label>
+<div class="row"><button type="button" class="gs-btn gs-btn--danger" disabled="{{ cannotApply }}" onClick="{{ apply }}">{{ applyLabel }}</button><span class="muted">{{ applyHint }}</span></div>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{ applied }}" hint-placeholder-val="{{ false }}">
+<div class="gs-alert gs-alert--success" role="status"><svg class="ico gs-alert__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.2 14.2-4-4 1.4-1.4 2.6 2.6 5.4-5.4 1.4 1.4-6.8 6.8Z"></path></svg><div class="gs-alert__body"><strong>Done. {{ doneText }}</strong> Abdul Mannan and Dr. Selina Parvin have been told. The change is in the history with your reason. <button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" onClick="{{ goHist }}">See it in the history</button> <button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" onClick="{{ again }}">Make another change</button></div></div>
+</sc-if>
+</sc-if>
+
+<sc-if value="{{ tHist }}" hint-placeholder-val="{{ false }}">
+<section class="gs-box">
+<div class="gs-box__body" style="display: flex; flex-direction: column; gap: 14px">
+<div class="row"><label class="search" for="hq" style="flex: 1 1 280px"><span class="gs-sr-only">Search the history</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input class="ctl" id="hq" type="search" placeholder="Person, office or reason"></label><div class="gs-segmented" role="group" aria-label="Change type"><button type="button" class="gs-segmented__option" aria-pressed="true">All</button><button type="button" class="gs-segmented__option" aria-pressed="false">Roles removed</button><button type="button" class="gs-segmented__option" aria-pressed="false">Released</button></div></div>
+<ol class="gs-timeline">
+<sc-if value="{{ applied }}" hint-placeholder-val="{{ false }}"><li class="gs-timeline__item"><div><strong>Nusrat Jahan</strong> {{ histVerb }}<br><span class="muted">"Absent without leave since 3 Sep; storekeeper role is blocking all issues at Dhamrai." · DGHS/Admin/2026/1142</span></div><time class="gs-timeline__meta">Just now</time></li></sc-if>
+<li class="gs-timeline__item"><div><strong>Nusrat Jahan</strong> released <strong>Abul Kalam</strong> from Upazila Health Complex, Savar<br><span class="muted">"Retired on 28 Feb; did not complete handover." · 2 items flagged for recovery</span></div><time class="gs-timeline__meta">14 Mar 2026</time></li>
+<li class="gs-timeline__item"><div><strong>Sabina Begum</strong> removed all roles from <strong>Mizanur Rahman</strong><br><span class="muted">"On long-term medical leave; approver role reassigned by office." · Civil Surgeon's Office, Dhaka</span></div><time class="gs-timeline__meta">2 Feb 2026</time></li>
+</ol>
+</div>
+</section>
+</sc-if>
+
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"$preview":{"width":1440,"height":1700}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { tab: 'make', choice: null, ack: false, applied: false }; }
+renderVals() {
+const V = {
+'civic-ledger': { header: 'neutral', density: 'regular', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { header: 'brand', density: 'regular', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { header: 'dark', density: 'compact', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { header: 'dark', density: 'comfortable', table: 'ledger', surfaces: 'flat', controls: 'outlined', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { header: 'brand', density: 'compact', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { header: 'floating', density: 'regular', table: 'rules', surfaces: 'elevated', controls: 'filled', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+const s = this.state;
+const go = (tab) => (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ tab }); };
+const isRoles = s.choice === 'roles';
+const isRelease = s.choice === 'release';
+const cannot = !s.choice || !s.ack;
+return {
+skin, mode, v: V[skin],
+tMake: s.tab === 'make', tHist: s.tab === 'history',
+cMake: s.tab === 'make' ? 'page' : undefined, cHist: s.tab === 'history' ? 'page' : undefined,
+goMake: go('make'), goHist: go('history'),
+histCount: s.applied ? 25 : 24,
+isRoles, isRelease, noChoice: !s.choice, hasChoice: !!s.choice,
+ack: s.ack, cannotApply: cannot,
+applyLabel: isRelease ? 'Release Abdul from Dhamrai' : (isRoles ? 'Remove Abdul’s roles' : 'Apply change'),
+applyHint: !s.choice ? 'Choose a change first.' : (!s.ack ? 'Tick the box to continue.' : ''),
+notApplied: !s.applied, applied: s.applied,
+doneText: isRelease ? 'Abdul Mannan is released from Dhamrai and no longer holds its storekeeper role.' : 'Abdul Mannan no longer holds any roles.',
+histVerb: isRelease ? 'released Abdul Mannan from Upazila Health Complex, Dhamrai' : 'removed all roles from Abdul Mannan',
+pickRoles: () => this.setState({ choice: 'roles' }),
+pickRelease: () => this.setState({ choice: 'release' }),
+toggleAck: () => this.setState({ ack: !s.ack }),
+apply: () => this.setState({ applied: true }),
+again: () => this.setState({ applied: false, choice: null, ack: false })
+};
+}
+}
+</script>
+</body>
+</html>
