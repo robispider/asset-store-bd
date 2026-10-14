@@ -197,6 +197,74 @@
         "tenures",
         "current"
       ]
+    },
+    "organization.registry": {
+      "description": "Office registry scope and status-tab counts for one user (super user: every location; area ICT officer: profiled offices inside their area), a live sample office with staff, and an office outside the area",
+      "parameters": {
+        "userId": "integer"
+      },
+      "outputFields": [
+        "user_id",
+        "all",
+        "action",
+        "setup",
+        "live",
+        "paused",
+        "none",
+        "attentionBanner",
+        "firstPageRows",
+        "liveRows",
+        "sampleOfficeId",
+        "sampleOfficeName",
+        "sampleSearchRows",
+        "foreignOfficeId"
+      ]
+    },
+    "organization.office": {
+      "description": "One office's lifecycle status and readiness restated from the business rule (eligible staff, administrator, approver, storekeeper), next setup step, administrator, activity count and another office for boundary checks",
+      "parameters": {
+        "id": "integer"
+      },
+      "outputFields": [
+        "id",
+        "name",
+        "company_id",
+        "status",
+        "badgeStatus",
+        "active",
+        "staff",
+        "hasAdmin",
+        "hasApprover",
+        "hasStorekeeper",
+        "done",
+        "readinessCount",
+        "nextStepKey",
+        "adminId",
+        "adminName",
+        "activityRows",
+        "geoVerified",
+        "foreignOfficeId"
+      ]
+    },
+    "organization.national": {
+      "description": "Counts behind the Administrators tabs (area ICT officers, ministry administrators) and the government directory",
+      "parameters": {},
+      "outputFields": [
+        "ictOfficers",
+        "ministryAdmins",
+        "directoryRecords",
+        "directoryPreviewRows"
+      ]
+    },
+    "organization.location": {
+      "description": "Number of locations with exactly this name (proves a rejected form created nothing)",
+      "parameters": {
+        "name": "string"
+      },
+      "outputFields": [
+        "name",
+        "count"
+      ]
     }
   }
 }

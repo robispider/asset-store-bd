@@ -17,7 +17,7 @@ class MinistryDirectoryController extends Controller
     {
         $user = auth()->user();
         if (!$user->isSuperUser()) {
-            abort(403, 'Unauthorized access to the Government Directory Configurator.');
+            abort(403, __('organization_labels::orglabel.directory_controller_unauthorized'));
         }
 
         $totalRecords = MinistryDirectory::count();
@@ -33,7 +33,7 @@ class MinistryDirectoryController extends Controller
     {
         $user = auth()->user();
         if (!$user->isSuperUser()) {
-            abort(403, 'Unauthorized.');
+            abort(403, __('organization_labels::orglabel.directory_controller_import_unauthorized'));
         }
 
         try {
@@ -44,10 +44,13 @@ class MinistryDirectoryController extends Controller
             $result = $importer->import($csvPath);
 
             // Fixed: changed 'records_synced' to 'total_processed' to align with the importer statistics output
-            $msg = "Government Directory Synchronized! Records Synced: {$result['stats']['total_processed']}, Companies Created: {$result['stats']['created_companies']}, Companies Matched: {$result['stats']['matched_companies']}.";
-            
+            $msg = __('organization_labels::office.directory_done', [
+                'processed' => $result['stats']['total_processed'],
+                'created' => $result['stats']['created_companies'],
+                'matched' => $result['stats']['matched_companies'],
+            ]);
             if (!empty($result['warnings'])) {
-                $msg .= " (Warnings generated: " . count($result['warnings']) . ")";
+                $msg .= ' '.trans_choice('organization_labels::office.directory_warnings', count($result['warnings']), ['count' => count($result['warnings'])]);
             }
 
             return redirect()->back()->with('success', $msg);

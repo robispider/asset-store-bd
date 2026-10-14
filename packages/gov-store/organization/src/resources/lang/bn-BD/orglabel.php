@@ -15,7 +15,7 @@ return [
     'lifecycle_geo_search' => 'বিভাগ, জেলা, উপজেলা বা ইউনিয়ন খুঁজুন',
     'lifecycle_geo_help' => 'স্থানান্তরের জন্য উভয় এলাকার অনুমোদিত আইসিটি কর্মকর্তা অথবা সুপারইউজার প্রয়োজন।',
     'lifecycle_reason' => 'কারণ',
-    'lifecycle_confirmation' => 'নিশ্চিত করতে CHANGE লিখুন',
+    'lifecycle_confirmation' => 'নিশ্চিতকরণ',
     'lifecycle_apply' => 'অফিসের পরিবর্তন কার্যকর করুন',
     'lifecycle_saved' => 'অফিসের পরিবর্তন সংরক্ষিত হয়েছে।',
     'starter_title' => 'প্রাথমিক ক্যাটালগ',

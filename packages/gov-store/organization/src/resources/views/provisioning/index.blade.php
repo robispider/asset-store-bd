@@ -1,214 +1,136 @@
 @extends('layouts/default')
 
-@section('title', __('organization_labels::orglabel.registry_title'))
+@section('title', __('organization_labels::office.registry_title'))
+
+@php
+    $bangla = str_starts_with(strtolower(app()->getLocale()), 'bn');
+    $filters = request()->except(['status', 'page']);
+    $tabs = collect(['all', 'action', 'setup', 'live', 'paused', 'none'])->map(fn ($key) => [
+        'key' => $key,
+        'label' => __('organization_labels::office.tab_'.$key),
+        'count' => $tabCounts[$key] ?? 0,
+        'href' => route('gov.org.provisioning.index', $filters + ($key === 'all' ? [] : ['status' => $key])),
+    ])->all();
+    $hasFilters = request()->filled('search') || request()->filled('ministry_id') || request()->filled('district_id') || $activeStatus !== 'all';
+@endphp
 
 @section('content')
-<div class="govorg-theme">
+<div class="govorg">
+    <x-gs::page-header :title="__('organization_labels::office.registry_title')" :bn="$bangla ? null : __('organization_labels::office.registry_title', [], 'bn-BD')"
+        :subtitle="__('organization_labels::office.registry_subtitle')">
+        <x-slot:actions>
+            <x-gs::button :href="route('gov.org.provisioning.create')" icon="fa-plus">{{ __('organization_labels::office.add_office') }}</x-gs::button>
+        </x-slot:actions>
+    </x-gs::page-header>
 
-{{-- Registry Custom High-Density Styling --}}
+    @include('govorg::partials.section-nav', ['active' => 'offices'])
 
+    @if (($tabCounts['action'] ?? 0) > 0 && $activeStatus !== 'action')
+        <x-gs::alert tone="warning" :title="__('organization_labels::office.attention', ['count' => $tabCounts['action']])">
+            {{ __('organization_labels::office.attention_hint') }}
+            <a href="{{ route('gov.org.provisioning.index', $filters + ['status' => 'action']) }}">{{ __('organization_labels::office.attention_show') }}</a>
+        </x-gs::alert>
+    @endif
 
-<!-- TOP ROLLING ROLLOUT METRICS -->
-<div class="row">
-    <div class="col-lg-3 col-xs-6">
-        <div class="small-box bg-blue">
-            <div class="inner">
-                <h3>{{ $totalOfficesCount ?? 0 }}</h3>
-                <p>{{ __('organization_labels::orglabel.registry_metric_total_offices') }}</p>
-            </div>
-            <div class="icon"><i class="fas fa-building"></i></div>
-        </div>
-    </div>
+    <x-gs::box>
+        <x-gs::status-tabs :tabs="$tabs" :active="$activeStatus" />
 
-    <div class="col-lg-3 col-xs-6">
-        <div class="small-box bg-green">
-            <div class="inner">
-                <h3>{{ $operationalCount ?? 0 }}</h3>
-                <p>{{ __('organization_labels::orglabel.registry_metric_operational') }}</p>
-            </div>
-            <div class="icon"><i class="fas fa-check-double"></i></div>
-        </div>
-    </div>
+        <form method="GET" action="{{ route('gov.org.provisioning.index') }}" role="search" class="govorg-filters" data-govorg-autosubmit>
+            @if ($activeStatus !== 'all')<input type="hidden" name="status" value="{{ $activeStatus }}">@endif
+            <label class="sr-only" for="search">{{ __('organization_labels::office.search_label') }}</label>
+            <input type="search" class="form-control govorg-filters__search" name="search" id="search" value="{{ request('search') }}" placeholder="{{ __('organization_labels::office.search_placeholder') }}">
+            <label class="sr-only" for="ministry_id">{{ __('organization_labels::office.col_ministry') }}</label>
+            <select class="form-control govorg-filters__select" name="ministry_id" id="ministry_id">
+                <option value="">{{ __('organization_labels::office.all_ministries') }}</option>
+                @foreach ($companies ?? [] as $company)
+                    <option value="{{ $company->id }}" @selected((string) request('ministry_id') === (string) $company->id)>{{ $company->name }}</option>
+                @endforeach
+            </select>
+            <label class="sr-only" for="district_id">{{ __('organization_labels::office.col_area') }}</label>
+            <select class="form-control govorg-filters__select" name="district_id" id="district_id">
+                <option value="">{{ __('organization_labels::office.all_districts') }}</option>
+                @foreach ($districts ?? [] as $dist)
+                    <option value="{{ $dist->GeoAreaId }}" @selected((string) request('district_id') === (string) $dist->GeoAreaId)>{{ $bangla && $dist->bn_name ? $dist->bn_name : $dist->en_name }}</option>
+                @endforeach
+            </select>
+            <x-gs::button type="submit" tone="light" outline icon="fa-search">{{ __('organization_labels::office.search') }}</x-gs::button>
+            @if ($hasFilters)
+                <a class="gs-btn gs-btn--light gs-btn--outline" href="{{ route('gov.org.provisioning.index') }}">{{ __('organization_labels::office.clear') }}</a>
+            @endif
+        </form>
 
-    <div class="col-lg-3 col-xs-6">
-        <div class="small-box bg-yellow">
-            <div class="inner">
-                <h3>{{ $pendingCount ?? 0 }}</h3>
-                <p>{{ __('organization_labels::orglabel.registry_metric_pending') }}</p>
-            </div>
-            <div class="icon"><i class="fas fa-hourglass-half"></i></div>
-        </div>
-    </div>
-
-    <div class="col-lg-3 col-xs-6">
-        <div class="small-box bg-purple">
-            <div class="inner">
-                <h3>{{ $ministriesCount ?? 0 }}</h3>
-                <p>{{ __('organization_labels::orglabel.registry_metric_ministries') }}</p>
-            </div>
-            <div class="icon"><i class="fas fa-university"></i></div>
-        </div>
-    </div>
-</div>
-
-<!-- SEARCH, FILTERS & DUAL ACTION BUTTON PANEL -->
-<div class="row">
-    <div class="col-md-12">
-        <div class="filter-bar">
-            <form action="{{ route('gov.org.provisioning.index') }}" method="GET" class="form-inline">
-                
-                <!-- Search term -->
-                <div class="form-group org-inline-00abe7ff">
-                    <label for="search" class="org-inline-ae731390"><i class="fas fa-search"></i> {{ __('organization_labels::orglabel.registry_search_label') }}</label>
-                    <input type="text" name="search" id="search" class="form-control input-sm" placeholder="{{ __('organization_labels::orglabel.registry_search_placeholder') }}" value="{{ request('search') }}">
-                </div>
-
-                <!-- Ministry Filter -->
-                <div class="form-group org-inline-00abe7ff">
-                    <label for="ministry_id" class="org-inline-ae731390"><i class="fas fa-university"></i> {{ __('organization_labels::orglabel.registry_ministry_label') }}</label>
-                    <select class="form-control input-sm select2 org-inline-4c3ea102" name="ministry_id" id="ministry_id">
-                        <option value="">{{ __('organization_labels::orglabel.registry_all_ministries') }}</option>
-                        @foreach($companies ?? [] as $company)
-                            <option value="{{ $company->id }}" {{ request('ministry_id') == $company->id ? 'selected' : '' }}>
-                                {{ $company->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- District Filter -->
-                <div class="form-group org-inline-00abe7ff">
-                    <label for="district_id" class="org-inline-ae731390"><i class="fas fa-map-marker-alt"></i> {{ __('organization_labels::orglabel.registry_district_label') }}</label>
-                    <select class="form-control input-sm select2 org-inline-4c3ea102" name="district_id" id="district_id">
-                        <option value="">{{ __('organization_labels::orglabel.registry_all_districts') }}</option>
-                        @foreach($districts ?? [] as $dist)
-                            <option value="{{ $dist->GeoAreaId }}" {{ request('district_id') == $dist->GeoAreaId ? 'selected' : '' }}>
-                                {{ $dist->en_name }} ({{ $dist->bn_name }})
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Status Filter -->
-                <div class="form-group org-inline-00abe7ff">
-                    <label for="status" class="org-inline-ae731390"><i class="fas fa-tasks"></i> {{ __('organization_labels::orglabel.registry_status_label') }}</label>
-                    <select name="status" id="status" class="form-control input-sm">
-                        <option value="">{{ __('organization_labels::orglabel.registry_all_statuses') }}</option>
-                        <option value="operational" {{ request('status') == 'operational' ? 'selected' : '' }}>{{ __('organization_labels::orglabel.registry_status_operational') }}</option>
-                        <option value="configured" {{ request('status') == 'configured' ? 'selected' : '' }}>{{ __('organization_labels::orglabel.registry_status_configured') }}</option>
-                        <option value="provisioned" {{ request('status') == 'provisioned' ? 'selected' : '' }}>{{ __('organization_labels::orglabel.registry_status_provisioned') }}</option>
-                        <option value="suspended" {{ request('status') == 'suspended' ? 'selected' : '' }}>{{ __('organization_labels::orglabel.lifecycle_suspended') }}</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn btn-sm btn-default"><i class="fas fa-filter"></i> {{ __('organization_labels::orglabel.registry_filter_button') }}</button>
-                <a href="{{ route('gov.org.provisioning.index') }}" class="btn btn-sm btn-link">{{ __('organization_labels::orglabel.registry_reset_button') }}</a>
-
-                <!-- DUAL ONBOARD & CREATE TRIGGERS -->
-                <div class="pull-right">
-                    <a class="btn btn-sm btn-default org-inline-ae731390" href="{{ route('gov.org.provisioning.onboard') }}">
-                        <i class="fas fa-plug text-success"></i> {{ __('organization_labels::orglabel.registry_onboard_button') }}
-                    </a>
-                    <a href="{{ route('gov.org.provisioning.create') }}" class="btn btn-sm btn-primary">
-                        <i class="fas fa-plus"></i> {{ __('organization_labels::orglabel.registry_create_button') }}
-                    </a>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- DATA GRID: OFFICES LIST -->
-<div class="row">
-    <div class="col-md-12">
-        <div class="box box-default">
-            <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-sitemap"></i> {{ __('organization_labels::orglabel.registry_table_offices_count') }} ({{ isset($offices) ? $offices->total() : 0 }})</h3>
-            </div>
-            <div class="box-body table-responsive">
-                <x-gs::table class="table table-striped table-hover registry-table">
-                    <thead>
-                        <tr>
-                            <th>{{ __('organization_labels::orglabel.registry_col_office_building') }}</th>
-                            <th>{{ __('organization_labels::orglabel.registry_col_administrative_territory') }}</th>
-                            <th>{{ __('organization_labels::orglabel.registry_col_owning_ministry') }}</th>
-                            <th>{{ __('organization_labels::orglabel.registry_col_office_administrator') }}</th>
-                            <th>{{ __('organization_labels::orglabel.registry_col_readiness_status') }}</th>
-                            <th class="org-inline-4df8f436">{{ __('organization_labels::orglabel.registry_col_actions') }}</th>
+        @if ($offices->total() > 0)
+            <p class="govorg-muted govorg-small" aria-live="polite">{{ __('organization_labels::office.showing', ['from' => $offices->firstItem(), 'to' => $offices->lastItem(), 'total' => $offices->total()]) }}</p>
+            <x-gs::table :caption="__('organization_labels::office.registry_title')">
+                <thead>
+                    <tr>
+                        <th scope="col">{{ __('organization_labels::office.col_office') }}</th>
+                        <th scope="col">{{ __('organization_labels::office.col_area') }}</th>
+                        <th scope="col">{{ __('organization_labels::office.col_ministry') }}</th>
+                        <th scope="col">{{ __('organization_labels::office.col_setup') }}</th>
+                        <th scope="col">{{ __('organization_labels::office.col_status') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($offices as $office)
+                        @php($href = $office->status === 'unconfigured' ? route('gov.org.provisioning.onboard', ['location_id' => $office->id]) : route('gov.org.hub.show', $office->id))
+                        <tr data-govorg-href="{{ $href }}">
+                            <td>
+                                <a class="govorg-office" href="{{ $href }}">{{ $office->name }}</a>
+                                @if ($office->parentName)<span class="govorg-meta">{{ __('organization_labels::office.reports_to', ['name' => $office->parentName]) }}</span>@endif
+                            </td>
+                            <td>
+                                @if ($office->geoName)
+                                    {{ $office->geoName }}
+                                    @if ($office->districtName)<span class="govorg-meta">{{ $office->districtName }}</span>@endif
+                                @else
+                                    <span class="govorg-muted">{{ __('organization_labels::office.not_placed') }}</span>
+                                @endif
+                            </td>
+                            <td>{!! $office->ministryName ? e($office->ministryName) : '<span class="govorg-muted">'.e(__('organization_labels::office.not_linked')).'</span>' !!}</td>
+                            <td class="govorg-setup">
+                                <x-gs::progress :value="$office->done" :max="\GovStore\Organization\ViewModels\OfficeRegistryViewModel::STEPS" size="sm" :show-value="false"
+                                    :tone="$office->status === 'suspended' ? 'danger' : ($office->done === 4 ? 'success' : 'primary')"
+                                    :label="__('organization_labels::office.setup_count', ['done' => $office->done, 'total' => \GovStore\Organization\ViewModels\OfficeRegistryViewModel::STEPS])" />
+                                <span class="govorg-next govorg-next--{{ $office->nextStep }}">{{ __('organization_labels::office.'.$office->nextStep) }}</span>
+                            </td>
+                            <td><x-gs::status-badge :status="'office_'.$office->status" /></td>
                         </tr>
-                    </thead>
-                   <tbody>
-                        @forelse($offices ?? [] as $office)
-                            <tr>
-                                <td>
-                                    <strong>{{ $office->name }}</strong><br>
-                                    <small class="text-muted"><i class="fas fa-sitemap"></i> {{ __('organization_labels::orglabel.registry_parent_label') }} {{ $office->parentName }}</small>
-                                </td>
-                                
-                                <td>
-                                    <span class="text-primary org-inline-3cdfe113"><i class="fas fa-map-marker-alt"></i> {{ $office->geoName }}</span><br>
-                                    <small class="text-muted">Type: {{ $office->geoType }}</small>
-                                </td>
-
-                                <td>
-                                    <i class="fas fa-university text-muted"></i> {{ $office->ministryName }}
-                                </td>
-
-                                <td>
-                                    <i class="fas fa-user-tie text-muted"></i> {{ $office->adminName }}
-                                </td>
-
-                                <td>
-                                    <div class="status-badge-container">
-                                        @if($office->status === 'suspended')
-                                            <span class="label label-danger">{{ __('organization_labels::orglabel.lifecycle_suspended') }}</span>
-                                        @elseif($office->status === 'operational')
-                                            <span class="label label-success"><i class="fas fa-check-double"></i> {{ __('organization_labels::orglabel.registry_status_operational_label') }}</span>
-                                        @elseif($office->status === 'configured')
-                                            <span class="label label-info"><i class="fas fa-sliders-h"></i> {{ __('organization_labels::orglabel.registry_status_configured_label') }}</span>
-                                        @elseif($office->status === 'provisioned')
-                                            <span class="label label-warning"><i class="fas fa-building"></i> {{ __('organization_labels::orglabel.registry_status_provisioned_label') }}</span>
-                                            <small class="text-muted org-inline-1ac8bcc9">
-                                                Needs: 
-                                                <span class="{{ $office->hasPrimary ? 'text-success' : 'text-danger' }}">{{ $office->hasPrimary ? '✓' : '✗' }} Primary</span> &bull; 
-                                                <span class="{{ $office->hasStorekeeper ? 'text-success' : 'text-danger' }}">{{ $office->hasStorekeeper ? '✓' : '✗' }} Storekeeper</span>
-                                            </small>
-                                        @else
-                                            <span class="label label-danger">{{ __('organization_labels::orglabel.registry_status_unconfigured') }}</span>
-                                        @endif
-                                    </div>
-                                </td>
-
-                                <td class="org-inline-092f0f30">
-                                    @if($office->status === 'unconfigured')
-                                        <!-- Clean Context-Aware Onboard Link -->
-                                        <a href="{{ route('gov.org.provisioning.onboard', ['location_id' => $office->id]) }}" class="btn btn-xs btn-success btn-block" title="Map Geography to this Location">
-                                            <i class="fas fa-plug"></i> Onboard Office
-                                        </a>
-                                    @else
-                                        <!-- Open Core Config Hub -->
-                                        <a href="{{ route('gov.org.hub.show', $office->id) }}" class="btn btn-xs btn-primary btn-block" title="Open Office Hub">
-                                            <i class="fas fa-external-link-alt"></i> View Hub
-                                        </a>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td class="text-center text-muted org-inline-ea7b6b7b" colspan="6">
-                                    <i class="fas fa-building fa-2x"></i>
-                                    <p class="org-inline-3225db96">{{ __('organization_labels::orglabel.registry_empty_state') }}</p>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </x-gs::table>
-            </div>
-        </div>
-    </div>
+                    @endforeach
+                </tbody>
+            </x-gs::table>
+            {{ $offices->links() }}
+        @else
+            <x-gs::empty-state icon="fa-building" :title="__('organization_labels::office.empty_title')">
+                {{ __('organization_labels::office.empty_body') }}
+                @if ($hasFilters)
+                    <x-slot:actions>
+                        <x-gs::button tone="light" outline :href="route('gov.org.provisioning.index')">{{ __('organization_labels::office.empty_reset') }}</x-gs::button>
+                    </x-slot:actions>
+                @endif
+            </x-gs::empty-state>
+        @endif
+    </x-gs::box>
 </div>
-<div class="row">
-    <div class="col-md-12">{{ $offices->links() }}</div>
-</div>
-</div>
+@endsection
+
+@section('moar_scripts')
+<script>
+$(function () {
+    // Instant filters: selects apply on change, search after a short pause. The Search button stays for keyboards and no-JS.
+    var $form = $('[data-govorg-autosubmit]');
+    var timer;
+    $form.on('change', 'select', function () { $form.trigger('submit'); });
+    $form.on('input', 'input[type="search"]', function () {
+        clearTimeout(timer);
+        var value = this.value;
+        timer = setTimeout(function () { if (value.length === 0 || value.length >= 2) { $form.trigger('submit'); } }, 500);
+    });
+    // Whole-row link; the office name stays the real, keyboard-reachable link.
+    $('tr[data-govorg-href]').on('click', function (event) {
+        if ($(event.target).closest('a, button, input, select, label').length) { return; }
+        window.location = $(this).data('govorg-href');
+    });
+});
+</script>
 @endsection

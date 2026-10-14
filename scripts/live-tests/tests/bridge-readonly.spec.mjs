@@ -60,6 +60,25 @@ const committeeRecord = await bridge.observe('committee.record', {
 assert(committeeRecord.id && committeeRecord.number, 'a visible committee record must resolve for its office');
 assert(committeeRecord.seatCount >= 0 && committeeRecord.orderCount >= 0 && committeeRecord.historyCount >= 0,
   'committee record projection must expose numeric, read-only detail counts');
+// Area-scoped actors (activeMembership: false) resolve without an office membership; office actors stay members.
+const org = await bridge.resolveContext({
+  office: {},
+  actors: {
+    ict: { role: 'ict_officer', activeMembership: false, capabilities: { allOf: ['organization.office.manage'], noneOf: ['organization.national.manage'] } },
+    admin: { role: 'office_admin', capabilities: { allOf: ['organization.office.manage'], noneOf: ['access.matrix'] } }
+  },
+  records: {}
+});
+assert.notEqual(org.actors.ict.id, org.actors.admin.id, 'area and office actors must be distinct users');
+const adminAssignments = await bridge.observe('actor.assignments', { id: org.actors.admin.id });
+assert(adminAssignments.office_ids.map(Number).includes(org.office.id), 'an office actor must be a member of the resolved office');
+const registry = await bridge.observe('organization.registry', { userId: org.actors.ict.id });
+assert.equal(registry.all, registry.action + registry.live + registry.paused, 'registry tabs must partition the area scope');
+assert.equal(registry.action, registry.setup + registry.none, 'needs action = setting up + not onboarded');
+const office = await bridge.observe('organization.office', { id: registry.sampleOfficeId ?? org.office.id });
+assert(office.done >= 0 && office.done <= 4 && office.badgeStatus === `office_${office.status}`, 'office readiness projection must be consistent');
+await bridge.observe('organization.national', {});
+assert.equal((await bridge.observe('organization.location', { name: 'LIVE-NO-SUCH-LOCATION' })).count, 0);
 await bridge.preflight();
 
 const after = await bridge.fingerprint();

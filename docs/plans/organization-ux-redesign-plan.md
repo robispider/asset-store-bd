@@ -3,8 +3,8 @@
 > **Scope:** every screen of `packages/gov-store/organization`: office registry, create, onboard, office hub, lifecycle, local
 > configuration, ICT jurisdictions, company (ministry) admins, government directory import, and the two staff-facing
 > readiness pages.
-> **Status:** Phase 0 delivered (Civic Ledger theme + workflow kit in `gov-store/theming`, branch
-> `feature/civic-ledger-theme`, uncommitted) · Phases 1–4 not started · **Date:** 2026-10-14
+> **Status:** Phases 0–3 delivered, Phase 4 partly (branch `feature/civic-ledger-theme`, uncommitted) · live UI
+> check, axe pass and bn-BD copy review (D5) pending · **Date:** 2026-10-14
 > **Design artifact:** https://claude.ai/artifact/UVEpbBykRxBvB9XzQD6C5A · snapshot in
 > [`organization-ux-redesign/`](organization-ux-redesign/README.md)
 > **Reference model:** `docs/plans/dynamic-theming-plan.md` (tokens, `<x-gs::*>` kit, compliance ratchet) and
@@ -197,7 +197,15 @@ Each phase ships on its own. Organization services keep their public behaviour u
 Civic Ledger theme, workflow kit, office statuses, Lab demo, tests (§3.2, §5). **Remaining:** commit and open a PR from
 `feature/civic-ledger-theme`, then review in `/gov/theme-lab/civic-ledger` (needs a superuser).
 
-### Phase 1 — Correctness and language (fixes F1, F2, F4, F5, F9, F10)
+### Phase 1 — Correctness and language (fixes F1, F2, F4, F5, F9, F10) ✅ (2026-10-14)
+
+Delivered: every form uses `<x-gs::form-row>` with `old()` on every field and an error summary
+(`partials/errors`). The new string file `lang/{en-US,bn-BD}/office.php` (key parity tested) covers all redesigned
+screens, and controller messages are translated. Status everywhere comes from `<x-gs::status-badge>`. One readiness
+partial (`partials/readiness`) is used by the hub, My office and the staff waiting page (read-only, built from real
+state). Jargon is rewritten; area codes sit behind "Technical details". Validation field names are translated.
+
+Original tasks:
 
 1. Replace every form group with `<x-gs::form-row>` and add `old()` to every field, select2 included (preselected option).
 2. Add an error summary (`<x-gs::alert tone="danger">` listing `$errors` with anchors) at the top of each form.
@@ -212,7 +220,19 @@ Civic Ledger theme, workflow kit, office statuses, Lab demo, tests (§3.2, §5).
 **Accept:** a failed create keeps every value and shows the message under the field; a bn-BD session shows no English on
 any Organization page; the waiting page matches the checklist; compliance baseline stays `{}`.
 
-### Phase 2 — Registry, Add office and hub layout (fixes F3, F7, F8, F11)
+### Phase 2 — Registry, Add office and hub layout (fixes F3, F7, F8, F11) ✅ (2026-10-14)
+
+Delivered: the registry has status tabs with server counts, a "Needs your action" filter, instant filters, whole-row
+links, a Setup column with the next step (`OfficeRegistryViewModel::nextStep`), and en/bn area names. Add office
+(`create`) starts by searching existing locations ("Set up this one" → onboard) and then shows the shared
+`partials/office-form`. `onboard` uses the same form. The always-disabled administrator select is gone. The duplicate
+check links to the existing office. The area search (`gov.org.provisioning.geo-search`, server-scoped) returns each
+result's parent path. The hub has a section nav, a readiness card, role slots with in-place pickers, staff, details
+(read-only with how-to-change notes and a rename form), location confirmation, starter items, activity sentences and
+settings. Every Organization GET route has a breadcrumb. `organization.css` went from 398 lines with 61 `!important`
+and 88 `org-inline-*` classes to a layout-only sheet; `!important` remains only to reset Bootstrap element margins.
+
+Original tasks:
 
 1. Registry → `page-header` + `status-tabs` (server-side counts per status, plus "Needs your action" =
    unconfigured ∪ provisioned ∪ configured) + `table` with a "Next step" column; debounced GET search (no Filter button);
@@ -228,7 +248,17 @@ any Organization page; the waiting page matches the checklist; compliance baseli
 **Accept:** 0 `org-inline-*` classes, `organization.css` only does layout, and every screen checked in Theme Lab focus
 view across 6 themes × 2 modes.
 
-### Phase 3 — Safe actions (fixes F6)
+### Phase 3 — Safe actions (fixes F6) ✅ (2026-10-14)
+
+Delivered: Settings uses `<x-gs::action-row>` for Pause/Resume, Move and Close/merge (disabled with its reason).
+Each action has its own Bootstrap modal with plain consequences, a required reason and an acknowledgement checkbox. A
+dialog that fails validation reopens with its message. D2 is applied: `OfficeLifecycleService` now validates
+`confirmation` as `accepted`. National changes (area access, ministry administrators, directory import) still go
+through tenant-scope's `NationalChangeReview` page **unchanged**, including its typed confirmation, as AGENTS.md
+requires. So D3 is implemented as a **Restore access** button after a removal. It submits the previous assignment,
+which goes through the same national review. Red full-width revoke buttons and `confirm()` are gone.
+
+Original tasks:
 
 1. Settings section with `<x-gs::action-row>` for Pause/Resume, Move and Close/merge (disabled, with reasons from
    clearance counts).
@@ -239,7 +269,24 @@ view across 6 themes × 2 modes.
 
 **Accept:** no destructive control shows by default, every risky action names its consequences, no `confirm()` left.
 
-### Phase 4 — Mobile, accessibility and verification
+### Phase 4 — Mobile, accessibility and verification ◐ (partly, 2026-10-14)
+
+Delivered: wide tables scroll inside `gs-table-wrap`, layouts use wrapping flex columns (no fixed widths), and the kit
+supplies 44 px coarse-pointer targets. Tests: `tests/Feature/GovStore/OrganizationUxTest.php` (6 tests: en/bn parity,
+next-step order, tab counts and filters, area paths in both languages, form keeps values and shows errors, read-only
+staff checklist). `OrganizationWorkflowTest` was updated for the checkbox confirmation and the new dialogs. The full
+GovStore suite passes: 351 tests, 5,882 assertions, with `php -d memory_limit=1G vendor/bin/phpunit tests/Feature/GovStore`
+(see AGENTS.md). Compliance baseline still `{}`.
+Live journeys: suite `organization` (`tests/live/subtests/organization/`, run with `npm run test:live -- run --suite
+organization`) checks the registry, hub, Pause dialog guard, Add office validation, My office and role/area boundaries
+against the database. Five journeys pass on the seeded dataset. `organization.national-admins-observation` is blocked
+there because the dataset has no super user. All of them are read-only: no office is created, paused or moved.
+**Pending:** an axe/Lighthouse pass, registry card layout under 768 px (tables scroll today), a write journey for
+nothing → live office and Pause/Resume, bn-BD live coverage (no session language switch exists), and the bn-BD copy
+review (D5). The staff waiting / no-office pages can't be reached live, because `EnsureOfficeIsOperational` is not
+registered on any route.
+
+Original tasks:
 
 1. Registry and hub card layouts under 768 px (board 3b). No horizontal page scroll.
 2. Axe / Lighthouse pass on every screen in light and dark. Target WCAG 2.2 AA, 44 px targets on coarse pointers (the kit
@@ -254,9 +301,9 @@ view across 6 themes × 2 modes.
 
 | # | Decision | Recommendation |
 |---|---|---|
-| D1 | Merge Create and Onboard into one "Add office" flow? | **Yes.** Search existing locations first. Keep both store endpoints. |
-| D2 | Replace `confirmation: required\|in:CHANGE` with an acknowledgement checkbox? | **Yes** for pause, resume and move (`accepted`). For close/merge, when built, type the office's own name. Small change in `OfficeLifecycleService::transition()`. |
-| D3 | Undo for revoking ICT officer / ministry admin access? | **Yes:** a session-scoped re-grant from the success flash; the audit log records both events. |
+| D1 | Merge Create and Onboard into one "Add office" flow? | **Applied.** Search existing locations first. Both store endpoints kept. |
+| D2 | Replace `confirmation: required\|in:CHANGE` with an acknowledgement checkbox? | **Applied** for office lifecycle (`accepted`). National review keeps its typed confirmation (AGENTS.md). |
+| D3 | Undo for revoking ICT officer / ministry admin access? | **Applied as "Restore access"**: re-submits the previous assignment through the national review. |
 | D4 | Publish Civic Ledger and make it `GS_THEME_DEFAULT`? | Publish after Lab review. Choosing the default is an organisation decision; `institutional-green` stays default until then. |
 | D5 | Bangla copy owner | A native reviewer signs off on the §3.4 glossary and the bn strings before Phase 1 merges (shared with navigation plan D3). |
 

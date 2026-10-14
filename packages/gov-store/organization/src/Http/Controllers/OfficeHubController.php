@@ -50,11 +50,34 @@ class OfficeHubController extends Controller
         $starter = DB::table('gov_office_starter_runs')->where('location_id', $id)->first();
         $readiness = app(OfficeReadinessService::class)->evaluateAndTransition($id);
         $profile->refresh();
-        $activityLogs = OrganizationActivityLog::with('performer')->where('location_id', $id)->orderByDesc('created_at')->get();
+        $activityLogs = OrganizationActivityLog::with('performer')->where('location_id', $id)->orderByDesc('created_at')->limit(20)->get();
+        $geoTrail = self::geoTrail($profile->geoArea);
 
         return view('govorg::provisioning.hub', compact(
-            'location', 'profile', 'roles', 'localStaff', 'allUsers', 'companies', 'allOffices', 'activityLogs', 'starter', 'readiness'
+            'location', 'profile', 'roles', 'localStaff', 'allUsers', 'companies', 'allOffices', 'activityLogs', 'starter', 'readiness', 'geoTrail'
         ));
+    }
+
+    /** Parent areas of a geo area, top down (Division, District, …), named in the user's language. */
+    public static function geoTrail($geo): array
+    {
+        if (! $geo || ! $geo->hid) {
+            return [];
+        }
+        $parts = array_values(array_filter(explode('/', (string) $geo->hid)));
+        array_pop($parts);
+        $prefixes = [];
+        foreach ($parts as $i => $part) {
+            $prefixes[] = '/'.implode('/', array_slice($parts, 0, $i + 1)).'/';
+        }
+        if (! $prefixes) {
+            return [];
+        }
+        $bangla = str_starts_with(strtolower(app()->getLocale()), 'bn');
+        $ancestors = \GovStore\GeoAreas\Models\GeoArea::whereIn('hid', $prefixes)->get()->keyBy('hid');
+
+        return collect($prefixes)->map(fn ($prefix) => $ancestors->get($prefix))->filter()
+            ->map(fn ($area) => $bangla && $area->bn_name ? $area->bn_name : $area->en_name)->values()->all();
     }
 
     public function update(Request $request, int $id)

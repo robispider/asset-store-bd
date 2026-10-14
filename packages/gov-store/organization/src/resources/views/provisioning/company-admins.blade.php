@@ -1,102 +1,76 @@
 @extends('layouts/default')
 
-@section('title', __('organization_labels::orglabel.company_admin_title'))
+@section('title', __('organization_labels::office.section_ministry'))
 
 @section('content')
-<div class="govorg-theme">
-<div class="row">
-    <!-- LEFT: Delegate New Company Admin Form -->
-    <div class="col-md-4">
-        <div class="box box-primary">
-            <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-university text-purple"></i> {{ __('organization_labels::orglabel.company_admin_assign_title') }}</h3>
-            </div>
-            <form action="{{ route('gov.org.company_admins.store') }}" method="POST">
-                @csrf
-                <div class="box-body">
-                    
-                    <div class="form-group">
-                        <label for="user_id">{{ __('organization_labels::orglabel.company_admin_select_user') }} <span class="text-danger">*</span></label>
-                        <select class="form-control select2 org-inline-442a70a1" name="user_id" id="user_id" required>
-                            <option value="">-- Select Employee --</option>
-                            @foreach($users as $user)
-                                <option value="{{ $user->id }}">{{ $user->present()->fullName }} ({{ $user->username }})</option>
+<div class="govorg">
+    @include('govorg::partials.admin-header', ['tab' => 'ministry', 'ictCount' => $ictCount ?? 0, 'ministryCount' => $admins->count()])
+
+    <div class="govorg-layout">
+        <div class="govorg-layout__main">
+            <x-gs::box>
+                @if ($admins->isEmpty())
+                    <x-gs::empty-state icon="fa-building-columns" :title="__('organization_labels::office.ministry_empty')" />
+                @else
+                    <x-gs::table :caption="__('organization_labels::office.ministry_caption')">
+                        <thead>
+                            <tr>
+                                <th scope="col">{{ __('organization_labels::office.col_officer') }}</th>
+                                <th scope="col">{{ __('organization_labels::office.col_scope_ministry') }}</th>
+                                <th scope="col">{{ __('organization_labels::office.col_home') }}</th>
+                                <th scope="col"><span class="sr-only">{{ __('organization_labels::office.col_actions') }}</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($admins as $admin)
+                                @php($name = $admin->user?->present()->fullName ?? '—')
+                                <tr>
+                                    <td>
+                                        <span class="govorg-toolbar"><x-gs::avatar :name="$name" size="sm" />
+                                        <span><strong>{{ $name }}</strong><span class="govorg-meta govorg-mono">{{ $admin->user->username ?? '' }}</span></span></span>
+                                    </td>
+                                    <td>{{ $admin->company->name ?? '—' }}</td>
+                                    <td>{!! $admin->user?->location ? e($admin->user->location->name) : '<span class="govorg-muted">'.e(__('organization_labels::office.no_home')).'</span>' !!}</td>
+                                    <td>
+                                        <form method="POST" action="{{ route('gov.org.company_admins.destroy', $admin->id) }}" class="govorg-inline-form">
+                                            @csrf
+                                            <x-gs::button type="submit" size="sm" tone="light" outline :aria-label="__('organization_labels::office.remove_access_for', ['name' => $name])">{{ __('organization_labels::office.remove_access') }}</x-gs::button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </x-gs::table>
+                @endif
+            </x-gs::box>
+        </div>
+
+        <aside class="govorg-layout__aside">
+            <x-gs::box :title="__('organization_labels::office.give_ministry_title')">
+                <form method="POST" action="{{ route('gov.org.company_admins.store') }}" class="govorg-stack">
+                    @csrf
+                    @include('govorg::partials.errors')
+                    <x-gs::form-row for="user_id" :label="__('organization_labels::office.person')" required>
+                        <select class="form-control select2" name="user_id" id="user_id" required style="width: 100%">
+                            <option value="">{{ __('organization_labels::office.person_placeholder') }}</option>
+                            @foreach ($users as $user)
+                                <option value="{{ $user->id }}" @selected((string) old('user_id') === (string) $user->id)>{{ $user->present()->fullName }} ({{ $user->username }})</option>
                             @endforeach
                         </select>
-                        <p class="help-block org-inline-dd9e524d">{{ __('organization_labels::orglabel.company_admin_help_user') }}</p>
-                    </div>
-
-                    <div class="form-group org-inline-b6ec21fd">
-                        <label for="company_id">{{ __('organization_labels::orglabel.company_admin_select_company') }} <span class="text-danger">*</span></label>
-                        <select class="form-control select2 org-inline-442a70a1" name="company_id" id="company_id" required>
-                            <option value="">-- Select Ministry / Company --</option>
-                            @foreach($companies as $company)
-                                <option value="{{ $company->id }}">{{ $company->name }}</option>
+                    </x-gs::form-row>
+                    <x-gs::form-row for="company_id" :label="__('organization_labels::office.ministry_pick')" required :help="__('organization_labels::office.ministry_hint')">
+                        <select class="form-control select2" name="company_id" id="company_id" required style="width: 100%" aria-describedby="company_id-help">
+                            <option value="">{{ __('organization_labels::office.ministry_placeholder') }}</option>
+                            @foreach ($companies as $company)
+                                <option value="{{ $company->id }}" @selected((string) old('company_id') === (string) $company->id)>{{ $company->name }}</option>
                             @endforeach
                         </select>
-                        <p class="help-block org-inline-dd9e524d">{{ __('organization_labels::orglabel.company_admin_help_company') }}</p>
-                    </div>
-
-                </div>
-                <div class="box-footer">
-                    <button class="btn btn-primary btn-block org-inline-3cdfe113" type="submit">
-                        <i class="fas fa-sitemap"></i> {{ __('organization_labels::orglabel.company_admin_btn_save') }}
-                    </button>
-                </div>
-            </form>
-        </div>
+                    </x-gs::form-row>
+                    <p class="govorg-muted govorg-small govorg-flush">{{ __('organization_labels::office.national_review_note') }}</p>
+                    <div class="govorg-toolbar govorg-toolbar--end"><x-gs::button type="submit" icon="fa-building-columns">{{ __('organization_labels::office.give_access') }}</x-gs::button></div>
+                </form>
+            </x-gs::box>
+        </aside>
     </div>
-
-    <!-- RIGHT: Assigned Company Admins Datatable -->
-    <div class="col-md-8">
-        <div class="box box-default">
-            <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-users-cog text-blue"></i> {{ __('organization_labels::orglabel.company_admin_list_title') }}</h3>
-            </div>
-            <div class="box-body table-responsive">
-                <x-gs::table class="table table-striped table-hover table-bordered">
-                    <thead class="org-inline-1f5081db">
-                        <tr>
-                            <th>{{ __('organization_labels::orglabel.company_admin_col_user') }}</th>
-                            <th>{{ __('organization_labels::orglabel.company_admin_col_company') }}</th>
-                            <th>{{ __('organization_labels::orglabel.company_admin_col_home_office') }}</th>
-                            <th class="text-center org-inline-b086e59f">{{ __('organization_labels::orglabel.company_admin_col_action') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($admins as $admin)
-                            <tr>
-                                <td>
-                                    <strong>{{ $admin->user->present()->fullName ?? 'Unknown User' }}</strong><br>
-                                    <small class="text-muted"><i class="fas fa-user"></i> {{ $admin->user->username ?? '-' }}</small>
-                                </td>
-                                <td class="org-inline-092f0f30">
-                                    <span class="label bg-purple org-inline-0ffaf047">
-                                        <i class="fas fa-university"></i> {{ $admin->company->name ?? 'Unmapped Company' }}
-                                    </span>
-                                </td>
-                                <td class="org-inline-092f0f30">
-                                    <small class="text-muted"><i class="fas fa-building"></i> {{ $admin->user->location->name ?? 'No Home Office Assigned' }}</small>
-                                </td>
-                                <td class="org-inline-092f0f30">
-                                    <form action="{{ route('gov.org.company_admins.destroy', $admin->id) }}" method="POST" class="org-inline-412e6498">
-                                        @csrf
-                                        <button type="submit" class="btn btn-sm btn-danger btn-block" onclick="return confirm('{{ __('organization_labels::orglabel.company_admin_confirm_revoke') }}')">
-                                            <i class="fas fa-trash"></i> {{ __('organization_labels::orglabel.company_admin_btn_revoke') }}
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td class="text-center text-muted org-inline-ed0f0aa0" colspan="4">{{ __('organization_labels::orglabel.company_admin_empty_state') }}</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </x-gs::table>
-            </div>
-        </div>
-    </div>
-</div>
 </div>
 @endsection

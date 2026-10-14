@@ -22,7 +22,7 @@ class OnboardLocationController extends Controller
 
         $isIctOfficer = IctJurisdiction::where('user_id', $user->id)->exists();
         if (!$isIctOfficer) {
-            abort(403, 'Unauthorized administrative request.');
+            abort(403, __('organization_labels::orglabel.onboard_controller_unauthorized'));
         }
     }
 
@@ -36,25 +36,26 @@ class OnboardLocationController extends Controller
         $user = auth()->user();
 
         $restrictToHid = null;
+        $jurisdiction = null;
         if (!$user->isSuperUser()) {
             $jurisdiction = IctJurisdiction::with('geoArea')->where('user_id', $user->id)->first();
             $restrictToHid = $jurisdiction && $jurisdiction->geoArea ? $jurisdiction->geoArea->hid : null;
         }
 
+        $scopeArea = $jurisdiction?->geoArea ?? null;
         $companies = Company::orderBy('name')->get();
-        $users = User::orderBy('first_name')->get();
+        $offices = Location::has('profile')->orderBy('name')->get();
 
-        // CONTEXT-AWARE HOOK: Detect if a specific location ID was passed from the Registry row click
+        // Context-aware: a registry row or the Add office search passes the location to set up.
         $preselectedLocation = null;
         if ($request->has('location_id')) {
-            $preselectedLocation = Location::findOrFail($request->input('location_id'));
+            $preselectedLocation = Location::doesntHave('profile')->findOrFail($request->input('location_id'));
         }
 
-        // Standard unprovisioned dropdown list
         $unprovisionedLocations = Location::doesntHave('profile')->orderBy('name')->get();
 
         return view('govorg::provisioning.onboard', compact(
-            'companies', 'users', 'restrictToHid', 'unprovisionedLocations', 'preselectedLocation'
+            'companies', 'offices', 'restrictToHid', 'scopeArea', 'unprovisionedLocations', 'preselectedLocation'
         ));
     }
 
@@ -68,7 +69,8 @@ class OnboardLocationController extends Controller
             'company_id' => 'nullable|integer',
             'office_admin_id' => 'nullable|integer',
             'office_type' => 'required|in:default,hospital,school,ict_office',
-        ]);
+            'parent_id' => 'nullable|integer',
+        ], [], ProvisioningController::attributes());
 
         try {
             $data = $request->all();
@@ -92,9 +94,10 @@ class OnboardLocationController extends Controller
             }
 
             // Reuse same provisioning service to keep database transactions unified
-            $service->provisionOffice($data, auth()->id());
+            $location = $service->provisionOffice($data, auth()->id());
 
-            return redirect()->route('gov.org.provisioning.index')->with('success', 'Existing office successfully onboarded.');
+            return redirect()->route('gov.org.hub.show', $location->id)
+                ->with('success', __('organization_labels::office.onboarded', ['name' => $location->name]));
         } catch (\Exception $e) {
             throw $e;
         }

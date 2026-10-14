@@ -1,123 +1,78 @@
 @extends('layouts/default')
 
-@section('title', __('organization_labels::orglabel.jurisdictions_title'))
+@section('title', __('organization_labels::office.section_ict'))
+
+@php($bangla = str_starts_with(strtolower(app()->getLocale()), 'bn'))
 
 @section('content')
-<div class="govorg-theme">
-<div class="row">
-    <!-- LEFT: Delegate New ICT Officer Form -->
-    <div class="col-md-4">
-        <div class="box box-primary">
-            <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-user-shield"></i> {{ __('organization_labels::orglabel.jurisdictions_map_title') }}</h3>
-            </div>
-            <form action="{{ route('gov.org.jurisdictions.store') }}" method="POST">
-                @csrf
-                <div class="box-body">
-                    
-                    <div class="form-group">
-                        <label for="user_id">Select Employee User <span class="text-danger">*</span></label>
-                        <select class="form-control select2 org-inline-442a70a1" name="user_id" id="user_id" required>
-                            <option value="">-- Select Employee --</option>
-                            @foreach($users as $user)
-                                <option value="{{ $user->id }}">{{ $user->present()->fullName }} ({{ $user->username }})</option>
+<div class="govorg">
+    @include('govorg::partials.admin-header', ['tab' => 'ict', 'ictCount' => $jurisdictions->count(), 'ministryCount' => $ministryCount ?? 0])
+
+    <div class="govorg-layout">
+        <div class="govorg-layout__main">
+            <x-gs::box>
+                @if ($jurisdictions->isEmpty())
+                    <x-gs::empty-state icon="fa-user-shield" :title="__('organization_labels::office.ict_empty')" />
+                @else
+                    <x-gs::table :caption="__('organization_labels::office.ict_caption')">
+                        <thead>
+                            <tr>
+                                <th scope="col">{{ __('organization_labels::office.col_officer') }}</th>
+                                <th scope="col">{{ __('organization_labels::office.col_scope_area') }}</th>
+                                <th scope="col">{{ __('organization_labels::office.col_home') }}</th>
+                                <th scope="col"><span class="sr-only">{{ __('organization_labels::office.col_actions') }}</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($jurisdictions as $jur)
+                                @php($name = $jur->user?->present()->fullName ?? '—')
+                                <tr>
+                                    <td>
+                                        <span class="govorg-toolbar"><x-gs::avatar :name="$name" size="sm" />
+                                        <span><strong>{{ $name }}</strong><span class="govorg-meta govorg-mono">{{ $jur->user->username ?? '' }}</span></span></span>
+                                    </td>
+                                    <td>{{ $jur->geoArea ? ($bangla && $jur->geoArea->bn_name ? $jur->geoArea->bn_name : $jur->geoArea->en_name) : '—' }}</td>
+                                    <td>{!! $jur->user?->location ? e($jur->user->location->name) : '<span class="govorg-muted">'.e(__('organization_labels::office.no_home')).'</span>' !!}</td>
+                                    <td>
+                                        <form method="POST" action="{{ route('gov.org.jurisdictions.destroy', $jur->id) }}" class="govorg-inline-form">
+                                            @csrf
+                                            <x-gs::button type="submit" size="sm" tone="light" outline :aria-label="__('organization_labels::office.remove_access_for', ['name' => $name])">{{ __('organization_labels::office.remove_access') }}</x-gs::button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </x-gs::table>
+                @endif
+            </x-gs::box>
+        </div>
+
+        <aside class="govorg-layout__aside">
+            <x-gs::box :title="__('organization_labels::office.give_area_title')">
+                <form method="POST" action="{{ route('gov.org.jurisdictions.store') }}" class="govorg-stack">
+                    @csrf
+                    @include('govorg::partials.errors')
+                    <x-gs::form-row for="user_id" :label="__('organization_labels::office.person')" required>
+                        <select class="form-control select2" name="user_id" id="user_id" required style="width: 100%">
+                            <option value="">{{ __('organization_labels::office.person_placeholder') }}</option>
+                            @foreach ($users as $user)
+                                <option value="{{ $user->id }}" @selected((string) old('user_id') === (string) $user->id)>{{ $user->present()->fullName }} ({{ $user->username }})</option>
                             @endforeach
                         </select>
-                        <p class="help-block">{{ __('organization_labels::orglabel.jurisdictions_help_employee') }}</p>
-                    </div>
-
-                    <!-- GEOGRAPHIC JURISDICTION SELECTOR -->
-                    <div class="form-group">
-                        <label for="jurisdictionSelector">Operational Jurisdiction Boundary <span class="text-danger">*</span></label>
-                        <select class="form-control org-inline-442a70a1" name="geo_area_id" id="jurisdictionSelector" required>
-                            <option value="">-- Start typing to search --</option>
-                        </select>
-                        <p class="help-block">Assign this officer to a specific Division, District, or Upazila. They can only provision offices within this bound.</p>
-                    </div>
-
-                </div>
-                <div class="box-footer">
-                    <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-shield-alt"></i> {{ __('organization_labels::orglabel.jurisdictions_save_button') }}</button>
-                </div>
-            </form>
-        </div>
+                    </x-gs::form-row>
+                    <x-gs::form-row for="geo_area_id" :label="__('organization_labels::office.area_manage')" required :help="__('organization_labels::office.area_manage_hint')">
+                        <select class="form-control" name="geo_area_id" id="geo_area_id" required style="width: 100%" aria-describedby="geo_area_id-help"></select>
+                    </x-gs::form-row>
+                    <p class="govorg-muted govorg-small govorg-flush">{{ __('organization_labels::office.national_review_note') }}</p>
+                    <div class="govorg-toolbar govorg-toolbar--end"><x-gs::button type="submit" icon="fa-shield-halved">{{ __('organization_labels::office.give_access') }}</x-gs::button></div>
+                </form>
+            </x-gs::box>
+        </aside>
     </div>
-
-    <!-- RIGHT: Assigned ICT Officers Datatable -->
-    <div class="col-md-8">
-        <div class="box box-default">
-            <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-user-cog"></i> {{ __('organization_labels::orglabel.jurisdictions_assigned_title') }}</h3>
-            </div>
-            <div class="box-body table-responsive">
-                <x-gs::table class="table table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>{{ __('organization_labels::orglabel.jurisdictions_col_officer_details') }}</th>
-                            <th>{{ __('organization_labels::orglabel.jurisdictions_col_home_office') }}</th>
-                            <th>{{ __('organization_labels::orglabel.jurisdictions_col_jurisdiction_boundary') }}</th>
-                            <th class="org-inline-b086e59f">{{ __('organization_labels::orglabel.jurisdictions_col_action') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($jurisdictions as $jur)
-                            <tr>
-                                <td>
-                                    <strong>{{ $jur->user->present()->fullName ?? 'Unknown User' }}</strong><br>
-                                    <small class="text-muted"><i class="fas fa-user"></i> {{ __('organization_labels::orglabel.jurisdictions_username_label') }} {{ $jur->user->username ?? '-' }}</small>
-                                </td>
-                                <td class="org-inline-092f0f30">
-                                    <small class="text-muted"><i class="fas fa-building"></i> {{ $jur->user->location->name ?? __('organization_labels::orglabel.jurisdictions_no_home_office') }}</small>
-                                </td>
-                                <td class="org-inline-092f0f30">
-                                    <span class="label bg-orange org-inline-19b327ae">
-                                        <i class="fas fa-map-marker-alt"></i> {{ $jur->geoArea->en_name ?? 'Unmapped' }} ({{ ucfirst($jur->geoArea->geo_type ?? 'N/A') }})
-                                    </span>
-                                </td>
-                                <td class="org-inline-092f0f30">
-                                    <form action="{{ route('gov.org.jurisdictions.destroy', $jur->id) }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="btn btn-sm btn-danger btn-block" onclick="return confirm('{{ __('organization_labels::orglabel.jurisdictions_revoke_confirm') }}')">
-                                            <i class="fas fa-trash"></i> {{ __('organization_labels::orglabel.jurisdictions_revoke_button') }}
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td class="text-center text-muted org-inline-ed0f0aa0" colspan="4">{{ __('organization_labels::orglabel.jurisdictions_empty_state') }}</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </x-gs::table>
-            </div>
-        </div>
-    </div>
-</div>
 </div>
 @endsection
 
 @section('moar_scripts')
-<script>
-$(document).ready(function() {
-    $('#jurisdictionSelector').select2({
-        minimumInputLength: 2,
-        ajax: {
-            url: '{{ route("gov.geo.search") }}',
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    q: params.term
-                };
-            },
-            processResults: function (data) {
-                return { results: data };
-            },
-            cache: true
-        },
-        placeholder: "Search Division, District, Upazila, or Union..."
-    });
-});
-</script>
+@include('govorg::partials.geo-select-script')
+<script>$(function () { window.govorgGeoSelect('#geo_area_id'); });</script>
 @endsection

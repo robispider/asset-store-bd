@@ -1,78 +1,38 @@
 @extends('layouts/default')
 
-@section('title', 'Office Awaiting Activation')
+@section('title', __('organization_labels::office.waiting_title'))
+
+@php($admin = $profile?->officeAdmin)
 
 @section('content')
-<div class="govorg-theme">
-
-
-<div class="wait-container">
-    <div class="box box-warning org-inline-a87d3448">
-        <div class="box-body">
-            <!-- Alert Icon -->
-            <span class="org-inline-e6e30944"><i class="fas fa-store-slash"></i></span>
-            
-            <h2 class="org-inline-356c41d4">Office Activation Pending</h2>
-            <p class="text-muted org-inline-95b69185">The <strong>{{ $location->name }}</strong> is currently mapped in the system but has not completed operational setup. The catalog will unlock once the following checklist is completed:</p>
-            
-            <!-- Live Progress List -->
-            <div class="org-inline-30890f81">
-                
-                <div class="setup-item">
-                    <span><i class="fas fa-user-tie text-success org-inline-cbd49f07"></i>
-                        <strong>Office Administrator Designated</strong></span>
-                    <span class="label label-success">Completed</span>
-                </div>
-
-                <div class="setup-item">
-                    <span>
-                        <i class="fas {{ $readiness['checklist']['has_primary_approver'] ? 'fa-check-circle text-success' : 'fa-times-circle text-muted' }} org-inline-cbd49f07"></i>
-                        <strong>Primary Approver (Supervisor)</strong>
-                    </span>
-                    <span class="label {{ $readiness['checklist']['has_primary_approver'] ? 'label-success' : 'label-default' }}">
-                        {{ $readiness['checklist']['has_primary_approver'] ? 'Assigned' : 'Awaiting Setup' }}
-                    </span>
-                </div>
-
-                <div class="setup-item">
-                    <span>
-                        <i class="fas {{ $readiness['checklist']['has_storekeeper'] ? 'fa-check-circle text-success' : 'fa-times-circle text-muted' }} org-inline-cbd49f07"></i>
-                        <strong>Storekeeper (Inventory Officer)</strong>
-                    </span>
-                    <span class="label {{ $readiness['checklist']['has_storekeeper'] ? 'label-success' : 'label-default' }}">
-                        {{ $readiness['checklist']['has_storekeeper'] ? 'Assigned' : 'Awaiting Setup' }}
-                    </span>
-                </div>
-
-                <div class="setup-item">
-                    <span>
-                        <i class="fas {{ $readiness['checklist']['has_users'] ? 'fa-check-circle text-success' : 'fa-times-circle text-muted' }} org-inline-cbd49f07"></i>
-                        <strong>Assigned Staff (Min: 1)</strong>
-                    </span>
-                    <span class="label {{ $readiness['checklist']['has_users'] ? 'label-success' : 'label-default' }}">
-                        {{ $readiness['checklist']['has_users'] ? 'Completed' : 'Awaiting Setup' }}
-                    </span>
-                </div>
-
+<div class="govorg govorg-staff-page">
+    <x-gs::box class="govorg-staff-card">
+        <div class="govorg-stack">
+            <div>
+                <h1 class="govorg-staff-card__heading">{{ __('organization_labels::office.waiting_heading') }}</h1>
+                <p class="govorg-muted govorg-flush">{{ __('organization_labels::office.waiting_body', ['name' => $location->name]) }}</p>
             </div>
 
-            <!-- Escalation Contact Details -->
-            @if($profile && $profile->officeAdmin)
-                <div class="well well-sm text-center org-inline-fee1b874">
-                    <p class="org-inline-c396f3fb"><strong>Who can activate this?</strong></p>
-                    <p class="org-inline-b47f8d00">
-                        Contact your Office Administrator: <br>
-                        <strong>{{ $profile->officeAdmin->present()->fullName }}</strong> 
-                        ({{ $profile->officeAdmin->email ?: $profile->officeAdmin->username }})
-                    </p>
+            {{-- The real checklist, read-only: staff see exactly what is done and what is not. --}}
+            @include('govorg::partials.readiness', ['readonly' => true, 'roles' => null, 'people' => []])
+
+            @if ($admin)
+                <div class="govorg-contact">
+                    <x-gs::avatar :name="$admin->present()->fullName" />
+                    <div class="govorg-contact__who">
+                        <strong>{{ $admin->present()->fullName }}</strong>
+                        <span class="govorg-meta">{{ __('organization_labels::office.waiting_contact_role') }}</span>
+                    </div>
+                    @if ($admin->email)
+                        <x-gs::button size="sm" icon="fa-envelope" :href="'mailto:'.$admin->email">{{ __('organization_labels::office.email_person', ['name' => $admin->first_name]) }}</x-gs::button>
+                    @endif
                 </div>
+            @else
+                <x-gs::alert tone="info">{{ __('organization_labels::office.waiting_no_admin') }}</x-gs::alert>
             @endif
 
-            <div class="org-inline-f5897d74">
-                <a href="{{ url('/') }}" class="btn btn-default"><i class="fas fa-home"></i> Return to Main Dashboard</a>
-            </div>
+            <div><x-gs::button tone="light" outline :href="url('/')" icon="fa-house">{{ __('organization_labels::office.home') }}</x-gs::button></div>
         </div>
-    </div>
-</div>
+    </x-gs::box>
 </div>
 @endsection

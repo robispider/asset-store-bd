@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "id": "organization.registry-observation",
+  "title": "An area ICT officer sees only the offices in their area, with status-tab counts, Live filter, instant search, next step and whole-row link matching the database",
+  "features": ["organization.registry"],
+  "tags": ["seeded", "readonly", "organization"],
+  "execution": { "capability": "observe", "language": "en-US", "timeoutMs": 90000, "accessMode": "any" },
+  "fixtures": {
+    "office": { "requirements": {} },
+    "actors": {
+      "ictOfficer": { "role": "ict_officer", "activeMembership": false, "capabilities": { "allOf": ["organization.office.manage"], "noneOf": ["organization.national.manage"] } }
+    }
+  },
+  "steps": [
+    { "action": "observe", "check": "organization.registry", "args": { "userId": "${actors.ictOfficer.id}" }, "as": "registry", "note": "Expected scope and counts restated from the area jurisdiction, independent of the page" },
+    { "action": "observe", "check": "organization.office", "args": { "id": "${observed.registry.sampleOfficeId}" }, "as": "office" },
+    { "use": "auth.login", "with": { "actor": "ictOfficer" } },
+
+    { "action": "goto", "url": "/gov-store/admin/organization" },
+    { "action": "assert", "target": "organization.pageTitle", "test": "text", "contains": "Offices" },
+    { "action": "assert", "target": "organization.addOffice", "test": "visible" },
+    { "action": "assert", "target": "organization.secNavCurrent", "test": "text", "equals": "Offices" },
+    { "action": "assert", "target": "organization.secNavNational", "test": "count", "equals": 0, "note": "Administrators and Government directory are national (super user) sections" },
+
+    { "action": "assert", "target": "organization.tabs", "test": "count", "equals": 6, "note": "All · Needs your action · Setting up · Live · Paused · Not onboarded" },
+    { "action": "assert", "target": "organization.tabCurrent", "test": "text", "contains": "All" },
+    { "action": "assert", "target": "organization.tabAllCount", "test": "number", "equals": "${observed.registry.all}" },
+    { "action": "assert", "target": "organization.tabActionCount", "test": "number", "equals": "${observed.registry.action}", "note": "Needs your action = not onboarded + needs administrator + setting up" },
+    { "action": "assert", "target": "organization.tabSetupCount", "test": "number", "equals": "${observed.registry.setup}" },
+    { "action": "assert", "target": "organization.tabLiveCount", "test": "number", "equals": "${observed.registry.live}" },
+    { "action": "assert", "target": "organization.tabPausedCount", "test": "number", "equals": "${observed.registry.paused}" },
+    { "action": "assert", "target": "organization.tabNoneCount", "test": "number", "equals": "${observed.registry.none}" },
+    { "action": "assert", "target": "organization.attentionBanner", "test": "count", "equals": "${observed.registry.attentionBanner}", "note": "The 'N offices are waiting on you' banner shows exactly when something needs action" },
+    { "action": "assert", "target": "organization.rows", "test": "count", "equals": "${observed.registry.firstPageRows}" },
+    { "action": "assert", "target": "organization.showing", "test": "text", "contains": "of ${observed.registry.all} offices" },
+
+    { "action": "click", "target": "organization.tabLive" },
+    { "action": "wait", "target": "organization.tabLiveCurrent", "state": "attached", "note": "Live tab page loaded" },
+    { "action": "assert", "test": "url", "contains": "status=live" },
+    { "action": "assert", "target": "organization.rows", "test": "count", "equals": "${observed.registry.liveRows}" },
+    { "action": "assert", "target": "organization.rowsNotLive", "test": "count", "equals": 0, "note": "The Live filter shows only Live offices" },
+
+    { "action": "goto", "url": "/gov-store/admin/organization" },
+    { "action": "fill", "target": "organization.search", "value": "${observed.registry.sampleOfficeName}" },
+    { "action": "wait", "target": "organization.searchActive", "state": "attached", "note": "Instant filter: the search submits itself after a short pause, no Filter click" },
+    { "action": "assert", "test": "url", "contains": "search=" },
+    { "action": "assert", "target": "organization.rows", "test": "count", "equals": "${observed.registry.sampleSearchRows}" },
+    { "action": "assert", "target": "organization.sampleRow", "test": "count", "equals": 1 },
+    { "action": "assert", "target": "organization.sampleRowBadge", "test": "count", "equals": 1, "note": "Row badge = persisted lifecycle status" },
+    { "action": "assert", "target": "organization.sampleRowNext", "test": "text", "equals": "Ready, staff can order", "note": "A live office's next step (business rule: operational → ready)" },
+    { "action": "assert", "target": "organization.sampleRowHref", "test": "count", "equals": 1, "note": "The whole row links to the office hub" },
+    { "action": "click", "target": "organization.sampleRowLink" },
+    { "action": "wait", "target": "organization.settings", "state": "attached", "note": "Hub page loaded" },
+    { "action": "assert", "test": "url", "contains": "/gov-store/admin/organization/${observed.registry.sampleOfficeId}/hub" },
+    { "action": "assert", "target": "organization.pageTitle", "test": "text", "equals": "${observed.office.name}" }
+  ],
+  "cleanup": { "policy": "no-business-records-created" }
+}

@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "organization.authorization-boundaries",
+  "title": "Area ICT officers manage only offices in their area and never national screens; local office administrators reach only their own office and never the registry, Add office or area search",
+  "features": ["organization.authorization"],
+  "tags": ["seeded", "readonly", "organization", "authorization"],
+  "execution": { "capability": "observe", "language": "en-US", "timeoutMs": 90000, "accessMode": "any" },
+  "fixtures": {
+    "office": { "requirements": { "operational": true } },
+    "actors": {
+      "ictOfficer": { "role": "ict_officer", "activeMembership": false, "capabilities": { "allOf": ["organization.office.manage"], "noneOf": ["organization.national.manage"] } },
+      "officeAdmin": { "role": "office_admin", "capabilities": { "allOf": ["organization.office.manage"], "noneOf": ["access.matrix", "organization.national.manage"] }, "office": "office", "activeMembership": true }
+    }
+  },
+  "steps": [
+    { "action": "observe", "check": "organization.registry", "args": { "userId": "${actors.ictOfficer.id}" }, "as": "registry", "note": "foreignOfficeId = a profiled office outside the officer's area" },
+    { "action": "observe", "check": "organization.office", "args": { "id": "${fixtures.office.id}" }, "as": "office", "note": "foreignOfficeId = an office this administrator does not run" },
+
+    { "use": "auth.login", "with": { "actor": "ictOfficer" } },
+    { "action": "probe", "path": "/gov-store/admin/organization", "expectStatus": [200] },
+    { "action": "probe", "path": "/gov-store/admin/organization/create", "expectStatus": [200] },
+    { "action": "probe", "path": "/gov-store/admin/organization/geo-search?q=ra", "expectStatus": [200], "note": "Area search is scoped server-side to the officer's area" },
+    { "action": "probe", "path": "/gov-store/admin/organization/${observed.registry.sampleOfficeId}/hub", "expectStatus": [200] },
+    { "action": "probe", "path": "/gov-store/admin/organization/${observed.registry.foreignOfficeId}/hub", "expectStatus": [404], "note": "Offices outside the area do not exist for this officer (object scope holds in shadow and enforce)" },
+    { "action": "probe", "path": "/gov-store/admin/organization/jurisdictions", "expectStatus": [403], "note": "National: super users only, enforced in shadow mode too" },
+    { "action": "probe", "path": "/gov-store/office/company-admins", "expectStatus": [403] },
+    { "action": "probe", "path": "/directory", "expectStatus": [403] },
+
+    { "use": "auth.login", "with": { "actor": "officeAdmin" } },
+    { "action": "probe", "path": "/gov-store/office", "expectStatus": [200] },
+    { "action": "probe", "path": "/gov-store/admin/organization/${fixtures.office.id}/hub", "expectStatus": [200], "note": "Their own office, in their working context" },
+    { "action": "probe", "path": "/gov-store/admin/organization/${observed.office.foreignOfficeId}/hub", "expectStatus": [404] },
+    { "action": "probe", "path": "/gov-store/admin/organization", "expectStatus": [403], "note": "The registry is for area ICT officers" },
+    { "action": "probe", "path": "/gov-store/admin/organization/create", "expectStatus": [403] },
+    { "action": "probe", "path": "/gov-store/admin/organization/onboard", "expectStatus": [403] },
+    { "action": "probe", "path": "/gov-store/admin/organization/geo-search?q=ra", "expectStatus": [403] },
+    { "action": "probe", "path": "/gov-store/admin/organization/jurisdictions", "expectStatus": [403] },
+    { "action": "probe", "path": "/gov-store/office/company-admins", "expectStatus": [403] },
+    { "action": "probe", "path": "/directory", "expectStatus": [403] }
+  ],
+  "cleanup": { "policy": "no-business-records-created" }
+}

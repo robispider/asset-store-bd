@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "id": "organization.office-hub-observation",
+  "title": "An area ICT officer opens a live office hub: status, readiness, roles, staff, details and activity match the database, and the Pause dialog explains itself and cannot be sent without a reason and acknowledgement",
+  "features": ["organization.hub", "organization.lifecycle"],
+  "tags": ["seeded", "readonly", "organization"],
+  "execution": { "capability": "observe", "language": "en-US", "timeoutMs": 90000, "accessMode": "any" },
+  "fixtures": {
+    "office": { "requirements": {} },
+    "actors": {
+      "ictOfficer": { "role": "ict_officer", "activeMembership": false, "capabilities": { "allOf": ["organization.office.manage"], "noneOf": ["organization.national.manage"] } }
+    }
+  },
+  "data": {
+    "reason": { "generate": "markedText", "prefix": "LIVE-NOT-SENT", "length": 6 }
+  },
+  "steps": [
+    { "action": "observe", "check": "organization.registry", "args": { "userId": "${actors.ictOfficer.id}" }, "as": "registry" },
+    { "action": "observe", "check": "organization.office", "args": { "id": "${observed.registry.sampleOfficeId}" }, "as": "before", "note": "A live office in the officer's area with staff; opening its hub must not change its status" },
+    { "use": "auth.login", "with": { "actor": "ictOfficer" } },
+
+    { "action": "goto", "url": "/gov-store/admin/organization/${observed.registry.sampleOfficeId}/hub" },
+    { "action": "observe", "check": "organization.office", "args": { "id": "${observed.registry.sampleOfficeId}" }, "as": "office", "note": "Re-read after the page evaluated readiness" },
+    { "action": "compare", "actual": "${observed.office.status}", "equals": "${observed.before.status}" },
+
+    { "action": "assert", "target": "organization.pageTitle", "test": "text", "equals": "${observed.office.name}" },
+    { "action": "assert", "target": "organization.headerBadgeExpected", "test": "count", "equals": 1, "note": "Header badge = persisted lifecycle status" },
+    { "action": "assert", "target": "organization.readinessTitle", "test": "text", "equals": "This office is live" },
+    { "action": "assert", "target": "organization.readinessCount", "test": "text", "equals": "${observed.office.readinessCount}" },
+    { "action": "assert", "target": "organization.readinessItems", "test": "count", "equals": 4, "note": "Staff · administrator · approver · storekeeper" },
+    { "action": "assert", "target": "organization.readinessDone", "test": "count", "equals": "${observed.office.done}" },
+    { "action": "assert", "target": "organization.readinessActions", "test": "count", "equals": 0, "note": "Nothing left to fix, so no fix-it buttons" },
+
+    { "action": "assert", "target": "organization.hubToc", "test": "count", "equals": 6, "note": "People and roles · Staff · Office details · Location · Activity · Settings" },
+    { "action": "assert", "target": "organization.adminPicker", "test": "count", "equals": 1, "note": "The hub lets the officer choose the office administrator in place" },
+    { "action": "assert", "target": "organization.adminSlotPerson", "test": "text", "equals": "${observed.office.adminName}" },
+    { "action": "assert", "target": "organization.roleSlotsNeeded", "test": "count", "equals": 0 },
+    { "action": "assert", "target": "organization.staffRows", "test": "count", "equals": "${observed.office.staff}", "note": "Staff = eligible active members (business rule)" },
+    { "action": "assert", "target": "organization.details", "test": "visible" },
+    { "action": "assert", "target": "organization.technicalDetails", "test": "hidden", "note": "Area codes and ids sit behind Technical details" },
+    { "action": "assert", "target": "organization.timelineItems", "test": "count", "equals": "${observed.office.activityRows}", "note": "Latest 20 activity entries" },
+
+    { "action": "assert", "target": "organization.pauseButton", "test": "visible" },
+    { "action": "assert", "target": "organization.moveButton", "test": "visible" },
+    { "action": "assert", "target": "organization.closeDisabled", "test": "count", "equals": 1, "note": "Close/merge is disabled and explains why" },
+    { "action": "assert", "target": "organization.closeWhy", "test": "visible" },
+    { "action": "assert", "target": "organization.pauseDialog", "test": "hidden", "note": "No destructive control shows by default" },
+
+    { "action": "click", "target": "organization.pauseButton" },
+    { "action": "wait", "target": "organization.pauseReason", "state": "visible" },
+    { "action": "assert", "target": "organization.pauseDialogEffects", "test": "count", "equals": 3, "note": "What stops, what continues, what locks" },
+    { "action": "assert", "target": "organization.pauseExpectedStatus", "test": "count", "equals": 1, "note": "The form carries the concurrency guard for the current status" },
+    { "action": "assert", "target": "organization.pauseReason", "test": "invalid", "note": "A reason is required" },
+    { "action": "assert", "target": "organization.pauseAck", "test": "invalid", "note": "The acknowledgement replaces typing CHANGE" },
+    { "action": "fill", "target": "organization.pauseReason", "value": "${data.reason}" },
+    { "action": "assert", "target": "organization.pauseReason", "test": "valid" },
+    { "action": "assert", "target": "organization.pauseAck", "test": "invalid", "note": "Still blocked until the person acknowledges" },
+    { "action": "click", "target": "organization.pauseCancel" },
+    { "action": "wait", "target": "organization.pauseDialog", "state": "hidden" },
+
+    { "action": "observe", "check": "organization.office", "args": { "id": "${observed.registry.sampleOfficeId}" }, "as": "after" },
+    { "action": "compare", "actual": "${observed.after.status}", "equals": "operational", "note": "Cancelling the dialog changed nothing" }
+  ],
+  "cleanup": { "policy": "no-business-records-created" }
+}

@@ -161,7 +161,7 @@ class OrganizationWorkflowTest extends TestCase
 
     private function change(string $action, string $status = 'configured', array $extra = []): array
     {
-        return $extra + ['action' => $action, 'expected_status' => $status, 'expected_geo_area_id' => 2, 'reason' => 'Isolated test transition', 'confirmation' => 'CHANGE'];
+        return $extra + ['action' => $action, 'expected_status' => $status, 'expected_geo_area_id' => 2, 'reason' => 'Isolated test transition', 'confirmation' => '1'];
     }
 
     private function denied(callable $action, int $status): void
@@ -401,9 +401,13 @@ class OrganizationWorkflowTest extends TestCase
                 'location' => Location::withoutGlobalScopes()->findOrFail(10),
                 'profile' => \GovStore\Organization\Models\LocationProfile::where('location_id', 10)->firstOrFail(), 'starter' => null,
             ])->render();
-            $this->assertStringContainsString(__('organization_labels::orglabel.lifecycle_title'), $html);
+            // Each action is its own dialog; confirmation is an acknowledgement checkbox, never a typed English word.
+            $this->assertStringContainsString(e(__('organization_labels::office.pause_dialog_title', ['name' => 'Office A'])), $html);
             $this->assertStringContainsString('name="expected_geo_area_id"', $html);
-            $this->assertStringContainsString(__('organization_labels::orglabel.lifecycle_clearance_pending'), $html);
+            $this->assertStringContainsString('name="action" value="relocate"', $html);
+            $this->assertMatchesRegularExpression('/type="checkbox"[^>]*name="confirmation" value="1"/', $html);
+            $this->assertStringNotContainsString('CHANGE', $html);
+            $this->assertStringContainsString(e(__('organization_labels::orglabel.lifecycle_clearance_pending')), $html);
         }
     }
 }

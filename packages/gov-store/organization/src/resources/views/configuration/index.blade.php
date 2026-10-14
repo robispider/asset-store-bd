@@ -1,199 +1,32 @@
 @extends('layouts/default')
 
-@section('title', __('organization_labels::orglabel.config_title'))
+@section('title', __('organization_labels::office.my_office_title'))
+
+@php
+    $active = in_array($profile->lifecycle_status, \GovStore\Organization\Services\OfficeLifecycleService::ACTIVE, true);
+    $people = $localStaff->mapWithKeys(fn ($user) => [$user->id => $user->present()->fullName])->all();
+    $geo = $profile->geoArea;
+    $bangla = str_starts_with(strtolower(app()->getLocale()), 'bn');
+@endphp
 
 @section('content')
-<div class="govorg-theme">
+<div class="govorg">
+    <x-gs::page-header :title="$location->name" :subtitle="__('organization_labels::office.my_office_subtitle')">
+        <x-slot:meta>
+            <span class="govorg-toolbar">
+                <x-gs::status-badge :status="'office_'.$profile->lifecycle_status" />
+                @if ($geo)<span>{{ $bangla && $geo->bn_name ? $geo->bn_name : $geo->en_name }}</span>@endif
+                <span>{{ $location->company->name ?? __('organization_labels::office.not_linked') }}</span>
+            </span>
+        </x-slot:meta>
+    </x-gs::page-header>
 
-{{-- Readiness Checklist and Config Layout --}}
+    <x-gs::box tone="primary">
+        @include('govorg::partials.readiness', ['rolesAnchor' => '#govorg-roles'])
+    </x-gs::box>
 
+    @include('govorg::partials.roles', ['rolesAction' => route('gov.org.config.save'), 'adminForm' => false, 'locked' => ! $active])
 
-<div class="row">
-    <!-- LEFT COLUMN: Dynamic Operational Readiness Checklist -->
-    <div class="col-md-5">
-        
-        <!-- Checklist status panel -->
-        <div class="box box-solid {{ $readiness['is_operational'] ? 'box-success' : 'box-warning' }}">
-            <div class="box-header with-border">
-                <h3 class="box-title org-inline-1b4b4734">
-                    <i class="fas {{ $readiness['is_operational'] ? 'fa-check-double' : 'fa-clipboard-list' }}"></i> 
-                    Office Status: {{ strtoupper($profile->lifecycle_status) }}
-                </h3>
-            </div>
-            <div class="box-body no-padding org-inline-2d2f5fdd">
-                
-                <div class="checklist-item">
-                    <span class="checklist-icon {{ $readiness['checklist']['has_office_admin'] ? 'text-success' : 'text-gray' }}">
-                        <i class="fas {{ $readiness['checklist']['has_office_admin'] ? 'fa-check-circle' : 'fa-circle' }}"></i>
-                    </span>
-                    <span class="checklist-text">{{ __('organization_labels::orglabel.config_checklist_designate_admin') }}</span>
-                    <span class="label {{ $readiness['checklist']['has_office_admin'] ? 'label-success' : 'label-default' }}">
-                        {{ $readiness['checklist']['has_office_admin'] ? __('organization_labels::orglabel.config_checklist_configured') : __('organization_labels::orglabel.config_checklist_missing') }}
-                    </span>
-                </div>
-
-                <div class="checklist-item">
-                    <span class="checklist-icon {{ $readiness['checklist']['has_primary_approver'] ? 'text-success' : 'text-gray' }}">
-                        <i class="fas {{ $readiness['checklist']['has_primary_approver'] ? 'fa-check-circle' : 'fa-circle' }}"></i>
-                    </span>
-                    <span class="checklist-text">{{ __('organization_labels::orglabel.config_checklist_assign_approver') }}</span>
-                    <span class="label {{ $readiness['checklist']['has_primary_approver'] ? 'label-success' : 'label-default' }}">
-                        {{ $readiness['checklist']['has_primary_approver'] ? __('organization_labels::orglabel.config_checklist_configured') : __('organization_labels::orglabel.config_checklist_missing') }}
-                    </span>
-                </div>
-
-                <div class="checklist-item">
-                    <span class="checklist-icon {{ $readiness['checklist']['has_storekeeper'] ? 'text-success' : 'text-gray' }}">
-                        <i class="fas {{ $readiness['checklist']['has_storekeeper'] ? 'fa-check-circle' : 'fa-circle' }}"></i>
-                    </span>
-                    <span class="checklist-text">{{ __('organization_labels::orglabel.config_checklist_assign_storekeeper') }}</span>
-                    <span class="label {{ $readiness['checklist']['has_storekeeper'] ? 'label-success' : 'label-default' }}">
-                        {{ $readiness['checklist']['has_storekeeper'] ? __('organization_labels::orglabel.config_checklist_configured') : __('organization_labels::orglabel.config_checklist_missing') }}
-                    </span>
-                </div>
-
-                <div class="checklist-item">
-                    <span class="checklist-icon {{ $readiness['checklist']['has_users'] ? 'text-success' : 'text-gray' }}">
-                        <i class="fas {{ $readiness['checklist']['has_users'] ? 'fa-check-circle' : 'fa-circle' }}"></i>
-                    </span>
-                    <span class="checklist-text">{{ __('organization_labels::orglabel.config_checklist_mapped_employees') }}</span>
-                    <span class="badge {{ $readiness['checklist']['has_users'] ? 'bg-green' : 'bg-gray' }}">
-                        {{ $readiness['users_count'] }} {{ __('organization_labels::orglabel.config_checklist_user_count_suffix') }}
-                    </span>
-                </div>
-
-            </div>
-            @if($readiness['is_operational'])
-                <div class="box-footer text-center org-inline-18698e3c">
-                    <strong class="text-success"><i class="fas fa-check-double"></i> {{ __('organization_labels::orglabel.config_operational_verified') }}</strong>
-                </div>
-            @else
-                <div class="box-footer text-center org-inline-ec5f400a">
-                    <strong class="text-warning"><i class="fas fa-exclamation-triangle"></i> {{ __('organization_labels::orglabel.config_pending_instruction') }}</strong>
-                </div>
-            @endif
-        </div>
-
-        <!-- Geographic Mapped Reference Details -->
-        <div class="box box-default">
-            <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-info-circle"></i> {{ __('organization_labels::orglabel.config_profile_title') }}</h3>
-            </div>
-            <div class="box-body table-responsive">
-                <x-gs::table class="table">
-                    <tr>
-                        <td class="org-inline-b38bc629"><strong>{{ __('organization_labels::orglabel.config_field_physical_office') }}</strong></td>
-                        <td class="org-inline-b38bc629">{{ $location->name }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>{{ __('organization_labels::orglabel.config_field_ministry_division') }}</strong></td>
-                        <td>{{ $location->company->name ?? __('organization_labels::orglabel.config_field_standalone') }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>{{ __('organization_labels::orglabel.config_field_territory_tag') }}</strong></td>
-                        <td>
-                            <span class="label bg-blue org-inline-19b327ae">
-                                <i class="fas fa-map-marker-alt"></i> {{ $profile->geoArea->en_name ?? __('organization_labels::orglabel.config_field_unspecified') }} ({{ ucfirst($profile->geoArea->geo_type ?? 'N/A') }})
-                            </span>
-                        </td>
-                    </tr>
-                </x-gs::table>
-            </div>
-        </div>
-    </div>
-
-    <!-- RIGHT COLUMN: Role Assignment Form and Local User List -->
-    <div class="col-md-7">
-        <div class="box box-primary">
-            <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-sliders-h"></i> {{ __('organization_labels::orglabel.config_roles_title') }}</h3>
-            </div>
-            <form action="{{ route('gov.org.config.save') }}" method="POST">
-                @csrf
-                @if(!in_array($profile->lifecycle_status, ['provisioned', 'configured', 'operational'], true))
-                    <p class="alert alert-warning">{{ __('organization_labels::orglabel.lifecycle_help') }}</p>
-                @endif
-                <fieldset @if(!in_array($profile->lifecycle_status, ['provisioned', 'configured', 'operational'], true)) disabled @endif>
-                <div class="box-body">
-                    
-                    <div class="form-group">
-                        <label for="primary_approver_id">{{ __('organization_labels::orglabel.config_role_primary_approver') }} <span class="text-danger">*</span></label>
-                        <select class="form-control select2 org-inline-442a70a1" name="primary_approver_id" id="primary_approver_id" required>
-                            <option value="">{{ __('organization_labels::orglabel.config_role_select_employee') }}</option>
-                            @foreach($localStaff as $user)
-                                <option value="{{ $user->id }}" {{ $roles && $roles->primary_approver_id == $user->id ? 'selected' : '' }}>
-                                    {{ $user->present()->fullName }} ({{ $user->username }})
-                                </option>
-                            @endforeach
-                        </select>
-                        <p class="help-block">{{ __('organization_labels::orglabel.config_help_primary_approver') }}</p>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="final_approver_id">{{ __('organization_labels::orglabel.config_role_final_approver') }}</label>
-                        <select class="form-control select2 org-inline-442a70a1" name="final_approver_id" id="final_approver_id">
-                            <option value="">{{ __('organization_labels::orglabel.config_role_none_single_level') }}</option>
-                            @foreach($localStaff as $user)
-                                <option value="{{ $user->id }}" {{ $roles && $roles->final_approver_id == $user->id ? 'selected' : '' }}>
-                                    {{ $user->present()->fullName }} ({{ $user->username }})
-                                </option>
-                            @endforeach
-                        </select>
-                        <p class="help-block">{{ __('organization_labels::orglabel.config_help_final_approver') }}</p>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="storekeeper_id">{{ __('organization_labels::orglabel.config_role_storekeeper') }} <span class="text-danger">*</span></label>
-                        <select class="form-control select2 org-inline-442a70a1" name="storekeeper_id" id="storekeeper_id" required>
-                            <option value="">{{ __('organization_labels::orglabel.config_role_select_employee') }}</option>
-                            @foreach($localStaff as $user)
-                                <option value="{{ $user->id }}" {{ $roles && $roles->storekeeper_id == $user->id ? 'selected' : '' }}>
-                                    {{ $user->present()->fullName }} ({{ $user->username }})
-                                </option>
-                            @endforeach
-                        </select>
-                        <p class="help-block">{{ __('organization_labels::orglabel.config_help_storekeeper') }}</p>
-                    </div>
-
-                </div>
-                <div class="box-footer">
-                    <button type="submit" class="btn btn-primary pull-right"><i class="fas fa-save"></i> {{ __('organization_labels::orglabel.config_save_button') }}</button>
-                </div>
-                </fieldset>
-            </form>
-        </div>
-
-        <!-- MAPPED EMPLOYEES LIST -->
-        <div class="box box-default">
-            <div class="box-header with-border">
-                <h3 class="box-title"><i class="fas fa-users"></i> {{ __('organization_labels::orglabel.config_employees_title') }}</h3>
-            </div>
-            <div class="box-body table-responsive org-inline-033db5fe">
-                <x-gs::table class="table table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>{{ __('organization_labels::orglabel.config_employee_name') }}</th>
-                            <th>{{ __('organization_labels::orglabel.config_employee_username') }}</th>
-                            <th>{{ __('organization_labels::orglabel.config_employee_jobtitle') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($localStaff as $user)
-                            <tr>
-                                <td><strong>{{ $user->present()->fullName }}</strong></td>
-                                <td>{{ $user->username }}</td>
-                                <td>{{ $user->jobtitle ?: '-' }}</td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="3" class="text-center text-muted">{{ __('organization_labels::orglabel.config_no_employees') }}</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </x-gs::table>
-            </div>
-        </div>
-    </div>
-</div>
+    @include('govorg::partials.staff')
 </div>
 @endsection

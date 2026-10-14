@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "organization.add-office-validation",
+  "title": "Add office searches existing locations first, carries the typed name into the form, and a save without an area is refused with an error summary and field message while keeping the name and creating nothing",
+  "features": ["organization.add-office"],
+  "tags": ["seeded", "validation", "organization"],
+  "execution": { "capability": "observe", "language": "en-US", "timeoutMs": 90000, "accessMode": "any" },
+  "fixtures": {
+    "office": { "requirements": {} },
+    "actors": {
+      "ictOfficer": { "role": "ict_officer", "activeMembership": false, "capabilities": { "allOf": ["organization.office.manage"], "noneOf": ["organization.national.manage"] } }
+    }
+  },
+  "data": {
+    "officeName": { "generate": "markedText", "prefix": "LIVE-OFFICE", "length": 6 }
+  },
+  "steps": [
+    { "action": "observe", "check": "organization.location", "args": { "name": "${data.officeName}" }, "as": "before" },
+    { "action": "compare", "actual": "${observed.before.count}", "equals": 0, "note": "Precondition: the generated name is unused" },
+    { "use": "auth.login", "with": { "actor": "ictOfficer" } },
+
+    { "action": "goto", "url": "/gov-store/admin/organization/create" },
+    { "action": "assert", "target": "organization.pageTitle", "test": "text", "equals": "Add an office" },
+    { "action": "fill", "target": "organization.findInput", "value": "${data.officeName}" },
+    { "action": "submitForm", "target": "organization.findSubmit" },
+    { "action": "wait", "target": "organization.findNone", "state": "visible" },
+    { "action": "assert", "test": "url", "contains": "find=" },
+    { "action": "assert", "target": "organization.findNone", "test": "text", "contains": "No existing location matches", "note": "Step 1 says nothing matches before offering to create" },
+    { "action": "assert", "target": "organization.officeName", "test": "value", "equals": "${data.officeName}", "note": "The searched name carries into the form" },
+    { "action": "assert", "target": "organization.officeTypeDefault", "test": "checked", "note": "Office type defaults to an administrative office" },
+
+    { "action": "submitForm", "target": "organization.createSubmit", "note": "Area left empty on purpose; the form is novalidate so the server must refuse it" },
+    { "action": "wait", "target": "organization.errorSummary", "state": "visible" },
+    { "action": "assert", "test": "url", "contains": "/gov-store/admin/organization/create" },
+    { "action": "assert", "target": "organization.errorSummary", "test": "text", "contains": "Please fix the highlighted fields before saving." },
+    { "action": "assert", "target": "organization.errorSummaryArea", "test": "count", "equals": 1, "note": "The summary links to the field that needs fixing" },
+    { "action": "assert", "target": "organization.errorSummaryName", "test": "count", "equals": 0, "note": "The name was valid, so it is not listed" },
+    { "action": "assert", "target": "organization.areaFieldError", "test": "visible", "note": "The message also shows under the area field" },
+    { "action": "assert", "target": "organization.officeName", "test": "value", "equals": "${data.officeName}", "note": "A failed save keeps what was typed" },
+
+    { "action": "observe", "check": "organization.location", "args": { "name": "${data.officeName}" }, "as": "after" },
+    { "action": "compare", "actual": "${observed.after.count}", "equals": 0, "note": "The refused save created no location" }
+  ],
+  "cleanup": { "policy": "no-business-records-created" }
+}

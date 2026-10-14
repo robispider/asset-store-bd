@@ -22,8 +22,13 @@ class OfficeLifecycleService
             'expected_status' => 'required|string',
             'expected_geo_area_id' => 'required|integer|min:1',
             'reason' => 'required|string|min:5|max:1000',
-            'confirmation' => 'required|in:CHANGE',
+            // An explicit acknowledgement in the user's own language (plan D2), not a typed English word.
+            'confirmation' => 'accepted',
             'geo_area_id' => 'required_if:action,relocate|nullable|integer|min:1',
+        ], [], [
+            'reason' => __('organization_labels::office.reason'),
+            'confirmation' => __('organization_labels::orglabel.lifecycle_confirmation'),
+            'geo_area_id' => __('organization_labels::office.move_to'),
         ])->validate();
 
         DB::transaction(function () use ($officeId, $actorId, $data) {
