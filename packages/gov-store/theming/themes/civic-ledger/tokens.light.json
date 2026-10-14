@@ -1,0 +1,74 @@
+{
+    "seed": {
+        "$type": "color",
+        "primary": { "$value": "#0B5E45" },
+        "accent": { "$value": "#1D4F91" },
+        "neutral": { "$value": "#15201B" },
+        "danger": { "$value": "#A3261B" }
+    },
+    "color": {
+        "$type": "color",
+        "bg": { "$value": "#F5F6F3" },
+        "surface": { "$value": "#FFFFFF" },
+        "surface-raised": { "$value": "#FFFFFF" },
+        "surface-sunken": { "$value": "#EEF0EC" },
+        "border": { "$value": "#DADFD8" },
+        "border-strong": { "$value": "#7C8780" },
+        "text": { "$value": "#15201B" },
+        "text-muted": { "$value": "#4A5650" },
+        "text-subtle": { "$value": "#5A6560" },
+        "link": { "$value": "#0B5E45" },
+        "link-hover": { "$value": "#084A36" },
+        "focus-ring": { "$value": "#1D4F91" },
+        "primary-subtle": { "$value": "#E3F0EA" },
+        "info": { "$value": "#1D4F91" },
+        "info-subtle": { "$value": "#E4ECF7" },
+        "success": { "$value": "#0B6B4F" },
+        "success-subtle": { "$value": "#E2F1EA" },
+        "warning": { "$value": "#8F4A06" },
+        "warning-subtle": { "$value": "#FBEEDC" },
+        "danger-subtle": { "$value": "#FBE7E4" },
+        "status-ready": { "$value": "#0B6347" },
+        "status-pending": { "$value": "#A0560A" },
+        "status-undeployable": { "$value": "#701A12" },
+        "status-archived": { "$value": "#4A5650" },
+        "status-deployed": { "$value": "#14396B" },
+        "doc-ready": { "$value": "#14396B" },
+        "doc-posted": { "$value": "#0B5E45" },
+        "doc-cancelled": { "$value": "#66706B" }
+    },
+    "header": {
+        "$type": "color",
+        "bg": { "$value": "#FFFFFF" },
+        "fg": { "$value": "#15201B" },
+        "fg-muted": { "$value": "#4A5650" }
+    },
+    "sidebar": {
+        "$type": "color",
+        "bg": { "$value": "{seed.neutral}" },
+        "fg": { "$value": "#C9D3CD" },
+        "active-bg": { "$value": "#0B5E45" },
+        "active-fg": { "$value": "#FFFFFF" },
+        "active-marker": { "$value": "#7FD1AE" }
+    },
+    "table": {
+        "$type": "color",
+        "head-bg": { "$value": "#F5F6F3" },
+        "row-alt": { "$value": "#FAFBF9" },
+        "row-hover": { "$value": "#F1F8F4" },
+        "border": { "$value": "#E3E7E3" }
+    },
+    "chart": {
+        "$type": "color",
+        "1": { "$value": "#0B5E45" },
+        "2": { "$value": "#1D4F91" },
+        "3": { "$value": "#B4580A" },
+        "4": { "$value": "#5B7F70" },
+        "5": { "$value": "#0E7490" },
+        "6": { "$value": "#8E5BA8" },
+        "7": { "$value": "#4A5650" },
+        "8": { "$value": "#B88A00" },
+        "9": { "$value": "#5E8C2F" },
+        "10": { "$value": "#A3261B" }
+    }
+}

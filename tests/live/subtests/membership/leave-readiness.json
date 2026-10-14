@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 1,
+  "id": "membership.leave-readiness",
+  "title": "A storekeeper opens Leave this office from their home office card: four steps, an open 'hand over your roles' item, their roles to hand over, and Ask to leave disabled with its reason and an unticked acknowledgement; nothing changes",
+  "features": [
+    "membership.leave"
+  ],
+  "tags": [
+    "seeded",
+    "readonly",
+    "membership"
+  ],
+  "execution": {
+    "capability": "observe",
+    "language": "en-US",
+    "timeoutMs": 90000,
+    "accessMode": "any"
+  },
+  "fixtures": {
+    "office": {
+      "requirements": {
+        "operational": true
+      }
+    },
+    "actors": {
+      "storekeeper": {
+        "role": "storekeeper",
+        "capabilities": {
+          "allOf": [
+            "membership.self"
+          ],
+          "noneOf": [
+            "membership.manage"
+          ]
+        },
+        "office": "office",
+        "activeMembership": true
+      }
+    }
+  },
+  "steps": [
+    {
+      "action": "observe",
+      "check": "membership.person",
+      "args": {
+        "userId": "${actors.storekeeper.id}"
+      },
+      "as": "person"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.person.homeOfficeId}",
+      "equals": "${fixtures.office.id}"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "storekeeper"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/my-memberships"
+    },
+    {
+      "action": "click",
+      "target": "membership.homeLeaveLink"
+    },
+    {
+      "action": "wait",
+      "target": "membership.currentStep",
+      "state": "attached"
+    },
+    {
+      "action": "assert",
+      "test": "url",
+      "contains": "/gov-store/my-memberships/${observed.person.homeMembershipId}/leave"
+    },
+    {
+      "action": "assert",
+      "target": "membership.pageTitle",
+      "test": "text",
+      "equals": "Leave ${observed.person.homeOfficeName}"
+    },
+    {
+      "action": "assert",
+      "target": "membership.steps",
+      "test": "count",
+      "equals": 4,
+      "note": "Home office: get ready, ask, sign-off, new office welcomes you"
+    },
+    {
+      "action": "assert",
+      "target": "membership.currentStep",
+      "test": "text",
+      "contains": "Get ready",
+      "note": "A storekeeper still holds a role, so they are not ready"
+    },
+    {
+      "action": "assert",
+      "target": "membership.rolesItemOpen",
+      "test": "count",
+      "equals": 1,
+      "note": "Business rule: a held role blocks leaving"
+    },
+    {
+      "action": "assert",
+      "target": "membership.leaveRoleSlots",
+      "test": "count",
+      "equals": "${observed.person.homeRoles}"
+    },
+    {
+      "action": "assert",
+      "target": "membership.askButton",
+      "test": "disabled"
+    },
+    {
+      "action": "assert",
+      "target": "membership.askWhy",
+      "test": "text",
+      "contains": "Available when everything above is done."
+    },
+    {
+      "action": "assert",
+      "target": "membership.askAck",
+      "test": "invalid",
+      "note": "The acknowledgement is required"
+    },
+    {
+      "action": "assert",
+      "target": "membership.destination",
+      "test": "count",
+      "equals": 1,
+      "note": "Where are you going? is offered for a home office (plan D3)"
+    },
+    {
+      "action": "assert",
+      "target": "membership.withdraw",
+      "test": "count",
+      "equals": 0
+    },
+    {
+      "action": "observe",
+      "check": "membership.person",
+      "args": {
+        "userId": "${actors.storekeeper.id}"
+      },
+      "as": "after"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.after.active}",
+      "equals": "${observed.person.active}",
+      "note": "Nothing was requested"
+    }
+  ],
+  "cleanup": {
+    "policy": "no-business-records-created"
+  }
+}

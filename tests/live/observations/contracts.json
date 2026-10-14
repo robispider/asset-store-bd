@@ -197,6 +197,161 @@
         "tenures",
         "current"
       ]
+    },
+    "organization.registry": {
+      "description": "Office registry scope and status-tab counts for one user (super user: every location; area ICT officer: profiled offices inside their area), a live sample office with staff, and an office outside the area",
+      "parameters": {
+        "userId": "integer"
+      },
+      "outputFields": [
+        "user_id",
+        "all",
+        "action",
+        "setup",
+        "live",
+        "paused",
+        "none",
+        "attentionBanner",
+        "firstPageRows",
+        "liveRows",
+        "sampleOfficeId",
+        "sampleOfficeName",
+        "sampleSearchRows",
+        "foreignOfficeId"
+      ]
+    },
+    "organization.office": {
+      "description": "One office's lifecycle status and readiness restated from the business rule (eligible staff, administrator, approver, storekeeper), next setup step, administrator, activity count and another office for boundary checks",
+      "parameters": {
+        "id": "integer"
+      },
+      "outputFields": [
+        "id",
+        "name",
+        "company_id",
+        "status",
+        "badgeStatus",
+        "active",
+        "staff",
+        "hasAdmin",
+        "hasApprover",
+        "hasStorekeeper",
+        "done",
+        "readinessCount",
+        "nextStepKey",
+        "adminId",
+        "adminName",
+        "activityRows",
+        "geoVerified",
+        "foreignOfficeId"
+      ]
+    },
+    "organization.national": {
+      "description": "Counts behind the Administrators tabs (area ICT officers, ministry administrators) and the government directory",
+      "parameters": {},
+      "outputFields": [
+        "ictOfficers",
+        "ministryAdmins",
+        "directoryRecords",
+        "directoryPreviewRows"
+      ]
+    },
+    "organization.location": {
+      "description": "Number of locations with exactly this name (proves a rejected form created nothing)",
+      "parameters": {
+        "name": "string"
+      },
+      "outputFields": [
+        "name",
+        "count"
+      ]
+    },
+    "membership.person": {
+      "description": "My offices restated for one person from the membership rules: current and past offices, status and home counts, roles (with or without a pending outgoing handover), handovers waiting for them, notices, personal code and colleagues at the home office",
+      "parameters": {
+        "userId": "integer"
+      },
+      "outputFields": [
+        "user_id",
+        "current",
+        "past",
+        "active",
+        "pending",
+        "homeTags",
+        "homeMembershipId",
+        "homeOfficeId",
+        "homeOfficeName",
+        "roles",
+        "homeRoles",
+        "handoverButtons",
+        "pendingOutgoing",
+        "incoming",
+        "incomingBox",
+        "openOffices",
+        "notices",
+        "personalCode",
+        "colleagues",
+        "leavingColleagues",
+        "foreignMembershipId"
+      ]
+    },
+    "membership.staff": {
+      "description": "The Staff page's tab counts for one office (staff, waiting, leaving, arriving from elsewhere in the ministry, past 12 months), the banner, first-page rows and additional staff",
+      "parameters": {
+        "officeId": "integer"
+      },
+      "outputFields": [
+        "officeId",
+        "name",
+        "status",
+        "adminId",
+        "staff",
+        "waiting",
+        "leaving",
+        "arriving",
+        "past",
+        "expected",
+        "waitTotal",
+        "staffRows",
+        "waitingRows",
+        "waitBanner",
+        "additionalStaff",
+        "codeLive"
+      ]
+    },
+    "membership.handover": {
+      "description": "The latest handover of one role at one office from one person, whether that person still holds the role, and the reason recorded with its notice",
+      "parameters": {
+        "officeId": "integer",
+        "role": "string",
+        "fromUserId": "integer"
+      },
+      "outputFields": [
+        "pendingForRole",
+        "id",
+        "status",
+        "incomingUserId",
+        "fromHolds",
+        "holders",
+        "noticeReason"
+      ]
+    },
+    "membership.code": {
+      "description": "How many offices use an office code, normalised as people may type it (proves a code check names no office)",
+      "parameters": {
+        "code": "string"
+      },
+      "outputFields": [
+        "code",
+        "offices"
+      ]
+    },
+    "membership.overrides": {
+      "description": "Number of emergency changes in the change history",
+      "parameters": {},
+      "outputFields": [
+        "count"
+      ]
     }
   }
 }

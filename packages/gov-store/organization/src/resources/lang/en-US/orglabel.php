@@ -15,7 +15,7 @@ return [
     'lifecycle_geo_search' => 'Search division, district, upazila or union',
     'lifecycle_geo_help' => 'Relocation requires an ICT officer authorized for both areas or a superuser.',
     'lifecycle_reason' => 'Reason',
-    'lifecycle_confirmation' => 'Type CHANGE to confirm',
+    'lifecycle_confirmation' => 'Confirmation',
     'lifecycle_apply' => 'Apply office transition',
     'lifecycle_saved' => 'Office changes saved.',
     'starter_title' => 'Starter catalog',

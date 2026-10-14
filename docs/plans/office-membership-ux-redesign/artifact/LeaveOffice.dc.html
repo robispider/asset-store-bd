@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Leave an office</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/818ad3bee488823df6a430cb763aba33">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Source+Serif+4:wght@400;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.app{min-height:100%;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:var(--gs-font-sans);font-size:14px;line-height:1.5}
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 20px;background:var(--gs-header-bg);color:var(--gs-header-fg);border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.main{box-sizing:border-box;max-width:1120px;margin:0 auto;padding:20px 28px 56px;display:flex;flex-direction:column;gap:18px}
+.crumb{font-size:13px;color:var(--gs-color-text-muted)}
+.ico{width:1em;height:1em;flex:none}
+.muted{color:var(--gs-color-text-muted)}
+.mono{font-family:var(--gs-font-mono);font-size:13px}
+.cols{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start}
+.content{flex:999 1 560px;min-width:0;display:flex;flex-direction:column;gap:18px}
+.aside{flex:1 1 280px;max-width:340px;min-width:0;display:flex;flex-direction:column;gap:18px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sub{display:block;font-size:13px;color:var(--gs-color-text-muted);font-weight:400}
+.wait{display:inline-flex;align-items:center;gap:6px;color:var(--gs-color-status-pending);font-weight:600}
+.ack{display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:var(--gs-radius-md);background:var(--gs-color-surface-sunken);cursor:pointer}
+.ack input{width:18px;height:18px;margin:2px 0 0;accent-color:var(--gs-color-primary)}
+.ctl{box-sizing:border-box;width:100%;min-height:var(--gs-size-control-h);padding:8px 10px;border:var(--gs-border-width) solid var(--gs-color-border-strong);border-radius:var(--gs-radius-sm);background:var(--gs-color-surface);color:var(--gs-color-text);font:inherit}
+.effects{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.effects li{display:flex;gap:10px;align-items:flex-start}
+.e-stop{color:var(--gs-color-danger)}
+.e-ok{color:var(--gs-color-success)}
+.track{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.track li{display:flex;gap:14px;padding:0 0 18px;position:relative}
+.track li:not(:last-child)::before{content:"";position:absolute;left:13px;top:30px;bottom:2px;width:2px;background:var(--gs-color-border)}
+.mk{width:28px;height:28px;border-radius:50%;flex:none;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;border:2px solid var(--gs-color-border-strong);background:var(--gs-color-surface);color:var(--gs-color-text-muted)}
+.mk--done{background:var(--gs-color-success);border-color:var(--gs-color-success);color:var(--gs-color-on-success)}
+.mk--now{border-color:var(--gs-color-primary);color:var(--gs-color-primary)}
+</style>
+</helmet>
+<div class="app" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-table="{{ v.table }}" data-gs-controls="{{ v.controls }}" data-gs-type="{{ v.type }}" data-gs-header="{{ v.header }}">
+<div class="top"><strong style="font-size: 16px; flex: 1 1 auto">National Asset Register</strong><span class="gs-avatar gs-avatar--sm gs-tone-primary" role="img" aria-label="Signed in as Rokeya Haque">RH</span></div>
+<main class="main">
+<nav class="crumb" aria-label="Breadcrumb"><a href="#">Home</a> / <a href="MyOffices.dc.html">My offices</a> / Leave Upazila Health Complex, Savar</nav>
+<header class="gs-page-header"><div class="gs-page-header__text"><h1 class="gs-page-header__title">Leave Upazila Health Complex, Savar</h1><p class="gs-page-header__subtitle">Your home office. Leaving it is how a transfer starts: Savar signs you off, then your new office welcomes you.</p></div></header>
+
+<ol class="gs-stepper" aria-label="Transfer progress">
+<li class="gs-step {{ st1 }}"><span class="gs-step__marker" aria-hidden="true">1</span><span class="gs-step__label">Get ready</span></li>
+<li class="gs-step {{ st2 }}"><span class="gs-step__marker" aria-hidden="true">2</span><span class="gs-step__label">Ask to leave</span></li>
+<li class="gs-step {{ st3 }}"><span class="gs-step__marker" aria-hidden="true">3</span><span class="gs-step__label">Savar signs you off</span></li>
+<li class="gs-step gs-step--upcoming"><span class="gs-step__marker" aria-hidden="true">4</span><span class="gs-step__label">New office welcomes you</span></li>
+</ol>
+
+<div class="cols">
+<div class="content">
+
+<sc-if value="{{ phaseReady }}" hint-placeholder-val="{{ true }}">
+<section class="gs-box gs-box--primary" aria-labelledby="ready-t">
+<div class="gs-box__body">
+<section class="gs-readiness">
+<div class="gs-readiness__head"><div class="gs-readiness__text"><strong class="gs-readiness__title" id="ready-t">Before you can leave</strong><p class="gs-readiness__caption">Savar checks these again when it signs you off, so nothing is lost if things change.</p></div><span class="gs-readiness__count">{{ doneCount }} of 3 done</span></div>
+<div class="gs-progress gs-progress--md gs-tone-primary"><div class="gs-progress__track" role="progressbar" aria-valuemin="0" aria-valuemax="3" aria-valuenow="{{ doneCount }}" aria-label="Ready to leave"><span class="gs-progress__bar" style="width: {{ pct }}"></span></div></div>
+<ul class="gs-readiness__list">
+<li class="gs-readiness__item {{ aCls }}"><svg class="ico gs-readiness__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle></svg><span class="gs-readiness__label">Return laptop HP ProBook 440 G9 <span class="sub">Asset tag <span class="mono">GS-SAV-0142</span> · with you since 3 Feb 2025</span></span><sc-if value="{{ aOpen }}" hint-placeholder-val="{{ true }}"><button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" onClick="{{ returnA }}">Ask for check-in</button></sc-if><sc-if value="{{ aDone }}" hint-placeholder-val="{{ false }}"><span class="muted">Checked in today</span></sc-if></li>
+<li class="gs-readiness__item {{ bCls }}"><svg class="ico gs-readiness__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle></svg><span class="gs-readiness__label">Return pulse oximeter <span class="sub">Asset tag <span class="mono">GS-SAV-0388</span> · with you since 11 Jun 2026</span></span><sc-if value="{{ bOpen }}" hint-placeholder-val="{{ true }}"><button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" onClick="{{ returnB }}">Ask for check-in</button></sc-if><sc-if value="{{ bDone }}" hint-placeholder-val="{{ false }}"><span class="muted">Checked in today</span></sc-if></li>
+<li class="gs-readiness__item {{ rCls }}"><svg class="ico gs-readiness__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle></svg><span class="gs-readiness__label">Hand over your Storekeeper role <span class="sub">A colleague must accept it first</span></span>
+<sc-if value="{{ rHeld }}" hint-placeholder-val="{{ true }}"><a class="gs-btn gs-btn--primary gs-btn--sm" href="Handover.dc.html" onClick="{{ propose }}">Hand over…</a></sc-if>
+<sc-if value="{{ rProposed }}" hint-placeholder-val="{{ false }}"><span class="wait"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Waiting for Nazma Akter</span><button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" onClick="{{ accepted }}">Preview: Nazma accepts</button></sc-if>
+<sc-if value="{{ rDone }}" hint-placeholder-val="{{ false }}"><span class="muted">Nazma Akter accepted</span></sc-if>
+</li>
+</ul>
+</section>
+<p class="muted" style="margin: 14px 0 0; font-size: 13px">Not needed: 14 consumables you used (gloves, syringes) stay in the records as history.</p>
+</div>
+</section>
+<div class="row">
+<button type="button" class="gs-btn gs-btn--primary" disabled="{{ notReady }}" aria-describedby="leave-why" onClick="{{ toConfirm }}">Continue</button>
+<sc-if value="{{ notReady }}" hint-placeholder-val="{{ true }}"><span class="muted" id="leave-why">Available when all three are done.</span></sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ phaseConfirm }}" hint-placeholder-val="{{ false }}">
+<section class="gs-box" aria-labelledby="conf-t">
+<header class="gs-box__header"><h2 class="gs-box__title" id="conf-t">Ask to leave Savar</h2></header>
+<div class="gs-box__body" style="display: flex; flex-direction: column; gap: 16px">
+<ul class="effects">
+<li><svg class="ico e-stop" style="margin-top: 3px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8 12h8"></path></svg><span>Once Mahbub Alam signs you off, you stop working in Savar and can't send requests from it.</span></li>
+<li><svg class="ico e-ok" style="margin-top: 3px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="m5 12 5 5L20 7"></path></svg><span>Until then, nothing changes. You can withdraw this request.</span></li>
+<li><svg class="ico e-ok" style="margin-top: 3px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="m5 12 5 5L20 7"></path></svg><span>Your additional office (Civil Surgeon's Office, Dhaka) is not affected.</span></li>
+</ul>
+<div class="gs-form-row"><label class="gs-form-row__label" for="dest">Where are you going? <span class="gs-muted">(optional)</span></label><div class="gs-form-row__control"><input class="ctl" id="dest" value="Upazila Health Complex, Dhamrai" aria-describedby="dest-help"><p class="gs-form-row__help" id="dest-help">We'll tell that office's administrator you're coming, so they can welcome you on your first day.</p></div></div>
+<label class="ack" for="ack"><input type="checkbox" id="ack" checked="{{ ack }}" onChange="{{ toggleAck }}"><span>I understand that Savar will stop being my home office once I'm signed off.</span></label>
+<div class="row"><button type="button" class="gs-btn gs-btn--primary" disabled="{{ noAck }}" onClick="{{ send }}">Ask to leave Savar</button><button type="button" class="gs-btn gs-btn--light gs-btn--outline" onClick="{{ back }}">Back</button></div>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{ phaseSent }}" hint-placeholder-val="{{ false }}">
+<div class="gs-alert gs-alert--success" role="status"><svg class="ico gs-alert__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.2 14.2-4-4 1.4-1.4 2.6 2.6 5.4-5.4 1.4 1.4-6.8 6.8Z"></path></svg><div class="gs-alert__body"><strong>Request sent.</strong> Mahbub Alam has been told. This page shows where your transfer is up to.</div></div>
+<section class="gs-box" aria-labelledby="tr-t">
+<header class="gs-box__header"><h2 class="gs-box__title" id="tr-t">Your transfer</h2><div class="gs-box__tools"><span class="gs-badge" data-tone="warning"><span class="gs-badge__label">Leaving · awaiting sign-off</span></span></div></header>
+<div class="gs-box__body">
+<ol class="track">
+<li><span class="mk mk--done" aria-hidden="true">✓</span><div><strong>You asked to leave Savar</strong><br><span class="muted">Today, 10:05 · items returned and role handed over</span></div></li>
+<li><span class="mk mk--now" aria-hidden="true">2</span><div><strong>Mahbub Alam signs you off</strong> <span class="gs-sr-only">(current step)</span><br><span class="muted">Office administrator, Savar · usually within 2 working days</span><div class="row" style="margin-top: 8px"><button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm">Remind Mahbub</button><button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" onClick="{{ withdraw }}">Withdraw request</button></div></div></li>
+<li><span class="mk" aria-hidden="true">3</span><div><strong>Upazila Health Complex, Dhamrai welcomes you</strong><br><span class="muted">Dr. Selina Parvin adds you when you report there. Dhamrai becomes your home office.</span></div></li>
+</ol>
+</div>
+</section>
+</sc-if>
+</div>
+
+<aside class="aside" aria-label="Help">
+<section class="gs-box gs-box--muted" aria-labelledby="who-t">
+<header class="gs-box__header"><h2 class="gs-box__title" id="who-t">Who to ask</h2></header>
+<div class="gs-box__body" style="display: flex; flex-direction: column; gap: 12px">
+<div class="row" style="gap: 12px; flex-wrap: nowrap"><span class="gs-avatar gs-avatar--md gs-tone-primary" aria-hidden="true">MA</span><div><strong>Mahbub Alam</strong><br><span class="muted">Office administrator · signs you off</span></div></div>
+<div class="row" style="gap: 12px; flex-wrap: nowrap"><span class="gs-avatar gs-avatar--md gs-tone-primary" aria-hidden="true">NA</span><div><strong>Nazma Akter</strong><br><span class="muted">Store assistant · checks items in</span></div></div>
+</div>
+</section>
+<section class="gs-box gs-box--muted" aria-labelledby="add-t">
+<header class="gs-box__header"><h2 class="gs-box__title" id="add-t">Leaving an additional office?</h2></header>
+<div class="gs-box__body"><p style="margin: 0">Same checks, but there's no step 4. The office simply drops off your list once it signs you off.</p></div>
+</section>
+</aside>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"$preview":{"width":1440,"height":1350}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { a: false, b: false, role: 'held', phase: 'ready', ack: false }; }
+renderVals() {
+const V = {
+'civic-ledger': { header: 'neutral', density: 'regular', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { header: 'brand', density: 'regular', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { header: 'dark', density: 'compact', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { header: 'dark', density: 'comfortable', table: 'ledger', surfaces: 'flat', controls: 'outlined', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { header: 'brand', density: 'compact', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { header: 'floating', density: 'regular', table: 'rules', surfaces: 'elevated', controls: 'filled', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+const s = this.state;
+const rDone = s.role === 'done';
+const done = (s.a ? 1 : 0) + (s.b ? 1 : 0) + (rDone ? 1 : 0);
+const D = 'gs-readiness__item--done';
+return {
+skin, mode, v: V[skin],
+doneCount: done, pct: Math.round(done / 3 * 100) + '%',
+aCls: s.a ? D : '', bCls: s.b ? D : '', rCls: rDone ? D : '',
+aOpen: !s.a, aDone: s.a, bOpen: !s.b, bDone: s.b,
+rHeld: s.role === 'held', rProposed: s.role === 'proposed', rDone,
+notReady: done < 3, noAck: !s.ack, ack: s.ack,
+phaseReady: s.phase === 'ready', phaseConfirm: s.phase === 'confirm', phaseSent: s.phase === 'sent',
+st1: s.phase === 'ready' ? 'gs-step--current' : 'gs-step--done',
+st2: s.phase === 'confirm' ? 'gs-step--current' : (s.phase === 'sent' ? 'gs-step--done' : 'gs-step--upcoming'),
+st3: s.phase === 'sent' ? 'gs-step--current' : 'gs-step--upcoming',
+returnA: () => this.setState({ a: true }),
+returnB: () => this.setState({ b: true }),
+propose: (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ role: 'proposed' }); },
+accepted: () => this.setState({ role: 'done' }),
+toConfirm: () => this.setState({ phase: 'confirm' }),
+back: () => this.setState({ phase: 'ready' }),
+toggleAck: () => this.setState({ ack: !s.ack }),
+send: () => this.setState({ phase: 'sent' }),
+withdraw: () => this.setState({ phase: 'ready', ack: false })
+};
+}
+}
+</script>
+</body>
+</html>

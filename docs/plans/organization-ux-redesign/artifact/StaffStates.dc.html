@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Staff pages before go-live</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/40008be14305f8813d984e23623f924e">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Source+Serif+4:wght@400;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.app{min-height:100%;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:var(--gs-font-sans);font-size:15px;line-height:1.55}
+.wrap{box-sizing:border-box;max-width:1280px;margin:0 auto;padding:56px 24px 72px;display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start;justify-content:center}
+.card{flex:1 1 480px;max-width:600px;box-sizing:border-box;background:var(--gs-color-surface);border:var(--gs-border-width) solid var(--gs-color-border);border-radius:var(--gs-radius-lg);padding:32px;display:flex;flex-direction:column;gap:20px}
+.bnroot{font-family:var(--gs-font-bengali);font-size:16px;line-height:1.75}
+.h1{margin:0;font-family:var(--gs-font-display);font-size:28px;line-height:1.3;font-weight:800}
+.bnroot .h1{font-family:var(--gs-font-bengali);font-weight:700}
+.lead{margin:0;color:var(--gs-color-text-muted)}
+.mark{width:52px;height:52px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}
+.mark--info{background:var(--gs-color-info-subtle);color:var(--gs-color-info)}
+.mark--warn{background:var(--gs-color-warning-subtle);color:var(--gs-color-warning)}
+.contact{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:16px;border-radius:var(--gs-radius-md);background:var(--gs-color-surface-sunken)}
+.contact__who{flex:1 1 220px;min-width:0}
+.muted{color:var(--gs-color-text-muted)}
+.steps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
+.user{display:inline-flex;align-items:center;gap:8px;padding:4px 6px 4px 12px;border-radius:var(--gs-radius-sm);border:var(--gs-border-width) solid var(--gs-color-border-strong);font-family:var(--gs-font-mono)}
+.ico{width:1em;height:1em;flex:none}
+.tag{margin:0;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gs-color-text-muted);font-family:var(--gs-font-sans)}
+</style>
+</helmet>
+<div class="app" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-controls="{{ v.controls }}" data-gs-type="{{ v.type }}">
+<div class="wrap">
+
+<section class="card bnroot" lang="bn" aria-labelledby="w-t">
+<p class="tag">Office not live yet · shown in Bangla</p>
+<span class="mark mark--info"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span>
+<div><h1 class="h1" id="w-t">আপনার অফিস প্রায় প্রস্তুত</h1><p class="lead">উপজেলা স্বাস্থ্য কমপ্লেক্স, সাভার-এর সেটআপ শেষ হলে আপনি পণ্য তালিকা দেখতে ও অনুরোধ পাঠাতে পারবেন।</p></div>
+<section class="gs-readiness">
+<div class="gs-readiness__head"><div class="gs-readiness__text"><strong class="gs-readiness__title">৪টির মধ্যে ৩টি সম্পন্ন</strong></div></div>
+<div class="gs-progress gs-progress--md gs-tone-primary"><div class="gs-progress__track" role="progressbar" aria-valuemin="0" aria-valuemax="4" aria-valuenow="3" aria-label="সেটআপের অগ্রগতি"><span class="gs-progress__bar" style="width: 75%"></span></div></div>
+<ul class="gs-readiness__list">
+<li class="gs-readiness__item gs-readiness__item--done"><svg class="ico gs-readiness__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.2 14.2-4-4 1.4-1.4 2.6 2.6 5.4-5.4 1.4 1.4-6.8 6.8Z"></path></svg><span class="gs-readiness__label">কর্মী যুক্ত হয়েছেন</span></li>
+<li class="gs-readiness__item gs-readiness__item--done"><svg class="ico gs-readiness__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.2 14.2-4-4 1.4-1.4 2.6 2.6 5.4-5.4 1.4 1.4-6.8 6.8Z"></path></svg><span class="gs-readiness__label">অফিস প্রশাসক নির্ধারিত</span></li>
+<li class="gs-readiness__item gs-readiness__item--done"><svg class="ico gs-readiness__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.2 14.2-4-4 1.4-1.4 2.6 2.6 5.4-5.4 1.4 1.4-6.8 6.8Z"></path></svg><span class="gs-readiness__label">অনুমোদনকারী নির্ধারিত</span></li>
+<li class="gs-readiness__item"><svg class="ico gs-readiness__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle></svg><span class="gs-readiness__label">স্টোরকিপার নির্ধারণ</span><span class="gs-readiness__todo">বাকি</span></li>
+</ul>
+</section>
+<div class="contact"><span class="gs-avatar gs-avatar--md gs-tone-primary" aria-hidden="true">MA</span><div class="contact__who"><strong>মাহবুব আলম</strong><br><span class="muted">অফিস প্রশাসক · বাকি কাজটি তিনি শেষ করতে পারেন</span></div><a class="gs-btn gs-btn--primary gs-btn--sm" href="#">ইমেইল পাঠান</a></div>
+<p class="muted" style="margin: 0">অফিস চালু হলে আমরা আপনাকে ইমেইলে জানাব।</p>
+<a class="gs-btn gs-btn--light gs-btn--outline" href="#" style="align-self: flex-start">হোম পেজে ফিরুন</a>
+</section>
+
+<section class="card" aria-labelledby="u-t">
+<p class="tag">No office on the account · shown in English</p>
+<span class="mark mark--warn"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg></span>
+<div><h1 class="h1" id="u-t">We couldn't find your office</h1><p class="lead">Your account isn't linked to an office yet, so we can't show you the catalog or let you send requests.</p></div>
+<div><strong>What to do</strong>
+<ol class="steps" style="margin-top: 8px">
+<li>Ask your office administrator to add you to your office.</li>
+<li>Give them your username: <span class="user">farhan.k <button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm">Copy</button></span></li>
+<li>Sign in again once they've confirmed. It usually takes a few minutes.</li>
+</ol>
+</div>
+<div class="contact"><span class="gs-avatar gs-avatar--md gs-tone-primary" aria-hidden="true">SB</span><div class="contact__who"><strong>Sabina Begum</strong><br><span class="muted">Your area ICT officer · Upazila ICT Office, Savar</span></div><a class="gs-btn gs-btn--primary gs-btn--sm" href="#">Email Sabina</a></div>
+<a class="gs-btn gs-btn--light gs-btn--outline" href="#" style="align-self: flex-start">Back to home</a>
+</section>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"$preview":{"width":1440,"height":1150}}'>
+class Component extends DCLogic {
+renderVals() {
+const V = {
+'civic-ledger': { density: 'regular', surfaces: 'card', controls: 'outlined', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { density: 'regular', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { density: 'compact', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { density: 'comfortable', surfaces: 'flat', controls: 'outlined', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { density: 'compact', surfaces: 'card', controls: 'outlined', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { density: 'regular', surfaces: 'elevated', controls: 'filled', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+return { skin, mode, v: V[skin] };
+}
+}
+</script>
+</body>
+</html>

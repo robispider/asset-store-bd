@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Office staff</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/818ad3bee488823df6a430cb763aba33">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Source+Serif+4:wght@400;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.app{min-height:100%;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:var(--gs-font-sans);font-size:14px;line-height:1.5}
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 20px;background:var(--gs-header-bg);color:var(--gs-header-fg);border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.chip{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 12px;border-radius:var(--gs-radius-sm);border:var(--gs-border-width) solid var(--gs-color-border);background:transparent;color:inherit;font:inherit}
+.shell{display:flex;flex-wrap:wrap;align-items:stretch}
+.side{flex:1 1 220px;max-width:240px;background:var(--gs-sidebar-bg);color:var(--gs-sidebar-fg);padding:12px 0;box-sizing:border-box}
+.side a{display:flex;align-items:center;justify-content:space-between;min-height:42px;padding:0 18px;color:var(--gs-sidebar-fg);text-decoration:none}
+.side a[aria-current]{background:var(--gs-sidebar-active-bg);color:var(--gs-sidebar-active-fg);box-shadow:inset 3px 0 0 var(--gs-sidebar-active-marker)}
+.side .sub{padding-left:34px}
+.main{flex:999 1 560px;min-width:0;box-sizing:border-box;padding:20px 28px 56px;display:flex;flex-direction:column;gap:18px}
+.crumb{font-size:13px;color:var(--gs-color-text-muted)}
+.ico{width:1em;height:1em;flex:none}
+.muted{color:var(--gs-color-text-muted)}
+.mono{font-family:var(--gs-font-mono);font-size:13px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ctl{box-sizing:border-box;min-height:var(--gs-size-control-h);padding:8px 10px 8px 34px;border:var(--gs-border-width) solid var(--gs-color-border-strong);border-radius:var(--gs-radius-sm);background:var(--gs-color-surface);color:var(--gs-color-text);font:inherit;width:100%}
+.search{position:relative;flex:1 1 280px;max-width:420px}
+.search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--gs-color-text-muted)}
+.tabbtn{border:0;background:transparent;font:inherit;cursor:pointer}
+.who{display:flex;gap:10px;align-items:center}
+.who small{display:block;color:var(--gs-color-text-muted)}
+.card{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;padding:16px 18px;border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.card:last-child{border-bottom:0}
+.card__who{flex:1 1 320px;min-width:0}
+.ok{display:inline-flex;gap:6px;align-items:center;color:var(--gs-color-success);font-weight:600}
+</style>
+</helmet>
+<div class="app" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-table="{{ v.table }}" data-gs-controls="{{ v.controls }}" data-gs-type="{{ v.type }}" data-gs-header="{{ v.header }}">
+<div class="top">
+<strong style="font-size: 16px; flex: 1 1 auto">National Asset Register</strong>
+<span class="chip"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg><span><span class="muted">Working in</span> Upazila Health Complex, Savar</span></span>
+<span class="gs-avatar gs-avatar--sm gs-tone-primary" role="img" aria-label="Signed in as Mahbub Alam">MA</span>
+</div>
+<div class="shell">
+<nav class="side" aria-label="Main"><a href="#">Dashboard</a><a href="#">Requests</a><a href="#">Stock</a><a href="#">My office</a><a class="sub" href="#" aria-current="page">Staff <span class="gs-tabs__count">{{ waitTotal }}</span></a><a class="sub" href="#">Roles and settings</a><a href="#">Reports</a></nav>
+<main class="main">
+<nav class="crumb" aria-label="Breadcrumb"><a href="#">Home</a> / <a href="#">My office</a> / Staff</nav>
+
+<header class="gs-page-header">
+<div class="gs-page-header__text"><h1 class="gs-page-header__title">Staff</h1><div class="gs-page-header__meta" style="display: flex; gap: 6px 18px; flex-wrap: wrap; color: var(--gs-color-text-muted)"><span>Upazila Health Complex, Savar</span><span>12 people work here</span></div></div>
+<div class="gs-page-header__actions"><a class="gs-btn gs-btn--light gs-btn--outline" href="StaffDialogs.dc.html">Office code</a><a class="gs-btn gs-btn--primary" href="StaffDialogs.dc.html">Add staff</a></div>
+</header>
+
+<sc-if value="{{ hasWaiting }}" hint-placeholder-val="{{ true }}">
+<div class="gs-alert gs-alert--warning" role="status"><svg class="ico gs-alert__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div class="gs-alert__body"><strong>{{ waitTotal }} things wait on you:</strong> {{ joinCount }} requests to join, 1 person to sign off and 1 person arriving. <button type="button" class="tabbtn" style="color: var(--gs-color-link); text-decoration: underline; padding: 0" onClick="{{ goWaiting }}">Review them</button></div></div>
+</sc-if>
+
+<nav class="gs-status-tabs" aria-label="Staff by status">
+<ul class="gs-tabs">
+<li class="gs-tabs__item"><a class="gs-tabs__link" href="#" aria-current="{{ cStaff }}" onClick="{{ goStaff }}"><span>Staff</span><span class="gs-tabs__count">12</span></a></li>
+<li class="gs-tabs__item"><a class="gs-tabs__link" href="#" aria-current="{{ cWaiting }}" onClick="{{ goWaiting }}"><span>Waiting for approval</span><span class="gs-tabs__count {{ joinZero }}">{{ joinCount }}</span></a></li>
+<li class="gs-tabs__item"><a class="gs-tabs__link" href="#" aria-current="{{ cLeaving }}" onClick="{{ goLeaving }}"><span>Leaving</span><span class="gs-tabs__count">1</span></a></li>
+<li class="gs-tabs__item"><a class="gs-tabs__link" href="#" aria-current="{{ cArriving }}" onClick="{{ goArriving }}"><span>Arriving</span><span class="gs-tabs__count">1</span></a></li>
+<li class="gs-tabs__item"><a class="gs-tabs__link" href="#" aria-current="{{ cPast }}" onClick="{{ goPast }}"><span>Past staff</span><span class="gs-tabs__count">5</span></a></li>
+</ul>
+</nav>
+
+<sc-if value="{{ tStaff }}" hint-placeholder-val="{{ true }}">
+<section class="gs-box">
+<div class="gs-box__body" style="display: flex; flex-direction: column; gap: 14px">
+<div class="row"><label class="search" for="q"><span class="gs-sr-only">Search staff</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input class="ctl" id="q" type="search" placeholder="Name, username or job title"></label><div class="gs-segmented" role="group" aria-label="Show"><button type="button" class="gs-segmented__option" aria-pressed="true">Everyone</button><button type="button" class="gs-segmented__option" aria-pressed="false">Home office</button><button type="button" class="gs-segmented__option" aria-pressed="false">Additional</button><button type="button" class="gs-segmented__option" aria-pressed="false">Has a role</button></div></div>
+<div class="gs-table-wrap"><table class="gs-table">
+<caption>Showing 6 of 12 · <a href="#">Show all</a></caption>
+<thead><tr><th scope="col">Name</th><th scope="col">Works here as</th><th scope="col">Role</th><th scope="col">Since</th><th scope="col"><span class="gs-sr-only">Actions</span></th></tr></thead>
+<tbody>
+<tr><td><div class="who"><span class="gs-avatar gs-avatar--sm gs-tone-primary" aria-hidden="true">MA</span><div><strong>Mahbub Alam</strong> <span class="muted">(you)</span><small>Upazila Health Officer · <span class="mono">mahbub.alam</span></small></div></div></td><td><span class="gs-tag gs-tag--primary gs-tag--outline">Home office</span></td><td>Office administrator</td><td>2021</td><td></td></tr>
+<tr><td><div class="who"><span class="gs-avatar gs-avatar--sm gs-tone-primary" aria-hidden="true">FA</span><div><strong>Dr. Farhana Akter</strong><small>Resident Medical Officer · <span class="mono">farhana.a</span></small></div></div></td><td><span class="gs-tag gs-tag--primary gs-tag--outline">Home office</span></td><td>Approver</td><td>2022</td><td><button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" aria-haspopup="menu" aria-label="Manage Dr. Farhana Akter">Manage</button></td></tr>
+<tr><td><div class="who"><span class="gs-avatar gs-avatar--sm gs-tone-primary" aria-hidden="true">NA</span><div><strong>Nazma Akter</strong><small>Store Assistant · <span class="mono">nazma.akter</span></small></div></div></td><td><span class="gs-tag gs-tag--primary gs-tag--outline">Home office</span></td><td>Storekeeper <span class="muted">· today</span></td><td>2024</td><td><button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" aria-haspopup="menu" aria-label="Manage Nazma Akter">Manage</button></td></tr>
+<tr><td><div class="who"><span class="gs-avatar gs-avatar--sm gs-tone-primary" aria-hidden="true">SI</span><div><strong>Shafiqul Islam</strong><small>Pharmacist · <span class="mono">shafiqul.i</span></small></div></div></td><td><span class="gs-tag gs-tag--primary gs-tag--outline">Home office</span></td><td class="muted">—</td><td>2023</td><td><button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" aria-haspopup="menu" aria-label="Manage Shafiqul Islam">Manage</button></td></tr>
+<tr><td><div class="who"><span class="gs-avatar gs-avatar--sm gs-tone-primary" aria-hidden="true">RK</span><div><strong>Rahela Khatun</strong><small>Statistician · <span class="mono">rahela.k</span></small></div></div></td><td><span class="gs-tag gs-tag--light gs-tag--outline">Additional · until 31 Dec</span><br><span class="muted" style="font-size: 12px">Home: Civil Surgeon's Office, Dhaka</span></td><td class="muted">—</td><td>Sep 2026</td><td><button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" aria-haspopup="menu" aria-label="Manage Rahela Khatun: extend or end access">Manage</button></td></tr>
+<tr><td><div class="who"><span class="gs-avatar gs-avatar--sm gs-tone-primary" aria-hidden="true">TK</span><div><strong>Tanvir Kabir</strong><small>Office Assistant · <span class="mono">tanvir.k</span></small></div></div></td><td><span class="gs-tag gs-tag--primary gs-tag--outline">Home office</span></td><td class="muted">—</td><td>2025</td><td><button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" aria-haspopup="menu" aria-label="Manage Tanvir Kabir">Manage</button></td></tr>
+</tbody></table></div>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{ tWaiting }}" hint-placeholder-val="{{ false }}">
+<section class="gs-box">
+<header class="gs-box__header"><h2 class="gs-box__title">Asked to join with the office code</h2></header>
+<div class="gs-box__body" style="padding: 0">
+<sc-if value="{{ showJ1 }}" hint-placeholder-val="{{ true }}">
+<div class="card"><div class="card__who who"><span class="gs-avatar gs-avatar--md gs-tone-primary" aria-hidden="true">SB</span><div><strong>Sumaiya Begum</strong><small>Nursing Officer · <span class="mono">sumaiya.b</span> · home office: Community Clinic, Ashulia</small><small>Asked 2 days ago</small></div></div><div class="row"><button type="button" class="gs-btn gs-btn--primary gs-btn--sm" onClick="{{ approve1 }}">Approve Sumaiya</button><button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm">Decline…</button></div></div>
+</sc-if>
+<sc-if value="{{ doneJ1 }}" hint-placeholder-val="{{ false }}">
+<div class="card"><span class="ok"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="m5 12 5 5L20 7"></path></svg>Sumaiya Begum can now work here as an additional office.</span><button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" onClick="{{ undo1 }}">Undo</button></div>
+</sc-if>
+<div class="card"><div class="card__who who"><span class="gs-avatar gs-avatar--md gs-tone-primary" aria-hidden="true">AH</span><div><strong>Arif Hossain</strong><small>Lab Attendant · <span class="mono">arif.h</span> · home office: Upazila Health Complex, Dhamrai</small><small>Asked today, 08:40</small></div></div><div class="row"><button type="button" class="gs-btn gs-btn--primary gs-btn--sm">Approve Arif</button><button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm">Decline…</button></div></div>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{ tLeaving }}" hint-placeholder-val="{{ false }}">
+<section class="gs-box">
+<header class="gs-box__header"><h2 class="gs-box__title">Asked to leave this office</h2></header>
+<div class="gs-box__body" style="padding: 0">
+<div class="card"><div class="card__who who"><span class="gs-avatar gs-avatar--md gs-tone-primary" aria-hidden="true">RH</span><div><strong>Rokeya Haque</strong><small>Senior Staff Nurse · home office · transferring to Upazila Health Complex, Dhamrai</small><span class="ok" style="font-size: 13px"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="m5 12 5 5L20 7"></path></svg>Clear to leave: 2 items checked in, Storekeeper role now with Nazma Akter</span></div></div><div class="row"><a class="gs-btn gs-btn--primary gs-btn--sm" href="StaffDialogs.dc.html">Sign off…</a></div></div>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{ tArriving }}" hint-placeholder-val="{{ false }}">
+<section class="gs-box">
+<header class="gs-box__header"><h2 class="gs-box__title">Coming to work here</h2></header>
+<div class="gs-box__body" style="padding: 0">
+<div class="card"><div class="card__who who"><span class="gs-avatar gs-avatar--md gs-tone-primary" aria-hidden="true">JH</span><div><strong>Jahid Hasan</strong><small>Medical Technologist · <span class="mono">jahid.h</span></small><small>Signed off by Upazila Health Complex, Keraniganj on 10 Oct · said he's coming to Savar</small></div></div><div class="row"><a class="gs-btn gs-btn--primary gs-btn--sm" href="StaffDialogs.dc.html">Welcome Jahid…</a></div></div>
+<div class="card"><span class="muted" style="flex: 1 1 300px">Someone else reported for work? Find anyone in your ministry who is ready to transfer.</span><a class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" href="StaffDialogs.dc.html">Find a person</a></div>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{ tPast }}" hint-placeholder-val="{{ false }}">
+<section class="gs-box"><div class="gs-box__body"><div class="gs-table-wrap"><table class="gs-table"><caption>Last 12 months</caption><thead><tr><th scope="col">Name</th><th scope="col">Left</th><th scope="col">How</th></tr></thead><tbody>
+<tr><td><strong>Kamrul Hasan</strong></td><td>2 Sep 2026</td><td>Transferred to Civil Surgeon's Office, Dhaka</td></tr>
+<tr><td><strong>Sharmin Sultana</strong></td><td>30 Jun 2026</td><td>Additional access ended</td></tr>
+<tr><td><strong>Abul Kalam</strong></td><td>14 Mar 2026</td><td>Released by a national ICT officer · reason on record</td></tr>
+</tbody></table></div></div></section>
+</sc-if>
+
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"$preview":{"width":1440,"height":1650}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { tab: 'staff', j1: false }; }
+renderVals() {
+const V = {
+'civic-ledger': { header: 'neutral', density: 'regular', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { header: 'brand', density: 'regular', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { header: 'dark', density: 'compact', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { header: 'dark', density: 'comfortable', table: 'ledger', surfaces: 'flat', controls: 'outlined', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { header: 'brand', density: 'compact', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { header: 'floating', density: 'regular', table: 'rules', surfaces: 'elevated', controls: 'filled', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+const t = this.state.tab;
+const go = (tab) => (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ tab }); };
+const joinCount = this.state.j1 ? 1 : 2;
+const cur = (k) => (t === k ? 'page' : undefined);
+return {
+skin, mode, v: V[skin],
+joinCount, joinZero: joinCount === 0 ? 'gs-tabs__count--zero' : '',
+waitTotal: joinCount + 2, hasWaiting: true,
+tStaff: t === 'staff', tWaiting: t === 'waiting', tLeaving: t === 'leaving', tArriving: t === 'arriving', tPast: t === 'past',
+cStaff: cur('staff'), cWaiting: cur('waiting'), cLeaving: cur('leaving'), cArriving: cur('arriving'), cPast: cur('past'),
+goStaff: go('staff'), goWaiting: go('waiting'), goLeaving: go('leaving'), goArriving: go('arriving'), goPast: go('past'),
+showJ1: !this.state.j1, doneJ1: this.state.j1,
+approve1: () => this.setState({ j1: true }),
+undo1: () => this.setState({ j1: false })
+};
+}
+}
+</script>
+</body>
+</html>

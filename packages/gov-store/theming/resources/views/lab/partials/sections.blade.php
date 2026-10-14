@@ -389,6 +389,42 @@
                 <x-gs::kpi :label="$kpi['label']" :value="$kpi['value']" :delta="$kpi['delta']" :icon="$kpi['icon']" :tone="$kpi['tone']" />
             @endforeach
         </div>
+        <h4 class="gs-lab-group">Office setup (workflow kit)</h4>
+        <div class="gs-lab-row">
+            @foreach ($fixtures->officeStatuses() as $status)<x-gs::status-badge :status="$status" />@endforeach
+        </div>
+        <div class="row">
+            <div class="col-md-7">
+                <x-gs::box title="People and roles">
+                    <div class="gs-roles">
+                        <x-gs::role-slot role="Office administrator" description="Runs this office: staff, roles and catalog." person="Mahbub Alam" meta="Upazila Health Officer" action-label="Change" action-href="#{{ $panel }}" />
+                        <x-gs::role-slot role="Approver" description="Reviews staff requests first." person="Farhana Akter" meta="Resident Medical Officer" action-label="Change" action-href="#{{ $panel }}" />
+                        <x-gs::role-slot role="Storekeeper" description="Hands out approved items and keeps stock records." required action-label="Choose from 12 staff" action-href="#{{ $panel }}" />
+                        <x-gs::role-slot role="Second approver" description="Off: requests need one approval." optional action-label="Add a second approval" action-href="#{{ $panel }}" />
+                    </div>
+                </x-gs::box>
+                <x-gs::box title="Settings">
+                    <x-gs::action-row title="Pause new requests" description="Staff can't send new requests. Requests in progress, approvals and returns continue.">
+                        <x-slot:actions><x-gs::button tone="light" outline>Pause…</x-gs::button></x-slot:actions>
+                    </x-gs::action-row>
+                    <x-gs::action-row id="{{ $panel }}-close" title="Close or merge this office" unavailable="Available once 12 memberships, 48 held items and 3 open requests are cleared.">
+                        <x-slot:actions><x-gs::button tone="light" outline disabled aria-describedby="{{ $panel }}-close-why">Close…</x-gs::button></x-slot:actions>
+                    </x-gs::action-row>
+                </x-gs::box>
+            </div>
+            <div class="col-md-5">
+                <x-gs::box title="Readiness">
+                    <x-gs::readiness :items="$fixtures->readiness()" title="One step left before staff can order" caption="Goes live on its own when every required item is done." />
+                </x-gs::box>
+                <x-gs::box title="Office type">
+                    <div class="gs-choices">
+                        <x-gs::choice-card name="{{ $panel }}-type" value="default" label="General office" description="Administrative offices and directorates" />
+                        <x-gs::choice-card name="{{ $panel }}-type" value="hospital" label="Hospital or clinic" description="Health complexes and district hospitals" checked />
+                    </div>
+                    <p><x-gs::trail :items="[['label' => 'Dhaka Division', 'bn' => 'ঢাকা বিভাগ'], 'Dhaka District', 'Savar Upazila']" /></p>
+                </x-gs::box>
+            </div>
+        </div>
     @endunless
 </section>
 

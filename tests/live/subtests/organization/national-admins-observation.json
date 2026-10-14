@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "organization.national-admins-observation",
+  "title": "A national administrator sees Area ICT officers and Ministry administrators as two counted tabs with quiet, labelled Remove access buttons (no red revoke, no confirm()), and the government directory with its import action and preview",
+  "features": ["organization.administrators", "organization.directory"],
+  "tags": ["seeded", "readonly", "organization", "privileged"],
+  "execution": { "capability": "observe", "language": "en-US", "timeoutMs": 90000, "accessMode": "any" },
+  "fixtures": {
+    "office": { "requirements": {} },
+    "actors": {
+      "national": { "role": "superuser", "allowSuperuser": true, "capabilities": { "allOf": ["organization.national.manage"] }, "office": "office", "activeMembership": true }
+    }
+  },
+  "steps": [
+    { "action": "observe", "check": "organization.national", "args": {}, "as": "national" },
+    { "use": "auth.login", "with": { "actor": "national" } },
+
+    { "action": "goto", "url": "/gov-store/admin/organization/jurisdictions" },
+    { "action": "assert", "target": "organization.pageTitle", "test": "text", "contains": "Administrators" },
+    { "action": "assert", "target": "organization.secNavCurrent", "test": "text", "equals": "Administrators" },
+    { "action": "assert", "target": "organization.adminsTabs", "test": "count", "equals": 2 },
+    { "action": "assert", "target": "organization.adminsIctCurrent", "test": "count", "equals": 1 },
+    { "action": "assert", "target": "organization.adminsIctCount", "test": "number", "equals": "${observed.national.ictOfficers}" },
+    { "action": "assert", "target": "organization.adminsMinistryCount", "test": "number", "equals": "${observed.national.ministryAdmins}" },
+    { "action": "assert", "target": "organization.adminRows", "test": "count", "equals": "${observed.national.ictOfficers}" },
+    { "action": "assert", "target": "organization.removeQuiet", "test": "count", "equals": "${observed.national.ictOfficers}", "note": "One quiet Remove access per officer, labelled with the person's name" },
+    { "action": "assert", "target": "organization.removeDanger", "test": "count", "equals": 0 },
+    { "action": "assert", "target": "organization.inlineConfirm", "test": "count", "equals": 0 },
+    { "action": "assert", "target": "organization.nationalNote", "test": "text", "contains": "national change" },
+
+    { "action": "goto", "url": "/gov-store/office/company-admins" },
+    { "action": "assert", "target": "organization.adminsMinistryCurrent", "test": "count", "equals": 1 },
+    { "action": "assert", "target": "organization.adminRows", "test": "count", "equals": "${observed.national.ministryAdmins}" },
+    { "action": "assert", "target": "organization.removeQuiet", "test": "count", "equals": "${observed.national.ministryAdmins}" },
+    { "action": "assert", "target": "organization.removeDanger", "test": "count", "equals": 0 },
+    { "action": "assert", "target": "organization.inlineConfirm", "test": "count", "equals": 0 },
+
+    { "action": "goto", "url": "/directory" },
+    { "action": "assert", "target": "organization.pageTitle", "test": "text", "contains": "Government directory" },
+    { "action": "assert", "target": "organization.secNavCurrent", "test": "text", "equals": "Government directory" },
+    { "action": "assert", "target": "organization.directoryImport", "test": "visible" },
+    { "action": "assert", "target": "organization.directoryRows", "test": "count", "equals": "${observed.national.directoryPreviewRows}" }
+  ],
+  "cleanup": { "policy": "no-business-records-created" }
+}

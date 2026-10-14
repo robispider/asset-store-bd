@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Office hub</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/40008be14305f8813d984e23623f924e">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Source+Serif+4:wght@400;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.app{min-height:100%;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:var(--gs-font-sans);font-size:14px;line-height:1.5}
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 20px;background:var(--gs-header-bg);color:var(--gs-header-fg);border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.shell{display:flex;flex-wrap:wrap;align-items:stretch}
+.side{flex:1 1 220px;max-width:240px;background:var(--gs-sidebar-bg);color:var(--gs-sidebar-fg);padding:12px 0;box-sizing:border-box}
+.side a{display:flex;align-items:center;min-height:42px;padding:0 18px;color:var(--gs-sidebar-fg);text-decoration:none}
+.side a[aria-current]{background:var(--gs-sidebar-active-bg);color:var(--gs-sidebar-active-fg);box-shadow:inset 3px 0 0 var(--gs-sidebar-active-marker)}
+.main{flex:999 1 560px;min-width:0;box-sizing:border-box;padding:20px 28px 56px;display:flex;flex-direction:column;gap:18px}
+.ico{width:1em;height:1em;flex:none}
+.bn{font-family:var(--gs-font-bengali)}
+.muted{color:var(--gs-color-text-muted)}
+.crumb{font-size:13px;color:var(--gs-color-text-muted)}
+.meta{display:flex;gap:6px 18px;flex-wrap:wrap;color:var(--gs-color-text-muted)}
+.cols{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start}
+.toc{flex:1 1 200px;max-width:220px;display:flex;flex-direction:column;gap:2px}
+.toc a{display:flex;justify-content:space-between;align-items:center;min-height:42px;padding:0 12px;border-radius:var(--gs-radius-sm);color:var(--gs-color-text-muted);text-decoration:none;font-weight:600}
+.toc a:hover{background:var(--gs-color-surface-sunken);color:var(--gs-color-text)}
+.toc a[aria-current]{background:var(--gs-color-surface);color:var(--gs-color-text);box-shadow:inset 3px 0 0 var(--gs-color-primary)}
+.content{flex:999 1 600px;min-width:0;display:flex;flex-direction:column;gap:18px}
+.loc{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+</style>
+</helmet>
+<div class="app" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-table="{{ v.table }}" data-gs-controls="{{ v.controls }}" data-gs-type="{{ v.type }}" data-gs-header="{{ v.header }}">
+<div class="top"><strong style="font-size: 16px; flex: 1 1 auto">National Asset Register</strong><span class="gs-avatar gs-avatar--sm gs-tone-primary" role="img" aria-label="Signed in as Nusrat Jahan">NJ</span></div>
+<div class="shell">
+<nav class="side" aria-label="Main"><a href="#">Dashboard</a><a href="#">Assets</a><a href="#">Requests</a><a href="Registry.dc.html" aria-current="page">Organization</a><a href="#">Reports</a></nav>
+<main class="main">
+<nav class="crumb" aria-label="Breadcrumb"><a href="Registry.dc.html">Offices</a> / Upazila Health Complex, Savar</nav>
+
+<header class="gs-page-header">
+<div class="gs-page-header__text">
+<h1 class="gs-page-header__title">Upazila Health Complex, Savar <span class="gs-page-header__bn" lang="bn">উপজেলা স্বাস্থ্য কমপ্লেক্স, সাভার</span></h1>
+<div class="gs-page-header__meta meta">
+<span class="gs-badge" data-tone="info"><svg class="ico gs-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m3 7 2 2 4-4M3 17l2 2 4-4M13 6h8M13 12h8M13 18h8"></path></svg><span class="gs-badge__label">Setting up</span></span>
+<span>Hospital</span><span>Health and Family Welfare</span><span>Reports to Civil Surgeon's Office, Dhaka</span>
+</div>
+</div>
+<div class="gs-page-header__actions">
+<button type="button" class="gs-btn gs-btn--light gs-btn--outline" aria-haspopup="menu" aria-expanded="false">More actions</button>
+<button type="button" class="gs-btn gs-btn--primary">Choose storekeeper</button>
+</div>
+</header>
+
+<section class="gs-box gs-box--primary">
+<div class="gs-box__body">
+<section class="gs-readiness">
+<div class="gs-readiness__head"><div class="gs-readiness__text"><strong class="gs-readiness__title">One step left before staff can order</strong><p class="gs-readiness__caption">The office goes live on its own when all four are done, and staff are told by email.</p></div><span class="gs-readiness__count">3 of 4 done</span></div>
+<div class="gs-progress gs-progress--md gs-tone-primary"><div class="gs-progress__track" role="progressbar" aria-valuemin="0" aria-valuemax="4" aria-valuenow="3" aria-label="Setup progress"><span class="gs-progress__bar" style="width: 75%"></span></div></div>
+<ul class="gs-readiness__list">
+<li class="gs-readiness__item gs-readiness__item--done"><svg class="ico gs-readiness__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.2 14.2-4-4 1.4-1.4 2.6 2.6 5.4-5.4 1.4 1.4-6.8 6.8Z"></path></svg><span class="gs-readiness__label">Staff added: <strong>12 people</strong></span></li>
+<li class="gs-readiness__item gs-readiness__item--done"><svg class="ico gs-readiness__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.2 14.2-4-4 1.4-1.4 2.6 2.6 5.4-5.4 1.4 1.4-6.8 6.8Z"></path></svg><span class="gs-readiness__label">Office administrator: <strong>Mahbub Alam</strong></span></li>
+<li class="gs-readiness__item gs-readiness__item--done"><svg class="ico gs-readiness__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.2 14.2-4-4 1.4-1.4 2.6 2.6 5.4-5.4 1.4 1.4-6.8 6.8Z"></path></svg><span class="gs-readiness__label">Approver: <strong>Dr. Farhana Akter</strong></span></li>
+<li class="gs-readiness__item"><svg class="ico gs-readiness__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle></svg><span class="gs-readiness__label">Storekeeper</span><a class="gs-btn gs-btn--primary gs-btn--sm" href="#roles">Choose</a></li>
+</ul>
+</section>
+</div>
+</section>
+
+<div class="cols">
+<nav class="toc" aria-label="Office sections">
+<a href="#roles" aria-current="true">People and roles</a><a href="#staff">Staff <span class="muted">12</span></a><a href="#details">Office details</a><a href="#location">Location</a><a href="#activity">Activity</a><a href="#settings">Settings</a>
+</nav>
+<div class="content">
+
+<section class="gs-box" id="roles">
+<header class="gs-box__header"><h2 class="gs-box__title">People and roles</h2></header>
+<div class="gs-box__body" style="display: flex; flex-direction: column; gap: 12px">
+<p class="muted" style="margin: 0">Roles can only go to staff of this office. Changes apply straight away.</p>
+<div class="gs-roles">
+<div class="gs-role"><div class="gs-role__head"><strong class="gs-role__name">Office administrator</strong></div><p class="gs-role__description">Runs this office in GovStore: staff, roles and catalog.</p><div class="gs-role__body"><span class="gs-avatar gs-avatar--md gs-tone-primary" aria-hidden="true">MA</span><div class="gs-role__person"><span class="gs-role__person-name">Mahbub Alam</span><span class="gs-role__person-meta">Upazila Health Officer</span></div><div class="gs-role__actions"><a class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" href="#">Change</a></div></div></div>
+<div class="gs-role"><div class="gs-role__head"><strong class="gs-role__name">Approver</strong></div><p class="gs-role__description">Reviews staff requests first. Every request needs this.</p><div class="gs-role__body"><span class="gs-avatar gs-avatar--md gs-tone-primary" aria-hidden="true">FA</span><div class="gs-role__person"><span class="gs-role__person-name">Dr. Farhana Akter</span><span class="gs-role__person-meta">Resident Medical Officer</span></div><div class="gs-role__actions"><a class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" href="#">Change</a></div></div></div>
+<div class="gs-role gs-role--empty gs-role--required"><div class="gs-role__head"><strong class="gs-role__name">Storekeeper</strong><span class="gs-role__flag">Needed</span></div><p class="gs-role__description">Hands out approved items and keeps stock records.</p><div class="gs-role__body"><div class="gs-role__actions"><a class="gs-btn gs-btn--primary gs-btn--sm" href="#">Choose from 12 staff</a></div></div></div>
+<div class="gs-role gs-role--empty"><div class="gs-role__head"><strong class="gs-role__name">Second approver</strong><span class="gs-role__flag gs-role__flag--muted">Optional</span></div><p class="gs-role__description">Off: requests need one approval. Turn it on if a second sign-off is policy here.</p><div class="gs-role__body"><div class="gs-role__actions"><a class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" href="#">Add a second approval</a></div></div></div>
+</div>
+</div>
+</section>
+
+<section class="gs-box" id="staff">
+<header class="gs-box__header"><h2 class="gs-box__title">Staff <span class="gs-muted">12</span></h2><div class="gs-box__tools"><a class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" href="#">Add staff</a></div></header>
+<div class="gs-box__body">
+<div class="gs-table-wrap"><table class="gs-table"><caption>Showing 3 of 12 · <a href="#">See all</a></caption>
+<thead><tr><th scope="col">Name</th><th scope="col">Job title</th><th scope="col">Username</th></tr></thead>
+<tbody>
+<tr><td><strong>Rokeya Haque</strong></td><td>Senior Staff Nurse</td><td style="font-family: var(--gs-font-mono)">rokeya.haque</td></tr>
+<tr><td><strong>Shafiqul Islam</strong></td><td>Pharmacist</td><td style="font-family: var(--gs-font-mono)">shafiqul.i</td></tr>
+<tr><td><strong>Tanvir Kabir</strong></td><td>Office Assistant</td><td style="font-family: var(--gs-font-mono)">tanvir.k</td></tr>
+</tbody></table></div>
+</div>
+</section>
+
+<section class="gs-box" id="details">
+<header class="gs-box__header"><h2 class="gs-box__title">Office details</h2><div class="gs-box__tools"><a class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" href="#">Edit name and type</a></div></header>
+<div class="gs-box__body">
+<dl class="gs-kv" style="--gs-kv-columns: 2">
+<div class="gs-kv__item"><dt class="gs-kv__label">Name</dt><dd class="gs-kv__value">Upazila Health Complex, Savar<br><span class="bn">উপজেলা স্বাস্থ্য কমপ্লেক্স, সাভার</span></dd></div>
+<div class="gs-kv__item"><dt class="gs-kv__label">Type</dt><dd class="gs-kv__value">Hospital</dd></div>
+<div class="gs-kv__item"><dt class="gs-kv__label">Ministry</dt><dd class="gs-kv__value">Health and Family Welfare<br><span class="muted">Fixed once set. A national administrator can change it.</span></dd></div>
+<div class="gs-kv__item"><dt class="gs-kv__label">Reports to</dt><dd class="gs-kv__value">Civil Surgeon's Office, Dhaka</dd></div>
+</dl>
+</div>
+</section>
+
+<section class="gs-box" id="location">
+<header class="gs-box__header"><h2 class="gs-box__title">Location</h2></header>
+<div class="gs-box__body" style="display: flex; flex-direction: column; gap: 12px">
+<div class="gs-alert gs-alert--info" role="status"><svg class="ico gs-alert__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg><div class="gs-alert__body loc" style="flex: 1 1 auto"><span style="flex: 1 1 300px"><strong>Savar Upazila</strong> <span class="bn">সাভার উপজেলা</span><br><span class="gs-trail"><span class="gs-trail__part">Dhaka Division</span><svg class="ico gs-trail__sep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg><span class="gs-trail__part">Dhaka District</span></span> · not confirmed yet</span><button type="button" class="gs-btn gs-btn--primary gs-btn--sm">Yes, this is correct</button><a class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" href="Dialogs.dc.html">It's wrong</a></div></div>
+<details class="muted"><summary style="cursor: pointer; font-weight: 600">Technical details</summary><p style="margin: 6px 0 0; font-family: var(--gs-font-mono); font-size: 12px">Area code 30.26.72 · Level: Upazila · Location ID LOC-00412</p></details>
+</div>
+</section>
+
+<section class="gs-box" id="activity">
+<header class="gs-box__header"><h2 class="gs-box__title">Activity</h2><div class="gs-box__tools"><a href="#">Full history</a></div></header>
+<div class="gs-box__body">
+<ol class="gs-timeline">
+<li class="gs-timeline__item"><div><strong>Nusrat Jahan</strong> made <span>Dr. Farhana Akter</span> approver</div><time class="gs-timeline__meta">Today, 10:42</time></li>
+<li class="gs-timeline__item"><div><strong>Nusrat Jahan</strong> made <span>Mahbub Alam</span> office administrator</div><time class="gs-timeline__meta">Yesterday, 16:05</time></li>
+<li class="gs-timeline__item"><div><strong>Nusrat Jahan</strong> created the office in <span>Savar Upazila</span></div><time class="gs-timeline__meta">11 Oct 2026</time></li>
+</ol>
+</div>
+</section>
+
+<section class="gs-box" id="settings">
+<header class="gs-box__header"><h2 class="gs-box__title">Settings</h2></header>
+<div class="gs-box__body">
+<div class="gs-action-row"><div class="gs-action-row__text"><strong class="gs-action-row__title">Pause new requests</strong><p class="gs-action-row__description">Staff can't send new requests. Requests already in progress, approvals and returns continue.</p></div><div class="gs-action-row__actions"><a class="gs-btn gs-btn--light gs-btn--outline" href="Dialogs.dc.html">Pause…</a></div></div>
+<div class="gs-action-row"><div class="gs-action-row__text"><strong class="gs-action-row__title">Move to another area</strong><p class="gs-action-row__description">For when the office relocates. Its name, staff and history stay the same.</p></div><div class="gs-action-row__actions"><a class="gs-btn gs-btn--light gs-btn--outline" href="Dialogs.dc.html">Move…</a></div></div>
+<div class="gs-action-row gs-action-row--unavailable"><div class="gs-action-row__text"><strong class="gs-action-row__title">Close or merge this office</strong><p class="gs-action-row__why" id="hub-close-why">Available once these are cleared: 12 staff memberships · 48 items held · 3 open requests · 1 committee.</p></div><div class="gs-action-row__actions"><button type="button" class="gs-btn gs-btn--light gs-btn--outline" disabled aria-describedby="hub-close-why">Close…</button></div></div>
+</div>
+</section>
+
+</div>
+</div>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"$preview":{"width":1440,"height":1900}}'>
+class Component extends DCLogic {
+renderVals() {
+const V = {
+'civic-ledger': { header: 'neutral', density: 'regular', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { header: 'brand', density: 'regular', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { header: 'dark', density: 'compact', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { header: 'dark', density: 'comfortable', table: 'ledger', surfaces: 'flat', controls: 'outlined', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { header: 'brand', density: 'compact', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { header: 'floating', density: 'regular', table: 'rules', surfaces: 'elevated', controls: 'filled', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+return { skin, mode, v: V[skin] };
+}
+}
+</script>
+</body>
+</html>

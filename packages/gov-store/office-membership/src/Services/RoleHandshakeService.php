@@ -6,9 +6,9 @@ use GovStore\OfficeMembership\Models\RoleHandshake;
 
 class RoleHandshakeService
 {
-    public function proposeHandshake(int $locationId, string $roleSlug, int $fromUserId, int $toUserId): RoleHandshake
+    public function proposeHandshake(int $locationId, string $roleSlug, int $fromUserId, int $toUserId, ?string $note = null): RoleHandshake
     {
-        return app(RoleTransfer::class)->propose(RoleHandshake::class, $locationId, $roleSlug, $fromUserId, $toUserId);
+        return app(RoleTransfer::class)->propose(RoleHandshake::class, $locationId, $roleSlug, $fromUserId, $toUserId, $note);
     }
 
     public function acceptHandshake(int $id, int $userId): void
@@ -16,9 +16,9 @@ class RoleHandshakeService
         app(RoleTransfer::class)->transition(RoleHandshake::class, $id, $userId, 'accept');
     }
 
-    public function rejectHandshake(int $id, int $userId): void
+    public function rejectHandshake(int $id, int $userId, ?string $reason = null): void
     {
-        app(RoleTransfer::class)->transition(RoleHandshake::class, $id, $userId, 'reject');
+        app(RoleTransfer::class)->transition(RoleHandshake::class, $id, $userId, 'reject', $reason);
     }
 
     public function cancelHandshake(int $id, int $userId): void

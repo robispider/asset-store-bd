@@ -58,6 +58,21 @@
     },
     "membership.manage": {
       "ability": "membership.manage"
+    },
+    "organization.office.manage": {
+      "ability": "organization.office.manage"
+    },
+    "organization.national.manage": {
+      "ability": "organization.national.manage"
+    },
+    "access.matrix": {
+      "ability": "access.matrix"
+    },
+    "membership.self": {
+      "ability": "membership.self"
+    },
+    "membership.override": {
+      "ability": "membership.override"
     }
   }
 }

@@ -54,9 +54,13 @@ class NoActiveAssetsRule implements IClearanceRule
         $consumed = DB::table('consumables_users as checkout')->join('consumables as stock', 'stock.id', '=', 'checkout.consumable_id')
             ->where('stock.location_id', $locationId)->where('checkout.assigned_to', $user->id)->count();
         if (array_sum($counts)) {
-            return new ClearanceResult(false, __('office_membership::member.holdings_blocked', $counts));
+            $items = collect($counts)->filter()->map(fn ($count, $kind) => ['count' => $count,
+                'label' => trans_choice('office_membership::member.holding_'.$kind, $count, ['count' => $count])])->values()->all();
+
+            return new ClearanceResult(false, __('office_membership::member.holdings_blocked',
+                ['items' => collect($items)->pluck('label')->implode(', ')]), $items);
         }
 
-        return new ClearanceResult(true, __('office_membership::member.holdings_clear', ['count' => $consumed]));
+        return new ClearanceResult(true, $consumed ? trans_choice('office_membership::member.holdings_clear', $consumed, ['count' => $consumed]) : '');
     }
 }

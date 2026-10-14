@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "organization",
+  "title": "Organization (offices, hub, administrators)",
+  "description": "Read-only checks of the redesigned Organization screens (docs/plans/organization-ux-redesign-plan.md): the office registry's status tabs, filters and next step for an area ICT officer; the office hub's readiness, roles, staff, activity and the Pause dialog guard (never submitted); Add office's find-first step and server validation (nothing created); a local administrator's My office; role and area boundaries; and the national Administrators and directory screens (needs a super user, so it is blocked on the seeded dataset). Counts and statuses are compared with the database. Run after any change to packages/gov-store/organization or the theming workflow kit.",
+  "environment": { "target": "http://snipeit.local", "allowlist": ["http://snipeit.local"] },
+  "journeys": [
+    "organization.registry-observation",
+    "organization.office-hub-observation",
+    "organization.add-office-validation",
+    "organization.my-office-observation",
+    "organization.authorization-boundaries",
+    "organization.national-admins-observation"
+  ],
+  "defaults": { "language": "en-US", "timeoutMs": 90000 }
+}

@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Join another office</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/818ad3bee488823df6a430cb763aba33">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Source+Serif+4:wght@400;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.app{min-height:100%;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:var(--gs-font-sans);font-size:14px;line-height:1.5}
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 20px;background:var(--gs-header-bg);color:var(--gs-header-fg);border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.main{box-sizing:border-box;max-width:1120px;margin:0 auto;padding:20px 28px 56px;display:flex;flex-direction:column;gap:18px}
+.crumb{font-size:13px;color:var(--gs-color-text-muted)}
+.ico{width:1em;height:1em;flex:none}
+.muted{color:var(--gs-color-text-muted)}
+.cols{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start}
+.content{flex:999 1 560px;min-width:0;display:flex;flex-direction:column;gap:18px}
+.aside{flex:1 1 280px;max-width:340px;min-width:0;display:flex;flex-direction:column;gap:18px}
+.ctl{box-sizing:border-box;width:100%;min-height:var(--gs-size-control-h);padding:8px 12px;border:var(--gs-border-width) solid var(--gs-color-border-strong);border-radius:var(--gs-radius-sm);background:var(--gs-color-surface);color:var(--gs-color-text);font:inherit}
+.ctl--code{font-family:var(--gs-font-mono);font-size:20px;letter-spacing:.18em;text-transform:uppercase;max-width:280px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.found{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;padding:16px;border-radius:var(--gs-radius-md);border:var(--gs-border-width) solid var(--gs-color-primary);background:var(--gs-color-primary-subtle)}
+.badgebox{width:44px;height:44px;border-radius:var(--gs-radius-md);background:var(--gs-color-surface);color:var(--gs-color-primary);display:inline-flex;align-items:center;justify-content:center;flex:none}
+.pcode{display:flex;flex-wrap:wrap;gap:20px;align-items:center;padding:20px;border-radius:var(--gs-radius-md);background:var(--gs-color-surface-sunken)}
+.pcode__val{font-family:var(--gs-font-mono);font-size:40px;font-weight:600;letter-spacing:.22em;line-height:1}
+.pcode dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 14px}
+.pcode dt{color:var(--gs-color-text-muted)}
+.pcode dd{margin:0;font-weight:600}
+.steps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+</style>
+</helmet>
+<div class="app" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-table="{{ v.table }}" data-gs-controls="{{ v.controls }}" data-gs-type="{{ v.type }}" data-gs-header="{{ v.header }}">
+<div class="top"><strong style="font-size: 16px; flex: 1 1 auto">National Asset Register</strong><span class="gs-avatar gs-avatar--sm gs-tone-primary" role="img" aria-label="Signed in as Rokeya Haque">RH</span></div>
+<main class="main">
+<nav class="crumb" aria-label="Breadcrumb"><a href="#">Home</a> / <a href="MyOffices.dc.html">My offices</a> / Join another office</nav>
+<header class="gs-page-header"><div class="gs-page-header__text"><h1 class="gs-page-header__title">Join another office</h1><p class="gs-page-header__subtitle">For working at a second office, such as covering shifts or helping with an audit. Your home office stays the same.</p></div></header>
+
+<div class="cols">
+<div class="content">
+<section class="gs-box" aria-labelledby="how-t">
+<header class="gs-box__header"><h2 class="gs-box__title" id="how-t">What did the office give you?</h2></header>
+<div class="gs-box__body" style="display: flex; flex-direction: column; gap: 18px">
+<div class="gs-choices" role="radiogroup" aria-labelledby="how-t" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: 12px">
+<label class="gs-choice" for="m-office"><input class="gs-choice__input" type="radio" id="m-office" name="method" value="office" checked="{{ isOffice }}" onChange="{{ pickOffice }}" aria-describedby="m-office-desc"><span class="gs-choice__text"><span class="gs-choice__label">An office code</span><span class="gs-choice__description" id="m-office-desc">8 characters, often on a notice board. You send a request and the office administrator approves it.</span></span></label>
+<label class="gs-choice" for="m-personal"><input class="gs-choice__input" type="radio" id="m-personal" name="method" value="personal" checked="{{ isPersonal }}" onChange="{{ pickPersonal }}" aria-describedby="m-personal-desc"><span class="gs-choice__text"><span class="gs-choice__label">Nothing. The administrator will add me</span><span class="gs-choice__description" id="m-personal-desc">You make a personal code and give it to them with your username. They add you straight away.</span></span></label>
+</div>
+
+<sc-if value="{{ isOffice }}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 14px">
+<div class="gs-form-row {{ errorClass }}">
+<label class="gs-form-row__label" for="office-code">Office code<span class="gs-form-row__required" aria-hidden="true">*</span><span class="gs-sr-only">required</span></label>
+<div class="gs-form-row__control">
+<div class="row"><input class="ctl ctl--code" id="office-code" name="office_code" value="{{ codeValue }}" autocomplete="off" spellcheck="false" aria-describedby="office-code-help"><button type="button" class="gs-btn gs-btn--light gs-btn--outline" onClick="{{ check }}">Check code</button></div>
+<p class="gs-form-row__help" id="office-code-help">Spaces and dashes don't matter. Codes last 30 days.</p>
+<sc-if value="{{ showError }}" hint-placeholder-val="{{ false }}"><p class="gs-form-row__error" id="office-code-error" role="alert"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 15h-2v-2h2v2Zm0-4h-2V7h2v6Z"></path></svg> This code has expired. Ask the office administrator for the new one; they can make it in a few seconds.</p></sc-if>
+</div>
+</div>
+<sc-if value="{{ showFound }}" hint-placeholder-val="{{ false }}">
+<div class="found"><span class="badgebox" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V8l7-4 7 4v13M9 21v-6h6v6"></path></svg></span><div style="flex: 1 1 300px; min-width: 0"><strong style="font-size: 16px">District Hospital, Manikganj</strong><br><span class="muted">Health and Family Welfare · Manikganj District</span><br>Dr. Abdul Karim, the office administrator, will review your request. We'll email you when it's decided.</div></div>
+<div class="row"><button type="button" class="gs-btn gs-btn--primary" onClick="{{ send }}">Send request to join</button><button type="button" class="gs-btn gs-btn--light gs-btn--outline" onClick="{{ resetCode }}">That's not the office</button></div>
+</sc-if>
+<sc-if value="{{ showSent }}" hint-placeholder-val="{{ false }}">
+<div class="gs-alert gs-alert--success" role="status"><svg class="ico gs-alert__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.2 14.2-4-4 1.4-1.4 2.6 2.6 5.4-5.4 1.4 1.4-6.8 6.8Z"></path></svg><div class="gs-alert__body"><strong>Request sent to District Hospital, Manikganj.</strong> It now shows on My offices as "Waiting for approval". You can cancel it there. <a href="MyOffices.dc.html">Back to My offices</a></div></div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ isPersonal }}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 14px">
+<sc-if value="{{ noCode }}" hint-placeholder-val="{{ true }}">
+<p style="margin: 0">Make a code only when the administrator is ready to add you. It works once, for 24 hours.</p>
+<button type="button" class="gs-btn gs-btn--primary" style="align-self: flex-start" onClick="{{ makeCode }}">Make a personal code</button>
+</sc-if>
+<sc-if value="{{ hasCode }}" hint-placeholder-val="{{ false }}">
+<div class="pcode">
+<span class="pcode__val" aria-label="Personal code 4 F 9 K 2 Q">4F9K2Q</span>
+<dl><dt>Username</dt><dd style="font-family: var(--gs-font-mono)">rokeya.haque</dd><dt>Works until</dt><dd>Tomorrow, 11:20 (23 hours)</dd><dt>Use</dt><dd>Once</dd></dl>
+<div class="row" style="flex: 1 1 100%"><button type="button" class="gs-btn gs-btn--primary">Copy username and code</button><button type="button" class="gs-btn gs-btn--light gs-btn--outline" onClick="{{ makeCode }}">Make a new code</button></div>
+</div>
+<ol class="steps"><li>Give both to the office administrator, in person or by phone.</li><li>They enter them on their Staff page. You're added straight away.</li><li>The office appears on My offices and you get an email.</li></ol>
+<div class="gs-alert gs-alert--warning" role="status"><svg class="ico gs-alert__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 2 21h20L12 3Z"></path><path d="M12 10v4M12 17h.01"></path></svg><div class="gs-alert__body">Only give it to an office administrator. Making a new code stops the old one working.</div></div>
+</sc-if>
+</div>
+</sc-if>
+</div>
+</section>
+</div>
+
+<aside class="aside" aria-label="Help">
+<section class="gs-box gs-box--muted" aria-labelledby="move-t">
+<header class="gs-box__header"><h2 class="gs-box__title" id="move-t">Moving offices for good?</h2></header>
+<div class="gs-box__body" style="display: flex; flex-direction: column; gap: 10px">
+<p style="margin: 0">Joining doesn't change your home office. For a transfer, leave your current office first. Your new office then welcomes you.</p>
+<a class="gs-btn gs-btn--light gs-btn--outline" href="LeaveOffice.dc.html" style="align-self: flex-start">Start a transfer</a>
+</div>
+</section>
+</aside>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"expiredCode":{"editor":"boolean","default":false,"section":"States"},"$preview":{"width":1440,"height":1150}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { method: 'office', step: 'enter', code: 'none' }; }
+renderVals() {
+const V = {
+'civic-ledger': { header: 'neutral', density: 'regular', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { header: 'brand', density: 'regular', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { header: 'dark', density: 'compact', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { header: 'dark', density: 'comfortable', table: 'ledger', surfaces: 'flat', controls: 'outlined', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { header: 'brand', density: 'compact', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { header: 'floating', density: 'regular', table: 'rules', surfaces: 'elevated', controls: 'filled', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+const s = this.state;
+const expired = !!this.props.expiredCode;
+const showError = s.step === 'error' || (expired && s.step === 'enter');
+return {
+skin, mode, v: V[skin],
+isOffice: s.method === 'office',
+isPersonal: s.method === 'personal',
+codeValue: showError ? 'B2RT 77QA' : 'K7Q2 M9XD',
+errorClass: showError ? 'gs-form-row--error' : '',
+showError,
+showFound: s.step === 'found',
+showSent: s.step === 'sent',
+noCode: s.code === 'none',
+hasCode: s.code === 'made',
+pickOffice: () => this.setState({ method: 'office' }),
+pickPersonal: () => this.setState({ method: 'personal' }),
+check: () => this.setState({ step: expired ? 'error' : 'found' }),
+send: () => this.setState({ step: 'sent' }),
+resetCode: () => this.setState({ step: 'enter' }),
+makeCode: () => this.setState({ code: 'made' })
+};
+}
+}
+</script>
+</body>
+</html>

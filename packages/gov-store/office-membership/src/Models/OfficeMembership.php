@@ -20,6 +20,7 @@ class OfficeMembership extends Model
         'approved_by_user_id',
         'approved_at',
         'approval_note',
+        'destination_location_id',
     ];
 
     protected $casts = [
@@ -42,5 +43,30 @@ class OfficeMembership extends Model
     {
         return $this->belongsTo(Location::class, 'location_id')
             ->withoutGlobalScopes(); // Add this to bypass TenantScope hiding the name
+    }
+
+    /** Where a leaving employee said they are going (plan D3). */
+    public function destination()
+    {
+        return $this->belongsTo(Location::class, 'destination_location_id')->withoutGlobalScopes();
+    }
+
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by_user_id')->withoutGlobalScope(UserScope::class);
+    }
+
+    /** Status key for <x-gs::status-badge>: a released home office is "Ready to transfer", not "Left". */
+    public function statusKey(): string
+    {
+        $status = $this->status === 'released' && $this->is_home_office ? 'released_home' : $this->status;
+
+        return 'membership_'.$status;
+    }
+
+    /** Active, and not past its end date. */
+    public function isLive(): bool
+    {
+        return $this->status === 'active' && (! $this->valid_until || $this->valid_until->gte(today()));
     }
 }

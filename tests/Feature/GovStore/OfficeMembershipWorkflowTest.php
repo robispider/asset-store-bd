@@ -5,7 +5,9 @@ namespace Tests\Feature\GovStore;
 use App\Exceptions\Handler;
 use App\Models\Location;
 use App\Models\User;
+use GovStore\OfficeMembership\Exceptions\MembershipRefused;
 use GovStore\OfficeMembership\Http\Controllers\MembershipController;
+use GovStore\OfficeMembership\Models\OfficeMembership;
 use GovStore\OfficeMembership\Http\Middleware\SetWorkingContext;
 use GovStore\OfficeMembership\Models\RoleAssignment;
 use GovStore\OfficeMembership\Models\RoleHandshake;
@@ -28,6 +30,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\MessageBag;
+use Illuminate\Support\ViewErrorBag;
 use Mockery;
 use Monolog\Handler\NullHandler;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -226,6 +230,7 @@ class OfficeMembershipWorkflowTest extends TestCase
             $t->integer('approved_by_user_id')->nullable();
             $t->timestamp('approved_at')->nullable();
             $t->string('approval_note')->nullable();
+            $t->integer('destination_location_id')->nullable();
         });
         Schema::table('gov_location_profiles', function (Blueprint $t) {
             $t->string('invitation_code')->nullable();
@@ -485,7 +490,8 @@ class OfficeMembershipWorkflowTest extends TestCase
         $en = require base_path('packages/gov-store/office-membership/src/resources/lang/en-US/member.php');
         $bn = require base_path('packages/gov-store/office-membership/src/resources/lang/bn-BD/member.php');
         $this->assertSame(array_keys($en), array_keys($bn));
-        foreach (['user.index', 'admin.staff', 'admin.override_console', 'hooks.office-chip', 'hooks.notices'] as $view) {
+        foreach (['user.index', 'user.join', 'user.leave', 'admin.staff', 'admin.override_console', 'hooks.office-chip',
+            'partials.errors', 'partials.personal-code', 'partials.role-slots', 'partials.handover-dialog', 'partials.script'] as $view) {
             $source = app('view')->getFinder()->find('govmem::'.$view);
             $compiled = app('blade.compiler')->compileString(file_get_contents($source));
             $temp = tempnam(sys_get_temp_dir(), 'membership-blade-');
@@ -617,5 +623,190 @@ class OfficeMembershipWorkflowTest extends TestCase
         $this->assertSame(2, (int) DB::table('gov_office_responsibilities')->where('role_slug', 'storekeeper')->value('user_id'));
         $this->assertSame(0, DB::table('gov_organization_activity_logs')->count());
         $this->assertSame(2, DB::table('gov_membership_notices')->count());
+    }
+
+    // =========================================================================
+    // Office membership redesign (docs/plans/office-membership-ux-redesign-plan.md)
+    // =========================================================================
+
+    private function overrideSchema(): void
+    {
+        require_once base_path('packages/gov-store/office-membership/src/database/migrations/2024_01_07_000000_create_gov_office_membership_tables.php');
+        (new \CreateGovOfficeMembershipTables)->up();
+        (require base_path('packages/gov-store/office-membership/src/database/migrations/2026_10_14_000001_add_membership_destination_and_override_reference.php'))->up();
+    }
+
+    private function refusal(callable $action, int $status, string $key, string $field = 'membership'): void
+    {
+        try {
+            $action();
+            $this->fail('Refused operation succeeded');
+        } catch (MembershipRefused $refusal) {
+            $this->assertSame($status, $refusal->getStatusCode(), $key);
+            $this->assertSame($field, $refusal->field, $key);
+            // The longest fixed part of the translated sentence (placeholders are filled with names and details).
+            $parts = preg_split('/:[a-zA-Z]+/', __('office_membership::member.'.$key));
+            usort($parts, fn ($a, $b) => mb_strlen($b) <=> mb_strlen($a));
+            $this->assertStringContainsString(trim($parts[0]), $refusal->getMessage(), $key);
+        }
+    }
+
+    public function test_workflow_refusals_keep_their_status_and_carry_a_translated_message_for_the_field(): void
+    {
+        $workflow = app(MembershipWorkflow::class);
+        DB::table('users')->where('id', 4)->update(['company_id' => 20, 'username' => 'joining']);
+        $this->actor(4);
+        $this->refusal(fn () => $workflow->join('NOSUCH01'), 404, 'membership_invalid_code', 'office_code');
+        DB::table('gov_location_profiles')->where('location_id', 10)->update(['invitation_code' => 'K7Q2M9XD', 'invitation_code_expires_at' => now()->subMinute()]);
+        $this->refusal(fn () => $workflow->join('k7q2 m9xd'), 422, 'membership_code_expired', 'office_code');
+        DB::table('gov_location_profiles')->where('location_id', 10)->update(['invitation_code_expires_at' => now()->addDay()]);
+        // Spaces, dashes and lower case are accepted, as the help text promises.
+        $workflow->join('k7q2-m9xd');
+        $this->refusal(fn () => $workflow->join('K7Q2M9XD'), 409, 'membership_request_pending', 'office_code');
+
+        $this->actor(2);
+        $this->refusal(fn () => $workflow->addByToken('nobody', 'ABC123'), 404, 'admin_user_not_found', 'username');
+        DB::table('gov_employee_verification_tokens')->insert(['user_id' => 4, 'token' => 'USED01', 'expires_at' => now()->addHour(), 'used_at' => now()]);
+        $this->refusal(fn () => $workflow->addByToken('joining', 'used01'), 422, 'admin_code_used', 'verification_code');
+        $this->refusal(fn () => $workflow->addByToken('joining', 'WRONG1'), 404, 'admin_invalid_code', 'verification_code');
+
+        $this->refusal(fn () => app(RoleTransfer::class)->propose(RoleHandshake::class, 10, 'primary_approver', 2, 3), 409, 'transfer_stale');
+        $this->refusal(fn () => $workflow->requestRelease((int) DB::table('gov_office_memberships')->where('user_id', 2)->value('id')), 409, 'membership_clearance_failed');
+    }
+
+    public function test_controller_returns_refusals_to_the_form_with_the_message_and_typed_values(): void
+    {
+        $this->actor(3);
+        $request = Request::create('/gov-store/my-memberships/join', 'POST', ['office_code' => 'nope-nope']);
+        $request->setLaravelSession(app('session.store'));
+        app()->instance('request', $request);
+        $response = app(MembershipController::class)->joinByCode($request, app(MembershipWorkflow::class));
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame(__('office_membership::member.membership_invalid_code'), session('errors')->first('office_code'));
+        $this->assertSame('nope-nope', session('_old_input')['office_code'] ?? null);
+        $this->assertSame(0, DB::table('gov_office_memberships')->where('user_id', 3)->where('status', 'pending')->count());
+    }
+
+    public function test_people_can_take_back_a_join_or_leave_request_and_admins_can_end_additional_access(): void
+    {
+        $workflow = app(MembershipWorkflow::class);
+        DB::table('users')->where('id', 4)->update(['company_id' => 20]);
+        DB::table('gov_location_profiles')->where('location_id', 10)->update(['invitation_code' => 'JOINJOIN', 'invitation_code_expires_at' => now()->addDay()]);
+        $this->actor(4);
+        $workflow->join('JOINJOIN');
+        $join = (int) DB::table('gov_office_memberships')->where('user_id', 4)->where('location_id', 10)->value('id');
+        $this->actor(3);
+        $this->failure(fn () => $workflow->cancelJoin($join), 404);
+        $this->actor(4);
+        $workflow->cancelJoin($join);
+        $this->assertSame('cancelled', DB::table('gov_office_memberships')->where('id', $join)->value('status'));
+        $this->refusal(fn () => $workflow->cancelJoin($join), 409, 'join_already_decided');
+        $workflow->join('JOINJOIN');
+        $this->actor(2);
+        $workflow->decide($join, 'approve');
+
+        // End additional access: never a home office, never yourself, and only when nothing is held there.
+        $home = (int) DB::table('gov_office_memberships')->where('user_id', 3)->value('id');
+        $this->refusal(fn () => $workflow->endAccess($home), 409, 'staff_end_only_additional');
+        $this->failure(fn () => $workflow->endAccess((int) DB::table('gov_office_memberships')->where('user_id', 2)->value('id')), 403);
+        DB::table('assets')->insert(['location_id' => 10, 'assigned_type' => User::class, 'assigned_to' => 4]);
+        $this->refusal(fn () => $workflow->endAccess($join), 409, 'staff_end_not_clear');
+        DB::table('assets')->delete();
+        $workflow->endAccess($join);
+        $this->assertSame('inactive', DB::table('gov_office_memberships')->where('id', $join)->value('status'));
+        $this->assertSame('active', DB::table('gov_office_memberships')->where('user_id', 4)->where('location_id', 30)->value('status'));
+
+        // Leave with a destination (D3), then withdraw before sign-off.
+        DB::table('locations')->insert(['id' => 50, 'name' => 'Receiving office', 'company_id' => 20]);
+        DB::table('gov_location_profiles')->insert(['location_id' => 50, 'geo_area_id' => 2, 'office_admin_id' => 1, 'lifecycle_status' => 'configured']);
+        $this->actor(3);
+        $this->refusal(fn () => $workflow->requestRelease($home, 30), 422, 'leave_destination_invalid', 'destination_location_id');
+        $workflow->requestRelease($home, 50);
+        $this->assertSame(50, (int) DB::table('gov_office_memberships')->where('id', $home)->value('destination_location_id'));
+        $this->assertSame(1, DB::table('gov_membership_notices')->where('event_key', 'membership_arriving')->where('user_id', 1)->where('location_id', 50)->count());
+        $workflow->withdrawRelease($home);
+        $this->assertSame('active', DB::table('gov_office_memberships')->where('id', $home)->value('status'));
+        $this->assertNull(DB::table('gov_office_memberships')->where('id', $home)->value('destination_location_id'));
+        $this->refusal(fn () => $workflow->withdrawRelease($home), 409, 'leave_already_signed_off');
+    }
+
+    public function test_emergency_release_ends_one_office_and_by_choice_that_offices_roles(): void
+    {
+        $this->overrideSchema();
+        $workflow = app(MembershipWorkflow::class);
+        DB::table('gov_office_memberships')->insert(['user_id' => 2, 'location_id' => 30, 'status' => 'active', 'is_home_office' => false]);
+        DB::table('gov_office_responsibilities')->insert(['user_id' => 2, 'location_id' => 30, 'role_slug' => 'primary_approver']);
+        $pending = app(RoleHandshakeService::class)->proposeHandshake(10, 'storekeeper', 2, 3);
+        $this->actor(1);
+
+        $this->refusal(fn () => $workflow->override(3, 'force_release', 30, true, 'Not a member of that office', null), 409, 'override_office_not_open', 'location_id');
+        $workflow->override(2, 'force_release', 10, true, 'Absent without leave since 3 Sep', 'DGHS/2026/1142');
+        $this->assertSame('released', DB::table('gov_office_memberships')->where('user_id', 2)->where('location_id', 10)->value('status'));
+        // D1: only that office ends. The home flag stays, so another office can welcome them.
+        $this->assertTrue((bool) DB::table('gov_office_memberships')->where('user_id', 2)->where('location_id', 10)->value('is_home_office'));
+        $this->assertSame('active', DB::table('gov_office_memberships')->where('user_id', 2)->where('location_id', 30)->value('status'));
+        // D2: roles at that office went with it; roles elsewhere stay; waiting handovers are cancelled.
+        $this->assertSame(0, DB::table('gov_office_responsibilities')->where('user_id', 2)->where('location_id', 10)->count());
+        $this->assertNull(DB::table('gov_location_profiles')->where('location_id', 10)->value('office_admin_id'));
+        $this->assertSame(1, DB::table('gov_office_responsibilities')->where('user_id', 2)->where('location_id', 30)->count());
+        $this->assertSame('cancelled', $pending->fresh()->status);
+        $log = DB::table('gov_override_audit_logs')->orderByDesc('id')->first();
+        $this->assertSame(['force_release', 10, 'DGHS/2026/1142'], [$log->override_type, (int) $log->old_location_id, $log->reference]);
+
+        $workflow->override(2, 'strip_roles', null, false, 'Long-term medical leave, roles reassigned', null);
+        $this->assertSame(0, DB::table('gov_office_responsibilities')->where('user_id', 2)->count());
+        $this->assertSame('active', DB::table('gov_office_memberships')->where('user_id', 2)->where('location_id', 30)->value('status'));
+        $this->assertSame(2, DB::table('gov_override_audit_logs')->count());
+    }
+
+    public function test_every_membership_status_has_a_badge_and_notices_are_whole_sentences_in_both_languages(): void
+    {
+        app()->setLocale('en-US');
+        $map = require base_path('packages/gov-store/theming/status-map.php');
+        foreach (['pending', 'active', 'release_requested', 'released_home', 'released', 'rejected', 'suspended', 'inactive', 'cancelled'] as $status) {
+            $this->assertArrayHasKey('membership_'.$status, $map);
+            foreach (['en-US', 'bn-BD'] as $locale) {
+                $label = trans('gs-theme::appearance.status.membership_'.$status, [], $locale);
+                $this->assertNotSame('gs-theme::appearance.status.membership_'.$status, $label, $locale.' '.$status);
+            }
+        }
+        $this->assertSame('membership_released_home', (new OfficeMembership(['status' => 'released', 'is_home_office' => true]))->statusKey());
+        $this->assertSame('membership_released', (new OfficeMembership(['status' => 'released', 'is_home_office' => false]))->statusKey());
+
+        $notice = (object) ['event_key' => 'transfer_rejected', 'location_name' => 'Savar', 'created_at' => now()->toDateTimeString(),
+            'details' => json_encode(['role' => 'storekeeper', 'reason' => 'Only here on Thursdays'])];
+        $english = app(MembershipNotices::class)->present($notice);
+        $this->assertSame('A handover of the Storekeeper role at Savar was declined.', $english['text']);
+        $this->assertSame('Only here on Thursdays', $english['quote']);
+        app()->setLocale('bn-BD');
+        try {
+            $bangla = app(MembershipNotices::class)->present($notice);
+            $this->assertStringContainsString('স্টোরকিপার', $bangla['text']);
+            $this->assertDoesNotMatchRegularExpression('/[A-Za-z]{3,}/', str_replace('Savar', '', $bangla['text']));
+            $incoming = __('office_membership::member.handover_incoming', ['name' => 'রোকেয়া হক', 'role' => 'স্টোরকিপার', 'office' => 'সাভার']);
+            $this->assertSame('রোকেয়া হক সাভার-এর স্টোরকিপার দায়িত্ব আপনাকে হস্তান্তর করতে চান।', $incoming);
+        } finally {
+            app()->setLocale('en-US');
+        }
+    }
+
+    public function test_screens_label_every_action_and_never_offer_roles_to_people_who_are_leaving(): void
+    {
+        $user = $this->actor(2);
+        $handover = app(RoleHandshakeService::class)->proposeHandshake(10, 'storekeeper', 2, 3);
+        $html = view('govmem::partials.role-slots', ['office' => 10, 'officeName' => 'Office A', 'officeRoles' => ['storekeeper', 'office_admin'],
+            'officeCover' => [], 'outgoing' => RoleHandshake::with('incomingUser')->whereKey($handover->id)->get(), 'user' => $user])->render();
+        $this->assertStringContainsString(__('office_membership::member.handover_cancel'), $html);
+        $this->assertStringContainsString(__('office_membership::member.handover_button'), $html);
+        $this->assertStringNotContainsString('&times;', $html);
+
+        $people = [10 => [['id' => 3, 'name' => 'Nazma Akter', 'job' => 'Store assistant', 'username' => 'nazma', 'roles' => [], 'leaving' => false],
+            ['id' => 5, 'name' => 'Farhan Rahman', 'job' => null, 'username' => 'farhan', 'roles' => [], 'leaving' => true]]];
+        view()->share('errors', (new ViewErrorBag)->put('default', new MessageBag(['assigned_user_id' => ['Choose a colleague, not yourself.']])));
+        $dialog = view('govmem::partials.handover-dialog', ['colleagues' => $people])->render();
+        $this->assertMatchesRegularExpression('/value="5"[^>]*disabled/', $dialog);
+        $this->assertStringContainsString('Choose a colleague, not yourself.', $dialog);
+        $this->assertStringContainsString(__('office_membership::member.handover_person_leaving'), $dialog);
+        view()->share('errors', new ViewErrorBag);
     }
 }

@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "id": "membership.join-validation",
+  "title": "Join another office checks an office code before anything is sent: an unknown code is explained under the field, the typed code is kept, no Send button appears and no request is created; choosing the other way shows the personal code instead",
+  "features": ["membership.join"],
+  "tags": ["seeded", "validation", "membership"],
+  "execution": { "capability": "observe", "language": "en-US", "timeoutMs": 90000, "accessMode": "any" },
+  "fixtures": {
+    "office": { "requirements": { "operational": true } },
+    "actors": {
+      "employee": { "capabilities": { "allOf": ["membership.self"], "noneOf": ["membership.manage", "requests.approve"] }, "office": "office", "activeMembership": true }
+    }
+  },
+  "data": {
+    "code": "zz-live 0",
+    "normalised": "ZZLIVE0"
+  },
+  "steps": [
+    { "action": "observe", "check": "membership.code", "args": { "code": "${data.code}" }, "as": "code" },
+    { "action": "compare", "actual": "${observed.code.offices}", "equals": 0, "note": "Precondition: 7 characters can never match a generated 8-character office code" },
+    { "action": "observe", "check": "membership.person", "args": { "userId": "${actors.employee.id}" }, "as": "before" },
+    { "use": "auth.login", "with": { "actor": "employee" } },
+
+    { "action": "goto", "url": "/gov-store/my-memberships/join?way=office" },
+    { "action": "assert", "target": "membership.pageTitle", "test": "text", "equals": "Join another office" },
+    { "action": "assert", "target": "membership.wayOffice", "test": "checked" },
+    { "action": "assert", "target": "membership.officeSection", "test": "visible" },
+    { "action": "assert", "target": "membership.personalSection", "test": "hidden", "note": "Only the chosen way is shown" },
+    { "action": "assert", "target": "membership.transferBox", "test": "text", "contains": "Joining doesn't change your home office." },
+
+    { "action": "fill", "target": "membership.codeInput", "value": "${data.code}" },
+    { "action": "submitForm", "target": "membership.codeCheck" },
+    { "action": "wait", "target": "membership.codeError", "state": "visible" },
+    { "action": "assert", "test": "url", "contains": "code=" },
+    { "action": "assert", "target": "membership.codeError", "test": "text", "contains": "No office has this code. Check it with the office administrator." },
+    { "action": "assert", "target": "membership.codeInput", "test": "value", "equals": "${data.normalised}", "note": "The code stays, cleaned of spaces and dashes as the help text promises" },
+    { "action": "assert", "target": "membership.sendRequest", "test": "count", "equals": 0, "note": "Nothing can be sent for an unknown code" },
+
+    { "action": "click", "target": "membership.wayPersonal" },
+    { "action": "assert", "target": "membership.personalSection", "test": "visible" },
+    { "action": "assert", "target": "membership.officeSection", "test": "hidden" },
+    { "action": "assert", "target": "membership.personalCode", "test": "visible" },
+
+    { "action": "observe", "check": "membership.person", "args": { "userId": "${actors.employee.id}" }, "as": "after" },
+    { "action": "compare", "actual": "${observed.after.pending}", "equals": "${observed.before.pending}", "note": "No join request was created" },
+    { "action": "compare", "actual": "${observed.after.current}", "equals": "${observed.before.current}" }
+  ],
+  "cleanup": { "policy": "no-business-records-created" }
+}

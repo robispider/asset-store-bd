@@ -51,6 +51,17 @@ For changes to these protections, run the focused suite using installed PHP:
 php vendor/bin/phpunit tests/Feature/GovStore/G1AuthorizationTest.php
 ```
 
+To run every GovStore suite together, raise PHP's memory limit. The local WAMP `php.ini`
+caps it at 128M and the combined run peaks at about 160 MB. `php artisan test` starts
+PHPUnit in a child process that ignores `-d`, so call PHPUnit directly, and leave the
+root `phpunit.xml` unchanged (it is a Snipe-IT core file):
+
+```text
+php -d memory_limit=1G vendor/bin/phpunit tests/Feature/GovStore
+```
+
+Single test files run fine at the default limit with `php artisan test <file>`.
+
 This suite uses isolated SQLite in memory. Add meaningful coverage for the changed
 invariant and update route coverage when a new protected surface is introduced.
 Also verify compiled Blade syntax and relevant live behavior when changing the UI.

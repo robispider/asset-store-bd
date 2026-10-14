@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "membership.authorization-boundaries",
+  "title": "Employees reach only their own office membership pages (another person's membership does not exist for them) and never Staff or Emergency changes; office administrators reach Staff but not Emergency changes",
+  "features": ["membership.authorization"],
+  "tags": ["seeded", "readonly", "membership", "authorization"],
+  "execution": { "capability": "observe", "language": "en-US", "timeoutMs": 90000, "accessMode": "any" },
+  "fixtures": {
+    "office": { "requirements": { "operational": true } },
+    "actors": {
+      "employee": { "capabilities": { "allOf": ["membership.self"], "noneOf": ["membership.manage", "requests.approve"] }, "office": "office", "activeMembership": true },
+      "officeAdmin": { "role": "office_admin", "capabilities": { "allOf": ["membership.manage"], "noneOf": ["membership.override"] }, "office": "office", "activeMembership": true }
+    }
+  },
+  "steps": [
+    { "action": "observe", "check": "membership.person", "args": { "userId": "${actors.employee.id}" }, "as": "person", "note": "foreignMembershipId belongs to someone else" },
+
+    { "use": "auth.login", "with": { "actor": "employee" } },
+    { "action": "probe", "path": "/gov-store/my-memberships", "expectStatus": [200] },
+    { "action": "probe", "path": "/gov-store/my-memberships/join", "expectStatus": [200] },
+    { "action": "probe", "path": "/gov-store/my-memberships/${observed.person.homeMembershipId}/leave", "expectStatus": [200] },
+    { "action": "probe", "path": "/gov-store/my-memberships/${observed.person.foreignMembershipId}/leave", "expectStatus": [404], "note": "Another person's membership does not exist for this employee" },
+    { "action": "probe", "path": "/gov-store/my-memberships/${observed.person.foreignMembershipId}/destinations?q=ab", "expectStatus": [404] },
+    { "action": "probe", "path": "/gov-store/office/staff", "expectStatus": [403], "note": "membership.manage is enforced in shadow mode too" },
+    { "action": "probe", "path": "/gov-store/admin/memberships/override/console", "expectStatus": [403], "note": "National: super users only" },
+
+    { "use": "auth.login", "with": { "actor": "officeAdmin" } },
+    { "action": "probe", "path": "/gov-store/office/staff", "expectStatus": [200] },
+    { "action": "probe", "path": "/gov-store/office/staff?tab=arriving", "expectStatus": [200] },
+    { "action": "probe", "path": "/gov-store/admin/memberships/override/console", "expectStatus": [403] }
+  ],
+  "cleanup": { "policy": "no-business-records-created" }
+}

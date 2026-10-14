@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "id": "membership.handover-decline",
+  "title": "An approver hands their role to a colleague with a note; the role stays theirs with a labelled Cancel; the colleague sees one whole sentence under Waiting for you and declines with a reason; the role is unchanged and the approver sees the reason under What changed",
+  "features": ["membership.handover"],
+  "tags": ["journey", "mutation", "membership"],
+  "execution": { "capability": "write-fixtures", "language": "en-US", "timeoutMs": 120000, "accessMode": "any" },
+  "fixtures": {
+    "office": { "requirements": { "operational": true } },
+    "actors": {
+      "approver": { "role": "primary_approver", "capabilities": { "allOf": ["membership.self"], "noneOf": ["membership.manage"] }, "office": "office", "activeMembership": true },
+      "colleague": { "capabilities": { "allOf": ["membership.self"], "noneOf": ["membership.manage", "requests.approve"] }, "office": "office", "activeMembership": true }
+    }
+  },
+  "data": {
+    "note": { "generate": "markedText", "prefix": "LIVE-NOTE", "length": 6 },
+    "reason": { "generate": "markedText", "prefix": "LIVE-DECLINE", "length": 6 }
+  },
+  "steps": [
+    { "action": "observe", "check": "membership.handover", "args": { "officeId": "${fixtures.office.id}", "role": "primary_approver", "fromUserId": "${actors.approver.id}" }, "as": "before" },
+    { "action": "compare", "actual": "${observed.before.pendingForRole}", "equals": 0, "note": "Precondition: no handover of this role is already waiting (a second one is refused by design)" },
+    { "action": "compare", "actual": "${observed.before.fromHolds}", "equals": true },
+    { "action": "observe", "check": "membership.person", "args": { "userId": "${actors.approver.id}" }, "as": "person" },
+    { "action": "compare", "actual": "${observed.person.homeOfficeId}", "equals": "${fixtures.office.id}" },
+
+    { "use": "auth.login", "with": { "actor": "approver" } },
+    { "action": "goto", "url": "/gov-store/my-memberships" },
+    { "action": "click", "target": "membership.approverHandover" },
+    { "action": "wait", "target": "membership.handoverColleague", "state": "visible" },
+    { "action": "assert", "target": "membership.handoverPeople", "test": "count", "equals": "${observed.person.colleagues}", "note": "Active colleagues at that office, plus leavers shown disabled" },
+    { "action": "assert", "target": "membership.handoverPeopleOff", "test": "count", "equals": "${observed.person.leavingColleagues}" },
+    { "action": "assert", "target": "membership.handoverNext", "test": "count", "equals": 3, "note": "What happens next" },
+    { "action": "click", "target": "membership.handoverColleague" },
+    { "action": "fill", "target": "membership.handoverNote", "value": "${data.note}" },
+    { "action": "submitForm", "target": "membership.handoverSend" },
+
+    { "action": "waitObserve", "check": "membership.handover", "args": { "officeId": "${fixtures.office.id}", "role": "primary_approver", "fromUserId": "${actors.approver.id}" }, "path": "status", "equals": "pending", "as": "proposed", "timeoutMs": 15000 },
+    { "action": "compare", "actual": "${observed.proposed.incomingUserId}", "equals": "${actors.colleague.id}" },
+    { "action": "compare", "actual": "${observed.proposed.fromHolds}", "equals": true, "note": "The role stays with the approver until the colleague accepts" },
+    { "action": "ledger", "kind": "role_handshake", "id": "${observed.proposed.id}", "effect": "created", "cleanup": "retained" },
+    { "action": "assert", "target": "membership.pendingSlotCancel", "test": "visible", "note": "A labelled Cancel request replaces Hand over" },
+    { "action": "assert", "target": "membership.pendingSlotMeta", "test": "text", "contains": "accepts" },
+
+    { "use": "auth.login", "with": { "actor": "colleague" } },
+    { "action": "goto", "url": "/gov-store/my-memberships" },
+    { "action": "assert", "target": "membership.proposedRequest", "test": "visible" },
+    { "action": "assert", "target": "membership.proposedSentence", "test": "text", "contains": "wants to hand over the Approver role at ${fixtures.office.name} to you.", "note": "One whole sentence, not four stitched fragments" },
+    { "action": "click", "target": "membership.proposedDeclineOpen" },
+    { "action": "fill", "target": "membership.proposedReason", "value": "${data.reason}" },
+    { "action": "submitForm", "target": "membership.proposedDecline" },
+
+    { "action": "waitObserve", "check": "membership.handover", "args": { "officeId": "${fixtures.office.id}", "role": "primary_approver", "fromUserId": "${actors.approver.id}" }, "path": "status", "equals": "rejected", "as": "declined", "timeoutMs": 15000 },
+    { "action": "compare", "actual": "${observed.declined.id}", "equals": "${observed.proposed.id}" },
+    { "action": "compare", "actual": "${observed.declined.fromHolds}", "equals": true, "note": "Declining changes nothing for either person" },
+    { "action": "compare", "actual": "${observed.declined.noticeReason}", "equals": "${data.reason}", "note": "The reason travels with the notice" },
+
+    { "action": "actor", "name": "approver" },
+    { "action": "goto", "url": "/gov-store/my-memberships" },
+    { "action": "assert", "target": "membership.feedQuote", "test": "visible", "note": "The approver reads the reason under What changed" },
+    { "action": "assert", "target": "membership.approverHandover", "test": "visible", "note": "The role can be handed over again" }
+  ],
+  "cleanup": {
+    "policy": "handover-history-retained",
+    "description": "The declined handover and its notices are history and have no delete workflow; they are retained and reported by id. No role, membership or office changes.",
+    "steps": []
+  }
+}
