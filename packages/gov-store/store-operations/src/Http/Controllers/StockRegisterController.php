@@ -4,25 +4,24 @@ namespace GovStore\StoreOperations\Http\Controllers;
 
 use App\Models\AssetModel;
 use GovStore\StoreOperations\DTOs\LedgerPeriod;
+use GovStore\StoreOperations\Http\Controllers\Concerns\ResolvesStoreContext;
 use GovStore\StoreOperations\Services\AssetUnitRegister;
 use GovStore\StoreOperations\Services\InventoryLedgerService;
 use GovStore\StoreOperations\Services\StockCardBuilder;
 use GovStore\StoreOperations\Services\StockLedgerReader;
 use GovStore\StoreOperations\Services\StockRegisterQuery;
-use GovStore\TenantScope\Contexts\TenantContext;
-use GovStore\TenantScope\Services\GovAccess;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /** The store's read-only books: the register, stock cards, asset cards and their printed copies. */
 class StockRegisterController extends Controller
 {
+    use ResolvesStoreContext;
+
     public const PER_PAGE = 25;
 
     public function __construct(
@@ -170,37 +169,6 @@ class StockRegisterController extends Controller
     }
 
     /** Working office, its company and ledger opening, for the context bar and printed header. */
-    private function office(): array
-    {
-        $context = app(TenantContext::class);
-        $id = $context->locationId ? (int) $context->locationId : null;
-        $location = $id && Schema::hasTable('locations') ? DB::table('locations')->where('id', $id)->first() : null;
-        $companyId = $location->company_id ?? $context->companyId;
-        $company = $companyId && Schema::hasTable('companies') ? DB::table('companies')->where('id', $companyId)->value('name') : null;
-
-        return [
-            'id' => $id,
-            'name' => $location->name ?? null,
-            'company' => $company,
-            'address' => $location ? collect([$location->address ?? null, $location->address2 ?? null, $location->city ?? null])->filter()->implode(', ') : null,
-            'opened_at' => $id ? $this->ledger->openedAt($id) : null,
-        ];
-    }
-
-    private function abilities(): array
-    {
-        $user = auth()->user();
-        if (! $user) {
-            return ['draft' => false, 'post' => false];
-        }
-        $access = app(GovAccess::class);
-
-        return [
-            'draft' => $access->decide($user, 'storeops.documents.draft')->allowed,
-            'post' => $access->decide($user, 'storeops.documents.post')->allowed,
-        ];
-    }
-
     private function registerFilters(Request $request): array
     {
         $type = $request->query('type');
