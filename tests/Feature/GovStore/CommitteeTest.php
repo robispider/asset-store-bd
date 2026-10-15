@@ -45,7 +45,7 @@ class CommitteeTest extends TestCase
         Schema::create('locations',function (Blueprint $t) { $t->increments('id'); $t->integer('company_id'); $t->integer('parent_id')->nullable(); $t->string('name'); $t->softDeletes(); });
         Schema::create('users',function (Blueprint $t) { $t->increments('id'); foreach (['first_name','last_name','display_name','jobtitle'] as $column) { $t->string($column)->nullable(); } $t->boolean('activated')->default(true); $t->integer('location_id')->nullable(); $t->softDeletes(); });
         Schema::create('gov_employee_verification_tokens',function (Blueprint $t) { $t->increments('id'); $t->integer('user_id'); $t->string('token'); $t->timestamp('expires_at'); $t->timestamp('used_at')->nullable(); });
-        Schema::create('draft_baskets',function (Blueprint $t) { $t->increments('id'); $t->integer('user_id'); $t->string('status'); $t->timestamp('expires_at')->nullable(); });
+        Schema::create('draft_baskets',function (Blueprint $t) { $t->increments('id'); $t->integer('user_id'); $t->integer('office_id')->nullable(); $t->string('status'); $t->timestamp('expires_at')->nullable(); });
         Schema::create('draft_basket_items',function (Blueprint $t) { $t->increments('id'); $t->integer('basket_id'); $t->softDeletes(); });
         Schema::create('action_logs',function (Blueprint $t) {
             $t->increments('id'); $t->string('item_type'); $t->integer('item_id'); $t->integer('company_id'); $t->integer('created_by')->nullable();

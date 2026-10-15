@@ -37,7 +37,7 @@
                 </fieldset>
             </form>
 
-            <section data-govmem-when="way=office" class="govmem-stack" aria-labelledby="join-office-title">
+            <section data-govmem-when="way=office" class="govmem-stack" @if($way !== 'office') hidden @endif aria-labelledby="join-office-title">
                 <h2 class="govmem-heading" id="join-office-title">{{ __($m.'join_way_office') }}</h2>
                 @if ($state === 'ok')
                     @php $profile = $checked['profile']; @endphp
@@ -73,7 +73,7 @@
                 @endif
             </section>
 
-            <section data-govmem-when="way=personal" class="govmem-stack" aria-labelledby="join-personal-title">
+            <section data-govmem-when="way=personal" class="govmem-stack" @if($way !== 'personal') hidden @endif aria-labelledby="join-personal-title">
                 <h2 class="govmem-heading" id="join-personal-title">{{ __($m.'join_way_personal') }}</h2>
                 <p class="govmem-flush">{{ __($m.'join_personal_intro') }}</p>
                 @include('govmem::partials.personal-code')

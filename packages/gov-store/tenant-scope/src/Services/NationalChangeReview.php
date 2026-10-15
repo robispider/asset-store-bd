@@ -139,6 +139,9 @@ class NationalChangeReview
 
             return $profile ?? [];
         }
+        if ($request->routeIs('gov.requests.admin.policies.destroy')) {
+            return ApprovalPolicy::find($request->route('id'))?->toArray() ?? [];
+        }
         if ($request->routeIs('gov.requests.admin.policies.store')) {
             return ApprovalPolicy::where('target_type', $request->input('target_type', 'category'))
                 ->where('target_id', $request->input('target_id', $request->input('category_id')))->get()->toArray();

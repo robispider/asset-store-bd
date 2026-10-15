@@ -3,6 +3,7 @@
 namespace GovStore\CustomRequests\Services;
 
 use App\Models\User;
+use GovStore\CustomRequests\Exceptions\RequestRefused;
 use GovStore\CustomRequests\Models\Request;
 use GovStore\CustomRequests\Models\RequestEvent;
 use GovStore\StoreOperations\Models\Document;
@@ -26,7 +27,7 @@ class RequestReturnService
             $lines[] = ['type' => $type, 'id' => $model->id, 'qty' => $line->issued_qty,
                 'unit_cost' => $model->purchase_cost ?? 0];
         }
-        abort_unless($lines, 422);
+        RequestRefused::unless((bool) $lines, 422, 'request_refused_return_nothing', 'reason');
 
         return $lines;
     }
@@ -38,7 +39,7 @@ class RequestReturnService
         return DB::transaction(function () use ($id, $actor, $reason) {
             $request = Request::whereKey($id)->where('requested_by', $actor->id)->lockForUpdate()->firstOrFail();
             app(RequestAccess::class)->check($request, $actor, 'requests.submit');
-            abort_unless(in_array($request->fulfillment_status, ['issued', 'closed']) && ! $request->return_requested_at, 409);
+            RequestRefused::unless(in_array($request->fulfillment_status, ['issued', 'closed']) && ! $request->return_requested_at, 409, 'request_refused_return', 'reason');
             $lines = $this->bulkLines($request);
             $request->update(['return_requested_at' => now()]);
             RequestEvent::create(['request_id' => $request->id, 'user_id' => $actor->id,
@@ -55,8 +56,8 @@ class RequestReturnService
             app(RequestAccess::class)->check($request, $actor, 'requests.fulfill');
             app(RequestAccess::class)->check($request, $actor, 'storeops.documents.draft');
             abort_unless((int) $request->office_id === app(TenantContext::class)->locationId, 404);
-            abort_unless($request->return_requested_at && ! $request->return_document_id
-                && in_array($request->fulfillment_status, ['issued', 'closed']), 409);
+            RequestRefused::unless($request->return_requested_at && ! $request->return_document_id
+                && in_array($request->fulfillment_status, ['issued', 'closed']), 409, 'request_refused_return_draft');
             $document = app(GoodsReceiptService::class)->saveDraft([
                 'reference_no' => $request->request_number,
                 'reference_date' => now()->toDateString(),

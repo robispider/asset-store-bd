@@ -3,55 +3,55 @@
   "id": "requests",
   "locators": {
     "basketQty": {
-      "css": "tr:has-text(\"${fixtures.item.name}\") .basket-qty-input",
-      "description": "Quantity input of the pinned fixture item row"
+      "css": "[data-cr-line]:has-text(\"${fixtures.item.name}\") input[data-cr-line-qty]",
+      "description": "Quantity input of the pinned fixture item line on the draft"
     },
     "basketPurpose": {
-      "css": "#purpose",
-      "description": "Purpose field"
+      "css": "#cr-field-purpose",
+      "description": "What is it for? field"
     },
     "basketJustification": {
-      "css": "#justification",
-      "description": "Justification field"
+      "css": "#cr-field-justification",
+      "description": "Why is it needed? field"
     },
     "basketSubmit": {
-      "css": "form[action*='basket/submit'] button[type='submit']",
-      "description": "Submit request button"
+      "css": "form[data-cr-send] [data-cr-submit]",
+      "description": "Send the request(s) button in the review step"
     },
     "basketRemove": {
-      "css": "tr:has-text(\"${fixtures.item.name}\") form[action*='basket/remove'] button[type='submit']",
-      "description": "Remove button on the pinned fixture item row"
+      "css": "[data-cr-line]:has-text(\"${fixtures.item.name}\") form[action*='basket/remove'] button[type='submit']",
+      "description": "Remove button on the pinned fixture item line"
     },
     "basketLines": {
-      "css": "tr:has-text(\"${fixtures.item.name}\") form[action*='basket/remove']",
-      "description": "Basket rows for the pinned fixture item"
+      "css": "[data-cr-line]:has-text(\"${fixtures.item.name}\")",
+      "description": "Draft lines for the pinned fixture item"
     },
     "myNumberByPurpose": {
-      "css": "tr:has-text(\"${data.purpose}\") td strong",
-      "description": "Request number in my-requests row for the generated purpose"
+      "css": "[data-request-number]:has([data-cr-purpose]:has-text(\"${data.purpose}\")) .cr-request__number",
+      "description": "Request number on the My requests card for the generated purpose"
     },
     "myRowByNumber": {
-      "css": "tr:has-text(\"${captured.requestNumber}\")",
-      "description": "my-requests row for the captured request"
+      "css": "[data-request-number=\"${captured.requestNumber}\"]",
+      "description": "My requests card for the captured request"
     },
     "approverRowOpen": {
-      "css": "tr:has-text(\"${captured.requestNumber}\") a.btn-primary",
-      "description": "Open button on approver pending row for the captured request"
+      "css": "[data-request-number=\"${captured.requestNumber}\"] a[href*='/gov-requests/admin/']",
+      "description": "Decide link on the approver card for the captured request"
     },
     "approverRowByNumber": {
-      "css": "tr:has-text(\"${captured.requestNumber}\")",
-      "description": "Approver list row for the captured request"
+      "css": "[data-request-number=\"${captured.requestNumber}\"]",
+      "description": "Approver card for the captured request"
     },
     "decisionSubmit": {
-      "css": "form[action*='/process'] button.btn-warning",
-      "description": "Finalize decision button"
+      "css": "form[data-cr-decision-form] button[type='submit']",
+      "description": "Save the decision button"
     },
     "decisionQty": {
       "css": "input[name$='[qty]']",
-      "description": "Approved quantity input"
+      "description": "Approve how many? input (shown for Approve fewer)"
     },
     "decisionFieldset": {
-      "css": "form[action*='/process'] fieldset",
+      "css": "form[data-cr-decision-form] fieldset",
       "description": "Decision form fieldset"
     },
     "flashSuccess": {
@@ -59,16 +59,72 @@
       "description": "Success flash"
     },
     "flashError": {
-      "css": ".alert-danger",
-      "description": "Error flash"
+      "css": "[data-cr-errors], .alert-danger",
+      "description": "Error summary or flash"
     },
     "approverOpenButtons": {
-      "css": "table a.btn-primary[href*='/gov-requests/admin/']",
-      "description": "Open buttons on the approver pending list"
+      "css": "[data-cr-approvals] a[href*='/gov-requests/admin/']",
+      "description": "Decide links on the approver list"
     },
     "fulfillmentOpenButtons": {
-      "css": "table a[href*='/gov-requests/fulfillment/']",
-      "description": "Open buttons in the fulfillment queue"
+      "css": "[data-cr-to-issue] a[href*='/gov-requests/fulfillment/']",
+      "description": "Issue links in the To issue queue"
+    },
+    "basketContinue": {
+      "css": "[data-cr-next='3']",
+      "description": "Continue to review: checks the details step in place and opens the review"
+    },
+    "basketSplit": {
+      "css": "#cr-split",
+      "description": "Split preview shown when the draft becomes more than one request"
+    },
+    "myStatusByNumber": {
+      "css": "[data-request-number=\"${captured.requestNumber}\"] .gs-badge",
+      "description": "Status badge on the My requests card for the captured request"
+    },
+    "requestNextStep": {
+      "css": "[data-cr-next-step]",
+      "description": "What happens next sentence on the request page"
+    },
+    "requestLine": {
+      "css": "tr[data-line-id]",
+      "description": "Line rows on the request page"
+    },
+    "decisionAsAsked": {
+      "css": "input[name$='[choice]'][value='as_asked']",
+      "description": "Approve as asked choice"
+    },
+    "myTabActive": {
+      "css": "nav.gs-status-tabs a[href*='tab=active'] .gs-tabs__count",
+      "description": "Count on the My requests 'active' tab"
+    },
+    "myTabNeedsYou": {
+      "css": "nav.gs-status-tabs a[href*='tab=needs_you'] .gs-tabs__count",
+      "description": "Count on the My requests 'needs_you' tab"
+    },
+    "myTabFinished": {
+      "css": "nav.gs-status-tabs a[href*='tab=finished'] .gs-tabs__count",
+      "description": "Count on the My requests 'finished' tab"
+    },
+    "myFirstNumber": {
+      "css": "[data-cr-my-requests] [data-request-number] .cr-request__number >> nth=0",
+      "description": "First request number on the open My requests tab"
+    },
+    "basketToDetails": {
+      "css": "[data-cr-next='2']",
+      "description": "Continue to details (checkout step 1 → 2)"
+    },
+    "basketDeclare": {
+      "css": "#cr-field-declared",
+      "description": "Declaration checkbox on the review step"
+    },
+    "basketChanged": {
+      "css": "#cr-changed",
+      "description": "What changed since the review, when sending was stopped"
+    },
+    "sentNumberFirst": {
+      "css": "[data-cr-sent] [data-request-number] .cr-sent__number a",
+      "description": "First request number on the Sent page"
     }
   },
   "labels": {

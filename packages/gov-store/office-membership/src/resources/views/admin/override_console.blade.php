@@ -120,7 +120,7 @@
                         </div>
                         <p class="govmem-muted govmem-small govmem-flush">{{ __($m.'override_nothing_chosen') }}</p>
 
-                        <div data-govmem-when="override_type=force_release" class="govmem-stack">
+                        <div data-govmem-when="override_type=force_release" class="govmem-stack" @if($type !== 'force_release') hidden @endif>
                             <fieldset id="location_id">
                                 <legend class="govmem-legend">{{ __($m.'override_which_office') }}</legend>
                                 @forelse ($openMemberships as $membership)
@@ -159,7 +159,7 @@
                             </div>
                         </div>
 
-                        <div data-govmem-when="override_type=strip_roles">
+                        <div data-govmem-when="override_type=strip_roles" @if($type !== 'strip_roles') hidden @endif>
                             <strong>{{ __($m.'override_changes_title') }}</strong>
                             <ul class="govmem-effects">
                                 <li class="govmem-effect--stop"><i class="fas fa-user-slash" aria-hidden="true"></i><span>{{ __($m.'override_strip_effect_roles', ['count' => count($reach['roles'])]) }}</span></li>

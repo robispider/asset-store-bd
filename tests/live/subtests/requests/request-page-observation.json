@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "id": "requests.request-page-observation",
+  "title": "The request page shows the derived status, a next step and every line; a request that is not the person's own is not found",
+  "features": [
+    "requests.my-requests",
+    "requests.authorization"
+  ],
+  "tags": [
+    "seeded",
+    "readonly",
+    "security"
+  ],
+  "execution": {
+    "capability": "observe",
+    "language": "en-US",
+    "timeoutMs": 60000
+  },
+  "fixtures": {
+    "office": {
+      "requirements": {
+        "operational": true
+      }
+    },
+    "actors": {
+      "employee": {
+        "capabilities": {
+          "allOf": [
+            "requests.submit"
+          ]
+        },
+        "office": "office",
+        "activeMembership": true
+      }
+    }
+  },
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "employee"
+      }
+    },
+    {
+      "action": "goto",
+      "route": "gov.requests.user.index",
+      "query": {
+        "tab": "active"
+      }
+    },
+    {
+      "action": "capture",
+      "target": "requests.myFirstNumber",
+      "as": "requestNumber"
+    },
+    {
+      "action": "observe",
+      "check": "request.state",
+      "args": {
+        "number": "${captured.requestNumber}"
+      },
+      "as": "state"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.state.requested_by}",
+      "equals": "${actors.employee.id}"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-requests/my-requests/${observed.state.id}"
+    },
+    {
+      "action": "assert",
+      "target": "requests.requestNextStep",
+      "test": "visible"
+    },
+    {
+      "action": "assert",
+      "target": "requests.requestLine",
+      "test": "count",
+      "equals": "${observed.state.lines_count}"
+    },
+    {
+      "action": "probe",
+      "path": "/gov-requests/my-requests/999999999",
+      "expectStatus": [
+        404
+      ],
+      "as": "missing"
+    }
+  ],
+  "cleanup": {
+    "policy": "no-business-records-created"
+  },
+  "description": "Needs an employee with at least one request in progress (seeded office data). An id that is not the person's own request answers 404, the same as another person's request."
+}

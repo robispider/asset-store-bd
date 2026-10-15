@@ -191,7 +191,7 @@
                             :label="__($m.'add_way_transfer')" :description="__($m.'add_way_transfer_desc')" />
                     </div>
                 </fieldset>
-                <div data-govmem-when="add_way=personal" class="govmem-stack">
+                <div data-govmem-when="add_way=personal" class="govmem-stack" @if($reopen !== 'add') hidden @endif>
                     <x-gs::form-row for="username" :label="__($m.'field_username')" required>
                         <input type="text" class="form-control" id="username" name="username" value="{{ old('username') }}" required maxlength="191" autocomplete="off">
                     </x-gs::form-row>
@@ -201,16 +201,16 @@
                     </x-gs::form-row>
                     <p class="govmem-muted govmem-small govmem-flush">{{ __($m.'add_ministry_only', ['ministry' => $location->company->name ?? '']) }}</p>
                 </div>
-                <div data-govmem-when="add_way=code">
+                <div data-govmem-when="add_way=code" hidden>
                     <button type="button" class="gs-btn gs-btn--light gs-btn--outline" data-dismiss="modal" data-toggle="modal" data-target="#govmem-code">{{ __($m.'add_show_code') }}</button>
                 </div>
-                <div data-govmem-when="add_way=transfer">
+                <div data-govmem-when="add_way=transfer" hidden>
                     <x-gs::button :href="route('gov.membership.admin.index', ['tab' => 'arriving'])" tone="light" outline>{{ __($m.'add_open_arriving') }}</x-gs::button>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="gs-btn gs-btn--light gs-btn--outline" data-dismiss="modal">{{ __($m.'cancel') }}</button>
-                <span data-govmem-when="add_way=personal"><button type="submit" class="gs-btn gs-btn--primary">{{ __($m.'add_submit') }}</button></span>
+                <span data-govmem-when="add_way=personal" @if($reopen !== 'add') hidden @endif><button type="submit" class="gs-btn gs-btn--primary">{{ __($m.'add_submit') }}</button></span>
             </div>
         </form>
     </div>

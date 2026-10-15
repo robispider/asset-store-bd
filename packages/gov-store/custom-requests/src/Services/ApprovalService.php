@@ -3,6 +3,7 @@
 namespace GovStore\CustomRequests\Services;
 
 use App\Models\User;
+use GovStore\CustomRequests\Exceptions\RequestRefused;
 use GovStore\CustomRequests\Models\Request as ServiceRequest;
 use GovStore\CustomRequests\Models\RequestEvent;
 use GovStore\CustomRequests\Support\RequestWorkflow;
@@ -15,7 +16,14 @@ class ApprovalService
     {
         return DB::transaction(function () use ($request, $admin, $itemDecisions) {
             $request = ServiceRequest::whereKey($request->id)->lockForUpdate()->firstOrFail();
-            abort_unless(in_array($request->approval_status, RequestWorkflow::PENDING), 409);
+            if (! in_array($request->approval_status, RequestWorkflow::PENDING)) {
+                // Someone else decided first: say who and when, instead of a bare 409 page.
+                throw $request->decided_by
+                    ? new RequestRefused(409, 'request_refused_already_decided', 'decision', [
+                        'name' => app(\GovStore\CustomRequests\Support\RequestPresenter::class)->name($request->decided_by),
+                        'time' => ($request->approved_at ?? $request->closed_at ?? $request->updated_at)?->diffForHumans()])
+                    : new RequestRefused(409, 'request_refused_already_decided_plain', 'decision');
+            }
             $primary = $request->approval_status === 'pending_primary';
             app(RequestAccess::class)->check($request, $admin, $primary ? 'requests.approve.primary' : 'requests.approve.final');
             abort_if((int) $request->requested_by === (int) $admin->id, 403);
@@ -28,7 +36,7 @@ class ApprovalService
                 'items.*.notes' => 'nullable|string|max:2000',
             ])->validate();
             $lines = $request->items()->orderBy('requested_type')->orderBy('requested_id')->get();
-            abort_if(array_diff(array_keys($itemDecisions), $lines->pluck('id')->all()), 422);
+            RequestRefused::when((bool) array_diff(array_keys($itemDecisions), $lines->pluck('id')->all()), 422, 'request_refused_lines_changed', 'decision');
             $accepted = 0;
             $rejected = 0;
             foreach ($lines as $line) {
@@ -37,12 +45,12 @@ class ApprovalService
 
                     continue;
                 }
-                abort_unless(isset($itemDecisions[$line->id]), 422);
+                RequestRefused::unless(isset($itemDecisions[$line->id]), 422, 'request_refused_lines_changed', 'decision');
                 $decision = $itemDecisions[$line->id];
                 $approved = $decision['status'] === 'approved';
                 $cap = ($primary || ! $request->primary_decided_by) ? $line->requested_qty : min($line->requested_qty, $line->approved_qty);
                 $qty = $approved ? min((int) $decision['qty'], $cap) : 0;
-                abort_if($approved && $qty < 1, 422);
+                RequestRefused::when($approved && $qty < 1, 422, 'request_refused_approve_at_least_one', 'items.'.$line->id.'.qty');
                 $awaitFinal = $primary && $request->resolved_policy === 'PRIMARY_AND_FINAL';
                 $line->update([
                     'approved_qty' => $qty, 'reserved_qty' => 0,

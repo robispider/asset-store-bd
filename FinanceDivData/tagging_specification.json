@@ -1,0 +1,137 @@
+{
+  "classification": "Source-derived tag format; provisional pending resolution of contradictions in the manual.",
+  "format": "GGSSII MMYY LL DD NNNN (remove spaces when encoding as a string)",
+  "segments": [
+    {
+      "field": "group_code",
+      "width_digits": 2,
+      "meaning": "Asset group",
+      "source_pdf_pages": [
+        89,
+        99
+      ]
+    },
+    {
+      "field": "subgroup_code",
+      "width_digits": 2,
+      "meaning": "Asset sub-group",
+      "source_pdf_pages": [
+        90,
+        99
+      ]
+    },
+    {
+      "field": "item_code",
+      "width_digits": 2,
+      "meaning": "Item of asset",
+      "source_pdf_pages": [
+        91,
+        99
+      ]
+    },
+    {
+      "field": "purchase_month_year",
+      "width_digits": 4,
+      "format": "MMYY",
+      "meaning": "Purchase month and year",
+      "source_pdf_pages": [
+        88,
+        99
+      ]
+    },
+    {
+      "field": "location_code",
+      "width_digits": 2,
+      "meaning": "Location",
+      "source_pdf_pages": [
+        98,
+        99
+      ]
+    },
+    {
+      "field": "division_code",
+      "width_digits": 2,
+      "meaning": "Division",
+      "source_pdf_pages": [
+        98,
+        99
+      ]
+    },
+    {
+      "field": "asset_id_number",
+      "width_digits": 4,
+      "meaning": "Unique asset ID number assigned at registration",
+      "source_pdf_pages": [
+        88,
+        99,
+        100
+      ]
+    }
+  ],
+  "worked_example": {
+    "tag": "030119012201090001",
+    "source_pdf_page": 99,
+    "source_explanation": "03 Furniture and Fixture; 01 Table; 19 Employee Table; 0122 purchase MM/YY; 01 Head Office; 09 Finance and Accounts; 0001 Asset ID."
+  },
+  "operational_rules": [
+    {
+      "rule": "Assign a unique identification number to each fixed asset and record the tag number in the fixed asset register.",
+      "source_pdf_pages": [
+        87,
+        100
+      ]
+    },
+    {
+      "rule": "Affix permanently in a readily visible/accessibly viewable place; place consistently on similar asset types.",
+      "source_pdf_pages": [
+        87,
+        100
+      ]
+    },
+    {
+      "rule": "Use RFID tag paper or sticker; manual also describes QR Code Tag for the identification number.",
+      "source_pdf_pages": [
+        99,
+        100
+      ]
+    },
+    {
+      "rule": "If physically impracticable or tagging would affect warranty, maintain an untagged-asset file and record detailed traceability specifications in the register/module.",
+      "source_pdf_pages": [
+        100,
+        101
+      ]
+    },
+    {
+      "rule": "Update identification when registering and keep asset information current for changes in location, condition, cost, model and serial number.",
+      "source_pdf_pages": [
+        101
+      ]
+    }
+  ],
+  "source_conflicts": [
+    {
+      "issue": "Worked example conflicts with the official group list: example uses group 03 for Furniture and Fixture, while the group list assigns 03 Building and 05 Furniture and Fixture.",
+      "source_pdf_pages": [
+        89,
+        99
+      ]
+    },
+    {
+      "issue": "Worked example uses subgroup 01 for Table; the detailed Annexure-5 catalog identifies Table as subgroup 08 and its item list uses item codes starting at 23.",
+      "source_pdf_pages": [
+        91,
+        99,
+        106
+      ]
+    },
+    {
+      "issue": "Manual narrative describes the segment labels and widths in a diagram with ambiguous alignment; the worked 16-digit example yields a 2+2+2+4+2+2+4 layout.",
+      "source_pdf_pages": [
+        88,
+        99
+      ]
+    }
+  ],
+  "recommendation": "Do not issue production tags from the worked example until the responsible authority confirms the controlling code list and validates a canonical tag specification."
+}

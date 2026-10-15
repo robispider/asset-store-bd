@@ -11,7 +11,9 @@
   },
   "journeys": [
     "requests.catalog-progress-observation",
-    "requests.authorization-boundaries"
+    "requests.authorization-boundaries",
+    "requests.my-requests-observation",
+    "requests.request-page-observation"
   ],
   "defaults": {
     "language": "en-US",

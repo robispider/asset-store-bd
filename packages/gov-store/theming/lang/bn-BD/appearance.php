@@ -120,6 +120,18 @@ return [
         'membership_suspended' => 'স্থগিত',
         'membership_inactive' => 'শেষ হয়েছে',
         'membership_cancelled' => 'অনুরোধ বাতিল',
+        'request_pending_primary' => 'অনুমোদনের অপেক্ষায়',
+        'request_pending_final' => 'চূড়ান্ত অনুমোদনের অপেক্ষায়',
+        'request_approved' => 'অনুমোদিত · স্টোরে প্রস্তুত হচ্ছে',
+        'request_partly_issued' => 'আংশিক সরবরাহ',
+        'request_issued' => 'সরবরাহ হয়েছে · বুঝে নিন',
+        'request_received' => 'বুঝে পেয়েছেন',
+        'request_closed_short' => 'বন্ধ · সব মালামাল দেওয়া হয়নি',
+        'request_rejected' => 'অনুমোদিত হয়নি',
+        'request_withdrawn' => 'প্রত্যাহার করা হয়েছে',
+        'request_return_requested' => 'ফেরতের অনুরোধ',
+        'request_return_drafted' => 'ফেরত গ্রহণ চলছে',
+        'request_needs_review' => 'অফিসের পর্যালোচনা প্রয়োজন',
     ],
 
     'kit' => [

@@ -6,6 +6,7 @@ use App\Models\Accessory;
 use App\Models\Asset;
 use App\Models\AssetModel;
 use App\Models\Consumable;
+use GovStore\CustomRequests\Exceptions\RequestRefused;
 use GovStore\CustomRequests\Models\Request;
 use GovStore\CustomRequests\Models\RequestItem;
 use GovStore\CustomRequests\Support\RequestWorkflow;
@@ -81,8 +82,10 @@ class RequestInventory
         foreach ($request->items()->where('line_approval_status', 'approved')->orderBy('requested_type')->orderBy('requested_id')->get() as $line) {
             $model = $this->validateItem($line->requested_type, $line->requested_id, true);
             $remaining = $line->approved_qty - $line->issued_qty;
-            abort_if($remaining > $this->available($line->requested_type, $model, $request->office_id, $line->id), 409,
-                __('requestlabels::requests.insufficient_available_stock'));
+            $available = $this->available($line->requested_type, $model, $request->office_id, $line->id);
+            // Approvers see it under the line's quantity; an automatic approval sends the requester back to the draft.
+            RequestRefused::when($remaining > $available, 409, $request->resolved_policy === 'AUTO_APPROVE' && ! $request->decided_by
+                ? 'request_refused_reserve_auto' : 'request_refused_reserve', 'items.'.$line->id.'.qty', ['available' => $available, 'item' => $model->name]);
             $line->update(['reserved_qty' => $remaining]);
         }
     }

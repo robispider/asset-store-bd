@@ -40,11 +40,32 @@ class RequestNotices
         }
     }
 
-    public function forUser(int $userId)
+    /**
+     * The person's latest updates in the working office, newest first, with the request link and date.
+     * $ownOnly limits them to requests the person sent (My requests).
+     */
+    public function forUser(int $userId, bool $ownOnly = false, int $limit = 20)
     {
         return DB::table('custom_request_notices as notices')->join('custom_service_requests as requests', 'requests.id', '=', 'notices.request_id')
             ->where('notices.user_id', $userId)->where('requests.office_id', app(TenantContext::class)->locationId)
-            ->whereNull('requests.deleted_at')->orderByDesc('notices.id')->limit(20)
-            ->get(['notices.event_key', 'requests.request_number']);
+            ->when($ownOnly, fn ($q) => $q->where('requests.requested_by', $userId))
+            ->whereNull('requests.deleted_at')->orderByDesc('notices.id')->limit($limit)
+            ->get(['notices.id', 'notices.event_key', 'notices.read_at', 'notices.created_at', 'notices.request_id', 'requests.request_number']);
+    }
+
+    /** Mark the person's updates as read (all in the working office, or one request's). F8: read_at was never set. */
+    public function markRead(int $userId, ?int $requestId = null): int
+    {
+        return DB::table('custom_request_notices')->where('user_id', $userId)->whereNull('read_at')
+            ->when($requestId, fn ($q) => $q->where('request_id', $requestId))
+            ->whereIn('request_id', DB::table('custom_service_requests')->select('id')->where('office_id', app(TenantContext::class)->locationId))
+            ->update(['read_at' => now(), 'updated_at' => now()]);
+    }
+
+    public function unreadCount(int $userId): int
+    {
+        return DB::table('custom_request_notices')->where('user_id', $userId)->whereNull('read_at')
+            ->whereIn('request_id', DB::table('custom_service_requests')->select('id')->where('office_id', app(TenantContext::class)->locationId)
+                ->where('requested_by', $userId))->count();
     }
 }

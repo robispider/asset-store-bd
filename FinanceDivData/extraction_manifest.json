@@ -1,0 +1,38 @@
+{
+  "source_file": "Policy and Procedure Manual for Property, Plant, Equipment and Other Assets finance division.pdf",
+  "source_sha256": "83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89",
+  "page_count": 170,
+  "extracted_text_characters": 396962,
+  "raw_tables_detected": 329,
+  "normalized_asset_catalog_rows": 490,
+  "normalized_catalog_pdf_pages": [
+    103,
+    116
+  ],
+  "notes": [
+    "The source manual is for SOEs and Autonomous Bodies; confirm applicability to the Finance Division before treating its policy as binding.",
+    "Catalog rows preserve the annexure hierarchy and source page; review_status remains provisional because the worked tag example conflicts with the group/subgroup lists.",
+    "PDF text and table extraction are machine-readable transcriptions, not replacements for the source PDF.",
+    "The 490 normalized catalog rows cover all 18 group codes. Six vessel item rows span a page break; their subgroup 01 / Vessels header appears on the following PDF page and was carried back with source provenance retained."
+  ],
+  "asset_group_codes_covered": [
+    "01",
+    "02",
+    "03",
+    "04",
+    "05",
+    "06",
+    "07",
+    "08",
+    "09",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18"
+  ]
+}

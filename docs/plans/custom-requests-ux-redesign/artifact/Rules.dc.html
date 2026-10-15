@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Request rules</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/aef52f8d7c3fef253b593dd05928ec1c">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Source+Serif+4:wght@400;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.app{min-height:100%;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:var(--gs-font-sans);font-size:14px;line-height:1.5}
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 20px;background:var(--gs-header-bg);color:var(--gs-header-fg);border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.chip{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 12px;border-radius:var(--gs-radius-sm);border:var(--gs-border-width) solid var(--gs-color-border);background:transparent;color:inherit;font:inherit;text-decoration:none}
+.shell{display:flex;flex-wrap:wrap;align-items:stretch}
+.side{flex:1 1 220px;max-width:240px;background:var(--gs-sidebar-bg);color:var(--gs-sidebar-fg);padding:12px 0;box-sizing:border-box}
+.side a{display:flex;align-items:center;justify-content:space-between;min-height:42px;padding:0 18px;color:var(--gs-sidebar-fg);text-decoration:none}
+.side a[aria-current]{background:var(--gs-sidebar-active-bg);color:var(--gs-sidebar-active-fg);box-shadow:inset 3px 0 0 var(--gs-sidebar-active-marker)}
+.side .sub{padding-left:34px}
+.main{flex:999 1 560px;min-width:0;box-sizing:border-box;padding:20px 28px 56px;display:flex;flex-direction:column;gap:18px;max-width:1120px}
+.crumb{font-size:13px;color:var(--gs-color-text-muted)}
+.ico{width:1em;height:1em;flex:none}
+.muted{color:var(--gs-color-text-muted)}
+.small{font-size:13px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.rule{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;padding:16px 18px;border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.rule:last-child{border-bottom:0}
+.rule__text{flex:1 1 380px;min-width:0;display:flex;flex-direction:column;gap:2px}
+.rule__name{font-weight:700}
+.ctl{box-sizing:border-box;min-height:44px;padding:8px 12px;border:var(--gs-border-width) solid var(--gs-color-border-strong);border-radius:var(--gs-radius-sm);background:var(--gs-color-surface);color:var(--gs-color-text);font:inherit}
+.num{width:110px}
+.editor{display:flex;flex-direction:column;gap:16px;padding:18px;margin:0 18px 18px;border-radius:var(--gs-radius-md);background:var(--gs-color-surface-sunken)}
+.sentence{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.preview{padding:14px;border-radius:var(--gs-radius-md);background:var(--gs-color-surface);border:var(--gs-border-width) solid var(--gs-color-border)}
+.preview p{margin:0}
+.search{position:relative;flex:1 1 280px;max-width:440px}
+.search .ctl{width:100%;padding-left:36px}
+.search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--gs-color-text-muted)}
+</style>
+</helmet>
+<div class="app" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-table="{{ v.table }}" data-gs-controls="{{ v.controls }}" data-gs-type="{{ v.type }}" data-gs-header="{{ v.header }}">
+<div class="top">
+<strong style="font-size: 16px; flex: 1 1 auto">National Asset Register</strong>
+<span class="gs-avatar gs-avatar--sm gs-tone-primary" role="img" aria-label="Signed in as Ahsan Habib">AH</span>
+</div>
+<div class="shell">
+<nav class="side" aria-label="Main"><a href="#">Dashboard</a><a href="#">Administration</a><a class="sub" href="#">Access and security</a><a class="sub" href="#" aria-current="page">Rules &amp; settings</a><a href="#">Reports</a></nav>
+<main class="main">
+<nav class="crumb" aria-label="Breadcrumb"><a href="#">Home</a> / Administration / Rules &amp; settings / Request rules</nav>
+
+<header class="gs-page-header">
+<div class="gs-page-header__text"><h1 class="gs-page-header__title">Request rules</h1><p class="gs-page-header__subtitle">Who has to approve a request, by category. <strong>These rules apply to every office.</strong></p></div>
+</header>
+
+<div class="gs-alert gs-alert--info" role="status"><div class="gs-alert__body">A change applies to requests sent after you save. Requests already sent keep the rule they were sent under. Each office's approvers are set on its own Roles page.</div></div>
+
+<section class="gs-box" aria-labelledby="cat">
+<header class="gs-box__header"><h2 class="gs-box__title" id="cat">Categories</h2></header>
+<div class="gs-box__body" style="padding: 0">
+
+<div class="rule"><div class="rule__text"><span class="rule__name">Office supplies</span><span>{{ officeSentence }}</span><span class="small muted">{{ officeSource }}</span></div><button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm" aria-expanded="{{ editingTxt }}" onClick="{{ toggleEdit }}">{{ editLabel }}<span class="gs-sr-only"> the rule for Office supplies</span></button></div>
+<sc-if value="{{ editing }}" hint-placeholder-val="{{ true }}">
+<div class="editor">
+<fieldset style="border: 0; margin: 0; padding: 0"><legend class="gs-form-row__label" style="margin-bottom: 8px">Who has to approve?</legend>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 10px">
+<label class="gs-choice" for="r0"><input class="gs-choice__input" type="radio" id="r0" name="r" checked="{{ c0 }}" onChange="{{ pick0 }}"><span class="gs-choice__text"><span class="gs-choice__label">No approval needed</span><span class="gs-choice__description">Approved as soon as it's sent</span></span></label>
+<label class="gs-choice" for="r1"><input class="gs-choice__input" type="radio" id="r1" name="r" checked="{{ c1 }}" onChange="{{ pick1 }}"><span class="gs-choice__text"><span class="gs-choice__label">One approver</span><span class="gs-choice__description">The office's first approver decides</span></span></label>
+<label class="gs-choice" for="r2"><input class="gs-choice__input" type="radio" id="r2" name="r" checked="{{ c2 }}" onChange="{{ pick2 }}"><span class="gs-choice__text"><span class="gs-choice__label">Two approvers</span><span class="gs-choice__description">First, then a different final approver</span></span></label>
+</div></fieldset>
+<sc-if value="{{ isAuto }}" hint-placeholder-val="{{ false }}"><div class="gs-alert gs-alert--warning" role="alert"><div class="gs-alert__body">Requests in this category will be approved the moment they're sent, and stock is set aside straight away. Use it only for low-value everyday supplies, and keep a limit below.</div></div></sc-if>
+<sc-if value="{{ notTwo }}" hint-placeholder-val="{{ true }}">
+<div class="sentence"><span>Ask a second approver when one item is</span><input class="ctl num" type="number" min="1" value="{{ qty }}" onInput="{{ onQty }}" aria-label="Quantity limit"><span>or more, or worth ৳</span><input class="ctl num" type="number" min="1" value="{{ val }}" onInput="{{ onVal }}" aria-label="Value limit in taka"><span>or more.</span></div>
+<p class="small muted" style="margin: 0">Leave a box empty for no limit. Items with no recorded price always get two approvers when a value limit is set.</p>
+</sc-if>
+<div class="preview" aria-live="polite"><p class="small muted" style="font-weight: 700; letter-spacing: .06em; text-transform: uppercase">What this means</p><p>{{ ex1 }}</p><p>{{ ex2 }}</p></div>
+<div class="row" style="justify-content: flex-end"><button type="button" class="gs-btn gs-btn--light gs-btn--outline" onClick="{{ toggleEdit }}">Cancel</button><button type="button" class="gs-btn gs-btn--primary" onClick="{{ save }}">Save for all offices</button></div>
+</div>
+</sc-if>
+
+<div class="rule"><div class="rule__text"><span class="rule__name">Printer supplies</span><span>Two approvers, always.</span><span class="small muted">Set 3 Sep 2026 by Ahsan Habib</span></div><button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm">Change<span class="gs-sr-only"> the rule for Printer supplies</span></button></div>
+<div class="rule"><div class="rule__text"><span class="rule__name">Laptops</span><span>Two approvers, always.</span><span class="small muted">Set 3 Sep 2026 by Ahsan Habib</span></div><button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm">Change<span class="gs-sr-only"> the rule for Laptops</span></button></div>
+<div class="rule"><div class="rule__text"><span class="rule__name">Computer accessories</span><span class="muted">Not set. Uses the default: one approver.</span></div><button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm">Set a rule<span class="gs-sr-only"> for Computer accessories</span></button></div>
+<div class="rule"><div class="rule__text"><span class="rule__name">Furniture</span><span class="muted">Not set. Uses the default: one approver.</span></div><button type="button" class="gs-btn gs-btn--light gs-btn--outline gs-btn--sm">Set a rule<span class="gs-sr-only"> for Furniture</span></button></div>
+</div>
+</section>
+
+<section class="gs-box" aria-labelledby="ex">
+<header class="gs-box__header"><h2 class="gs-box__title" id="ex">Exceptions for single items</h2></header>
+<div class="gs-box__body" style="display: flex; flex-direction: column; gap: 12px">
+<p class="muted" style="margin: 0">An item exception wins over its category's rule.</p>
+<div class="rule" style="padding: 12px 0"><div class="rule__text"><span class="rule__name">Epson EB-E01 projector</span><span>Two approvers, always. <span class="muted">Category Projectors would allow one.</span></span></div><button type="button" class="gs-btn gs-btn--ghost gs-btn--sm">Remove<span class="gs-sr-only"> the exception for Epson EB-E01 projector</span></button></div>
+<div class="row"><label class="search" for="find"><span class="gs-sr-only">Find an item to add an exception</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input class="ctl" id="find" type="search" placeholder="Find an item by name to add an exception"></label></div>
+</div>
+</section>
+
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { editing: true, rule: 1, qty: '10', val: '50000', saved: { rule: 1, qty: '10', val: '50000' }, savedAt: '' }; }
+renderVals() {
+const V = {
+'civic-ledger': { header: 'neutral', density: 'regular', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { header: 'brand', density: 'regular', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { header: 'dark', density: 'compact', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { header: 'dark', density: 'comfortable', table: 'ledger', surfaces: 'flat', controls: 'outlined', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { header: 'brand', density: 'compact', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { header: 'floating', density: 'regular', table: 'rules', surfaces: 'elevated', controls: 'filled', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+const s = this.state;
+const names = ['No approval needed', 'One approver', 'Two approvers, always'];
+const describe = (r, q, v) => {
+if (r === 2) return 'Two approvers, always.';
+const lim = [];
+if (q) lim.push(q + ' or more of one item');
+if (v) lim.push('৳' + Number(v).toLocaleString('en-IN') + ' or more');
+return names[r] + (lim.length ? '; two approvers from ' + lim.join(' or ') + '.' : '.');
+};
+const q = parseInt(s.qty, 10); const v = parseFloat(s.val);
+const twoFor = (n, price) => s.rule === 2 || (q && n >= q) || (v && n * price >= v);
+const ex = (n, item, price) => {
+const two = twoFor(n, price);
+const who = two ? 'two approvers' : (s.rule === 0 ? 'no approval, approved at once' : 'one approver');
+return 'A request for ' + n + ' ' + item + ' (৳' + (n * price).toLocaleString('en-IN') + ') → ' + who + '.';
+};
+return {
+skin, mode, v: V[skin],
+editing: s.editing, editingTxt: s.editing ? 'true' : 'false', editLabel: s.editing ? 'Close' : 'Change',
+toggleEdit: () => this.setState({ editing: !s.editing, rule: s.saved.rule, qty: s.saved.qty, val: s.saved.val }),
+c0: s.rule === 0, c1: s.rule === 1, c2: s.rule === 2,
+pick0: () => this.setState({ rule: 0 }), pick1: () => this.setState({ rule: 1 }), pick2: () => this.setState({ rule: 2 }),
+isAuto: s.rule === 0, notTwo: s.rule !== 2,
+qty: s.qty, val: s.val, onQty: (e) => this.setState({ qty: e.target.value }), onVal: (e) => this.setState({ val: e.target.value }),
+ex1: ex(3, 'reams of A4 paper', 550), ex2: ex(12, 'reams of A4 paper', 550),
+officeSentence: describe(s.saved.rule, s.saved.qty, s.saved.val),
+officeSource: s.savedAt ? 'Changed just now by you · applies to new requests' : 'Set 3 Sep 2026 by Ahsan Habib',
+save: () => this.setState({ saved: { rule: s.rule, qty: s.qty, val: s.val }, editing: false, savedAt: 'now' })
+};
+}
+}
+</script>
+</body>
+</html>

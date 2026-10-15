@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Issue items for SR-2026-000307</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/aef52f8d7c3fef253b593dd05928ec1c">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Source+Serif+4:wght@400;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.app{min-height:100%;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:var(--gs-font-sans);font-size:14px;line-height:1.5}
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 20px;background:var(--gs-header-bg);color:var(--gs-header-fg);border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.chip{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 12px;border-radius:var(--gs-radius-sm);border:var(--gs-border-width) solid var(--gs-color-border);background:transparent;color:inherit;font:inherit;text-decoration:none}
+.shell{display:flex;flex-wrap:wrap;align-items:stretch}
+.side{flex:1 1 220px;max-width:240px;background:var(--gs-sidebar-bg);color:var(--gs-sidebar-fg);padding:12px 0;box-sizing:border-box}
+.side a{display:flex;align-items:center;justify-content:space-between;min-height:42px;padding:0 18px;color:var(--gs-sidebar-fg);text-decoration:none}
+.side a[aria-current]{background:var(--gs-sidebar-active-bg);color:var(--gs-sidebar-active-fg);box-shadow:inset 3px 0 0 var(--gs-sidebar-active-marker)}
+.side .sub{padding-left:34px}
+.main{flex:999 1 560px;min-width:0;box-sizing:border-box;padding:20px 28px 56px;display:flex;flex-direction:column;gap:18px}
+.crumb{font-size:13px;color:var(--gs-color-text-muted)}
+.ico{width:1em;height:1em;flex:none}
+.muted{color:var(--gs-color-text-muted)}
+.mono{font-family:var(--gs-font-mono)}
+.small{font-size:13px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.cols{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
+.colmain{flex:999 1 600px;min-width:0;display:flex;flex-direction:column;gap:18px}
+.colside{flex:1 1 300px;max-width:380px;display:flex;flex-direction:column;gap:18px}
+.line{display:flex;flex-direction:column;gap:12px;padding:18px;border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.line:last-child{border-bottom:0}
+.line__head{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;justify-content:space-between}
+.line__name{font-weight:700;font-size:15px}
+.counts{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--gs-color-text-muted)}
+.counts strong{color:var(--gs-color-text);font-variant-numeric:tabular-nums}
+.ctl{box-sizing:border-box;min-height:44px;padding:8px 12px;border:var(--gs-border-width) solid var(--gs-color-border-strong);border-radius:var(--gs-radius-sm);background:var(--gs-color-surface);color:var(--gs-color-text);font:inherit;width:100%}
+.qtyin{width:96px;font-size:18px;font-weight:700;text-align:center}
+.of{font-size:15px;color:var(--gs-color-text-muted)}
+.linkbtn{border:0;background:transparent;padding:0;font:inherit;color:var(--gs-color-link);text-decoration:underline;cursor:pointer;min-height:44px}
+.scan{position:relative;max-width:420px}
+.scan .ctl{padding-left:38px}
+.scan svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--gs-color-text-muted)}
+.dialog{display:flex;flex-direction:column;gap:14px;padding:20px;border-radius:var(--gs-radius-lg);background:var(--gs-color-surface);border:var(--gs-border-width) solid var(--gs-color-border-strong);box-shadow:var(--gs-shadow-2,none)}
+.dialog h2{margin:0;font-size:18px}
+.dialog p{margin:0}
+.sum{display:flex;flex-direction:column;gap:8px;padding:18px;border-radius:var(--gs-radius-md);background:var(--gs-color-surface-sunken)}
+.sum p{margin:0}
+.sub{display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap}
+</style>
+</helmet>
+<div class="app" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-table="{{ v.table }}" data-gs-controls="{{ v.controls }}" data-gs-type="{{ v.type }}" data-gs-header="{{ v.header }}">
+<div class="top">
+<strong style="font-size: 16px; flex: 1 1 auto">National Asset Register</strong>
+<span class="chip"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg><span><span class="muted">Working in</span> Upazila Health Complex, Savar</span></span>
+<span class="gs-avatar gs-avatar--sm gs-tone-primary" role="img" aria-label="Signed in as Rafiq Ahmed">RA</span>
+</div>
+<div class="shell">
+<nav class="side" aria-label="Main"><a href="#">Dashboard</a><a href="#">Requests</a><a class="sub" href="ToIssue.dc.html" aria-current="page">To issue <span class="gs-tabs__count">6</span></a><a class="sub" href="Register.dc.html">Issue register</a><a href="#">Store</a></nav>
+<main class="main">
+<nav class="crumb" aria-label="Breadcrumb"><a href="#">Home</a> / <a href="ToIssue.dc.html">To issue</a> / SR-2026-000307</nav>
+
+<header class="gs-page-header">
+<div class="gs-page-header__text"><h1 class="gs-page-header__title">Issue items · <span class="mono">SR-2026-000307</span></h1><div class="gs-page-header__meta" style="display: flex; gap: 6px 18px; flex-wrap: wrap; align-items: center; color: var(--gs-color-text-muted)"><span class="gs-badge" data-tone="info"><span class="gs-badge__label">Approved · with the store</span></span><span>For <strong style="color: var(--gs-color-text)">Jahid Hasan</strong>, Laboratory</span><span>Approved 14 Oct by Kamal Hossain</span><span>Needed by 17 Oct</span></div></div>
+</header>
+
+<sc-if value="{{ issued }}" hint-placeholder-val="{{ false }}">
+<div class="gs-alert gs-alert--success" role="status"><div class="gs-alert__body"><strong>Issued 3 items to Jahid Hasan.</strong> Goods issue <a href="Register.dc.html">GI-2026-000044</a> is in the register, the laptop LT-0412 is checked out to him, and he has been asked to confirm receipt. <a href="ToIssue.dc.html">Next request (4 ready)</a></div></div>
+</sc-if>
+<sc-if value="{{ closed }}" hint-placeholder-val="{{ false }}">
+<div class="gs-alert gs-alert--warning" role="status"><div class="gs-alert__body"><strong>The rest of SR-2026-000307 is closed.</strong> Jahid Hasan has been told why. Nothing was issued, and the set-aside stock is free again. <a href="ToIssue.dc.html">Back to To issue</a></div></div>
+</sc-if>
+
+<div class="cols">
+<div class="colmain">
+<section class="gs-box" aria-labelledby="it">
+<header class="gs-box__header"><h2 class="gs-box__title" id="it">2 items to issue</h2></header>
+<div class="gs-box__body" style="padding: 0">
+
+<div class="line">
+<div class="line__head"><span class="line__name">{{ mouseName }}</span><span class="counts"><span>Approved <strong>2</strong></span><span>Issued <strong>0</strong></span><span>Free in the store <strong>{{ mouseFree }}</strong></span></span></div>
+<sc-if value="{{ hasSub }}" hint-placeholder-val="{{ false }}"><span class="sub small"><span class="gs-tag gs-tag--light gs-tag--outline">Alternative for USB optical mouse</span><button type="button" class="linkbtn" onClick="{{ undoSub }}">Undo</button></span></sc-if>
+<div class="gs-form-row {{ stockCls }}"><label class="gs-form-row__label" for="q1">Issue now</label><div class="gs-form-row__control"><div class="row"><input class="ctl qtyin" id="q1" type="number" min="0" max="2" value="2"><span class="of">of 2</span><sc-if value="{{ noSub }}" hint-placeholder-val="{{ true }}"><button type="button" class="linkbtn" onClick="{{ openSub }}">Give an alternative…</button></sc-if></div>
+<sc-if value="{{ stockErr }}" hint-placeholder-val="{{ false }}"><p class="gs-form-row__error" role="alert">Only 1 USB optical mouse is free now: another issue used the rest a minute ago. Issue 1, or give an alternative.</p></sc-if></div></div>
+<sc-if value="{{ subOpen }}" hint-placeholder-val="{{ false }}">
+<section class="dialog" role="dialog" aria-labelledby="sb">
+<h2 id="sb">Give an alternative for USB optical mouse</h2>
+<p class="small muted">Same category and a known price no higher than the approved item (৳520). A dearer alternative needs a new approval.</p>
+<label class="gs-choice" for="a1"><input class="gs-choice__input" type="radio" id="a1" name="alt" checked><span class="gs-choice__text"><span class="gs-choice__label">Logitech B100 USB mouse</span><span class="gs-choice__description">20 free · ৳450</span></span></label>
+<label class="gs-choice" for="a2"><input class="gs-choice__input" type="radio" id="a2" name="alt" disabled><span class="gs-choice__text"><span class="gs-choice__label">Logitech M90 USB mouse</span><span class="gs-choice__description">8 free · ৳610, dearer than approved, needs a new approval</span></span></label>
+<div class="row" style="justify-content: flex-end"><button type="button" class="gs-btn gs-btn--light gs-btn--outline" onClick="{{ closeSub }}">Cancel</button><button type="button" class="gs-btn gs-btn--primary" onClick="{{ applySub }}">Use Logitech B100</button></div>
+</section>
+</sc-if>
+</div>
+
+<div class="line">
+<div class="line__head"><span class="line__name">Dell Latitude 3440 laptop</span><span class="counts"><span>Approved <strong>1</strong></span><span>Issued <strong>0</strong></span><span>Free in the store <strong>3</strong></span></span></div>
+<label class="scan" for="tag"><span class="gs-sr-only">Scan or type the asset tag</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6v12M8 6v12M11 6v12M15 6v12M18 6v12M20 6v12"></path></svg><input class="ctl" id="tag" placeholder="Scan the asset tag, or pick one below"></label>
+<fieldset style="border: 0; margin: 0; padding: 0"><legend class="small muted" style="margin-bottom: 6px">Free laptops in this store</legend>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 8px">
+<label class="gs-choice" for="l1"><input class="gs-choice__input" type="radio" id="l1" name="lt" checked><span class="gs-choice__text"><span class="gs-choice__label mono">LT-0412</span><span class="gs-choice__description">Serial 7HQ2YV3 · Store room A</span></span></label>
+<label class="gs-choice" for="l2"><input class="gs-choice__input" type="radio" id="l2" name="lt"><span class="gs-choice__text"><span class="gs-choice__label mono">LT-0415</span><span class="gs-choice__description">Serial 9KD1LP0 · Store room A</span></span></label>
+<label class="gs-choice" for="l3"><input class="gs-choice__input" type="radio" id="l3" name="lt"><span class="gs-choice__text"><span class="gs-choice__label mono">LT-0420</span><span class="gs-choice__description">Serial 2MX8RT4 · Store room B</span></span></label>
+</div></fieldset>
+</div>
+
+</div>
+</section>
+
+<section class="gs-box" aria-labelledby="ho">
+<header class="gs-box__header"><h2 class="gs-box__title" id="ho">Handover</h2></header>
+<div class="gs-box__body" style="display: flex; flex-direction: column; gap: 14px">
+<div class="gs-form-row"><label class="gs-form-row__label" for="to">Handed to</label><div class="gs-form-row__control"><select class="ctl" id="to"><option>Jahid Hasan (asked for it)</option><option>Someone else on his behalf…</option></select></div></div>
+<div class="gs-form-row"><label class="gs-form-row__label" for="nt">Note (optional)</label><div class="gs-form-row__control"><input class="ctl" id="nt" placeholder="e.g. Charger and bag included"></div></div>
+</div>
+</section>
+
+<div class="sum" aria-live="polite"><p><strong>You're issuing 3 items to Jahid Hasan.</strong></p><p class="small muted">Store stock goes down by 2 {{ mouseShort }}; laptop LT-0412 is checked out to him. A goods issue document is added to the register and Jahid is asked to confirm receipt.</p></div>
+<div class="row" style="justify-content: space-between"><button type="button" class="linkbtn" onClick="{{ openClose }}">Can't issue everything? Close the rest…</button><button type="button" class="gs-btn gs-btn--primary gs-btn--lg" onClick="{{ issue }}">Issue 3 items</button></div>
+
+<sc-if value="{{ closeOpen }}" hint-placeholder-val="{{ false }}">
+<section class="dialog" role="dialog" aria-labelledby="cl">
+<h2 id="cl">Close the rest of SR-2026-000307</h2>
+<p>This cancels everything not yet issued: <strong>2 USB mice and 1 laptop</strong>. The stock set aside for them becomes free again. Jahid Hasan sees your reason. It can't be undone; he would need to send a new request.</p>
+<div class="gs-form-row"><label class="gs-form-row__label" for="rs">Why?</label><div class="gs-form-row__control"><select class="ctl" id="rs"><option>Out of stock, no delivery expected soon</option><option>The item is no longer issued</option><option>Jahid no longer needs it</option><option>Something else</option></select></div></div>
+<div class="gs-form-row {{ closeCls }}"><label class="gs-form-row__label" for="rn">Explain for Jahid <span class="gs-form-row__required" aria-hidden="true">*</span></label><div class="gs-form-row__control"><input class="ctl" id="rn" value="{{ closeNote }}" onInput="{{ onCloseNote }}"><sc-if value="{{ closeErr }}" hint-placeholder-val="{{ false }}"><p class="gs-form-row__error" role="alert">Write at least 5 characters so Jahid knows why.</p></sc-if></div></div>
+<div class="row" style="justify-content: flex-end"><button type="button" class="gs-btn gs-btn--light gs-btn--outline" onClick="{{ cancelClose }}">Keep the request open</button><button type="button" class="gs-btn gs-btn--danger" onClick="{{ confirmClose }}">Close the rest</button></div>
+</section>
+</sc-if>
+</div>
+
+<aside class="colside">
+<section class="gs-box" aria-labelledby="ab">
+<header class="gs-box__header"><h2 class="gs-box__title" id="ab">The request</h2></header>
+<div class="gs-box__body"><dl class="gs-kv" style="--gs-kv-columns: 1">
+<div class="gs-kv__item"><dt class="gs-kv__label">What it's for</dt><dd class="gs-kv__value">Set up the new sample-registration counter</dd></div>
+<div class="gs-kv__item"><dt class="gs-kv__label">Where it goes</dt><dd class="gs-kv__value">Laboratory, ground floor</dd></div>
+</dl></div>
+</section>
+<section class="gs-box" aria-labelledby="hi">
+<header class="gs-box__header"><h2 class="gs-box__title" id="hi">History</h2></header>
+<div class="gs-box__body"><ol class="gs-timeline">
+<li class="gs-timeline__item"><div><strong>Kamal Hossain</strong> approved it as asked</div><time class="gs-timeline__meta">14 Oct 2026, 11:30</time></li>
+<li class="gs-timeline__item"><div><strong>Jahid Hasan</strong> sent the request</div><time class="gs-timeline__meta">14 Oct 2026, 08:55</time></li>
+</ol></div>
+</section>
+</aside>
+</div>
+
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"stockError":{"editor":"boolean","default":false,"section":"States"},"$preview":{"width":1440,"height":1850}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { subOpen: false, sub: false, closeOpen: false, closeNote: '', closeErr: false, issued: false, closed: false }; }
+renderVals() {
+const V = {
+'civic-ledger': { header: 'neutral', density: 'regular', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { header: 'brand', density: 'regular', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { header: 'dark', density: 'compact', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { header: 'dark', density: 'comfortable', table: 'ledger', surfaces: 'flat', controls: 'outlined', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { header: 'brand', density: 'compact', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { header: 'floating', density: 'regular', table: 'rules', surfaces: 'elevated', controls: 'filled', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+const s = this.state;
+const stockErr = !!this.props.staleError || !!this.props.stockError;
+return {
+skin, mode, v: V[skin],
+mouseName: s.sub ? 'Logitech B100 USB mouse' : 'USB optical mouse', mouseShort: s.sub ? 'Logitech B100 mice' : 'USB mice', mouseFree: s.sub ? 20 : (stockErr ? 1 : 12),
+hasSub: s.sub, noSub: !s.sub, subOpen: s.subOpen,
+openSub: () => this.setState({ subOpen: true }), closeSub: () => this.setState({ subOpen: false }),
+applySub: () => this.setState({ sub: true, subOpen: false }), undoSub: () => this.setState({ sub: false }),
+stockErr: stockErr && !s.sub, stockCls: stockErr && !s.sub ? 'gs-form-row--error' : '',
+closeOpen: s.closeOpen, closeNote: s.closeNote, closeErr: s.closeErr, closeCls: s.closeErr ? 'gs-form-row--error' : '',
+openClose: () => this.setState({ closeOpen: true }), cancelClose: () => this.setState({ closeOpen: false, closeErr: false }),
+onCloseNote: (e) => this.setState({ closeNote: e.target.value, closeErr: false }),
+confirmClose: () => { if ((s.closeNote || '').trim().length < 5) { this.setState({ closeErr: true }); return; } this.setState({ closed: true, closeOpen: false }); },
+issued: s.issued, closed: s.closed,
+issue: () => this.setState({ issued: true })
+};
+}
+}
+</script>
+</body>
+</html>

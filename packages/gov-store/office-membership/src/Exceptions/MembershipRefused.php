@@ -2,7 +2,7 @@
 
 namespace GovStore\OfficeMembership\Exceptions;
 
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use GovStore\TenantScope\Exceptions\WorkflowRefusal;
 
 /**
  * A workflow refusal the person can act on: a wrong code, an outdated page, an unfinished checklist.
@@ -10,11 +10,11 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  * G1 handler behave as before, and carries a translated message plus the form field it belongs to,
  * so controllers can send the person back to the form with their input kept.
  */
-class MembershipRefused extends HttpException
+class MembershipRefused extends WorkflowRefusal
 {
-    public function __construct(int $status, string $key, public readonly string $field = 'membership', array $replace = [])
+    public function __construct(int $status, string $key, string $field = 'membership', array $replace = [])
     {
-        parent::__construct($status, __('office_membership::member.'.$key, $replace));
+        parent::__construct($status, __('office_membership::member.'.$key, $replace), $field);
     }
 
     public static function unless(bool $condition, int $status, string $key, string $field = 'membership', array $replace = []): void

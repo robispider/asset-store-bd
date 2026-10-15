@@ -1,0 +1,9375 @@
+{
+  "source_pdf": "Policy and Procedure Manual for Property, Plant, Equipment and Other Assets finance division.pdf",
+  "tables_detected": 329,
+  "tables": [
+    {
+      "pdf_page": 10,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Abbreviation",
+          "Description"
+        ],
+        [
+          "CEWIP",
+          "Capital Expenditure Work in Progress"
+        ],
+        [
+          "CSR",
+          "Corporate Social Responsibility"
+        ],
+        [
+          "CWIP",
+          "Capital work-in-progress"
+        ],
+        [
+          "FDN",
+          "Fixed Asset Disposal Note"
+        ],
+        [
+          "FATF",
+          "Fixed Asset Transfer Form"
+        ],
+        [
+          "ADMINISTRATION\nDEPARTMENT",
+          "Human Resources and Admin Division"
+        ],
+        [
+          "FD",
+          "Finance Division"
+        ],
+        [
+          "FAMC",
+          "Fixed Asset Management Committee"
+        ],
+        [
+          "PPE",
+          "Property, Plant and Equipment"
+        ],
+        [
+          "AB",
+          "Autonomous Body"
+        ],
+        [
+          "APA",
+          "Annual Performance Agreement"
+        ],
+        [
+          "API",
+          "Application Program Interface"
+        ],
+        [
+          "BMC",
+          "Budget Management Committees"
+        ],
+        [
+          "DLI",
+          "Disbursement Linked Indicators"
+        ],
+        [
+          "DLR",
+          "Disbursement Linked Results"
+        ],
+        [
+          "EFT",
+          "Electronic Funds Transfer"
+        ],
+        [
+          "ERD",
+          "Economic Relations Division"
+        ],
+        [
+          "FD",
+          "Finance Division"
+        ],
+        [
+          "IDA",
+          "International Development Association"
+        ],
+        [
+          "iBAS++",
+          "Integrated Budget and Accounting System"
+        ],
+        [
+          "IPE",
+          "Independent Performance Evaluation"
+        ],
+        [
+          "IFRIC",
+          "International Financial Reporting Interpretations Committee"
+        ],
+        [
+          "IFRS",
+          "International Financial Reporting Standards"
+        ],
+        [
+          "IAS",
+          "International Accounting Standards"
+        ],
+        [
+          "IPEG",
+          "Independent Performance Evaluation Guideline"
+        ],
+        [
+          "IPEC",
+          "Independent Performance Evaluation Committee"
+        ],
+        [
+          "LM",
+          "Line Ministry"
+        ],
+        [
+          "MoF",
+          "Ministry of Finance"
+        ],
+        [
+          "PECT",
+          "Program Execution and Coordination Team"
+        ],
+        [
+          "PPE",
+          "Property Plant & Equipment"
+        ],
+        [
+          "PEFA",
+          "Public Expenditure and Financial Accountability"
+        ],
+        [
+          "PFM",
+          "Public Financial Management"
+        ],
+        [
+          "PIS",
+          "Performance Improvement Strategy"
+        ],
+        [
+          "PIT",
+          "Program Implementation Team"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 11,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "SABRE",
+          "State-owned Enterprises and Autonomous Bodies Budget,\nReporting and Evaluation softwire"
+        ],
+        [
+          "SC",
+          "Steering Committee"
+        ],
+        [
+          "SOEs",
+          "State-owned Enterprises"
+        ],
+        [
+          "SPFMS",
+          "Strengthening Public Financial Management Program to\nenable Service Delivery"
+        ],
+        [
+          "TDM",
+          "Treasury and Debt Management Wing"
+        ],
+        [
+          "TOE",
+          "Table of Organization & Equipment"
+        ],
+        [
+          "ToR",
+          "Terms of Reference"
+        ],
+        [
+          "FAMD",
+          "Fixed Asset Management Department"
+        ],
+        [
+          "FOB",
+          "Free on Board"
+        ],
+        [
+          "LC",
+          "Letter of credit"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 12,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "",
+          "Duration",
+          null,
+          "",
+          "",
+          "Implementation Period",
+          null,
+          ""
+        ],
+        [
+          "Years",
+          null,
+          "Months",
+          null,
+          "Start date",
+          null,
+          "End date",
+          null
+        ],
+        [
+          "6",
+          null,
+          "7",
+          null,
+          "December 1, 2019",
+          null,
+          "June 30, 2026",
+          null
+        ]
+      ]
+    },
+    {
+      "pdf_page": 16,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "• Categories of fixed assets;",
+          "(See section 5)"
+        ],
+        [
+          "• Recognition of fixed asset;",
+          "(See section 6)"
+        ],
+        [
+          "• Capitalization threshold",
+          "(See section 7)"
+        ],
+        [
+          "• Acquisition of property, plant and equipment;",
+          "(See section 8)"
+        ],
+        [
+          "• Receiving property, plant and equipment;",
+          "(See section 9)"
+        ],
+        [
+          "• Depreciation charges on PPE;",
+          "(See section 10)"
+        ],
+        [
+          "• Intangibles assets",
+          "(See section 11)"
+        ],
+        [
+          "• Disposal or write off of PPE;",
+          "(See section 12)"
+        ],
+        [
+          "• Derecognition of assets",
+          "(See section 13)"
+        ],
+        [
+          "• Impairment",
+          "(See section 14)"
+        ],
+        [
+          "• Revaluation;",
+          "(See section 15)"
+        ],
+        [
+          "• Fixed asset transfer policy",
+          "(See section 16)"
+        ],
+        [
+          "• Recording of fixed asset;",
+          "(See section 17)"
+        ],
+        [
+          "• Fixed assets register",
+          "(See section 18)"
+        ],
+        [
+          "• Disclosure, identification mark, maintenance,\naccountability statement etc.",
+          "See section 19 to 27"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 17,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Asset category",
+          "For further details"
+        ],
+        [
+          "1. Land",
+          "See section 5.1.1"
+        ],
+        [
+          "2. Land Improvements",
+          "See section 5.1.2"
+        ],
+        [
+          "3. Buildings",
+          "See section 5.1.3"
+        ],
+        [
+          "4. Plant and Machinery (Including heavy equipment)",
+          "See section 5.1.4"
+        ],
+        [
+          "5. Furniture and fixture",
+          "See section 5.1.5"
+        ],
+        [
+          "6. Decoration and renovation",
+          "See section 5.1.6"
+        ],
+        [
+          "7. Office equipment",
+          "See section 5.1.7"
+        ],
+        [
+          "8. Electric equipment",
+          "See section 5.1.8"
+        ],
+        [
+          "9. Computer and computer equipment",
+          "See section 5.1.9"
+        ],
+        [
+          "10. Motor vehicle",
+          "See section 5.1.10"
+        ],
+        [
+          "11. Network and IT Equipment / Technology Assets",
+          "See section 5.1.11"
+        ],
+        [
+          "12. Tools",
+          "See section 5.1.12"
+        ],
+        [
+          "13. Leasehold Improvements",
+          "See section 5.1.13"
+        ],
+        [
+          "14. Infrastructure",
+          "See section 5.1.14"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 18,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Asset category",
+          "For further details"
+        ],
+        [
+          "15. Aircraft and other inter-alia assets",
+          "See section 5.1.15"
+        ],
+        [
+          "16. VESSELS, shipping machinery and equipment’s",
+          "See section 5.1.16"
+        ],
+        [
+          "17. Other Tangible Assets (Artwork, Safety Equipment etc.)",
+          "See section 5.1.17"
+        ],
+        [
+          "18. Intangible Assets",
+          "See section 5.1.18"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 18,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "Category",
+          "Examples"
+        ],
+        [
+          "Office Buildings",
+          "Headquarters, branch offices"
+        ],
+        [
+          "Warehouses",
+          "Storage, logistics centers"
+        ],
+        [
+          "Factories",
+          "Production facilities"
+        ],
+        [
+          "Retail Stores",
+          "Shopping outlets"
+        ],
+        [
+          "Infrastructure",
+          "Bridges, parking structures"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 20,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "1. AIRCRAFT FLEET (CORE OPERATIONAL ASSETS)",
+          null,
+          null
+        ],
+        [
+          "Asset Type",
+          "Specific Models",
+          "Key Details"
+        ],
+        [
+          "Passenger Aircraft",
+          "Boeing 787-8/9 Dreamliner",
+          "Long-haul routes (e.g., London, Kuala\nLumpur)"
+        ],
+        [
+          "",
+          "Boeing 777-300ER",
+          "High-capacity international flights"
+        ],
+        [
+          "",
+          "Dash 8-400",
+          "Domestic/short haul (e.g., Chittagong,\nSylhet)"
+        ],
+        [
+          "Cargo Aircraft",
+          "Boeing 737-800BCF",
+          "Dedicated freight operations"
+        ],
+        [
+          "",
+          "",
+          ""
+        ],
+        [
+          "Note: Fleet composition may change; typically, 10-15 active aircraft.",
+          null,
+          null
+        ],
+        [
+          "",
+          "",
+          ""
+        ],
+        [
+          "2. GROUND SUPPORT EQUIPMENT",
+          null,
+          null
+        ],
+        [
+          "Category",
+          "Examples",
+          "Purpose"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 21,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Aircraft Handling",
+          "Tow tractors, pushback\ntrucks",
+          "Aircraft maneuvering"
+        ],
+        [
+          "Loading Systems",
+          "Container loaders, belt\nloaders",
+          "Cargo/baggage handling"
+        ],
+        [
+          "Passenger Services",
+          "Mobile stairs, airbridges",
+          "Boarding/deboarding"
+        ],
+        [
+          "Maintenance",
+          "Hydraulic lifts, fuel trucks",
+          "Servicing aircraft"
+        ],
+        [
+          "",
+          "",
+          ""
+        ],
+        [
+          "3. REAL ESTATE & INFRASTRUCTURE",
+          null,
+          null
+        ],
+        [
+          "Asset",
+          "Location",
+          "Function"
+        ],
+        [
+          "Headquarters",
+          "Balaka, Dhaka",
+          "Administrative hub"
+        ],
+        [
+          "Hangars",
+          "Shahjalal International\nAirport",
+          "Aircraft maintenance"
+        ],
+        [
+          "Training Center",
+          "Dhaka (Kurmitola)",
+          "Pilot/cabin crew training"
+        ],
+        [
+          "Catering Facility",
+          "Airport premises",
+          "In-flight meal production"
+        ],
+        [
+          "",
+          "",
+          ""
+        ],
+        [
+          "4. VEHICLES",
+          null,
+          null
+        ],
+        [
+          "Type",
+          "Usage",
+          ""
+        ],
+        [
+          "Airport Buses",
+          "Passenger transport\nbetween terminal/aircraft",
+          ""
+        ],
+        [
+          "Crew Transport\nVans",
+          "Staff commuting",
+          ""
+        ],
+        [
+          "Emergency Vehicles",
+          "Fire trucks, ambulances\n( airport operations)",
+          ""
+        ],
+        [
+          "",
+          "",
+          ""
+        ],
+        [
+          "5. IT & OPERATIONAL SYSTEMS",
+          null,
+          null
+        ],
+        [
+          "System",
+          "Function",
+          ""
+        ],
+        [
+          "Flight Simulators",
+          "Pilot training (B787, B777\nmodels)",
+          ""
+        ],
+        [
+          "Reservation\nSystems",
+          "Amadeus/Altea suite",
+          "Ticket sales/inventory"
+        ],
+        [
+          "Baggage Handling",
+          "Radio Frequency\nIdentification Number\n( RFID) tracking systems",
+          ""
+        ],
+        [
+          "",
+          "",
+          ""
+        ],
+        [
+          "6. IN-FLIGHT ASSETS",
+          null,
+          null
+        ],
+        [
+          "Item",
+          "Value Driver",
+          ""
+        ],
+        [
+          "Aircraft Seats",
+          "Business/Economy class\nconfigurations",
+          ""
+        ],
+        [
+          "Galley Equipment",
+          "Food service infrastructure",
+          ""
+        ],
+        [
+          "Entertainment\nSystems",
+          "In-flight screens/audio",
+          ""
+        ]
+      ]
+    },
+    {
+      "pdf_page": 23,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "",
+          "1. Intellectual Property (IP)",
+          null,
+          null,
+          null,
+          ""
+        ],
+        [
+          "",
+          "Asset Type",
+          "",
+          "",
+          "Description",
+          ""
+        ]
+      ]
+    },
+    {
+      "pdf_page": 23,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "",
+          "Trademarks",
+          "",
+          "",
+          "Brand names, logos, slogans (e.g., Petrobangla’s \"BPC’s,\" TCB’s logo).",
+          ""
+        ]
+      ]
+    },
+    {
+      "pdf_page": 23,
+      "table_number_on_page": 3,
+      "rows": [
+        [
+          "Trade Secrets",
+          "",
+          "Confidential business knowledge (e.g., Parjatan Corporation’s recipe,",
+          ""
+        ],
+        [
+          null,
+          null,
+          "E astern Oil Refining’s algorithm).",
+          null
+        ]
+      ]
+    },
+    {
+      "pdf_page": 23,
+      "table_number_on_page": 4,
+      "rows": [
+        [
+          "",
+          "2. Technology & Software",
+          ""
+        ]
+      ]
+    },
+    {
+      "pdf_page": 23,
+      "table_number_on_page": 5,
+      "rows": [
+        [
+          "Software Licenses",
+          "",
+          "Purchased or developed software (e.g., SAP, Microsoft Office",
+          ""
+        ],
+        [
+          null,
+          null,
+          "licenses).",
+          null
+        ]
+      ]
+    },
+    {
+      "pdf_page": 23,
+      "table_number_on_page": 6,
+      "rows": [
+        [
+          "",
+          "Domain Names",
+          "",
+          "",
+          "Website URLs with brand value (e.g., govt.com).",
+          ""
+        ]
+      ]
+    },
+    {
+      "pdf_page": 23,
+      "table_number_on_page": 7,
+      "rows": [
+        [
+          "",
+          "3. Customer-Related Assets",
+          ""
+        ]
+      ]
+    },
+    {
+      "pdf_page": 23,
+      "table_number_on_page": 8,
+      "rows": [
+        [
+          "",
+          "Customer Lists",
+          "",
+          "",
+          "Databases of clients with purchase history (common in acquisitions).",
+          ""
+        ]
+      ]
+    },
+    {
+      "pdf_page": 23,
+      "table_number_on_page": 9,
+      "rows": [
+        [
+          "",
+          "Franchise Agreements",
+          "",
+          "",
+          "Rights to operate under a brand (e.g., KFC’s franchisee rights).",
+          ""
+        ]
+      ]
+    },
+    {
+      "pdf_page": 23,
+      "table_number_on_page": 10,
+      "rows": [
+        [
+          "",
+          "4. Contract-Based Assets",
+          ""
+        ]
+      ]
+    },
+    {
+      "pdf_page": 23,
+      "table_number_on_page": 11,
+      "rows": [
+        [
+          "",
+          "Licensing Agreements",
+          "",
+          "",
+          "Rights to use third-party IP (e.g., BTRC’s Tower sharing license).",
+          ""
+        ]
+      ]
+    },
+    {
+      "pdf_page": 23,
+      "table_number_on_page": 12,
+      "rows": [
+        [
+          "",
+          "Lease Agreements",
+          "",
+          "",
+          "Favorable lease terms (e.g., below-market rent contracts).",
+          ""
+        ]
+      ]
+    },
+    {
+      "pdf_page": 23,
+      "table_number_on_page": 13,
+      "rows": [
+        [
+          "",
+          "5. Artistic & Creative Assets",
+          ""
+        ]
+      ]
+    },
+    {
+      "pdf_page": 23,
+      "table_number_on_page": 14,
+      "rows": [
+        [
+          "",
+          "Motion Pictures",
+          "",
+          "",
+          "Rights to films/TV shows (e.g., BTV’s Stranger Things library).",
+          ""
+        ]
+      ]
+    },
+    {
+      "pdf_page": 23,
+      "table_number_on_page": 15,
+      "rows": [
+        [
+          "",
+          "Literary Works",
+          "",
+          "",
+          "Rights to books/comics (e.g., Humayun Ahmed franchise).",
+          ""
+        ]
+      ]
+    },
+    {
+      "pdf_page": 23,
+      "table_number_on_page": 16,
+      "rows": [
+        [
+          "",
+          "6. Goodwill",
+          ""
+        ]
+      ]
+    },
+    {
+      "pdf_page": 24,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Goodwill",
+          "",
+          "Premium paid in acquisitions over net asset value (brand reputation,",
+          ""
+        ],
+        [
+          null,
+          null,
+          "s ynergies).",
+          null
+        ]
+      ]
+    },
+    {
+      "pdf_page": 24,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "",
+          "7. Regulatory & Legal Rights",
+          ""
+        ]
+      ]
+    },
+    {
+      "pdf_page": 24,
+      "table_number_on_page": 3,
+      "rows": [
+        [
+          "Permits/Licenses",
+          "",
+          "Government-granted rights (e.g., mining licenses, Directorate",
+          ""
+        ],
+        [
+          null,
+          null,
+          "General of Drug Administration (DGDA) drug approvals).",
+          null
+        ]
+      ]
+    },
+    {
+      "pdf_page": 24,
+      "table_number_on_page": 5,
+      "rows": [
+        [
+          "",
+          "Asset Type",
+          "",
+          "",
+          "Description",
+          ""
+        ]
+      ]
+    },
+    {
+      "pdf_page": 24,
+      "table_number_on_page": 6,
+      "rows": [
+        [
+          "",
+          "Advertising Contracts",
+          "",
+          "",
+          "Long-term favorable ad space agreements.",
+          ""
+        ]
+      ]
+    },
+    {
+      "pdf_page": 35,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Type of cost",
+          "Preliminary",
+          "Pre-",
+          "Construction",
+          "Considerations/Explanations"
+        ],
+        [
+          "",
+          "",
+          "acquisition",
+          "",
+          ""
+        ],
+        [
+          null,
+          null,
+          "",
+          null,
+          null
+        ],
+        [
+          "Construction labor and\nother direct costs of\nconstruction",
+          "Expense",
+          "Capitalize",
+          "Capitalize",
+          "Labor and related direct costs\nshould be expensed until the\nproject is probable. Costs that\nare direct and clearly\nincremental should be\ncapitalized once the project is\nprobable and during the\nconstruction stage."
+        ],
+        [
+          "Consulting fees",
+          "Expense",
+          "It depends",
+          "It depends",
+          "Fees should be expensed until\nthe project is probable. Once\nthe project is probable,\ndirectly identifiable costs\nshould be capitalized. The\namount capitalized is limited\nto those amounts directly\nrelated to the site and project\nselected (e.g., costs related to\nevaluation of potential\nprojects or locations should\nbe expensed)."
+        ],
+        [
+          "Contribution to local\ncommunity organization\nor other similar gift made\nas a precondition to\nobtaining necessary\npermits or licenses",
+          "Expense",
+          "It depends",
+          "It depends",
+          "Contributions should be\nexpensed in the period made\nunless they are exchange\ntransactions for the purchase\nof a good or service.\nContributions made in\nexchange for a required\nlicense or permit may qualify\nfor capitalization."
+        ]
+      ]
+    },
+    {
+      "pdf_page": 36,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Type of cost",
+          "Preliminary",
+          "Pre-",
+          "Construction",
+          "Considerations/Explanations"
+        ],
+        [
+          "",
+          "",
+          "acquisition",
+          "",
+          ""
+        ],
+        [
+          null,
+          null,
+          "",
+          null,
+          null
+        ],
+        [
+          "Demolition costs",
+          "It depends",
+          "It depends",
+          "It depends",
+          "Demolition costs should be\nexpensed as incurred, except\nin certain situations when\nincurred in conjunction with\nan acquisition or lease of real\nestate"
+        ],
+        [
+          "Due diligence fees",
+          "Expense",
+          "It depends",
+          "It depends",
+          "See discussion under\n“Consulting fees.”"
+        ],
+        [
+          "Engineering,\nprocurement, and\nconstruction contract\ncosts",
+          "Expense",
+          "Capitalize",
+          "Capitalize",
+          "Direct costs of construction\nshould be capitalized. Other\ncosts should also be\ncapitalized as part of the\ndirect costs of construction if\nthe amounts are considered\nan incremental direct cost."
+        ],
+        [
+          "Feasibility studies",
+          "Expense",
+          "It depends",
+          "It depends",
+          "See discussion under\n“Consulting fees.”"
+        ],
+        [
+          "Ground lease\nexpense",
+          "Expense",
+          "Expense",
+          "Generally\nexpense",
+          "Capitalization of ground lease\nexpense by a lessee for\nproperty constructed for its\nown use is prohibited.\nHowever, ground lease\nexpense should be capitalized\nduring the construction of\nproperty for sale or rental."
+        ],
+        [
+          "Interest costs",
+          "Expense",
+          "Capitalize",
+          "Capitalize",
+          "Interest costs should be\ncapitalized in accordance with\nthe criteria in IAS 16"
+        ],
+        [
+          "Land option",
+          "Capitalize",
+          "Capitalize",
+          "Capitalize",
+          "The unissued PPE and IAS 16\nspecifically permit\ncapitalization of land options,\neven during the preliminary\nstage when the project is not yet\nprobable."
+        ],
+        [
+          "Legal fees",
+          "Expense",
+          "It depends",
+          "It depends",
+          "See discussion under\n“Consulting fees.”"
+        ],
+        [
+          "Materials and\nsupplies",
+          "It depends",
+          "Capitalize",
+          "Capitalize",
+          "Materials and supplies should\nbe expensed during the\npreliminary stage unless they\nhave an alternative use (e.g.,\ninventory)."
+        ]
+      ]
+    },
+    {
+      "pdf_page": 37,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Type of cost",
+          "Preliminary",
+          "Pre-",
+          "Construction",
+          "Considerations/Explanations"
+        ],
+        [
+          "",
+          "",
+          "acquisition",
+          "",
+          ""
+        ],
+        [
+          null,
+          null,
+          "",
+          null,
+          null
+        ],
+        [
+          "Operating contract\nnegotiation (e.g., fuel\nsupply agreements,\npower sales agreements,\noperating and\nmaintenance\nagreements)",
+          "Expense",
+          "Expense",
+          "Expense",
+          "Contract negotiation costs\nshould be expensed. Although\nthe project may not be viable\nwithout operating contracts\n(e.g., a signed power sales\nagreement is a prerequisite\nfor financing), these contracts\nare not directly related to or\nnecessary for construction of\nthe asset itself."
+        ],
+        [
+          "Organizational costs\n(e.g., corporate bylaws,\nother agreements)",
+          "Expense",
+          "Expense",
+          "Expense",
+          "Organizational costs should be\nexpensed in accordance with\nIAS 16"
+        ],
+        [
+          "Overhead, including\nrent, depreciation, and\nsupport functions\n(executive\nmanagement,\naccounting, purchasing,\ncorporate legal, human\nresources, and\ninformation systems)",
+          "Expense",
+          "Expense",
+          "Generally\nexpense",
+          "General and administrative\nand overhead costs should be\ncharged to expense as\nincurred, with a limited\nexception for property\nconstructed for sale or rental."
+        ],
+        [
+          "Outsourced\nadministrative\nfunctions (e.g.,\naccounting, purchases,\nand payables)",
+          "Expense",
+          "Expense",
+          "Generally\nexpense",
+          "General and administrative\nand overhead costs should be\ncharged to expense as\nincurred, even if the costs are\nincurred by a third party on\nbehalf of the SOEs and ABs.\nThese costs may be eligible for\ncapitalization if the property\nis constructed for sale or\nrental."
+        ],
+        [
+          "Project financing—\nexternal fees",
+          "Capitalize",
+          "Capitalize",
+          "Capitalize",
+          "Specific incremental costs\ndirectly attributable to a\nproject financing should be\ncapitalized (e.g., debt issuance\ncosts). Any amortization\nrecorded during construction\nwould be included in\ncapitalized interest\ncalculations."
+        ]
+      ]
+    },
+    {
+      "pdf_page": 38,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Type of cost",
+          "Preliminary",
+          "Pre-",
+          "Construction",
+          "Considerations/Explanations"
+        ],
+        [
+          "",
+          "",
+          "acquisition",
+          "",
+          ""
+        ],
+        [
+          null,
+          null,
+          "",
+          null,
+          null
+        ],
+        [
+          "Project financing—\ninternal costs and\nsalaries",
+          "Expense",
+          "Expense",
+          "Expense",
+          "General and administrative\ncosts and overhead costs\nshould be charged to expense\nas incurred."
+        ],
+        [
+          "Property taxes",
+          "Expense",
+          "Expense",
+          "Generally\nexpense",
+          "Property taxes are a cost of\nowning the property and are\nnot a direct incremental cost of\nconstruction, thus such\namounts should be expensed\nas incurred. However, similar\nto ground lease expense, such\namounts may be capitalized if\nthe property is being\nconstructed for sale or rental.\nSee PPE 1.7.2."
+        ],
+        [
+          "Recruiting (costs to\nidentify and hire\noperating and\nadministrative\npersonnel on site)",
+          "Expense",
+          "Expense",
+          "Expense",
+          "Recruiting costs should be\nexpensed in accordance with\nIAS 16"
+        ],
+        [
+          "Salaries— developers,\nlegal counsel, and other\npersonnel working\ndirectly on the project",
+          "Expense",
+          "It depends",
+          "It depends",
+          "All payroll and payroll-related\ncosts should be expensed until\nthe project is probable. Once\nthe project is probable, directly\nidentifiable payroll and\npayroll-related costs should be\ncapitalized. The amount\ncapitalized should be limited to\nthose amounts directly related\nto the site and project selected\n(e.g., costs related to\nevaluation of potential projects\nor locations should be\nexpensed). In addition,\noccupancy and similar costs\nassociated with personnel\nworking on the project should\nbe expensed."
+        ],
+        [
+          "Salaries— support\nfunctions",
+          "Expense",
+          "Expense",
+          "Generally\nexpense",
+          "General and administrative\ncosts should be expensed as\nincurred, with a limited\nexception related to property\nconstructed for sale or rental.\nSee discussion under\n“Overhead” costs."
+        ],
+        [
+          "Site permit and license\nfees",
+          "Expense",
+          "Capitalize",
+          "Capitalize",
+          "Site permit and related fees are\na direct cost of construction\nand should be capitalized once\nconstruction is probable."
+        ]
+      ]
+    },
+    {
+      "pdf_page": 39,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Type of cost",
+          "Preliminary",
+          "Pre-",
+          "Construction",
+          "Considerations/Explanations"
+        ],
+        [
+          "",
+          "",
+          "acquisition",
+          "",
+          ""
+        ],
+        [
+          null,
+          null,
+          "",
+          null,
+          null
+        ],
+        [
+          "Site security costs",
+          "Expense",
+          "Capitalize",
+          "Capitalize",
+          "Site security costs are a direct\ncost of construction and should\nbe capitalized once\nconstruction is probable.\nAmounts capitalized should be\nlimited to incremental security\ncosts."
+        ],
+        [
+          "Internal use software\ndevelopment costs",
+          "Expense",
+          "Capitalize as\npermitted",
+          "Capitalize as\npermitted",
+          "Internal use software\ndevelopment costs should be\ncapitalized in accordance with\nthe requirements of IAS 16"
+        ],
+        [
+          "Training costs",
+          "Expense",
+          "Expense",
+          "Expense",
+          "Training costs should be\nexpensed in accordance with\nIAS 16"
+        ],
+        [
+          "Travel expenses—\ninternal and third\nparty",
+          "Expense",
+          "It depends",
+          "It depends",
+          "See discussion under\n“Consulting fees.”"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 43,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Date",
+          "Qualifying\nexpenditures\n(A)",
+          "Capitalization Period\n(B)",
+          "Weighted average\nqualifying\nexpenditures\n(A × B)"
+        ],
+        [
+          "September",
+          "Taka 100,000",
+          "4/12",
+          "Taka 29,167"
+        ],
+        [
+          "October",
+          "Taka 400,000",
+          "2.5/12",
+          "Taka 83,333"
+        ],
+        [
+          "November",
+          "Taka 400,000",
+          "1.5/12",
+          "Taka 50,000"
+        ],
+        [
+          "December",
+          "Taka 400,000",
+          "0.5/12",
+          "Taka 16,667"
+        ],
+        [
+          "Total",
+          "Taka 1,300,000",
+          "",
+          "Taka 179,167"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 46,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Method",
+          "Guidance"
+        ],
+        [
+          "",
+          ""
+        ],
+        [
+          "Direct expense",
+          "Overhauls associated with large fleets are relatively constant from"
+        ],
+        [
+          "",
+          "period to period, thus most carriers recognize the cost of overhauls as"
+        ],
+        [
+          null,
+          "expense as they are incurred."
+        ],
+        [
+          "Deferral",
+          "The actual cost of each overhaul is capitalized and amortized to the"
+        ],
+        [
+          "",
+          "next overhaul."
+        ],
+        [
+          "Built-in overhaul",
+          "When overhaul costs are included or combined with other costs, an"
+        ],
+        [
+          "",
+          "organization would segregate costs into components that (1) are"
+        ],
+        [
+          null,
+          "depreciated over the useful life of the asset and (2) require overhaul"
+        ],
+        [
+          null,
+          "at periodic intervals. The cost of the initial overhaul is capitalized and"
+        ],
+        [
+          null,
+          "amortized to the next overhaul; at which time the process is repeated."
+        ]
+      ]
+    },
+    {
+      "pdf_page": 48,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Criterion",
+          "Guidance"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 49,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "True-ups",
+          "The service provider absorbing substantially all of the variability of\nthe cost of maintenance may transfer risk to the service provider.\nA contract that provides for true-up payments to cover actual costs\nincurred by the service provider would not result in risk transfer."
+        ],
+        [
+          "Contract\nadjustment\nprovisions",
+          "Contracts with adjustments for a change in scope may transfer risk\nif they are not merely true-up adjustments for the service provider’s\nactual costs.\nAnnual or periodic inflation adjustments are also permitted, as well\nas increases tied to certain performance criteria, if adjustments tied\nto performance are capped or otherwise limited."
+        ],
+        [
+          "Termination\nprovisions",
+          "Buy-out provisions that provide for cost recovery on termination\nwould not transfer risk. Termination provisions need to be\nsubstantive enough to prevent either party from exiting at their\ndiscretion or risk is not transferred."
+        ]
+      ]
+    },
+    {
+      "pdf_page": 54,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Spare Parts Category",
+          "Accounting Treatment"
+        ],
+        [
+          "Rotatable parts typically are significant\nin value and can be repaired and reused\nsuch that they typically have an expected\nuseful life approximately equal to the\naircraft they support.",
+          "Rotatable parts are capitalized and classified\nalong with flight equipment as fixed assets.\nRotatable parts are normally depreciated over\ntheir useful lives or the remaining service lives\nof the related equipment.\nThe cost of repairing rotatable is charged to\nexpense as it is incurred."
+        ],
+        [
+          "Repairable parts are repairable and\nreusable but with economic useful lives\ngenerally less than the aircraft they\nsupport and values less than most\nrotatable parts.",
+          "The Accounting Standards Executive\nCommittee believes that repairable parts,\nalong with certain life-limited rotatable parts,\ncan be classified as either expendable in\ncurrent assets or as rotatable in fixed assets.\nRepairable parts are normally depreciated\nover the lesser of their useful lives or the\nremaining service lives of the related\nequipment. The cost of repairing repairable\nparts is charged to expense as it is incurred."
+        ],
+        [
+          "Expendable parts cannot be\neconomically repaired, reconditioned,\nor reused after removal from the\naircraft.",
+          "Expendable parts are recorded as a current\nasset and are charged to expense as they are\nused or consumed in operations (that is,\nplaced on an aircraft). Expendable parts are\nvalued at cost, less an allowance for\nobsolescence."
+        ],
+        [
+          "Miscellaneous materials and supplies\nsupport flight or ground equipment.",
+          "Miscellaneous materials and supplies are\neither classified with expendable parts in\ncurrent assets or are expensed upon purchase.\nClassification of specific parts ordinarily\ndepends on the carrier's maintenance\nprogram."
+        ]
+      ]
+    },
+    {
+      "pdf_page": 58,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Accounts Title",
+          "Chart of Accounts",
+          "Debit",
+          "Credit"
+        ],
+        [
+          "Capital work-in-progress",
+          "….. 1234",
+          "3,000",
+          ""
+        ],
+        [
+          "Cash",
+          "",
+          "",
+          "3,000"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 58,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "Accounts Title",
+          "Chart of Accounts",
+          "Debit",
+          "Credit"
+        ],
+        [
+          "Capital work-in-progress",
+          "….. 1234",
+          "7,000",
+          ""
+        ],
+        [
+          "Cash",
+          "",
+          "",
+          "7,000"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 59,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Property, Plant & Equipment/\nBuilding",
+          "",
+          "10,000",
+          ""
+        ],
+        [
+          "Work in Progress",
+          "",
+          "",
+          "10,000"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 59,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "Serial",
+          "Description",
+          "Performed by"
+        ],
+        [
+          "1",
+          "Receive assets and Acknowledge receipt of assets.\n▪ “Received” on the Delivery Order with the current\ndate and sign off to acknowledge that the assets\nhave been received.",
+          "Administration\nDepartment\nAnd/or Authorized\nUser Department"
+        ],
+        [
+          "2",
+          "Verify the item descriptions and quantity stated\non the Delivery Order against purchase order or\nwork order\n▪ Verify the item description, quantity and quality\nstated on the Delivery Order to ensure that the\ninformation matches to the PO.\n▪ In the event that wrong assets are delivered,\ninform to Head of Supply Chain Management and\nreturn it to the supplier on instruction of Head of\nSCM and ensure that these are undelivered in\nterms of issued PO.",
+          "Administration\nDepartment\nAnd/or Authorized\nUser Department"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 60,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Serial",
+          "Description",
+          "Performed by"
+        ],
+        [
+          "3",
+          "Prepare a Goods Received Note (GRN) and Assets\nOnboarding Form, ensuring prompt submission\nto the respective Department.\n▪ Upon successful completion of the quality\nassurance check, a Goods Received Note (GRN)\nshall be prepared to document the receipt of\nassets. The GRN will indicate that the assets are\ndeemed ready for use or are being sent to the\ndesignated warehouse for storage.\n▪ Assets Onboarding Form shall be prepared in\norder to document and track the process of\nbringing new assets into the organization.\n▪ The Goods Received Note (GRN) and Assets\nOnboarding Form copy is to be promptly\nforwarded to the Finance and Admin Department\nwithin 1 (one) working days.",
+          "Procuring Entity\nand/or\nAny authorized\nPersonnel with\ncoordination with\nAdministration\nDepartment"
+        ],
+        [
+          "4",
+          "Submission of invoice and related documents\n▪ Assets which are qualified in verification, copies of\ninvoice and related documents of purchase\nsubmitted to Finance department.\n▪ One copy of the above-mentioned documents\nretains by Supply Chain Management Department.",
+          "Procuring Entity\nand/or\nAny authorized\nPersonnel with\ncoordination with\nAdministration\nDepartment"
+        ],
+        [
+          "5",
+          "Update Fixed Assets register on the basis of\nreceive documents.\n▪ The Fixed Assets register shall be updated on the\ndate of receipt of the GRN or upon issuance of a\nletter from the Store/User Department or the\nrespective department confirming that the asset is\nready to use.",
+          "Finance/Accounts\nDepartment"
+        ],
+        [
+          "6",
+          "Prepare Voucher and Submit to Assigned\nPersonnel Finance\nPrepare Debit/ Journal Voucher and Submit to\nassigned personnel of Finance at the date of received\nof documents from SCM Department.",
+          "Finance/Accounts\nDepartment"
+        ],
+        [
+          "7",
+          "Review the Vouchers and forward to Concern,\nFinance\nReview the Debit/ Journal Vouchers and approve it to\nrecord the transaction to the system.",
+          "Finance/Accounts\nDepartment"
+        ],
+        [
+          "8",
+          "Record the transaction to the Accounting System\n▪ Record the transaction to the accounting system\non the basis of supporting documents and\napprove the same as per approval matrix.\n▪ Archive the PR, PO, Delivery Order, Invoice and\nother supporting documents.",
+          "Finance/Accounts\nDepartment"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 61,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Serial",
+          "Description",
+          "Performed by"
+        ],
+        [
+          "9",
+          "Supporting audit and external parties for Fixed\nassets data\n▪ In case of external audit, verification and\nrequisition of supporting documentation related\nwith fixed assets shall be provided by Finance and\nAdmin as appropriate",
+          "1. Physical\nverification-\nAdministration &\nFinance/Accounts\nDepartment\n2. Documentation-\nFinance/Accounts\nDepartment"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 61,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "",
+          "Account Title",
+          "",
+          "",
+          "Chart of Accounts",
+          "",
+          "",
+          "Debit",
+          "",
+          "",
+          "Credit",
+          ""
+        ],
+        [
+          "Property, Plant &\nEquipment",
+          null,
+          null,
+          "",
+          null,
+          null,
+          "50,000",
+          null,
+          null,
+          "",
+          null,
+          null
+        ],
+        [
+          "Bank/ Cash",
+          null,
+          null,
+          "",
+          null,
+          null,
+          "",
+          null,
+          null,
+          "30,000",
+          null,
+          null
+        ],
+        [
+          "Account Payable",
+          null,
+          null,
+          "",
+          null,
+          null,
+          "",
+          null,
+          null,
+          "20,000",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "pdf_page": 62,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Capital Asset Type",
+          "Depreciated?\n(Yes/No)",
+          "Depreciation\ncharging\nFrequency",
+          "Depreciation rate\n(%)/Year"
+        ],
+        [
+          "1. Land",
+          "No",
+          "-",
+          "-"
+        ],
+        [
+          "2. Land Improvement",
+          "Yes",
+          "Monthly",
+          "5%-10%"
+        ],
+        [
+          "3. Buildings",
+          "Yes",
+          "Monthly",
+          "2% -5%"
+        ],
+        [
+          "4. Plant and Machinery (Including heavy\nequipment)",
+          "Yes",
+          "Monthly",
+          "10%"
+        ],
+        [
+          "5. Furniture and fixture",
+          "Yes",
+          "Monthly",
+          "10% -20%"
+        ],
+        [
+          "6. Decoration and renovation",
+          "Yes",
+          "Monthly",
+          "10%"
+        ],
+        [
+          "7. Office equipment",
+          "Yes",
+          "Monthly",
+          "10%"
+        ],
+        [
+          "8. Electric equipment",
+          "Yes",
+          "Monthly",
+          "10%"
+        ],
+        [
+          "9. Computer and computer equipment",
+          "Yes",
+          "Monthly",
+          "10% -20%"
+        ],
+        [
+          "10. Motor vehicle",
+          "Yes",
+          "Monthly",
+          "10%"
+        ],
+        [
+          "11. Network and IT Equipment / Technology\nAssets",
+          "Yes",
+          "Monthly",
+          "10%-20%"
+        ],
+        [
+          "12. Tools",
+          "Yes",
+          "Monthly",
+          "10%"
+        ],
+        [
+          "13. Leasehold Improvements",
+          "Yes",
+          "Monthly",
+          "10%"
+        ],
+        [
+          "14. Infrastructure",
+          "Yes",
+          "Monthly",
+          "10%"
+        ],
+        [
+          "15. Aircraft and other inter-alia assets",
+          "Yes",
+          "Monthly",
+          "As per certificate\nprovided by\nmanufacturing\ncompany"
+        ],
+        [
+          "16. VESSELS, shipping machinery and\nequipment’s",
+          "Yes",
+          "Monthly",
+          "As per certificate\nprovided by\nmanufacturing\ncompany"
+        ],
+        [
+          "17. Other Tangible Assets (Artwork, Safety\nEquipment etc.)",
+          "Yes",
+          "Monthly",
+          "10%"
+        ],
+        [
+          "18. Intangible Assets",
+          "Yes",
+          "Monthly",
+          "Period of expected\neconomic benefit"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 63,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Serial",
+          "Description",
+          "Performed by"
+        ],
+        [
+          "1",
+          "Summarize a list if the assets are broken, stolen or lost, damaged or any\nissues aroused in case of assets wear and tears so that Finance can\nconsider this impact before running monthly depreciation charge in profit\nand loss account. Also discuss and take opinion from technical\nexperts/users and determine the remaining useful life of individual assets\nin the group of assets so that impairment impact also can be taken in\nfinancial statements.",
+          "Admin\ndepartment"
+        ],
+        [
+          "2",
+          "Review Fixed Asset Register and identify depreciable assets:\n▪ Review Fixed Asset Register and identify depreciable assets which are\ndepreciable based on the remaining useful life and the net book value.",
+          "Accounts and\nFinance\ndepartment"
+        ],
+        [
+          "3",
+          "Calculate depreciation charges\n▪ Calculate depreciation charges based on the depreciation rate and\nremaining useful life.\n▪ Depreciation will be charged from the following month of recognition.\n▪ Depreciation will not be charged at the month of disposal or sale of\nsuch asset.\n▪ Prepare depreciation Schedule of assets to be depreciated within 5\nworking days of the beginning of the following month.\n▪ Prepare Journal Voucher and attach Depreciation Schedule to submit\nfor approval.",
+          null
+        ],
+        [
+          "4",
+          "Review and approve depreciation calculation\n▪ Review the Depreciation Schedule to ensure accuracy and approve the\nJournal Voucher at the date of receives the Depreciation schedule.\n▪ Forward the approved documents to the concern of Finance to record\nthe Accounting System.",
+          "Accounts and\nFinance\ndepartment"
+        ],
+        [
+          "5",
+          "Record the transaction to the Accounting System\n▪ Record the transaction to the accounting System after getting the\napproval of the depreciation schedule.\n▪ Archive the Depreciation Schedule and Journal Voucher for future\nreference.",
+          "Accounts and\nFinance\ndepartment"
+        ],
+        [
+          "6",
+          "Regular maintenance and update of Fixed asset register\n▪ Information or acquisition of fixed assets shall be provided in the\nprescribed form by Admin or User Department as appropriate",
+          "Admin or User\nDepartment\nAccounts and\nFinance\ndepartment"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 64,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Serial",
+          "Description",
+          "Performed by"
+        ],
+        [
+          "",
+          "▪ Update of Fixed asset register in Fixed Assets module or\nERP/Accounting Software shall be done by Accounts and Finance\ndepartment",
+          ""
+        ]
+      ]
+    },
+    {
+      "pdf_page": 64,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "Account Title",
+          "",
+          "Chart of",
+          "",
+          "Debit",
+          "Credit"
+        ],
+        [
+          null,
+          null,
+          "Accounts",
+          null,
+          null,
+          null
+        ],
+        [
+          "Depreciation Expense",
+          "",
+          null,
+          null,
+          "10,000",
+          ""
+        ],
+        [
+          "Accumulated Depreciation",
+          "",
+          null,
+          null,
+          "",
+          "10,000"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 66,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Type of asset",
+          "Amortization period in years"
+        ],
+        [
+          "Product rights and related supply agreements",
+          "period of expected economic benefit"
+        ],
+        [
+          "Trademarks",
+          "shorter of economic or legal life"
+        ],
+        [
+          "Computer software",
+          "3 to 5"
+        ],
+        [
+          "Favorable product supply agreements",
+          "Period of the agreement, unless earlier\ntermination is allowed under the agreement\nand is considered probable"
+        ],
+        [
+          "Favorable lease agreements",
+          "Period of the lease, unless earlier termination\nis allowed under the agreement and is\nconsidered probable"
+        ],
+        [
+          "Other intangibles",
+          "period of expected economic benefit"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 79,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Serial",
+          "Description",
+          "Performed by"
+        ],
+        [
+          "1",
+          "Assessment, Evaluation, Decision Making and Approval of assets\ndisposal or written off:\n▪ The Fixed Assets Management Committee (FAMC) is responsible\nfor assessing the condition, value, and usefulness of the asset to\ndetermine if it should be disposed of or written off.\n▪ Based on the assessment, the committee makes informed decisions\nregarding the disposal or write-off of the asset. They consider\nfactors such as the asset's remaining useful life, market value,\nobsolescence, and any legal or regulatory requirements.\n▪ The committee ensures that proper documentation is prepared and\nmaintained throughout the disposal or write-off process.\n▪ The committee will be responsible for determining whether the\ndisposal process will follow a Request for Quotation (RFQ) or a\nSingle Vendor approach.\n▪ The committee will have the responsibility of obtaining\nmanagement approval.",
+          "Fixed Assets\nManagement\nCommittee\n(FAMC)"
+        ],
+        [
+          "2",
+          "Initiate assets transfer to Warehouse or Vendor:\n▪ Admin Department shall inform Accounts and Finance Department\nabout list of assets including Assets ID and other details to be\ndisposed so that Finance can keep the Fixed assets register updated.\nAfter that Admin initiates assets transfer to Warehouse or vendor\n(instruct Department for hand over assets through email) within 3\nworking days of receiving the Approved Asset Disposal From FAMC.",
+          "Admin\ndepartment"
+        ],
+        [
+          "3",
+          "Prepare Journal Voucher based on the list provided by Admin\n▪ For disposal, calculate the gain/ (loss) on disposal, If any.\n▪ Prepare Journal Voucher for the disposal and/or write off of assets.\n▪ Forward the Journal Voucher to concerned personnel of the\ndepartment for Approval.",
+          "Accounts and\nFinance\nDepartment"
+        ],
+        [
+          "4",
+          "Review and Approve Journal Voucher\n▪ Review the Journal Voucher to ensure that the information is\ncorrect and approve the Journal Voucher.",
+          "Accounts and\nFinance\nDepartment"
+        ],
+        [
+          "5",
+          "Record the transaction to the Accounting System\n▪ Record the transaction to the accounting System.\n▪ Archive the Journal Voucher, Asset Disposal Form and other\nsupporting documents for future reference.",
+          "Accounts and\nFinance\nDepartment"
+        ],
+        [
+          "6",
+          "Removal of disposed assets from the asset register\n▪ Collect the relevant documentation for each disposed asset and\nmake necessary updates to the assets register to reflect the removal\nof the disposed assets.",
+          "Accounts and\nFinance\nDepartment"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 80,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "",
+          "Account Title",
+          "",
+          "",
+          "Chart of Accounts",
+          "",
+          "",
+          "Debit",
+          "",
+          "",
+          "Credit",
+          ""
+        ],
+        [
+          "Bank",
+          null,
+          null,
+          "",
+          null,
+          null,
+          "30,000",
+          null,
+          null,
+          "",
+          null,
+          null
+        ],
+        [
+          "Loss on Disposal",
+          null,
+          null,
+          "",
+          null,
+          null,
+          "10,000",
+          null,
+          null,
+          "",
+          null,
+          null
+        ],
+        [
+          "Accumulated Depreciation",
+          null,
+          null,
+          "",
+          null,
+          null,
+          "10,000",
+          null,
+          null,
+          "",
+          null,
+          null
+        ],
+        [
+          "Property, Plant and Equipment",
+          null,
+          null,
+          "",
+          null,
+          null,
+          "",
+          null,
+          null,
+          "50,000",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "pdf_page": 80,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "",
+          "General Ledger account name",
+          "",
+          "",
+          "Debit/Credit",
+          "",
+          "",
+          "Amount",
+          ""
+        ],
+        [
+          "Expense-A/c Write off of Fixed Asset",
+          null,
+          null,
+          "Debit",
+          null,
+          null,
+          "XXX",
+          null,
+          null
+        ],
+        [
+          "Accumulated depreciation- specific asset\naccount",
+          null,
+          null,
+          "Debit",
+          null,
+          null,
+          "XXX",
+          null,
+          null
+        ],
+        [
+          "Fixed asset account or PPE",
+          null,
+          null,
+          "Credit",
+          null,
+          null,
+          "XXX",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "pdf_page": 81,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "GL account name",
+          "Debit/Credit",
+          "Amount"
+        ],
+        [
+          "Bank account",
+          "Debit",
+          "XXX"
+        ],
+        [
+          "Expense- A/c Loss on sale of fixed asset",
+          "Debit",
+          "XXX"
+        ],
+        [
+          "Accumulated depreciation- specific asset account",
+          "Debit",
+          "XXX"
+        ],
+        [
+          "Fixed asset account",
+          "Credit",
+          "XXX"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 81,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "GL account name",
+          "Debit/Credit",
+          "Amount"
+        ],
+        [
+          "Bank account",
+          "Debit",
+          "XXX"
+        ],
+        [
+          "Accumulated depreciation- specific asset\naccount",
+          "Debit",
+          "XXX"
+        ],
+        [
+          "Income A/c- Gain on sale of fixed asset\naccount",
+          "Credit",
+          "XXX"
+        ],
+        [
+          "Fixed asset account",
+          "Credit",
+          "XXX"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 84,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "GL account name",
+          "Debit/Credit",
+          "Amount"
+        ],
+        [
+          "Loss on fixed asset impairment account",
+          "Debit",
+          "XXX"
+        ],
+        [
+          "Accumulated impairment loss account",
+          "Credit",
+          "XXX"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 84,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "",
+          "GL account name",
+          "",
+          "",
+          "Debit/Credit",
+          "",
+          "",
+          "Amount",
+          ""
+        ],
+        [
+          "Revaluation reserve for impairment on fixed asset\naccount",
+          null,
+          null,
+          "Debit",
+          null,
+          null,
+          "XXX",
+          null,
+          null
+        ],
+        [
+          "Accumulated impairment loss account",
+          null,
+          null,
+          "Credit",
+          null,
+          null,
+          "XXX",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "pdf_page": 85,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "GL account name",
+          "Debit/Credit",
+          "",
+          "Amount",
+          ""
+        ],
+        [
+          null,
+          null,
+          null,
+          "",
+          null
+        ],
+        [
+          "Accumulated impairment loss account",
+          "Debit",
+          "XXX",
+          null,
+          null
+        ],
+        [
+          "Reversal of impairment loss",
+          "Credit",
+          "XXX",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "pdf_page": 88,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "0",
+          "1",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          "0",
+          "1",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          "0",
+          "1",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "0",
+          "1",
+          "2",
+          "2",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "0",
+          "1",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "0",
+          "1",
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "0",
+          "0",
+          "0",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 89,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "0",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 89,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "0",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 89,
+      "table_number_on_page": 3,
+      "rows": [
+        [
+          "0",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 89,
+      "table_number_on_page": 4,
+      "rows": [
+        [
+          "0",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 89,
+      "table_number_on_page": 5,
+      "rows": [
+        [
+          "0",
+          "5"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 89,
+      "table_number_on_page": 6,
+      "rows": [
+        [
+          "0",
+          "6"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 89,
+      "table_number_on_page": 7,
+      "rows": [
+        [
+          "0",
+          "7"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 89,
+      "table_number_on_page": 8,
+      "rows": [
+        [
+          "0",
+          "8"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 89,
+      "table_number_on_page": 9,
+      "rows": [
+        [
+          "0",
+          "9"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 89,
+      "table_number_on_page": 10,
+      "rows": [
+        [
+          "1",
+          "0"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 89,
+      "table_number_on_page": 11,
+      "rows": [
+        [
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 89,
+      "table_number_on_page": 12,
+      "rows": [
+        [
+          "1",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 89,
+      "table_number_on_page": 13,
+      "rows": [
+        [
+          "1",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 89,
+      "table_number_on_page": 14,
+      "rows": [
+        [
+          "1",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 89,
+      "table_number_on_page": 15,
+      "rows": [
+        [
+          "1",
+          "5"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 89,
+      "table_number_on_page": 16,
+      "rows": [
+        [
+          "1",
+          "6"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 89,
+      "table_number_on_page": 17,
+      "rows": [
+        [
+          "1",
+          "7"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 89,
+      "table_number_on_page": 18,
+      "rows": [
+        [
+          "1",
+          "8"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 90,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "0",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 90,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "0",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 90,
+      "table_number_on_page": 3,
+      "rows": [
+        [
+          "0",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 90,
+      "table_number_on_page": 4,
+      "rows": [
+        [
+          "0",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 90,
+      "table_number_on_page": 5,
+      "rows": [
+        [
+          "0",
+          "5"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 90,
+      "table_number_on_page": 6,
+      "rows": [
+        [
+          "0",
+          "6"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 90,
+      "table_number_on_page": 7,
+      "rows": [
+        [
+          "0",
+          "7"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 90,
+      "table_number_on_page": 8,
+      "rows": [
+        [
+          "0",
+          "8"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 90,
+      "table_number_on_page": 9,
+      "rows": [
+        [
+          "0",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 90,
+      "table_number_on_page": 10,
+      "rows": [
+        [
+          "0",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 90,
+      "table_number_on_page": 11,
+      "rows": [
+        [
+          "0",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 90,
+      "table_number_on_page": 12,
+      "rows": [
+        [
+          "0",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 90,
+      "table_number_on_page": 13,
+      "rows": [
+        [
+          "0",
+          "5"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 90,
+      "table_number_on_page": 14,
+      "rows": [
+        [
+          "0",
+          "6"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 90,
+      "table_number_on_page": 15,
+      "rows": [
+        [
+          "0",
+          "7"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 90,
+      "table_number_on_page": 16,
+      "rows": [
+        [
+          "0",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 90,
+      "table_number_on_page": 17,
+      "rows": [
+        [
+          "0",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 90,
+      "table_number_on_page": 18,
+      "rows": [
+        [
+          "0",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 90,
+      "table_number_on_page": 19,
+      "rows": [
+        [
+          "0",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 90,
+      "table_number_on_page": 20,
+      "rows": [
+        [
+          "0",
+          "5"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 90,
+      "table_number_on_page": 21,
+      "rows": [
+        [
+          "0",
+          "6"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 91,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "0",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 91,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "0",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 91,
+      "table_number_on_page": 3,
+      "rows": [
+        [
+          "0",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 91,
+      "table_number_on_page": 4,
+      "rows": [
+        [
+          "0",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 91,
+      "table_number_on_page": 5,
+      "rows": [
+        [
+          "0",
+          "5"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 91,
+      "table_number_on_page": 6,
+      "rows": [
+        [
+          "0",
+          "6"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 91,
+      "table_number_on_page": 7,
+      "rows": [
+        [
+          "0",
+          "7"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 91,
+      "table_number_on_page": 8,
+      "rows": [
+        [
+          "0",
+          "8"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 91,
+      "table_number_on_page": 9,
+      "rows": [
+        [
+          "0",
+          "9"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 91,
+      "table_number_on_page": 10,
+      "rows": [
+        [
+          "1",
+          "0"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 91,
+      "table_number_on_page": 11,
+      "rows": [
+        [
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 91,
+      "table_number_on_page": 12,
+      "rows": [
+        [
+          "1",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 91,
+      "table_number_on_page": 13,
+      "rows": [
+        [
+          "0",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 91,
+      "table_number_on_page": 14,
+      "rows": [
+        [
+          "0",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 91,
+      "table_number_on_page": 15,
+      "rows": [
+        [
+          "0",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 91,
+      "table_number_on_page": 16,
+      "rows": [
+        [
+          "0",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 91,
+      "table_number_on_page": 17,
+      "rows": [
+        [
+          "0",
+          "5"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 91,
+      "table_number_on_page": 18,
+      "rows": [
+        [
+          "0",
+          "6"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 91,
+      "table_number_on_page": 19,
+      "rows": [
+        [
+          "0",
+          "7"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 91,
+      "table_number_on_page": 20,
+      "rows": [
+        [
+          "0",
+          "8"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 91,
+      "table_number_on_page": 21,
+      "rows": [
+        [
+          "0",
+          "9"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 91,
+      "table_number_on_page": 22,
+      "rows": [
+        [
+          "1",
+          "0"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 92,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 92,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "1",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 92,
+      "table_number_on_page": 3,
+      "rows": [
+        [
+          "1",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 92,
+      "table_number_on_page": 4,
+      "rows": [
+        [
+          "0",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 92,
+      "table_number_on_page": 5,
+      "rows": [
+        [
+          "0",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 92,
+      "table_number_on_page": 6,
+      "rows": [
+        [
+          "0",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 92,
+      "table_number_on_page": 7,
+      "rows": [
+        [
+          "0",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 92,
+      "table_number_on_page": 8,
+      "rows": [
+        [
+          "0",
+          "5"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 92,
+      "table_number_on_page": 9,
+      "rows": [
+        [
+          "0",
+          "6"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 92,
+      "table_number_on_page": 10,
+      "rows": [
+        [
+          "0",
+          "7"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 92,
+      "table_number_on_page": 11,
+      "rows": [
+        [
+          "0",
+          "8"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 92,
+      "table_number_on_page": 12,
+      "rows": [
+        [
+          "0",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 92,
+      "table_number_on_page": 13,
+      "rows": [
+        [
+          "0",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 92,
+      "table_number_on_page": 14,
+      "rows": [
+        [
+          "0",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 92,
+      "table_number_on_page": 15,
+      "rows": [
+        [
+          "0",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 92,
+      "table_number_on_page": 16,
+      "rows": [
+        [
+          "0",
+          "5"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 92,
+      "table_number_on_page": 17,
+      "rows": [
+        [
+          "0",
+          "6"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 92,
+      "table_number_on_page": 18,
+      "rows": [
+        [
+          "0",
+          "7"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 92,
+      "table_number_on_page": 19,
+      "rows": [
+        [
+          "0",
+          "8"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 92,
+      "table_number_on_page": 20,
+      "rows": [
+        [
+          "0",
+          "9"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 92,
+      "table_number_on_page": 21,
+      "rows": [
+        [
+          "1",
+          "0"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 92,
+      "table_number_on_page": 22,
+      "rows": [
+        [
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 93,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "1",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 93,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "1",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 93,
+      "table_number_on_page": 3,
+      "rows": [
+        [
+          "1",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 93,
+      "table_number_on_page": 4,
+      "rows": [
+        [
+          "1",
+          "5"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 93,
+      "table_number_on_page": 5,
+      "rows": [
+        [
+          "1",
+          "6"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 93,
+      "table_number_on_page": 6,
+      "rows": [
+        [
+          "1",
+          "7"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 93,
+      "table_number_on_page": 7,
+      "rows": [
+        [
+          "1",
+          "8"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 93,
+      "table_number_on_page": 8,
+      "rows": [
+        [
+          "0",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 93,
+      "table_number_on_page": 9,
+      "rows": [
+        [
+          "0",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 93,
+      "table_number_on_page": 10,
+      "rows": [
+        [
+          "0",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 93,
+      "table_number_on_page": 11,
+      "rows": [
+        [
+          "0",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 93,
+      "table_number_on_page": 12,
+      "rows": [
+        [
+          "0",
+          "5"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 93,
+      "table_number_on_page": 13,
+      "rows": [
+        [
+          "0",
+          "6"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 93,
+      "table_number_on_page": 14,
+      "rows": [
+        [
+          "0",
+          "7"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 93,
+      "table_number_on_page": 15,
+      "rows": [
+        [
+          "0",
+          "8"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 93,
+      "table_number_on_page": 16,
+      "rows": [
+        [
+          "0",
+          "9"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 93,
+      "table_number_on_page": 17,
+      "rows": [
+        [
+          "0",
+          "10"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 93,
+      "table_number_on_page": 18,
+      "rows": [
+        [
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 93,
+      "table_number_on_page": 19,
+      "rows": [
+        [
+          "1",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 93,
+      "table_number_on_page": 20,
+      "rows": [
+        [
+          "1",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 93,
+      "table_number_on_page": 21,
+      "rows": [
+        [
+          "1",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 93,
+      "table_number_on_page": 22,
+      "rows": [
+        [
+          "1",
+          "5"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 93,
+      "table_number_on_page": 23,
+      "rows": [
+        [
+          "1",
+          "6"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 94,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "0",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 94,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "0",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 94,
+      "table_number_on_page": 3,
+      "rows": [
+        [
+          "0",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 94,
+      "table_number_on_page": 4,
+      "rows": [
+        [
+          "0",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 94,
+      "table_number_on_page": 5,
+      "rows": [
+        [
+          "0",
+          "5"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 94,
+      "table_number_on_page": 6,
+      "rows": [
+        [
+          "0",
+          "6"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 94,
+      "table_number_on_page": 7,
+      "rows": [
+        [
+          "0",
+          "7"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 94,
+      "table_number_on_page": 8,
+      "rows": [
+        [
+          "0",
+          "8"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 94,
+      "table_number_on_page": 9,
+      "rows": [
+        [
+          "0",
+          "9"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 94,
+      "table_number_on_page": 10,
+      "rows": [
+        [
+          "1",
+          "0"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 94,
+      "table_number_on_page": 11,
+      "rows": [
+        [
+          "0",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 94,
+      "table_number_on_page": 12,
+      "rows": [
+        [
+          "0",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 94,
+      "table_number_on_page": 13,
+      "rows": [
+        [
+          "0",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 94,
+      "table_number_on_page": 14,
+      "rows": [
+        [
+          "0",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 94,
+      "table_number_on_page": 15,
+      "rows": [
+        [
+          "0",
+          "5"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 94,
+      "table_number_on_page": 16,
+      "rows": [
+        [
+          "0",
+          "6"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 94,
+      "table_number_on_page": 17,
+      "rows": [
+        [
+          "0",
+          "7"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 94,
+      "table_number_on_page": 18,
+      "rows": [
+        [
+          "0",
+          "8"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 94,
+      "table_number_on_page": 19,
+      "rows": [
+        [
+          "0",
+          "9"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 94,
+      "table_number_on_page": 20,
+      "rows": [
+        [
+          "1",
+          "0"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 94,
+      "table_number_on_page": 21,
+      "rows": [
+        [
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 95,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "1",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 95,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "1",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 95,
+      "table_number_on_page": 3,
+      "rows": [
+        [
+          "1",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 95,
+      "table_number_on_page": 4,
+      "rows": [
+        [
+          "1",
+          "5"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 95,
+      "table_number_on_page": 5,
+      "rows": [
+        [
+          "1",
+          "6"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 95,
+      "table_number_on_page": 6,
+      "rows": [
+        [
+          "0",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 95,
+      "table_number_on_page": 7,
+      "rows": [
+        [
+          "0",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 95,
+      "table_number_on_page": 8,
+      "rows": [
+        [
+          "0",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 95,
+      "table_number_on_page": 9,
+      "rows": [
+        [
+          "0",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 95,
+      "table_number_on_page": 10,
+      "rows": [
+        [
+          "0",
+          "5"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 95,
+      "table_number_on_page": 11,
+      "rows": [
+        [
+          "0",
+          "6"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 95,
+      "table_number_on_page": 12,
+      "rows": [
+        [
+          "0",
+          "7"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 95,
+      "table_number_on_page": 13,
+      "rows": [
+        [
+          "0",
+          "8"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 95,
+      "table_number_on_page": 14,
+      "rows": [
+        [
+          "0",
+          "9"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 95,
+      "table_number_on_page": 15,
+      "rows": [
+        [
+          "1",
+          "0"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 95,
+      "table_number_on_page": 16,
+      "rows": [
+        [
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 95,
+      "table_number_on_page": 17,
+      "rows": [
+        [
+          "1",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 95,
+      "table_number_on_page": 18,
+      "rows": [
+        [
+          "1",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 95,
+      "table_number_on_page": 19,
+      "rows": [
+        [
+          "1",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 95,
+      "table_number_on_page": 20,
+      "rows": [
+        [
+          "1",
+          "5"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 95,
+      "table_number_on_page": 21,
+      "rows": [
+        [
+          "1",
+          "6"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 95,
+      "table_number_on_page": 22,
+      "rows": [
+        [
+          "1",
+          "7"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 95,
+      "table_number_on_page": 23,
+      "rows": [
+        [
+          "1",
+          "8"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 96,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "1",
+          "9"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 96,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "2",
+          "0"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 96,
+      "table_number_on_page": 3,
+      "rows": [
+        [
+          "2",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 96,
+      "table_number_on_page": 4,
+      "rows": [
+        [
+          "2",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 96,
+      "table_number_on_page": 5,
+      "rows": [
+        [
+          "2",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 96,
+      "table_number_on_page": 6,
+      "rows": [
+        [
+          "2",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 96,
+      "table_number_on_page": 7,
+      "rows": [
+        [
+          "2",
+          "5"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 96,
+      "table_number_on_page": 8,
+      "rows": [
+        [
+          "2",
+          "6"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 96,
+      "table_number_on_page": 9,
+      "rows": [
+        [
+          "2",
+          "7"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 96,
+      "table_number_on_page": 10,
+      "rows": [
+        [
+          "2",
+          "8"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 96,
+      "table_number_on_page": 11,
+      "rows": [
+        [
+          "2",
+          "9"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 96,
+      "table_number_on_page": 12,
+      "rows": [
+        [
+          "3",
+          "0"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 96,
+      "table_number_on_page": 13,
+      "rows": [
+        [
+          "3",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 96,
+      "table_number_on_page": 14,
+      "rows": [
+        [
+          "0",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 96,
+      "table_number_on_page": 15,
+      "rows": [
+        [
+          "0",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 96,
+      "table_number_on_page": 16,
+      "rows": [
+        [
+          "0",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 96,
+      "table_number_on_page": 17,
+      "rows": [
+        [
+          "0",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 96,
+      "table_number_on_page": 18,
+      "rows": [
+        [
+          "0",
+          "5"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 96,
+      "table_number_on_page": 19,
+      "rows": [
+        [
+          "0",
+          "6"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 96,
+      "table_number_on_page": 20,
+      "rows": [
+        [
+          "0",
+          "7"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 96,
+      "table_number_on_page": 21,
+      "rows": [
+        [
+          "0",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 96,
+      "table_number_on_page": 22,
+      "rows": [
+        [
+          "0",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 97,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "0",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 97,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "0",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 97,
+      "table_number_on_page": 3,
+      "rows": [
+        [
+          "0",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 97,
+      "table_number_on_page": 4,
+      "rows": [
+        [
+          "0",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 97,
+      "table_number_on_page": 5,
+      "rows": [
+        [
+          "0",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 97,
+      "table_number_on_page": 6,
+      "rows": [
+        [
+          "0",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 97,
+      "table_number_on_page": 7,
+      "rows": [
+        [
+          "0",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 97,
+      "table_number_on_page": 8,
+      "rows": [
+        [
+          "0",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 97,
+      "table_number_on_page": 9,
+      "rows": [
+        [
+          "0",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 97,
+      "table_number_on_page": 10,
+      "rows": [
+        [
+          "0",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 97,
+      "table_number_on_page": 11,
+      "rows": [
+        [
+          "0",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 97,
+      "table_number_on_page": 12,
+      "rows": [
+        [
+          "0",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 97,
+      "table_number_on_page": 13,
+      "rows": [
+        [
+          "0",
+          "5"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 97,
+      "table_number_on_page": 14,
+      "rows": [
+        [
+          "0",
+          "6"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 97,
+      "table_number_on_page": 15,
+      "rows": [
+        [
+          "0",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 97,
+      "table_number_on_page": 16,
+      "rows": [
+        [
+          "0",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 97,
+      "table_number_on_page": 17,
+      "rows": [
+        [
+          "0",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 97,
+      "table_number_on_page": 18,
+      "rows": [
+        [
+          "0",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 98,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "0",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 98,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "0",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 98,
+      "table_number_on_page": 3,
+      "rows": [
+        [
+          "0",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 98,
+      "table_number_on_page": 4,
+      "rows": [
+        [
+          "0",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 98,
+      "table_number_on_page": 5,
+      "rows": [
+        [
+          "0",
+          "5"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 98,
+      "table_number_on_page": 6,
+      "rows": [
+        [
+          "0",
+          "6"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 98,
+      "table_number_on_page": 7,
+      "rows": [
+        [
+          "0",
+          "7"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 98,
+      "table_number_on_page": 8,
+      "rows": [
+        [
+          "0",
+          "8"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 98,
+      "table_number_on_page": 9,
+      "rows": [
+        [
+          "0",
+          "9"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 98,
+      "table_number_on_page": 10,
+      "rows": [
+        [
+          "1",
+          "0"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 98,
+      "table_number_on_page": 11,
+      "rows": [
+        [
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 98,
+      "table_number_on_page": 12,
+      "rows": [
+        [
+          "1",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 98,
+      "table_number_on_page": 13,
+      "rows": [
+        [
+          "1",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 98,
+      "table_number_on_page": 14,
+      "rows": [
+        [
+          "1",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 98,
+      "table_number_on_page": 15,
+      "rows": [
+        [
+          "0",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 98,
+      "table_number_on_page": 16,
+      "rows": [
+        [
+          "0",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 98,
+      "table_number_on_page": 17,
+      "rows": [
+        [
+          "0",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 98,
+      "table_number_on_page": 18,
+      "rows": [
+        [
+          "0",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 98,
+      "table_number_on_page": 19,
+      "rows": [
+        [
+          "0",
+          "5"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 98,
+      "table_number_on_page": 20,
+      "rows": [
+        [
+          "0",
+          "6"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 98,
+      "table_number_on_page": 21,
+      "rows": [
+        [
+          "0",
+          "7"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 99,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "0",
+          "8"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 99,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "0",
+          "9"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 99,
+      "table_number_on_page": 3,
+      "rows": [
+        [
+          "1",
+          "0"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 99,
+      "table_number_on_page": 4,
+      "rows": [
+        [
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 99,
+      "table_number_on_page": 5,
+      "rows": [
+        [
+          "1",
+          "2"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 99,
+      "table_number_on_page": 6,
+      "rows": [
+        [
+          "1",
+          "3"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 99,
+      "table_number_on_page": 7,
+      "rows": [
+        [
+          "1",
+          "4"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 99,
+      "table_number_on_page": 8,
+      "rows": [
+        [
+          "1",
+          "5"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 99,
+      "table_number_on_page": 9,
+      "rows": [
+        [
+          "1",
+          "6"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 99,
+      "table_number_on_page": 10,
+      "rows": [
+        [
+          "1",
+          "7"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 102,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Particulars",
+          "Responsible",
+          "Accountable",
+          "Consulted",
+          "Informed"
+        ],
+        [
+          "Acquisition of PPE",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Requisition",
+          "User Department",
+          "Head of the\nDepartment",
+          "Procurement\ndepartment",
+          ""
+        ],
+        [
+          "RFQ, Comparative analysis,\nSelection of Vendor",
+          "Supply chain\nmanagement (SCM)",
+          "Head of SCM",
+          "",
+          "User\nDepartment"
+        ],
+        [
+          "Receiving of the fixed\nAssets",
+          "Admin and User\nDepartment",
+          "Head of Admin\nand Head of the\nUser\nDepartment",
+          "",
+          ""
+        ],
+        [
+          "Bookkeeping",
+          "Finance Department",
+          "Head of Finance",
+          "",
+          ""
+        ],
+        [
+          "Maintain of FAR",
+          "Admin department",
+          "Finance\ndepartment",
+          "",
+          "User\nDepartment"
+        ],
+        [
+          "Place Purchase Order",
+          "SCM",
+          "Head of SCM",
+          "",
+          "User\nDepartment"
+        ],
+        [
+          "Prepare GRN and QC",
+          "User Department",
+          "Head of User\nDepartment",
+          "",
+          "Head of SCM"
+        ],
+        [
+          "PPE Disposal and Write Off",
+          "Fixed Asset\nManagement\nCommittee (FAMC)",
+          "Finance\ndepartment",
+          "Head of SCM",
+          "User\nDepartment"
+        ],
+        [
+          "Insurance Coverage of Fixed\nAssets",
+          "Admin department",
+          "Finance\ndepartment",
+          "Head of SCM",
+          ""
+        ],
+        [
+          "Fixed Assets Tagging",
+          "Admin department",
+          "Finance\ndepartment",
+          "",
+          "User\nDepartment"
+        ],
+        [
+          "Custodian of Assets",
+          "Admin and user\nDepartment",
+          "Head of User\nDepartment",
+          "",
+          ""
+        ],
+        [
+          "Custodian of Assets- IT\nequipment",
+          "User Department\nand Admin and user\nDepartment",
+          "Department\nHead",
+          "IT",
+          "Finance"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 103,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Sub-Category of Asset",
+          "Sub-Category\nCode",
+          "Asset Item Name",
+          "Asset Item\nCode",
+          "Asset\nCode"
+        ],
+        [
+          "Freehold land",
+          "01",
+          "Land Property",
+          "01",
+          "L"
+        ],
+        [
+          "Leasehold Land",
+          "02",
+          "Land held under lease",
+          "02",
+          "L"
+        ],
+        [
+          "Industrial Land",
+          "03",
+          "Factory land",
+          "03",
+          "L"
+        ],
+        [
+          "Commercial Land",
+          "04",
+          "Mall, shop land",
+          "04",
+          "L"
+        ],
+        [
+          "Agricultural land",
+          "05",
+          "Farming land",
+          "05",
+          "L"
+        ],
+        [
+          "Pond",
+          "06",
+          "IPS Rack",
+          "06",
+          "L"
+        ],
+        [
+          "Recreational land",
+          "07",
+          "Parks",
+          "07",
+          "L"
+        ],
+        [
+          "Land with Timber rights",
+          "08",
+          "Forest land",
+          "08",
+          "L"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 103,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "Sub-Category of Asset",
+          "Sub-Category\nCode",
+          "Asset Item Name",
+          "Asset Item\nCode",
+          "Asset\nCode"
+        ],
+        [
+          "Boundary Wall",
+          "01",
+          "Boundary on Free Land",
+          "01",
+          "LI"
+        ],
+        [
+          "Embankment",
+          "02",
+          "Lands near river",
+          "02",
+          "LI"
+        ],
+        [
+          "Flood Embankment",
+          "03",
+          "Concrete flood walls",
+          "03",
+          "LI"
+        ],
+        [
+          "Pond Excavation",
+          "04",
+          "Water level sensors",
+          "04",
+          "LI"
+        ],
+        [
+          null,
+          null,
+          "Flow meters",
+          "05",
+          "LI"
+        ],
+        [
+          "Sewerage & Drainage",
+          "05",
+          "Farming land",
+          "06",
+          "LI"
+        ],
+        [
+          "Signage",
+          "06",
+          "IPS Rack",
+          "07",
+          "LI"
+        ],
+        [
+          "Store yard",
+          "07",
+          "Parks",
+          "08",
+          "LI"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 103,
+      "table_number_on_page": 3,
+      "rows": [
+        [
+          "Sub-Category of Asset",
+          "Sub-Category\nCode",
+          "Asset Item Name",
+          "Asset Item\nCode",
+          "Asset\nCode"
+        ],
+        [
+          "Office Building",
+          "01",
+          "Office Building",
+          "01",
+          "B"
+        ],
+        [
+          "Residential Building",
+          "02",
+          "Residential Quarters",
+          "02",
+          "B"
+        ],
+        [
+          "Network Tower",
+          "03",
+          "Network Tower",
+          "03",
+          "B"
+        ],
+        [
+          "Terminal Building",
+          "04",
+          "Terminal Building",
+          "04",
+          "B"
+        ],
+        [
+          "Factory Building",
+          "05",
+          "Factory Building",
+          "05",
+          "B"
+        ],
+        [
+          "Cargo and Passenger Sheds",
+          "06",
+          "Cargo and Passenger sheds",
+          "06",
+          "B"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 103,
+      "table_number_on_page": 4,
+      "rows": [
+        [
+          "Sub-Category of Asset",
+          "Sub-Category\nCode",
+          "Asset Item Name",
+          "Asset\nItem Code",
+          "Asset\nCode"
+        ],
+        [
+          "Diesel Generator",
+          "01",
+          "Diesel Engine",
+          "01",
+          "P&M"
+        ],
+        [
+          "Dredgers",
+          "02",
+          "Cutter Suction Dredger",
+          "02",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Bucket Ladder Dredger",
+          "03",
+          "P&M"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 104,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "",
+          "",
+          "Backhoe Dredger",
+          "04",
+          "P&M"
+        ],
+        [
+          "Equipment",
+          "03",
+          "Heavy Equipment",
+          "05",
+          "P&M"
+        ],
+        [
+          "Factory Equipment",
+          "04",
+          "CNC machines",
+          "06",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Textiles looms",
+          "07",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Conveyor belts",
+          "08",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Mixers and blenders",
+          "09",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Blowers & Compressors",
+          "10",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Cranes and hoists",
+          "11",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Air Compressors",
+          "12",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Custom molds",
+          "13",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Industrial cabinets",
+          "14",
+          "P&M"
+        ],
+        [
+          "Generator",
+          "05",
+          "Diesel Generators",
+          "15",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Natural Gas Generators",
+          "16",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Solar Power Generators",
+          "17",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Portable Generators",
+          "18",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Inverter Generators",
+          "19",
+          "P&M"
+        ],
+        [
+          "Laboratory Equipment",
+          "06",
+          "Analytical Instruments",
+          "20",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "General Lab Equipment",
+          "21",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Data & Monitoring systems",
+          "22",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Specialized Equipment",
+          "23",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Measuring & Testing Equipment",
+          "24",
+          "P&M"
+        ],
+        [
+          "Machinery and Equipment",
+          "07",
+          "CNC machines",
+          "25",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Welding Machines",
+          "26",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Presses",
+          "27",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Conveyors",
+          "28",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Injection Molding Machine",
+          "29",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Labeling Machines",
+          "30",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Assembly Line Equipment",
+          "31",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Cutting Machines",
+          "32",
+          "P&M"
+        ],
+        [
+          "Power House",
+          "08",
+          "Generators",
+          "33",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Motors & Pumps",
+          "34",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Boilers",
+          "35",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Control Panels",
+          "36",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Power Distribution Boards",
+          "37",
+          "P&M"
+        ],
+        [
+          "Power Plant",
+          "09",
+          "Transformers",
+          "38",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Switchgear and Circuit Breakers",
+          "39",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Electrical Panel",
+          "40",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Meters and Sensors",
+          "41",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Battery Banks and UPS",
+          "42",
+          "P&M"
+        ],
+        [
+          "Production Machinery",
+          "10",
+          "Milling Machines",
+          "43",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Lathes",
+          "44",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Printing Machines",
+          "45",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Mixing and Blending Machine",
+          "46",
+          "P&M"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 105,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "",
+          "",
+          "Extruders",
+          "47",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Press Machine",
+          "48",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Cutting Machine",
+          "49",
+          "P&M"
+        ],
+        [
+          "Seismic and Toll Equipment",
+          "11",
+          "Seismographs",
+          "50",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Geophones",
+          "51",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Electronic Toll Collection Readers",
+          "52",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Toll Booths",
+          "53",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Ticket Dispensers",
+          "54",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Payment Terminals",
+          "55",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Toll Plaza Barriers/gates",
+          "56",
+          "P&M"
+        ],
+        [
+          "Transformer",
+          "12",
+          "Power Transformer",
+          "57",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Distribution Transfer",
+          "58",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Instrument Transformer",
+          "59",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Auto Transformer",
+          "60",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Isolation Transformer",
+          "61",
+          "P&M"
+        ],
+        [
+          null,
+          null,
+          "Dry-type Transformer",
+          "62",
+          "P&M"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 105,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "Sub-Category of Asset",
+          "Sub-Category\nCode",
+          "Asset Item Name",
+          "Asset Item\nCode",
+          "Asset\nCode"
+        ],
+        [
+          "Almirah",
+          "01",
+          "Almirah",
+          "01",
+          "F&F"
+        ],
+        [
+          "Cabinet",
+          "02",
+          "Table Side Cabinet",
+          "02",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Cabinet",
+          "03",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Wall Cabinet",
+          "04",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Wall Low Cabinet",
+          "05",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Bookshelf",
+          "06",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Wall High Cabinet",
+          "07",
+          "F&F"
+        ],
+        [
+          "Chair",
+          "03",
+          "Plastic Chair",
+          "08",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Revolving Armless Chair",
+          "09",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Revolving Arm Chair",
+          "10",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Revolving Arm HOD Chair",
+          "11",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Revolving Lobby Chair",
+          "12",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Security Chair",
+          "13",
+          "F&F"
+        ],
+        [
+          "Drawer Cabinet Box",
+          "04",
+          "Drawer Cabinet Box",
+          "14",
+          "F&F"
+        ],
+        [
+          "Foot Rest",
+          "05",
+          "Foot Rest",
+          "15",
+          "F&F"
+        ],
+        [
+          "Rack",
+          "06",
+          "Rack",
+          "16",
+          "F&F"
+        ],
+        [
+          "Sofa",
+          "07",
+          "Sofa",
+          "17",
+          "F&F"
+        ],
+        [
+          "",
+          "",
+          "Customer Care Table",
+          "18",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Conference Table",
+          "19",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Employee Table",
+          "20",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Executive Table",
+          "21",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Front Desk Table",
+          "22",
+          "F&F"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 106,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Table",
+          "08",
+          "Kitchen Table",
+          "23",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Meeting Table",
+          "24",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Restaurant Table",
+          "25",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Secretariat Table",
+          "26",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Tea Table",
+          "27",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Equipment Table",
+          "28",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Security Table",
+          "29",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Side Table",
+          "30",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Printer Table",
+          "31",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Round Table",
+          "32",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Trolley Table",
+          "33",
+          "F&F"
+        ],
+        [
+          "Tool",
+          "09",
+          "Round Tool",
+          "34",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Revolving Round Tool",
+          "35",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Sofa Tool",
+          "36",
+          "F&F"
+        ],
+        [
+          null,
+          null,
+          "Tool",
+          "37",
+          "F&F"
+        ],
+        [
+          "Trolley",
+          "10",
+          "Trolley",
+          "38",
+          "F&F"
+        ],
+        [
+          "Ladder",
+          "11",
+          "Ladder",
+          "39",
+          "F&F"
+        ],
+        [
+          "Bench",
+          "12",
+          "Siting bench",
+          "40",
+          "F&F"
+        ],
+        [
+          "Plywood Board",
+          "13",
+          "Partitions",
+          "41",
+          "F&F"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 106,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "Sub-Category of Asset",
+          "Sub-Category\nCode",
+          "Asset Item Name",
+          "Asset Item\nCode",
+          "Asset\nCode"
+        ],
+        [
+          "Wall Decoration",
+          "01",
+          "Paintings and Wall Arts",
+          "01",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Framed Posters",
+          "02",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Wall Clocks",
+          "03",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "3D Wall Panels",
+          "04",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Shelve with Décor Pieces",
+          "05",
+          "D&R"
+        ],
+        [
+          "Lighting",
+          "02",
+          "LED Strips lights",
+          "06",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Pendant light",
+          "07",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Chandeliers",
+          "08",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Floor Lamps",
+          "09",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Table Lamps",
+          "10",
+          "D&R"
+        ],
+        [
+          "Natural Elements",
+          "03",
+          "Indoor Plants",
+          "11",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Hanging Planters",
+          "12",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Bonsai",
+          "13",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Flower Vases",
+          "14",
+          "D&R"
+        ],
+        [
+          "Furniture Decoration",
+          "04",
+          "Cushions",
+          "15",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Table Runners",
+          "16",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Poufs or Ottomans",
+          "17",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Reception Counters",
+          "18",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Centerpieces",
+          "19",
+          "D&R"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 107,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Fixtures and Fittings",
+          "05",
+          "Doors",
+          "20",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Windows",
+          "21",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Curtains",
+          "22",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Carpets",
+          "23",
+          "D&R"
+        ],
+        [
+          "Kitchen Renovation",
+          "06",
+          "Countertops",
+          "24",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Kitchen Sinks",
+          "25",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Cabinets",
+          "26",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Chimneys & Hoods",
+          "27",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Backsplashes",
+          "28",
+          "D&R"
+        ],
+        [
+          "Electrical & Smart Assets",
+          "07",
+          "Switchboards",
+          "29",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Smart Switches",
+          "30",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Security Cameras",
+          "31",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Intercom systems",
+          "32",
+          "D&R"
+        ],
+        [
+          "Flooring",
+          "08",
+          "Tiles",
+          "33",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Vinyl Flooring",
+          "34",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Laminate",
+          "35",
+          "D&R"
+        ],
+        [
+          null,
+          null,
+          "Hardwood",
+          "36",
+          "D&R"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 107,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "Sub-Category of Asset",
+          "Sub-Category\nCode",
+          "Asset Item Name",
+          "Asset Item\nCode",
+          "Asset\nCode"
+        ],
+        [
+          "Binding Machine",
+          "01",
+          "Binding Machine",
+          "01",
+          "OE"
+        ],
+        [
+          "Blender Machine",
+          "02",
+          "Blender Machine",
+          "02",
+          "OE"
+        ],
+        [
+          "Exhausted Fan",
+          "03",
+          "Exhausted Fan",
+          "03",
+          "OE"
+        ],
+        [
+          "Fire Ball",
+          "04",
+          "Fire Ball",
+          "04",
+          "OE"
+        ],
+        [
+          "Fire Extinguisher",
+          "05",
+          "Fire Extinguisher",
+          "05",
+          "OE"
+        ],
+        [
+          "Hand Mike",
+          "06",
+          "Hand Mike",
+          "06",
+          "OE"
+        ],
+        [
+          "Clock",
+          "07",
+          "Hanging Clock",
+          "07",
+          "OE"
+        ],
+        [
+          null,
+          null,
+          "Wall Clock",
+          "08",
+          "OE"
+        ],
+        [
+          "Generator",
+          "08",
+          "Generator",
+          "09",
+          "OE"
+        ],
+        [
+          "Juicer Machine",
+          "09",
+          "Juicer Machine",
+          "10",
+          "OE"
+        ],
+        [
+          "Locker",
+          "10",
+          "Locker",
+          "11",
+          "OE"
+        ],
+        [
+          "Water Filter Machine",
+          "11",
+          "Water Filter Machine",
+          "12",
+          "OE"
+        ],
+        [
+          "Vacuum Cleaner",
+          "12",
+          "Vacuum Cleaner",
+          "13",
+          "OE"
+        ],
+        [
+          "IP Phone",
+          "13",
+          "IP Phone",
+          "14",
+          "OE"
+        ],
+        [
+          "Coffee Machine",
+          "14",
+          "Coffee Machine",
+          "15",
+          "OE"
+        ],
+        [
+          "Weight Machine",
+          "15",
+          "Weight Machine",
+          "16",
+          "OE"
+        ],
+        [
+          "Sewing Machine",
+          "16",
+          "Sewing Machine",
+          "17",
+          "OE"
+        ],
+        [
+          "QR Code Scanner",
+          "17",
+          "QR Code Scanner",
+          "18",
+          "OE"
+        ],
+        [
+          "Barcode Scanner",
+          "18",
+          "Barcode Scanner",
+          "19",
+          "OE"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 108,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Sub-Category of Asset",
+          "Sub-Category\nCode",
+          "Asset Item Name",
+          "Asset Item\nCode",
+          "Asset\nCode"
+        ],
+        [
+          "Air Conditioner",
+          "01",
+          "Air Conditioner",
+          "01",
+          "EE"
+        ],
+        [
+          "Air Purifier",
+          "02",
+          "Air Purifier",
+          "02",
+          "EE"
+        ],
+        [
+          "Electric Kettle",
+          "03",
+          "Electric Kettle",
+          "03",
+          "EE"
+        ],
+        [
+          "Fan",
+          "04",
+          "Wall Fan",
+          "04",
+          "EE"
+        ],
+        [
+          null,
+          null,
+          "Stand Fan",
+          "05",
+          "EE"
+        ],
+        [
+          null,
+          null,
+          "Cooling Fan",
+          "06",
+          "EE"
+        ],
+        [
+          null,
+          null,
+          "Table Fan",
+          "07",
+          "EE"
+        ],
+        [
+          null,
+          null,
+          "Ceiling Fan",
+          "08",
+          "EE"
+        ],
+        [
+          "Oven",
+          "05",
+          "Microwave Oven",
+          "09",
+          "EE"
+        ],
+        [
+          "Access Control",
+          "06",
+          "Access Control",
+          "10",
+          "EE"
+        ],
+        [
+          "CC Camera",
+          "07",
+          "CC Camera",
+          "11",
+          "EE"
+        ],
+        [
+          "Projector",
+          "08",
+          "Projector",
+          "12",
+          "EE"
+        ],
+        [
+          "CC Camera Machine",
+          "09",
+          "CC Camera Machine",
+          "13",
+          "EE"
+        ],
+        [
+          "CC Camera Set Up Box",
+          "10",
+          "CC Camera Set Up Box",
+          "14",
+          "EE"
+        ],
+        [
+          "Paper Shredder",
+          "11",
+          "Paper Shredder",
+          "15",
+          "EE"
+        ],
+        [
+          "Refrigerator",
+          "12",
+          "Refrigerator",
+          "16",
+          "EE"
+        ],
+        [
+          "Electric Heater",
+          "13",
+          "Electric Heater",
+          "17",
+          "EE"
+        ],
+        [
+          "Sound Speaker",
+          "14",
+          "Sound Speaker",
+          "18",
+          "EE"
+        ],
+        [
+          "External Hard disk & SSD",
+          "15",
+          "Hardware",
+          "19",
+          "EE"
+        ],
+        [
+          "Television",
+          "16",
+          "Television",
+          "20",
+          "EE"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 108,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "Sub-Category of Asset",
+          "Sub-Category\nCode",
+          "Asset Item Name",
+          "Asset Item\nCode",
+          "Asset\nCode"
+        ],
+        [
+          "Printer",
+          "01",
+          "Printer",
+          "01",
+          "C"
+        ],
+        [
+          null,
+          null,
+          "Printer & Photocopy Machine",
+          "02",
+          "C"
+        ],
+        [
+          "IPS & UPS Box",
+          "02",
+          "IPS & UPS Box",
+          "03",
+          "C"
+        ],
+        [
+          "UPS",
+          "03",
+          "UPS",
+          "04",
+          "C"
+        ],
+        [
+          "IPS Battery",
+          "04",
+          "IPS Battery",
+          "05",
+          "C"
+        ],
+        [
+          "IPS",
+          "05",
+          "IPS",
+          "06",
+          "C"
+        ],
+        [
+          "IPS Rack",
+          "06",
+          "IPS Rack",
+          "07",
+          "C"
+        ],
+        [
+          "Desktop Computer",
+          "07",
+          "Desktop Computer",
+          "08",
+          "C"
+        ],
+        [
+          "Laptop",
+          "08",
+          "Laptop",
+          "09",
+          "C"
+        ],
+        [
+          "Scanner",
+          "09",
+          "Scanner",
+          "10",
+          "C"
+        ],
+        [
+          "Monitor",
+          "10",
+          "Monitor",
+          "11",
+          "C"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 109,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Sub-Category of Asset",
+          "Sub-Category\nCode",
+          "Asset Item Name",
+          "Asset Item\nCode",
+          "Asset\nCode"
+        ],
+        [
+          "Jeep",
+          "01",
+          "Jeep",
+          "01",
+          "MV"
+        ],
+        [
+          "Motor Cycle",
+          "02",
+          "Motor Cycle",
+          "02",
+          "MV"
+        ],
+        [
+          "Car",
+          "03",
+          "Car",
+          "03",
+          "MV"
+        ],
+        [
+          "Microbus",
+          "04",
+          "Microbus",
+          "04",
+          "MV"
+        ],
+        [
+          "Bus",
+          "05",
+          "Bus",
+          "05",
+          "MV"
+        ],
+        [
+          "Crane",
+          "06",
+          "Crane",
+          "06",
+          "MV"
+        ],
+        [
+          "Water Tank",
+          "07",
+          "Water Tank",
+          "07",
+          "MV"
+        ],
+        [
+          "Dumper Truck",
+          "08",
+          "Dumper Truck",
+          "08",
+          "MV"
+        ],
+        [
+          "Excavator",
+          "09",
+          "Excavator",
+          "09",
+          "MV"
+        ],
+        [
+          "Bulldozer",
+          "10",
+          "Bulldozer",
+          "10",
+          "MV"
+        ],
+        [
+          "Road Roller",
+          "11",
+          "Road Roller",
+          "11",
+          "MV"
+        ],
+        [
+          "Fire Truck",
+          "12",
+          "Fire Truck",
+          "12",
+          "MV"
+        ],
+        [
+          "Floating Cranes",
+          "13",
+          "Floating Cranes",
+          "13",
+          "MV"
+        ],
+        [
+          "Lorries",
+          "14",
+          "Lorries",
+          "14",
+          "MV"
+        ],
+        [
+          "Tractor",
+          "15",
+          "Tractor",
+          "15",
+          "MV"
+        ],
+        [
+          "Trailer",
+          "16",
+          "Trailer",
+          "16",
+          "MV"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 109,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "Sub-Category of Asset",
+          "Sub-Category\nCode",
+          "Asset Item Name",
+          "Asset Item\nCode",
+          "Asset\nCode"
+        ],
+        [
+          "Automatic Transfer Switch\n(ATS)",
+          "01",
+          "Automatic Transfer Switch\n(ATS)",
+          "01",
+          "N&IT"
+        ],
+        [
+          "Battery Bank Case",
+          "02",
+          "Battery Bank Case",
+          "02",
+          "N&IT"
+        ],
+        [
+          "DB Box",
+          "03",
+          "DB Box",
+          "03",
+          "N&IT"
+        ],
+        [
+          "Battery Bank Rack",
+          "04",
+          "Battery Bank Rack",
+          "04",
+          "N&IT"
+        ],
+        [
+          "Load Balancer",
+          "05",
+          "Load Balancer",
+          "05",
+          "N&IT"
+        ],
+        [
+          "Protect Server Network, HSM",
+          "06",
+          "Protect Server Network, HSM",
+          "06",
+          "N&IT"
+        ],
+        [
+          "Switch",
+          "07",
+          "Network Switch",
+          "07",
+          "N&IT"
+        ],
+        [
+          null,
+          null,
+          "SAN Switch",
+          "08",
+          "N&IT"
+        ],
+        [
+          null,
+          null,
+          "ACI Spine Switch",
+          "09",
+          "N&IT"
+        ],
+        [
+          null,
+          null,
+          "ACI Network Switch",
+          "10",
+          "N&IT"
+        ],
+        [
+          null,
+          null,
+          "ACI Leaf Switch",
+          "11",
+          "N&IT"
+        ],
+        [
+          null,
+          null,
+          "SW Switch",
+          "12",
+          "N&IT"
+        ],
+        [
+          null,
+          null,
+          "Kum Switch",
+          "13",
+          "N&IT"
+        ],
+        [
+          "Dense Wavelength Division\nMultiplexing (DWDM)",
+          "08",
+          "DWDM",
+          "14",
+          "N&IT"
+        ],
+        [
+          "Firewall",
+          "09",
+          "Firewall",
+          "15",
+          "N&IT"
+        ],
+        [
+          "Fire Power",
+          "10",
+          "Fire Power",
+          "16",
+          "N&IT"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 110,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Maintenance-Free Sealed Lead\nAcid Battery with Controller",
+          "11",
+          "Maintenance-Free Sealed Lead\nAcid Battery with Controller",
+          "17",
+          "N&IT"
+        ],
+        [
+          "Mass Storage",
+          "12",
+          "Mass Storage",
+          "18",
+          "N&IT"
+        ],
+        [
+          "UPS",
+          "13",
+          "Online UPS",
+          "19",
+          "N&IT"
+        ],
+        [
+          "Patch Panel",
+          "14",
+          "Patch Panel",
+          "20",
+          "N&IT"
+        ],
+        [
+          null,
+          null,
+          "Copper Patch Panel",
+          "21",
+          "N&IT"
+        ],
+        [
+          null,
+          null,
+          "Fiber Patch Panel",
+          "22",
+          "N&IT"
+        ],
+        [
+          "Protect Server Network",
+          "15",
+          "Protect Server Network",
+          "23",
+          "N&IT"
+        ],
+        [
+          "Cable Manager",
+          "16",
+          "Cable Manager",
+          "24",
+          "N&IT"
+        ],
+        [
+          "APIC Controller",
+          "17",
+          "APIC Controller",
+          "25",
+          "N&IT"
+        ],
+        [
+          "IM Vision Controller",
+          "18",
+          "IM Vision Controller",
+          "26",
+          "N&IT"
+        ],
+        [
+          "NetApp Storage",
+          "19",
+          "NetApp Storage",
+          "27",
+          "N&IT"
+        ],
+        [
+          "DCIM",
+          "20",
+          "DCIM",
+          "28",
+          "N&IT"
+        ],
+        [
+          "Fixed Mobile Convergence\n(FMC)",
+          "21",
+          "FMC",
+          "29",
+          "N&IT"
+        ],
+        [
+          "Server Network",
+          "22",
+          "Server Network",
+          "30",
+          "N&IT"
+        ],
+        [
+          "HUB",
+          "23",
+          "HUB",
+          "31",
+          "N&IT"
+        ],
+        [
+          "Server",
+          "23",
+          "Server",
+          "32",
+          "N&IT"
+        ],
+        [
+          "Router Board",
+          "24",
+          "Router Board",
+          "33",
+          "N&IT"
+        ],
+        [
+          "Kum Console",
+          "25",
+          "Kum Console",
+          "34",
+          "N&IT"
+        ],
+        [
+          "HNAS",
+          "26",
+          "HNAS",
+          "35",
+          "N&IT"
+        ],
+        [
+          "Wireless Controller",
+          "27",
+          "Wireless Controller",
+          "36",
+          "N&IT"
+        ],
+        [
+          "Router",
+          "28",
+          "Router",
+          "37",
+          "N&IT"
+        ],
+        [
+          "Rack",
+          "29",
+          "Server Rack",
+          "38",
+          "N&IT"
+        ],
+        [
+          null,
+          null,
+          "Storage Rack",
+          "39",
+          "N&IT"
+        ],
+        [
+          null,
+          null,
+          "Switch Rack",
+          "40",
+          "N&IT"
+        ],
+        [
+          "Access Point",
+          "30",
+          "Access Point",
+          "41",
+          "N&IT"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 110,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "Sub-Category of Asset",
+          "Sub-Category\nCode",
+          "Asset Item Name",
+          "Asset Item\nCode",
+          "Asset\nCode"
+        ],
+        [
+          "Domestic Appliances",
+          "01",
+          "Inverters",
+          "01",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Washing Machines",
+          "02",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Clothes Iron",
+          "03",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Hair Dryers",
+          "04",
+          "T"
+        ],
+        [
+          "Drawing Equipment",
+          "02",
+          "Drawing Boards",
+          "05",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Drawing Pens",
+          "06",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Drawing Tubes",
+          "07",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Erases/Erasing shields",
+          "08",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Manual Sketching Kits",
+          "09",
+          "T"
+        ],
+        [
+          "",
+          "",
+          "Glass Etching Tools",
+          "10",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Vinyl Cutter",
+          "11",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Frosted Glass Panels",
+          "12",
+          "T"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 111,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Frosting and designing",
+          "03",
+          "Glass Design Templates",
+          "13",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Sandblasting Equipment",
+          "14",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Glass Engraving Machines",
+          "15",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Laser Etching Equipment",
+          "16",
+          "T"
+        ],
+        [
+          "Loose tools",
+          "04",
+          "Hammers",
+          "17",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Screwdrivers",
+          "18",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Pliers",
+          "19",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Wrenches",
+          "20",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Measuring Tapes",
+          "21",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Utility Knives",
+          "22",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Chisels",
+          "23",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Clamps",
+          "24",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Torque Wrenches",
+          "25",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Grease Guns",
+          "26",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Pipe Wrenches",
+          "27",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Bearing Pullers",
+          "28",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Oil Cans",
+          "29",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Taps and dies",
+          "30",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Testers",
+          "31",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Wire Strippers",
+          "32",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Crimping Tools",
+          "33",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Insulation Tape & Tools",
+          "34",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Hand Saws",
+          "35",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Planers",
+          "36",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Files and Rasps",
+          "37",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Carpenter Squares",
+          "38",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Mallets",
+          "39",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Marking Gauges",
+          "40",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Try Squares",
+          "41",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Chalk Line Tools",
+          "42",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Socket Sets",
+          "43",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Hex Keys",
+          "44",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Vernier Calipers",
+          "45",
+          "T"
+        ],
+        [
+          "Kitchen Tools",
+          "05",
+          "Blenders/Grinders",
+          "46",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Toasters/Sandwich Makers",
+          "47",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Rice Cookers",
+          "48",
+          "T"
+        ],
+        [
+          "",
+          "",
+          "Manual Sewing Machine",
+          "49",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Overlock Sewing Machine",
+          "50",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Embroidery Machine",
+          "51",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Buttonhole Machine",
+          "52",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Blind Stitch Machine",
+          "53",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Fabric Cutting Table",
+          "54",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Tailors Scissors/Shears",
+          "55",
+          "T"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 112,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Tailoring Equipment",
+          "06",
+          "Notcher & Hole Punch",
+          "56",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Sewing Machine Stand/Table",
+          "57",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Needle Set",
+          "58",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Tailor Chalk/Marking Pens",
+          "59",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Fabric Storage Racks",
+          "60",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Cutting Machines",
+          "61",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Stitch Counter",
+          "62",
+          "T"
+        ],
+        [
+          "Testing Equipment",
+          "07",
+          "Insulation Resistance Tester",
+          "63",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Multimeter",
+          "64",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Clamp Meter",
+          "65",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Earth Resistance Tester",
+          "66",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "High Voltage Test Set",
+          "67",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Continuity Tester",
+          "68",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Circuit Breaker Analyzer",
+          "69",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Power Analyzer",
+          "70",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Compression Testing Machine",
+          "71",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Concrete Cube Molds",
+          "72",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Slump Cone Test Kit",
+          "73",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Bitumen Testing Apparatus",
+          "74",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Soil Testing Equipment",
+          "75",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Universal Testing Machine",
+          "76",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Torque Tester",
+          "77",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Vibration Analyzer",
+          "78",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Oscilloscope",
+          "79",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "LCR Meter",
+          "80",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Function Generator",
+          "81",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Thermometers",
+          "82",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "pH Meter",
+          "83",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Hygrometer",
+          "84",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Anemometer",
+          "85",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Water Quality Test Kit",
+          "86",
+          "T"
+        ],
+        [
+          null,
+          null,
+          "Air Quality Monitoring Devices",
+          "87",
+          "T"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 112,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "Sub-Category of Asset",
+          "Sub-Category\nCode",
+          "Asset Item Name",
+          "Asset Item\nCode",
+          "Asset\nCode"
+        ],
+        [
+          "Structural & Interior Fittings",
+          "01",
+          "Partition Walls",
+          "01",
+          "LI"
+        ],
+        [
+          null,
+          null,
+          "False Ceiling",
+          "02",
+          "LI"
+        ],
+        [
+          null,
+          null,
+          "Internal Doors & Frames",
+          "03",
+          "LI"
+        ],
+        [
+          null,
+          null,
+          "Soundproofing Panels",
+          "04",
+          "LI"
+        ],
+        [
+          "",
+          "",
+          "Lighting Fixtures & Fittings",
+          "05",
+          "LI"
+        ],
+        [
+          null,
+          null,
+          "Power Outlets",
+          "06",
+          "LI"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 113,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Electrical & Lighting",
+          "02",
+          "Electrical Wiring",
+          "07",
+          "LI"
+        ],
+        [
+          null,
+          null,
+          "Server Room Electrical Fit-out",
+          "08",
+          "LI"
+        ],
+        [
+          null,
+          null,
+          "Emergency Lights & Exit Signs",
+          "09",
+          "LI"
+        ],
+        [
+          "Safety & Compliance",
+          "03",
+          "Fire Alarm System",
+          "10",
+          "LI"
+        ],
+        [
+          null,
+          null,
+          "Smoke Detectors",
+          "11",
+          "LI"
+        ],
+        [
+          null,
+          null,
+          "Fire Extinguisher cabinets",
+          "12",
+          "LI"
+        ],
+        [
+          null,
+          null,
+          "CCTV Infrastructures",
+          "13",
+          "LI"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 113,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "Sub-Category of Asset",
+          "Sub-Category\nCode",
+          "Asset Item Name",
+          "Asset Item\nCode",
+          "Asset\nCode"
+        ],
+        [
+          "Civil & Structural\nInfrastructure",
+          "01",
+          "Roads & Pavements",
+          "01",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Bridges & Culverts",
+          "02",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Airports & Airstrips",
+          "03",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Seaports & Inland River Ports",
+          "04",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Bus Terminals",
+          "05",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Ferry Terminals",
+          "06",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Railway Station",
+          "07",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Satellite Ground Stations",
+          "08",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Mobile Network Towers",
+          "09",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Toll Plaza",
+          "10",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Border Check-posts",
+          "11",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Underground Cable Trench",
+          "12",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Drainage Systems",
+          "13",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Water Reservoirs/Tanks",
+          "14",
+          "I"
+        ],
+        [
+          "Utilities Infrastructure",
+          "02",
+          "Power Distribution Network",
+          "15",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Transformers & Substations",
+          "16",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Electrical Duct Banks",
+          "17",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Water Supply Lines",
+          "18",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Wastewater Pipelines",
+          "19",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Telecommunication Ducting",
+          "20",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Gas Pipeline Network",
+          "21",
+          "I"
+        ],
+        [
+          "Building Support\nInfrastructure",
+          "03",
+          "Compound Lighting",
+          "22",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Watch Towers",
+          "23",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Export Processing Zones",
+          "24",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Industrial Parks",
+          "25",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Government Warehouse & Cold\nStorage",
+          "26",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Internal Roadways & Footpaths",
+          "27",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Reticulated Systems",
+          "28",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Septic Tanks/Soak Pits",
+          "29",
+          "I"
+        ],
+        [
+          "",
+          "",
+          "Parking Areas/Carports",
+          "30",
+          "I"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 114,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Transport/Access\nInfrastructure",
+          "04",
+          "Rail Sidings/Tracks",
+          "31",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Helipads/Taxiways",
+          "32",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Railway Tracks",
+          "33",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Mass Transit Systems",
+          "34",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Loading Bays/Access Ramps",
+          "35",
+          "I"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 114,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "Sub-Category of Asset",
+          "Sub-Category\nCode",
+          "Asset Item Name",
+          "Asset Item\nCode",
+          "Asset\nCode"
+        ],
+        [
+          "Air Craft",
+          "01",
+          "Airplane",
+          "01",
+          "A"
+        ],
+        [
+          null,
+          null,
+          "Turbojet Aircraft",
+          "02",
+          "A"
+        ],
+        [
+          null,
+          null,
+          "High Altitude",
+          "03",
+          "A"
+        ],
+        [
+          null,
+          null,
+          "Tail wheel",
+          "04",
+          "A"
+        ],
+        [
+          null,
+          null,
+          "Single Engine Land",
+          "05",
+          "A"
+        ],
+        [
+          null,
+          null,
+          "Single Engine Sea",
+          "06",
+          "A"
+        ],
+        [
+          null,
+          null,
+          "Multi Engine Land",
+          "07",
+          "A"
+        ],
+        [
+          null,
+          null,
+          "Multi Engine Sea",
+          "08",
+          "A"
+        ],
+        [
+          null,
+          null,
+          "JET",
+          "09",
+          "A"
+        ],
+        [
+          null,
+          null,
+          "Single Main-Rotor Helicopter",
+          "10",
+          "A"
+        ],
+        [
+          null,
+          null,
+          "Tandem Rotor Helicopter",
+          "11",
+          "A"
+        ],
+        [
+          null,
+          null,
+          "Coaxial Helicopter",
+          "12",
+          "A"
+        ],
+        [
+          null,
+          null,
+          "Compound Helicopter",
+          "13",
+          "A"
+        ],
+        [
+          null,
+          null,
+          "Tilt Rotor Helicopter",
+          "14",
+          "A"
+        ],
+        [
+          null,
+          null,
+          "Intermeshing Rotor Helicopter",
+          "15",
+          "A"
+        ],
+        [
+          null,
+          null,
+          "Tandem Rotor Helicopter",
+          "16",
+          "A"
+        ],
+        [
+          null,
+          null,
+          "Troop Carrier Helicopter",
+          "17",
+          "A"
+        ],
+        [
+          "Train",
+          "02",
+          "Inter City Train",
+          "18",
+          "A"
+        ],
+        [
+          null,
+          null,
+          "Rapid Transit Train",
+          "19",
+          "A"
+        ],
+        [
+          null,
+          null,
+          "Metro Rail",
+          "20",
+          "A"
+        ],
+        [
+          null,
+          null,
+          "Cargo Train",
+          "21",
+          "A"
+        ],
+        [
+          null,
+          null,
+          "Passenger Carrier Train",
+          "22",
+          "A"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 114,
+      "table_number_on_page": 3,
+      "rows": [
+        [
+          "Sub-Category of Asset",
+          "Sub-Category\nCode",
+          "Asset Item Name",
+          "Asset Item\nCode",
+          "Asset\nCode"
+        ],
+        [
+          "",
+          "",
+          "Aircraft Carrier Ship",
+          "01",
+          "V"
+        ],
+        [
+          null,
+          null,
+          "Submarines",
+          "02",
+          "V"
+        ],
+        [
+          null,
+          null,
+          "Frigates",
+          "03",
+          "V"
+        ],
+        [
+          null,
+          null,
+          "Corvettes",
+          "04",
+          "V"
+        ],
+        [
+          null,
+          null,
+          "Patrol Vessels",
+          "05",
+          "V"
+        ],
+        [
+          null,
+          null,
+          "Container Ship",
+          "06",
+          "V"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 115,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Vessels",
+          "01",
+          "Bulk Carrier",
+          "07",
+          "V"
+        ],
+        [
+          null,
+          null,
+          "Fishing Vessels",
+          "08",
+          "V"
+        ],
+        [
+          null,
+          null,
+          "General Cargo Ship",
+          "09",
+          "V"
+        ],
+        [
+          null,
+          null,
+          "Reefer Ship",
+          "10",
+          "V"
+        ],
+        [
+          null,
+          null,
+          "Tanker Ship",
+          "11",
+          "V"
+        ],
+        [
+          null,
+          null,
+          "Passenger Carrier Ship",
+          "12",
+          "V"
+        ],
+        [
+          null,
+          null,
+          "Yachts",
+          "13",
+          "V"
+        ],
+        [
+          null,
+          null,
+          "Ferry",
+          "14",
+          "V"
+        ],
+        [
+          null,
+          null,
+          "Coastal Patrol Boats",
+          "15",
+          "V"
+        ],
+        [
+          null,
+          null,
+          "Jetties, Slipways",
+          "16",
+          "V"
+        ],
+        [
+          null,
+          null,
+          "Dredgers",
+          "17",
+          "V"
+        ],
+        [
+          null,
+          null,
+          "Fishing Vessels",
+          "18",
+          "V"
+        ],
+        [
+          null,
+          null,
+          "Speed Boats",
+          "19",
+          "V"
+        ],
+        [
+          null,
+          null,
+          "Tugs, Vessels & Launches",
+          "20",
+          "V"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 115,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "Sub-Category of Asset",
+          "Sub-Category\nCode",
+          "Asset Item Name",
+          "Asset Item\nCode",
+          "Asset\nCode"
+        ],
+        [
+          "Crockeries",
+          "01",
+          "Dinner Plates",
+          "01",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Soup Bowls",
+          "02",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Rice Bowls",
+          "03",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Tea Cups & Saucers",
+          "04",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Mugs",
+          "05",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Glasses",
+          "06",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Jugs & Pitchers",
+          "07",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Cutlery",
+          "08",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Tray Sets",
+          "09",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Napkin Holders",
+          "10",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Side Plates",
+          "11",
+          "O"
+        ],
+        [
+          "Fire & Safety Equipment\nGas Line",
+          "02",
+          "Fire Extinguishers",
+          "12",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Fire Hose Reels",
+          "13",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Fire Dampers",
+          "14",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Fire Water Storage Tanks",
+          "15",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Fire Buckets",
+          "16",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Fire Blankets",
+          "17",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Fire Water Storage Tanks",
+          "18",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Fire Hydrants",
+          "19",
+          "O"
+        ],
+        [
+          "",
+          "",
+          "Stethoscopes",
+          "20",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Sphygmomanometers",
+          "21",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Pulse Oximeters",
+          "22",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Glucometers",
+          "23",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Syringe Pumps",
+          "24",
+          "O"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 116,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Medical Accessories",
+          "03",
+          "Dressing Sets",
+          "25",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Bandage & Cotton Dispensers",
+          "26",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Autoclave containers",
+          "27",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Centrifuge Tubes and Racks",
+          "28",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "First Aid Kits",
+          "29",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Thermal Boxes",
+          "30",
+          "O"
+        ],
+        [
+          "Forklifts",
+          "04",
+          "Diesel Forklift",
+          "31",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Electric Forklift",
+          "32",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "LPG Forklift",
+          "33",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Rough Terrain Forklift",
+          "34",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Pallet Stackers",
+          "35",
+          "O"
+        ],
+        [
+          null,
+          null,
+          "Counterbalance Forklift",
+          "36",
+          "O"
+        ],
+        [
+          "Sundry Assets",
+          "05",
+          "Sundry assets",
+          "37",
+          "O"
+        ],
+        [
+          "Other assets",
+          "06",
+          "Other assets",
+          "38",
+          "O"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 116,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "Sub-Category of Asset",
+          "Sub-Category\nCode",
+          "Asset Item Name",
+          "Asset Item\nCode",
+          "Asset\nCode"
+        ],
+        [
+          "SOES AND ABS domain",
+          "01",
+          "SOES AND ABS domain",
+          "01",
+          "I"
+        ],
+        [
+          "DFS platform hardware",
+          "02",
+          "DFS platform hardware",
+          "02",
+          "I"
+        ],
+        [
+          "ORACLE database",
+          "03",
+          "ORACLE database",
+          "03",
+          "I"
+        ],
+        [
+          "Software",
+          "04",
+          "Operating Software",
+          "04",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Application Software",
+          "05",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Internet Banking Software",
+          "06",
+          "I"
+        ],
+        [
+          null,
+          null,
+          "Mobile Banking Software",
+          "07",
+          "I"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 117,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Disposal Type (Please\nTick):",
+          "Sale",
+          "Donation"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 117,
+      "table_number_on_page": 2,
+      "rows": [
+        [
+          "Location Code:",
+          "",
+          "FDN #",
+          ""
+        ],
+        [
+          "Location Description:",
+          "",
+          "Date:",
+          ""
+        ],
+        [
+          "User Name:",
+          "",
+          null,
+          null
+        ],
+        [
+          "Type of Asset:",
+          "",
+          null,
+          null
+        ],
+        [
+          "Reference:",
+          "",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "pdf_page": 117,
+      "table_number_on_page": 3,
+      "rows": [
+        [
+          "Imported",
+          "Local"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 117,
+      "table_number_on_page": 4,
+      "rows": [
+        [
+          "Year of Purchase:",
+          ""
+        ],
+        [
+          "Date of Commission:",
+          ""
+        ]
+      ]
+    },
+    {
+      "pdf_page": 117,
+      "table_number_on_page": 5,
+      "rows": [
+        [
+          "Reason (Use separate sheet if insufficient space):",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Serial\nNo.",
+          "Asset\nType",
+          "GL\nAsset\nCode\nNo.",
+          "Description of\nAsset",
+          "Original\nValue",
+          "Accumulated\nDepreciation",
+          "Writte\nn Down\nValue",
+          "Sales\nValue"
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Total",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      ]
+    },
+    {
+      "pdf_page": 118,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "SL\nNo.",
+          "Item\nDescription",
+          "Asset tag\nNumber",
+          "Date of\nPurchase",
+          "Cost",
+          "Acc. Dep.",
+          "Written\nDown\nValue",
+          "Est. Remaining\nUseful Life"
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      ]
+    },
+    {
+      "pdf_page": 119,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Asset Purchase Requisition",
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "STATE-OWNED ENTERPRISES (SOES) AND AUTONOMOUS BODIES (ABS)",
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Name of office:",
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Division Name:",
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Requested by:",
+          null,
+          null,
+          "Date:",
+          null
+        ],
+        [
+          "Purpose of Use:",
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Vendor Name:",
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Vendor Address:",
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Vendor Contact:",
+          null,
+          null,
+          "Phone:",
+          null
+        ],
+        [
+          "",
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "SL No.",
+          "Product/ Services\nDescription",
+          "Quantity",
+          "Unit Price",
+          "Extended Cost"
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "For Purchasing Division Only",
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Approvals:",
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Division Head:",
+          null,
+          "Date:",
+          "Approved:",
+          null
+        ],
+        [
+          "Additional:",
+          null,
+          "Date:",
+          "Ordered for:",
+          null
+        ],
+        [
+          "",
+          null,
+          null,
+          "P.O. No.:",
+          null
+        ],
+        [
+          "Vendor ETIN/TIN or ID No. on file? □Yes □No",
+          null,
+          null,
+          "Date:",
+          null
+        ]
+      ]
+    },
+    {
+      "pdf_page": 120,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Asset Group",
+          "Asset Sub-\nGroup",
+          "Asset Name",
+          "Specification",
+          "Brand/\nManufacturer",
+          "Asset ID",
+          "Location",
+          "Division",
+          "Dept.\nin use",
+          "Date of\npurchase",
+          "Invoice\nNo.",
+          "Supplier\nname",
+          "Dep. Rate\n/ Useful\nlife",
+          "Cost\nprice",
+          "Acc.\nDep.",
+          "Written\ndown\nvalue",
+          "Remark"
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      ]
+    },
+    {
+      "pdf_page": 121,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Assets Onboarding Form",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "STATE-OWNED ENTERPRISES (SOES) AND AUTONOMOUS BODIES (ABS)",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Name of Receiver:",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Division Name:",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Department Name:",
+          null,
+          null,
+          null,
+          "Received Date:",
+          null,
+          null,
+          null
+        ],
+        [
+          "Employee ID:",
+          null,
+          null,
+          null,
+          "Phone:",
+          null,
+          null,
+          null
+        ],
+        [
+          "Vendor Name:",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Vendor Address:",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "PO Number:",
+          null,
+          null,
+          null,
+          "PO Date:",
+          null,
+          null,
+          null
+        ],
+        [
+          "",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Item Name",
+          "Item\nSpecification",
+          "Serial\nNumber",
+          "Unit",
+          "Condition",
+          "Location",
+          "Sub-\nLocation",
+          "Remarks"
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "I acknowledge receipt for above equipment and request it be added fixed assets register.",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          "Receiver Signature:",
+          null,
+          null,
+          null,
+          "Date:",
+          null,
+          null,
+          null
+        ],
+        [
+          "Departmental Head Signature:",
+          null,
+          null,
+          null,
+          "Date:",
+          null,
+          null,
+          null
+        ],
+        [
+          "Additional:",
+          null,
+          null,
+          null,
+          "Date:",
+          null,
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "pdf_page": 122,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Sl. No.",
+          "Category",
+          "Purchase and procurement method"
+        ],
+        [
+          "1.",
+          "Real Estate- Land\nand Building",
+          "Method A with prior approval of Board of Directors of SOEs AND ABs"
+        ],
+        [
+          "2.",
+          "Renovation and\nDecoration",
+          "Up to Tk. 100,000 method B\nMore than Tk. 100,000 method C/ E"
+        ],
+        [
+          "3.",
+          "Furniture and\nFixture",
+          "Up to Tk. 100, 000: Method B\nMore than Tk. 100,000: Method C/ E\nBrand Item: Method D"
+        ],
+        [
+          "4.",
+          "Vehicle",
+          "Method D: Only through preferred vendor upon Obtaining approval\nfrom the competent authority."
+        ]
+      ]
+    },
+    {
+      "pdf_page": 123,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Sl. No.",
+          "Category",
+          "Purchase and procurement method"
+        ],
+        [
+          "5.",
+          "Air Cooler/\nGenerator",
+          "Up to Tk. 100,000: Method A\nMore than Tk. 100,000: Method C"
+        ],
+        [
+          "6.",
+          "IT related items",
+          "Up to Tk. 25,000: Method B/ C (Purchase & Procurement Committee is\nnot necessary)\nMore than Tk. 25,000: Method B/ C/ E\nBrand Items: Method D"
+        ],
+        [
+          "7.",
+          "Direct Import",
+          "Import directly on the basis of Proforma Invoices through direct\nnegotiation as per decision of Competent authority as per Method A"
+        ],
+        [
+          "8.",
+          "All Other Items",
+          "Up to Tk. 25,000: Method A\nMore Than Tk. 25,000: Method B/ C"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 132,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Typical initial direct costs of a lessee",
+          null
+        ],
+        [
+          "Include ✔",
+          "Exclude ×"
+        ],
+        [
+          "– Commissions\n– Legal fees*\n– Costs that are incremental and\ndirectly attributable to negotiating\nlease terms and conditions*\n– Costs of arranging collateral\n– Payments made by a potential\nlessee to existing tenants to obtain\nthe lease\nIf they are contingent on obtaining the\nlease",
+          "– General overheads (e.g. costs incurred\nby a sales and marketing team or a\npurchase team)\n– Costs of investment appraisals,\nfeasibility studies, due diligence etc.\nthat are incurred regardless of whether\nthe lease is entered into\n– Costs to obtain offers for potential\nleases"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 135,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Year",
+          "Balance b/f*",
+          "Finance cost 6%",
+          "Payment",
+          "Balance c/f*"
+        ],
+        [
+          "1",
+          "917,600",
+          "55,056",
+          "(80,000)",
+          "892,656"
+        ],
+        [
+          "2",
+          "892,656",
+          "53,559",
+          "(80,000)",
+          "866,215"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 136,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Year",
+          "Balance b/f",
+          "Payment",
+          "Subtotal",
+          "Finance cost\n6%",
+          "Balance c/f"
+        ],
+        [
+          "1",
+          "972,640",
+          "(80,000)",
+          "892,640",
+          "53,558",
+          "946,198"
+        ],
+        [
+          "2",
+          "946,198",
+          "(80,000)",
+          "866,198",
+          "51,972",
+          "918,170"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 152,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Finance lease",
+          "Operating lease"
+        ],
+        [
+          "Statement of financial position",
+          null
+        ],
+        [
+          "• Present assets held under a finance lease as\na receivable at an amount equal to the net\ninvestment in the lease",
+          "• Present the underlying assets subject\nto operating leases according to the\nnature of the underlying asset"
+        ]
+      ]
+    },
+    {
+      "pdf_page": 154,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "",
+          "Lessee (seller)",
+          "Lessor (buyer)"
+        ],
+        [
+          "Transfer to\nbuyer-lessor is\na sale",
+          "• Derecognize the underlying asset and\napply the lessee accounting model to\nthe leaseback. *\n• Measure the right-of-use asset at the\nretained portion of the previous\nCarrying amount/value (i.e. at cost).*\n• Recognize only the amount of any gain\nor loss related to the rights transferred\nto the lessor.*",
+          "• Recognise the underlying asset\nand apply the lessor accounting\nmodel"
+        ],
+        [
+          "Transfer to\nbuyer-lessor is\nnot a sale",
+          "• Continue to recognize the underlying\nasset.\n• Recognize a financial liability under\nIFRS 9 for amounts received from the\nbuyer-lessor.",
+          "• Do not recognise the\nunderlying asset.\n• Recognise a financial asset\nunder IFRS 9 for amounts\ntransferred to the seller-\nlessee."
+        ]
+      ]
+    },
+    {
+      "pdf_page": 158,
+      "table_number_on_page": 1,
+      "rows": [
+        [
+          "Particulars",
+          "Responsible",
+          "Accountable",
+          "Consulted",
+          "Informed"
+        ],
+        [
+          "Acquisition of Lease",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Requisition",
+          "User Department",
+          "Head of the\nDepartment",
+          "Procurement\ndepartment",
+          ""
+        ],
+        [
+          "Lease agreement",
+          "Supply chain\nmanagement\n(SCM)",
+          "Administration\ndepartment",
+          "",
+          "User\nDepartment"
+        ],
+        [
+          "Bookkeeping and Lease\naccounting",
+          "Finance\nDepartment",
+          "Head of Finance",
+          "",
+          ""
+        ],
+        [
+          "Disposal and termination of\ncontracts",
+          "User Department\nand Admin and\nuser Department",
+          "Admin\ndepartment",
+          "",
+          "Finance\nDepartment"
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Approvals</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/aef52f8d7c3fef253b593dd05928ec1c">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Source+Serif+4:wght@400;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.app{min-height:100%;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:var(--gs-font-sans);font-size:14px;line-height:1.5}
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 20px;background:var(--gs-header-bg);color:var(--gs-header-fg);border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.chip{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 12px;border-radius:var(--gs-radius-sm);border:var(--gs-border-width) solid var(--gs-color-border);background:transparent;color:inherit;font:inherit;text-decoration:none}
+.shell{display:flex;flex-wrap:wrap;align-items:stretch}
+.side{flex:1 1 220px;max-width:240px;background:var(--gs-sidebar-bg);color:var(--gs-sidebar-fg);padding:12px 0;box-sizing:border-box}
+.side a{display:flex;align-items:center;justify-content:space-between;min-height:42px;padding:0 18px;color:var(--gs-sidebar-fg);text-decoration:none}
+.side a[aria-current]{background:var(--gs-sidebar-active-bg);color:var(--gs-sidebar-active-fg);box-shadow:inset 3px 0 0 var(--gs-sidebar-active-marker)}
+.side .sub{padding-left:34px}
+.main{flex:999 1 560px;min-width:0;box-sizing:border-box;padding:20px 28px 56px;display:flex;flex-direction:column;gap:18px}
+.crumb{font-size:13px;color:var(--gs-color-text-muted)}
+.ico{width:1em;height:1em;flex:none}
+.muted{color:var(--gs-color-text-muted)}
+.mono{font-family:var(--gs-font-mono)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.req{display:flex;flex-wrap:wrap;gap:10px 20px;align-items:center;padding:16px 18px;border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.req:last-child{border-bottom:0}
+.req__main{flex:1 1 440px;min-width:0;display:flex;flex-direction:column;gap:4px}
+.req__head{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.req__num{font-family:var(--gs-font-mono);font-weight:600}
+.small{font-size:13px}
+.flag{display:inline-flex;gap:6px;align-items:center;font-size:13px;font-weight:600}
+.flag--warn{color:var(--gs-color-warning)}
+.flag--late{color:var(--gs-color-danger)}
+.tabbtn{border:0;background:transparent;font:inherit;cursor:pointer}
+</style>
+</helmet>
+<div class="app" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-table="{{ v.table }}" data-gs-controls="{{ v.controls }}" data-gs-type="{{ v.type }}" data-gs-header="{{ v.header }}">
+<div class="top">
+<strong style="font-size: 16px; flex: 1 1 auto">National Asset Register</strong>
+<span class="chip"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg><span><span class="muted">Working in</span> Upazila Health Complex, Savar</span></span>
+<span class="gs-avatar gs-avatar--sm gs-tone-primary" role="img" aria-label="Signed in as Kamal Hossain">KH</span>
+</div>
+<div class="shell">
+<nav class="side" aria-label="Main"><a href="#">Dashboard</a><a href="#">Request items</a><a href="#">Requests</a><a class="sub" href="#" aria-current="page">Approvals <span class="gs-tabs__count">4</span></a><a href="#">My office</a><a href="#">Reports</a></nav>
+<main class="main">
+<nav class="crumb" aria-label="Breadcrumb"><a href="#">Home</a> / Requests / Approvals</nav>
+
+<header class="gs-page-header">
+<div class="gs-page-header__text"><h1 class="gs-page-header__title">Approvals</h1><p class="gs-page-header__subtitle">Requests from Upazila Health Complex, Savar that you can decide. You never see your own.</p></div>
+</header>
+
+<div class="gs-alert gs-alert--warning" role="status"><svg class="ico gs-alert__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div class="gs-alert__body"><strong>1 request is overdue</strong> and has been passed to the office head, Dr. Selina Rahman. You can still decide it. <button type="button" class="tabbtn" style="color: var(--gs-color-link); text-decoration: underline; padding: 0" onClick="{{ goLate }}">Show it</button></div></div>
+
+<nav class="gs-status-tabs" aria-label="Approvals by status">
+<ul class="gs-tabs">
+<li class="gs-tabs__item"><a class="gs-tabs__link" href="#" aria-current="{{ cWait }}" onClick="{{ goWait }}"><span>Waiting for you</span><span class="gs-tabs__count">4</span></a></li>
+<li class="gs-tabs__item"><a class="gs-tabs__link" href="#" aria-current="{{ cLate }}" onClick="{{ goLate }}"><span>Overdue</span><span class="gs-tabs__count">1</span></a></li>
+<li class="gs-tabs__item"><a class="gs-tabs__link" href="#" aria-current="{{ cDone }}" onClick="{{ goDone }}"><span>Decided by you</span><span class="gs-tabs__count">23</span></a></li>
+</ul>
+</nav>
+
+<section class="gs-box">
+<div class="gs-box__body" style="padding: 0">
+<sc-if value="{{ tWait }}" hint-placeholder-val="{{ true }}">
+<div class="req"><div class="req__main"><div class="req__head"><a class="req__num" href="Decide.dc.html">SR-2026-000305</a><span class="gs-tag gs-tag--light gs-tag--outline">First approval of two</span><span class="flag flag--late"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>4 working days · overdue</span></div><strong>A4 paper ×12 reams, HP 85A toner ×3</strong><span class="small muted">Shahana Parvin, Accounts section · "Quarter-end audit printing" · <span class="flag flag--warn">only 4 toner free</span></span></div><a class="gs-btn gs-btn--primary" href="Decide.dc.html">Decide<span class="gs-sr-only"> on SR-2026-000305</span></a></div>
+<div class="req"><div class="req__main"><div class="req__head"><a class="req__num" href="Decide.dc.html">SR-2026-000302</a><span class="gs-tag gs-tag--light gs-tag--outline">First approval of two</span><span class="small muted">Sent today, 09:12</span></div><strong>Dell Latitude 3440 laptop ×1</strong><span class="small muted">Nasrin Akter, Outpatient desk · "Replace the outpatient laptop" · 3 free</span></div><a class="gs-btn gs-btn--primary" href="Decide.dc.html">Decide<span class="gs-sr-only"> on SR-2026-000302</span></a></div>
+<div class="req"><div class="req__main"><div class="req__head"><a class="req__num" href="Decide.dc.html">SR-2026-000300</a><span class="gs-tag gs-tag--light gs-tag--outline">Only approval</span><span class="small muted">Sent yesterday · escalates Thu 16 Oct</span></div><strong>USB optical mouse ×2</strong><span class="small muted">Jahid Hasan, Laboratory · "Two new lab counters" · 12 free</span></div><a class="gs-btn gs-btn--primary" href="Decide.dc.html">Decide<span class="gs-sr-only"> on SR-2026-000300</span></a></div>
+<div class="req"><div class="req__main"><div class="req__head"><a class="req__num" href="Decide.dc.html">SR-2026-000298</a><span class="gs-tag gs-tag--light gs-tag--outline">Final approval</span><span class="small muted">Approved first by Dr. Farhana Akter on 13 Oct</span></div><strong>Projector, Epson EB-E01 ×1</strong><span class="small muted">Rokeya Haque, Training room · "Monthly staff training" · 1 free</span></div><a class="gs-btn gs-btn--primary" href="Decide.dc.html">Decide<span class="gs-sr-only"> on SR-2026-000298</span></a></div>
+</sc-if>
+<sc-if value="{{ tLate }}" hint-placeholder-val="{{ false }}">
+<div class="req"><div class="req__main"><div class="req__head"><a class="req__num" href="Decide.dc.html">SR-2026-000305</a><span class="gs-tag gs-tag--light gs-tag--outline">First approval of two</span><span class="flag flag--late">Sent 9 Oct · passed to Dr. Selina Rahman on 14 Oct</span></div><strong>A4 paper ×12 reams, HP 85A toner ×3</strong><span class="small muted">Shahana Parvin, Accounts section</span></div><a class="gs-btn gs-btn--primary" href="Decide.dc.html">Decide<span class="gs-sr-only"> on SR-2026-000305</span></a></div>
+</sc-if>
+<sc-if value="{{ tDone }}" hint-placeholder-val="{{ false }}">
+<div class="gs-table-wrap"><table class="gs-table"><caption class="gs-sr-only">Requests you decided</caption><thead><tr><th scope="col">Request</th><th scope="col">From</th><th scope="col">Your decision</th><th scope="col">Now</th><th scope="col">Decided</th></tr></thead><tbody>
+<tr><td><a class="mono" href="Decide.dc.html">SR-2026-000301</a></td><td>Nasrin Akter</td><td>Approved as asked</td><td><span class="gs-badge" data-tone="status-ready"><span class="gs-badge__label">Issued · confirm receipt</span></span></td><td>15 Oct, 10:20</td></tr>
+<tr><td><a class="mono" href="Decide.dc.html">SR-2026-000286</a></td><td>Nasrin Akter</td><td>Approved 2 of 3 items</td><td><span class="gs-badge" data-tone="success"><span class="gs-badge__label">Received</span></span></td><td>11 Oct, 16:02</td></tr>
+<tr><td><a class="mono" href="Decide.dc.html">SR-2026-000288</a></td><td>Nasrin Akter</td><td>Declined</td><td><span class="gs-badge" data-tone="doc-rejected"><span class="gs-badge__label">Not approved</span></span></td><td>2 Oct, 12:45</td></tr>
+</tbody></table></div>
+</sc-if>
+</div>
+</section>
+<p class="muted small" style="margin: 0">Oldest first. Requests waiting 3 working days are passed to the office head; you can still decide them.</p>
+
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"$preview":{"width":1440,"height":1150}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { tab: 'wait' }; }
+renderVals() {
+const V = {
+'civic-ledger': { header: 'neutral', density: 'regular', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { header: 'brand', density: 'regular', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { header: 'dark', density: 'compact', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { header: 'dark', density: 'comfortable', table: 'ledger', surfaces: 'flat', controls: 'outlined', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { header: 'brand', density: 'compact', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { header: 'floating', density: 'regular', table: 'rules', surfaces: 'elevated', controls: 'filled', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+const t = this.state.tab;
+const go = (tab) => (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ tab }); };
+const cur = (k) => (t === k ? 'page' : undefined);
+return { skin, mode, v: V[skin], tWait: t === 'wait', tLate: t === 'late', tDone: t === 'done', cWait: cur('wait'), cLate: cur('late'), cDone: cur('done'), goWait: go('wait'), goLate: go('late'), goDone: go('done') };
+}
+}
+</script>
+</body>
+</html>

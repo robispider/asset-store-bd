@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Request items</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/aef52f8d7c3fef253b593dd05928ec1c">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Source+Serif+4:wght@400;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.app{min-height:100%;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:var(--gs-font-sans);font-size:14px;line-height:1.5}
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 20px;background:var(--gs-header-bg);color:var(--gs-header-fg);border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.chip{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 12px;border-radius:var(--gs-radius-sm);border:var(--gs-border-width) solid var(--gs-color-border);background:transparent;color:inherit;font:inherit;text-decoration:none}
+.shell{display:flex;flex-wrap:wrap;align-items:stretch}
+.side{flex:1 1 220px;max-width:240px;background:var(--gs-sidebar-bg);color:var(--gs-sidebar-fg);padding:12px 0;box-sizing:border-box}
+.side a{display:flex;align-items:center;justify-content:space-between;min-height:42px;padding:0 18px;color:var(--gs-sidebar-fg);text-decoration:none}
+.side a[aria-current]{background:var(--gs-sidebar-active-bg);color:var(--gs-sidebar-active-fg);box-shadow:inset 3px 0 0 var(--gs-sidebar-active-marker)}
+.side .sub{padding-left:34px}
+.main{flex:999 1 560px;min-width:0;box-sizing:border-box;padding:20px 28px 56px;display:flex;flex-direction:column;gap:18px}
+.crumb{font-size:13px;color:var(--gs-color-text-muted)}
+.ico{width:1em;height:1em;flex:none}
+.muted{color:var(--gs-color-text-muted)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.ctl{box-sizing:border-box;min-height:44px;padding:8px 12px;border:var(--gs-border-width) solid var(--gs-color-border-strong);border-radius:var(--gs-radius-sm);background:var(--gs-color-surface);color:var(--gs-color-text);font:inherit;width:100%}
+.search{position:relative;flex:1 1 320px}
+.search .ctl{padding-left:38px;font-size:16px}
+.search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--gs-color-text-muted)}
+.cols{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
+.list{flex:999 1 560px;min-width:0;display:flex;flex-direction:column;gap:0}
+.rail{flex:1 1 280px;max-width:340px;display:flex;flex-direction:column;gap:16px}
+.item{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;padding:14px 18px;border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.item:last-child{border-bottom:0}
+.thumb{width:48px;height:48px;border-radius:var(--gs-radius-sm);background:var(--gs-color-surface-sunken);color:var(--gs-color-text-muted);display:flex;align-items:center;justify-content:center;flex:none}
+.item__text{flex:1 1 260px;min-width:0}
+.item__name{font-weight:600;font-size:15px}
+.item__meta{font-size:13px;color:var(--gs-color-text-muted)}
+.avail{display:inline-flex;gap:6px;align-items:center;font-size:13px;font-weight:600}
+.avail--ok{color:var(--gs-color-success)}
+.avail--low{color:var(--gs-color-warning)}
+.avail--none{color:var(--gs-color-text-muted)}
+.qty{display:inline-flex;align-items:center;border:var(--gs-border-width) solid var(--gs-color-border-strong);border-radius:var(--gs-radius-sm);overflow:hidden}
+.qty button{width:40px;min-height:42px;border:0;background:var(--gs-color-surface-sunken);color:var(--gs-color-text);font:inherit;font-size:18px;cursor:pointer}
+.qty input{width:52px;min-height:42px;border:0;text-align:center;font:inherit;background:var(--gs-color-surface);color:var(--gs-color-text)}
+.act{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.added{display:inline-flex;gap:6px;align-items:center;color:var(--gs-color-success);font-weight:600}
+.linkbtn{border:0;background:transparent;padding:0;font:inherit;color:var(--gs-color-link);text-decoration:underline;cursor:pointer;min-height:44px}
+.draft li{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:var(--gs-border-width) dashed var(--gs-color-border)}
+.draft ul{margin:0;padding:0;list-style:none}
+.stat{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:44px;text-decoration:none;color:inherit;border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.stat:last-child{border-bottom:0}
+</style>
+</helmet>
+<div class="app" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-table="{{ v.table }}" data-gs-controls="{{ v.controls }}" data-gs-type="{{ v.type }}" data-gs-header="{{ v.header }}">
+<div class="top">
+<strong style="font-size: 16px; flex: 1 1 auto">National Asset Register</strong>
+<span class="chip"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg><span><span class="muted">Working in</span> Upazila Health Complex, Savar</span></span>
+<a class="chip" href="DraftRequest.dc.html"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7h14l-1.5 12h-11Z"></path><path d="M9 7a3 3 0 0 1 6 0"></path></svg><span>Draft request</span><span class="gs-tabs__count" aria-live="polite">{{ draftCount }}</span></a>
+<span class="gs-avatar gs-avatar--sm gs-tone-primary" role="img" aria-label="Signed in as Nasrin Akter">NA</span>
+</div>
+<div class="shell">
+<nav class="side" aria-label="Main"><a href="#">Dashboard</a><a href="#" aria-current="page">Request items</a><a class="sub" href="MyRequests.dc.html">My requests <span class="gs-tabs__count">2</span></a><a href="#">My assets</a><a href="#">My offices</a></nav>
+<main class="main">
+<nav class="crumb" aria-label="Breadcrumb"><a href="#">Home</a> / Request items</nav>
+
+<header class="gs-page-header">
+<div class="gs-page-header__text"><h1 class="gs-page-header__title">Request items</h1><p class="gs-page-header__subtitle">From the store of Upazila Health Complex, Savar. Add what you need, then review and send.</p></div>
+</header>
+
+<div class="row">
+<label class="search" for="q"><span class="gs-sr-only">Search items</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input class="ctl" id="q" type="search" placeholder="Search in English or বাংলা: toner, কাগজ, mouse…" value="{{ q }}" onInput="{{ onQ }}"></label>
+<div class="gs-segmented" role="group" aria-label="Item group">
+<button type="button" class="gs-segmented__option" aria-pressed="{{ pAll }}" onClick="{{ tAll }}">All</button>
+<button type="button" class="gs-segmented__option" aria-pressed="{{ pSupply }}" onClick="{{ tSupply }}">Supplies</button>
+<button type="button" class="gs-segmented__option" aria-pressed="{{ pAcc }}" onClick="{{ tAcc }}">Accessories</button>
+<button type="button" class="gs-segmented__option" aria-pressed="{{ pHw }}" onClick="{{ tHw }}">Hardware</button>
+</div>
+</div>
+<div class="row" style="font-size: 13px"><span class="muted">Often requested here:</span>
+<button type="button" class="gs-tag gs-tag--light gs-tag--outline" style="cursor: pointer; min-height: 32px" onClick="{{ qToner }}">Toner</button>
+<button type="button" class="gs-tag gs-tag--light gs-tag--outline" style="cursor: pointer; min-height: 32px" onClick="{{ qPaper }}">কাগজ (paper)</button>
+<button type="button" class="gs-tag gs-tag--light gs-tag--outline" style="cursor: pointer; min-height: 32px" onClick="{{ qMouse }}">Mouse</button>
+<span class="muted">· from this office's last 90 days</span></div>
+
+<div class="cols">
+<section class="gs-box list" aria-labelledby="results">
+<header class="gs-box__header"><h2 class="gs-box__title" id="results">{{ resultTitle }}</h2></header>
+<div class="gs-box__body" style="padding: 0">
+<sc-for list="{{ items }}" as="it" hint-placeholder-count="5">
+<div class="item">
+<span class="thumb" aria-hidden="true"><svg class="ico" style="width: 22px; height: 22px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4Z"></path><path d="M3 7v10l9 4 9-4V7"></path><path d="M12 11v10"></path></svg></span>
+<div class="item__text"><div class="item__name">{{ it.name }}</div><div class="item__meta">{{ it.meta }}</div><span class="avail {{ it.availClass }}">{{ it.avail }}</span></div>
+<sc-if value="{{ it.canAdd }}" hint-placeholder-val="{{ true }}">
+<div class="act">
+<sc-if value="{{ it.notAdded }}" hint-placeholder-val="{{ true }}">
+<span class="qty"><button type="button" aria-label="One fewer {{ it.name }}">−</button><input type="number" value="1" min="1" max="{{ it.max }}" aria-label="Quantity of {{ it.name }}"><button type="button" aria-label="One more {{ it.name }}">+</button></span>
+<button type="button" class="gs-btn gs-btn--primary" onClick="{{ it.add }}">Add to draft</button>
+</sc-if>
+<sc-if value="{{ it.isAdded }}" hint-placeholder-val="{{ false }}">
+<span class="added" role="status"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="m5 12 5 5L20 7"></path></svg>1 in your draft</span>
+<button type="button" class="linkbtn" onClick="{{ it.undo }}">Undo</button>
+</sc-if>
+</div>
+</sc-if>
+<sc-if value="{{ it.cannotAdd }}" hint-placeholder-val="{{ false }}">
+<span class="muted" style="font-size: 13px; max-width: 260px">All 6 are promised to approved requests. Ask the store when more arrive.</span>
+</sc-if>
+</div>
+</sc-for>
+<sc-if value="{{ none }}" hint-placeholder-val="{{ false }}">
+<div class="gs-empty"><h3 class="gs-empty__title">No item matches "{{ q }}"</h3><div>Try a shorter word, or the Bangla name. Items you can't see may not be stocked by this office.</div><div class="gs-empty__actions"><button type="button" class="gs-btn gs-btn--light gs-btn--outline" onClick="{{ clear }}">Show all items</button></div></div>
+</sc-if>
+</div>
+</section>
+
+<aside class="rail">
+<section class="gs-box draft" aria-labelledby="dr">
+<header class="gs-box__header"><h2 class="gs-box__title" id="dr">Your draft · {{ draftCount }} items</h2></header>
+<div class="gs-box__body" style="display: flex; flex-direction: column; gap: 12px">
+<ul>
+<li><span>A4 paper, 80 gsm (ream)</span><strong>2</strong></li>
+<sc-for list="{{ draftAdded }}" as="d" hint-placeholder-count="0"><li><span>{{ d.name }}</span><strong>1</strong></li></sc-for>
+</ul>
+<a class="gs-btn gs-btn--primary" href="DraftRequest.dc.html">Review and send</a>
+<p class="muted" style="margin: 0; font-size: 13px">Nothing is sent until you press Send. Your draft is kept for 7 days.</p>
+</div>
+</section>
+<section class="gs-box" aria-labelledby="yr">
+<header class="gs-box__header"><h2 class="gs-box__title" id="yr">Your requests</h2></header>
+<div class="gs-box__body" style="padding-top: 0; padding-bottom: 0">
+<a class="stat" href="MyRequests.dc.html"><span>Issued · confirm receipt</span><span class="gs-badge" data-tone="status-ready"><span class="gs-badge__label">1</span></span></a>
+<a class="stat" href="MyRequests.dc.html"><span>Waiting for approval</span><span class="gs-badge" data-tone="status-pending"><span class="gs-badge__label">1</span></span></a>
+<a class="stat" href="MyRequests.dc.html"><span>With the store</span><span class="gs-badge" data-tone="info"><span class="gs-badge__label">1</span></span></a>
+</div>
+</section>
+</aside>
+</div>
+
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { q: '', type: 'all', added: {} }; }
+renderVals() {
+const V = {
+'civic-ledger': { header: 'neutral', density: 'regular', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { header: 'brand', density: 'regular', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { header: 'dark', density: 'compact', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { header: 'dark', density: 'comfortable', table: 'ledger', surfaces: 'flat', controls: 'outlined', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { header: 'brand', density: 'compact', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { header: 'floating', density: 'regular', table: 'rules', surfaces: 'elevated', controls: 'filled', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+const all = [
+{ id: 1, name: 'HP 85A toner cartridge', bn: 'টোনার', type: 'supply', meta: 'Printer supplies · Supply', free: 4 },
+{ id: 2, name: 'A4 paper, 80 gsm (ream) · এ৪ কাগজ', bn: 'কাগজ paper', type: 'supply', meta: 'Office supplies · Supply', free: 80 },
+{ id: 3, name: 'Ballpoint pen, blue (box of 12) · বলপয়েন্ট কলম', bn: 'কলম pen', type: 'supply', meta: 'Office supplies · Supply', free: 100 },
+{ id: 4, name: 'USB optical mouse', bn: 'মাউস', type: 'accessory', meta: 'Computer accessories · Accessory', free: 12 },
+{ id: 5, name: 'Keyboard, Bangla–English', bn: 'কিবোর্ড', type: 'accessory', meta: 'Computer accessories · Accessory', free: 0 },
+{ id: 6, name: 'Dell Latitude 3440 laptop', bn: 'ল্যাপটপ', type: 'hardware', meta: 'Laptops · Hardware · one per request line', free: 3 }
+];
+const q = (this.state.q || '').trim().toLowerCase();
+const t = this.state.type;
+const added = this.state.added;
+const items = all.filter((i) => (t === 'all' || i.type === t) && (!q || (i.name + ' ' + i.bn).toLowerCase().indexOf(q) !== -1)).map((i) => ({
+name: i.name, meta: i.meta, max: Math.max(1, i.free),
+avail: i.free === 0 ? 'None free right now' : (i.free <= 5 ? 'Only ' + i.free + ' free' : i.free + ' free'),
+availClass: i.free === 0 ? 'avail--none' : (i.free <= 5 ? 'avail--low' : 'avail--ok'),
+canAdd: i.free > 0, cannotAdd: i.free === 0, isAdded: !!added[i.id], notAdded: !added[i.id],
+add: () => this.setState({ added: Object.assign({}, added, { [i.id]: true }) }),
+undo: () => { const n = Object.assign({}, added); delete n[i.id]; this.setState({ added: n }); }
+}));
+const setType = (type) => () => this.setState({ type });
+const setQ = (v) => () => this.setState({ q: v });
+const draftAdded = all.filter((i) => added[i.id]).map((i) => ({ name: i.name }));
+return {
+skin, mode, v: V[skin], q: this.state.q, items, none: items.length === 0,
+resultTitle: items.length + (items.length === 1 ? ' item' : ' items') + (q ? ' match "' + this.state.q + '"' : ' you can request'),
+onQ: (e) => this.setState({ q: e.target.value }), clear: () => this.setState({ q: '', type: 'all' }),
+pAll: t === 'all' ? 'true' : 'false', pSupply: t === 'supply' ? 'true' : 'false', pAcc: t === 'accessory' ? 'true' : 'false', pHw: t === 'hardware' ? 'true' : 'false',
+tAll: setType('all'), tSupply: setType('supply'), tAcc: setType('accessory'), tHw: setType('hardware'),
+qToner: setQ('toner'), qPaper: setQ('কাগজ'), qMouse: setQ('mouse'),
+draftAdded, draftCount: 1 + draftAdded.length
+};
+}
+}
+</script>
+</body>
+</html>

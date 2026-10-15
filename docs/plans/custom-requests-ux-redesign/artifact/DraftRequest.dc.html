@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Draft request</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/aef52f8d7c3fef253b593dd05928ec1c">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Source+Serif+4:wght@400;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.app{min-height:100%;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:var(--gs-font-sans);font-size:14px;line-height:1.5}
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 20px;background:var(--gs-header-bg);color:var(--gs-header-fg);border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.chip{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 12px;border-radius:var(--gs-radius-sm);border:var(--gs-border-width) solid var(--gs-color-border);background:transparent;color:inherit;font:inherit;text-decoration:none}
+.shell{display:flex;flex-wrap:wrap;align-items:stretch}
+.side{flex:1 1 220px;max-width:240px;background:var(--gs-sidebar-bg);color:var(--gs-sidebar-fg);padding:12px 0;box-sizing:border-box}
+.side a{display:flex;align-items:center;justify-content:space-between;min-height:42px;padding:0 18px;color:var(--gs-sidebar-fg);text-decoration:none}
+.side a[aria-current]{background:var(--gs-sidebar-active-bg);color:var(--gs-sidebar-active-fg);box-shadow:inset 3px 0 0 var(--gs-sidebar-active-marker)}
+.side .sub{padding-left:34px}
+.main{flex:999 1 560px;min-width:0;box-sizing:border-box;padding:20px 28px 56px;display:flex;flex-direction:column;gap:18px;max-width:1080px}
+.crumb{font-size:13px;color:var(--gs-color-text-muted)}
+.ico{width:1em;height:1em;flex:none}
+.muted{color:var(--gs-color-text-muted)}
+.mono{font-family:var(--gs-font-mono);font-size:13px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.ctl{box-sizing:border-box;min-height:44px;padding:8px 12px;border:var(--gs-border-width) solid var(--gs-color-border-strong);border-radius:var(--gs-radius-sm);background:var(--gs-color-surface);color:var(--gs-color-text);font:inherit;width:100%}
+textarea.ctl{min-height:96px;resize:vertical}
+.line{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;padding:14px 18px;border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.line:last-child{border-bottom:0}
+.line__text{flex:1 1 280px;min-width:0}
+.line__name{font-weight:600}
+.small{font-size:13px}
+.qty{display:inline-flex;align-items:center;border:var(--gs-border-width) solid var(--gs-color-border-strong);border-radius:var(--gs-radius-sm);overflow:hidden}
+.qty button{width:40px;min-height:42px;border:0;background:var(--gs-color-surface-sunken);color:var(--gs-color-text);font:inherit;font-size:18px;cursor:pointer}
+.qty input{width:52px;min-height:42px;border:0;text-align:center;font:inherit;background:var(--gs-color-surface);color:var(--gs-color-text)}
+.groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:12px;margin-top:10px}
+.group{padding:14px;border-radius:var(--gs-radius-md);background:var(--gs-color-surface);border:var(--gs-border-width) solid var(--gs-color-border)}
+.group p{margin:4px 0 0}
+.steps{display:flex;flex-direction:column;gap:10px;margin:0;padding-left:20px}
+.foot{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center}
+</style>
+</helmet>
+<div class="app" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-table="{{ v.table }}" data-gs-controls="{{ v.controls }}" data-gs-type="{{ v.type }}" data-gs-header="{{ v.header }}">
+<div class="top">
+<strong style="font-size: 16px; flex: 1 1 auto">National Asset Register</strong>
+<span class="chip"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg><span><span class="muted">Working in</span> Upazila Health Complex, Savar</span></span>
+<span class="chip" aria-current="page"><span>Draft request</span><span class="gs-tabs__count">{{ draftCount }}</span></span>
+<span class="gs-avatar gs-avatar--sm gs-tone-primary" role="img" aria-label="Signed in as Nasrin Akter">NA</span>
+</div>
+<div class="shell">
+<nav class="side" aria-label="Main"><a href="#">Dashboard</a><a href="Catalog.dc.html">Request items</a><a class="sub" href="MyRequests.dc.html">My requests</a><a href="#">My assets</a><a href="#">My offices</a></nav>
+<main class="main">
+<nav class="crumb" aria-label="Breadcrumb"><a href="#">Home</a> / <a href="Catalog.dc.html">Request items</a> / Draft request</nav>
+
+<header class="gs-page-header">
+<div class="gs-page-header__text"><h1 class="gs-page-header__title">Draft request</h1><p class="gs-page-header__subtitle">Check the items, say what they're for, and send. Kept until 22 Oct.</p></div>
+<div class="gs-page-header__actions"><a class="gs-btn gs-btn--light gs-btn--outline" href="Catalog.dc.html">Add more items</a></div>
+</header>
+
+<ol class="gs-stepper" aria-label="Sending a request">
+<li class="gs-step {{ s1 }}"><span class="gs-step__marker" aria-hidden="true">1</span><span class="gs-step__label">Items and details</span></li>
+<li class="gs-step {{ s2 }}"><span class="gs-step__marker" aria-hidden="true">2</span><span class="gs-step__label">Review and send</span></li>
+<li class="gs-step {{ s3 }}"><span class="gs-step__marker" aria-hidden="true">3</span><span class="gs-step__label">Sent</span></li>
+</ol>
+
+<sc-if value="{{ isEdit }}" hint-placeholder-val="{{ true }}">
+<section class="gs-box" aria-labelledby="it">
+<header class="gs-box__header"><h2 class="gs-box__title" id="it">3 items</h2></header>
+<div class="gs-box__body" style="padding: 0">
+<div class="line"><div class="line__text"><div class="line__name">HP 85A toner cartridge</div><div class="small muted">Supply · <span style="color: var(--gs-color-warning); font-weight: 600">only 4 free</span> · one approver</div></div><span class="qty"><button type="button" aria-label="One fewer toner cartridge">−</button><input type="number" value="1" min="1" max="4" aria-label="Quantity of HP 85A toner cartridge"><button type="button" aria-label="One more toner cartridge">+</button></span><span class="small muted" role="status">Saved</span><button type="button" class="gs-btn gs-btn--ghost gs-btn--sm">Remove<span class="gs-sr-only"> HP 85A toner cartridge</span></button></div>
+<div class="line"><div class="line__text"><div class="line__name">A4 paper, 80 gsm (ream) · এ৪ কাগজ</div><div class="small muted">Supply · 80 free · one approver</div></div><span class="qty"><button type="button" aria-label="One fewer ream">−</button><input type="number" value="2" min="1" max="80" aria-label="Quantity of A4 paper"><button type="button" aria-label="One more ream">+</button></span><span class="small muted"></span><button type="button" class="gs-btn gs-btn--ghost gs-btn--sm">Remove<span class="gs-sr-only"> A4 paper</span></button></div>
+<div class="line"><div class="line__text"><div class="line__name">Dell Latitude 3440 laptop</div><div class="small muted">Hardware · 3 free · <strong>two approvers</strong> (laptops need a final approval)</div></div><span class="qty"><button type="button" aria-label="One fewer laptop">−</button><input type="number" value="1" min="1" max="3" aria-label="Quantity of laptops"><button type="button" aria-label="One more laptop">+</button></span><span class="small muted"></span><button type="button" class="gs-btn gs-btn--ghost gs-btn--sm">Remove<span class="gs-sr-only"> laptop</span></button></div>
+</div>
+</section>
+
+<div class="gs-alert gs-alert--info" role="status"><svg class="ico gs-alert__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.5"></path></svg><div class="gs-alert__body"><strong>This will be sent as 2 requests.</strong> Your items follow different approval rules, so each group goes to its own approvers. You fill in the details once.
+<div class="groups"><div class="group"><strong>Toner and paper</strong><p class="muted small">One approver: Kamal Hossain</p></div><div class="group"><strong>Laptop</strong><p class="muted small">Two approvers: Kamal Hossain, then Dr. Selina Rahman</p></div></div></div></div>
+
+<section class="gs-box" aria-labelledby="dt">
+<header class="gs-box__header"><h2 class="gs-box__title" id="dt">About this request</h2></header>
+<div class="gs-box__body" style="display: flex; flex-direction: column; gap: 18px">
+<fieldset style="border: 0; margin: 0; padding: 0"><legend class="gs-form-row__label" style="margin-bottom: 8px">What kind of request is it?</legend>
+<div class="gs-choices" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 10px">
+<label class="gs-choice" for="t1"><input class="gs-choice__input" type="radio" id="t1" name="type" checked><span class="gs-choice__text"><span class="gs-choice__label">Everyday supplies</span><span class="gs-choice__description">Paper, toner, stationery</span></span></label>
+<label class="gs-choice" for="t2"><input class="gs-choice__input" type="radio" id="t2" name="type"><span class="gs-choice__text"><span class="gs-choice__label">Replace something broken</span><span class="gs-choice__description">Say what broke below</span></span></label>
+<label class="gs-choice" for="t3"><input class="gs-choice__input" type="radio" id="t3" name="type"><span class="gs-choice__text"><span class="gs-choice__label">A new colleague</span><span class="gs-choice__description">Setting up someone who joined</span></span></label>
+<label class="gs-choice" for="t4"><input class="gs-choice__input" type="radio" id="t4" name="type"><span class="gs-choice__text"><span class="gs-choice__label">Something else</span><span class="gs-choice__description">Project, repair, office move, emergency</span></span></label>
+</div></fieldset>
+<div class="gs-form-row {{ purposeErr }}"><label class="gs-form-row__label" for="purpose">What is it for? <span class="gs-form-row__required" aria-hidden="true">*</span><span class="gs-sr-only">required</span></label><div class="gs-form-row__control"><input class="ctl" id="purpose" value="{{ purpose }}" onInput="{{ onPurpose }}" aria-describedby="purpose-help" maxlength="255"><p class="gs-form-row__help" id="purpose-help">One line the approver and the store will see first, e.g. "Monthly printing for the outpatient desk".</p><sc-if value="{{ err }}" hint-placeholder-val="{{ false }}"><p class="gs-form-row__error" role="alert">Say what the items are for, so the approver can decide.</p></sc-if></div></div>
+<div class="gs-form-row"><label class="gs-form-row__label" for="why">Why is it needed? <span class="gs-form-row__required" aria-hidden="true">*</span><span class="gs-sr-only">required</span></label><div class="gs-form-row__control"><textarea class="ctl" id="why">The laptop at the outpatient desk stopped charging on 10 Oct; IT confirmed the board is dead (ticket ICT-2231).</textarea><p class="gs-form-row__help">A sentence or two is enough.</p></div></div>
+<div class="row" style="align-items: flex-start; gap: 18px">
+<div class="gs-form-row" style="flex: 1 1 220px"><label class="gs-form-row__label" for="by">Needed by</label><div class="gs-form-row__control"><input class="ctl" id="by" type="date"><p class="gs-form-row__help">Leave empty if it isn't urgent.</p></div></div>
+<div class="gs-form-row" style="flex: 2 1 320px"><label class="gs-form-row__label" for="to">Where should it go?</label><div class="gs-form-row__control"><select class="ctl" id="to"><option>I'll collect it from the store</option><option>Outpatient department</option><option>Emergency ward</option></select></div></div>
+</div>
+<details class="gs-accordion__item"><summary class="gs-accordion__summary" style="min-height: 44px; display: flex; align-items: center; cursor: pointer">More details (optional): cost centre</summary><div class="gs-accordion__body"><div class="gs-form-row"><label class="gs-form-row__label" for="cc">Cost centre</label><div class="gs-form-row__control"><input class="ctl" id="cc" placeholder="e.g. DGHS-OPD-04"></div></div></div></details>
+</div>
+</section>
+<div class="foot"><span class="muted small">Nothing is sent yet.</span><button type="button" class="gs-btn gs-btn--primary gs-btn--lg" onClick="{{ toReview }}">Continue to review</button></div>
+</sc-if>
+
+<sc-if value="{{ isReview }}" hint-placeholder-val="{{ false }}">
+<section class="gs-box" aria-labelledby="rv">
+<header class="gs-box__header"><h2 class="gs-box__title" id="rv">Check before sending</h2></header>
+<div class="gs-box__body" style="display: flex; flex-direction: column; gap: 16px">
+<dl class="gs-kv" style="--gs-kv-columns: 2">
+<div class="gs-kv__item"><dt class="gs-kv__label">What it is for</dt><dd class="gs-kv__value">{{ purpose }}</dd></div>
+<div class="gs-kv__item"><dt class="gs-kv__label">Kind</dt><dd class="gs-kv__value">Everyday supplies</dd></div>
+<div class="gs-kv__item"><dt class="gs-kv__label">Needed by</dt><dd class="gs-kv__value">Not urgent</dd></div>
+<div class="gs-kv__item"><dt class="gs-kv__label">Where it goes</dt><dd class="gs-kv__value">Collect from the store</dd></div>
+</dl>
+<div class="groups"><div class="group"><strong>Request 1 · toner ×1, A4 paper ×2</strong><p class="muted small">Kamal Hossain decides</p></div><div class="group"><strong>Request 2 · laptop ×1</strong><p class="muted small">Kamal Hossain, then Dr. Selina Rahman</p></div></div>
+<div><strong>What happens next</strong><ol class="steps"><li>The approvers get a notice. If nobody decides in 3 working days, the office head is told.</li><li>Approved items are set aside for you, so nobody else can take them.</li><li>Rafiq Ahmed at the store issues them, and you confirm you received them.</li></ol></div>
+</div>
+</section>
+<div class="foot"><button type="button" class="gs-btn gs-btn--light gs-btn--outline" onClick="{{ toEdit }}">Back to edit</button><button type="button" class="gs-btn gs-btn--primary gs-btn--lg" onClick="{{ send }}">Send 2 requests</button></div>
+</sc-if>
+
+<sc-if value="{{ isSent }}" hint-placeholder-val="{{ false }}">
+<div class="gs-alert gs-alert--success" role="status"><svg class="ico gs-alert__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="m5 12 5 5L20 7"></path></svg><div class="gs-alert__body"><strong>Sent.</strong> Your items need different approvals, so we sent 2 requests: <a href="RequestDetail.dc.html">SR-2026-000301</a> (toner and paper) and <a href="RequestDetail.dc.html">SR-2026-000302</a> (laptop). Kamal Hossain has been told.</div></div>
+<div class="row"><a class="gs-btn gs-btn--primary" href="MyRequests.dc.html">See my requests</a><a class="gs-btn gs-btn--light gs-btn--outline" href="Catalog.dc.html">Request something else</a><button type="button" class="gs-btn gs-btn--ghost" onClick="{{ toEdit }}">Start this demo again</button></div>
+</sc-if>
+
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"$preview":{"width":1440,"height":1750}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { step: 'edit', purpose: '', err: false }; }
+renderVals() {
+const V = {
+'civic-ledger': { header: 'neutral', density: 'regular', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { header: 'brand', density: 'regular', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { header: 'dark', density: 'compact', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { header: 'dark', density: 'comfortable', table: 'ledger', surfaces: 'flat', controls: 'outlined', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { header: 'brand', density: 'compact', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { header: 'floating', density: 'regular', table: 'rules', surfaces: 'elevated', controls: 'filled', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+const st = this.state.step;
+const cls = (n) => { const order = { edit: 1, review: 2, sent: 3 }; const c = order[st]; return n < c ? 'gs-step--done' : (n === c ? 'gs-step--current' : ''); };
+return {
+skin, mode, v: V[skin], draftCount: st === 'sent' ? 0 : 3,
+isEdit: st === 'edit', isReview: st === 'review', isSent: st === 'sent',
+s1: cls(1), s2: cls(2), s3: cls(3),
+purpose: this.state.purpose, err: this.state.err, purposeErr: this.state.err ? 'gs-form-row--error' : '',
+onPurpose: (e) => this.setState({ purpose: e.target.value, err: false }),
+toReview: () => { if (!(this.state.purpose || '').trim()) { this.setState({ err: true }); return; } this.setState({ step: 'review' }); },
+toEdit: () => this.setState({ step: 'edit' }),
+send: () => this.setState({ step: 'sent' })
+};
+}
+}
+</script>
+</body>
+</html>

@@ -12,8 +12,9 @@ class InventoryLedgerService
     /**
      * Retrieve chronological movements for a specific stockable entity.
      * Supports both legacy FQCNs and consolidated polymorphic short keys.
+     * Pass $locationId for stock shared across offices (asset models) to keep one office's chain.
      */
-    public function getKardexFor(string $modelClass, int $id, int $limit = 100): Collection
+    public function getKardexFor(string $modelClass, int $id, int $limit = 100, ?int $locationId = null): Collection
     {
         // 1. Resolve the short polymorphic map key (e.g., 'consumable')
         $morphKey = array_search($modelClass, Relation::morphMap()) ?: $modelClass;
@@ -22,6 +23,7 @@ class InventoryLedgerService
         return InventoryMovement::with(['document', 'creator'])
             ->whereIn('stockable_type', [$modelClass, $morphKey]) // Query BOTH keys
             ->where('stockable_id', $id)
+            ->when($locationId !== null, fn ($query) => $query->where('location_id', $locationId))
             ->orderBy('created_at', 'desc')
             ->orderBy('id', 'desc')
             ->limit($limit)

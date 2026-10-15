@@ -38,6 +38,42 @@ class RequestQueues
             });
     }
 
+    /**
+     * Waiting requests already passed to the office head (an escalation event since the last change), or
+     * waiting longer than the escalation period; the same rule gov-requests:maintain applies.
+     */
+    public function overdue(User $user): Builder
+    {
+        $cutoff = now()->subWeekdays(max(1, (int) config('govstore-requests.escalation_weekdays', 3)));
+
+        return $this->awaitingApproval($user)->where(fn ($q) => $q->where('updated_at', '<', $cutoff)
+            ->orWhereHas('events', fn ($e) => $e->where('event_type', 'escalated')->whereColumn('custom_service_request_events.created_at', '>=', 'custom_service_requests.updated_at')));
+    }
+
+    /** Requests this user decided, at either stage, in the working office. */
+    public function decidedBy(User $user): Builder
+    {
+        $query = ServiceRequest::query()->whereNotIn('approval_status', ['draft', 'submitted', 'under_review'])
+            ->where(fn ($q) => $q->where('decided_by', $user->id)->orWhere('primary_decided_by', $user->id));
+        if (! $user->isSuperUser()) {
+            $query->where('office_id', app(TenantContext::class)->locationId);
+        }
+
+        return $query;
+    }
+
+    /** Requests the store has issued or closed and the requester wants to return; no receipt drafted yet. */
+    public function returnsToReceive(User $user): Builder
+    {
+        $query = ServiceRequest::query()->whereNotNull('return_requested_at')->whereNull('return_document_id')
+            ->whereIn('fulfillment_status', ['issued', 'closed']);
+        if (! $user->isSuperUser()) {
+            $query->where('office_id', app(TenantContext::class)->locationId);
+        }
+
+        return $query;
+    }
+
     /** Approved requests the working office's store still has to issue. */
     public function awaitingFulfilment(User $user): Builder
     {

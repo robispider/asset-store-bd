@@ -16,7 +16,10 @@ use GovStore\CustomRequests\Services\RequestQueues;
 use GovStore\OfficeMembership\Services\ClearanceEngine;
 use GovStore\TenantScope\Navigation\MenuRegistry;
 use GovStore\Theming\Facades\GsTheme;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Http\Request as HttpRequest;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -38,6 +41,9 @@ class CustomRequestServiceProvider extends ServiceProvider
         // 3. Load Views
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'govstore');
 
+        // D9: the request screens' script lives in the package and is published to its existing URL.
+        $this->publishes([__DIR__.'/../resources/js/gov-requests.js' => public_path('js/gov-requests.js')], 'gov-requests-assets');
+
         // Register package styles with the shared theme build. The package still works
         // without theming installed, as with other optional GovStore integrations.
         if ($this->app->bound('gs.theme')) {
@@ -46,11 +52,11 @@ class CustomRequestServiceProvider extends ServiceProvider
 
         // Compose only pages using the shared application layout.
         View::composer('layouts/default', function ($view) {
-            $count = auth()->check() ? BasketItem::whereHas('basket', fn ($q) => $q
-                ->where('user_id', auth()->id())->where('status', 'draft')
-                ->where(fn ($q) => $q->whereNull('expires_at')->orWhere('expires_at', '>', now())))->count() : 0;
+            // The draft of the office the person is working in: each office keeps its own.
+            $count = auth()->check() ? BasketItem::whereHas('basket', fn ($q) => $q->openFor(auth()->id()))->count() : 0;
             $view->with('govBasketCount', $count);
         });
+        $this->rateLimits();
         Relation::morphMap([
             'asset' => Asset::class,
             'assetmodel' => AssetModel::class,
@@ -65,6 +71,17 @@ class CustomRequestServiceProvider extends ServiceProvider
         $this->registerNavigationMenus();
     }
 
+    /**
+     * Draft changes: generous for a person clicking quickly, low enough to stop a script flooding the
+     * store. Sending: a few per minute per person.
+     */
+    protected function rateLimits(): void
+    {
+        $who = fn (HttpRequest $request) => (string) ($request->user()?->id ?: $request->ip());
+        RateLimiter::for('gov-requests-draft', fn (HttpRequest $request) => Limit::perMinute(120)->by('draft:'.$who($request)));
+        RateLimiter::for('gov-requests-send', fn (HttpRequest $request) => Limit::perMinute(6)->by('send:'.$who($request)));
+    }
+
     protected function registerNavigationMenus(): void
     {
         $registry = $this->app->make(MenuRegistry::class);
@@ -73,7 +90,7 @@ class CustomRequestServiceProvider extends ServiceProvider
         // My workspace — every employee who may request items.
         $registry->register(['id' => 'gov-requests-catalog', 'group' => 'gov-workspace', 'order' => 10,
             'label' => 'requestlabels::requests.nav_request_items', 'icon' => 'fas fa-store',
-            'route' => 'gov.requests.catalog', 'match' => ['gov.requests.catalog*', 'gov.requests.basket.*']]);
+            'route' => 'gov.requests.catalog', 'match' => ['gov.requests.catalog*', 'gov.requests.basket.*', 'gov.requests.sent']]);
         $registry->register(['id' => 'gov-requests-my-requests', 'group' => 'gov-workspace', 'order' => 20,
             'label' => 'requestlabels::requests.nav_my_requests', 'icon' => 'fas fa-clipboard-list',
             'route' => 'gov.requests.user.index', 'match' => ['gov.requests.user.*']]);
@@ -111,6 +128,8 @@ class CustomRequestServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__.'/../config/requests.php', 'govstore-requests');
+        // One presenter per request, so names and items are looked up once per page.
+        $this->app->scoped(\GovStore\CustomRequests\Support\RequestPresenter::class);
         $this->commands([MaintainRequests::class,
             RequestReconciliation::class]);
     }

@@ -70,6 +70,26 @@ class Document extends Model implements StoreDocumentInterface
         return $this->belongsTo(User::class, 'posted_by')->withoutGlobalScopes();
     }
 
+    public function manager()
+    {
+        return $this->belongsTo(User::class, 'managed_by')->withoutGlobalScopes();
+    }
+
+    public function recipient()
+    {
+        return $this->belongsTo(User::class, 'issued_to_user_id')->withoutGlobalScopes();
+    }
+
+    public function destination()
+    {
+        return $this->belongsTo(\App\Models\Location::class, 'destination_location_id')->withoutGlobalScopes();
+    }
+
+    public function source()
+    {
+        return $this->belongsTo(self::class, 'source_document_id')->withoutGlobalScopes();
+    }
+
     // --- StoreDocumentInterface Implementation ---
 
     public function getDocumentId(): string|int

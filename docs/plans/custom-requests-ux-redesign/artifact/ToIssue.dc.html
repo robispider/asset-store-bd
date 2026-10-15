@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>To issue</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/aef52f8d7c3fef253b593dd05928ec1c">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Source+Serif+4:wght@400;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.app{min-height:100%;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:var(--gs-font-sans);font-size:14px;line-height:1.5}
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 20px;background:var(--gs-header-bg);color:var(--gs-header-fg);border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.chip{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 12px;border-radius:var(--gs-radius-sm);border:var(--gs-border-width) solid var(--gs-color-border);background:transparent;color:inherit;font:inherit;text-decoration:none}
+.shell{display:flex;flex-wrap:wrap;align-items:stretch}
+.side{flex:1 1 220px;max-width:240px;background:var(--gs-sidebar-bg);color:var(--gs-sidebar-fg);padding:12px 0;box-sizing:border-box}
+.side a{display:flex;align-items:center;justify-content:space-between;min-height:42px;padding:0 18px;color:var(--gs-sidebar-fg);text-decoration:none}
+.side a[aria-current]{background:var(--gs-sidebar-active-bg);color:var(--gs-sidebar-active-fg);box-shadow:inset 3px 0 0 var(--gs-sidebar-active-marker)}
+.side .sub{padding-left:34px}
+.main{flex:999 1 560px;min-width:0;box-sizing:border-box;padding:20px 28px 56px;display:flex;flex-direction:column;gap:18px}
+.crumb{font-size:13px;color:var(--gs-color-text-muted)}
+.ico{width:1em;height:1em;flex:none}
+.muted{color:var(--gs-color-text-muted)}
+.small{font-size:13px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.req{display:flex;flex-wrap:wrap;gap:10px 20px;align-items:center;padding:16px 18px;border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.req:last-child{border-bottom:0}
+.req__main{flex:1 1 440px;min-width:0;display:flex;flex-direction:column;gap:4px}
+.req__head{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.req__num{font-family:var(--gs-font-mono);font-weight:600}
+.soon{color:var(--gs-color-warning);font-weight:600}
+.search{position:relative;flex:1 1 280px;max-width:420px}
+.ctl{box-sizing:border-box;min-height:44px;padding:8px 12px 8px 36px;border:var(--gs-border-width) solid var(--gs-color-border-strong);border-radius:var(--gs-radius-sm);background:var(--gs-color-surface);color:var(--gs-color-text);font:inherit;width:100%}
+.search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--gs-color-text-muted)}
+</style>
+</helmet>
+<div class="app" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-table="{{ v.table }}" data-gs-controls="{{ v.controls }}" data-gs-type="{{ v.type }}" data-gs-header="{{ v.header }}">
+<div class="top">
+<strong style="font-size: 16px; flex: 1 1 auto">National Asset Register</strong>
+<span class="chip"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg><span><span class="muted">Working in</span> Upazila Health Complex, Savar</span></span>
+<span class="gs-avatar gs-avatar--sm gs-tone-primary" role="img" aria-label="Signed in as Rafiq Ahmed">RA</span>
+</div>
+<div class="shell">
+<nav class="side" aria-label="Main"><a href="#">Dashboard</a><a href="#">Requests</a><a class="sub" href="#" aria-current="page">To issue <span class="gs-tabs__count">6</span></a><a class="sub" href="Register.dc.html">Issue register</a><a href="#">Store</a><a href="#">Reports</a></nav>
+<main class="main">
+<nav class="crumb" aria-label="Breadcrumb"><a href="#">Home</a> / Requests / To issue</nav>
+
+<header class="gs-page-header">
+<div class="gs-page-header__text"><h1 class="gs-page-header__title">To issue</h1><p class="gs-page-header__subtitle">Approved requests for the store of Upazila Health Complex, Savar. Needed-soonest first, then oldest.</p></div>
+<div class="gs-page-header__actions"><a class="gs-btn gs-btn--light gs-btn--outline" href="Register.dc.html">Issue register</a></div>
+</header>
+
+<nav class="gs-status-tabs" aria-label="Requests to issue">
+<ul class="gs-tabs">
+<li class="gs-tabs__item"><a class="gs-tabs__link" href="#" aria-current="{{ cReady }}" onClick="{{ goReady }}"><span>Ready to issue</span><span class="gs-tabs__count">5</span></a></li>
+<li class="gs-tabs__item"><a class="gs-tabs__link" href="#" aria-current="{{ cPart }}" onClick="{{ goPart }}"><span>Partly issued</span><span class="gs-tabs__count">1</span></a></li>
+<li class="gs-tabs__item"><a class="gs-tabs__link" href="#" aria-current="{{ cRet }}" onClick="{{ goRet }}"><span>Returns to receive</span><span class="gs-tabs__count">1</span></a></li>
+</ul>
+</nav>
+
+<div class="row"><label class="search" for="q"><span class="gs-sr-only">Find a request</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input class="ctl" id="q" type="search" placeholder="Request number, name or item"></label></div>
+
+<section class="gs-box">
+<div class="gs-box__body" style="padding: 0">
+<sc-if value="{{ tReady }}" hint-placeholder-val="{{ true }}">
+<div class="req"><div class="req__main"><div class="req__head"><a class="req__num" href="IssueItems.dc.html">SR-2026-000301</a><span class="soon">Needed by tomorrow</span></div><strong>HP 85A toner ×1 · A4 paper ×2 reams</strong><span class="small muted">For Nasrin Akter, Outpatient desk · collect from the store · approved today 10:20 by Kamal Hossain</span></div><a class="gs-btn gs-btn--primary" href="IssueItems.dc.html">Issue<span class="gs-sr-only"> SR-2026-000301</span></a></div>
+<div class="req"><div class="req__main"><div class="req__head"><a class="req__num" href="IssueItems.dc.html">SR-2026-000297</a><span class="small muted">Approved 12 Oct · waiting 3 days</span></div><strong>USB optical mouse ×2</strong><span class="small muted">For Nasrin Akter · deliver to Outpatient department</span></div><a class="gs-btn gs-btn--primary" href="IssueItems.dc.html">Issue<span class="gs-sr-only"> SR-2026-000297</span></a></div>
+<div class="req"><div class="req__main"><div class="req__head"><a class="req__num" href="IssueItems.dc.html">SR-2026-000294</a><span class="small muted">Approved 7 Oct · waiting 8 days</span></div><strong>Dell Latitude 3440 laptop ×1</strong><span class="small muted">For Ripon Tripura · 3 laptops free in the store · needs a serial number</span></div><a class="gs-btn gs-btn--primary" href="IssueItems.dc.html">Issue<span class="gs-sr-only"> SR-2026-000294</span></a></div>
+<div class="req"><div class="req__main"><div class="req__head"><a class="req__num" href="IssueItems.dc.html">SR-2026-000292</a><span class="small muted">Approved 7 Oct · waiting 8 days</span></div><strong>A4 paper ×3 reams</strong><span class="small muted">For Md. Mahmudul Alam</span></div><a class="gs-btn gs-btn--primary" href="IssueItems.dc.html">Issue<span class="gs-sr-only"> SR-2026-000292</span></a></div>
+<div class="req"><div class="req__main"><div class="req__head"><a class="req__num" href="IssueItems.dc.html">SR-2026-000289</a><span class="small muted">Approved 7 Oct · waiting 8 days</span></div><strong>A4 paper ×3 reams</strong><span class="small muted">For Md. Mahmudul Alam</span></div><a class="gs-btn gs-btn--primary" href="IssueItems.dc.html">Issue<span class="gs-sr-only"> SR-2026-000289</span></a></div>
+</sc-if>
+<sc-if value="{{ tPart }}" hint-placeholder-val="{{ false }}">
+<div class="req"><div class="req__main"><div class="req__head"><a class="req__num" href="IssueItems.dc.html">SR-2026-000283</a><span class="gs-badge" data-tone="info"><span class="gs-badge__label">Partly issued</span></span></div><strong>Whiteboard markers: 3 of 6 given</strong><span class="small muted">For Jahid Hasan · none free now · next delivery expected in December</span></div><div class="row"><a class="gs-btn gs-btn--primary" href="IssueItems.dc.html">Issue the rest</a><a class="gs-btn gs-btn--light gs-btn--outline" href="IssueItems.dc.html">Close the rest…</a></div></div>
+</sc-if>
+<sc-if value="{{ tRet }}" hint-placeholder-val="{{ false }}">
+<div class="req"><div class="req__main"><div class="req__head"><a class="req__num" href="Register.dc.html">SR-2026-000287</a><span class="gs-badge" data-tone="warning"><span class="gs-badge__label">Return requested</span></span></div><strong>USB optical mouse ×2, A4 paper ×3 reams to come back</strong><span class="small muted">Ripon Tripura: “Project cancelled; items unused.” · asked 4 Oct</span></div><a class="gs-btn gs-btn--primary" href="Register.dc.html">Prepare return receipt</a></div>
+</sc-if>
+</div>
+</section>
+
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { tab: 'ready' }; }
+renderVals() {
+const V = {
+'civic-ledger': { header: 'neutral', density: 'regular', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { header: 'brand', density: 'regular', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { header: 'dark', density: 'compact', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { header: 'dark', density: 'comfortable', table: 'ledger', surfaces: 'flat', controls: 'outlined', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { header: 'brand', density: 'compact', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { header: 'floating', density: 'regular', table: 'rules', surfaces: 'elevated', controls: 'filled', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+const t = this.state.tab;
+const go = (tab) => (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ tab }); };
+const cur = (k) => (t === k ? 'page' : undefined);
+return { skin, mode, v: V[skin], tReady: t === 'ready', tPart: t === 'part', tRet: t === 'ret', cReady: cur('ready'), cPart: cur('part'), cRet: cur('ret'), goReady: go('ready'), goPart: go('part'), goRet: go('ret') };
+}
+}
+</script>
+</body>
+</html>

@@ -5,8 +5,18 @@
     {
       "id": "requests.catalog",
       "title": "Request catalog and progress counts",
-      "journeys": [{"id": "requests.catalog-progress-observation", "kind": "seeded-readonly", "status": "verified-live"}],
+      "journeys": [{"id": "requests.catalog-progress-observation", "kind": "seeded-readonly", "status": "defined"}],
       "missing": ["bilingual (bn-BD) labels", "catalog filtering/pagination", "stock shown vs persisted availability"]
+    },
+    {
+      "id": "requests.my-requests",
+      "title": "My requests and the request page: one derived status, the next step, every line (custom-requests UX redesign)",
+      "journeys": [
+        {"id": "requests.my-requests-observation", "kind": "seeded-readonly", "status": "defined"},
+        {"id": "requests.request-page-observation", "kind": "seeded-readonly", "status": "defined"}
+      ],
+      "notes": "Locators use the stable data-request-number / data-status-key / data-line-id hooks. Not yet run by the JSON runner; the screens were walked by hand on 2026-10-15.",
+      "missing": ["requests.split-approve-issue-receive", "requests.decline-with-reason", "requests.over-issue-refusal", "requests.approvals-observation", "requests.to-issue-observation", "requests.register-observation", "requests.rules-observation"]
     },
     {
       "id": "requests.authorization",
@@ -19,8 +29,8 @@
       "id": "requests.submit-approve-fulfill",
       "title": "Request submit, primary approval and fulfillment",
       "journeys": [
-        {"id": "requests.basket-validation", "kind": "mutation", "status": "verified-live"},
-        {"id": "requests.submit-approve", "kind": "mutation", "status": "verified-live"}
+        {"id": "requests.basket-validation", "kind": "mutation", "status": "defined"},
+        {"id": "requests.submit-approve", "kind": "mutation", "status": "defined"}
       ],
       "missing": ["final-approver branch (policy dependent)", "fulfillment/issue and stock ledger effects", "rejection and partial approval", "withdraw/receive/return", "boundary quantities min-1/max+1"],
       "notes": "Submitted and approved requests have no reversal lifecycle and are retained and reported by number."
@@ -115,6 +125,6 @@
     {"id": "membership.handover", "title": "Hand over a role: colleague picker, note, pending slot with Cancel, whole-sentence request, decline with reason", "journeys": [{"id": "membership.handover-decline", "kind": "mutation", "status": "defined"}], "status": "partial", "notes": "Write journey (suite journeys, --allow-writes). Blocked by preflight.mail-sink-unsafe on this installation (mail driver smtp); membership mail is disabled and unscheduled, so running it needs --allow-external-mail by an operator's decision.", "missing": ["accepting a handover (moves a seeded role; no reversal except handing it back)", "stale-role refusal"]},
     {"id": "membership.staff", "title": "Office staff: five status tabs with counts, own row without End access, office code dialog, Add staff refusal keeps typed values", "journeys": [{"id": "membership.staff-observation", "kind": "seeded-readonly", "status": "verified-live"}], "missing": ["approve / decline a join request, sign off a leaver, welcome a transferred employee, end additional access (writes; no seeded pending, leaving or arriving memberships)", "search and paging beyond 25 rows"]},
     {"id": "membership.authorization", "title": "Office membership boundaries: own memberships only, Staff for office administrators, Emergency changes for super users", "journeys": [{"id": "membership.authorization-boundaries", "kind": "seeded-readonly", "status": "verified-live"}], "notes": "membership.manage is enforced in shadow mode and membership.override is national, so the same statuses hold in both access modes; another person's membership returns 404.", "missing": ["POST endpoints (probe supports GET only; covered by OfficeMembershipWorkflowTest)"]},
-    {"id": "membership.emergency-changes", "title": "Emergency changes: person search, reach preview, nothing preselected, one office per release with roles option, reason and acknowledgement", "journeys": [{"id": "membership.emergency-changes-observation", "kind": "seeded-readonly", "status": "blocked-no-actor"}], "notes": "Needs a super user; the seeded dataset has none, so the journey is blocked with fixtures.unsatisfied-requirements. Run it on a configured target with a super-admin login.", "missing": ["submitting through the national review (write; the release cannot be undone)", "change history entries"]}
+    {"id": "membership.emergency-changes", "title": "Emergency changes: person search, reach preview, nothing preselected, one office per release with roles option, reason and acknowledgement", "journeys": [{"id": "membership.emergency-changes-observation", "kind": "seeded-readonly", "status": "verified-live"}], "notes": "Needs a super user; the seeded dataset has none, so a plain local run is blocked with fixtures.unsatisfied-requirements. Verified live on 2026-10-14 with --target local (super-admin bootstrap login). The title is checked by presence, not wording, because the super-admin may read the page in Bangla.", "missing": ["submitting through the national review (write; the release cannot be undone)", "change history entries"]}
   ]
 }

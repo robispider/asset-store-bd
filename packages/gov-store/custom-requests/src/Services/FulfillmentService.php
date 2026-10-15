@@ -4,13 +4,16 @@ namespace GovStore\CustomRequests\Services;
 
 use App\Models\Asset;
 use App\Models\User;
+use GovStore\CustomRequests\Exceptions\RequestRefused;
 use GovStore\CustomRequests\Factories\RequestableFactory;
+use GovStore\CustomRequests\Support\RequestPresenter;
 use GovStore\CustomRequests\Models\Request as ServiceRequest;
 use GovStore\CustomRequests\Models\RequestEvent;
 use GovStore\CustomRequests\Support\RequestWorkflow;
 use GovStore\StoreOperations\Contracts\StockIssuingServiceInterface;
 use GovStore\StoreOperations\Models\GoodsIssue;
 use GovStore\TenantScope\Contexts\TenantContext;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -26,21 +29,36 @@ class FulfillmentService
         app(RequestAccess::class)->check($request, $actor, 'requests.fulfill');
         // The stock issuer uses the working context, including for a superuser.
         abort_unless((int) $request->office_id === app(TenantContext::class)->locationId, 404);
-        abort_unless(in_array($request->approval_status, RequestWorkflow::APPROVED)
-            && in_array($request->fulfillment_status, RequestWorkflow::OPEN_FULFILLMENT), 409);
+        RequestRefused::unless(in_array($request->approval_status, RequestWorkflow::APPROVED)
+            && in_array($request->fulfillment_status, RequestWorkflow::OPEN_FULFILLMENT), 409, 'request_refused_not_open');
 
         return $request;
     }
 
-    public function issueItems(ServiceRequest $request, User $storekeeper, array $issuePayload, array $substitutions = [], ?string $notes = null): ServiceRequest
+    /**
+     * What the issue page was built from: every line's approval, issued count and alternative. The page
+     * sends it back, so a double press or a colleague's issue in between is refused instead of issued twice.
+     */
+    public function issueVersion(ServiceRequest $request, ?Collection $lines = null): string
     {
-        Validator::make(['notes' => $notes], ['notes' => 'nullable|string|max:2000'])->validate();
+        $lines ??= $request->items()->get();
 
-        return DB::transaction(function () use ($request, $storekeeper, $issuePayload, $substitutions, $notes) {
+        return sha1($request->fulfillment_status.'|'.$lines->sortBy('id')
+            ->map(fn ($l) => implode(':', [$l->id, $l->line_approval_status, $l->approved_qty, $l->issued_qty, $l->fulfilled_id]))->implode(','));
+    }
+
+    /** $handedTo (D7): who took the items when it was not the requester; kept in the event details. */
+    public function issueItems(ServiceRequest $request, User $storekeeper, array $issuePayload, array $substitutions = [], ?string $notes = null, ?string $handedTo = null, ?string $expectedVersion = null): ServiceRequest
+    {
+        Validator::make(['notes' => $notes, 'handed_to' => $handedTo], ['notes' => 'nullable|string|max:2000', 'handed_to' => 'nullable|string|max:255'])->validate();
+
+        return DB::transaction(function () use ($request, $storekeeper, $issuePayload, $substitutions, $notes, $handedTo, $expectedVersion) {
             $request = $this->lockedOpenRequest($request, $storekeeper);
             $lines = $request->items()->orderBy('requested_type')->orderBy('requested_id')->get();
-            abort_if(array_diff(array_keys($issuePayload), $lines->pluck('id')->all())
-                || array_diff(array_keys($substitutions), $lines->pluck('id')->all()), 422);
+            RequestRefused::when($expectedVersion !== null && ! hash_equals($this->issueVersion($request, $lines), $expectedVersion),
+                409, 'request_refused_changed', 'request');
+            RequestRefused::when(array_diff(array_keys($issuePayload), $lines->pluck('id')->all())
+                || array_diff(array_keys($substitutions), $lines->pluck('id')->all()), 422, 'request_refused_lines_changed', 'issue');
             $ledger = [];
             $serials = [];
             $inventory = app(RequestInventory::class);
@@ -57,16 +75,18 @@ class FulfillmentService
                 if ($type === 'asset_model') {
                     Validator::make(['ids' => $payload ?? []], ['ids' => 'array', 'ids.*' => 'nullable|integer|min:1'])->validate();
                     $assetIds = array_values(array_filter($payload ?? []));
-                    abort_if(count($assetIds) !== count(array_unique($assetIds)), 422);
+                    RequestRefused::when(count($assetIds) !== count(array_unique($assetIds)), 422, 'request_refused_duplicate_serial', 'issue.'.$line->id);
                     sort($assetIds, SORT_NUMERIC);
                     $qty = count($assetIds);
                 } else {
                     Validator::make(['qty' => $payload ?? 0], ['qty' => 'integer|min:0|max:'.RequestWorkflow::MAX_QUANTITY])->validate();
                     $qty = (int) ($payload ?? 0);
                 }
-                abort_if($qty > $remaining, 422);
+                RequestRefused::when($qty > $remaining, 422, 'request_refused_over_remaining', 'issue.'.$line->id,
+                    ['remaining' => $remaining, 'item' => app(RequestPresenter::class)->lineName($line)]);
                 if ($qty === 0) {
-                    abort_if(! empty($substitutions[$line->id]) && (int) $substitutions[$line->id] !== (int) $id, 422);
+                    RequestRefused::when(! empty($substitutions[$line->id]) && (int) $substitutions[$line->id] !== (int) $id, 422,
+                        'request_refused_alt_needs_qty', 'issue.'.$line->id);
 
                     continue;
                 }
@@ -75,12 +95,15 @@ class FulfillmentService
                 Validator::make(['id' => $subId], ['id' => 'required|integer|min:1'])->validate();
                 if ((int) $subId !== (int) $id) {
                     // No change of stock identity after the first issue. Higher-value substitutes need a new approval.
-                    abort_if($line->issued_qty > 0, 409);
+                    $field = 'substitutions.'.$line->id;
+                    RequestRefused::when($line->issued_qty > 0, 409, 'request_refused_alt_after_issue', $field, ['item' => $model->name]);
                     $alternate = $inventory->validateItem($type, (int) $subId, true);
-                    abort_unless($model->category_id && (int) $model->category_id === (int) $alternate->category_id, 422);
-                    abort_if($model->purchase_cost === null || $alternate->purchase_cost === null
-                        || (float) $alternate->purchase_cost > (float) $model->purchase_cost, 422);
-                    abort_if($remaining > $inventory->available($type, $alternate, $request->office_id, $line->id), 409);
+                    RequestRefused::unless($model->category_id && (int) $model->category_id === (int) $alternate->category_id, 422,
+                        'request_refused_alt_category', $field, ['item' => $model->name]);
+                    RequestRefused::when($model->purchase_cost === null || $alternate->purchase_cost === null
+                        || (float) $alternate->purchase_cost > (float) $model->purchase_cost, 422, 'request_refused_alt_price', $field, ['item' => $model->name]);
+                    $alternateFree = $inventory->available($type, $alternate, $request->office_id, $line->id);
+                    RequestRefused::when($remaining > $alternateFree, 409, 'request_refused_alt_stock', $field, ['available' => $alternateFree, 'needed' => $remaining]);
                     $line->update(['fulfilled_type' => $type, 'fulfilled_id' => $alternate->id, 'reserved_qty' => $remaining]);
                     RequestEvent::create(['request_id' => $request->id, 'user_id' => $storekeeper->id,
                         'event_type' => 'item_substituted', 'details' => ['original_id' => $model->id, 'original' => $model->name,
@@ -88,7 +111,8 @@ class FulfillmentService
                     $model = $alternate;
                     $id = $alternate->id;
                 }
-                abort_if($qty > $inventory->available($type, $model, $request->office_id, $line->id), 409);
+                $free = $inventory->available($type, $model, $request->office_id, $line->id);
+                RequestRefused::when($qty > $free, 409, 'request_refused_stock', 'issue.'.$line->id, ['available' => $free, 'item' => $model->name]);
                 if ($type === 'asset_model') {
                     foreach ($assetIds as $assetId) {
                         $asset = Asset::whereKey($assetId)->lockForUpdate()->firstOrFail();
@@ -97,7 +121,8 @@ class FulfillmentService
                         abort_if($company && $asset->company_id && (int) $asset->company_id !== $company, 404);
                         // Use a current locking read for status after any wait on the asset row.
                         $asset->setRelation('status', $asset->status()->lockForUpdate()->first());
-                        abort_unless((int) $asset->model_id === (int) $id && $asset->requestable && $asset->availableForCheckout(), 422);
+                        RequestRefused::unless((int) $asset->model_id === (int) $id && $asset->requestable && $asset->availableForCheckout(), 422,
+                            'request_refused_serial_not_free', 'issue.'.$line->id, ['asset' => $asset->asset_tag]);
                         if (! $asset->checkOut($request->requester, $storekeeper, now(), null,
                             'GovStore '.$request->request_number, $asset->name, $request->delivery_location_id ?: $request->office_id)) {
                             // Native validation must remain authoritative. Explain the failure without exposing
@@ -110,12 +135,12 @@ class FulfillmentService
                         }
                         $serials[] = $asset;
                     }
-                    $this->recordIssue($request, $line, $storekeeper, $qty, $model->name, ['asset_ids' => $assetIds, 'notes' => $notes]);
+                    $this->recordIssue($request, $line, $storekeeper, $qty, $model->name, ['asset_ids' => $assetIds, 'notes' => $notes, 'handed_to' => $handedTo]);
                 } else {
                     $ledger[] = ['type' => $type, 'id' => $id, 'qty' => $qty, 'line_id' => $line->id];
                 }
             }
-            abort_unless($ledger || $serials, 422);
+            RequestRefused::unless($ledger || $serials, 422, 'request_refused_nothing_to_issue', 'issue');
             if ($ledger) {
                 $documents = $this->stockIssuer->issueSystemStock($ledger, $request->requested_by, $request);
                 foreach ($ledger as $payload) {
@@ -124,7 +149,7 @@ class FulfillmentService
                     $adapter = RequestableFactory::make($payload['type'], $payload['id']);
                     // The immutable ledger owns stock; adapters write history only, never checkout pivots.
                     $adapter->checkout($request->requester, $storekeeper, $payload['qty'], 'Logged in Goods Issue: '.$documents[$line->id]);
-                    $this->recordIssue($request, $line, $storekeeper, $payload['qty'], $adapter->getDisplayName(), ['goods_issue' => $documents[$line->id], 'notes' => $notes]);
+                    $this->recordIssue($request, $line, $storekeeper, $payload['qty'], $adapter->getDisplayName(), ['goods_issue' => $documents[$line->id], 'notes' => $notes, 'handed_to' => $handedTo]);
                 }
             }
             if ($serials) {
@@ -160,17 +185,19 @@ class FulfillmentService
             'details' => $details + ['item' => $name, 'issued_qty' => $qty, 'total_issued' => $issued, 'approved_qty' => $line->approved_qty]]);
     }
 
-    public function forceClose(ServiceRequest $request, User $storekeeper, ?string $reason = null): ServiceRequest
+    /** Close the rest: cancels what is not issued. The reason, and the chosen kind of reason, are shown to the requester. */
+    public function forceClose(ServiceRequest $request, User $storekeeper, ?string $reason = null, ?string $reasonCode = null): ServiceRequest
     {
-        Validator::make(['reason' => $reason], ['reason' => 'required|string|min:5|max:2000'])->validate();
+        Validator::make(['reason' => $reason, 'reason_code' => $reasonCode], ['reason' => 'required|string|min:5|max:2000',
+            'reason_code' => 'nullable|in:out_of_stock,discontinued,not_needed,other'])->validate();
 
-        return DB::transaction(function () use ($request, $storekeeper, $reason) {
+        return DB::transaction(function () use ($request, $storekeeper, $reason, $reasonCode) {
             $request = $this->lockedOpenRequest($request, $storekeeper);
             $request->items()->where('line_approval_status', 'approved')->where('line_fulfillment_status', '!=', 'issued')
                 ->update(['line_fulfillment_status' => 'cancelled', 'reserved_qty' => 0]);
             $request->update(['fulfillment_status' => 'closed', 'closed_at' => now()]);
             RequestEvent::create(['request_id' => $request->id, 'user_id' => $storekeeper->id,
-                'event_type' => 'closed', 'details' => ['reason' => $reason]]);
+                'event_type' => 'closed', 'details' => array_filter(['reason' => $reason, 'reason_code' => $reasonCode])]);
 
             return $request;
         });

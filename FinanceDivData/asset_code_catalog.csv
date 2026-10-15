@@ -1,0 +1,491 @@
+﻿group_code_from_annexure,group_name_from_group_code_list,subgroup_code,subgroup_name,item_code,item_name,annexure_asset_abbreviation,source_pdf_page,source_manual_page,source_table_on_page,review_status
+01,Land,01,Freehold land,01,Land Property,L,103,101,1,provisional_source_extraction
+01,Land,02,Leasehold Land,02,Land held under lease,L,103,101,1,provisional_source_extraction
+01,Land,03,Industrial Land,03,Factory land,L,103,101,1,provisional_source_extraction
+01,Land,04,Commercial Land,04,"Mall, shop land",L,103,101,1,provisional_source_extraction
+01,Land,05,Agricultural land,05,Farming land,L,103,101,1,provisional_source_extraction
+01,Land,06,Pond,06,IPS Rack,L,103,101,1,provisional_source_extraction
+01,Land,07,Recreational land,07,Parks,L,103,101,1,provisional_source_extraction
+01,Land,08,Land with Timber rights,08,Forest land,L,103,101,1,provisional_source_extraction
+02,Land Improvement,01,Boundary Wall,01,Boundary on Free Land,LI,103,101,2,provisional_source_extraction
+02,Land Improvement,02,Embankment,02,Lands near river,LI,103,101,2,provisional_source_extraction
+02,Land Improvement,03,Flood Embankment,03,Concrete flood walls,LI,103,101,2,provisional_source_extraction
+02,Land Improvement,04,Pond Excavation,04,Water level sensors,LI,103,101,2,provisional_source_extraction
+02,Land Improvement,04,Pond Excavation,05,Flow meters,LI,103,101,2,provisional_source_extraction
+02,Land Improvement,05,Sewerage & Drainage,06,Farming land,LI,103,101,2,provisional_source_extraction
+02,Land Improvement,06,Signage,07,IPS Rack,LI,103,101,2,provisional_source_extraction
+02,Land Improvement,07,Store yard,08,Parks,LI,103,101,2,provisional_source_extraction
+03,Building,01,Office Building,01,Office Building,B,103,101,3,provisional_source_extraction
+03,Building,02,Residential Building,02,Residential Quarters,B,103,101,3,provisional_source_extraction
+03,Building,03,Network Tower,03,Network Tower,B,103,101,3,provisional_source_extraction
+03,Building,04,Terminal Building,04,Terminal Building,B,103,101,3,provisional_source_extraction
+03,Building,05,Factory Building,05,Factory Building,B,103,101,3,provisional_source_extraction
+03,Building,06,Cargo and Passenger Sheds,06,Cargo and Passenger sheds,B,103,101,3,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),01,Diesel Generator,01,Diesel Engine,P&M,103,101,4,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),02,Dredgers,02,Cutter Suction Dredger,P&M,103,101,4,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),02,Dredgers,03,Bucket Ladder Dredger,P&M,103,101,4,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),02,Dredgers,04,Backhoe Dredger,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),03,Equipment,05,Heavy Equipment,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),04,Factory Equipment,06,CNC machines,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),04,Factory Equipment,07,Textiles looms,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),04,Factory Equipment,08,Conveyor belts,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),04,Factory Equipment,09,Mixers and blenders,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),04,Factory Equipment,10,Blowers & Compressors,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),04,Factory Equipment,11,Cranes and hoists,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),04,Factory Equipment,12,Air Compressors,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),04,Factory Equipment,13,Custom molds,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),04,Factory Equipment,14,Industrial cabinets,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),05,Generator,15,Diesel Generators,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),05,Generator,16,Natural Gas Generators,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),05,Generator,17,Solar Power Generators,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),05,Generator,18,Portable Generators,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),05,Generator,19,Inverter Generators,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),06,Laboratory Equipment,20,Analytical Instruments,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),06,Laboratory Equipment,21,General Lab Equipment,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),06,Laboratory Equipment,22,Data & Monitoring systems,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),06,Laboratory Equipment,23,Specialized Equipment,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),06,Laboratory Equipment,24,Measuring & Testing Equipment,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),07,Machinery and Equipment,25,CNC machines,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),07,Machinery and Equipment,26,Welding Machines,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),07,Machinery and Equipment,27,Presses,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),07,Machinery and Equipment,28,Conveyors,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),07,Machinery and Equipment,29,Injection Molding Machine,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),07,Machinery and Equipment,30,Labeling Machines,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),07,Machinery and Equipment,31,Assembly Line Equipment,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),07,Machinery and Equipment,32,Cutting Machines,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),08,Power House,33,Generators,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),08,Power House,34,Motors & Pumps,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),08,Power House,35,Boilers,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),08,Power House,36,Control Panels,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),08,Power House,37,Power Distribution Boards,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),09,Power Plant,38,Transformers,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),09,Power Plant,39,Switchgear and Circuit Breakers,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),09,Power Plant,40,Electrical Panel,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),09,Power Plant,41,Meters and Sensors,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),09,Power Plant,42,Battery Banks and UPS,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),10,Production Machinery,43,Milling Machines,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),10,Production Machinery,44,Lathes,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),10,Production Machinery,45,Printing Machines,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),10,Production Machinery,46,Mixing and Blending Machine,P&M,104,102,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),10,Production Machinery,47,Extruders,P&M,105,103,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),10,Production Machinery,48,Press Machine,P&M,105,103,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),10,Production Machinery,49,Cutting Machine,P&M,105,103,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),11,Seismic and Toll Equipment,50,Seismographs,P&M,105,103,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),11,Seismic and Toll Equipment,51,Geophones,P&M,105,103,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),11,Seismic and Toll Equipment,52,Electronic Toll Collection Readers,P&M,105,103,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),11,Seismic and Toll Equipment,53,Toll Booths,P&M,105,103,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),11,Seismic and Toll Equipment,54,Ticket Dispensers,P&M,105,103,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),11,Seismic and Toll Equipment,55,Payment Terminals,P&M,105,103,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),11,Seismic and Toll Equipment,56,Toll Plaza Barriers/gates,P&M,105,103,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),12,Transformer,57,Power Transformer,P&M,105,103,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),12,Transformer,58,Distribution Transfer,P&M,105,103,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),12,Transformer,59,Instrument Transformer,P&M,105,103,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),12,Transformer,60,Auto Transformer,P&M,105,103,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),12,Transformer,61,Isolation Transformer,P&M,105,103,1,provisional_source_extraction
+04,Plant and Machinery (Including heavy equipment),12,Transformer,62,Dry-type Transformer,P&M,105,103,1,provisional_source_extraction
+05,Furniture and Fixture,01,Almirah,01,Almirah,F&F,105,103,2,provisional_source_extraction
+05,Furniture and Fixture,02,Cabinet,02,Table Side Cabinet,F&F,105,103,2,provisional_source_extraction
+05,Furniture and Fixture,02,Cabinet,03,Cabinet,F&F,105,103,2,provisional_source_extraction
+05,Furniture and Fixture,02,Cabinet,04,Wall Cabinet,F&F,105,103,2,provisional_source_extraction
+05,Furniture and Fixture,02,Cabinet,05,Wall Low Cabinet,F&F,105,103,2,provisional_source_extraction
+05,Furniture and Fixture,02,Cabinet,06,Bookshelf,F&F,105,103,2,provisional_source_extraction
+05,Furniture and Fixture,02,Cabinet,07,Wall High Cabinet,F&F,105,103,2,provisional_source_extraction
+05,Furniture and Fixture,03,Chair,08,Plastic Chair,F&F,105,103,2,provisional_source_extraction
+05,Furniture and Fixture,03,Chair,09,Revolving Armless Chair,F&F,105,103,2,provisional_source_extraction
+05,Furniture and Fixture,03,Chair,10,Revolving Arm Chair,F&F,105,103,2,provisional_source_extraction
+05,Furniture and Fixture,03,Chair,11,Revolving Arm HOD Chair,F&F,105,103,2,provisional_source_extraction
+05,Furniture and Fixture,03,Chair,12,Revolving Lobby Chair,F&F,105,103,2,provisional_source_extraction
+05,Furniture and Fixture,03,Chair,13,Security Chair,F&F,105,103,2,provisional_source_extraction
+05,Furniture and Fixture,04,Drawer Cabinet Box,14,Drawer Cabinet Box,F&F,105,103,2,provisional_source_extraction
+05,Furniture and Fixture,05,Foot Rest,15,Foot Rest,F&F,105,103,2,provisional_source_extraction
+05,Furniture and Fixture,06,Rack,16,Rack,F&F,105,103,2,provisional_source_extraction
+05,Furniture and Fixture,07,Sofa,17,Sofa,F&F,105,103,2,provisional_source_extraction
+05,Furniture and Fixture,07,Sofa,18,Customer Care Table,F&F,105,103,2,provisional_source_extraction
+05,Furniture and Fixture,07,Sofa,19,Conference Table,F&F,105,103,2,provisional_source_extraction
+05,Furniture and Fixture,07,Sofa,20,Employee Table,F&F,105,103,2,provisional_source_extraction
+05,Furniture and Fixture,07,Sofa,21,Executive Table,F&F,105,103,2,provisional_source_extraction
+05,Furniture and Fixture,07,Sofa,22,Front Desk Table,F&F,105,103,2,provisional_source_extraction
+05,Furniture and Fixture,08,Table,23,Kitchen Table,F&F,106,104,1,provisional_source_extraction
+05,Furniture and Fixture,08,Table,24,Meeting Table,F&F,106,104,1,provisional_source_extraction
+05,Furniture and Fixture,08,Table,25,Restaurant Table,F&F,106,104,1,provisional_source_extraction
+05,Furniture and Fixture,08,Table,26,Secretariat Table,F&F,106,104,1,provisional_source_extraction
+05,Furniture and Fixture,08,Table,27,Tea Table,F&F,106,104,1,provisional_source_extraction
+05,Furniture and Fixture,08,Table,28,Equipment Table,F&F,106,104,1,provisional_source_extraction
+05,Furniture and Fixture,08,Table,29,Security Table,F&F,106,104,1,provisional_source_extraction
+05,Furniture and Fixture,08,Table,30,Side Table,F&F,106,104,1,provisional_source_extraction
+05,Furniture and Fixture,08,Table,31,Printer Table,F&F,106,104,1,provisional_source_extraction
+05,Furniture and Fixture,08,Table,32,Round Table,F&F,106,104,1,provisional_source_extraction
+05,Furniture and Fixture,08,Table,33,Trolley Table,F&F,106,104,1,provisional_source_extraction
+05,Furniture and Fixture,09,Tool,34,Round Tool,F&F,106,104,1,provisional_source_extraction
+05,Furniture and Fixture,09,Tool,35,Revolving Round Tool,F&F,106,104,1,provisional_source_extraction
+05,Furniture and Fixture,09,Tool,36,Sofa Tool,F&F,106,104,1,provisional_source_extraction
+05,Furniture and Fixture,09,Tool,37,Tool,F&F,106,104,1,provisional_source_extraction
+05,Furniture and Fixture,10,Trolley,38,Trolley,F&F,106,104,1,provisional_source_extraction
+05,Furniture and Fixture,11,Ladder,39,Ladder,F&F,106,104,1,provisional_source_extraction
+05,Furniture and Fixture,12,Bench,40,Siting bench,F&F,106,104,1,provisional_source_extraction
+05,Furniture and Fixture,13,Plywood Board,41,Partitions,F&F,106,104,1,provisional_source_extraction
+06,Decoration and Renovation,01,Wall Decoration,01,Paintings and Wall Arts,D&R,106,104,2,provisional_source_extraction
+06,Decoration and Renovation,01,Wall Decoration,02,Framed Posters,D&R,106,104,2,provisional_source_extraction
+06,Decoration and Renovation,01,Wall Decoration,03,Wall Clocks,D&R,106,104,2,provisional_source_extraction
+06,Decoration and Renovation,01,Wall Decoration,04,3D Wall Panels,D&R,106,104,2,provisional_source_extraction
+06,Decoration and Renovation,01,Wall Decoration,05,Shelve with Décor Pieces,D&R,106,104,2,provisional_source_extraction
+06,Decoration and Renovation,02,Lighting,06,LED Strips lights,D&R,106,104,2,provisional_source_extraction
+06,Decoration and Renovation,02,Lighting,07,Pendant light,D&R,106,104,2,provisional_source_extraction
+06,Decoration and Renovation,02,Lighting,08,Chandeliers,D&R,106,104,2,provisional_source_extraction
+06,Decoration and Renovation,02,Lighting,09,Floor Lamps,D&R,106,104,2,provisional_source_extraction
+06,Decoration and Renovation,02,Lighting,10,Table Lamps,D&R,106,104,2,provisional_source_extraction
+06,Decoration and Renovation,03,Natural Elements,11,Indoor Plants,D&R,106,104,2,provisional_source_extraction
+06,Decoration and Renovation,03,Natural Elements,12,Hanging Planters,D&R,106,104,2,provisional_source_extraction
+06,Decoration and Renovation,03,Natural Elements,13,Bonsai,D&R,106,104,2,provisional_source_extraction
+06,Decoration and Renovation,03,Natural Elements,14,Flower Vases,D&R,106,104,2,provisional_source_extraction
+06,Decoration and Renovation,04,Furniture Decoration,15,Cushions,D&R,106,104,2,provisional_source_extraction
+06,Decoration and Renovation,04,Furniture Decoration,16,Table Runners,D&R,106,104,2,provisional_source_extraction
+06,Decoration and Renovation,04,Furniture Decoration,17,Poufs or Ottomans,D&R,106,104,2,provisional_source_extraction
+06,Decoration and Renovation,04,Furniture Decoration,18,Reception Counters,D&R,106,104,2,provisional_source_extraction
+06,Decoration and Renovation,04,Furniture Decoration,19,Centerpieces,D&R,106,104,2,provisional_source_extraction
+06,Decoration and Renovation,05,Fixtures and Fittings,20,Doors,D&R,107,105,1,provisional_source_extraction
+06,Decoration and Renovation,05,Fixtures and Fittings,21,Windows,D&R,107,105,1,provisional_source_extraction
+06,Decoration and Renovation,05,Fixtures and Fittings,22,Curtains,D&R,107,105,1,provisional_source_extraction
+06,Decoration and Renovation,05,Fixtures and Fittings,23,Carpets,D&R,107,105,1,provisional_source_extraction
+06,Decoration and Renovation,06,Kitchen Renovation,24,Countertops,D&R,107,105,1,provisional_source_extraction
+06,Decoration and Renovation,06,Kitchen Renovation,25,Kitchen Sinks,D&R,107,105,1,provisional_source_extraction
+06,Decoration and Renovation,06,Kitchen Renovation,26,Cabinets,D&R,107,105,1,provisional_source_extraction
+06,Decoration and Renovation,06,Kitchen Renovation,27,Chimneys & Hoods,D&R,107,105,1,provisional_source_extraction
+06,Decoration and Renovation,06,Kitchen Renovation,28,Backsplashes,D&R,107,105,1,provisional_source_extraction
+06,Decoration and Renovation,07,Electrical & Smart Assets,29,Switchboards,D&R,107,105,1,provisional_source_extraction
+06,Decoration and Renovation,07,Electrical & Smart Assets,30,Smart Switches,D&R,107,105,1,provisional_source_extraction
+06,Decoration and Renovation,07,Electrical & Smart Assets,31,Security Cameras,D&R,107,105,1,provisional_source_extraction
+06,Decoration and Renovation,07,Electrical & Smart Assets,32,Intercom systems,D&R,107,105,1,provisional_source_extraction
+06,Decoration and Renovation,08,Flooring,33,Tiles,D&R,107,105,1,provisional_source_extraction
+06,Decoration and Renovation,08,Flooring,34,Vinyl Flooring,D&R,107,105,1,provisional_source_extraction
+06,Decoration and Renovation,08,Flooring,35,Laminate,D&R,107,105,1,provisional_source_extraction
+06,Decoration and Renovation,08,Flooring,36,Hardwood,D&R,107,105,1,provisional_source_extraction
+07,Office Equipment,01,Binding Machine,01,Binding Machine,OE,107,105,2,provisional_source_extraction
+07,Office Equipment,02,Blender Machine,02,Blender Machine,OE,107,105,2,provisional_source_extraction
+07,Office Equipment,03,Exhausted Fan,03,Exhausted Fan,OE,107,105,2,provisional_source_extraction
+07,Office Equipment,04,Fire Ball,04,Fire Ball,OE,107,105,2,provisional_source_extraction
+07,Office Equipment,05,Fire Extinguisher,05,Fire Extinguisher,OE,107,105,2,provisional_source_extraction
+07,Office Equipment,06,Hand Mike,06,Hand Mike,OE,107,105,2,provisional_source_extraction
+07,Office Equipment,07,Clock,07,Hanging Clock,OE,107,105,2,provisional_source_extraction
+07,Office Equipment,07,Clock,08,Wall Clock,OE,107,105,2,provisional_source_extraction
+07,Office Equipment,08,Generator,09,Generator,OE,107,105,2,provisional_source_extraction
+07,Office Equipment,09,Juicer Machine,10,Juicer Machine,OE,107,105,2,provisional_source_extraction
+07,Office Equipment,10,Locker,11,Locker,OE,107,105,2,provisional_source_extraction
+07,Office Equipment,11,Water Filter Machine,12,Water Filter Machine,OE,107,105,2,provisional_source_extraction
+07,Office Equipment,12,Vacuum Cleaner,13,Vacuum Cleaner,OE,107,105,2,provisional_source_extraction
+07,Office Equipment,13,IP Phone,14,IP Phone,OE,107,105,2,provisional_source_extraction
+07,Office Equipment,14,Coffee Machine,15,Coffee Machine,OE,107,105,2,provisional_source_extraction
+07,Office Equipment,15,Weight Machine,16,Weight Machine,OE,107,105,2,provisional_source_extraction
+07,Office Equipment,16,Sewing Machine,17,Sewing Machine,OE,107,105,2,provisional_source_extraction
+07,Office Equipment,17,QR Code Scanner,18,QR Code Scanner,OE,107,105,2,provisional_source_extraction
+07,Office Equipment,18,Barcode Scanner,19,Barcode Scanner,OE,107,105,2,provisional_source_extraction
+08,Electric Equipment,01,Air Conditioner,01,Air Conditioner,EE,108,106,1,provisional_source_extraction
+08,Electric Equipment,02,Air Purifier,02,Air Purifier,EE,108,106,1,provisional_source_extraction
+08,Electric Equipment,03,Electric Kettle,03,Electric Kettle,EE,108,106,1,provisional_source_extraction
+08,Electric Equipment,04,Fan,04,Wall Fan,EE,108,106,1,provisional_source_extraction
+08,Electric Equipment,04,Fan,05,Stand Fan,EE,108,106,1,provisional_source_extraction
+08,Electric Equipment,04,Fan,06,Cooling Fan,EE,108,106,1,provisional_source_extraction
+08,Electric Equipment,04,Fan,07,Table Fan,EE,108,106,1,provisional_source_extraction
+08,Electric Equipment,04,Fan,08,Ceiling Fan,EE,108,106,1,provisional_source_extraction
+08,Electric Equipment,05,Oven,09,Microwave Oven,EE,108,106,1,provisional_source_extraction
+08,Electric Equipment,06,Access Control,10,Access Control,EE,108,106,1,provisional_source_extraction
+08,Electric Equipment,07,CC Camera,11,CC Camera,EE,108,106,1,provisional_source_extraction
+08,Electric Equipment,08,Projector,12,Projector,EE,108,106,1,provisional_source_extraction
+08,Electric Equipment,09,CC Camera Machine,13,CC Camera Machine,EE,108,106,1,provisional_source_extraction
+08,Electric Equipment,10,CC Camera Set Up Box,14,CC Camera Set Up Box,EE,108,106,1,provisional_source_extraction
+08,Electric Equipment,11,Paper Shredder,15,Paper Shredder,EE,108,106,1,provisional_source_extraction
+08,Electric Equipment,12,Refrigerator,16,Refrigerator,EE,108,106,1,provisional_source_extraction
+08,Electric Equipment,13,Electric Heater,17,Electric Heater,EE,108,106,1,provisional_source_extraction
+08,Electric Equipment,14,Sound Speaker,18,Sound Speaker,EE,108,106,1,provisional_source_extraction
+08,Electric Equipment,15,External Hard disk & SSD,19,Hardware,EE,108,106,1,provisional_source_extraction
+08,Electric Equipment,16,Television,20,Television,EE,108,106,1,provisional_source_extraction
+09,Computer and Computer Equipment,01,Printer,01,Printer,C,108,106,2,provisional_source_extraction
+09,Computer and Computer Equipment,01,Printer,02,Printer & Photocopy Machine,C,108,106,2,provisional_source_extraction
+09,Computer and Computer Equipment,02,IPS & UPS Box,03,IPS & UPS Box,C,108,106,2,provisional_source_extraction
+09,Computer and Computer Equipment,03,UPS,04,UPS,C,108,106,2,provisional_source_extraction
+09,Computer and Computer Equipment,04,IPS Battery,05,IPS Battery,C,108,106,2,provisional_source_extraction
+09,Computer and Computer Equipment,05,IPS,06,IPS,C,108,106,2,provisional_source_extraction
+09,Computer and Computer Equipment,06,IPS Rack,07,IPS Rack,C,108,106,2,provisional_source_extraction
+09,Computer and Computer Equipment,07,Desktop Computer,08,Desktop Computer,C,108,106,2,provisional_source_extraction
+09,Computer and Computer Equipment,08,Laptop,09,Laptop,C,108,106,2,provisional_source_extraction
+09,Computer and Computer Equipment,09,Scanner,10,Scanner,C,108,106,2,provisional_source_extraction
+09,Computer and Computer Equipment,10,Monitor,11,Monitor,C,108,106,2,provisional_source_extraction
+10,Motor Vehicle,01,Jeep,01,Jeep,MV,109,107,1,provisional_source_extraction
+10,Motor Vehicle,02,Motor Cycle,02,Motor Cycle,MV,109,107,1,provisional_source_extraction
+10,Motor Vehicle,03,Car,03,Car,MV,109,107,1,provisional_source_extraction
+10,Motor Vehicle,04,Microbus,04,Microbus,MV,109,107,1,provisional_source_extraction
+10,Motor Vehicle,05,Bus,05,Bus,MV,109,107,1,provisional_source_extraction
+10,Motor Vehicle,06,Crane,06,Crane,MV,109,107,1,provisional_source_extraction
+10,Motor Vehicle,07,Water Tank,07,Water Tank,MV,109,107,1,provisional_source_extraction
+10,Motor Vehicle,08,Dumper Truck,08,Dumper Truck,MV,109,107,1,provisional_source_extraction
+10,Motor Vehicle,09,Excavator,09,Excavator,MV,109,107,1,provisional_source_extraction
+10,Motor Vehicle,10,Bulldozer,10,Bulldozer,MV,109,107,1,provisional_source_extraction
+10,Motor Vehicle,11,Road Roller,11,Road Roller,MV,109,107,1,provisional_source_extraction
+10,Motor Vehicle,12,Fire Truck,12,Fire Truck,MV,109,107,1,provisional_source_extraction
+10,Motor Vehicle,13,Floating Cranes,13,Floating Cranes,MV,109,107,1,provisional_source_extraction
+10,Motor Vehicle,14,Lorries,14,Lorries,MV,109,107,1,provisional_source_extraction
+10,Motor Vehicle,15,Tractor,15,Tractor,MV,109,107,1,provisional_source_extraction
+10,Motor Vehicle,16,Trailer,16,Trailer,MV,109,107,1,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,01,Automatic Transfer Switch (ATS),01,Automatic Transfer Switch (ATS),N&IT,109,107,2,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,02,Battery Bank Case,02,Battery Bank Case,N&IT,109,107,2,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,03,DB Box,03,DB Box,N&IT,109,107,2,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,04,Battery Bank Rack,04,Battery Bank Rack,N&IT,109,107,2,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,05,Load Balancer,05,Load Balancer,N&IT,109,107,2,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,06,"Protect Server Network, HSM",06,"Protect Server Network, HSM",N&IT,109,107,2,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,07,Switch,07,Network Switch,N&IT,109,107,2,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,07,Switch,08,SAN Switch,N&IT,109,107,2,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,07,Switch,09,ACI Spine Switch,N&IT,109,107,2,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,07,Switch,10,ACI Network Switch,N&IT,109,107,2,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,07,Switch,11,ACI Leaf Switch,N&IT,109,107,2,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,07,Switch,12,SW Switch,N&IT,109,107,2,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,07,Switch,13,Kum Switch,N&IT,109,107,2,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,08,Dense Wavelength Division Multiplexing (DWDM),14,DWDM,N&IT,109,107,2,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,09,Firewall,15,Firewall,N&IT,109,107,2,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,10,Fire Power,16,Fire Power,N&IT,109,107,2,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,11,Maintenance-Free Sealed Lead Acid Battery with Controller,17,Maintenance-Free Sealed Lead Acid Battery with Controller,N&IT,110,108,1,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,12,Mass Storage,18,Mass Storage,N&IT,110,108,1,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,13,UPS,19,Online UPS,N&IT,110,108,1,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,14,Patch Panel,20,Patch Panel,N&IT,110,108,1,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,14,Patch Panel,21,Copper Patch Panel,N&IT,110,108,1,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,14,Patch Panel,22,Fiber Patch Panel,N&IT,110,108,1,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,15,Protect Server Network,23,Protect Server Network,N&IT,110,108,1,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,16,Cable Manager,24,Cable Manager,N&IT,110,108,1,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,17,APIC Controller,25,APIC Controller,N&IT,110,108,1,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,18,IM Vision Controller,26,IM Vision Controller,N&IT,110,108,1,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,19,NetApp Storage,27,NetApp Storage,N&IT,110,108,1,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,20,DCIM,28,DCIM,N&IT,110,108,1,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,21,Fixed Mobile Convergence (FMC),29,FMC,N&IT,110,108,1,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,22,Server Network,30,Server Network,N&IT,110,108,1,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,23,HUB,31,HUB,N&IT,110,108,1,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,23,Server,32,Server,N&IT,110,108,1,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,24,Router Board,33,Router Board,N&IT,110,108,1,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,25,Kum Console,34,Kum Console,N&IT,110,108,1,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,26,HNAS,35,HNAS,N&IT,110,108,1,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,27,Wireless Controller,36,Wireless Controller,N&IT,110,108,1,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,28,Router,37,Router,N&IT,110,108,1,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,29,Rack,38,Server Rack,N&IT,110,108,1,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,29,Rack,39,Storage Rack,N&IT,110,108,1,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,29,Rack,40,Switch Rack,N&IT,110,108,1,provisional_source_extraction
+11,Network and IT Equipment / Technology Assets,30,Access Point,41,Access Point,N&IT,110,108,1,provisional_source_extraction
+12,Tools,01,Domestic Appliances,01,Inverters,T,110,108,2,provisional_source_extraction
+12,Tools,01,Domestic Appliances,02,Washing Machines,T,110,108,2,provisional_source_extraction
+12,Tools,01,Domestic Appliances,03,Clothes Iron,T,110,108,2,provisional_source_extraction
+12,Tools,01,Domestic Appliances,04,Hair Dryers,T,110,108,2,provisional_source_extraction
+12,Tools,02,Drawing Equipment,05,Drawing Boards,T,110,108,2,provisional_source_extraction
+12,Tools,02,Drawing Equipment,06,Drawing Pens,T,110,108,2,provisional_source_extraction
+12,Tools,02,Drawing Equipment,07,Drawing Tubes,T,110,108,2,provisional_source_extraction
+12,Tools,02,Drawing Equipment,08,Erases/Erasing shields,T,110,108,2,provisional_source_extraction
+12,Tools,02,Drawing Equipment,09,Manual Sketching Kits,T,110,108,2,provisional_source_extraction
+12,Tools,02,Drawing Equipment,10,Glass Etching Tools,T,110,108,2,provisional_source_extraction
+12,Tools,02,Drawing Equipment,11,Vinyl Cutter,T,110,108,2,provisional_source_extraction
+12,Tools,02,Drawing Equipment,12,Frosted Glass Panels,T,110,108,2,provisional_source_extraction
+12,Tools,03,Frosting and designing,13,Glass Design Templates,T,111,109,1,provisional_source_extraction
+12,Tools,03,Frosting and designing,14,Sandblasting Equipment,T,111,109,1,provisional_source_extraction
+12,Tools,03,Frosting and designing,15,Glass Engraving Machines,T,111,109,1,provisional_source_extraction
+12,Tools,03,Frosting and designing,16,Laser Etching Equipment,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,17,Hammers,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,18,Screwdrivers,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,19,Pliers,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,20,Wrenches,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,21,Measuring Tapes,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,22,Utility Knives,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,23,Chisels,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,24,Clamps,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,25,Torque Wrenches,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,26,Grease Guns,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,27,Pipe Wrenches,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,28,Bearing Pullers,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,29,Oil Cans,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,30,Taps and dies,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,31,Testers,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,32,Wire Strippers,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,33,Crimping Tools,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,34,Insulation Tape & Tools,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,35,Hand Saws,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,36,Planers,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,37,Files and Rasps,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,38,Carpenter Squares,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,39,Mallets,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,40,Marking Gauges,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,41,Try Squares,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,42,Chalk Line Tools,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,43,Socket Sets,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,44,Hex Keys,T,111,109,1,provisional_source_extraction
+12,Tools,04,Loose tools,45,Vernier Calipers,T,111,109,1,provisional_source_extraction
+12,Tools,05,Kitchen Tools,46,Blenders/Grinders,T,111,109,1,provisional_source_extraction
+12,Tools,05,Kitchen Tools,47,Toasters/Sandwich Makers,T,111,109,1,provisional_source_extraction
+12,Tools,05,Kitchen Tools,48,Rice Cookers,T,111,109,1,provisional_source_extraction
+12,Tools,05,Kitchen Tools,49,Manual Sewing Machine,T,111,109,1,provisional_source_extraction
+12,Tools,05,Kitchen Tools,50,Overlock Sewing Machine,T,111,109,1,provisional_source_extraction
+12,Tools,05,Kitchen Tools,51,Embroidery Machine,T,111,109,1,provisional_source_extraction
+12,Tools,05,Kitchen Tools,52,Buttonhole Machine,T,111,109,1,provisional_source_extraction
+12,Tools,05,Kitchen Tools,53,Blind Stitch Machine,T,111,109,1,provisional_source_extraction
+12,Tools,05,Kitchen Tools,54,Fabric Cutting Table,T,111,109,1,provisional_source_extraction
+12,Tools,05,Kitchen Tools,55,Tailors Scissors/Shears,T,111,109,1,provisional_source_extraction
+12,Tools,06,Tailoring Equipment,56,Notcher & Hole Punch,T,112,110,1,provisional_source_extraction
+12,Tools,06,Tailoring Equipment,57,Sewing Machine Stand/Table,T,112,110,1,provisional_source_extraction
+12,Tools,06,Tailoring Equipment,58,Needle Set,T,112,110,1,provisional_source_extraction
+12,Tools,06,Tailoring Equipment,59,Tailor Chalk/Marking Pens,T,112,110,1,provisional_source_extraction
+12,Tools,06,Tailoring Equipment,60,Fabric Storage Racks,T,112,110,1,provisional_source_extraction
+12,Tools,06,Tailoring Equipment,61,Cutting Machines,T,112,110,1,provisional_source_extraction
+12,Tools,06,Tailoring Equipment,62,Stitch Counter,T,112,110,1,provisional_source_extraction
+12,Tools,07,Testing Equipment,63,Insulation Resistance Tester,T,112,110,1,provisional_source_extraction
+12,Tools,07,Testing Equipment,64,Multimeter,T,112,110,1,provisional_source_extraction
+12,Tools,07,Testing Equipment,65,Clamp Meter,T,112,110,1,provisional_source_extraction
+12,Tools,07,Testing Equipment,66,Earth Resistance Tester,T,112,110,1,provisional_source_extraction
+12,Tools,07,Testing Equipment,67,High Voltage Test Set,T,112,110,1,provisional_source_extraction
+12,Tools,07,Testing Equipment,68,Continuity Tester,T,112,110,1,provisional_source_extraction
+12,Tools,07,Testing Equipment,69,Circuit Breaker Analyzer,T,112,110,1,provisional_source_extraction
+12,Tools,07,Testing Equipment,70,Power Analyzer,T,112,110,1,provisional_source_extraction
+12,Tools,07,Testing Equipment,71,Compression Testing Machine,T,112,110,1,provisional_source_extraction
+12,Tools,07,Testing Equipment,72,Concrete Cube Molds,T,112,110,1,provisional_source_extraction
+12,Tools,07,Testing Equipment,73,Slump Cone Test Kit,T,112,110,1,provisional_source_extraction
+12,Tools,07,Testing Equipment,74,Bitumen Testing Apparatus,T,112,110,1,provisional_source_extraction
+12,Tools,07,Testing Equipment,75,Soil Testing Equipment,T,112,110,1,provisional_source_extraction
+12,Tools,07,Testing Equipment,76,Universal Testing Machine,T,112,110,1,provisional_source_extraction
+12,Tools,07,Testing Equipment,77,Torque Tester,T,112,110,1,provisional_source_extraction
+12,Tools,07,Testing Equipment,78,Vibration Analyzer,T,112,110,1,provisional_source_extraction
+12,Tools,07,Testing Equipment,79,Oscilloscope,T,112,110,1,provisional_source_extraction
+12,Tools,07,Testing Equipment,80,LCR Meter,T,112,110,1,provisional_source_extraction
+12,Tools,07,Testing Equipment,81,Function Generator,T,112,110,1,provisional_source_extraction
+12,Tools,07,Testing Equipment,82,Thermometers,T,112,110,1,provisional_source_extraction
+12,Tools,07,Testing Equipment,83,pH Meter,T,112,110,1,provisional_source_extraction
+12,Tools,07,Testing Equipment,84,Hygrometer,T,112,110,1,provisional_source_extraction
+12,Tools,07,Testing Equipment,85,Anemometer,T,112,110,1,provisional_source_extraction
+12,Tools,07,Testing Equipment,86,Water Quality Test Kit,T,112,110,1,provisional_source_extraction
+12,Tools,07,Testing Equipment,87,Air Quality Monitoring Devices,T,112,110,1,provisional_source_extraction
+13,Leasehold Improvements,01,Structural & Interior Fittings,01,Partition Walls,LI,112,110,2,provisional_source_extraction
+13,Leasehold Improvements,01,Structural & Interior Fittings,02,False Ceiling,LI,112,110,2,provisional_source_extraction
+13,Leasehold Improvements,01,Structural & Interior Fittings,03,Internal Doors & Frames,LI,112,110,2,provisional_source_extraction
+13,Leasehold Improvements,01,Structural & Interior Fittings,04,Soundproofing Panels,LI,112,110,2,provisional_source_extraction
+13,Leasehold Improvements,01,Structural & Interior Fittings,05,Lighting Fixtures & Fittings,LI,112,110,2,provisional_source_extraction
+13,Leasehold Improvements,01,Structural & Interior Fittings,06,Power Outlets,LI,112,110,2,provisional_source_extraction
+13,Leasehold Improvements,02,Electrical & Lighting,07,Electrical Wiring,LI,113,111,1,provisional_source_extraction
+13,Leasehold Improvements,02,Electrical & Lighting,08,Server Room Electrical Fit-out,LI,113,111,1,provisional_source_extraction
+13,Leasehold Improvements,02,Electrical & Lighting,09,Emergency Lights & Exit Signs,LI,113,111,1,provisional_source_extraction
+13,Leasehold Improvements,03,Safety & Compliance,10,Fire Alarm System,LI,113,111,1,provisional_source_extraction
+13,Leasehold Improvements,03,Safety & Compliance,11,Smoke Detectors,LI,113,111,1,provisional_source_extraction
+13,Leasehold Improvements,03,Safety & Compliance,12,Fire Extinguisher cabinets,LI,113,111,1,provisional_source_extraction
+13,Leasehold Improvements,03,Safety & Compliance,13,CCTV Infrastructures,LI,113,111,1,provisional_source_extraction
+14,Infrastructure,01,Civil & Structural Infrastructure,01,Roads & Pavements,I,113,111,2,provisional_source_extraction
+14,Infrastructure,01,Civil & Structural Infrastructure,02,Bridges & Culverts,I,113,111,2,provisional_source_extraction
+14,Infrastructure,01,Civil & Structural Infrastructure,03,Airports & Airstrips,I,113,111,2,provisional_source_extraction
+14,Infrastructure,01,Civil & Structural Infrastructure,04,Seaports & Inland River Ports,I,113,111,2,provisional_source_extraction
+14,Infrastructure,01,Civil & Structural Infrastructure,05,Bus Terminals,I,113,111,2,provisional_source_extraction
+14,Infrastructure,01,Civil & Structural Infrastructure,06,Ferry Terminals,I,113,111,2,provisional_source_extraction
+14,Infrastructure,01,Civil & Structural Infrastructure,07,Railway Station,I,113,111,2,provisional_source_extraction
+14,Infrastructure,01,Civil & Structural Infrastructure,08,Satellite Ground Stations,I,113,111,2,provisional_source_extraction
+14,Infrastructure,01,Civil & Structural Infrastructure,09,Mobile Network Towers,I,113,111,2,provisional_source_extraction
+14,Infrastructure,01,Civil & Structural Infrastructure,10,Toll Plaza,I,113,111,2,provisional_source_extraction
+14,Infrastructure,01,Civil & Structural Infrastructure,11,Border Check-posts,I,113,111,2,provisional_source_extraction
+14,Infrastructure,01,Civil & Structural Infrastructure,12,Underground Cable Trench,I,113,111,2,provisional_source_extraction
+14,Infrastructure,01,Civil & Structural Infrastructure,13,Drainage Systems,I,113,111,2,provisional_source_extraction
+14,Infrastructure,01,Civil & Structural Infrastructure,14,Water Reservoirs/Tanks,I,113,111,2,provisional_source_extraction
+14,Infrastructure,02,Utilities Infrastructure,15,Power Distribution Network,I,113,111,2,provisional_source_extraction
+14,Infrastructure,02,Utilities Infrastructure,16,Transformers & Substations,I,113,111,2,provisional_source_extraction
+14,Infrastructure,02,Utilities Infrastructure,17,Electrical Duct Banks,I,113,111,2,provisional_source_extraction
+14,Infrastructure,02,Utilities Infrastructure,18,Water Supply Lines,I,113,111,2,provisional_source_extraction
+14,Infrastructure,02,Utilities Infrastructure,19,Wastewater Pipelines,I,113,111,2,provisional_source_extraction
+14,Infrastructure,02,Utilities Infrastructure,20,Telecommunication Ducting,I,113,111,2,provisional_source_extraction
+14,Infrastructure,02,Utilities Infrastructure,21,Gas Pipeline Network,I,113,111,2,provisional_source_extraction
+14,Infrastructure,03,Building Support Infrastructure,22,Compound Lighting,I,113,111,2,provisional_source_extraction
+14,Infrastructure,03,Building Support Infrastructure,23,Watch Towers,I,113,111,2,provisional_source_extraction
+14,Infrastructure,03,Building Support Infrastructure,24,Export Processing Zones,I,113,111,2,provisional_source_extraction
+14,Infrastructure,03,Building Support Infrastructure,25,Industrial Parks,I,113,111,2,provisional_source_extraction
+14,Infrastructure,03,Building Support Infrastructure,26,Government Warehouse & Cold Storage,I,113,111,2,provisional_source_extraction
+14,Infrastructure,03,Building Support Infrastructure,27,Internal Roadways & Footpaths,I,113,111,2,provisional_source_extraction
+14,Infrastructure,03,Building Support Infrastructure,28,Reticulated Systems,I,113,111,2,provisional_source_extraction
+14,Infrastructure,03,Building Support Infrastructure,29,Septic Tanks/Soak Pits,I,113,111,2,provisional_source_extraction
+14,Infrastructure,03,Building Support Infrastructure,30,Parking Areas/Carports,I,113,111,2,provisional_source_extraction
+14,Infrastructure,04,Transport/Access Infrastructure,31,Rail Sidings/Tracks,I,114,112,1,provisional_source_extraction
+14,Infrastructure,04,Transport/Access Infrastructure,32,Helipads/Taxiways,I,114,112,1,provisional_source_extraction
+14,Infrastructure,04,Transport/Access Infrastructure,33,Railway Tracks,I,114,112,1,provisional_source_extraction
+14,Infrastructure,04,Transport/Access Infrastructure,34,Mass Transit Systems,I,114,112,1,provisional_source_extraction
+14,Infrastructure,04,Transport/Access Infrastructure,35,Loading Bays/Access Ramps,I,114,112,1,provisional_source_extraction
+15,Aircraft and other inter-alia assets,01,Air Craft,01,Airplane,A,114,112,2,provisional_source_extraction
+15,Aircraft and other inter-alia assets,01,Air Craft,02,Turbojet Aircraft,A,114,112,2,provisional_source_extraction
+15,Aircraft and other inter-alia assets,01,Air Craft,03,High Altitude,A,114,112,2,provisional_source_extraction
+15,Aircraft and other inter-alia assets,01,Air Craft,04,Tail wheel,A,114,112,2,provisional_source_extraction
+15,Aircraft and other inter-alia assets,01,Air Craft,05,Single Engine Land,A,114,112,2,provisional_source_extraction
+15,Aircraft and other inter-alia assets,01,Air Craft,06,Single Engine Sea,A,114,112,2,provisional_source_extraction
+15,Aircraft and other inter-alia assets,01,Air Craft,07,Multi Engine Land,A,114,112,2,provisional_source_extraction
+15,Aircraft and other inter-alia assets,01,Air Craft,08,Multi Engine Sea,A,114,112,2,provisional_source_extraction
+15,Aircraft and other inter-alia assets,01,Air Craft,09,JET,A,114,112,2,provisional_source_extraction
+15,Aircraft and other inter-alia assets,01,Air Craft,10,Single Main-Rotor Helicopter,A,114,112,2,provisional_source_extraction
+15,Aircraft and other inter-alia assets,01,Air Craft,11,Tandem Rotor Helicopter,A,114,112,2,provisional_source_extraction
+15,Aircraft and other inter-alia assets,01,Air Craft,12,Coaxial Helicopter,A,114,112,2,provisional_source_extraction
+15,Aircraft and other inter-alia assets,01,Air Craft,13,Compound Helicopter,A,114,112,2,provisional_source_extraction
+15,Aircraft and other inter-alia assets,01,Air Craft,14,Tilt Rotor Helicopter,A,114,112,2,provisional_source_extraction
+15,Aircraft and other inter-alia assets,01,Air Craft,15,Intermeshing Rotor Helicopter,A,114,112,2,provisional_source_extraction
+15,Aircraft and other inter-alia assets,01,Air Craft,16,Tandem Rotor Helicopter,A,114,112,2,provisional_source_extraction
+15,Aircraft and other inter-alia assets,01,Air Craft,17,Troop Carrier Helicopter,A,114,112,2,provisional_source_extraction
+15,Aircraft and other inter-alia assets,02,Train,18,Inter City Train,A,114,112,2,provisional_source_extraction
+15,Aircraft and other inter-alia assets,02,Train,19,Rapid Transit Train,A,114,112,2,provisional_source_extraction
+15,Aircraft and other inter-alia assets,02,Train,20,Metro Rail,A,114,112,2,provisional_source_extraction
+15,Aircraft and other inter-alia assets,02,Train,21,Cargo Train,A,114,112,2,provisional_source_extraction
+15,Aircraft and other inter-alia assets,02,Train,22,Passenger Carrier Train,A,114,112,2,provisional_source_extraction
+16,"Vessels, shipping machinery and equipment",01,Vessels,01,Aircraft Carrier Ship,V,114,112,3,provisional_source_extraction
+16,"Vessels, shipping machinery and equipment",01,Vessels,02,Submarines,V,114,112,3,provisional_source_extraction
+16,"Vessels, shipping machinery and equipment",01,Vessels,03,Frigates,V,114,112,3,provisional_source_extraction
+16,"Vessels, shipping machinery and equipment",01,Vessels,04,Corvettes,V,114,112,3,provisional_source_extraction
+16,"Vessels, shipping machinery and equipment",01,Vessels,05,Patrol Vessels,V,114,112,3,provisional_source_extraction
+16,"Vessels, shipping machinery and equipment",01,Vessels,06,Container Ship,V,114,112,3,provisional_source_extraction
+16,"Vessels, shipping machinery and equipment",01,Vessels,07,Bulk Carrier,V,115,113,1,provisional_source_extraction
+16,"Vessels, shipping machinery and equipment",01,Vessels,08,Fishing Vessels,V,115,113,1,provisional_source_extraction
+16,"Vessels, shipping machinery and equipment",01,Vessels,09,General Cargo Ship,V,115,113,1,provisional_source_extraction
+16,"Vessels, shipping machinery and equipment",01,Vessels,10,Reefer Ship,V,115,113,1,provisional_source_extraction
+16,"Vessels, shipping machinery and equipment",01,Vessels,11,Tanker Ship,V,115,113,1,provisional_source_extraction
+16,"Vessels, shipping machinery and equipment",01,Vessels,12,Passenger Carrier Ship,V,115,113,1,provisional_source_extraction
+16,"Vessels, shipping machinery and equipment",01,Vessels,13,Yachts,V,115,113,1,provisional_source_extraction
+16,"Vessels, shipping machinery and equipment",01,Vessels,14,Ferry,V,115,113,1,provisional_source_extraction
+16,"Vessels, shipping machinery and equipment",01,Vessels,15,Coastal Patrol Boats,V,115,113,1,provisional_source_extraction
+16,"Vessels, shipping machinery and equipment",01,Vessels,16,"Jetties, Slipways",V,115,113,1,provisional_source_extraction
+16,"Vessels, shipping machinery and equipment",01,Vessels,17,Dredgers,V,115,113,1,provisional_source_extraction
+16,"Vessels, shipping machinery and equipment",01,Vessels,18,Fishing Vessels,V,115,113,1,provisional_source_extraction
+16,"Vessels, shipping machinery and equipment",01,Vessels,19,Speed Boats,V,115,113,1,provisional_source_extraction
+16,"Vessels, shipping machinery and equipment",01,Vessels,20,"Tugs, Vessels & Launches",V,115,113,1,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",01,Crockeries,01,Dinner Plates,O,115,113,2,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",01,Crockeries,02,Soup Bowls,O,115,113,2,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",01,Crockeries,03,Rice Bowls,O,115,113,2,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",01,Crockeries,04,Tea Cups & Saucers,O,115,113,2,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",01,Crockeries,05,Mugs,O,115,113,2,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",01,Crockeries,06,Glasses,O,115,113,2,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",01,Crockeries,07,Jugs & Pitchers,O,115,113,2,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",01,Crockeries,08,Cutlery,O,115,113,2,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",01,Crockeries,09,Tray Sets,O,115,113,2,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",01,Crockeries,10,Napkin Holders,O,115,113,2,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",01,Crockeries,11,Side Plates,O,115,113,2,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",02,Fire & Safety Equipment Gas Line,12,Fire Extinguishers,O,115,113,2,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",02,Fire & Safety Equipment Gas Line,13,Fire Hose Reels,O,115,113,2,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",02,Fire & Safety Equipment Gas Line,14,Fire Dampers,O,115,113,2,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",02,Fire & Safety Equipment Gas Line,15,Fire Water Storage Tanks,O,115,113,2,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",02,Fire & Safety Equipment Gas Line,16,Fire Buckets,O,115,113,2,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",02,Fire & Safety Equipment Gas Line,17,Fire Blankets,O,115,113,2,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",02,Fire & Safety Equipment Gas Line,18,Fire Water Storage Tanks,O,115,113,2,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",02,Fire & Safety Equipment Gas Line,19,Fire Hydrants,O,115,113,2,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",02,Fire & Safety Equipment Gas Line,20,Stethoscopes,O,115,113,2,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",02,Fire & Safety Equipment Gas Line,21,Sphygmomanometers,O,115,113,2,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",02,Fire & Safety Equipment Gas Line,22,Pulse Oximeters,O,115,113,2,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",02,Fire & Safety Equipment Gas Line,23,Glucometers,O,115,113,2,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",02,Fire & Safety Equipment Gas Line,24,Syringe Pumps,O,115,113,2,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",03,Medical Accessories,25,Dressing Sets,O,116,114,1,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",03,Medical Accessories,26,Bandage & Cotton Dispensers,O,116,114,1,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",03,Medical Accessories,27,Autoclave containers,O,116,114,1,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",03,Medical Accessories,28,Centrifuge Tubes and Racks,O,116,114,1,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",03,Medical Accessories,29,First Aid Kits,O,116,114,1,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",03,Medical Accessories,30,Thermal Boxes,O,116,114,1,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",04,Forklifts,31,Diesel Forklift,O,116,114,1,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",04,Forklifts,32,Electric Forklift,O,116,114,1,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",04,Forklifts,33,LPG Forklift,O,116,114,1,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",04,Forklifts,34,Rough Terrain Forklift,O,116,114,1,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",04,Forklifts,35,Pallet Stackers,O,116,114,1,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",04,Forklifts,36,Counterbalance Forklift,O,116,114,1,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",05,Sundry Assets,37,Sundry assets,O,116,114,1,provisional_source_extraction
+17,"Other Tangible Assets (Artwork, Safety Equipment etc.)",06,Other assets,38,Other assets,O,116,114,1,provisional_source_extraction
+18,Intangible Assets,01,SOES AND ABS domain,01,SOES AND ABS domain,I,116,114,2,provisional_source_extraction
+18,Intangible Assets,02,DFS platform hardware,02,DFS platform hardware,I,116,114,2,provisional_source_extraction
+18,Intangible Assets,03,ORACLE database,03,ORACLE database,I,116,114,2,provisional_source_extraction
+18,Intangible Assets,04,Software,04,Operating Software,I,116,114,2,provisional_source_extraction
+18,Intangible Assets,04,Software,05,Application Software,I,116,114,2,provisional_source_extraction
+18,Intangible Assets,04,Software,06,Internet Banking Software,I,116,114,2,provisional_source_extraction
+18,Intangible Assets,04,Software,07,Mobile Banking Software,I,116,114,2,provisional_source_extraction

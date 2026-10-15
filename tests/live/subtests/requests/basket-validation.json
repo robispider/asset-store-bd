@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "requests.basket-validation",
-  "title": "Basket submission rejects empty inputs without creating a request",
+  "title": "The checkout refuses to leave Details with empty answers, and nothing is sent",
   "features": [
     "requests.submit-approve-fulfill",
     "validation"
@@ -92,14 +92,14 @@
       }
     },
     {
-      "action": "fill",
-      "target": "catalog.itemQty",
-      "value": "${data.qty}"
-    },
-    {
       "action": "click",
       "target": "catalog.itemAdd",
       "waitForResponse": "basket/add"
+    },
+    {
+      "action": "fill",
+      "target": "catalog.itemQty",
+      "value": "${data.qty}"
     },
     {
       "action": "waitObserve",
@@ -125,6 +125,10 @@
       "cleanup": "removed"
     },
     {
+      "action": "click",
+      "target": "requests.basketToDetails"
+    },
+    {
       "action": "assert",
       "target": "requests.basketPurpose",
       "test": "invalid"
@@ -136,7 +140,7 @@
     },
     {
       "action": "click",
-      "target": "requests.basketSubmit"
+      "target": "requests.basketContinue"
     },
     {
       "action": "assert",
@@ -155,6 +159,11 @@
       "action": "compare",
       "actual": "${observed.after.total}",
       "equals": "${observed.before.total}"
+    },
+    {
+      "action": "assert",
+      "target": "requests.basketSubmit",
+      "test": "hidden"
     }
   ],
   "cleanup": {

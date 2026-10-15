@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Issue register</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/aef52f8d7c3fef253b593dd05928ec1c">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Source+Serif+4:wght@400;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.app{min-height:100%;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:var(--gs-font-sans);font-size:14px;line-height:1.5}
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 20px;background:var(--gs-header-bg);color:var(--gs-header-fg);border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.chip{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 12px;border-radius:var(--gs-radius-sm);border:var(--gs-border-width) solid var(--gs-color-border);background:transparent;color:inherit;font:inherit;text-decoration:none}
+.shell{display:flex;flex-wrap:wrap;align-items:stretch}
+.side{flex:1 1 220px;max-width:240px;background:var(--gs-sidebar-bg);color:var(--gs-sidebar-fg);padding:12px 0;box-sizing:border-box}
+.side a{display:flex;align-items:center;justify-content:space-between;min-height:42px;padding:0 18px;color:var(--gs-sidebar-fg);text-decoration:none}
+.side a[aria-current]{background:var(--gs-sidebar-active-bg);color:var(--gs-sidebar-active-fg);box-shadow:inset 3px 0 0 var(--gs-sidebar-active-marker)}
+.side .sub{padding-left:34px}
+.main{flex:999 1 560px;min-width:0;box-sizing:border-box;padding:20px 28px 56px;display:flex;flex-direction:column;gap:18px}
+.crumb{font-size:13px;color:var(--gs-color-text-muted)}
+.ico{width:1em;height:1em;flex:none}
+.muted{color:var(--gs-color-text-muted)}
+.mono{font-family:var(--gs-font-mono)}
+.small{font-size:13px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.ctl{box-sizing:border-box;min-height:44px;padding:8px 12px;border:var(--gs-border-width) solid var(--gs-color-border-strong);border-radius:var(--gs-radius-sm);background:var(--gs-color-surface);color:var(--gs-color-text);font:inherit}
+.num{font-variant-numeric:tabular-nums;text-align:right}
+.divider{height:0;border-top:var(--gs-border-width) dashed var(--gs-color-border-strong);margin:8px 0}
+.cols{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
+.colmain{flex:999 1 600px;min-width:0;display:flex;flex-direction:column;gap:18px}
+.colside{flex:1 1 300px;max-width:380px;display:flex;flex-direction:column;gap:18px}
+.label{margin:0;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gs-color-text-muted)}
+</style>
+</helmet>
+<div class="app" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-table="{{ v.table }}" data-gs-controls="{{ v.controls }}" data-gs-type="{{ v.type }}" data-gs-header="{{ v.header }}">
+<div class="top">
+<strong style="font-size: 16px; flex: 1 1 auto">National Asset Register</strong>
+<span class="chip"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg><span><span class="muted">Working in</span> Upazila Health Complex, Savar</span></span>
+<span class="gs-avatar gs-avatar--sm gs-tone-primary" role="img" aria-label="Signed in as Rafiq Ahmed">RA</span>
+</div>
+<div class="shell">
+<nav class="side" aria-label="Main"><a href="#">Dashboard</a><a href="#">Requests</a><a class="sub" href="ToIssue.dc.html">To issue <span class="gs-tabs__count">6</span></a><a class="sub" href="#" aria-current="page">Issue register</a><a href="#">Store</a></nav>
+<main class="main">
+<nav class="crumb" aria-label="Breadcrumb"><a href="#">Home</a> / Requests / Issue register</nav>
+
+<header class="gs-page-header">
+<div class="gs-page-header__text"><h1 class="gs-page-header__title">Issue register</h1><p class="gs-page-header__subtitle">Every request this store has issued or closed, with its goods issue documents.</p></div>
+<div class="gs-page-header__actions"><button type="button" class="gs-btn gs-btn--light gs-btn--outline">Download CSV</button></div>
+</header>
+
+<div class="gs-filter-bar" role="search" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end">
+<label style="display: flex; flex-direction: column; gap: 4px; flex: 2 1 260px"><span class="small muted">Search</span><input class="ctl" type="search" placeholder="Request, person, item or GI number"></label>
+<label style="display: flex; flex-direction: column; gap: 4px; flex: 1 1 160px"><span class="small muted">Issued from</span><input class="ctl" type="date" value="2026-10-01"></label>
+<label style="display: flex; flex-direction: column; gap: 4px; flex: 1 1 160px"><span class="small muted">to</span><input class="ctl" type="date" value="2026-10-15"></label>
+<label style="display: flex; flex-direction: column; gap: 4px; flex: 1 1 200px"><span class="small muted">Show</span><select class="ctl"><option>All</option><option>Issued in full</option><option>Closed with items not given</option><option>With a return</option></select></label>
+</div>
+
+<section class="gs-box">
+<div class="gs-box__body" style="padding: 0"><div class="gs-table-wrap"><table class="gs-table">
+<caption>Showing 4 of 61 · 1 Oct to 15 Oct 2026 · <a href="#">next page</a></caption>
+<thead><tr><th scope="col">Request</th><th scope="col">For</th><th scope="col">Items issued</th><th scope="col">Documents</th><th scope="col">Status</th><th scope="col">Last issued</th></tr></thead>
+<tbody>
+<tr><td><a class="mono" href="#rec">SR-2026-000301</a></td><td>Nasrin Akter</td><td>HP 85A toner ×1, A4 paper ×2</td><td><a class="mono" href="#">GI-2026-000043</a></td><td><span class="gs-badge" data-tone="status-ready"><span class="gs-badge__label">Issued · confirm receipt</span></span></td><td>15 Oct, 11:05</td></tr>
+<tr><td><a class="mono" href="#rec">SR-2026-000286</a></td><td>Nasrin Akter</td><td>Ballpoint pens ×3, stapler ×1</td><td><a class="mono" href="#">GI-2026-000031</a></td><td><span class="gs-badge" data-tone="success"><span class="gs-badge__label">Received</span></span></td><td>12 Oct, 14:10</td></tr>
+<tr><td><a class="mono" href="#rec">SR-2026-000283</a></td><td>Jahid Hasan</td><td>Whiteboard markers 3 of 6</td><td><a class="mono" href="#">GI-2026-000027</a></td><td><span class="gs-badge" data-tone="info"><span class="gs-badge__label">Partly issued</span></span></td><td>9 Oct, 10:30</td></tr>
+<tr><td><a class="mono" href="#rec">SR-2026-000287</a></td><td>Ripon Tripura</td><td>USB optical mouse ×2, A4 paper ×3</td><td><a class="mono" href="#">GI-2026-000011</a>, <a class="mono" href="#">GI-2026-000012</a></td><td><span class="gs-badge" data-tone="warning"><span class="gs-badge__label">Return requested</span></span></td><td>4 Oct, 14:29</td></tr>
+</tbody></table></div></div>
+</section>
+
+<div class="divider" role="presentation"></div>
+<p class="label" id="rec">Opening a record</p>
+
+<header class="gs-page-header">
+<div class="gs-page-header__text"><h2 class="gs-page-header__title"><span class="mono">SR-2026-000287</span> · issue record</h2><div class="gs-page-header__meta" style="display: flex; gap: 6px 18px; flex-wrap: wrap; align-items: center; color: var(--gs-color-text-muted)"><span class="gs-badge" data-tone="warning"><span class="gs-badge__label">Return requested</span></span><span>For Ripon Tripura</span><span>Issued 4 Oct 2026, 14:29</span></div></div>
+<div class="gs-page-header__actions"><button type="button" class="gs-btn gs-btn--light gs-btn--outline">Print</button></div>
+</header>
+
+<div class="cols">
+<div class="colmain">
+<div class="gs-alert gs-alert--warning" role="status"><div class="gs-alert__body"><strong>Ripon Tripura wants to return the supplies on this request</strong>: “Project cancelled; items unused.” Check the items when they arrive, then prepare a receipt. Stock changes only when you post it in the store documents. <div class="row" style="margin-top: 10px"><button type="button" class="gs-btn gs-btn--primary gs-btn--sm">Prepare return receipt</button></div></div></div>
+
+<section class="gs-box" aria-labelledby="docs">
+<header class="gs-box__header"><h3 class="gs-box__title" id="docs">Goods issue documents</h3></header>
+<div class="gs-box__body" style="padding: 0"><div class="gs-table-wrap"><table class="gs-table">
+<caption class="gs-sr-only">Lines of each goods issue document</caption>
+<thead><tr><th scope="col">Document</th><th scope="col">Item</th><th scope="col" class="num">Quantity</th><th scope="col">Issued by</th></tr></thead>
+<tbody>
+<tr><td><a class="mono" href="#">GI-2026-000011</a></td><td>USB optical mouse <span class="muted small">· Accessory</span></td><td class="num">2</td><td>Md. Ashraful Islam · 4 Oct 2026, 14:29</td></tr>
+<tr><td><a class="mono" href="#">GI-2026-000012</a></td><td>A4 paper, 80 gsm <span class="muted small">· Supply</span></td><td class="num">3</td><td>Md. Ashraful Islam · 4 Oct 2026, 14:29</td></tr>
+</tbody></table></div></div>
+</section>
+</div>
+
+<aside class="colside">
+<section class="gs-box" aria-labelledby="hi">
+<header class="gs-box__header"><h3 class="gs-box__title" id="hi">History</h3></header>
+<div class="gs-box__body"><ol class="gs-timeline">
+<li class="gs-timeline__item"><div><strong>Ripon Tripura</strong> asked to return the supplies</div><time class="gs-timeline__meta">4 Oct 2026, 14:29</time></li>
+<li class="gs-timeline__item"><div><strong>Ripon Tripura</strong> confirmed receipt</div><time class="gs-timeline__meta">4 Oct 2026, 14:29</time></li>
+<li class="gs-timeline__item"><div><strong>Md. Ashraful Islam</strong> issued 2 mice and 3 reams of paper</div><time class="gs-timeline__meta">4 Oct 2026, 14:29</time></li>
+<li class="gs-timeline__item"><div><strong>Kamal Hossain</strong> approved it as asked</div><time class="gs-timeline__meta">4 Oct 2026, 14:29</time></li>
+<li class="gs-timeline__item"><div><strong>Ripon Tripura</strong> sent the request</div><time class="gs-timeline__meta">4 Oct 2026, 14:28</time></li>
+</ol>
+<p class="small muted" style="margin: 8px 0 0">All times Bangladesh Standard Time (UTC+6).</p></div>
+</section>
+</aside>
+</div>
+
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"$preview":{"width":1440,"height":1400}}'>
+class Component extends DCLogic {
+renderVals() {
+const V = {
+'civic-ledger': { header: 'neutral', density: 'regular', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { header: 'brand', density: 'regular', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { header: 'dark', density: 'compact', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { header: 'dark', density: 'comfortable', table: 'ledger', surfaces: 'flat', controls: 'outlined', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { header: 'brand', density: 'compact', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { header: 'floating', density: 'regular', table: 'rules', surfaces: 'elevated', controls: 'filled', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+return { skin, mode, v: V[skin] };
+}
+}
+</script>
+</body>
+</html>

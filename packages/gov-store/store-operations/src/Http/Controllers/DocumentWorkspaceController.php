@@ -3,9 +3,11 @@
 namespace GovStore\StoreOperations\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use GovStore\StoreOperations\Http\Controllers\Concerns\ResolvesStoreContext;
 use GovStore\StoreOperations\Models\Document;
 use GovStore\StoreOperations\Policies\DocumentPolicy;
 use GovStore\StoreOperations\Services\CapabilityRegistry;
+use GovStore\StoreOperations\Services\DocumentHub;
 use GovStore\StoreOperations\Services\DocumentValidationService;
 use GovStore\StoreOperations\Services\GoodsReceiptService;
 use GovStore\StoreOperations\Services\PostingPipelineManager;
@@ -23,6 +25,8 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class DocumentWorkspaceController extends Controller
 {
+    use ResolvesStoreContext;
+
     public function __construct(
         protected ProductResolver $productResolver,
         protected GoodsReceiptService $receiptService,
@@ -89,19 +93,25 @@ class DocumentWorkspaceController extends Controller
         }
     }
 
-    public function hub(Request $request)
+    public function hub(Request $request, DocumentHub $hub)
     {
-        $filter = $request->validate(['filter' => 'nullable|in:all,drafts,posted'])['filter'] ?? 'all';
-        $documents = Document::with(['creator', 'references'])->when($filter === 'drafts', fn ($query) => $query
-            ->where('status', 'DRAFT')->where('managed_by', auth()->id()))
-            ->when($filter === 'posted', fn ($query) => $query->where('status', 'POSTED'))
-            ->orderByDesc('created_at')->paginate(20)->withQueryString();
-        $notices = DB::table('gov_document_notices as notice')->join('gov_documents as document', 'document.id', '=', 'notice.document_id')
-            ->where('notice.user_id', auth()->id())->where('document.location_id', app(TenantContext::class)->locationId)
-            ->where('document.company_id', app(TenantContext::class)->companyId)
-            ->orderByDesc('notice.id')->limit(20)->get(['document.document_number', 'notice.event_key']);
+        $filters = $hub->filters($request);
+        $office = $this->office();
+        $abilities = $this->abilities();
+        $userId = (int) auth()->id();
+        $opened = $office['id'] && DB::table('gov_store_ledger_openings')->where('location_id', $office['id'])->exists();
+        $counts = $office['id'] ? $hub->counts($office['id'], $userId) : array_fill_keys([...DocumentHub::FILTERS, 'posted_month'], 0);
+        $documents = $office['id'] ? $hub->documents($office['id'], $userId, $filters)->through(fn ($document) => $hub->row($document, $userId)) : null;
+        $notices = $office['id'] ? $hub->notices($office['id'], app(TenantContext::class)->companyId, $userId) : collect();
 
-        return view('storeops::operations.hub', compact('documents', 'filter', 'notices'));
+        $panel = null;
+        if ($filters['doc']) {
+            $document = Document::whereKey($filters['doc'])->firstOrFail();
+            $this->policy->check($document, $document->type);
+            $panel = $hub->panel($document, $userId);
+        }
+
+        return view('storeops::operations.hub', compact('filters', 'office', 'abilities', 'opened', 'counts', 'documents', 'notices', 'panel'));
     }
 
     public function initialize(Request $request)
