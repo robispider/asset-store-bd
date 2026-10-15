@@ -16,7 +16,7 @@
 |   context – navbar, left, after the logo (the working-office chip)
 |   actions – navbar "＋ New" menu, in place of Snipe-IT's "Create New" (gov verbs:
 |             receive, issue, request). Items with 'form' => [...] submit a POST.
-|   topbar – navbar, before the user menu (inbox, basket)
+|   topbar – navbar, before the user menu (inbox, basket, language toggle)
 |   content, scripts, body-end – page slots for package hooks (no menu markup)
 |
 | Order guide: frequency and audience — my work, my queues, operations, then admin.
@@ -55,6 +55,16 @@ return [
         'hide_core_shortcuts' => env('GOVSTORE_NAV_HIDE_CORE_SHORTCUTS', true),
         // Floating navbar (sticky on desktop, hide-on-scroll on phones).
         'sticky' => env('GOVSTORE_NAV_STICKY_HEADER', true),
+    ],
+
+    /*
+    | Navbar language toggle: locale => its own short name, in the order shown. Each locale
+    | needs a resources/lang folder. Leave a single entry (or none) to hide the toggle; the
+    | profile page's language field still offers every language.
+    */
+    'languages' => [
+        'en-US' => 'EN',
+        'bn-BD' => 'বাং',
     ],
 
     'user_menu' => [

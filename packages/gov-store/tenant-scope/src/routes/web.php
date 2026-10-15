@@ -1,7 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use GovStore\TenantScope\Http\Controllers\LocaleController;
 use GovStore\TenantScope\Http\Controllers\TenantScopeController;
+
+// Navbar language toggle: every signed-in user, no gov ability needed.
+Route::post('/gov-store/locale', [LocaleController::class, 'switch'])->middleware(['web', 'auth'])->name('gov.locale.switch');
 
 Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'gov-store/admin/scope'], function () {
     

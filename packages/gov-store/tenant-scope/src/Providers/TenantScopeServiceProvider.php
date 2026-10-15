@@ -191,6 +191,9 @@ class TenantScopeServiceProvider extends ServiceProvider
         // sidebar is collapsed (the default).
         $registry->register(['id' => 'gov-nav-inbox', 'zone' => 'topbar', 'order' => 10, 'view' => 'govscope::nav.inbox']);
 
+        // Navbar language toggle (EN | বাং), last before the user menu.
+        $registry->register(['id' => 'gov-nav-language', 'zone' => 'topbar', 'order' => 900, 'view' => 'govscope::nav.language']);
+
         // Page slots.
         $registry->register(['id' => 'gov-access-rollout', 'zone' => 'content', 'view' => 'govscope::hooks.rollout']);
         $registry->register(['id' => 'gov-access-inline-denials', 'zone' => 'scripts', 'view' => 'govscope::hooks.unified-menu']);

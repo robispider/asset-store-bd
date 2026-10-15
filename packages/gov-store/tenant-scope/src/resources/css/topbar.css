@@ -167,3 +167,57 @@ html[data-gs-sticky-header] .main-header .navbar-nav > li > .dropdown-menu {
         background-color: var(--gs-color-surface) !important;
     }
 }
+
+/* Language toggle (EN | বাং): a two-segment pill in the navbar's own colours. */
+.gs-nav-lang .gs-nav-lang-form {
+    display: flex !important;
+    align-items: center !important;
+    margin: 12px 8px !important;
+    padding: 0 !important;
+    border: var(--gs-border-width, 1px) solid currentColor !important;
+    border-radius: 999px !important;
+    overflow: hidden !important;
+    color: var(--gs-shell-header-fg, var(--gs-header-fg)) !important;
+}
+
+.gs-nav-lang .gs-nav-lang-option {
+    margin: 0 !important;
+    padding: 2px 10px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: inherit !important;
+    font-size: var(--gs-font-size-sm, 13px) !important;
+    font-weight: 600 !important;
+    line-height: 20px !important;
+    cursor: pointer;
+}
+
+.gs-nav-lang .gs-nav-lang-option + .gs-nav-lang-option {
+    border-left: var(--gs-border-width, 1px) solid currentColor !important;
+}
+
+.gs-nav-lang .gs-nav-lang-option:hover {
+    background-color: var(--gs-shell-header-hover) !important;
+}
+
+.gs-nav-lang .gs-nav-lang-option[aria-pressed="true"] {
+    background-color: var(--gs-shell-header-fg, var(--gs-header-fg)) !important;
+    color: var(--gs-shell-header-bg, var(--gs-header-bg)) !important;
+    cursor: default;
+}
+
+.gs-nav-lang .gs-nav-lang-option:focus-visible {
+    outline: 2px solid var(--gs-color-focus-ring, currentColor) !important;
+    outline-offset: -3px !important;
+}
+
+@media (max-width: 767px) {
+    .gs-nav-lang .gs-nav-lang-form {
+        margin: 12px 4px !important;
+    }
+
+    .gs-nav-lang .gs-nav-lang-option {
+        padding: 2px 7px !important;
+    }
+}

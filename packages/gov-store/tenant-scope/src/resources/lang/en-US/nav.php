@@ -34,4 +34,5 @@ return [
     'new' => 'New',
     'inbox_label' => 'Waiting for me: :count',
     'inbox_empty' => 'Nothing is waiting for you',
+    'language' => 'Language',
 ];
