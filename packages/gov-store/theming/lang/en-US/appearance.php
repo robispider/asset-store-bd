@@ -120,6 +120,18 @@ return [
         'membership_suspended' => 'Paused',
         'membership_inactive' => 'Ended',
         'membership_cancelled' => 'Request cancelled',
+        'request_pending_primary' => 'Waiting for approval',
+        'request_pending_final' => 'Waiting for final approval',
+        'request_approved' => 'Approved · with the store',
+        'request_partly_issued' => 'Partly issued',
+        'request_issued' => 'Issued · confirm receipt',
+        'request_received' => 'Received',
+        'request_closed_short' => 'Closed · not all items given',
+        'request_rejected' => 'Not approved',
+        'request_withdrawn' => 'Withdrawn',
+        'request_return_requested' => 'Return requested',
+        'request_return_drafted' => 'Return being received',
+        'request_needs_review' => 'Needs office review',
     ],
 
     'kit' => [

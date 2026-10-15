@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "requests.catalog-progress-observation",
-  "title": "An employee sees request progress counts that match persisted requests",
+  "title": "Request items shows the search, the count, the draft panel and the Cards / List switch, without changing anything",
   "features": [
     "requests.catalog"
   ],
@@ -43,6 +43,15 @@
       "as": "before"
     },
     {
+      "action": "observe",
+      "check": "request.list",
+      "args": {
+        "userId": "${actors.employee.id}",
+        "officeId": "${fixtures.office.id}"
+      },
+      "as": "list"
+    },
+    {
       "use": "auth.login",
       "with": {
         "actor": "employee"
@@ -54,21 +63,8 @@
     },
     {
       "action": "assert",
-      "target": "catalog.pending",
-      "test": "number",
-      "equals": "${observed.before.pending}"
-    },
-    {
-      "action": "assert",
-      "target": "catalog.approved",
-      "test": "number",
-      "equals": "${observed.before.approved}"
-    },
-    {
-      "action": "assert",
-      "target": "catalog.rejected",
-      "test": "number",
-      "equals": "${observed.before.rejected}"
+      "target": "catalog.productCount",
+      "test": "visible"
     },
     {
       "action": "assert",
@@ -76,13 +72,21 @@
       "test": "visible"
     },
     {
-      "action": "reload"
+      "action": "assert",
+      "target": "catalog.draftPanel",
+      "test": "visible"
+    },
+    {
+      "action": "click",
+      "target": "catalog.viewList"
     },
     {
       "action": "assert",
-      "target": "catalog.pending",
-      "test": "number",
-      "equals": "${observed.before.pending}"
+      "target": "catalog.goodsList",
+      "test": "visible"
+    },
+    {
+      "action": "reload"
     },
     {
       "action": "observe",

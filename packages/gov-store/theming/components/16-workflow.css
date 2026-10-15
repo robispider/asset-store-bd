@@ -71,7 +71,12 @@
     .gs-choice:hover { border-color: var(--gs-color-primary); }
     .gs-choice:has(.gs-choice__input:checked) { border-color: var(--gs-color-primary); background: var(--gs-color-primary-subtle); box-shadow: inset 0 0 0 1px var(--gs-color-primary); }
     .gs-choice:has(.gs-choice__input:focus-visible) { outline: 3px solid var(--gs-color-focus-ring); outline-offset: 2px; }
-    .gs-choice__input { margin: .2em 0 0 !important; accent-color: var(--gs-color-primary); width: 1.1em; height: 1.1em; flex: 0 0 auto; }
+    /* Snipe-IT's unlayered label and input[type=radio] rules (block label, 25 px drawn radio) would otherwise win. */
+    .gs-choice { display: flex !important; margin: 0 !important; font-weight: 400 !important; }
+    .gs-choice__input {
+        -webkit-appearance: auto !important; appearance: auto !important; display: inline-block !important; position: static !important; opacity: 1 !important;
+        margin: .2em 0 0 !important; accent-color: var(--gs-color-primary); width: 1.1em !important; height: 1.1em !important; flex: 0 0 auto;
+    }
     .gs-choice__icon { color: var(--gs-color-primary); margin-top: .15em; }
     .gs-choice__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
     .gs-choice__label { font-weight: 600; }

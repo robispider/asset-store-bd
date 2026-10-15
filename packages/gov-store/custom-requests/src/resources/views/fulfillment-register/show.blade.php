@@ -1,114 +1,107 @@
 @extends('layouts/default')
 
-@section('title', __('requestlabels::requests.fulfillment_register_show_title_prefix') . $serviceRequest->request_number)
+@section('title', __('requestlabels::requests.record_title', ['number' => $serviceRequest->request_number]))
+
+{{--
+    Issue record (board 11): the storekeeper's return task in their words, the goods issue lines with item
+    names (not class names), document links and a dated history with full names.
+    Expects the data from FulfillmentRegisterController::show.
+--}}
+@php
+    $r = 'requestlabels::requests.';
+    $req = $serviceRequest;
+    $requesterName = $presenter->name($req->requested_by);
+    $return = $req->events->where('event_type', 'return_requested')->sortByDesc('id')->first();
+    $lastIssued = $presenter->lastEventAt($req, ['item_issued', 'issued']) ?? $req->closed_at;
+@endphp
 
 @section('content')
-<div class="cr-theme">
-@if($serviceRequest->return_requested_at)
-    <div class="alert alert-info">
-        <p>{{ __('requestlabels::requests.return_help') }}</p>
-        @if($serviceRequest->return_document_id)
-            <a href="{{ route('storeops.documents.workspace', ['type'=>'receipt', 'id'=>$serviceRequest->return_document_id]) }}">{{ __('requestlabels::requests.open_return_receipt') }}</a>
-        @else
-            <form action="{{ route('gov.requests.fulfillment_register.return', $serviceRequest->id) }}" method="POST">
-                @csrf
-                <button class="btn btn-primary">{{ __('requestlabels::requests.draft_return_receipt') }}</button>
-            </form>
-        @endif
-    </div>
-@endif
-<div class="row">
-    <div class="col-md-8">
-        <div class="box box-primary">
-            <div class="box-header with-border">
-                <h3 class="box-title">{{ __('requestlabels::requests.fulfillment_register_show_header_summary') }}</h3>
+<div class="cr" data-cr-record data-request-number="{{ $req->request_number }}" data-status-key="{{ $req->statusKey() }}">
+    <x-gs::page-header :title="__($r.'record_title', ['number' => $req->request_number])">
+        <x-slot:meta>
+            <div class="cr-toolbar">
+                <x-gs::status-badge :status="$req->statusKey()" />
+                <span class="cr-meta">{{ __($r.'for_person', ['name' => $requesterName]) }}@if ($lastIssued) · {{ __($r.'record_issued', ['date' => $presenter->dateTime($lastIssued)]) }}@endif</span>
             </div>
-            <div class="box-body">
-                <table class="gs-table table table-striped">
-                    <tr>
-                        <th style="width: 200px;">{{ __('requestlabels::requests.request_number') }}</th>
-                        <td><strong class="request-number">{{ $serviceRequest->request_number }}</strong></td>
-                    </tr>
-                    <tr>
-                        <th>{{ __('requestlabels::requests.requester') }}</th>
-                        <td>{{ $serviceRequest->requester->present()->fullName ?? __('requestlabels::requests.not_available') }}</td>
-                    </tr>
-                    <tr>
-                        <th>{{ __('requestlabels::requests.purpose') }}</th>
-                        <td>{{ $serviceRequest->purpose }}</td>
-                    </tr>
-                    <tr>
-                        <th>{{ __('requestlabels::requests.completion_date') }}</th>
-                        <td>{{ $serviceRequest->closed_at ? $serviceRequest->closed_at->format('d M Y, h:i A') : __('requestlabels::requests.not_available') }}</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
+        </x-slot:meta>
+        <x-slot:actions>
+            <x-gs::button tone="light" outline icon="fa-print" data-cr-print>{{ __($r.'print') }}</x-gs::button>
+        </x-slot:actions>
+    </x-gs::page-header>
 
-        <div class="box box-success">
-            <div class="box-header with-border">
-                <h3 class="box-title">{{ __('requestlabels::requests.fulfillment_register_show_header_documents') }}</h3>
-            </div>
-            <div class="box-body">
-                @forelse($goodsIssues as $issue)
-                    <div class="panel panel-default">
-                        <div class="panel-heading register-panel-heading">
-                            <strong>{{ __('requestlabels::requests.fulfillment_register_show_doc_label') }}</strong> <span class="text-green">{{ $issue->issue_no }}</span>
-                            <span class="pull-right text-muted">{{ __('requestlabels::requests.executed_by') }}: {{ $issue->creator->first_name ?? __('requestlabels::requests.system') }} — {{ $issue->created_at->format('d M Y') }}</span>
-                        </div>
-                        <table class="gs-table table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>{{ __('requestlabels::requests.item_type') }}</th>
-                                    <th>{{ __('requestlabels::requests.quantity') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($issue->items as $issueItem)
+    @include('govstore::partials.errors')
+
+    @if ($req->return_requested_at)
+        <x-gs::alert tone="warning">
+            @if ($req->return_document_id)
+                <p class="cr-flush">{{ __($r.'return_task_drafted', ['number' => $req->returnDocument?->document_number ?? '']) }}</p>
+                <x-gs::button :href="route('storeops.documents.workspace', ['type' => 'receipt', 'id' => $req->return_document_id])" size="sm" icon="fa-file-import">{{ __($r.'open_return_receipt') }}</x-gs::button>
+            @else
+                <p class="cr-flush">{{ __($r.'return_task', ['name' => $requesterName, 'reason' => $return->details['reason'] ?? '']) }}</p>
+                @if ($canDraftReturn)
+                    <form method="POST" action="{{ route('gov.requests.fulfillment_register.return', $req->id) }}" class="cr-inline-form">
+                        @csrf
+                        <x-gs::button type="submit" size="sm" icon="fa-file-import">{{ __($r.'prepare_return') }}</x-gs::button>
+                    </form>
+                @endif
+            @endif
+        </x-gs::alert>
+    @endif
+
+    <div class="cr-layout">
+        <div class="cr-layout__main cr-stack">
+            <x-gs::box :title="__($r.'lines_title')" icon="fas fa-list">
+                <x-gs::table :caption="__($r.'lines_caption')" class="cr-cards-sm">
+                    <thead><tr><th scope="col">{{ __($r.'col_item') }}</th><th scope="col" class="gs-num">{{ __($r.'col_asked') }}</th><th scope="col" class="gs-num">{{ __($r.'col_approved') }}</th><th scope="col" class="gs-num">{{ __($r.'col_issued') }}</th><th scope="col">{{ __($r.'col_status') }}</th></tr></thead>
+                    <tbody>
+                        @foreach ($req->items as $line)
+                            <tr data-line-id="{{ $line->id }}">
+                                <td data-label="{{ __($r.'col_item') }}"><strong>{{ $presenter->lineName($line) }}</strong> <span class="cr-meta">{{ $presenter->typeLabel($line->fulfilled_type ?: $line->requested_type) }}</span></td>
+                                <td class="gs-num" data-label="{{ __($r.'col_asked') }}">{{ $line->requested_qty }}</td>
+                                <td class="gs-num" data-label="{{ __($r.'col_approved') }}">{{ $line->approved_qty }}</td>
+                                <td class="gs-num" data-label="{{ __($r.'col_issued') }}">{{ $line->issued_qty }}</td>
+                                <td data-label="{{ __($r.'col_status') }}"><x-gs::badge :tone="$presenter->lineTone($line)" outline>{{ $presenter->lineLabel($line, $req) }}</x-gs::badge></td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </x-gs::table>
+            </x-gs::box>
+
+            <x-gs::box :title="__($r.'documents_title')" icon="fas fa-file-invoice">
+                @if ($goodsIssues->isEmpty())
+                    <p class="cr-muted cr-flush">{{ __($r.'documents_none') }}</p>
+                @else
+                    <x-gs::table :caption="__($r.'documents_caption')" class="cr-cards-sm">
+                        <thead><tr><th scope="col">{{ __($r.'col_document') }}</th><th scope="col">{{ __($r.'col_item') }}</th><th scope="col" class="gs-num">{{ __($r.'col_quantity') }}</th><th scope="col">{{ __($r.'col_issued_by') }}</th></tr></thead>
+                        <tbody>
+                            @foreach ($goodsIssues as $issue)
+                                @foreach ($issue->items as $issueItem)
+                                    @php $key = \GovStore\CustomRequests\Http\Controllers\FulfillmentRegisterController::morphKey($issueItem->stockable_type); @endphp
                                     <tr>
-                                        <td>{{ class_basename($issueItem->stockable_type) }}</td>
-                                        <td>{{ $issueItem->quantity }}</td>
+                                        <td data-label="{{ __($r.'col_document') }}">
+                                            @if (isset($documentLinks[$issue->issue_no]))<a href="{{ $documentLinks[$issue->issue_no] }}" class="cr-mono">{{ $issue->issue_no }}</a>@else<span class="cr-mono">{{ \Illuminate\Support\Str::limit($issue->issue_no, 18) }}</span>@endif
+                                        </td>
+                                        <td data-label="{{ __($r.'col_item') }}">{{ $presenter->itemName($key, (int) $issueItem->stockable_id) }} <span class="cr-meta">{{ $presenter->typeLabel($key) }}</span></td>
+                                        <td class="gs-num" data-label="{{ __($r.'col_quantity') }}">{{ $issueItem->quantity }}</td>
+                                        <td data-label="{{ __($r.'col_issued_by') }}">{{ $presenter->name($issue->created_by) }} <span class="cr-meta">{{ $presenter->dateTime($issue->created_at) }}</span></td>
                                     </tr>
                                 @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @empty
-                    <p class="text-muted text-center" style="padding: 10px;">{{ __('requestlabels::requests.fulfillment_register_show_empty_ledger') }}</p>
-                @endforelse
-            </div>
+                            @endforeach
+                        </tbody>
+                    </x-gs::table>
+                @endif
+            </x-gs::box>
         </div>
-    </div>
 
-    <div class="col-md-4">
-        <div class="box box-default">
-            <div class="box-header with-border">
-                <h3 class="box-title">{{ __('requestlabels::requests.fulfillment_register_show_header_audit') }}</h3>
-            </div>
-            <div class="box-body">
-                <ul class="timeline request-timeline">
-                    @foreach($serviceRequest->events as $event)
-                        <li>
-                            <i class="fa fa-info bg-gray"></i>
-                            <div class="timeline-item">
-                                <span class="time"><i class="fa fa-clock"></i> {{ $event->created_at->format('H:i') }}</span>
-                                <h3 class="timeline-header" style="font-size: 13px; font-weight: bold;">
-                                    {{ __('requestlabels::requests.event_'.$event->event_type) }}
-                                </h3>
-                                <div class="timeline-body" style="padding: 5px 10px; font-size: 12px;">
-                                    <strong>{{ __('requestlabels::requests.executed_by') }}: {{ $event->user->first_name }}</strong><br>
-                                    @if(isset($event->details['message']))
-                                        {{ $event->details['message'] }}
-                                    @endif
-                                </div>
-                            </div>
-                        </li>
-                    @endforeach
-                    <li><i class="fa fa-clock bg-gray"></i></li>
-                </ul>
-            </div>
-        </div>
+        <aside class="cr-layout__aside cr-stack">
+            <x-gs::box :title="__($r.'request_box')" icon="fas fa-file-lines">
+                <dl class="cr-facts">
+                    <div><dt>{{ __($r.'about_for') }}</dt><dd>{{ $req->purpose }}</dd></div>
+                    <div><dt>{{ __($r.'about_where') }}</dt><dd>{{ $req->deliveryLocation?->name ?? __($r.'collect_from_store') }}</dd></div>
+                </dl>
+            </x-gs::box>
+            @include('govstore::partials.history')
+        </aside>
     </div>
-</div>
 </div>
 @endsection

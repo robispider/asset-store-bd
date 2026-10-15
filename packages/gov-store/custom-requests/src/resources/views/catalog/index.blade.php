@@ -2,173 +2,96 @@
 
 @section('title', __('requestlabels::requests.catalog_title'))
 
+{{--
+    Request items: search first, kind tabs with counts, quick-add shortcuts, then the items as cards or a
+    list. The draft panel beside it is always current and says how the draft will be sent; on phones it
+    becomes a bar at the bottom. Nothing is sent from this page. Expects GovRequestController::catalog.
+--}}
+@php
+    $r = 'requestlabels::requests.';
+    $type = $filters['type'] ?? '';
+@endphp
+
 @section('content')
-<div class="cr-theme">
+<div class="cr cr-shop" data-cr-catalog>
+    <x-gs::page-header :title="__($r.'catalog_title')" :subtitle="__($r.'catalog_subtitle_v2')" />
+    <p class="cr-context">
+        <i class="fas fa-building" aria-hidden="true"></i>
+        <span>{!! __($r.'catalog_context', ['office' => '<strong>'.e($office).'</strong>', 'name' => e($presenter->name((int) auth()->id()))]) !!}</span>
+    </p>
 
-{{-- Clean Employee Portal Styling --}}
+    @include('govstore::partials.errors')
 
-
-<!-- CLEAN HERO SECTION -->
-<div class="row">
-    <div class="col-md-12">
-        <div class="search-section">
-            <p>{{ __('requestlabels::requests.catalog_hero_question') }}</p>
-            <div class="hero-search-wrapper">
-                <input type="text" id="catalogSearch" value="{{ request('q') }}" placeholder="{{ __('requestlabels::requests.catalog_search_placeholder') }}">
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- SIDE-BY-SIDE: QUICK REQUESTS (LEFT) & COMPACT PIPELINE (RIGHT) -->
-<div class="row">
-    <!-- Quick Requests Panel -->
-    <div class="col-md-7">
-        <div class="dashboard-panel">
-            <strong>{{ __('requestlabels::requests.catalog_quick_requests_label') }}</strong>
-            <div class="quick-requests-container">
-                <button class="quick-request-btn" data-search="laptop">💻 {{ __('requestlabels::requests.quick_laptop') }}</button>
-                <button class="quick-request-btn" data-search="mouse">🖱 {{ __('requestlabels::requests.quick_mouse') }}</button>
-                <button class="quick-request-btn" data-search="keyboard">⌨ {{ __('requestlabels::requests.quick_keyboard') }}</button>
-                <button class="quick-request-btn" data-search="toner">🖨 {{ __('requestlabels::requests.quick_toner') }}</button>
-                <button class="quick-request-btn" data-search="paper">📄 {{ __('requestlabels::requests.quick_paper') }}</button>
-                <button class="quick-request-btn" data-search="chair">🪑 {{ __('requestlabels::requests.quick_chair') }}</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tidy Tracking Pipeline Panel -->
-    <div class="col-md-5">
-        <div class="dashboard-panel">
-            <strong>{{ __('requestlabels::requests.pipeline') }}</strong>
-            <div class="compact-pipeline-wrapper">
-                
-                <!-- Pending -->
-                <a href="{{ route('gov.requests.user.index') }}" style="text-decoration: none; flex: 1;">
-                    <div class="compact-pipeline-card">
-                        <span class="badge bg-yellow-active">{{ $pendingCount }}</span>
-                        <span class="status-label">{{ __('requestlabels::requests.catalog_pipeline_pending_label') }}</span>
-                    </div>
-                </a>
-
-                <!-- Approved -->
-                <a href="{{ route('gov.requests.user.index') }}" style="text-decoration: none; flex: 1;">
-                    <div class="compact-pipeline-card">
-                        <span class="badge bg-green-active">{{ $approvedCount }}</span>
-                        <span class="status-label">{{ __('requestlabels::requests.catalog_pipeline_approved_label') }}</span>
-                    </div>
-                </a>
-
-                <!-- Rejected -->
-                <a href="{{ route('gov.requests.user.index') }}" style="text-decoration: none; flex: 1;">
-                    <div class="compact-pipeline-card">
-                        <span class="badge bg-red-active">{{ $rejectedCount }}</span>
-                        <span class="status-label">{{ __('requestlabels::requests.catalog_pipeline_rejected_label') }}</span>
-                    </div>
-                </a>
-
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- TOP FILTER BAR & CONTROL BAR -->
-<div class="row">
-    <div class="col-md-12">
-        <div class="control-bar">
-            <!-- Left Controls: Dynamic Filtering -->
-            <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-                <div><strong id="productCount">{{ $catalogItems->total() }}</strong> {{ __('requestlabels::requests.items_available') }}</div>
-                
-                <select id="catFilter" class="form-control input-sm" aria-label="{{ __('requestlabels::requests.all_categories') }}" style="width:auto">
-    <option value="">{{ __('requestlabels::requests.all_categories') }}</option>
-    @foreach(\App\Models\Category::orderBy('name')->get() as $cat)
-        <option value="{{ $cat->id }}" {{ (int) request('category_id') === (int) $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
-    @endforeach
-</select>
-
-                <select id="typeFilter" aria-label="{{ __('requestlabels::requests.item_type') }}" class="form-control input-sm" style="width: auto; display: inline-block;">
-                    <option value="">{{ __('requestlabels::requests.all_groups') }}</option>
-                    <option value="asset_model" {{ request('type') === 'asset_model' ? 'selected' : '' }}>{{ __('requestlabels::requests.type_asset_model') }}</option>
-                    <option value="accessory" {{ request('type') === 'accessory' ? 'selected' : '' }}>{{ __('requestlabels::requests.type_accessory') }}</option>
-                    <option value="consumable" {{ request('type') === 'consumable' ? 'selected' : '' }}>{{ __('requestlabels::requests.type_consumable') }}</option>
-                </select>
-            </div>
-            
-            <!-- Right Controls: Sorting & View Grid/List toggling -->
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <button id="catalogFilterButton" class="btn btn-primary btn-sm">{{ __('requestlabels::requests.search') }}</button>
-                
-                <div class="view-toggles">
-                    <button id="btnList" class="active" aria-pressed="true" aria-label="{{ __('requestlabels::requests.catalog_view_list_label') }}" title="{{ __('requestlabels::requests.catalog_view_list_label') }}"><i class="fas fa-list" aria-hidden="true"></i></button>
-                    <button id="btnGrid" aria-pressed="false" aria-label="{{ __('requestlabels::requests.catalog_view_grid_label') }}" title="{{ __('requestlabels::requests.catalog_view_grid_label') }}"><i class="fas fa-th" aria-hidden="true"></i></button>
+    <div class="cr-shop__layout">
+        <div class="cr-shop__main">
+            <form method="GET" action="{{ route('gov.requests.catalog') }}" class="cr-finder" role="search" data-cr-live="#cr-results">
+                <div class="cr-finder__search">
+                    <label for="cr-q" class="gs-sr-only">{{ __($r.'catalog_search_label') }}</label>
+                    <i class="fas fa-magnifying-glass cr-finder__icon" aria-hidden="true"></i>
+                    <input type="search" id="cr-q" name="q" value="{{ $filters['q'] ?? '' }}" class="form-control cr-finder__input" autocomplete="off"
+                        placeholder="{{ __($r.'catalog_search_placeholder_v2') }}" maxlength="200" aria-keyshortcuts="/">
+                    <kbd class="cr-finder__key" aria-hidden="true">/</kbd>
+                    <x-gs::button type="submit" tone="light" outline class="cr-finder__submit" data-cr-live-submit>{{ __($r.'catalog_search_button') }}</x-gs::button>
                 </div>
+                <div class="cr-finder__filters">
+                    <fieldset class="cr-kinds">
+                        <legend class="gs-sr-only">{{ __($r.'catalog_type_label') }}</legend>
+                        @foreach (['' => 'catalog_type_all', 'consumable' => 'catalog_type_consumable', 'accessory' => 'catalog_type_accessory', 'asset_model' => 'catalog_type_asset_model'] as $value => $label)
+                            <label class="cr-kind">
+                                <input type="radio" name="type" value="{{ $value }}" @checked($type === $value)>
+                                <span>{{ __($r.$label) }} <span class="cr-kind__count" data-cr-type-count="{{ $value }}">{{ $counts[$value] ?? 0 }}</span></span>
+                            </label>
+                        @endforeach
+                    </fieldset>
+                    <label for="cr-category" class="gs-sr-only">{{ __($r.'catalog_category_label') }}</label>
+                    <select id="cr-category" name="category_id" class="form-control cr-finder__select">
+                        <option value="">{{ __($r.'catalog_category_all') }}</option>
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}" @selected((int) ($filters['category_id'] ?? 0) === (int) $category->id)>{{ $category->name }}</option>
+                        @endforeach
+                    </select>
+                    <label class="cr-check" for="cr-free">
+                        <input type="checkbox" id="cr-free" name="free" value="1" @checked(! empty($filters['free']))>
+                        <span>{{ __($r.'catalog_only_free') }}</span>
+                    </label>
+                </div>
+            </form>
+
+            @if ($usual['items'])
+                <div class="cr-usuals" data-cr-usuals>
+                    <span class="cr-usuals__label">{{ __($r.($usual['personal'] ? 'catalog_usual_mine' : 'catalog_usual_office')) }}</span>
+                    @foreach ($usual['items'] as $quick)
+                        @php
+                            $quickLine = $inDraft[$quick['type'].':'.$quick['id']] ?? null;
+                        @endphp
+                        <span class="cr-usual {{ $quickLine ? 'cr-usual--in' : '' }}">
+                            <span>{{ $quick['name'] }}</span>
+                            @if ($quickLine)
+                                <span class="cr-pill cr-pill--ok"><i class="fas fa-check" aria-hidden="true"></i> {{ $quickLine->qty }}</span>
+                            @else
+                                <form method="POST" action="{{ route('gov.requests.basket.add') }}" class="cr-inline-form" data-cr-add data-cr-quick>
+                                    @csrf
+                                    <input type="hidden" name="item_type" value="{{ $quick['type'] }}">
+                                    <input type="hidden" name="item_id" value="{{ $quick['id'] }}">
+                                    <input type="hidden" name="qty" value="1">
+                                    <input type="hidden" name="context" value="catalog">
+                                    <button type="submit" class="cr-usual__add" aria-label="{{ __($r.'catalog_add_label', ['item' => $quick['name']]) }}"><i class="fas fa-plus" aria-hidden="true"></i></button>
+                                </form>
+                            @endif
+                        </span>
+                    @endforeach
+                </div>
+            @endif
+
+            <div id="cr-results" class="cr-results" aria-live="polite" aria-busy="false">
+                @include('govstore::catalog.results')
             </div>
         </div>
-    </div>
-</div>
 
-<!-- PRODUCT GRID (Toggles class between view-list and view-grid) -->
-<div class="row">
-    <div class="col-md-12">
-        <div id="catalogContainer" class="row view-list">
-            @forelse($catalogItems as $item)
-                <div class="catalog-item" 
-                     data-name="{{ strtolower($item->name) }}" 
-                     data-type="{{ strtolower($item->type) }}"
-                     data-category="{{ strtolower($item->category) }}"
-                     data-avail="{{ $item->available_qty }}"
-                     data-date="{{ $item->created_timestamp }}">
-                    
-                    <div class="catalog-card">
-                        <div class="img-wrapper">
-                            <img class="catalog-image" src="{{ $item->image_url }}" alt="{{ $item->name }}">
-                            <i class="fas fa-box catalog-image-fallback" aria-hidden="true"></i>
-                        </div>
-                        
-                        <div class="card-body">
-                            <div class="item-title">{{ $item->name }}</div>
-                            <div class="item-category">
-                                <i class="fas fa-tag"></i> 
-                                {{ $item->category }} &bull; 
-                                {{ __('requestlabels::requests.type_'.$item->type) }}
-                            </div>
-                            
-                            <ul class="details-list">
-                                @foreach($item->details as $detail)
-                                    <li>{{ $detail }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                        
-                        <div class="card-footer">
-                            <div style="font-size: 13px; margin-bottom: 12px; font-weight: bold;">
-                                @if($item->available_qty > 5)
-                                    <span class="text-success"><i class="fas fa-check-circle"></i> {{ $item->available_qty }} {{ __('requestlabels::requests.in_stock') }}</span>
-                                @elseif($item->available_qty > 0)
-                                    <span class="text-warning"><i class="fas fa-exclamation-triangle"></i> {{ $item->available_qty }} {{ __('requestlabels::requests.remaining') }}</span>
-                                @endif
-                            </div>
-                            
-                            @include('govstore::components.request-button', [
-                                'itemType' => $item->type, 
-                                'itemId' => $item->id, 
-                                'itemName' => $item->name
-                            ])
-                        </div>
-                    </div>
-                </div>
-            @empty
-                <div class="col-md-12 text-center" style="padding: 50px;">
-                    <i class="fas fa-box-open fa-3x text-muted"></i>
-                    <h3 class="text-muted">{{ __('requestlabels::requests.catalog_empty_state_title') }}</h3>
-                    <p class="text-muted">{{ __('requestlabels::requests.catalog_empty_state_subtitle') }}</p>
-                </div>
-            @endforelse
-        </div>
+        <aside class="cr-shop__aside" id="cr-drawer" data-cr-drawer aria-label="{{ __($r.'draft_title') }}">
+            @include('govstore::basket.partials.drawer')
+        </aside>
     </div>
-</div>
-
-{{ $catalogItems->links() }}
+    <div class="cr-toast" data-cr-toast role="status" aria-live="polite" hidden></div>
 </div>
 @endsection

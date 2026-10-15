@@ -5,8 +5,18 @@
     {
       "id": "requests.catalog",
       "title": "Request catalog and progress counts",
-      "journeys": [{"id": "requests.catalog-progress-observation", "kind": "seeded-readonly", "status": "verified-live"}],
+      "journeys": [{"id": "requests.catalog-progress-observation", "kind": "seeded-readonly", "status": "defined"}],
       "missing": ["bilingual (bn-BD) labels", "catalog filtering/pagination", "stock shown vs persisted availability"]
+    },
+    {
+      "id": "requests.my-requests",
+      "title": "My requests and the request page: one derived status, the next step, every line (custom-requests UX redesign)",
+      "journeys": [
+        {"id": "requests.my-requests-observation", "kind": "seeded-readonly", "status": "defined"},
+        {"id": "requests.request-page-observation", "kind": "seeded-readonly", "status": "defined"}
+      ],
+      "notes": "Locators use the stable data-request-number / data-status-key / data-line-id hooks. Not yet run by the JSON runner; the screens were walked by hand on 2026-10-15.",
+      "missing": ["requests.split-approve-issue-receive", "requests.decline-with-reason", "requests.over-issue-refusal", "requests.approvals-observation", "requests.to-issue-observation", "requests.register-observation", "requests.rules-observation"]
     },
     {
       "id": "requests.authorization",
@@ -19,8 +29,8 @@
       "id": "requests.submit-approve-fulfill",
       "title": "Request submit, primary approval and fulfillment",
       "journeys": [
-        {"id": "requests.basket-validation", "kind": "mutation", "status": "verified-live"},
-        {"id": "requests.submit-approve", "kind": "mutation", "status": "verified-live"}
+        {"id": "requests.basket-validation", "kind": "mutation", "status": "defined"},
+        {"id": "requests.submit-approve", "kind": "mutation", "status": "defined"}
       ],
       "missing": ["final-approver branch (policy dependent)", "fulfillment/issue and stock ledger effects", "rejection and partial approval", "withdraw/receive/return", "boundary quantities min-1/max+1"],
       "notes": "Submitted and approved requests have no reversal lifecycle and are retained and reported by number."

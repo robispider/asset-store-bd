@@ -102,14 +102,14 @@
       }
     },
     {
-      "action": "fill",
-      "target": "catalog.itemQty",
-      "value": "${data.qty}"
-    },
-    {
       "action": "click",
       "target": "catalog.itemAdd",
       "waitForResponse": "basket/add"
+    },
+    {
+      "action": "fill",
+      "target": "catalog.itemQty",
+      "value": "${data.qty}"
     },
     {
       "action": "waitObserve",
@@ -140,6 +140,10 @@
       "equals": "${data.qty}"
     },
     {
+      "action": "click",
+      "target": "requests.basketToDetails"
+    },
+    {
       "action": "fill",
       "target": "requests.basketPurpose",
       "value": "${data.purpose}"
@@ -150,17 +154,30 @@
       "value": "Automated live journey justification for ${data.purpose}"
     },
     {
+      "action": "click",
+      "target": "requests.basketContinue"
+    },
+    {
+      "action": "assert",
+      "target": "requests.basketSubmit",
+      "test": "visible"
+    },
+    {
+      "action": "check",
+      "target": "requests.basketDeclare"
+    },
+    {
       "action": "submitForm",
       "target": "requests.basketSubmit"
     },
     {
       "action": "assert",
       "test": "url",
-      "contains": "/gov-requests/my-requests"
+      "contains": "/gov-requests/sent/"
     },
     {
       "action": "capture",
-      "target": "requests.myNumberByPurpose",
+      "target": "requests.sentNumberFirst",
       "as": "requestNumber"
     },
     {
@@ -204,6 +221,16 @@
       "equals": "pending_primary"
     },
     {
+      "action": "goto",
+      "route": "gov.requests.user.index"
+    },
+    {
+      "action": "assert",
+      "target": "requests.myStatusByNumber",
+      "test": "text",
+      "contains": "Waiting for approval"
+    },
+    {
       "action": "reload"
     },
     {
@@ -228,9 +255,9 @@
     },
     {
       "action": "assert",
-      "target": "requests.decisionQty",
-      "test": "value",
-      "equals": "${data.qty}"
+      "target": "requests.decisionAsAsked",
+      "test": "checked",
+      "equals": true
     },
     {
       "action": "click",

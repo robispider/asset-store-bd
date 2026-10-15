@@ -14,6 +14,7 @@ class ApprovalPolicy extends Model
         'policy_name',
         'threshold_qty',
         'threshold_value',
+        'updated_by', // D4: rules apply to every office, so the page says who changed one
     ];
 
     /**

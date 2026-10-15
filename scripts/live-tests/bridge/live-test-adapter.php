@@ -508,6 +508,32 @@ try {
                         ->sum('i.requested_qty');
                     jsonResponse(['user_id' => $uid, 'quantity' => (int) $qty]);
 
+                case 'request.list':
+                    // Independent restatement of Request::statusKey() and the My requests tabs (plan P0/P2).
+                    $uid = (int) ($args['userId'] ?? 0);
+                    $officeId = (int) ($args['officeId'] ?? 0);
+                    $rows = DB::table('custom_service_requests')->where('requested_by', $uid)->where('office_id', $officeId)
+                        ->where('approval_status', '!=', 'draft')->whereNull('deleted_at')
+                        ->get(['request_number', 'approval_status', 'fulfillment_status', 'received_at', 'return_requested_at', 'return_document_id']);
+                    $statuses = [];
+                    $tabs = ['active' => 0, 'needs_you' => 0, 'finished' => 0];
+                    foreach ($rows as $r) {
+                        $key = $r->return_document_id ? 'request_return_drafted'
+                            : ($r->return_requested_at ? 'request_return_requested'
+                            : ($r->approval_status === 'rejected' ? 'request_rejected'
+                            : ($r->approval_status === 'cancelled' ? 'request_withdrawn'
+                            : ($r->received_at ? 'request_received'
+                            : ($r->fulfillment_status === 'issued' ? 'request_issued'
+                            : (in_array($r->fulfillment_status, ['closed', 'cannot_fulfill'], true) ? 'request_closed_short'
+                            : ($r->approval_status === 'pending_final' ? 'request_pending_final'
+                            : (in_array($r->approval_status, ['pending_primary', 'submitted', 'under_review'], true) ? 'request_pending_primary'
+                            : ($r->fulfillment_status === 'partially_issued' ? 'request_partly_issued' : 'request_approved')))))))));
+                        $statuses[$r->request_number] = $key;
+                        $tabs[$key === 'request_issued' ? 'needs_you' : (in_array($key, ['request_received', 'request_closed_short', 'request_rejected', 'request_withdrawn'], true) ? 'finished' : 'active')]++;
+                    }
+                    jsonResponse(['user_id' => $uid, 'office_id' => $officeId, 'total' => count($statuses), 'tabs' => $tabs,
+                        'byStatus' => array_count_values($statuses), 'statuses' => $statuses]);
+
                 case 'request.state':
                     $number = (string) ($args['number'] ?? '');
                     $r = DB::table('custom_service_requests')->where('request_number', $number)->first();

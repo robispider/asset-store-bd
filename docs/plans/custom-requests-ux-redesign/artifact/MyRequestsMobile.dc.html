@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<title>আমার চাহিদাপত্র (ফোন)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/aef52f8d7c3fef253b593dd05928ec1c">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Source+Serif+4:wght@400;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.app{width:390px;min-height:1500px;box-sizing:border-box;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:'Noto Sans Bengali',var(--gs-font-sans);font-size:15px;line-height:1.6}
+.top{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--gs-header-bg);color:var(--gs-header-fg);border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.iconbtn{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border:0;background:transparent;color:inherit;border-radius:var(--gs-radius-sm)}
+.ico{width:20px;height:20px;flex:none}
+.main{padding:16px 14px 40px;display:flex;flex-direction:column;gap:14px}
+.muted{color:var(--gs-color-text-muted)}
+.mono{font-family:var(--gs-font-mono);font-size:13px}
+.card{display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:var(--gs-radius-md);background:var(--gs-color-surface);border:var(--gs-border-width) solid var(--gs-color-border)}
+.card__head{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.next{font-size:14px;color:var(--gs-color-text-muted);margin:0}
+.full{width:100%;box-sizing:border-box;justify-content:center;min-height:48px}
+.tabs{display:flex;gap:6px;overflow-x:auto}
+</style>
+</helmet>
+<div class="app" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-table="{{ v.table }}" data-gs-controls="{{ v.controls }}" data-gs-type="{{ v.type }}" data-gs-header="{{ v.header }}">
+<div class="top">
+<button type="button" class="iconbtn" aria-label="মেনু খুলুন"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></button>
+<strong style="flex: 1 1 auto; font-size: 16px">জাতীয় সম্পদ রেজিস্টার</strong>
+<a class="iconbtn" href="DraftRequest.dc.html" aria-label="খসড়া চাহিদাপত্র, ০টি মালামাল"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7h14l-1.5 12h-11Z"></path><path d="M9 7a3 3 0 0 1 6 0"></path></svg></a>
+</div>
+<main class="main">
+<div><h1 style="margin: 0; font-size: 22px">আমার চাহিদাপত্র</h1><p class="muted" style="margin: 0; font-size: 14px">উপজেলা স্বাস্থ্য কমপ্লেক্স, সাভার</p></div>
+
+<div class="gs-alert gs-alert--warning" role="status"><div class="gs-alert__body"><strong>১টি চাহিদাপত্রে আপনার কাজ বাকি।</strong> রফিক আহমেদ আপনার টোনার ও কাগজ সরবরাহ করেছেন। হাতে পেলে নিশ্চিত করুন।</div></div>
+
+<nav aria-label="অবস্থা অনুযায়ী চাহিদাপত্র"><ul class="gs-tabs tabs">
+<li class="gs-tabs__item"><a class="gs-tabs__link" href="#">চলমান <span class="gs-tabs__count">৩</span></a></li>
+<li class="gs-tabs__item"><a class="gs-tabs__link" href="#" aria-current="page">আপনার কাজ <span class="gs-tabs__count">১</span></a></li>
+<li class="gs-tabs__item"><a class="gs-tabs__link" href="#">সম্পন্ন <span class="gs-tabs__count">৩</span></a></li>
+</ul></nav>
+
+<article class="card">
+<div class="card__head"><a class="mono" href="RequestDetail.dc.html">SR-2026-000301</a><span class="gs-badge" data-tone="status-ready"><span class="gs-badge__label">সরবরাহ হয়েছে · বুঝে নিন</span></span></div>
+<strong>এইচপি ৮৫এ টোনার ×১, এ৪ কাগজ ×২ রিম</strong>
+<p class="next">রফিক আহমেদ আজ সকাল ১১:০৫-এ সরবরাহ করেছেন। স্টোর থেকে সংগ্রহ করে নিশ্চিত করুন।</p>
+<button type="button" class="gs-btn gs-btn--primary full">বুঝে পেয়েছি</button>
+<a class="gs-btn gs-btn--light gs-btn--outline full" href="RequestDetail.dc.html">কোনো সমস্যা আছে</a>
+</article>
+
+<h2 style="margin: 8px 0 0; font-size: 17px">চলমান</h2>
+<article class="card">
+<div class="card__head"><a class="mono" href="RequestDetail.dc.html">SR-2026-000302</a><span class="gs-badge" data-tone="status-pending"><span class="gs-badge__label">অনুমোদনের অপেক্ষায়</span></span></div>
+<strong>ডেল ল্যাটিচুড ৩৪৪০ ল্যাপটপ</strong>
+<p class="next">প্রথমে কামাল হোসেন, তারপর ডা. সেলিনা রহমান সিদ্ধান্ত দেবেন। আজ সকাল ৯:১২-এ পাঠানো।</p>
+</article>
+<article class="card">
+<div class="card__head"><a class="mono" href="RequestDetail.dc.html">SR-2026-000297</a><span class="gs-badge" data-tone="info"><span class="gs-badge__label">অনুমোদিত · স্টোরে আছে</span></span></div>
+<strong>ইউএসবি মাউস ×২</strong>
+<p class="next">রফিক আহমেদ প্রস্তুত করছেন। ১২ অক্টোবর কামাল হোসেন অনুমোদন করেছেন।</p>
+</article>
+<article class="card">
+<div class="card__head"><a class="mono" href="RequestDetail.dc.html">SR-2026-000293</a><span class="gs-badge" data-tone="info"><span class="gs-badge__label">আংশিক সরবরাহ</span></span></div>
+<strong>বলপয়েন্ট কলম ×৪ বাক্স, স্ট্যাপলার ×১</strong>
+<p class="next">কলম পেয়েছেন। স্ট্যাপলার আসছে। ৪ বাক্সের মধ্যে ৩টি অনুমোদিত: “শাখার মাসিক সীমা ৩ বাক্স।”</p>
+</article>
+
+<a class="gs-btn gs-btn--primary full" href="Catalog.dc.html">চাহিদাপত্র দিন</a>
+<p class="muted" style="margin: 0; font-size: 13px">খসড়া বাংলা লেখা; একজন বাংলাভাষী পর্যালোচক দেখে নেবেন (D6)।</p>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"$preview":{"width":390,"height":1500}}'>
+class Component extends DCLogic {
+renderVals() {
+const V = {
+'civic-ledger': { header: 'neutral', density: 'regular', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { header: 'brand', density: 'regular', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { header: 'dark', density: 'compact', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { header: 'dark', density: 'comfortable', table: 'ledger', surfaces: 'flat', controls: 'outlined', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { header: 'brand', density: 'compact', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { header: 'floating', density: 'regular', table: 'rules', surfaces: 'elevated', controls: 'filled', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+return { skin, mode, v: V[skin] };
+}
+}
+</script>
+</body>
+</html>

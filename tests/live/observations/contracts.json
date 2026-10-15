@@ -352,6 +352,21 @@
       "outputFields": [
         "count"
       ]
+    },
+    "request.list": {
+      "description": "One requester's requests in one office with the derived request status (request_* status-map key) and the My requests tab counts (In progress, Needs you, Finished)",
+      "parameters": {
+        "userId": "integer",
+        "officeId": "integer"
+      },
+      "outputFields": [
+        "user_id",
+        "office_id",
+        "total",
+        "tabs",
+        "byStatus",
+        "statuses"
+      ]
     }
   }
 }

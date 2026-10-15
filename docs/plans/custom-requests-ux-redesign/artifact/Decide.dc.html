@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Decide on SR-2026-000305</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/aef52f8d7c3fef253b593dd05928ec1c">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Source+Serif+4:wght@400;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.app{min-height:100%;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:var(--gs-font-sans);font-size:14px;line-height:1.5}
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 20px;background:var(--gs-header-bg);color:var(--gs-header-fg);border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.chip{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 12px;border-radius:var(--gs-radius-sm);border:var(--gs-border-width) solid var(--gs-color-border);background:transparent;color:inherit;font:inherit;text-decoration:none}
+.shell{display:flex;flex-wrap:wrap;align-items:stretch}
+.side{flex:1 1 220px;max-width:240px;background:var(--gs-sidebar-bg);color:var(--gs-sidebar-fg);padding:12px 0;box-sizing:border-box}
+.side a{display:flex;align-items:center;justify-content:space-between;min-height:42px;padding:0 18px;color:var(--gs-sidebar-fg);text-decoration:none}
+.side a[aria-current]{background:var(--gs-sidebar-active-bg);color:var(--gs-sidebar-active-fg);box-shadow:inset 3px 0 0 var(--gs-sidebar-active-marker)}
+.side .sub{padding-left:34px}
+.main{flex:999 1 560px;min-width:0;box-sizing:border-box;padding:20px 28px 56px;display:flex;flex-direction:column;gap:18px}
+.crumb{font-size:13px;color:var(--gs-color-text-muted)}
+.ico{width:1em;height:1em;flex:none}
+.muted{color:var(--gs-color-text-muted)}
+.mono{font-family:var(--gs-font-mono)}
+.small{font-size:13px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.cols{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
+.colmain{flex:999 1 600px;min-width:0;display:flex;flex-direction:column;gap:18px}
+.colside{flex:1 1 300px;max-width:380px;display:flex;flex-direction:column;gap:18px}
+.line{display:flex;flex-direction:column;gap:12px;padding:18px;border-bottom:var(--gs-border-width) solid var(--gs-color-border)}
+.line:last-child{border-bottom:0}
+.line__head{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:baseline;justify-content:space-between}
+.line__name{font-weight:700;font-size:15px}
+.facts{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--gs-color-text-muted)}
+.facts strong{color:var(--gs-color-text)}
+.warn{color:var(--gs-color-warning);font-weight:600}
+.ctl{box-sizing:border-box;min-height:44px;padding:8px 12px;border:var(--gs-border-width) solid var(--gs-color-border-strong);border-radius:var(--gs-radius-sm);background:var(--gs-color-surface);color:var(--gs-color-text);font:inherit;width:100%}
+.qtyin{width:96px}
+.sub{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start}
+.sum{display:flex;flex-direction:column;gap:10px;padding:18px;border-radius:var(--gs-radius-md);background:var(--gs-color-surface-sunken)}
+.sum p{margin:0}
+.foot{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center}
+.why{padding:14px;border-radius:var(--gs-radius-md);background:var(--gs-color-surface);border:var(--gs-border-width) solid var(--gs-color-border)}
+.why p{margin:0}
+</style>
+</helmet>
+<div class="app" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-table="{{ v.table }}" data-gs-controls="{{ v.controls }}" data-gs-type="{{ v.type }}" data-gs-header="{{ v.header }}">
+<div class="top">
+<strong style="font-size: 16px; flex: 1 1 auto">National Asset Register</strong>
+<span class="chip"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg><span><span class="muted">Working in</span> Upazila Health Complex, Savar</span></span>
+<span class="gs-avatar gs-avatar--sm gs-tone-primary" role="img" aria-label="Signed in as Kamal Hossain">KH</span>
+</div>
+<div class="shell">
+<nav class="side" aria-label="Main"><a href="#">Dashboard</a><a href="#">Request items</a><a href="#">Requests</a><a class="sub" href="Approvals.dc.html" aria-current="page">Approvals <span class="gs-tabs__count">4</span></a><a href="#">My office</a></nav>
+<main class="main">
+<nav class="crumb" aria-label="Breadcrumb"><a href="#">Home</a> / <a href="Approvals.dc.html">Approvals</a> / SR-2026-000305</nav>
+
+<header class="gs-page-header">
+<div class="gs-page-header__text"><h1 class="gs-page-header__title">Decide on <span class="mono">SR-2026-000305</span></h1><div class="gs-page-header__meta" style="display: flex; gap: 6px 18px; flex-wrap: wrap; align-items: center; color: var(--gs-color-text-muted)"><span class="gs-badge" data-tone="status-pending"><span class="gs-badge__label">Waiting for approval</span></span><span>First approval of two</span><span>Sent 9 Oct · passed to the office head on 14 Oct</span></div></div>
+</header>
+
+<sc-if value="{{ stale }}" hint-placeholder-val="{{ false }}">
+<div class="gs-alert gs-alert--danger" role="alert"><div class="gs-alert__body"><strong>Dr. Selina Rahman decided this request 2 minutes ago,</strong> so your decision wasn't saved. Your choices are kept below for reference. <a href="RequestDetail.dc.html">See what she decided</a> or <a href="Approvals.dc.html">go back to Approvals</a>.</div></div>
+</sc-if>
+<sc-if value="{{ done }}" hint-placeholder-val="{{ false }}">
+<div class="gs-alert gs-alert--success" role="status"><div class="gs-alert__body"><strong>Saved.</strong> SR-2026-000305 now goes to Dr. Selina Rahman for the final approval. Shahana Parvin has been told. <a href="Approvals.dc.html">Next request (3 waiting)</a></div></div>
+</sc-if>
+
+<div class="cols">
+<div class="colmain">
+<section class="gs-box" aria-labelledby="it">
+<header class="gs-box__header"><h2 class="gs-box__title" id="it">Your decision on each item</h2></header>
+<div class="gs-box__body" style="padding: 0">
+
+<fieldset class="line" style="border: 0; margin: 0">
+<div class="line__head"><legend class="line__name">A4 paper, 80 gsm · 12 reams asked</legend></div>
+<div class="facts"><span><strong>80</strong> free in the store</span><span>Accounts got <strong>10</strong> on 2 Sep</span><span>Rule: two approvers from 10 reams</span></div>
+<div class="gs-segmented" role="group" aria-label="Decision for A4 paper">
+<button type="button" class="gs-segmented__option" aria-pressed="{{ p1a }}" onClick="{{ l1a }}">Approve 12</button>
+<button type="button" class="gs-segmented__option" aria-pressed="{{ p1r }}" onClick="{{ l1r }}">Approve fewer</button>
+<button type="button" class="gs-segmented__option" aria-pressed="{{ p1d }}" onClick="{{ l1d }}">Decline</button>
+</div>
+<sc-if value="{{ l1NeedsReason }}" hint-placeholder-val="{{ false }}">
+<div class="sub">
+<sc-if value="{{ l1IsReduce }}" hint-placeholder-val="{{ false }}"><div class="gs-form-row"><label class="gs-form-row__label" for="q1">Approve how many?</label><div class="gs-form-row__control"><input class="ctl qtyin" id="q1" type="number" min="1" max="11" value="8"></div></div></sc-if>
+<div class="gs-form-row {{ e1cls }}" style="flex: 1 1 320px"><label class="gs-form-row__label" for="n1">Reason for Shahana <span class="gs-muted">(optional)</span></label><div class="gs-form-row__control"><input class="ctl" id="n1" value="{{ n1 }}" onInput="{{ onN1 }}" placeholder="She sees this on her request"><p class="gs-form-row__help">Shahana sees this on her request. Without a reason she only sees the new number.</p></div></div>
+</div>
+</sc-if>
+</fieldset>
+
+<fieldset class="line" style="border: 0; margin: 0">
+<div class="line__head"><legend class="line__name">HP 85A toner cartridge · 3 asked</legend></div>
+<div class="facts"><span class="warn"><strong style="color: inherit">4</strong> free · after this, 1 left for the whole office</span><span>Rule: printer supplies always need two approvers</span></div>
+<div class="gs-segmented" role="group" aria-label="Decision for HP 85A toner">
+<button type="button" class="gs-segmented__option" aria-pressed="{{ p2a }}" onClick="{{ l2a }}">Approve 3</button>
+<button type="button" class="gs-segmented__option" aria-pressed="{{ p2r }}" onClick="{{ l2r }}">Approve fewer</button>
+<button type="button" class="gs-segmented__option" aria-pressed="{{ p2d }}" onClick="{{ l2d }}">Decline</button>
+</div>
+<sc-if value="{{ l2NeedsReason }}" hint-placeholder-val="{{ false }}">
+<div class="sub">
+<sc-if value="{{ l2IsReduce }}" hint-placeholder-val="{{ false }}"><div class="gs-form-row"><label class="gs-form-row__label" for="q2">Approve how many?</label><div class="gs-form-row__control"><input class="ctl qtyin" id="q2" type="number" min="1" max="2" value="2"></div></div></sc-if>
+<div class="gs-form-row {{ e2cls }}" style="flex: 1 1 320px"><label class="gs-form-row__label" for="n2">Reason for Shahana <span class="gs-muted">(optional)</span></label><div class="gs-form-row__control"><input class="ctl" id="n2" value="{{ n2 }}" onInput="{{ onN2 }}" placeholder="She sees this on her request"><p class="gs-form-row__help">Shahana sees this on her request. Without a reason she only sees the new number.</p></div></div>
+</div>
+</sc-if>
+</fieldset>
+
+</div>
+</section>
+
+<div class="sum" aria-live="polite">
+<p><strong>{{ summary }}</strong></p>
+<p class="small muted">{{ after }}</p>
+</div>
+<div class="foot"><a class="gs-btn gs-btn--light gs-btn--outline" href="Approvals.dc.html">Back without deciding</a><button type="button" class="gs-btn gs-btn--primary gs-btn--lg" onClick="{{ save }}">{{ saveLabel }}</button></div>
+</div>
+
+<aside class="colside">
+<section class="gs-box" aria-labelledby="ab">
+<header class="gs-box__header"><h2 class="gs-box__title" id="ab">The request</h2></header>
+<div class="gs-box__body" style="display: flex; flex-direction: column; gap: 14px">
+<div class="row" style="flex-wrap: nowrap"><span class="gs-avatar gs-avatar--md gs-tone-primary" aria-hidden="true">SP</span><div><strong>Shahana Parvin</strong><div class="small muted">Accounts Assistant · Accounts section</div></div></div>
+<dl class="gs-kv" style="--gs-kv-columns: 1">
+<div class="gs-kv__item"><dt class="gs-kv__label">What it's for</dt><dd class="gs-kv__value">Quarter-end audit printing</dd></div>
+<div class="gs-kv__item"><dt class="gs-kv__label">Why it's needed</dt><dd class="gs-kv__value">The auditors need printed ledgers for July–September by 20 Oct; the section printer is out of toner.</dd></div>
+<div class="gs-kv__item"><dt class="gs-kv__label">Needed by</dt><dd class="gs-kv__value">20 Oct 2026 · in 5 days</dd></div>
+<div class="gs-kv__item"><dt class="gs-kv__label">Where it goes</dt><dd class="gs-kv__value">Accounts section, 2nd floor</dd></div>
+</dl>
+</div>
+</section>
+<div class="why"><p class="small"><strong>Why two approvers?</strong> Paper needs a second approver from 10 reams, and printer supplies always do. You decide first; Dr. Selina Rahman gives the final decision. <a href="Rules.dc.html">See the rule</a></p></div>
+<section class="gs-box" aria-labelledby="hi">
+<header class="gs-box__header"><h2 class="gs-box__title" id="hi">History</h2></header>
+<div class="gs-box__body"><ol class="gs-timeline">
+<li class="gs-timeline__item"><div><strong>System</strong> passed it to Dr. Selina Rahman (3 working days without a decision)</div><time class="gs-timeline__meta">14 Oct 2026, 09:00</time></li>
+<li class="gs-timeline__item"><div><strong>Shahana Parvin</strong> sent the request; it came to you</div><time class="gs-timeline__meta">9 Oct 2026, 15:31</time></li>
+</ol></div>
+</section>
+</aside>
+</div>
+
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"staleError":{"editor":"boolean","default":false,"section":"States"},"$preview":{"width":1440,"height":1800}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { l1: 'approve', l2: 'approve', n1: '', n2: '', e1: false, e2: false, done: false }; }
+renderVals() {
+const V = {
+'civic-ledger': { header: 'neutral', density: 'regular', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { header: 'brand', density: 'regular', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { header: 'dark', density: 'compact', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { header: 'dark', density: 'comfortable', table: 'ledger', surfaces: 'flat', controls: 'outlined', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { header: 'brand', density: 'compact', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { header: 'floating', density: 'regular', table: 'rules', surfaces: 'elevated', controls: 'filled', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+const s = this.state;
+const set = (k, val) => () => this.setState({ [k]: val, e1: false, e2: false, done: false });
+const approved = (s.l1 !== 'decline' ? 1 : 0) + (s.l2 !== 'decline' ? 1 : 0);
+let summary; let after; let saveLabel;
+if (approved === 0) { summary = 'You decline the whole request.'; after = 'Shahana sees your reasons. Nothing is set aside; she can send a new request.'; saveLabel = 'Decline the request'; }
+else { summary = 'You approve ' + approved + ' of 2 items' + ((s.l1 === 'reduce' || s.l2 === 'reduce') ? ', one with fewer than asked.' : (approved === 2 ? ', as asked.' : '.')); after = 'Next: Dr. Selina Rahman gives the final approval. Stock is set aside only after that, and Rafiq Ahmed (store) is told.'; saveLabel = 'Save and send for final approval'; }
+return {
+skin, mode, v: V[skin], stale: !!this.props.staleError, done: s.done && !this.props.staleError,
+p1a: s.l1 === 'approve' ? 'true' : 'false', p1r: s.l1 === 'reduce' ? 'true' : 'false', p1d: s.l1 === 'decline' ? 'true' : 'false',
+p2a: s.l2 === 'approve' ? 'true' : 'false', p2r: s.l2 === 'reduce' ? 'true' : 'false', p2d: s.l2 === 'decline' ? 'true' : 'false',
+l1a: set('l1', 'approve'), l1r: set('l1', 'reduce'), l1d: set('l1', 'decline'),
+l2a: set('l2', 'approve'), l2r: set('l2', 'reduce'), l2d: set('l2', 'decline'),
+l1NeedsReason: s.l1 !== 'approve', l2NeedsReason: s.l2 !== 'approve', l1IsReduce: s.l1 === 'reduce', l2IsReduce: s.l2 === 'reduce',
+n1: s.n1, n2: s.n2, onN1: (e) => this.setState({ n1: e.target.value, e1: false }), onN2: (e) => this.setState({ n2: e.target.value, e2: false }),
+e1: s.e1, e2: s.e2, e1cls: s.e1 ? 'gs-form-row--error' : '', e2cls: s.e2 ? 'gs-form-row--error' : '',
+summary, after, saveLabel,
+save: () => this.setState({ done: true })
+};
+}
+}
+</script>
+</body>
+</html>

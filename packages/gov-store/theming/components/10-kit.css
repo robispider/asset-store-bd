@@ -171,7 +171,7 @@
     [data-gs-status-style="text"] .gs-badge { color: var(--gs-tone) !important; font-weight: 600; }
 
     /* ---------- status tabs ---------- */
-    .gs-tabs { display: flex; gap: var(--gs-space-1); overflow-x: auto; border-bottom: var(--gs-border-width) solid var(--gs-color-border); margin: 0 0 var(--gs-space-3); padding: 0; list-style: none; scrollbar-width: thin; }
+    .gs-tabs { display: flex; gap: var(--gs-space-1); overflow-x: auto; overflow-y: hidden; border-bottom: var(--gs-border-width) solid var(--gs-color-border); margin: 0 0 var(--gs-space-3); padding: 0; list-style: none; scrollbar-width: thin; }
     .gs-tabs__item { flex: none; }
     .gs-tabs__link {
         display: inline-flex; align-items: center; gap: var(--gs-space-2);

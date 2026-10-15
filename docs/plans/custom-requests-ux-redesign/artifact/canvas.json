@@ -1,0 +1,31 @@
+{
+  "v": 3,
+  "createdOnFiles": {"v": 1, "at": "2026-10-14T18:30:00Z"},
+  "title": "Custom Requests UX Redesign",
+  "launch": {"view": "canvas"},
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {"x": 0, "y": 0, "w": 1440, "h": 3300, "title": "1 · UX audit of the current package", "expand": "fill"},
+    "Vocabulary.dc.html": {"x": 1520, "y": 0, "w": 1440, "h": 2300, "title": "2 · Statuses, words and structure", "expand": "fill"},
+    "Catalog.dc.html": {"x": 0, "y": 3700, "w": 1440, "h": 1500, "title": "3 · Request items (catalog)", "expand": "fill", "is_interactive": true},
+    "DraftRequest.dc.html": {"x": 1520, "y": 3700, "w": 1440, "h": 1750, "title": "4 · Draft request: review and send", "expand": "fill", "is_interactive": true},
+    "MyRequests.dc.html": {"x": 3040, "y": 3700, "w": 1440, "h": 1300, "title": "5 · My requests", "expand": "fill", "is_interactive": true},
+    "MyRequestsMobile.dc.html": {"x": 4560, "y": 3700, "w": 390, "h": 1500, "title": "5b · My requests on a phone, in Bangla"},
+    "RequestDetail.dc.html": {"x": 5030, "y": 3700, "w": 1440, "h": 1750, "title": "6 · One request, start to finish (new page)", "expand": "fill", "is_interactive": true},
+    "Approvals.dc.html": {"x": 0, "y": 5850, "w": 1440, "h": 1150, "title": "7 · Approvals (approver inbox)", "expand": "fill", "is_interactive": true},
+    "Decide.dc.html": {"x": 1520, "y": 5850, "w": 1440, "h": 1800, "title": "8 · Decide on a request", "expand": "fill", "is_interactive": true},
+    "ToIssue.dc.html": {"x": 0, "y": 8050, "w": 1440, "h": 1100, "title": "9 · To issue (storekeeper queue)", "expand": "fill", "is_interactive": true},
+    "IssueItems.dc.html": {"x": 1520, "y": 8050, "w": 1440, "h": 1850, "title": "10 · Issue items", "expand": "fill", "is_interactive": true},
+    "Register.dc.html": {"x": 3040, "y": 8050, "w": 1440, "h": 1400, "title": "11 · Issue register and record", "expand": "fill"},
+    "Rules.dc.html": {"x": 0, "y": 10300, "w": 1440, "h": 1500, "title": "12 · Request rules (who approves what)", "expand": "fill", "is_interactive": true}
+  },
+  "order": ["Main.dc.html", "Vocabulary.dc.html", "Catalog.dc.html", "DraftRequest.dc.html", "MyRequests.dc.html", "MyRequestsMobile.dc.html", "RequestDetail.dc.html", "Approvals.dc.html", "Decide.dc.html", "ToIssue.dc.html", "IssueItems.dc.html", "Register.dc.html", "Rules.dc.html"],
+  "notes": {
+    "rowAudit": {"x": 0, "y": -300, "text": "Where we are, and the words we'll use", "kind": "title1", "maxW": 2960},
+    "rowEmployee": {"x": 0, "y": 3400, "text": "An employee asks for something and follows it", "kind": "title1", "maxW": 6470},
+    "rowApprover": {"x": 0, "y": 5550, "text": "The approver decides with the facts at hand", "kind": "title1", "maxW": 2960},
+    "rowStore": {"x": 0, "y": 7750, "text": "The storekeeper issues and keeps the record", "kind": "title1", "maxW": 4480},
+    "rowRules": {"x": 0, "y": 10000, "text": "The office decides who approves what", "kind": "title1", "maxW": 1440}
+  },
+  "designSystems": []
+}

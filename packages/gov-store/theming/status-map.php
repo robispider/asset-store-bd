@@ -43,4 +43,18 @@ return [
     'membership_suspended' => ['tone' => 'status-undeployable', 'icon' => 'fa-circle-pause'],
     'membership_inactive' => ['tone' => 'status-archived', 'icon' => 'fa-minus'],
     'membership_cancelled' => ['tone' => 'status-archived', 'icon' => 'fa-ban'],
+
+    // Requests: one status derived from approval, fulfilment, receipt and return (Request::statusKey()).
+    'request_pending_primary' => ['tone' => 'status-pending', 'icon' => 'fa-hourglass-half'],
+    'request_pending_final' => ['tone' => 'status-pending', 'icon' => 'fa-hourglass-end'],
+    'request_approved' => ['tone' => 'info', 'icon' => 'fa-warehouse'],
+    'request_partly_issued' => ['tone' => 'info', 'icon' => 'fa-truck'],
+    'request_issued' => ['tone' => 'status-ready', 'icon' => 'fa-hand-holding'],
+    'request_received' => ['tone' => 'success', 'icon' => 'fa-circle-check'],
+    'request_closed_short' => ['tone' => 'status-undeployable', 'icon' => 'fa-circle-minus'],
+    'request_rejected' => ['tone' => 'doc-rejected', 'icon' => 'fa-circle-xmark'],
+    'request_withdrawn' => ['tone' => 'status-archived', 'icon' => 'fa-rotate-left'],
+    'request_return_requested' => ['tone' => 'warning', 'icon' => 'fa-arrow-rotate-left'],
+    'request_return_drafted' => ['tone' => 'info', 'icon' => 'fa-file-import'],
+    'request_needs_review' => ['tone' => 'status-undeployable', 'icon' => 'fa-triangle-exclamation'],
 ];

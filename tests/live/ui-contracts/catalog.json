@@ -2,37 +2,41 @@
   "schemaVersion": 1,
   "id": "catalog",
   "locators": {
-    "pending": {
-      "css": ".compact-pipeline-card .badge.bg-yellow-active",
-      "description": "Pending request count in the pipeline panel"
-    },
-    "approved": {
-      "css": ".compact-pipeline-card .badge.bg-green-active",
-      "description": "Approved request count"
-    },
-    "rejected": {
-      "css": ".compact-pipeline-card .badge.bg-red-active",
-      "description": "Rejected request count"
-    },
     "productCount": {
-      "css": "#productCount",
-      "description": "Items available count"
+      "css": "[data-cr-results-count]",
+      "description": "Result count sentence"
     },
     "search": {
-      "css": "#catalogSearch",
-      "description": "Catalog search box"
+      "css": "#cr-q",
+      "description": "Live item search box"
     },
     "itemCard": {
-      "css": ".catalog-item:has(.item-title:text-is(\"${fixtures.item.name}\"))",
-      "description": "Exact catalog card of the pinned fixture item"
+      "css": ".cr-good:has(.cr-good__name:text-is(\"${fixtures.item.name}\"))",
+      "description": "Card or list row of the pinned fixture item"
     },
     "itemQty": {
-      "css": ".catalog-item:has(.item-title:text-is(\"${fixtures.item.name}\")) input[name='qty']",
-      "description": "Quantity input on the pinned item's card"
+      "css": ".cr-good:has(.cr-good__name:text-is(\"${fixtures.item.name}\")) [data-cr-line-qty]",
+      "description": "Quantity of the pinned item once it is in the draft (saves as you type)"
     },
     "itemAdd": {
-      "css": ".catalog-item:has(.item-title:text-is(\"${fixtures.item.name}\")) .add-to-basket-btn",
-      "description": "Add-to-basket button on the pinned item's card"
+      "css": ".cr-good:has(.cr-good__name:text-is(\"${fixtures.item.name}\")) [data-cr-add] button[type='submit']",
+      "description": "Add button on the pinned item (adds 1; the card then shows a quantity)"
+    },
+    "itemStatus": {
+      "css": ".cr-good:has(.cr-good__name:text-is(\"${fixtures.item.name}\")) .cr-good__in",
+      "description": "'In your draft' on the pinned item"
+    },
+    "draftPanel": {
+      "css": "[data-cr-drawer] .cr-drawer",
+      "description": "Draft panel beside the items (always current)"
+    },
+    "viewList": {
+      "css": "[data-cr-view='list']",
+      "description": "Cards / List switch: List"
+    },
+    "goodsList": {
+      "css": ".cr-goods--list",
+      "description": "Items shown as a list"
     }
   },
   "labels": {

@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Custom Requests UX audit</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/aef52f8d7c3fef253b593dd05928ec1c">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Source+Serif+4:wght@400;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.app{min-height:100%;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:var(--gs-font-sans);font-size:15px;line-height:1.55}
+.wrap{box-sizing:border-box;max-width:1280px;margin:0 auto;padding:64px 24px 96px;display:flex;flex-direction:column;gap:56px}
+.card{background:var(--gs-color-surface);border:var(--gs-border-width) solid var(--gs-color-border);border-radius:var(--gs-radius-lg);box-sizing:border-box}
+.eyebrow{margin:0;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gs-color-text-muted)}
+.h1{margin:0;font-family:var(--gs-font-display);font-size:46px;line-height:1.1;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+.h2{margin:0;font-family:var(--gs-font-display);font-size:26px;line-height:1.25;font-weight:700;text-wrap:balance}
+.lead{margin:0;font-size:18px;line-height:1.6;color:var(--gs-color-text-muted);max-width:900px}
+.muted{color:var(--gs-color-text-muted)}
+.score{background:var(--gs-color-primary);color:var(--gs-color-on-primary);border:0}
+.score .eyebrow{color:var(--gs-color-on-primary);opacity:.85}
+.big{font-size:112px;line-height:.9;font-weight:800;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.bar{height:10px;border-radius:99px;background:var(--gs-color-surface-sunken);overflow:hidden;flex:1 1 auto}
+.bar>span{display:block;height:100%;border-radius:99px}
+.b-mid{background:var(--gs-color-info)}
+.b-lo{background:var(--gs-color-warning)}
+.b-crit{background:var(--gs-color-danger)}
+.hrow{display:flex;align-items:center;gap:12px}
+.hrow>span:first-child{width:210px;font-size:14px}
+.hrow>b{width:24px;text-align:right;font-variant-numeric:tabular-nums}
+.evid{font-family:var(--gs-font-mono);font-size:12px;color:var(--gs-color-text-muted);background:var(--gs-color-surface-sunken);border-radius:var(--gs-radius-sm);padding:6px 8px;line-height:1.5;display:block}
+.fix{margin:0;font-size:14px;line-height:1.5;font-weight:600;color:var(--gs-color-primary)}
+.ftable td,.ftable th{vertical-align:top}
+.ftable td:first-child{white-space:nowrap}
+.stage{flex:1 1 160px;min-width:0;display:flex;flex-direction:column;gap:10px;padding:18px;border-radius:var(--gs-radius-md);background:var(--gs-color-surface);border:var(--gs-border-width) solid var(--gs-color-border)}
+.stage__n{font-family:var(--gs-font-mono);font-size:12px;color:var(--gs-color-text-muted)}
+.quote{margin:0;font-size:15px;line-height:1.5}
+.who{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--gs-color-text-muted)}
+.keep{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:12px}
+.keep li{display:flex;gap:10px;align-items:flex-start;padding:14px;border-radius:var(--gs-radius-md);background:var(--gs-color-surface-sunken)}
+.ico{width:18px;height:18px;flex:none;margin-top:2px}
+.ok{color:var(--gs-color-success)}
+.prin{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:16px}
+.prin>div{display:flex;flex-direction:column;gap:6px;padding:20px;border-top:3px solid var(--gs-color-primary);background:var(--gs-color-surface)}
+.prin strong{font-size:16px}
+.prin p{margin:0;color:var(--gs-color-text-muted);font-size:14px}
+.people{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:16px}
+.person{display:flex;flex-direction:column;gap:8px;padding:20px}
+.person h3{margin:0;font-size:17px}
+.person p{margin:0;font-size:14px}
+.person ul{margin:0;padding-left:18px;font-size:14px;color:var(--gs-color-text-muted)}
+.meas{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:12px}
+.meas>div{padding:16px;border-radius:var(--gs-radius-md);background:var(--gs-color-surface);border:var(--gs-border-width) solid var(--gs-color-border);display:flex;flex-direction:column;gap:4px}
+.meas b{font-size:28px;font-variant-numeric:tabular-nums;line-height:1.1}
+.meas span{font-size:13px;color:var(--gs-color-text-muted)}
+</style>
+</helmet>
+<div class="app" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-table="{{ v.table }}" data-gs-controls="{{ v.controls }}" data-gs-type="{{ v.type }}" data-gs-header="{{ v.header }}">
+<main class="wrap">
+
+<header style="display: flex; flex-direction: column; gap: 16px">
+<p class="eyebrow">UX evaluation · packages/gov-store/custom-requests · 14 Oct 2026</p>
+<h1 class="h1">The request workflow is careful underneath. On screen, people can't see their own request.</h1>
+<p class="lead">I reviewed all ten screens the package renders (catalog, draft basket, my requests, approvals, the decision page, the issue queue, issue items, the issue register and its record, request policies) plus the notices, navbar basket, substitution dialog and timeline. I walked the full journey on the seeded office as an employee, a primary approver and a storekeeper, measured contrast and target sizes in the browser, and read every refusal path in the services. Each screen is scored against ten heuristics weighted for Bangla use and for the four people who do this work.</p>
+</header>
+
+<section style="display: flex; flex-wrap: wrap; gap: 24px; align-items: stretch">
+<div class="card score" style="flex: 1 1 340px; padding: 32px; display: flex; flex-direction: column; gap: 20px">
+<p class="eyebrow">Human-centred score</p>
+<div style="display: flex; align-items: baseline; gap: 10px"><span class="big">33</span><span style="font-size: 28px; font-weight: 600; opacity: .85">/ 100</span></div>
+<p style="margin: 0; font-size: 17px; line-height: 1.55">Independent approvals, stock reservation, locking, substitution rules and goods issue documents are solid. What fails is feedback: the requester has no page for their own request, refusals end on bare error pages, and statuses don't say what happens next. Most fixes are views, controllers and one new page. The services stay.</p>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<span class="gs-tag gs-tag--light">2 critical</span><span class="gs-tag gs-tag--light">5 high</span><span class="gs-tag gs-tag--light">6 medium</span><span class="gs-tag gs-tag--light">1 low</span>
+</div>
+</div>
+<div class="card" style="flex: 2 1 560px; min-width: 0; padding: 32px; display: flex; flex-direction: column; gap: 14px">
+<p class="eyebrow">Heuristic breakdown (out of 10)</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); column-gap: 40px; row-gap: 14px">
+<div class="hrow"><span>Speed for daily users</span><div class="bar"><span class="b-mid" style="width: 50%"></span></div><b>5</b></div>
+<div class="hrow"><span>Error prevention</span><div class="bar"><span class="b-lo" style="width: 40%"></span></div><b>4</b></div>
+<div class="hrow"><span>Focused layout</span><div class="bar"><span class="b-lo" style="width: 40%"></span></div><b>4</b></div>
+<div class="hrow"><span>Control and undo</span><div class="bar"><span class="b-lo" style="width: 40%"></span></div><b>4</b></div>
+<div class="hrow"><span>Recognition over recall</span><div class="bar"><span class="b-lo" style="width: 30%"></span></div><b>3</b></div>
+<div class="hrow"><span>Consistency</span><div class="bar"><span class="b-lo" style="width: 30%"></span></div><b>3</b></div>
+<div class="hrow"><span>Plain language (EN + বাংলা)</span><div class="bar"><span class="b-lo" style="width: 30%"></span></div><b>3</b></div>
+<div class="hrow"><span>Accessibility</span><div class="bar"><span class="b-lo" style="width: 30%"></span></div><b>3</b></div>
+<div class="hrow"><span>Status is visible</span><div class="bar"><span class="b-crit" style="width: 20%"></span></div><b>2</b></div>
+<div class="hrow"><span>Error messages and recovery</span><div class="bar"><span class="b-crit" style="width: 20%"></span></div><b>2</b></div>
+</div>
+<p class="muted" style="margin: 0; font-size: 13px">For comparison: Organization scored 42 and Office Membership 35 before their redesigns.</p>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 16px">
+<h2 class="h2">Who does this work</h2>
+<div class="people">
+<div class="card person"><span class="who">Employee · requests</span><h3>Nasrin, office assistant</h3><p>Asks for toner, paper or a laptop a few times a month, usually on a shared PC, often in Bangla.</p><ul><li>Needs: find it fast, ask once, know when to collect.</li><li>Fears: asking wrong and being refused without a reason.</li></ul></div>
+<div class="card person"><span class="who">Approver · primary or final</span><h3>Kamal, section head</h3><p>Decides 5 to 20 requests a week between meetings, sometimes on a phone.</p><ul><li>Needs: stock, stage and reason at a glance.</li><li>Fears: approving what the store can't give.</li></ul></div>
+<div class="card person"><span class="who">Storekeeper · issues</span><h3>Rafiq, store assistant</h3><p>Issues from a counter with a barcode scanner, a queue of people and a paper register.</p><ul><li>Needs: the oldest first, issue all in one step.</li><li>Fears: wrong stock count, an audit question later.</li></ul></div>
+<div class="card person"><span class="who">National administrator · rules</span><h3>Ahsan, national ICT officer</h3><p>Sets who approves what for every office at once, a few times a year and after audits.</p><ul><li>Needs: see the effect of a rule before saving it.</li><li>Fears: a rule that lets big orders through unseen, everywhere.</li></ul></div>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 16px">
+<h2 class="h2">Measured in the running app</h2>
+<div class="meas">
+<div><b>2.19 : 1</b><span>Issue items header text on its blue panel, light mode (needs 4.5 : 1)</span></div>
+<div><b>1.50 : 1</b><span>The same header in dark mode</span></div>
+<div><b>30 px</b><span>Height of Substitute, Withdraw and Confirm receipt buttons (target 44 px)</span></div>
+<div><b>56</b><span>abort() calls in the package's services and controllers; each ends on a bare 403 / 404 / 409 / 422 page</span></div>
+<div><b>0</b><span>Pages where a requester can open one of their own requests</span></div>
+<div><b>3</b><span>Separate timeline implementations; all show the time without the date</span></div>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 16px">
+<h2 class="h2">Keep these</h2>
+<ul class="keep">
+<li><svg class="ico ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"></path></svg><span><strong>Independent approval.</strong> Nobody approves their own request, and the two stages need two different people.</span></li>
+<li><svg class="ico ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"></path></svg><span><strong>Stock is reserved on approval</strong> under row locks, so two approvals can't promise the same box.</span></li>
+<li><svg class="ico ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"></path></svg><span><strong>Safe substitution.</strong> Same category, known cost, never dearer than what was approved.</span></li>
+<li><svg class="ico ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"></path></svg><span><strong>Goods issue documents</strong> and returns that go through the store's normal receipt and posting.</span></li>
+<li><svg class="ico ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"></path></svg><span><strong>Quantity autosave</strong> in the basket, and Add without leaving the catalog.</span></li>
+<li><svg class="ico ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"></path></svg><span><strong>One queue definition</strong> (RequestQueues) behind each page and its menu badge; durable notice outbox; escalation after 3 weekdays.</span></li>
+</ul>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 16px">
+<h2 class="h2">Findings</h2>
+<div class="gs-box"><div class="gs-table-wrap"><table class="gs-table ftable">
+<caption class="gs-sr-only">Findings by severity</caption>
+<thead><tr><th scope="col">#</th><th scope="col">Severity</th><th scope="col">Finding</th><th scope="col">Evidence</th><th scope="col">Fix (board)</th></tr></thead>
+<tbody>
+<tr><td>F1</td><td><span class="gs-badge" data-tone="danger"><span class="gs-badge__label">Critical</span></span></td><td>A requester can't open their own request. The number isn't a link and there is no page: line decisions, approved quantities, approver notes, who has it now and the timeline are invisible to the person who asked.</td><td><span class="evid">routes/web.php has no GET my-requests/{id} · user/index.blade.php</span></td><td><p class="fix">New request page with progress, lines, next step and history (6)</p></td></tr>
+<tr><td>F2</td><td><span class="gs-badge" data-tone="danger"><span class="gs-badge__label">Critical</span></span></td><td>Refusals end on bare error pages: issuing more than stock (409), deciding twice (409), a stale line (422), self-approval (403). Others flash "Workflow error: …" with input lost.</td><td><span class="evid">ApprovalService, FulfillmentService, RequesterService, RequestInventory abort_* · govapprovalcontroller_flash_workflow_error</span></td><td><p class="fix">Typed refusals → message under the field, input kept (4, 8, 10)</p></td></tr>
+<tr><td>F3</td><td><span class="gs-badge" data-tone="warning"><span class="gs-badge__label">High</span></span></td><td>Statuses are wrong or silent. "Issued" shows as a warning with a clock; approval_status "closed" (58 rows) and "cannot_fulfill" have no label; two status columns become one ladder per page; nothing says what's next or who has it.</td><td><span class="evid">user/index, admin/index, fulfillment/index ladders · status-map.php has no request_* keys</span></td><td><p class="fix">One derived request status in status-map with a next-step sentence (2, 5, 6)</p></td></tr>
+<tr><td>F4</td><td><span class="gs-badge" data-tone="warning"><span class="gs-badge__label">High</span></span></td><td>Sending a basket silently splits it by approval rule: "Service Request(s) [SR-41, SR-42] submitted!" Nobody is told why there are two, or which items went where.</td><td><span class="evid">BasketService::submitBasket groups by resolvePolicy()</span></td><td><p class="fix">Preview the split before sending, explain it after (4)</p></td></tr>
+<tr><td>F5</td><td><span class="gs-badge" data-tone="warning"><span class="gs-badge__label">High</span></span></td><td>Approvers decide blind: no stock, no stage (first or final), no reason two approvers are needed, no age or escalation date. Nothing prompts a reason when a line is declined or cut, so the requester often learns nothing; the chosen option shows only as a faint border. "Review &amp; Process" is hard-coded English.</td><td><span class="evid">admin/show.blade.php · admin/index.blade.php line 40</span></td><td><p class="fix">Decision page with stock, stage, rule reason, and a prompted (optional) reason when declining or cutting (7, 8)</p></td></tr>
+<tr><td>F6</td><td><span class="gs-badge" data-tone="warning"><span class="gs-badge__label">High</span></span></td><td>Issue items: header contrast 2.19 : 1 (1.50 : 1 dark) on an off-theme blue; every quantity starts at 0; "Remaining" is danger red in the normal case; a full-width red Force Close sits beside the main action; browser confirm() dialogs.</td><td><span class="evid">fulfillment/show.blade.php · box bg-blue · metric-box--remaining</span></td><td><p class="fix">Themed header, prefilled quantities, scan list, close-the-rest dialog (10)</p></td></tr>
+<tr><td>F7</td><td><span class="gs-badge" data-tone="warning"><span class="gs-badge__label">High</span></span></td><td>Policies: one rule applies to every office, but the page never says so. Options read "AUTO_APPROVE (Fulfill instantly…)" with emoji; a category with no rule shows PRIMARY_ONLY as if saved; an item exception needs a typed "Inventory item ID"; no preview of the effect, no record of who changed a rule.</td><td><span class="evid">admin/policies.blade.php · gov_approval_policies has no office_id · requests.configure is national</span></td><td><p class="fix">Plain rules, inherited state, item search, live preview (12)</p></td></tr>
+<tr><td>F8</td><td><span class="gs-badge" data-tone="info"><span class="gs-badge__label">Medium</span></span></td><td>Notices are "SR-2026-000293 — Approved": no date, no link, never read, the last 20 forever, above every queue. Approvers get "Submitted" for requests they already decided.</td><td><span class="evid">components/notices · RequestNotices::forUser · custom_request_notices.read_at is never set</span></td><td><p class="fix">"Waiting for you" plus sentences with dates and links (5, 7, 9)</p></td></tr>
+<tr><td>F9</td><td><span class="gs-badge" data-tone="info"><span class="gs-badge__label">Medium</span></span></td><td>Time is unclear: timelines print H:i only; the register shows "20:28" in its timeline and "04 Oct 2026, 02:29 PM" for the same moment. "Executed by: Ripon" (first name).</td><td><span class="evid">timeline-widget, admin/show, fulfillment-register/show</span></td><td><p class="fix">One &lt;x-gs::timeline&gt; with full names and dated times (6, 11)</p></td></tr>
+<tr><td>F10</td><td><span class="gs-badge" data-tone="info"><span class="gs-badge__label">Medium</span></span></td><td>Words: "Gov Approvals Dashboard", "Pick &amp; Issue", "Force Close", "Fulfillment Ledger", "1 lines", a leaked key <span class="evid" style="display: inline">requestlabels::requests.request_type_equipment</span>. Bangla menu says চাহিদাপত্র, pages say সার্ভিস রিকোয়েস্ট.</td><td><span class="evid">lang/en-US, lang/bn-BD requests.php (284 keys each)</span></td><td><p class="fix">Glossary and whole-sentence keys (2)</p></td></tr>
+<tr><td>F11</td><td><span class="gs-badge" data-tone="info"><span class="gs-badge__label">Medium</span></span></td><td>Catalog: three panels before the first item; quick chips are fixed English words with emoji (Bangla item names won't match); a separate Search button; "Approved" count includes issued.</td><td><span class="evid">catalog/index.blade.php · quick_* keys</span></td><td><p class="fix">Live search, filter chips, draft rail, honest counts (3)</p></td></tr>
+<tr><td>F12</td><td><span class="gs-badge" data-tone="info"><span class="gs-badge__label">Medium</span></span></td><td>The kit is bypassed: AdminLTE boxes re-skinned by 187 lines of <span class="evid" style="display: inline">.cr-theme … !important</span>, inline styles, mislabelled columns ("Item type" shows the request type).</td><td><span class="evid">resources/css/custom-requests.css · user/index, admin/index</span></td><td><p class="fix">Rebuild on &lt;x-gs::*&gt;; delete the overrides (all)</p></td></tr>
+<tr><td>F13</td><td><span class="gs-badge" data-tone="info"><span class="gs-badge__label">Medium</span></span></td><td>Register lists every record with no search or paging; goods issue lines read "Accessory 2" (class name) instead of the item; the storekeeper sees help written for the requester.</td><td><span class="evid">FulfillmentRegisterController::index ->get() · fulfillment-register/show</span></td><td><p class="fix">Filters, paging, item names, document links (11)</p></td></tr>
+<tr><td>F14</td><td><span class="gs-badge" data-tone="status-archived"><span class="gs-badge__label">Low</span></span></td><td>Phones: 6 to 7 column tables scroll sideways; 30 px buttons; actions hidden in the status column.</td><td><span class="evid">user/index, admin/index at 375 px</span></td><td><p class="fix">Card rows under 768 px, 44 px targets (5b)</p></td></tr>
+</tbody></table></div></div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 16px">
+<h2 class="h2">The journey today</h2>
+<p class="muted" style="margin: 0">Nasrin needs a toner cartridge and two reams of paper. Kamal approves, Rafiq issues. The quotes are illustrative, written from what each screen shows.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 12px">
+<div class="stage"><span class="stage__n">1 · Find</span><span class="who">Nasrin</span><p class="quote">"The quick buttons say Laptop, Mouse, Chair. Our toner is listed in Bangla. I scroll past three boxes first."</p></div>
+<div class="stage"><span class="stage__n">2 · Describe</span><span class="who">Nasrin</span><p class="quote">"Purpose, justification, cost centre, request type… for one toner? The form was there even when my basket was empty."</p></div>
+<div class="stage"><span class="stage__n">3 · Send</span><span class="who">Nasrin</span><p class="quote">"'Service Request(s) [SR-41, SR-42] submitted!' I asked once. Why are there two?"</p></div>
+<div class="stage"><span class="stage__n">4 · Wait</span><span class="who">Nasrin</span><p class="quote">"It says Approved. By whom? Is the paper approved too? When do I collect it? I can't click the number."</p></div>
+<div class="stage"><span class="stage__n">5 · Decide</span><span class="who">Kamal</span><p class="quote">"Do we even have 12 reams? Am I the last approver? If I cut it, how will she know why?"</p></div>
+<div class="stage"><span class="stage__n">6 · Issue</span><span class="who">Rafiq</span><p class="quote">"I type 1, then 2… zero is the default. The big red Force Close is right under my button."</p></div>
+<div class="stage"><span class="stage__n">7 · Receive</span><span class="who">Nasrin</span><p class="quote">"Confirm receipt is a small green button inside the status column. Did it work?"</p></div>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 16px">
+<h2 class="h2">Principles for the redesign</h2>
+<div class="prin">
+<div><strong>One request, one story.</strong><p>The person who asked can open it and see where it is, who has it and what happens next.</p></div>
+<div><strong>Errors speak and keep your input.</strong><p>Every refusal is a sentence where the problem is. No bare error pages.</p></div>
+<div><strong>Decide with the facts at hand.</strong><p>Stock, stage, the rule's reason and the age sit beside every decision.</p></div>
+<div><strong>The usual case is one step.</strong><p>Issue everything approved, approve as asked, reorder the same items.</p></div>
+<div><strong>Irreversible steps show their reach.</strong><p>Closing, declining and rule changes say who and what they affect, and need a reason.</p></div>
+<div><strong>One vocabulary, two languages.</strong><p>চাহিদাপত্র everywhere in Bangla; whole sentences, never stitched fragments.</p></div>
+</div>
+</section>
+
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"$preview":{"width":1440,"height":3300}}'>
+class Component extends DCLogic {
+renderVals() {
+const V = {
+'civic-ledger': { header: 'neutral', density: 'regular', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { header: 'brand', density: 'regular', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { header: 'dark', density: 'compact', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { header: 'dark', density: 'comfortable', table: 'ledger', surfaces: 'flat', controls: 'outlined', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { header: 'brand', density: 'compact', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { header: 'floating', density: 'regular', table: 'rules', surfaces: 'elevated', controls: 'filled', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+return { skin, mode, v: V[skin] };
+}
+}
+</script>
+</body>
+</html>

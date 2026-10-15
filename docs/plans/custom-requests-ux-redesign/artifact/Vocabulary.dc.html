@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Request statuses, words and structure</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/aef52f8d7c3fef253b593dd05928ec1c">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Source+Serif+4:wght@400;600;700&amp;family=Noto+Serif+Bengali:wght@400;600&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:var(--gs-color-link)}a:hover{color:var(--gs-color-link-hover)}
+.app{min-height:100%;background:var(--gs-color-bg);color:var(--gs-color-text);font-family:var(--gs-font-sans);font-size:15px;line-height:1.55}
+.wrap{box-sizing:border-box;max-width:1280px;margin:0 auto;padding:64px 24px 96px;display:flex;flex-direction:column;gap:48px}
+.eyebrow{margin:0;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gs-color-text-muted)}
+.h1{margin:0;font-family:var(--gs-font-display);font-size:40px;line-height:1.15;font-weight:800;letter-spacing:-.02em}
+.h2{margin:0;font-family:var(--gs-font-display);font-size:24px;line-height:1.25;font-weight:700}
+.lead{margin:0;font-size:17px;line-height:1.6;color:var(--gs-color-text-muted);max-width:900px}
+.muted{color:var(--gs-color-text-muted)}
+.mono{font-family:var(--gs-font-mono);font-size:12px}
+.bn{font-family:'Noto Sans Bengali',var(--gs-font-sans)}
+.old{color:var(--gs-color-text-muted);text-decoration:line-through;text-decoration-thickness:1px}
+.ia{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:16px}
+.lane{display:flex;flex-direction:column;gap:10px;padding:20px;border-radius:var(--gs-radius-md);background:var(--gs-color-surface);border:var(--gs-border-width) solid var(--gs-color-border)}
+.lane h3{margin:0;font-size:16px}
+.path{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:14px}
+.path span.n{padding:4px 10px;border-radius:var(--gs-radius-sm);background:var(--gs-color-surface-sunken)}
+.path span.a{color:var(--gs-color-text-muted)}
+.sent{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr));gap:16px}
+.sent>div{padding:18px;border-radius:var(--gs-radius-md);background:var(--gs-color-surface);border:var(--gs-border-width) solid var(--gs-color-border);display:flex;flex-direction:column;gap:8px}
+.sent p{margin:0}
+</style>
+</helmet>
+<div class="app" data-skin="{{ skin }}" data-theme="{{ mode }}" data-gs-mode="{{ mode }}" data-gs-density="{{ v.density }}" data-gs-radius="{{ v.radius }}" data-gs-surfaces="{{ v.surfaces }}" data-gs-status-style="{{ v.status_style }}" data-gs-table="{{ v.table }}" data-gs-controls="{{ v.controls }}" data-gs-type="{{ v.type }}" data-gs-header="{{ v.header }}">
+<main class="wrap">
+
+<header style="display: flex; flex-direction: column; gap: 14px">
+<p class="eyebrow">Board 2 · shared by every screen</p>
+<h1 class="h1">One status that says where the request is, and who has it</h1>
+<p class="lead">Today two columns (approval and fulfilment) become a different label ladder on each page. The redesign derives one request status from both, keeps per-line detail on the request page, and adds <span class="mono">request_*</span> entries to <span class="mono">theming/status-map.php</span> so every badge is themed, has an icon and never relies on colour alone.</p>
+</header>
+
+<section style="display: flex; flex-direction: column; gap: 14px">
+<h2 class="h2">Request statuses</h2>
+<div class="gs-box"><div class="gs-table-wrap"><table class="gs-table">
+<caption class="gs-sr-only">Request statuses, when they apply and the next step shown to the requester</caption>
+<thead><tr><th scope="col">Badge</th><th scope="col">status-map key · tone</th><th scope="col">When (stored values)</th><th scope="col">Next step shown to the requester</th></tr></thead>
+<tbody>
+<tr><td><span class="gs-badge" data-tone="status-pending"><span class="gs-badge__label">Waiting for approval</span></span></td><td><span class="mono">request_pending_primary · status-pending</span></td><td><span class="mono">approval = pending_primary</span></td><td>Kamal Hossain will decide. If nobody decides in 3 working days, the office head is told.</td></tr>
+<tr><td><span class="gs-badge" data-tone="status-pending"><span class="gs-badge__label">Waiting for final approval</span></span></td><td><span class="mono">request_pending_final · status-pending</span></td><td><span class="mono">approval = pending_final</span></td><td>Kamal Hossain approved it. Dr. Selina Rahman gives the final decision.</td></tr>
+<tr><td><span class="gs-badge" data-tone="info"><span class="gs-badge__label">Approved · with the store</span></span></td><td><span class="mono">request_approved · info</span></td><td><span class="mono">approval ∈ approved, partially_approved · fulfilment = unstarted</span></td><td>Rafiq Ahmed (store) is preparing your items. You'll get a notice when they're ready.</td></tr>
+<tr><td><span class="gs-badge" data-tone="info"><span class="gs-badge__label">Partly issued</span></span></td><td><span class="mono">request_partly_issued · info</span></td><td><span class="mono">fulfilment = partially_issued</span></td><td>You have 2 of 3 items. The store is getting the rest.</td></tr>
+<tr><td><span class="gs-badge" data-tone="status-ready"><span class="gs-badge__label">Issued · confirm receipt</span></span></td><td><span class="mono">request_issued · status-ready</span></td><td><span class="mono">fulfilment = issued · received_at null</span></td><td>Collected it? Tell us you received it.</td></tr>
+<tr><td><span class="gs-badge" data-tone="success"><span class="gs-badge__label">Received</span></span></td><td><span class="mono">request_received · success</span></td><td><span class="mono">received_at set</span></td><td>Nothing more to do. Unused supplies can be returned from this page.</td></tr>
+<tr><td><span class="gs-badge" data-tone="status-undeployable"><span class="gs-badge__label">Closed · not all items given</span></span></td><td><span class="mono">request_closed_short · status-undeployable</span></td><td><span class="mono">fulfilment ∈ closed, cannot_fulfill · issued &lt; approved</span></td><td>The store closed the rest: "Out of stock until December." You can ask again later.</td></tr>
+<tr><td><span class="gs-badge" data-tone="doc-rejected"><span class="gs-badge__label">Not approved</span></span></td><td><span class="mono">request_rejected · doc-rejected</span></td><td><span class="mono">approval = rejected</span></td><td>Kamal Hossain declined: "We have enough toner in the section." You can send a new request.</td></tr>
+<tr><td><span class="gs-badge" data-tone="status-archived"><span class="gs-badge__label">Withdrawn</span></span></td><td><span class="mono">request_withdrawn · status-archived</span></td><td><span class="mono">approval = cancelled</span></td><td>You withdrew this request on 12 Oct.</td></tr>
+<tr><td><span class="gs-badge" data-tone="warning"><span class="gs-badge__label">Return requested</span></span></td><td><span class="mono">request_return_requested · warning</span></td><td><span class="mono">return_requested_at set · no document</span></td><td>Bring the items to the store. Rafiq Ahmed will check them and prepare a receipt.</td></tr>
+<tr><td><span class="gs-badge" data-tone="info"><span class="gs-badge__label">Return being received</span></span></td><td><span class="mono">request_return_drafted · info</span></td><td><span class="mono">return_document_id set</span></td><td>The store is checking the returned items. Stock changes when the receipt is posted.</td></tr>
+<tr><td><span class="gs-badge" data-tone="status-undeployable"><span class="gs-badge__label">Needs office review</span></span></td><td><span class="mono">request_needs_review · status-undeployable</span></td><td><span class="mono">office_id null (historical)</span></td><td>This older request has no office. An administrator has to review it before anything else happens.</td></tr>
+</tbody></table></div></div>
+<p class="muted" style="margin: 0; font-size: 14px">The stored <span class="mono">approval_status = closed</span> (58 seeded rows) maps by its fulfilment value. Lines keep their own short labels on the request page: <em>Approved as asked</em> · <em>Approved 3 of 5</em> · <em>Not approved</em> · <em>Alternative given</em> · <em>Issued 2 of 3</em> · <em>Closed</em>.</p>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 14px">
+<h2 class="h2">Words</h2>
+<div class="gs-box"><div class="gs-table-wrap"><table class="gs-table">
+<caption class="gs-sr-only">Glossary in English and Bangla with the words they replace</caption>
+<thead><tr><th scope="col">Use</th><th scope="col">বাংলা</th><th scope="col">Instead of</th></tr></thead>
+<tbody>
+<tr><td><strong>Request</strong></td><td class="bn" lang="bn">চাহিদাপত্র</td><td class="old">Service Request · সার্ভিস রিকোয়েস্ট</td></tr>
+<tr><td><strong>Request items</strong> (catalog)</td><td class="bn" lang="bn">চাহিদাপত্র দিন</td><td class="old">Service Catalog · সার্ভিস ক্যাটালগ</td></tr>
+<tr><td><strong>Draft request</strong> (navbar: Draft · 3)</td><td class="bn" lang="bn">খসড়া চাহিদাপত্র</td><td class="old">My Service Basket · সার্ভিস বাস্কেট</td></tr>
+<tr><td><strong>Send request</strong></td><td class="bn" lang="bn">চাহিদাপত্র পাঠান</td><td class="old">Submit Service Request</td></tr>
+<tr><td><strong>What is it for?</strong> · <strong>Why is it needed?</strong></td><td class="bn" lang="bn">কোন কাজে লাগবে? · কেন প্রয়োজন?</td><td class="old">Purpose · Justification</td></tr>
+<tr><td><strong>Needed by</strong> · <strong>Deliver to</strong></td><td class="bn" lang="bn">কবের মধ্যে প্রয়োজন · কোথায় পৌঁছাবে</td><td class="old">Required By Date · Delivery Location</td></tr>
+<tr><td><strong>Approvals</strong> · <strong>First approval</strong> · <strong>Final approval</strong></td><td class="bn" lang="bn">অনুমোদন · প্রথম অনুমোদন · চূড়ান্ত অনুমোদন</td><td class="old">Gov Approvals Dashboard · primary · final</td></tr>
+<tr><td><strong>Approve</strong> · <strong>Approve fewer</strong> · <strong>Decline</strong></td><td class="bn" lang="bn">অনুমোদন · কম অনুমোদন · নামঞ্জুর</td><td class="old">Approve / Reject · Finalize Decisions</td></tr>
+<tr><td><strong>To issue</strong> · <strong>Issue items</strong></td><td class="bn" lang="bn">সরবরাহের অপেক্ষায় · মালামাল সরবরাহ</td><td class="old">Fulfillment Queue · Pick &amp; Issue Items</td></tr>
+<tr><td><strong>Give an alternative</strong></td><td class="bn" lang="bn">বিকল্প দিন</td><td class="old">Substitute · Alternative Substitution</td></tr>
+<tr><td><strong>Close the rest</strong></td><td class="bn" lang="bn">বাকিটা বন্ধ করুন</td><td class="old">Force Close Request · ফোর্স ক্লোজ</td></tr>
+<tr><td><strong>I've received it</strong></td><td class="bn" lang="bn">বুঝে পেয়েছি</td><td class="old">Confirm receipt</td></tr>
+<tr><td><strong>Issue register</strong></td><td class="bn" lang="bn">সরবরাহ রেজিস্টার</td><td class="old">Fulfillment Register · Fulfillment Ledger · ফুলফিলমেন্ট</td></tr>
+<tr><td><strong>Request rules</strong>: No approval needed · One approver · Two approvers</td><td class="bn" lang="bn">চাহিদাপত্রের নিয়ম: অনুমোদন লাগবে না · একজন অনুমোদন দেবেন · দুইজন অনুমোদন দেবেন</td><td class="old">AUTO_APPROVE · PRIMARY_ONLY · PRIMARY_AND_FINAL</td></tr>
+<tr><td><strong>Hardware</strong> · <strong>Accessory</strong> · <strong>Supply</strong></td><td class="bn" lang="bn">যন্ত্রপাতি · আনুষঙ্গিক · সরবরাহ সামগ্রী</td><td class="old">mixed per page</td></tr>
+<tr><td>"Rafiq Ahmed issued 2 items · 14 Oct, 10:42"</td><td class="bn" lang="bn">"রফিক আহমেদ ২টি মালামাল সরবরাহ করেছেন · ১৪ অক্টোবর, ১০:৪২"</td><td class="old">Executed by: Rafiq · 10:42</td></tr>
+</tbody></table></div></div>
+<p class="muted" style="margin: 0; font-size: 14px">Bangla drafts need a native reviewer (decision D6, shared with Organization and Office Membership).</p>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 14px">
+<h2 class="h2">Whole sentences, never stitched</h2>
+<div class="sent">
+<div><span class="mono">request_split_sent</span><p>Your items need different approvals, so we sent :count requests: :numbers.</p><p class="bn" lang="bn">মালামালগুলোর অনুমোদনের নিয়ম আলাদা, তাই :countটি চাহিদাপত্র পাঠানো হয়েছে: :numbers।</p></div>
+<div><span class="mono">request_line_reduced</span><p>:approver approved :approved of :requested. Their note: “:note”</p><p class="bn" lang="bn">:approver :requestedটির মধ্যে :approvedটি অনুমোদন করেছেন। তাঁর মন্তব্য: “:note”</p></div>
+<div><span class="mono">request_next_pending_primary</span><p>:approver will decide. If nobody decides by :date, the office head is told.</p><p class="bn" lang="bn">:approver সিদ্ধান্ত দেবেন। :date-এর মধ্যে সিদ্ধান্ত না হলে অফিস প্রধানকে জানানো হবে।</p></div>
+<div><span class="mono">request_refused_stock</span><p>Only :available :item are free now. Issue :available or fewer, or give an alternative.</p><p class="bn" lang="bn">এখন মাত্র :availableটি :item খালি আছে। :availableটি বা তার কম সরবরাহ করুন, অথবা বিকল্প দিন।</p></div>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 14px">
+<h2 class="h2">Structure</h2>
+<div class="ia">
+<div class="lane"><h3>Employee</h3><div class="path"><span class="n">Request items</span><span class="a">→</span><span class="n">Draft request</span><span class="a">→</span><span class="n">My requests</span><span class="a">→</span><span class="n">Request page</span></div><p class="muted" style="margin: 0; font-size: 14px">My requests tabs: Active · Needs you · Finished. The navbar shows "Draft · 3" only while a draft has items.</p></div>
+<div class="lane"><h3>Approver</h3><div class="path"><span class="n">Approvals</span><span class="a">→</span><span class="n">Decide</span></div><p class="muted" style="margin: 0; font-size: 14px">Tabs: Waiting for me · Overdue · Decided by me. Same RequestQueues query as the menu badge.</p></div>
+<div class="lane"><h3>Storekeeper</h3><div class="path"><span class="n">To issue</span><span class="a">→</span><span class="n">Issue items</span><span class="a">·</span><span class="n">Issue register</span><span class="a">→</span><span class="n">Record</span></div><p class="muted" style="margin: 0; font-size: 14px">Tabs: Ready · Partly issued · Returns to receive. Oldest and needed-soonest first.</p></div>
+<div class="lane"><h3>National administrator</h3><div class="path"><span class="n">Administration</span><span class="a">›</span><span class="n">Rules &amp; settings</span><span class="a">›</span><span class="n">Request rules</span></div><p class="muted" style="margin: 0; font-size: 14px">One rule set for every office (requests.configure is national). The breadcrumb no longer sits under Approvals (today <span class="mono">/gov-requests/admin/settings/policies</span>).</p></div>
+</div>
+</section>
+
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"civic-ledger","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender","default"],"section":"Theme"},"mode":{"editor":"enum","default":"light","options":["light","dark"],"section":"Theme"},"$preview":{"width":1440,"height":2300}}'>
+class Component extends DCLogic {
+renderVals() {
+const V = {
+'civic-ledger': { header: 'neutral', density: 'regular', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'lg', type: 'sans', status_style: 'tinted' },
+'default': { header: 'brand', density: 'regular', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'tinted' },
+'digital-blue': { header: 'dark', density: 'compact', table: 'rules', surfaces: 'card', controls: 'outlined', radius: 'sm', type: 'sans', status_style: 'chip' },
+'executive-neutral': { header: 'dark', density: 'comfortable', table: 'ledger', surfaces: 'flat', controls: 'outlined', radius: 'none', type: 'serif-display', status_style: 'text' },
+'institutional-green': { header: 'brand', density: 'compact', table: 'grid', surfaces: 'card', controls: 'outlined', radius: 'md', type: 'sans', status_style: 'tinted' },
+'lavender': { header: 'floating', density: 'regular', table: 'rules', surfaces: 'elevated', controls: 'filled', radius: 'lg', type: 'sans', status_style: 'tinted' }
+};
+const skin = V[this.props.theme] ? this.props.theme : 'civic-ledger';
+const mode = this.props.mode === 'dark' ? 'dark' : 'light';
+return { skin, mode, v: V[skin] };
+}
+}
+</script>
+</body>
+</html>
