@@ -3,68 +3,40 @@
 @section('title', __('storeops::storeops.stock_card_title', ['name' => $item->name]))
 
 @section('content')
-<div class="storeops-theme">
-<div class="row">
-    <div class="col-md-12">
-        <div class="box box-default">
-            <div class="box-header with-border">
-                <h3 class="box-title">
-                    <i class="fa fa-book"></i> {{ __('storeops::storeops.immutable_stock_register') }}
-                </h3>
-                <div class="box-tools pull-right">
-                    <span class="label label-primary storeops-inline-231" >
-                        {{ __('storeops::storeops.current_snipeit_projection') }} {{ $item->qty }}
-                    </span>
-                </div>
-            </div>
-            <div class="box-body">
-                <h4>{{ __('storeops::storeops.item_label') }} <strong>{{ $item->name }}</strong></h4>
+@php
+    $c = 'storeops::storeops.stock_card.';
+@endphp
+<div class="storeops-theme storeops-card">
+    @include('storeops::register.partials.context-bar')
+    @include('storeops::register.partials.item-header', ['kind' => 'stock'])
 
-                <table class="table table-striped table-bordered storeops-inline-230 gs-table" >
-                    <thead>
-                        <tr  class="storeops-inline-229">
-                            <th>Date & Time</th>
-                            <th>Reference Document</th>
-                            <th>Operator</th>
-                            <th class="text-center text-success">IN (+)</th>
-                            <th class="text-center text-danger">OUT (-)</th>
-                            <th class="text-center storeops-inline-228" >Running Balance</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($movements as $movement)
-                            <tr>
-                                <td>{{ \Carbon\Carbon::parse($movement->created_at)->format('d M Y, h:i A') }}</td>
-                              <td>
-                                    @if($movement->document)
-                                        <!-- Reads new document_number, falling back to old columns for legacy data -->
-                                        <strong>{{ $movement->document->document_number ?? $movement->document->receipt_no ?? $movement->document->issue_no ?? $movement->document->adjustment_no }}</strong>
-                                    @else
-                                        {{ __('storeops::storeops.system_initialization') }}
-                                    @endif
-                                </td>
-                                <td>{{ $movement->creator->first_name ?? __('storeops::storeops.system_initialization') }}</td>
+    @if (! $card)
+        <x-gs::empty-state icon="fa-building" :title="__('storeops::storeops.stock_register.no_office')" />
+    @else
+        @include('storeops::register.partials.card-summary')
 
-                                <td class="text-center text-success">
-                                    {{ $movement->movement_type === 'IN' ? $movement->quantity : '-' }}
-                                </td>
-                                <td class="text-center text-danger">
-                                    {{ $movement->movement_type === 'OUT' ? $movement->quantity : '-' }}
-                                </td>
-                                <td class="text-center storeops-inline-227" >
-                                    {{ $movement->running_balance }}
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center text-muted">{{ __('storeops::storeops.no_movements_recorded') }}</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+        <div class="storeops-split">
+            <div class="storeops-split__main">
+                @include('storeops::register.partials.balance-chart')
             </div>
+            <aside class="storeops-split__side">
+                @include('storeops::register.partials.stock-outlook')
+                @include('storeops::register.partials.chain-check')
+            </aside>
         </div>
-    </div>
-</div>
+
+        <div class="storeops-split" id="ledger">
+            <div class="storeops-split__main">
+                <x-gs::box :title="__($c.'ledger_title')" icon="fas fa-book">
+                    <p class="gs-muted">{{ __($c.'ledger_subtitle') }}</p>
+                    @include('storeops::register.partials.period-filter')
+                    @include('storeops::register.partials.ledger-table', ['showTags' => false])
+                </x-gs::box>
+            </div>
+            <aside class="storeops-split__side">
+                @include('storeops::register.partials.entry-details', ['unit' => $facts['unit']])
+            </aside>
+        </div>
+    @endif
 </div>
 @endsection

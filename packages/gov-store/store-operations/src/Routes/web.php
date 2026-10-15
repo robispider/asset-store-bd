@@ -15,7 +15,10 @@ Route::group([
     // 1. Stock Register & Kardex (Preserved Core Dashboards)
     // =========================================================================
     Route::get('/register', [StockRegisterController::class, 'index'])->middleware('gov.can:storeops.documents.view')->name('storeops.register.index');
+    Route::get('/register/export', [StockRegisterController::class, 'export'])->middleware('gov.can:storeops.documents.view')->name('storeops.register.export');
     Route::get('/kardex/{type}/{id}', [StockRegisterController::class, 'kardex'])->middleware('gov.can:storeops.documents.view')->name('storeops.register.kardex');
+    Route::get('/kardex/{type}/{id}/export', [StockRegisterController::class, 'exportCard'])->middleware('gov.can:storeops.documents.view')->name('storeops.register.kardex.export');
+    Route::get('/kardex/{type}/{id}/print', [StockRegisterController::class, 'printCard'])->middleware('gov.can:storeops.documents.view')->name('storeops.register.kardex.print');
 
     // =========================================================================
     // 2. Generic Document Engine (The Unified Workspace & Hub)
