@@ -83,7 +83,8 @@ $(function () {
             step = value; $('.wizard-step-pane').removeClass('active'); $('#pane_step_'+step).addClass('active');
             $('.step-node').removeClass('active complete');
             for (let i=1; i<=3; i++) $('#badge_step_'+i).addClass(i<step ? 'complete' : i===step ? 'active' : '');
-            $('#btn_prev').css('visibility',step===1 ? 'hidden' : 'visible'); $('#btn_next').toggle(step!==3); $('#btn_submit').toggle(step===3);
+            // The buttons start hidden by !important utility classes (CSP forbids inline styles), so toggle those classes.
+            $('#btn_prev').toggleClass('storeops-inline-7', step===1); $('#btn_next').toggle(step!==3); $('#btn_submit').toggleClass('storeops-inline-6', step!==3);
         }
         $('#btn_next').on('click', () => {
             if (step===2 && !$('#input_rule_name')[0].reportValidity()) return;

@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "id": "asset-tagging.grn-attention",
+  "title": "A desktop line without any challan or PO date needs attention and blocks posting; 'use a standard tag' clears it and 'back to a Govt. Tag' restores it; entering the challan date turns it into a Govt. Tag; switching the receiving source to Donation makes it a standard tag with an explanation; the draft is voided and no tag is issued",
+  "features": ["asset-tagging.grn", "storeops.grn"],
+  "tags": ["seeded", "write", "asset-tagging", "validation"],
+  "execution": { "capability": "write-fixtures", "language": "en-US", "timeoutMs": 240000, "accessMode": "any" },
+  "fixtures": {
+    "office": { "requirements": { "operational": true, "ledgerOpen": true } },
+    "actors": {
+      "storekeeper": { "role": "storekeeper", "capabilities": { "allOf": ["storeops.documents.draft", "storeops.documents.post"] } }
+    },
+    "records": {
+      "desktop": { "kind": "assetModel", "categoryContains": "Desktop Computers" }
+    }
+  },
+  "data": {
+    "challanNo": { "generate": "markedText", "prefix": "LIVE-CH", "length": 5 },
+    "challanDate": { "generate": "date", "offsetDays": -2 },
+    "challanMMYY": { "generate": "date", "offsetDays": -2, "format": "MMYY" },
+    "voidReason": { "generate": "markedText", "prefix": "LIVE attention scenarios finished", "length": 4 }
+  },
+  "steps": [
+    { "action": "observe", "check": "asset-tags.readiness", "args": { "officeId": "${fixtures.office.id}" }, "as": "ready" },
+    { "action": "compare", "actual": "${observed.ready.enabled}", "equals": true, "note": "Precondition: the office is enabled" },
+    { "action": "observe", "check": "storeops.documents", "args": { "officeId": "${fixtures.office.id}", "userId": "${actors.storekeeper.id}", "type": "receipt" }, "as": "before" },
+
+    { "use": "auth.login", "with": { "actor": "storekeeper" } },
+    { "action": "goto", "route": "storeops.hub", "query": { "start": "receipt" } },
+    { "action": "wait", "target": "storeops.hubStartDialog", "state": "visible" },
+    { "action": "check", "target": "storeops.hubStartReceipt" },
+    { "action": "submitForm", "target": "storeops.hubStartSubmit" },
+    { "action": "capture", "url": true, "pattern": "/documents/receipt/([0-9a-f-]{36})", "as": "docId" },
+    { "action": "ledger", "kind": "grn", "id": "${captured.docId}", "effect": "Draft GRN for attention scenarios, voided at the end", "cleanup": "retained" },
+
+    { "action": "select", "target": "storeops.purchaseType", "value": "Purchase" },
+    { "action": "capture", "target": "css=#supplier_id option:not([value='']) >> nth=0", "attribute": "value", "as": "supplierId" },
+    { "action": "select", "target": "css=#supplier_id", "value": "${captured.supplierId}", "note": "Purchases need an active supplier (store-operations rule)" },
+    { "action": "fill", "target": "storeops.challanNumber", "value": "${data.challanNo}", "note": "A challan number without a date satisfies the store reference rule but not the tag date" },
+    { "action": "select2", "target": "storeops.row0Item", "search": "${fixtures.desktop.name}", "option": "${fixtures.desktop.name}" },
+    { "action": "fill", "target": "storeops.row0Qty", "value": "1" },
+    { "action": "wait", "target": "tagging.panel0DateAttention", "state": "visible", "note": "A Govt. Tag needs an acquisition date" },
+    { "action": "assert", "target": "tagging.panel0GoToDate", "test": "visible" },
+    { "action": "wait", "target": "storeops.checklistFailing", "state": "attached" },
+    { "action": "assert", "target": "storeops.checklistFailing", "test": "count", "equals": 1, "note": "The line is a required checklist item" },
+    { "action": "assert", "target": "storeops.post", "test": "disabled" },
+
+    { "action": "click", "target": "tagging.panel0UseStandard" },
+    { "action": "wait", "target": "tagging.panel0StandardChosen", "state": "visible" },
+    { "action": "assert", "target": "tagging.panel0Standard", "test": "visible" },
+    { "action": "wait", "target": "css=#triggerPostBtn:not([disabled])", "state": "attached", "note": "Nothing blocks a standard tag" },
+    { "action": "assert", "target": "storeops.checklistFailing", "test": "count", "equals": 0 },
+
+    { "action": "click", "target": "tagging.panel0UseGovt" },
+    { "action": "wait", "target": "tagging.panel0DateAttention", "state": "visible" },
+    { "action": "assert", "target": "storeops.post", "test": "disabled" },
+
+    { "action": "fill", "target": "storeops.challanDate", "value": "${data.challanDate}" },
+    { "action": "wait", "target": "tagging.panel0Govt", "state": "visible", "note": "The saved challan date resolves the line" },
+    { "action": "assert", "target": "css=tr[data-parent-index='0'] .at-preview .gs-seg:nth-child(4) .gs-seg__v", "test": "text", "equals": "${data.challanMMYY}" },
+    { "action": "wait", "target": "css=#triggerPostBtn:not([disabled])", "state": "attached" },
+
+    { "action": "select", "target": "storeops.purchaseType", "value": "Donation" },
+    { "action": "wait", "target": "tagging.panel0Standard", "state": "visible", "note": "Donations get standard tags until their acquisition-date rule (D-04) is decided" },
+    { "action": "assert", "target": "tagging.panel0ReceivingSource", "test": "visible" },
+    { "action": "assert", "target": "tagging.panel0Govt", "test": "count", "equals": 0 },
+
+    { "action": "click", "target": "storeops.voidOpen" },
+    { "action": "wait", "target": "storeops.voidReason", "state": "visible" },
+    { "action": "fill", "target": "storeops.voidReason", "value": "${data.voidReason}" },
+    { "action": "submitForm", "target": "storeops.voidSubmit" },
+    { "action": "waitObserve", "check": "asset-tags.document", "args": { "id": "${captured.docId}" }, "path": "status", "equals": "CANCELLED", "as": "voided" },
+    { "action": "compare", "actual": "${observed.voided.tags}", "equals": "", "note": "A voided draft issues no tag" }
+  ],
+  "cleanup": { "policy": "retained-with-report" }
+}

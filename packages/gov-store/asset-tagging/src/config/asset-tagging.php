@@ -19,6 +19,10 @@ return [
     // Set to the review date once custodians have verified the preflight list.
     'legacy_reviewed_at' => env('ASSET_TAGS_LEGACY_REVIEWED_AT'),
 
+    // G6 rehearsal: lets experiment offices pass G6 so a whole issuance can be rehearsed end to end on a
+    // seeded dataset (live journey tests). Ignored in production; real offices are unaffected.
+    'rehearsal' => (bool) env('ASSET_TAGS_REHEARSAL', false),
+
     // A Govt. Tag sequence (NNNN) runs 1..9999 per 14-digit prefix and is never reset or wrapped.
     'sequence_capacity' => 9999,
 ];

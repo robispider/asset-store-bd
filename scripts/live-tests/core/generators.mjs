@@ -34,10 +34,14 @@ export class DeterministicRandom {
     return `${prefix}-${suffix}`;
   }
 
-  date(offsetDays = 0) {
+  /** ISO date (YYYY-MM-DD), or the same day in `format` built from the tokens YYYY, YY, MM and DD (e.g. "MMYY"). */
+  date(offsetDays = 0, format = null) {
     const d = new Date();
     d.setDate(d.getDate() + offsetDays);
-    return d.toISOString().split('T')[0];
+    const iso = d.toISOString().split('T')[0];
+    if (!format) return iso;
+    const [yyyy, mm, dd] = iso.split('-');
+    return format.replace(/YYYY|YY|MM|DD/g, token => ({ YYYY: yyyy, YY: yyyy.slice(2), MM: mm, DD: dd })[token]);
   }
 
   email(prefix = 'actor') {
@@ -65,7 +69,7 @@ export function resolveData(data = {}, rng, uniqueSuffix = '') {
         case 'markedText': v = rng.uniqueMarkedText(def.prefix || 'LIVE', def.length || 6) + (uniqueSuffix ? `-${uniqueSuffix}` : ''); break;
         case 'integer': v = rng.integer(def.min ?? 1, def.max ?? 10); break;
         case 'decimal': v = rng.decimal(def.min ?? 0, def.max ?? 100, def.places ?? 2); break;
-        case 'date': v = rng.date(def.offsetDays ?? 0); break;
+        case 'date': v = rng.date(def.offsetDays ?? 0, def.format ?? null); break;
         case 'email': v = rng.email(def.prefix || 'actor'); break;
         default: throw new Error(`Unknown generator '${def.generate}' for data.${key}`);
       }

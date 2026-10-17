@@ -5,126 +5,827 @@
     {
       "id": "requests.catalog",
       "title": "Request catalog and progress counts",
-      "journeys": [{"id": "requests.catalog-progress-observation", "kind": "seeded-readonly", "status": "defined"}],
-      "missing": ["bilingual (bn-BD) labels", "catalog filtering/pagination", "stock shown vs persisted availability"]
+      "journeys": [
+        {
+          "id": "requests.catalog-progress-observation",
+          "kind": "seeded-readonly",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "bilingual (bn-BD) labels",
+        "catalog filtering/pagination",
+        "stock shown vs persisted availability"
+      ]
     },
     {
       "id": "requests.my-requests",
       "title": "My requests and the request page: one derived status, the next step, every line (custom-requests UX redesign)",
       "journeys": [
-        {"id": "requests.my-requests-observation", "kind": "seeded-readonly", "status": "defined"},
-        {"id": "requests.request-page-observation", "kind": "seeded-readonly", "status": "defined"}
+        {
+          "id": "requests.my-requests-observation",
+          "kind": "seeded-readonly",
+          "status": "defined"
+        },
+        {
+          "id": "requests.request-page-observation",
+          "kind": "seeded-readonly",
+          "status": "defined"
+        }
       ],
       "notes": "Locators use the stable data-request-number / data-status-key / data-line-id hooks. Not yet run by the JSON runner; the screens were walked by hand on 2026-10-15.",
-      "missing": ["requests.split-approve-issue-receive", "requests.decline-with-reason", "requests.over-issue-refusal", "requests.approvals-observation", "requests.to-issue-observation", "requests.register-observation", "requests.rules-observation"]
+      "missing": [
+        "requests.split-approve-issue-receive",
+        "requests.decline-with-reason",
+        "requests.over-issue-refusal",
+        "requests.approvals-observation",
+        "requests.to-issue-observation",
+        "requests.register-observation",
+        "requests.rules-observation"
+      ]
     },
     {
       "id": "requests.authorization",
       "title": "Approver/fulfillment/policy screens denied or empty for an ordinary employee",
-      "journeys": [{"id": "requests.authorization-boundaries", "kind": "seeded-readonly", "status": "verified-live"}],
+      "journeys": [
+        {
+          "id": "requests.authorization-boundaries",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        }
+      ],
       "notes": "Access mode is shadow: approver and fulfillment screens load (200/302) but offer no actionable rows; enforce mode must deny. Enforce-mode expectations are declared but not exercised live.",
-      "missing": ["foreign-office/company actors", "direct request to another office's request id"]
+      "missing": [
+        "foreign-office/company actors",
+        "direct request to another office's request id"
+      ]
     },
     {
       "id": "requests.submit-approve-fulfill",
       "title": "Request submit, primary approval and fulfillment",
       "journeys": [
-        {"id": "requests.basket-validation", "kind": "mutation", "status": "defined"},
-        {"id": "requests.submit-approve", "kind": "mutation", "status": "defined"}
+        {
+          "id": "requests.basket-validation",
+          "kind": "mutation",
+          "status": "defined"
+        },
+        {
+          "id": "requests.submit-approve",
+          "kind": "mutation",
+          "status": "defined"
+        }
       ],
-      "missing": ["final-approver branch (policy dependent)", "fulfillment/issue and stock ledger effects", "rejection and partial approval", "withdraw/receive/return", "boundary quantities min-1/max+1"],
+      "missing": [
+        "final-approver branch (policy dependent)",
+        "fulfillment/issue and stock ledger effects",
+        "rejection and partial approval",
+        "withdraw/receive/return",
+        "boundary quantities min-1/max+1"
+      ],
       "notes": "Submitted and approved requests have no reversal lifecycle and are retained and reported by number."
     },
     {
       "id": "inventory.consumables",
       "title": "Native consumable inventory (read)",
-      "journeys": [{"id": "inventory.seeded-consumable-observation", "kind": "seeded-readonly", "status": "blocked-no-actor"}],
+      "journeys": [
+        {
+          "id": "inventory.seeded-consumable-observation",
+          "kind": "seeded-readonly",
+          "status": "blocked-no-actor"
+        }
+      ],
       "notes": "Requires native consumables.view; no seeded actor holds it, so the journey is blocked with fixtures.unsatisfied-requirements (see suite native-inventory)."
     },
     {
       "id": "committee.registry",
       "title": "Committee desk and registry for the working office",
-      "journeys": [{"id": "committee.desk-registry-observation", "kind": "seeded-readonly", "status": "verified-live"}],
-      "missing": ["bn-BD labels", "registry pagination beyond 20 rows", "status/type filters", "desk attention and coverage rows"]
+      "journeys": [
+        {
+          "id": "committee.desk-registry-observation",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        }
+      ],
+      "missing": [
+        "bn-BD labels",
+        "registry pagination beyond 20 rows",
+        "status/type filters",
+        "desk attention and coverage rows"
+      ]
     },
     {
       "id": "committee.authorization",
       "title": "Committee office/company boundary and role-gated screens",
       "journeys": [
-        {"id": "committee.foreign-committee-boundary", "kind": "seeded-readonly", "status": "verified-live"},
-        {"id": "committee.authorization-boundaries", "kind": "seeded-readonly", "status": "verified-live"}
+        {
+          "id": "committee.foreign-committee-boundary",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        },
+        {
+          "id": "committee.authorization-boundaries",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        }
       ],
       "notes": "Access mode is shadow: registrar-only GET screens (new, transfers, registry, purposes) load for an ordinary employee; enforce mode must deny and is declared but not exercised live. The foreign-committee boundary (404) holds in both modes.",
-      "missing": ["enforce-mode denials exercised live", "mutation endpoints denied (live probe supports GET only)", "private order/declaration file access for another office"]
+      "missing": [
+        "enforce-mode denials exercised live",
+        "mutation endpoints denied (live probe supports GET only)",
+        "private order/declaration file access for another office"
+      ]
     },
     {
       "id": "committee.mine",
       "title": "My committees page for someone who serves on none",
-      "journeys": [{"id": "committee.authorization-boundaries", "kind": "seeded-readonly", "status": "verified-live"}],
-      "missing": ["member with a current appointment", "past committees", "declaration upload", "own order file download"]
+      "journeys": [
+        {
+          "id": "committee.authorization-boundaries",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        }
+      ],
+      "missing": [
+        "member with a current appointment",
+        "past committees",
+        "declaration upload",
+        "own order file download"
+      ]
     },
     {
       "id": "committee.history",
       "title": "Committee history and roster as of a selected date",
-      "journeys": [{"id": "committee.record-history-print-observation", "kind": "seeded-readonly", "status": "verified-live"}],
-      "missing": ["date changes and history filter interactions"]
+      "journeys": [
+        {
+          "id": "committee.record-history-print-observation",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        }
+      ],
+      "missing": [
+        "date changes and history filter interactions"
+      ]
     },
     {
       "id": "committee.print",
       "title": "Printable committee roster",
-      "journeys": [{"id": "committee.record-history-print-observation", "kind": "seeded-readonly", "status": "verified-live"}],
-      "missing": ["browser print dialog / paper output verification"]
+      "journeys": [
+        {
+          "id": "committee.record-history-print-observation",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        }
+      ],
+      "missing": [
+        "browser print dialog / paper output verification"
+      ]
     },
     {
       "id": "committee.transfers",
       "title": "Review all committee roles for a transferred person",
-      "journeys": [{"id": "committee.record-history-print-observation", "kind": "seeded-readonly", "status": "verified-live"}],
-      "missing": ["person lookup and atomic multi-committee transfer submission"]
+      "journeys": [
+        {
+          "id": "committee.record-history-print-observation",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        }
+      ],
+      "missing": [
+        "person lookup and atomic multi-committee transfer submission"
+      ]
     },
     {
       "id": "committee.catalogue",
       "title": "Committee types and rules (company administrator)",
-      "journeys": [{"id": "committee.rules-catalogue-observation", "kind": "seeded-readonly", "status": "blocked-no-actor"}],
+      "journeys": [
+        {
+          "id": "committee.rules-catalogue-observation",
+          "kind": "seeded-readonly",
+          "status": "blocked-no-actor"
+        }
+      ],
       "notes": "Requires a company administrator who is also an active member of the working office; the seeded company administrators are not office members, so the journey is blocked with fixtures.unsatisfied-requirements.",
-      "missing": ["type create/edit and national review", "purpose bindings"]
+      "missing": [
+        "type create/edit and national review",
+        "purpose bindings"
+      ]
     },
     {
       "id": "committee.lifecycle",
       "title": "Constitute, appoint, activate, replace, extend, suspend, dissolve",
-      "journeys": [{"id": "committee.order-readiness-guard", "kind": "seeded-readonly", "status": "verified-live"}],
+      "journeys": [
+        {
+          "id": "committee.order-readiness-guard",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        }
+      ],
       "status": "missing",
       "notes": "Live inspection on 7 October 2026 showed the order wizard stating that no ministry committee rules are active. The order-readiness guard covers this message and required-file validation. No active type is available to complete constitution or amendment flows. A write journey also needs an authorized company catalogue actor, a synthetic signed-file fixture, and a cleanup/retention policy. Do not create a committee type or assign roles just to make this suite pass."
     },
     {
       "id": "committee.order-intake",
       "title": "Capture and retain a signed committee order before forming a committee",
-      "journeys": [{"id": "committee.order-readiness-guard", "kind": "seeded-readonly", "status": "verified-live"}],
+      "journeys": [
+        {
+          "id": "committee.order-readiness-guard",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        }
+      ],
       "status": "partial",
-      "missing": ["upload and save a synthetic signed order", "resume and discard saved intake through the supported screen"]
+      "missing": [
+        "upload and save a synthetic signed order",
+        "resume and discard saved intake through the supported screen"
+      ]
     },
-    {"id": "auth.context", "title": "Authentication and working-context selection", "journeys": [], "status": "partial", "notes": "Login and header context are exercised inside other journeys via flow auth.login only."},
-    {"id": "storeops.documents", "title": "Stock documents", "journeys": [], "status": "missing"},
-    {"id": "tracking", "title": "Tracking", "journeys": [], "status": "missing"},
-    {"id": "access.governance", "title": "Access governance and shadow/enforce switching", "journeys": [], "status": "missing"},
-    {"id": "navigation.topbar", "title": "Gov top bar: office chip, ＋ New, inbox, basket and user menu; Snipe-IT Create New, shortcuts and Requested assets removed", "journeys": [{"id": "navigation.employee-topbar-sidebar", "kind": "seeded-readonly", "status": "verified-live"}, {"id": "navigation.approver-inbox-queues", "kind": "seeded-readonly", "status": "verified-live"}, {"id": "navigation.storekeeper-new-menu-store", "kind": "seeded-readonly", "status": "verified-live"}], "missing": ["super admin (Global overview, office search, settings cog)", "office switching (writes session context)", "bn-BD labels", "phone width hide-on-scroll bar", "submitting ＋ New receipt/issue (creates a draft document)"]},
-    {"id": "navigation.sidebar", "title": "Sidebar work zone: groups expand, leaves navigate, current page and its group marked active, role-gated queues", "journeys": [{"id": "navigation.employee-topbar-sidebar", "kind": "seeded-readonly", "status": "verified-live"}, {"id": "navigation.approver-inbox-queues", "kind": "seeded-readonly", "status": "verified-live"}, {"id": "navigation.storekeeper-new-menu-store", "kind": "seeded-readonly", "status": "verified-live"}], "missing": ["admin zone (office admin, company admin, super admin)", "sidebar badge numbers", "collapsed-sidebar hover flyout"]},
-    {"id": "navigation.inbox", "title": "Navbar inbox total and entries match the approval / fulfilment queues in the database", "journeys": [{"id": "navigation.approver-inbox-queues", "kind": "seeded-readonly", "status": "verified-live"}, {"id": "navigation.storekeeper-new-menu-store", "kind": "seeded-readonly", "status": "verified-live"}], "missing": ["final approver", "office admin access-request and onboarding queues"]},
-    {"id": "navigation.actions", "title": "＋ New menu by role: single Request items button for employees, receipt/issue/adjustment for storekeepers", "journeys": [{"id": "navigation.employee-topbar-sidebar", "kind": "seeded-readonly", "status": "verified-live"}, {"id": "navigation.storekeeper-new-menu-store", "kind": "seeded-readonly", "status": "verified-live"}], "missing": ["Add staff member for office admins"]},
-    {"id":"organization.registry","title":"Office registry: area-scoped offices, status tabs with counts, Live filter, instant search, next step and whole-row link (area ICT officer)","journeys":[{"id":"organization.registry-observation","kind":"seeded-readonly","status":"verified-live"}],"missing":["bn-BD labels and Bangla-name search (needs a session language switch; changing a user's locale is not allowed)","offices needing action (the seeded area offices are all Live, so the attention banner and Setting up / Not onboarded rows are only checked as absent)","ministry and district filters","pagination beyond 25 rows","phone card layout under 768 px (plan Phase 4, not built yet)"]},
-    {"id":"organization.hub","title":"Office hub: status badge, readiness card, role slots, staff, details, location and activity (area ICT officer)","journeys":[{"id":"organization.office-hub-observation","kind":"seeded-readonly","status":"verified-live"}],"missing":["office with open readiness items (fix-it buttons, empty role slots)","saving roles, administrator, rename and location confirmation (write journeys; no reversal workflow for activity entries)","starter items retry"]},
-    {"id":"organization.lifecycle","title":"Pause / Resume / Move dialogs with explained consequences, required reason and acknowledgement","journeys":[{"id":"organization.office-hub-observation","kind":"seeded-readonly","status":"verified-live"}],"status":"partial","notes":"The Pause dialog is opened, its constraint validation is checked and it is cancelled; nothing is submitted.","missing":["submitting Pause then Resume (writes lifecycle status and activity log; needs a write journey with Resume as cleanup and retained activity entries)","Move dialog area search and relocation","server-side reopen of a dialog that failed validation"]},
-    {"id":"organization.add-office","title":"Add office: find existing locations first, then the shared office form with server validation","journeys":[{"id":"organization.add-office-validation","kind":"seeded-readonly","status":"verified-live"}],"missing":["Set up this one (onboard) from a matching unprovisioned location","area select2 search and duplicate warning","successful create (offices have no delete workflow, so a created office would be retained)"]},
-    {"id":"organization.my-office","title":"My office for a local office administrator: status, readiness, read-only administrator slot, role pickers, staff","journeys":[{"id":"organization.my-office-observation","kind":"seeded-readonly","status":"verified-live"}],"missing":["saving roles (write)","office that is not live yet"]},
-    {"id":"organization.authorization","title":"Organization boundaries: area ICT officer vs local office administrator vs national screens","journeys":[{"id":"organization.authorization-boundaries","kind":"seeded-readonly","status":"verified-live"}],"notes":"organization.office.manage and organization.national.manage are enforced in shadow mode too, and object scope (area / own office) returns 404, so the same statuses hold in both access modes.","missing":["POST endpoints (probe supports GET only)","office administrator whose working context is another office"]},
-    {"id":"organization.administrators","title":"Administrators: Area ICT officers and Ministry administrators tabs, quiet Remove access, national review note","journeys":[{"id":"organization.national-admins-observation","kind":"seeded-readonly","status":"blocked-no-actor"}],"notes":"Needs a super user; the seeded dataset has none, so the journey is blocked with fixtures.unsatisfied-requirements. Run it on a configured target with a super-admin login.","missing":["give access and Restore access (national review; write)"]},
-    {"id":"organization.directory","title":"Government directory preview and import action","journeys":[{"id":"organization.national-admins-observation","kind":"seeded-readonly","status":"blocked-no-actor"}],"missing":["import through the national review (write)"]},
-    {"id":"organization.staff-readiness","title":"Staff pages before go-live (waiting / no office)","journeys":[],"status":"missing","notes":"EnsureOfficeIsOperational, which renders readiness/waiting and readiness/unassigned, is not registered on any route or middleware group, so neither page can be reached live. Covered only by the feature test OrganizationUxTest."},
-    {"id": "membership.my-offices", "title": "My offices: current offices with status and home tag, roles with Hand over or a labelled Cancel, handovers waiting, updates and personal code (storekeeper)", "journeys": [{"id": "membership.my-offices-observation", "kind": "seeded-readonly", "status": "verified-live"}], "missing": ["bn-BD labels (needs a session language switch; changing a user's locale is not allowed)", "waiting, leaving, paused and ready-to-transfer offices (the seeded dataset has active memberships only)", "switching the working office from a card", "cancelling a join request and withdrawing a leave request (write; no seeded pending or leaving membership)"]},
-    {"id": "membership.join", "title": "Join another office: office code checked first, unknown code explained under the field, personal code way", "journeys": [{"id": "membership.join-validation", "kind": "seeded-readonly", "status": "verified-live"}], "missing": ["a valid office code showing the office and sending a request (the seeded dataset has no office code; making one replaces an office's code)", "making a personal code (write: creates a 24-hour token)"]},
-    {"id": "membership.leave", "title": "Leave an office: steps, readiness from the clearance rules, roles to hand over, consequences, acknowledgement and transfer tracker", "journeys": [{"id": "membership.leave-readiness", "kind": "seeded-readonly", "status": "verified-live"}], "status": "partial", "notes": "Checked for a storekeeper, who is blocked by their role; nothing is requested.", "missing": ["asking to leave with a destination, then withdrawing (write; needs a seeded employee with no role, holdings or open requests)", "the transfer tracker after sign-off"]},
-    {"id": "membership.handover", "title": "Hand over a role: colleague picker, note, pending slot with Cancel, whole-sentence request, decline with reason", "journeys": [{"id": "membership.handover-decline", "kind": "mutation", "status": "defined"}], "status": "partial", "notes": "Write journey (suite journeys, --allow-writes). Blocked by preflight.mail-sink-unsafe on this installation (mail driver smtp); membership mail is disabled and unscheduled, so running it needs --allow-external-mail by an operator's decision.", "missing": ["accepting a handover (moves a seeded role; no reversal except handing it back)", "stale-role refusal"]},
-    {"id": "membership.staff", "title": "Office staff: five status tabs with counts, own row without End access, office code dialog, Add staff refusal keeps typed values", "journeys": [{"id": "membership.staff-observation", "kind": "seeded-readonly", "status": "verified-live"}], "missing": ["approve / decline a join request, sign off a leaver, welcome a transferred employee, end additional access (writes; no seeded pending, leaving or arriving memberships)", "search and paging beyond 25 rows"]},
-    {"id": "membership.authorization", "title": "Office membership boundaries: own memberships only, Staff for office administrators, Emergency changes for super users", "journeys": [{"id": "membership.authorization-boundaries", "kind": "seeded-readonly", "status": "verified-live"}], "notes": "membership.manage is enforced in shadow mode and membership.override is national, so the same statuses hold in both access modes; another person's membership returns 404.", "missing": ["POST endpoints (probe supports GET only; covered by OfficeMembershipWorkflowTest)"]},
-    {"id": "membership.emergency-changes", "title": "Emergency changes: person search, reach preview, nothing preselected, one office per release with roles option, reason and acknowledgement", "journeys": [{"id": "membership.emergency-changes-observation", "kind": "seeded-readonly", "status": "verified-live"}], "notes": "Needs a super user; the seeded dataset has none, so a plain local run is blocked with fixtures.unsatisfied-requirements. Verified live on 2026-10-14 with --target local (super-admin bootstrap login). The title is checked by presence, not wording, because the super-admin may read the page in Bangla.", "missing": ["submitting through the national review (write; the release cannot be undone)", "change history entries"]}
+    {
+      "id": "auth.context",
+      "title": "Authentication and working-context selection",
+      "journeys": [],
+      "status": "partial",
+      "notes": "Login and header context are exercised inside other journeys via flow auth.login only."
+    },
+    {
+      "id": "storeops.documents",
+      "title": "Stock documents",
+      "journeys": [],
+      "status": "missing"
+    },
+    {
+      "id": "tracking",
+      "title": "Tracking",
+      "journeys": [],
+      "status": "missing"
+    },
+    {
+      "id": "access.governance",
+      "title": "Access governance and shadow/enforce switching",
+      "journeys": [],
+      "status": "missing"
+    },
+    {
+      "id": "navigation.topbar",
+      "title": "Gov top bar: office chip, ＋ New, inbox, basket and user menu; Snipe-IT Create New, shortcuts and Requested assets removed",
+      "journeys": [
+        {
+          "id": "navigation.employee-topbar-sidebar",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        },
+        {
+          "id": "navigation.approver-inbox-queues",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        },
+        {
+          "id": "navigation.storekeeper-new-menu-store",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        }
+      ],
+      "missing": [
+        "super admin (Global overview, office search, settings cog)",
+        "office switching (writes session context)",
+        "bn-BD labels",
+        "phone width hide-on-scroll bar",
+        "submitting ＋ New receipt/issue (creates a draft document)"
+      ]
+    },
+    {
+      "id": "navigation.sidebar",
+      "title": "Sidebar work zone: groups expand, leaves navigate, current page and its group marked active, role-gated queues",
+      "journeys": [
+        {
+          "id": "navigation.employee-topbar-sidebar",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        },
+        {
+          "id": "navigation.approver-inbox-queues",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        },
+        {
+          "id": "navigation.storekeeper-new-menu-store",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        }
+      ],
+      "missing": [
+        "admin zone (office admin, company admin, super admin)",
+        "sidebar badge numbers",
+        "collapsed-sidebar hover flyout"
+      ]
+    },
+    {
+      "id": "navigation.inbox",
+      "title": "Navbar inbox total and entries match the approval / fulfilment queues in the database",
+      "journeys": [
+        {
+          "id": "navigation.approver-inbox-queues",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        },
+        {
+          "id": "navigation.storekeeper-new-menu-store",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        }
+      ],
+      "missing": [
+        "final approver",
+        "office admin access-request and onboarding queues"
+      ]
+    },
+    {
+      "id": "navigation.actions",
+      "title": "＋ New menu by role: single Request items button for employees, receipt/issue/adjustment for storekeepers",
+      "journeys": [
+        {
+          "id": "navigation.employee-topbar-sidebar",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        },
+        {
+          "id": "navigation.storekeeper-new-menu-store",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        }
+      ],
+      "missing": [
+        "Add staff member for office admins"
+      ]
+    },
+    {
+      "id": "organization.registry",
+      "title": "Office registry: area-scoped offices, status tabs with counts, Live filter, instant search, next step and whole-row link (area ICT officer)",
+      "journeys": [
+        {
+          "id": "organization.registry-observation",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        }
+      ],
+      "missing": [
+        "bn-BD labels and Bangla-name search (needs a session language switch; changing a user's locale is not allowed)",
+        "offices needing action (the seeded area offices are all Live, so the attention banner and Setting up / Not onboarded rows are only checked as absent)",
+        "ministry and district filters",
+        "pagination beyond 25 rows",
+        "phone card layout under 768 px (plan Phase 4, not built yet)"
+      ]
+    },
+    {
+      "id": "organization.hub",
+      "title": "Office hub: status badge, readiness card, role slots, staff, details, location and activity (area ICT officer)",
+      "journeys": [
+        {
+          "id": "organization.office-hub-observation",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        }
+      ],
+      "missing": [
+        "office with open readiness items (fix-it buttons, empty role slots)",
+        "saving roles, administrator, rename and location confirmation (write journeys; no reversal workflow for activity entries)",
+        "starter items retry"
+      ]
+    },
+    {
+      "id": "organization.lifecycle",
+      "title": "Pause / Resume / Move dialogs with explained consequences, required reason and acknowledgement",
+      "journeys": [
+        {
+          "id": "organization.office-hub-observation",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        }
+      ],
+      "status": "partial",
+      "notes": "The Pause dialog is opened, its constraint validation is checked and it is cancelled; nothing is submitted.",
+      "missing": [
+        "submitting Pause then Resume (writes lifecycle status and activity log; needs a write journey with Resume as cleanup and retained activity entries)",
+        "Move dialog area search and relocation",
+        "server-side reopen of a dialog that failed validation"
+      ]
+    },
+    {
+      "id": "organization.add-office",
+      "title": "Add office: find existing locations first, then the shared office form with server validation",
+      "journeys": [
+        {
+          "id": "organization.add-office-validation",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        }
+      ],
+      "missing": [
+        "Set up this one (onboard) from a matching unprovisioned location",
+        "area select2 search and duplicate warning",
+        "successful create (offices have no delete workflow, so a created office would be retained)"
+      ]
+    },
+    {
+      "id": "organization.my-office",
+      "title": "My office for a local office administrator: status, readiness, read-only administrator slot, role pickers, staff",
+      "journeys": [
+        {
+          "id": "organization.my-office-observation",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        }
+      ],
+      "missing": [
+        "saving roles (write)",
+        "office that is not live yet"
+      ]
+    },
+    {
+      "id": "organization.authorization",
+      "title": "Organization boundaries: area ICT officer vs local office administrator vs national screens",
+      "journeys": [
+        {
+          "id": "organization.authorization-boundaries",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        }
+      ],
+      "notes": "organization.office.manage and organization.national.manage are enforced in shadow mode too, and object scope (area / own office) returns 404, so the same statuses hold in both access modes.",
+      "missing": [
+        "POST endpoints (probe supports GET only)",
+        "office administrator whose working context is another office"
+      ]
+    },
+    {
+      "id": "organization.administrators",
+      "title": "Administrators: Area ICT officers and Ministry administrators tabs, quiet Remove access, national review note",
+      "journeys": [
+        {
+          "id": "organization.national-admins-observation",
+          "kind": "seeded-readonly",
+          "status": "blocked-no-actor"
+        }
+      ],
+      "notes": "Needs a super user; the seeded dataset has none, so the journey is blocked with fixtures.unsatisfied-requirements. Run it on a configured target with a super-admin login.",
+      "missing": [
+        "give access and Restore access (national review; write)"
+      ]
+    },
+    {
+      "id": "organization.directory",
+      "title": "Government directory preview and import action",
+      "journeys": [
+        {
+          "id": "organization.national-admins-observation",
+          "kind": "seeded-readonly",
+          "status": "blocked-no-actor"
+        }
+      ],
+      "missing": [
+        "import through the national review (write)"
+      ]
+    },
+    {
+      "id": "organization.staff-readiness",
+      "title": "Staff pages before go-live (waiting / no office)",
+      "journeys": [],
+      "status": "missing",
+      "notes": "EnsureOfficeIsOperational, which renders readiness/waiting and readiness/unassigned, is not registered on any route or middleware group, so neither page can be reached live. Covered only by the feature test OrganizationUxTest."
+    },
+    {
+      "id": "membership.my-offices",
+      "title": "My offices: current offices with status and home tag, roles with Hand over or a labelled Cancel, handovers waiting, updates and personal code (storekeeper)",
+      "journeys": [
+        {
+          "id": "membership.my-offices-observation",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        }
+      ],
+      "missing": [
+        "bn-BD labels (needs a session language switch; changing a user's locale is not allowed)",
+        "waiting, leaving, paused and ready-to-transfer offices (the seeded dataset has active memberships only)",
+        "switching the working office from a card",
+        "cancelling a join request and withdrawing a leave request (write; no seeded pending or leaving membership)"
+      ]
+    },
+    {
+      "id": "membership.join",
+      "title": "Join another office: office code checked first, unknown code explained under the field, personal code way",
+      "journeys": [
+        {
+          "id": "membership.join-validation",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        }
+      ],
+      "missing": [
+        "a valid office code showing the office and sending a request (the seeded dataset has no office code; making one replaces an office's code)",
+        "making a personal code (write: creates a 24-hour token)"
+      ]
+    },
+    {
+      "id": "membership.leave",
+      "title": "Leave an office: steps, readiness from the clearance rules, roles to hand over, consequences, acknowledgement and transfer tracker",
+      "journeys": [
+        {
+          "id": "membership.leave-readiness",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        }
+      ],
+      "status": "partial",
+      "notes": "Checked for a storekeeper, who is blocked by their role; nothing is requested.",
+      "missing": [
+        "asking to leave with a destination, then withdrawing (write; needs a seeded employee with no role, holdings or open requests)",
+        "the transfer tracker after sign-off"
+      ]
+    },
+    {
+      "id": "membership.handover",
+      "title": "Hand over a role: colleague picker, note, pending slot with Cancel, whole-sentence request, decline with reason",
+      "journeys": [
+        {
+          "id": "membership.handover-decline",
+          "kind": "mutation",
+          "status": "defined"
+        }
+      ],
+      "status": "partial",
+      "notes": "Write journey (suite journeys, --allow-writes). Blocked by preflight.mail-sink-unsafe on this installation (mail driver smtp); membership mail is disabled and unscheduled, so running it needs --allow-external-mail by an operator's decision.",
+      "missing": [
+        "accepting a handover (moves a seeded role; no reversal except handing it back)",
+        "stale-role refusal"
+      ]
+    },
+    {
+      "id": "membership.staff",
+      "title": "Office staff: five status tabs with counts, own row without End access, office code dialog, Add staff refusal keeps typed values",
+      "journeys": [
+        {
+          "id": "membership.staff-observation",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        }
+      ],
+      "missing": [
+        "approve / decline a join request, sign off a leaver, welcome a transferred employee, end additional access (writes; no seeded pending, leaving or arriving memberships)",
+        "search and paging beyond 25 rows"
+      ]
+    },
+    {
+      "id": "membership.authorization",
+      "title": "Office membership boundaries: own memberships only, Staff for office administrators, Emergency changes for super users",
+      "journeys": [
+        {
+          "id": "membership.authorization-boundaries",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        }
+      ],
+      "notes": "membership.manage is enforced in shadow mode and membership.override is national, so the same statuses hold in both access modes; another person's membership returns 404.",
+      "missing": [
+        "POST endpoints (probe supports GET only; covered by OfficeMembershipWorkflowTest)"
+      ]
+    },
+    {
+      "id": "membership.emergency-changes",
+      "title": "Emergency changes: person search, reach preview, nothing preselected, one office per release with roles option, reason and acknowledgement",
+      "journeys": [
+        {
+          "id": "membership.emergency-changes-observation",
+          "kind": "seeded-readonly",
+          "status": "verified-live"
+        }
+      ],
+      "notes": "Needs a super user; the seeded dataset has none, so a plain local run is blocked with fixtures.unsatisfied-requirements. Verified live on 2026-10-14 with --target local (super-admin bootstrap login). The title is checked by presence, not wording, because the super-admin may read the page in Bangla.",
+      "missing": [
+        "submitting through the national review (write; the release cannot be undone)",
+        "change history entries"
+      ]
+    },
+    {
+      "id": "asset-tagging.access",
+      "title": "Who reaches which tagging screen (storekeeper, approver, office admin, company admin)",
+      "journeys": [
+        {
+          "id": "asset-tagging.access-boundaries",
+          "kind": "seeded-readonly",
+          "status": "passed"
+        }
+      ],
+      "missing": [
+        "enforce-mode run",
+        "foreign-company admin"
+      ]
+    },
+    {
+      "id": "asset-tagging.national-setup",
+      "title": "Native tag sequence (G1), Finance activation and national product-type Finance Code",
+      "journeys": [
+        {
+          "id": "asset-tagging.national-setup",
+          "kind": "write",
+          "status": "passed"
+        }
+      ],
+      "missing": [
+        "company-owned product types (no company-facing Finance Code screen yet)",
+        "Finance retire / new item / UNSPSC link"
+      ]
+    },
+    {
+      "id": "asset-tagging.company-codelists",
+      "title": "Company location and division code lists",
+      "journeys": [
+        {
+          "id": "asset-tagging.company-code-lists",
+          "kind": "write",
+          "status": "passed"
+        },
+        {
+          "id": "asset-tagging.office-settings",
+          "kind": "write",
+          "status": "passed"
+        }
+      ],
+      "missing": [
+        "stale-revision conflict screen",
+        "99-entry limit"
+      ]
+    },
+    {
+      "id": "asset-tagging.office-settings",
+      "title": "Office registration location and divisions; readiness gates",
+      "journeys": [
+        {
+          "id": "asset-tagging.office-settings",
+          "kind": "write",
+          "status": "passed"
+        }
+      ],
+      "missing": [
+        "stale-revision conflict screen"
+      ]
+    },
+    {
+      "id": "asset-tagging.enablement",
+      "title": "Enablement console, national change review, pause and resume",
+      "journeys": [
+        {
+          "id": "asset-tagging.enablement",
+          "kind": "write",
+          "status": "passed"
+        },
+        {
+          "id": "asset-tagging.pause-resume",
+          "kind": "write",
+          "status": "passed"
+        }
+      ],
+      "missing": [
+        "refusal when a gate fails at enable time (all offices pass in rehearsal)"
+      ]
+    },
+    {
+      "id": "asset-tagging.grn",
+      "title": "GRN tag panel, posting and issued tags (Govt. from product type / line, standard, needs attention, donation)",
+      "journeys": [
+        {
+          "id": "asset-tagging.grn-issuance",
+          "kind": "write",
+          "status": "passed"
+        },
+        {
+          "id": "asset-tagging.grn-attention",
+          "kind": "write",
+          "status": "passed"
+        },
+        {
+          "id": "asset-tagging.rules-studio",
+          "kind": "write",
+          "status": "passed"
+        },
+        {
+          "id": "asset-tagging.pause-resume",
+          "kind": "write",
+          "status": "passed"
+        }
+      ],
+      "missing": [
+        "typed tag in an enabled office (no UI field exists)",
+        "paused by a gate failing at posting",
+        "Finance Code retired between draft and posting",
+        "models with required custom fields (GRN cannot receive them: store-operations gap)"
+      ]
+    },
+    {
+      "id": "asset-tagging.lookup",
+      "title": "Tag lookup and object-level visibility",
+      "journeys": [
+        {
+          "id": "asset-tagging.grn-issuance",
+          "kind": "write",
+          "status": "passed"
+        }
+      ],
+      "missing": [
+        "approver lookup expectation",
+        "standard-tag lookup"
+      ]
+    },
+    {
+      "id": "asset-tagging.export",
+      "title": "Issued tags CSV and label printing",
+      "journeys": [
+        {
+          "id": "asset-tagging.grn-issuance",
+          "kind": "write",
+          "status": "passed"
+        }
+      ],
+      "missing": [
+        "label print output itself"
+      ]
+    },
+    {
+      "id": "rules-studio.trace",
+      "title": "Rules studio: what applies here and why, per layer",
+      "journeys": [
+        {
+          "id": "asset-tagging.rules-studio",
+          "kind": "write",
+          "status": "passed"
+        }
+      ],
+      "missing": [
+        "flow and family views",
+        "simulator assertions"
+      ]
+    },
+    {
+      "id": "rules-studio.policies",
+      "title": "Rules studio: create, edit, publish, attach and detach policies",
+      "journeys": [
+        {
+          "id": "asset-tagging.rules-studio",
+          "kind": "write",
+          "status": "passed"
+        }
+      ],
+      "missing": [
+        "duplicate (make draft) of a published policy",
+        "company and category layers"
+      ]
+    },
+    {
+      "id": "rules-studio.access",
+      "title": "Rules studio is national only",
+      "journeys": [
+        {
+          "id": "asset-tagging.access-boundaries",
+          "kind": "seeded-readonly",
+          "status": "passed"
+        }
+      ],
+      "missing": []
+    },
+    {
+      "id": "storeops.grn",
+      "title": "GRN (goods received) workspace: draft, lines, checklist, post, void",
+      "journeys": [
+        {
+          "id": "asset-tagging.grn-issuance",
+          "kind": "write",
+          "status": "passed"
+        },
+        {
+          "id": "asset-tagging.grn-attention",
+          "kind": "write",
+          "status": "passed"
+        }
+      ],
+      "missing": [
+        "custom-field sub-grid for models with required fields",
+        "attachments",
+        "takeover"
+      ]
+    },
+    {
+      "id": "classification.finance",
+      "title": "Finance Division item list and activation",
+      "journeys": [
+        {
+          "id": "asset-tagging.national-setup",
+          "kind": "write",
+          "status": "passed"
+        }
+      ],
+      "missing": [
+        "retire",
+        "create new item",
+        "UNSPSC link"
+      ]
+    }
   ]
 }

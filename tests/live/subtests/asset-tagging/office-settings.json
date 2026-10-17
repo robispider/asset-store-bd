@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "id": "asset-tagging.office-settings",
+  "title": "Office admins choose their registration location and divisions from the company lists: the office takes location A with both divisions (default B) and its readiness turns G4 green; the sibling office is refused location A because it is taken and saves location B; the company admin then sees those codes marked as used and locked",
+  "features": ["asset-tagging.office-settings", "asset-tagging.company-codelists"],
+  "tags": ["seeded", "write", "asset-tagging", "multi-office"],
+  "execution": { "capability": "write-fixtures", "language": "en-US", "timeoutMs": 150000, "accessMode": "any" },
+  "fixtures": {
+    "office": { "requirements": { "operational": true, "ledgerOpen": true } },
+    "actors": {
+      "officeAdmin": { "role": "office_admin", "capabilities": { "allOf": ["asset-tags.office.configure"] } },
+      "siblingAdmin": { "role": "office_admin", "office": "sibling", "capabilities": { "allOf": ["asset-tags.office.configure"] } },
+      "companyAdmin": { "role": "company_admin", "activeMembership": false, "capabilities": { "allOf": ["asset-tags.company.codelists"] } }
+    },
+    "records": {
+      "sibling": { "kind": "office", "sameCompany": true, "ledgerOpen": true }
+    }
+  },
+  "data": {
+    "locationA": "41", "locationB": "42", "divisionA": "01", "divisionB": "02"
+  },
+  "steps": [
+    { "action": "observe", "check": "asset-tags.readiness", "args": { "officeId": "${fixtures.office.id}" }, "as": "before" },
+    { "action": "compare", "actual": "${observed.before.locationListCount}", "equals": 2, "note": "Precondition: the company code lists exist (asset-tagging.company-code-lists)" },
+
+    { "use": "auth.login", "with": { "actor": "officeAdmin" } },
+    { "action": "goto", "route": "asset-tags.settings" },
+    { "action": "assert", "target": "tagging.readinessItems", "test": "count", "equals": 6 },
+    { "action": "assert", "target": "tagging.officeDivisionChecks", "test": "count", "equals": "${observed.before.divisionListCount}", "note": "Offices choose only from the company list" },
+    { "action": "select", "target": "tagging.officeLocation", "value": "${data.locationA}" },
+    { "action": "check", "target": "tagging.officeDivisionA" },
+    { "action": "check", "target": "tagging.officeDivisionB" },
+    { "action": "select", "target": "tagging.officeDefaultDivision", "value": "${data.divisionB}" },
+    { "action": "submitForm", "target": "tagging.officeSave" },
+    { "action": "assert", "target": "tagging.successAlert", "test": "visible" },
+    { "action": "observe", "check": "asset-tags.readiness", "args": { "officeId": "${fixtures.office.id}" }, "as": "office" },
+    { "action": "compare", "actual": "${observed.office.locationCode}", "equals": "${data.locationA}" },
+    { "action": "compare", "actual": "${observed.office.defaultDivision}", "equals": "${data.divisionB}" },
+    { "action": "compare", "actual": "${observed.office.divisionCount}", "equals": 2 },
+    { "action": "compare", "actual": "${observed.office.gates.G4}", "equals": true },
+    { "action": "assert", "target": "tagging.readinessDone", "test": "count", "equals": "${observed.office.passCount}", "note": "The page's readiness matches the gates restated from the rules" },
+    { "action": "assert", "target": "tagging.officePreviewLocation", "test": "text", "equals": "${data.locationA}" },
+    { "action": "assert", "target": "tagging.officePreviewDivision", "test": "text", "equals": "${data.divisionB}" },
+    { "action": "ledger", "kind": "office-tag-settings", "id": "office:${fixtures.office.id}", "effect": "Location A, divisions A+B, default B", "cleanup": "retained" },
+
+    { "use": "auth.login", "with": { "actor": "siblingAdmin" } },
+    { "action": "observe", "check": "asset-tags.readiness", "args": { "officeId": "${fixtures.sibling.id}" }, "as": "siblingBefore" },
+    { "action": "goto", "route": "asset-tags.settings" },
+    { "action": "assert", "target": "css=#location_code option[value='${data.locationA}']", "test": "disabled", "note": "A location code belongs to one office of the company: the taken code cannot be chosen" },
+    { "action": "assert", "target": "css=#location_code option[value='${data.locationA}']", "test": "text", "contains": "${fixtures.office.name}", "note": "and the option names the office that holds it" },
+    { "action": "assert", "target": "css=#location_code option[value='${data.locationB}']", "test": "enabled" },
+    { "action": "select", "target": "tagging.officeLocation", "value": "${data.locationB}" },
+    { "action": "check", "target": "tagging.officeDivisionA" },
+    { "action": "select", "target": "tagging.officeDefaultDivision", "value": "${data.divisionA}" },
+    { "action": "submitForm", "target": "tagging.officeSave" },
+    { "action": "assert", "target": "tagging.successAlert", "test": "visible" },
+    { "action": "waitObserve", "check": "asset-tags.readiness", "args": { "officeId": "${fixtures.sibling.id}" }, "path": "locationCode", "equals": "${data.locationB}", "as": "siblingAfter" },
+    { "action": "compare", "actual": "${observed.siblingAfter.enabled}", "equals": false, "note": "Saving codes never enables an office" },
+    { "action": "ledger", "kind": "office-tag-settings", "id": "office:${fixtures.sibling.id}", "effect": "Location B, division A", "cleanup": "retained" },
+
+    { "use": "auth.login", "with": { "actor": "companyAdmin" } },
+    { "action": "goto", "route": "asset-tags.codes" },
+    { "action": "assert", "target": "tagging.codesUsedBadges", "test": "count", "equals": 4, "note": "Locations A and B and divisions A and B are each used by at least one office" },
+    { "action": "capture", "target": "tagging.codesLocation0Code", "attribute": "readonly", "as": "locationALocked" },
+    { "action": "compare", "actual": "${captured.locationALocked}", "equals": "", "note": "A code in use can be renamed but never re-coded" },
+    { "action": "assert", "target": "tagging.codesLocation0Name", "test": "enabled" }
+  ],
+  "cleanup": { "policy": "retained-with-report" }
+}

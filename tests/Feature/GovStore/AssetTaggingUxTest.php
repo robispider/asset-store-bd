@@ -139,6 +139,10 @@ class AssetTaggingUxTest extends TestCase
         $this->assertStringContainsString('GS-000100', $html);
         $this->assertStringContainsString('name="bulk_actions" value="labels"', $html);
         $this->assertSame(3, substr_count($html, 'name="ids[]"'));
+        // The box is rendered inside the workspace form, so it must not open a nested form of its own.
+        $this->assertStringNotContainsString('<form', $html);
+        $this->assertStringContainsString('formaction="'.route('hardware.bulkedit.show').'"', $html);
+        $this->assertStringContainsString('formtarget="_blank"', $html);
         $this->assertStringContainsString(route('asset-tags.grn.csv', ['document' => $receipt->id]), $html);
 
         $csv = app(IssuedTagsExportController::class)($receipt->id, $this->policy());

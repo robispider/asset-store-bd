@@ -226,9 +226,10 @@ export class BrowserBridge {
         fail('fixtures.dataset-changed', 'The selected target dataset is no longer ready.');
       }
       const rows = parsePrivateCsv(await this.download(page, "a[href$='/accounts']"), ['username', 'password', 'home_office_id', 'office_roles', 'oversight_role']);
-      this.accounts = rows.filter(row => row.username && row.password && /^\d+$/.test(row.home_office_id)).map(row => ({
+      // Company administrators have no home office; they are kept (officeId null) for company-scoped actors.
+      this.accounts = rows.filter(row => row.username && row.password && (/^\d+$/.test(row.home_office_id) || row.oversight_role === 'company_admin')).map(row => ({
         username: row.username, password: row.password, display_name: row.name,
-        officeId: Number(row.home_office_id), companyId: Number(row.company_id),
+        officeId: /^\d+$/.test(row.home_office_id) ? Number(row.home_office_id) : null, companyId: Number(row.company_id),
         roles: ['authenticated', ...row.office_roles.split(',').map(r => r.trim()).filter(Boolean), ...(row.oversight_role ? [row.oversight_role] : [])]
       }));
       for (const supplied of Object.values(this.profile.accounts || {})) {
@@ -278,8 +279,13 @@ export class BrowserBridge {
       const resolved = await this.databaseBridge.resolveContext({ ...fixtures, actors: ordinaryActors }, dataset.id, { fixtureCredentials: credentials });
       if (resolved.run.id !== dataset.id) fail('fixtures.target-database-mismatch', 'The target browser and database resolved different datasets.');
       for (const [alias, actor] of Object.entries(resolved.actors)) {
+        // The actor's own office (the resolved office, or an office record it is bound to); company-scoped actors need no office.
+        const scoped = fixtures.actors[alias].activeMembership === false;
+        const officeId = actor.office_id ?? resolved.office.id;
+        const companyId = officeId === resolved.office.id ? resolved.office.company_id
+          : Object.values(resolved.records || {}).find(record => record.id === officeId)?.company_id;
         const account = this.accounts.find(candidate => candidate.username === actor.username
-          && candidate.officeId === resolved.office.id && candidate.companyId === resolved.office.company_id);
+          && (scoped || candidate.officeId === officeId) && candidate.companyId === (scoped ? resolved.office.company_id : companyId));
         if (!account) fail('fixtures.target-database-mismatch', 'The target database selected an account absent from this target dataset or office export.');
         const verified = await this.verify(account);
         if (verified.id && verified.id !== actor.id) fail('fixtures.target-database-mismatch', 'The target UI and database identify different signed-in users.');

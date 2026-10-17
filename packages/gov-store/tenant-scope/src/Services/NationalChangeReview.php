@@ -33,14 +33,22 @@ class NationalChangeReview
             $consumed = DB::table('gov_access_review_uses')->insertOrIgnore(['token_hash' => hash('sha256', $token), 'created_at' => now()]);
             abort_unless($consumed, 409);
             $request->session()->forget('gov_national_reviews.'.$token);
+            // The review page was the response to the original POST, so this confirmation's referer is the POST-only
+            // action URL; restore the page the change started from so the controller's back() lands there.
+            if (! empty($review['back'])) {
+                $request->headers->set('referer', $review['back']);
+            }
 
             return null;
         }
         $token = (string) Str::uuid();
         $input = $request->except(['_token', 'change_reason', 'confirmation', 'review_token']);
         $before = $this->currentConfiguration($request);
+        $origin = (string) $request->headers->get('referer');
+        $back = $origin !== '' && parse_url($origin, PHP_URL_HOST) === $request->getHost()
+            && trim((string) parse_url($origin, PHP_URL_PATH), '/') !== trim($request->path(), '/') ? $origin : null;
         $review = ['input' => $input, 'before' => $before, 'user' => $request->user()->id, 'target' => $request->path(), 'method' => $request->method(),
-            'expires' => time() + 1800, 'fingerprint' => $this->fingerprint($request)];
+            'expires' => time() + 1800, 'fingerprint' => $this->fingerprint($request), 'back' => $back];
         $reviews = $request->session()->get('gov_national_reviews', []);
         $reviews = array_filter($reviews, fn ($entry) => $entry['expires'] > time());
         $reviews[$token] = $review;

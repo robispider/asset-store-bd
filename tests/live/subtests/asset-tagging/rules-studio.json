@@ -1,0 +1,616 @@
+{
+  "schemaVersion": 1,
+  "id": "asset-tagging.rules-studio",
+  "title": "In the Rules studio the super admin sees 'Issue Govt. Tags' decided by the built-in package default for the office and desktop model, creates a policy that turns it off, publishes it and attaches it to the office (each step through the national change review); the studio and the restated rules then show it off, decided at the office layer, and the storekeeper's GRN line loses its tag panel; detaching the policy restores the built-in rule and the panel",
+  "features": [
+    "rules-studio.policies",
+    "rules-studio.trace",
+    "asset-tagging.grn"
+  ],
+  "tags": [
+    "seeded",
+    "write",
+    "rules-studio",
+    "asset-tagging",
+    "national",
+    "multi-actor"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "language": "en-US",
+    "timeoutMs": 360000,
+    "accessMode": "any"
+  },
+  "fixtures": {
+    "office": {
+      "requirements": {
+        "operational": true,
+        "ledgerOpen": true
+      }
+    },
+    "actors": {
+      "superuser": {
+        "role": "superuser",
+        "allowSuperuser": true,
+        "activeMembership": false,
+        "capabilities": {
+          "allOf": [
+            "storeops.rules.view",
+            "storeops.rules.publish"
+          ]
+        }
+      },
+      "storekeeper": {
+        "role": "storekeeper",
+        "capabilities": {
+          "allOf": [
+            "storeops.documents.draft"
+          ]
+        }
+      },
+      "cleanupAdmin": {
+        "role": "superuser",
+        "allowSuperuser": true,
+        "activeMembership": false,
+        "capabilities": {
+          "allOf": [
+            "storeops.rules.publish"
+          ]
+        }
+      }
+    },
+    "records": {
+      "desktop": {
+        "kind": "assetModel",
+        "categoryContains": "Desktop Computers"
+      }
+    }
+  },
+  "data": {
+    "policyName": {
+      "generate": "markedText",
+      "prefix": "LIVE Govt tags off",
+      "length": 4
+    },
+    "reviewReason": {
+      "generate": "markedText",
+      "prefix": "LIVE rules rehearsal",
+      "length": 4
+    },
+    "voidReason": {
+      "generate": "markedText",
+      "prefix": "LIVE rules check finished",
+      "length": 4
+    }
+  },
+  "steps": [
+    {
+      "action": "observe",
+      "check": "asset-tags.readiness",
+      "args": {
+        "officeId": "${fixtures.office.id}"
+      },
+      "as": "ready"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.ready.enabled}",
+      "equals": true,
+      "note": "Precondition: the office is enabled, so the tag panel is visible by default"
+    },
+    {
+      "action": "observe",
+      "check": "rules.effective",
+      "args": {
+        "officeId": "${fixtures.office.id}",
+        "modelId": "${fixtures.desktop.id}"
+      },
+      "as": "before"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.before.decider}",
+      "equals": "DEFAULT",
+      "note": "Precondition: no policy decides issue_govt_tags here"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "superuser"
+      }
+    },
+    {
+      "action": "goto",
+      "route": "rules.studio",
+      "query": {
+        "location": "${fixtures.office.id}",
+        "model": "${fixtures.desktop.id}",
+        "rule": "issue_govt_tags"
+      }
+    },
+    {
+      "action": "assert",
+      "target": "rules.studio",
+      "test": "count",
+      "equals": 1
+    },
+    {
+      "action": "assert",
+      "target": "rules.tagRule",
+      "test": "count",
+      "equals": 1,
+      "note": "The asset-tagging package adds the rule to the studio"
+    },
+    {
+      "action": "assert",
+      "target": "rules.tagRuleOn",
+      "test": "count",
+      "equals": 1
+    },
+    {
+      "action": "assert",
+      "target": "rules.tagWhy",
+      "test": "visible"
+    },
+    {
+      "action": "assert",
+      "target": "rules.tagWhySteps",
+      "test": "count",
+      "equals": 6,
+      "note": "Built-in, Country, Ministry, Office, Category, Model"
+    },
+    {
+      "action": "goto",
+      "route": "rules.create",
+      "params": {
+        "template": "blank"
+      }
+    },
+    {
+      "action": "click",
+      "target": "rules.wizardNext"
+    },
+    {
+      "action": "fill",
+      "target": "rules.wizardName",
+      "value": "${data.policyName}"
+    },
+    {
+      "action": "click",
+      "target": "rules.wizardNext"
+    },
+    {
+      "action": "wait",
+      "target": "rules.wizardSubmit",
+      "state": "visible"
+    },
+    {
+      "action": "submitForm",
+      "target": "rules.wizardSubmit"
+    },
+    {
+      "use": "review.confirm",
+      "with": {
+        "reason": "${data.reviewReason}"
+      }
+    },
+    {
+      "action": "waitObserve",
+      "check": "rules.policy",
+      "args": {
+        "name": "${data.policyName}"
+      },
+      "path": "status",
+      "equals": "DRAFT",
+      "as": "draft"
+    },
+    {
+      "action": "ledger",
+      "kind": "rules-policy",
+      "id": "${data.policyName}",
+      "effect": "Product-rules policy created, published, attached and detached (policies are never deleted)",
+      "cleanup": "retained"
+    },
+    {
+      "action": "goto",
+      "route": "rules.edit",
+      "params": {
+        "id": "${observed.draft.id}"
+      }
+    },
+    {
+      "action": "click",
+      "target": "rules.editorTagOffLabel"
+    },
+    {
+      "action": "assert",
+      "target": "rules.editorTagOff",
+      "test": "checked"
+    },
+    {
+      "action": "submitForm",
+      "target": "rules.editorSave"
+    },
+    {
+      "use": "review.confirm",
+      "with": {
+        "reason": "${data.reviewReason}"
+      }
+    },
+    {
+      "action": "waitObserve",
+      "check": "rules.policy",
+      "args": {
+        "name": "${data.policyName}"
+      },
+      "path": "capabilities.issue_govt_tags",
+      "equals": "DISABLE",
+      "as": "saved"
+    },
+    {
+      "action": "goto",
+      "route": "rules.edit",
+      "params": {
+        "id": "${observed.draft.id}"
+      }
+    },
+    {
+      "action": "click",
+      "target": "rules.editorPublish"
+    },
+    {
+      "action": "wait",
+      "target": "rules.publishConfirm",
+      "state": "visible"
+    },
+    {
+      "action": "submitForm",
+      "target": "rules.publishConfirm"
+    },
+    {
+      "use": "review.confirm",
+      "with": {
+        "reason": "${data.reviewReason}"
+      }
+    },
+    {
+      "action": "waitObserve",
+      "check": "rules.policy",
+      "args": {
+        "name": "${data.policyName}"
+      },
+      "path": "status",
+      "equals": "PUBLISHED",
+      "as": "published"
+    },
+    {
+      "action": "goto",
+      "route": "rules.studio",
+      "query": {
+        "location": "${fixtures.office.id}",
+        "model": "${fixtures.desktop.id}",
+        "node": "location:${fixtures.office.id}",
+        "rule": "issue_govt_tags"
+      }
+    },
+    {
+      "action": "select",
+      "target": "rules.attachPolicy",
+      "value": "${observed.published.id}"
+    },
+    {
+      "action": "submitForm",
+      "target": "rules.attachSubmit"
+    },
+    {
+      "use": "review.confirm",
+      "with": {
+        "reason": "${data.reviewReason}"
+      }
+    },
+    {
+      "action": "waitObserve",
+      "check": "rules.effective",
+      "args": {
+        "officeId": "${fixtures.office.id}",
+        "modelId": "${fixtures.desktop.id}"
+      },
+      "path": "on",
+      "equals": false,
+      "as": "off"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.off.decider}",
+      "equals": "LOCATION"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.off.policy}",
+      "equals": "${data.policyName}"
+    },
+    {
+      "action": "goto",
+      "route": "rules.studio",
+      "query": {
+        "location": "${fixtures.office.id}",
+        "model": "${fixtures.desktop.id}",
+        "node": "location:${fixtures.office.id}",
+        "rule": "issue_govt_tags"
+      }
+    },
+    {
+      "action": "assert",
+      "target": "rules.tagRuleOff",
+      "test": "count",
+      "equals": 1
+    },
+    {
+      "action": "assert",
+      "target": "rules.tagRuleBy",
+      "test": "text",
+      "contains": "${data.policyName}"
+    },
+    {
+      "action": "assert",
+      "target": "rules.attachedText",
+      "test": "text",
+      "contains": "${data.policyName}"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "storekeeper"
+      }
+    },
+    {
+      "action": "goto",
+      "route": "storeops.hub",
+      "query": {
+        "start": "receipt"
+      }
+    },
+    {
+      "action": "wait",
+      "target": "storeops.hubStartDialog",
+      "state": "visible"
+    },
+    {
+      "action": "check",
+      "target": "storeops.hubStartReceipt"
+    },
+    {
+      "action": "submitForm",
+      "target": "storeops.hubStartSubmit"
+    },
+    {
+      "action": "capture",
+      "url": true,
+      "pattern": "/documents/receipt/([0-9a-f-]{36})",
+      "as": "offDoc"
+    },
+    {
+      "action": "ledger",
+      "kind": "grn",
+      "id": "${captured.offDoc}",
+      "effect": "Draft GRN with the rule off, voided",
+      "cleanup": "retained"
+    },
+    {
+      "action": "select2",
+      "target": "storeops.row0Item",
+      "search": "${fixtures.desktop.name}",
+      "option": "${fixtures.desktop.name}"
+    },
+    {
+      "action": "fill",
+      "target": "storeops.row0Qty",
+      "value": "1"
+    },
+    {
+      "action": "wait"
+    },
+    {
+      "action": "assert",
+      "target": "tagging.anyPanel",
+      "test": "count",
+      "equals": 0,
+      "note": "The office-level policy turns the tag panel off"
+    },
+    {
+      "action": "click",
+      "target": "storeops.voidOpen"
+    },
+    {
+      "action": "wait",
+      "target": "storeops.voidReason",
+      "state": "visible"
+    },
+    {
+      "action": "fill",
+      "target": "storeops.voidReason",
+      "value": "${data.voidReason}"
+    },
+    {
+      "action": "submitForm",
+      "target": "storeops.voidSubmit"
+    },
+    {
+      "action": "actor",
+      "name": "superuser"
+    },
+    {
+      "action": "goto",
+      "route": "rules.studio",
+      "query": {
+        "location": "${fixtures.office.id}",
+        "model": "${fixtures.desktop.id}",
+        "node": "location:${fixtures.office.id}",
+        "rule": "issue_govt_tags"
+      }
+    },
+    {
+      "action": "submitForm",
+      "target": "rules.detach"
+    },
+    {
+      "use": "review.confirm",
+      "with": {
+        "reason": "${data.reviewReason}"
+      }
+    },
+    {
+      "action": "waitObserve",
+      "check": "rules.effective",
+      "args": {
+        "officeId": "${fixtures.office.id}",
+        "modelId": "${fixtures.desktop.id}"
+      },
+      "path": "decider",
+      "equals": "DEFAULT",
+      "as": "restored"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.restored.on}",
+      "equals": true
+    },
+    {
+      "action": "actor",
+      "name": "storekeeper"
+    },
+    {
+      "action": "goto",
+      "route": "storeops.hub",
+      "query": {
+        "start": "receipt"
+      }
+    },
+    {
+      "action": "wait",
+      "target": "storeops.hubStartDialog",
+      "state": "visible"
+    },
+    {
+      "action": "check",
+      "target": "storeops.hubStartReceipt"
+    },
+    {
+      "action": "submitForm",
+      "target": "storeops.hubStartSubmit"
+    },
+    {
+      "action": "capture",
+      "url": true,
+      "pattern": "/documents/receipt/([0-9a-f-]{36})",
+      "as": "onDoc"
+    },
+    {
+      "action": "ledger",
+      "kind": "grn",
+      "id": "${captured.onDoc}",
+      "effect": "Draft GRN with the rule back on, voided",
+      "cleanup": "retained"
+    },
+    {
+      "action": "select2",
+      "target": "storeops.row0Item",
+      "search": "${fixtures.desktop.name}",
+      "option": "${fixtures.desktop.name}"
+    },
+    {
+      "action": "fill",
+      "target": "storeops.row0Qty",
+      "value": "1"
+    },
+    {
+      "action": "wait",
+      "target": "tagging.panel0",
+      "state": "visible",
+      "note": "Detaching restores the built-in rule and the panel"
+    },
+    {
+      "action": "click",
+      "target": "storeops.voidOpen"
+    },
+    {
+      "action": "wait",
+      "target": "storeops.voidReason",
+      "state": "visible"
+    },
+    {
+      "action": "fill",
+      "target": "storeops.voidReason",
+      "value": "${data.voidReason}"
+    },
+    {
+      "action": "submitForm",
+      "target": "storeops.voidSubmit"
+    }
+  ],
+  "cleanup": {
+    "policy": "retained-with-report",
+    "steps": [
+      {
+        "action": "observe",
+        "check": "rules.effective",
+        "args": {
+          "officeId": "${fixtures.office.id}",
+          "modelId": "${fixtures.desktop.id}"
+        },
+        "as": "cleanupState"
+      },
+      {
+        "use": "auth.login",
+        "with": {
+          "actor": "cleanupAdmin"
+        },
+        "when": {
+          "actual": "${observed.cleanupState.decider}",
+          "equals": "LOCATION"
+        }
+      },
+      {
+        "action": "goto",
+        "route": "rules.studio",
+        "query": {
+          "location": "${fixtures.office.id}",
+          "model": "${fixtures.desktop.id}",
+          "node": "location:${fixtures.office.id}"
+        },
+        "when": {
+          "actual": "${observed.cleanupState.decider}",
+          "equals": "LOCATION"
+        }
+      },
+      {
+        "action": "submitForm",
+        "target": "rules.detach",
+        "when": {
+          "actual": "${observed.cleanupState.decider}",
+          "equals": "LOCATION"
+        }
+      },
+      {
+        "use": "review.confirm",
+        "with": {
+          "reason": "LIVE cleanup: detach the rehearsal policy from the office"
+        },
+        "when": {
+          "actual": "${observed.cleanupState.decider}",
+          "equals": "LOCATION"
+        }
+      },
+      {
+        "action": "waitObserve",
+        "check": "rules.effective",
+        "args": {
+          "officeId": "${fixtures.office.id}",
+          "modelId": "${fixtures.desktop.id}"
+        },
+        "path": "decider",
+        "equals": "DEFAULT"
+      }
+    ]
+  }
+}

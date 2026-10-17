@@ -84,6 +84,8 @@ export class ExecutionPlanner {
         for (const inner of innerSteps) {
           expanded.push({
             ...inner,
+            ...(step.when && !inner.when ? { when: step.when } : {}),
+            ...(step.modes && !inner.modes ? { modes: step.modes } : {}),
             _flow: step.use
           });
         }

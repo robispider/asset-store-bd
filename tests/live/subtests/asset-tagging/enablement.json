@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "id": "asset-tagging.enablement",
+  "title": "The super admin opens the enablement console, sees the installation gates and both offices with their codes, is stopped without a reason (browser) and without the typed CHANGE (national review), then enables the office; the sibling office stays not enabled and the action is audited",
+  "features": ["asset-tagging.enablement"],
+  "tags": ["seeded", "write", "asset-tagging", "national"],
+  "execution": { "capability": "write-fixtures", "language": "en-US", "timeoutMs": 150000, "accessMode": "any" },
+  "fixtures": {
+    "office": { "requirements": { "operational": true, "ledgerOpen": true } },
+    "actors": {
+      "superuser": { "role": "superuser", "allowSuperuser": true, "activeMembership": false, "capabilities": { "allOf": ["asset-tags.scope.enable"] } }
+    },
+    "records": {
+      "sibling": { "kind": "office", "sameCompany": true, "ledgerOpen": true }
+    }
+  },
+  "data": {
+    "reason": { "generate": "markedText", "prefix": "LIVE enable tagging rehearsal", "length": 4 },
+    "reviewReason": { "generate": "markedText", "prefix": "LIVE enablement review", "length": 4 }
+  },
+  "steps": [
+    { "action": "observe", "check": "asset-tags.readiness", "args": { "officeId": "${fixtures.office.id}" }, "as": "before" },
+    { "action": "compare", "actual": "${observed.before.allPass}", "equals": true, "note": "Precondition: every gate passes (national setup, code lists and office settings ran)" },
+    { "action": "observe", "check": "asset-tags.readiness", "args": { "officeId": "${fixtures.sibling.id}" }, "as": "sibling" },
+    { "action": "compare", "actual": "${observed.sibling.enabled}", "equals": false, "note": "Precondition: the sibling office stays out of the rehearsal" },
+
+    { "use": "auth.login", "with": { "actor": "superuser" } },
+    { "action": "goto", "route": "asset-tags.enablement" },
+    { "action": "assert", "target": "tagging.installationGates", "test": "count", "equals": 4 },
+    { "action": "assert", "target": "tagging.readinessDone", "test": "count", "equals": "${observed.before.installationPassCount}" },
+    { "action": "assert", "target": "tagging.enableRow", "test": "count", "equals": 1, "note": "Offices appear once they have saved settings" },
+    { "action": "assert", "target": "tagging.enableRowSibling", "test": "count", "equals": 1 },
+    { "action": "assert", "target": "tagging.enableRow", "test": "text", "contains": "LL ${observed.before.locationCode}" },
+    { "action": "assert", "target": "tagging.enableRowPassed", "test": "count", "equals": "${observed.before.officePassCount}", "note": "G4 and G6 per office" },
+
+    { "action": "assert", "target": "tagging.enableReason", "test": "invalid", "when": { "actual": "${observed.before.enabled}", "equals": false }, "note": "A reason is required" },
+    { "action": "fill", "target": "tagging.enableReason", "value": "abc", "when": { "actual": "${observed.before.enabled}", "equals": false } },
+    { "action": "assert", "target": "tagging.enableReason", "test": "invalid", "when": { "actual": "${observed.before.enabled}", "equals": false }, "note": "At least 5 characters" },
+    { "action": "fill", "target": "tagging.enableReason", "value": "${data.reason}", "when": { "actual": "${observed.before.enabled}", "equals": false } },
+    { "action": "assert", "target": "tagging.enableSubmit", "test": "enabled", "when": { "actual": "${observed.before.enabled}", "equals": false } },
+    { "action": "submitForm", "target": "tagging.enableSubmit", "when": { "actual": "${observed.before.enabled}", "equals": false } },
+    { "use": "review.confirm", "with": { "reason": "${data.reviewReason}" }, "when": { "actual": "${observed.before.enabled}", "equals": false } },
+    { "action": "assert", "target": "tagging.successAlert", "test": "visible", "when": { "actual": "${observed.before.enabled}", "equals": false } },
+    { "action": "ledger", "kind": "office-enablement", "id": "office:${fixtures.office.id}", "effect": "Asset tagging enabled for the office (rehearsal)", "cleanup": "retained", "when": { "actual": "${observed.before.enabled}", "equals": false } },
+
+    { "action": "waitObserve", "check": "asset-tags.readiness", "args": { "officeId": "${fixtures.office.id}" }, "path": "enabled", "equals": true, "as": "after" },
+    { "action": "compare", "actual": "${observed.after.enablement.gates_passed_at}", "matches": "^\\d{4}-\\d{2}-\\d{2}T", "note": "When the gates passed is recorded" },
+    { "action": "compare", "actual": "${observed.after.accessEvents}", "greaterThan": "${observed.before.accessEvents}", "when": { "actual": "${observed.before.enabled}", "equals": false }, "note": "The national action is audited" },
+    { "action": "goto", "route": "asset-tags.enablement" },
+    { "action": "assert", "target": "tagging.enableState", "test": "count", "equals": 1 },
+    { "action": "assert", "target": "css=tr:has(#reason-${fixtures.office.id}) .gs-tag--success:not(.gs-tag--outline)", "test": "count", "equals": 1, "note": "Shown as enabled" },
+    { "action": "assert", "target": "css=tr:has(#reason-${fixtures.sibling.id}) .gs-tag--secondary:not(.gs-tag--outline)", "test": "count", "equals": 1, "note": "The sibling office is not enabled" }
+  ],
+  "cleanup": { "policy": "retained-with-report" }
+}

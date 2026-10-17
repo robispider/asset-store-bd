@@ -153,6 +153,12 @@ try {
                 'officeProfiles' => $hash('gov_location_profiles', ['id', 'location_id', 'lifecycle_status', 'office_admin_id', 'geo_area_id', 'geo_area_verified_at', 'updated_at']),
                 'ictJurisdictions' => $hash('gov_ict_jurisdictions', ['id', 'user_id', 'geo_area_id']),
                 'companyAdmins' => $hash('gov_company_admins', ['id', 'user_id', 'company_id']),
+                'metadata' => $hash('gov_metadata_values', ['id', 'subject_type', 'subject_id', 'namespace', 'revision', 'updated_at']),
+                'registrations' => $hash('gov_asset_registrations', ['id', 'asset_id', 'asset_tag', 'format_version']),
+                'financeItems' => $hash('gov_finance_items', ['gov_code', 'status', 'unspsc_code', 'updated_at']),
+                'profileAssignments' => $hash('gov_profile_assignments', ['id', 'profile_id', 'target_type', 'target_id', 'effective_to']),
+                'documents' => $hash('gov_documents', ['id', 'status', 'updated_at']),
+                'settings' => $hash('settings', ['id', 'auto_increment_assets', 'auto_increment_prefix', 'next_auto_tag_base']),
             ]);
 
         case 'preflight':
@@ -233,8 +239,12 @@ try {
             if ($requestedOfficeId) {
                 $officeQuery->where('l.id', $requestedOfficeId);
             }
+            // ledgerOpen: the office has a stock-ledger opening record (GRN posting needs one).
+            if (! empty($officeReqs['ledgerOpen'])) {
+                $officeQuery->whereIn('l.id', DB::table('gov_store_ledger_openings')->select('location_id'));
+            }
 
-            $offices = $officeQuery->get();
+            $offices = $officeQuery->orderBy('l.id')->get();
             $resolvedOffice = null;
             $resolvedActors = [];
             $resolvedRecords = [];
@@ -245,149 +255,166 @@ try {
 
             $actorDefs = $input['actors'] ?? [];
             $recordDefs = $input['records'] ?? [];
+            $ownedIds = fn (string $table) => DB::table('gov_experiment_records')->where('run_id', $run->id)->where('table_name', $table)
+                ->pluck('record_key')->map(fn ($key) => (int) (json_decode($key, true)['id'] ?? 0))->filter()->values()->all();
 
-            foreach ($offices as $candOffice) {
-                $officeId = (int) $candOffice->id;
-                $search['offices']++;
-                $usedUserIds = [];
-                $officeActors = [];
+            // One actor in one office: least privilege first (fewest effective roles, then lowest id).
+            $resolveActor = function (array $actorDef, int $officeId, int $companyId, array $usedUserIds) use ($ownedUserIds, $reject, &$search, $input, $target, $run): ?array {
+                $reqRole = $actorDef['role'] ?? null;
+                $reqCaps = $actorDef['capabilities']['allOf'] ?? [];
+                // activeMembership false declares an area-, company- or nation-scoped actor who need not be a member.
+                $candidateUsers = DB::table('users as u')
+                    ->when(($actorDef['activeMembership'] ?? true) !== false, fn ($q) => $q
+                        ->join('gov_office_memberships as m', 'm.user_id', '=', 'u.id')
+                        ->where('m.location_id', $officeId)
+                        ->where('m.status', 'active')
+                        ->where(fn ($w) => $w->whereNull('m.valid_until')->orWhere('m.valid_until', '>=', today()->toDateString())))
+                    ->whereIn('u.id', $ownedUserIds)
+                    ->when($reqRole === 'ict_officer', fn ($q) => $q->whereIn('u.id', DB::table('gov_ict_jurisdictions')->select('user_id')))
+                    ->when($reqRole === 'company_admin', fn ($q) => $q->whereIn('u.id', DB::table('gov_company_admins')->where('company_id', $companyId)->select('user_id')))
+                    ->where('u.activated', true)
+                    ->whereNull('u.deleted_at')
+                    ->when($usedUserIds, fn ($q) => $q->whereNotIn('u.id', $usedUserIds))
+                    ->select('u.id', 'u.username', 'u.first_name', 'u.last_name', 'u.display_name', 'u.password', 'u.permissions')
+                    ->get();
 
-                // Try resolving each requested actor in this office
-                $allActorsMatched = true;
-                foreach ($actorDefs as $actorAlias => $actorDef) {
-                    $reqRole = $actorDef['role'] ?? null;
-                    $reqCaps = $actorDef['capabilities']['allOf'] ?? [];
+                $scored = [];
+                foreach ($candidateUsers as $candUser) {
+                    $isSuper = (bool) ($candUser->permissions && preg_match('/"superuser":"?1"?/', $candUser->permissions));
+                    $scored[] = [$candUser, officeRoles((int) $candUser->id, $officeId, $companyId, $isSuper), $isSuper];
+                }
+                usort($scored, fn ($a, $b) => [count($a[1]), $a[0]->id] <=> [count($b[1]), $b[0]->id]);
 
-                    // Find eligible users in this office. `activeMembership: false` declares an area- or
-                    // nation-scoped actor (e.g. an area ICT officer) who need not be a member of the office.
-                    $candUserQuery = DB::table('users as u')
-                        ->when(($actorDef['activeMembership'] ?? true) !== false, fn ($q) => $q
-                            ->join('gov_office_memberships as m', 'm.user_id', '=', 'u.id')
-                            ->where('m.location_id', $officeId)
-                            ->where('m.status', 'active')
-                            ->where(fn ($w) => $w->whereNull('m.valid_until')->orWhere('m.valid_until', '>=', today()->toDateString())))
-                        ->whereIn('u.id', $ownedUserIds)
-                        ->when($reqRole === 'ict_officer', fn ($q) => $q->whereIn('u.id', DB::table('gov_ict_jurisdictions')->select('user_id')))
-                        ->where('u.activated', true)
-                        ->whereNull('u.deleted_at')
-                        ->select('u.id', 'u.username', 'u.first_name', 'u.last_name', 'u.display_name', 'u.password', 'u.permissions');
-
-                    if (! empty($usedUserIds)) {
-                        $candUserQuery->whereNotIn('u.id', $usedUserIds);
+                foreach ($scored as [$candUser, $roles, $isSuper]) {
+                    $search['users']++;
+                    if ($isSuper && empty($actorDef['allowSuperuser'])) {
+                        $reject('superuser-not-requested');
+                        continue;
                     }
-
-                    $candidateUsers = $candUserQuery->get();
-                    $selectedUser = null;
-
-                    // Least privilege first: fewest effective roles, then lowest id.
-                    $scored = [];
-                    foreach ($candidateUsers as $candUser) {
-                        $isSuper = (bool) ($candUser->permissions && str_contains($candUser->permissions, '"superuser":"1"'));
-                        $scored[] = [$candUser, officeRoles((int) $candUser->id, $officeId, (int) $candOffice->company_id, $isSuper), $isSuper];
+                    if (! empty($actorDef['emptyBasket']) && DB::table('draft_basket_items as i')
+                        ->join('draft_baskets as b', 'b.id', '=', 'i.basket_id')
+                        ->where('b.user_id', $candUser->id)->where('b.status', 'draft')->exists()) {
+                        $reject('basket-not-empty');
+                        continue;
                     }
-                    usort($scored, fn ($a, $b) => [count($a[1]), $a[0]->id] <=> [count($b[1]), $b[0]->id]);
-
-                    foreach ($scored as [$candUser, $roles, $isSuper]) {
-                        $search['users']++;
-                        if ($isSuper && empty($actorDef['allowSuperuser'])) {
-                            $reject('superuser-not-requested');
-                            continue;
+                    if ($reqRole && ! in_array($reqRole, $roles, true)) {
+                        $reject('missing-role:'.$reqRole);
+                        continue;
+                    }
+                    $capOk = true;
+                    foreach ($reqCaps as $cap) {
+                        $has = hasCapability((string) $cap, $roles, (int) $candUser->id);
+                        if ($has === null) {
+                            jsonError("Capability alias '{$cap}' is not mapped in tests/live/capabilities.json", 'fixtures.unknown-capability');
                         }
-                        if (! empty($actorDef['emptyBasket']) && DB::table('draft_basket_items as i')
-                            ->join('draft_baskets as b', 'b.id', '=', 'i.basket_id')
-                            ->where('b.user_id', $candUser->id)->where('b.status', 'draft')->exists()) {
-                            $reject('basket-not-empty');
-                            continue;
-                        }
-                        if ($reqRole && ! in_array($reqRole, $roles, true)) {
-                            $reject('missing-role:'.$reqRole);
-                            continue;
-                        }
-                        $capOk = true;
-                        foreach ($reqCaps as $cap) {
-                            $has = hasCapability((string) $cap, $roles, (int) $candUser->id);
-                            if ($has === null) {
-                                jsonError("Capability alias '{$cap}' is not mapped in tests/live/capabilities.json", 'fixtures.unknown-capability');
-                            }
-                            if (! $has) {
-                                $capOk = false;
-                                $reject('missing-capability:'.$cap);
-                                break;
-                            }
-                        }
-                        foreach (($actorDef['capabilities']['noneOf'] ?? []) as $cap) {
-                            if (hasCapability((string) $cap, $roles, (int) $candUser->id)) {
-                                $capOk = false;
-                                $reject('denied-capability-present:'.$cap);
-                                break;
-                            }
-                        }
-                        if (! $capOk) {
-                            continue;
-                        }
-
-                        // Verify credential privately
-                        $verifiedPassword = null;
-                        $targetPassword = $input['fixtureCredentials'][$candUser->username] ?? null;
-                        if (is_string($targetPassword) && Hash::check($targetPassword, $candUser->password)) {
-                            $verifiedPassword = $targetPassword;
-                        }
-                        if (! $target && ! $verifiedPassword && Hash::check(BangladeshPeople::PASSWORD, $candUser->password)) {
-                            $verifiedPassword = BangladeshPeople::PASSWORD;
-                        }
-
-                        if (! $target && ! $verifiedPassword && isset($run->password)) {
-                            try {
-                                $decrypted = decrypt($run->password);
-                                if (Hash::check($decrypted, $candUser->password)) {
-                                    $verifiedPassword = $decrypted;
-                                }
-                            } catch (\Throwable $t) {
-                                // ignore decryption error
-                            }
-                        }
-
-                        if (! $verifiedPassword) {
-                            $reject('credential-mismatch');
-                        }
-                        if ($verifiedPassword) {
-                            $selectedUser = [
-                                'id' => (int) $candUser->id,
-                                'username' => $candUser->username,
-                                'display_name' => $candUser->display_name ?: ($candUser->first_name.' '.$candUser->last_name),
-                                'password' => $verifiedPassword,
-                            ];
-                            $usedUserIds[] = (int) $candUser->id;
+                        if (! $has) {
+                            $capOk = false;
+                            $reject('missing-capability:'.$cap);
                             break;
                         }
                     }
+                    foreach (($actorDef['capabilities']['noneOf'] ?? []) as $cap) {
+                        if (hasCapability((string) $cap, $roles, (int) $candUser->id)) {
+                            $capOk = false;
+                            $reject('denied-capability-present:'.$cap);
+                            break;
+                        }
+                    }
+                    if (! $capOk) {
+                        continue;
+                    }
 
+                    // Verify credential privately
+                    $verifiedPassword = null;
+                    $targetPassword = $input['fixtureCredentials'][$candUser->username] ?? null;
+                    if (is_string($targetPassword) && Hash::check($targetPassword, $candUser->password)) {
+                        $verifiedPassword = $targetPassword;
+                    }
+                    if (! $target && ! $verifiedPassword && Hash::check(BangladeshPeople::PASSWORD, $candUser->password)) {
+                        $verifiedPassword = BangladeshPeople::PASSWORD;
+                    }
+                    if (! $target && ! $verifiedPassword && isset($run->password)) {
+                        try {
+                            $decrypted = decrypt($run->password);
+                            if (Hash::check($decrypted, $candUser->password)) {
+                                $verifiedPassword = $decrypted;
+                            }
+                        } catch (\Throwable $t) {
+                            // ignore decryption error
+                        }
+                    }
+                    if (! $verifiedPassword) {
+                        $reject('credential-mismatch');
+                        continue;
+                    }
+
+                    return [
+                        'id' => (int) $candUser->id,
+                        'username' => $candUser->username,
+                        'display_name' => $candUser->display_name ?: ($candUser->first_name.' '.$candUser->last_name),
+                        'password' => $verifiedPassword,
+                        'office_id' => $officeId,
+                    ];
+                }
+
+                return null;
+            };
+
+            foreach ($offices as $candOffice) {
+                $officeId = (int) $candOffice->id;
+                $companyId = (int) $candOffice->company_id;
+                $search['offices']++;
+                $usedUserIds = [];
+                $officeActors = [];
+                $officeRecords = [];
+
+                // Office records first (another office for cross-office scenarios), so actors can be bound to them.
+                $allRecordsMatched = true;
+                foreach ($recordDefs as $recAlias => $recDef) {
+                    if (($recDef['kind'] ?? null) !== 'office') {
+                        continue;
+                    }
+                    $taken = array_merge([$officeId], array_column($officeRecords, 'id'));
+                    $other = DB::table('locations as l')->whereIn('l.id', $ownedIds('locations'))->whereNotIn('l.id', $taken)->whereNull('l.deleted_at')
+                        ->when(array_key_exists('sameCompany', $recDef), fn ($q) => $recDef['sameCompany']
+                            ? $q->where('l.company_id', $companyId) : $q->where('l.company_id', '!=', $companyId))
+                        ->when(! empty($recDef['ledgerOpen']), fn ($q) => $q->whereIn('l.id', DB::table('gov_store_ledger_openings')->select('location_id')))
+                        ->orderBy('l.id')->first(['l.id', 'l.name', 'l.company_id']);
+                    if (! $other) {
+                        $reject('missing-office-record:'.$recAlias);
+                        $allRecordsMatched = false;
+                        break;
+                    }
+                    $officeRecords[$recAlias] = ['id' => (int) $other->id, 'name' => $other->name, 'company_id' => (int) $other->company_id];
+                }
+                if (! $allRecordsMatched) {
+                    continue;
+                }
+
+                // Actors: in this office, or in an office record named by the actor's "office" field.
+                $allActorsMatched = true;
+                foreach ($actorDefs as $actorAlias => $actorDef) {
+                    $boundOffice = isset($actorDef['office'], $officeRecords[$actorDef['office']]) ? $officeRecords[$actorDef['office']] : null;
+                    $selectedUser = $resolveActor($actorDef, $boundOffice['id'] ?? $officeId, $boundOffice['company_id'] ?? $companyId, $usedUserIds);
                     if (! $selectedUser) {
                         $allActorsMatched = false;
                         break;
                     }
-
+                    $usedUserIds[] = $selectedUser['id'];
                     $officeActors[$actorAlias] = $selectedUser;
                 }
-
                 if (! $allActorsMatched) {
                     continue;
                 }
 
-                // Check records in this office
-                $allRecordsMatched = true;
-                $officeRecords = [];
+                // Other records in this office.
                 foreach ($recordDefs as $recAlias => $recDef) {
                     $kind = $recDef['kind'] ?? 'consumable';
                     $minAvail = (int) ($recDef['minimumAvailable'] ?? 0);
 
                     if ($kind === 'consumable') {
                         $item = DB::table('consumables as c')
-                            ->join('gov_experiment_records as own', function ($join) use ($run) {
-                                $join->on(DB::raw("CAST(JSON_UNQUOTE(JSON_EXTRACT(own.record_key, '$.id')) AS UNSIGNED)"), '=', 'c.id')
-                                    ->where('own.table_name', '=', 'consumables')
-                                    ->where('own.run_id', '=', $run->id);
-                            })
+                            ->whereIn('c.id', $ownedIds('consumables'))
                             ->where('c.location_id', $officeId)
                             ->where('c.qty', '>=', $minAvail)
                             ->whereNull('c.deleted_at')
@@ -408,6 +435,31 @@ try {
                             'location_id' => (int) $item->location_id,
                             'company_id' => (int) $item->company_id,
                         ];
+                    } elseif ($kind === 'assetModel') {
+                        // A dataset asset model whose product type (category) name contains categoryContains.
+                        $model = DB::table('models as m')->join('categories as c', 'c.id', '=', 'm.category_id')
+                            ->whereIn('m.id', $ownedIds('models'))->whereNull('m.deleted_at')
+                            ->when(! empty($recDef['categoryContains']), fn ($q) => $q->where('c.name', 'like', '%'.$recDef['categoryContains'].'%'))
+                            ->orderBy('m.id')->first(['m.id', 'm.name', 'm.model_number', 'm.category_id', 'c.name as category_name']);
+                        if (! $model) {
+                            $reject('missing-asset-model:'.$recAlias);
+                            $allRecordsMatched = false;
+                            break;
+                        }
+                        $officeRecords[$recAlias] = ['id' => (int) $model->id, 'name' => $model->name, 'model_number' => $model->model_number,
+                            'category_id' => (int) $model->category_id, 'category_name' => $model->category_name];
+                    } elseif ($kind === 'financeItem') {
+                        // National Finance master data (not dataset-owned): the item with exactly this English name.
+                        $item = DB::table('gov_finance_items')->where('item_name', $recDef['itemName'] ?? '')->orderBy('gov_code')->first();
+                        if (! $item) {
+                            $reject('missing-finance-item:'.$recAlias);
+                            $allRecordsMatched = false;
+                            break;
+                        }
+                        $officeRecords[$recAlias] = ['id' => $item->gov_code, 'gov_code' => $item->gov_code, 'item_name' => $item->item_name,
+                            'status' => $item->status, 'group_name' => $item->group_name];
+                    } elseif ($kind !== 'office') {
+                        jsonError("Unknown record kind '{$kind}'", 'fixtures.unknown-record-kind');
                     }
                 }
 
@@ -419,7 +471,7 @@ try {
                 $resolvedOffice = [
                     'id' => $officeId,
                     'name' => $candOffice->name,
-                    'company_id' => (int) $candOffice->company_id,
+                    'company_id' => $companyId,
                 ];
                 $resolvedActors = $officeActors;
                 $resolvedRecords = $officeRecords;
@@ -927,6 +979,183 @@ try {
                 case 'membership.overrides':
                     // Emergency change history size (the Change history tab count).
                     jsonResponse(['count' => DB::table('gov_override_audit_logs')->count()]);
+
+                case 'asset-tags.readiness':
+                    // Gates G1-G6 restated from the business rules (ARCHITECTURE.md §6/§15), plus the office's facts,
+                    // the company code lists and enablement, each with its stored revision.
+                    $officeId = (int) ($args['officeId'] ?? 0);
+                    $office = DB::table('locations')->where('id', $officeId)->first(['id', 'name', 'company_id']);
+                    $meta = fn (string $type, int $id, string $ns) => DB::table('gov_metadata_values')->where('subject_type', $type)
+                        ->where('subject_id', $id)->where('namespace', $ns)->first(['payload', 'revision', 'updated_by']);
+                    $facts = $meta('office', $officeId, 'asset-tagging.office');
+                    $enable = $meta('office', $officeId, 'asset-tagging.enablement');
+                    $lists = $office?->company_id ? $meta('company', (int) $office->company_id, 'asset-tagging.codelists') : null;
+                    $factsPayload = $facts ? json_decode($facts->payload, true) : null;
+                    $listsPayload = $lists ? json_decode($lists->payload, true) : ['locations' => [], 'divisions' => []];
+                    $settings = DB::table('settings')->first(['auto_increment_assets', 'auto_increment_prefix', 'zerofill_count', 'next_auto_tag_base']);
+                    $prefix = (string) ($settings->auto_increment_prefix ?? '');
+                    $locationCodes = array_column($listsPayload['locations'] ?? [], 'code');
+                    $divisionCodes = array_column($listsPayload['divisions'] ?? [], 'code');
+                    $experiment = DB::table('gov_experiment_records')->where('table_name', 'locations')->where('record_key', json_encode(['id' => (string) $officeId]))->exists();
+                    $fd18 = DB::table('gov_asset_registrations')->where('format_version', 'fd18-v1')->pluck('asset_tag')->flip();
+                    $legacy = DB::table('assets')->whereRaw('LENGTH(asset_tag) = 18')->pluck('asset_tag')
+                        ->filter(fn ($tag) => ctype_digit((string) $tag) && ! $fd18->has($tag))->count();
+                    $gates = [
+                        'G1' => (string) ($settings->auto_increment_assets ?? '0') === '1' && $prefix !== '' && ! ctype_digit($prefix[0]),
+                        'G2' => ! DB::table('gov_asset_registrations')->select('asset_tag')->groupBy('asset_tag')->havingRaw('count(*) > 1')->exists(),
+                        'G3' => $legacy === 0 || filled(config('asset-tagging.legacy_reviewed_at')),
+                        'G4' => $factsPayload && in_array($factsPayload['location_code'] ?? null, $locationCodes, true)
+                            && ! empty($factsPayload['division_codes']) && ! array_diff($factsPayload['division_codes'], $divisionCodes)
+                            && in_array($factsPayload['default_division_code'] ?? null, $factsPayload['division_codes'], true),
+                        'G5' => (bool) config('asset-tagging.single_issuer'),
+                        'G6' => ! $experiment || ((bool) config('asset-tagging.rehearsal') && ! app()->isProduction()),
+                    ];
+                    jsonResponse([
+                        'office_id' => $officeId, 'company_id' => (int) ($office->company_id ?? 0), 'office_name' => $office->name ?? null,
+                        'native' => ['auto_increment' => (string) ($settings->auto_increment_assets ?? '0') === '1', 'prefix' => $prefix,
+                            'zerofill' => (int) ($settings->zerofill_count ?? 0), 'next' => (int) ($settings->next_auto_tag_base ?? 0)],
+                        'gates' => $gates, 'failing' => array_keys(array_filter($gates, fn ($passed) => ! $passed)),
+                        'allPass' => ! in_array(false, $gates, true), 'passCount' => count(array_filter($gates)), 'experimentOffice' => $experiment,
+                        'officePassCount' => (int) $gates['G4'] + (int) $gates['G6'], 'installationPassCount' => (int) $gates['G1'] + (int) $gates['G2'] + (int) $gates['G3'] + (int) $gates['G5'],
+                        'facts' => $factsPayload, 'factsRevision' => $facts->revision ?? null,
+                        'locationCode' => $factsPayload['location_code'] ?? null, 'defaultDivision' => $factsPayload['default_division_code'] ?? null,
+                        'divisionCount' => count($factsPayload['division_codes'] ?? []),
+                        'codeLists' => $listsPayload, 'codeListsRevision' => $lists->revision ?? null,
+                        'locationListCount' => count($locationCodes), 'divisionListCount' => count($divisionCodes),
+                        'enabled' => (bool) ($enable ? (json_decode($enable->payload, true)['enabled'] ?? false) : false),
+                        'enablement' => $enable ? json_decode($enable->payload, true) : null, 'enablementRevision' => $enable->revision ?? null,
+                        'takenLocations' => DB::table('gov_metadata_values as v')->join('locations as l', 'l.id', '=', 'v.subject_id')
+                            ->where('v.subject_type', 'office')->where('v.namespace', 'asset-tagging.office')
+                            ->where('l.company_id', (int) ($office->company_id ?? 0))->where('v.subject_id', '!=', $officeId)
+                            ->pluck('v.payload')->map(fn ($p) => json_decode($p, true)['location_code'] ?? null)->filter()->values()->all(),
+                        'accessEvents' => DB::table('gov_access_events')->where('ability', 'like', 'asset-tags.%')->count(),
+                    ]);
+
+                case 'asset-tags.document':
+                    // One store document by id: header facts the tag rules read, its lines and every tag issued for it.
+                    $doc = DB::table('gov_documents')->where('id', (string) ($args['id'] ?? ''))->first();
+                    if (! $doc) {
+                        jsonResponse(['exists' => false]);
+                    }
+                    $refs = DB::table('gov_document_references')->where('document_id', $doc->id)->get(['reference_type', 'reference_number', 'reference_date']);
+                    $date = fn (string $type) => ($r = $refs->firstWhere('reference_type', $type)) && $r->reference_date ? substr((string) $r->reference_date, 0, 10) : null;
+                    $items = DB::table('gov_document_items')->where('document_id', $doc->id)->orderBy('id')->get(['id', 'product_type', 'product_id', 'quantity']);
+                    $regs = DB::table('gov_asset_registrations as r')->join('gov_document_items as i', 'i.id', '=', 'r.intake_item_id')
+                        ->leftJoin('assets as a', 'a.id', '=', 'r.asset_id')
+                        ->where('i.document_id', $doc->id)->orderBy('i.id')->orderBy('r.unit_index')
+                        ->get(['r.asset_tag', 'r.format_version', 'r.gov_code', 'r.unit_index', 'r.tag_snapshot', 'i.product_id',
+                            'a.asset_tag as asset_asset_tag', 'a.purchase_date', 'a.location_id', 'a.company_id', 'a.model_id'])
+                        ->map(function ($r) {
+                            $snapshot = json_decode((string) $r->tag_snapshot, true) ?: [];
+
+                            return ['tag' => $r->asset_tag, 'format' => $r->format_version, 'gov_code' => $r->gov_code, 'unit' => $r->unit_index,
+                                'model_id' => (int) $r->product_id, 'asset_tag_matches' => $r->asset_asset_tag === $r->asset_tag,
+                                'purchase_date' => $r->purchase_date ? substr((string) $r->purchase_date, 0, 10) : null,
+                                'location_id' => (int) $r->location_id, 'company_id' => (int) $r->company_id,
+                                'finance_source' => $snapshot['finance_source'] ?? null, 'standard_reason' => $snapshot['standard_reason'] ?? null,
+                                'division_code' => $snapshot['division_code'] ?? null, 'location_code' => $snapshot['location_code'] ?? null,
+                                'acquired_on' => $snapshot['acquired_on'] ?? null, 'date_source' => $snapshot['date_source'] ?? null];
+                        });
+                    $byModel = fn (string $format) => $regs->where('format', $format)->groupBy('model_id')->map->count()->all();
+                    jsonResponse([
+                        'exists' => true, 'id' => $doc->id, 'number' => $doc->document_number, 'type' => $doc->type, 'status' => $doc->status,
+                        'purchase_type' => $doc->purchase_type ?? null, 'location_id' => (int) $doc->location_id, 'company_id' => (int) $doc->company_id,
+                        'posted_by' => $doc->posted_by ? (int) $doc->posted_by : null, 'created_by' => $doc->created_by ? (int) $doc->created_by : null,
+                        'challanDate' => $date('Supplier Challan'), 'poDate' => $date('Purchase Order'),
+                        'lines' => $items->count(), 'quantity' => (int) $items->sum('quantity'),
+                        'lineQuantities' => $items->mapWithKeys(fn ($i) => [$i->product_id => (int) $i->quantity])->all(),
+                        'tags' => $regs->pluck('tag')->all(), 'registrations' => $regs->values()->all(),
+                        'govt' => $regs->where('format', 'fd18-v1')->count(), 'standard' => $regs->where('format', 'native-v1')->count(),
+                        'entered' => $regs->whereNotIn('format', ['fd18-v1', 'native-v1'])->count(),
+                        'govtByModel' => $byModel('fd18-v1'), 'standardByModel' => $byModel('native-v1'),
+                        'govtTags' => $regs->where('format', 'fd18-v1')->pluck('tag')->values()->all(),
+                        'standardTags' => $regs->where('format', 'native-v1')->pluck('tag')->values()->all(),
+                        'allAssetTagsMatch' => $regs->every(fn ($r) => $r['asset_tag_matches']),
+                        // Optional modelId: the same facts for one line's product.
+                        'modelTags' => $regs->where('model_id', (int) ($args['modelId'] ?? 0))->pluck('tag')->values()->all(),
+                        'modelFormats' => $regs->where('model_id', (int) ($args['modelId'] ?? 0))->pluck('format')->unique()->values()->all(),
+                        'modelFinanceSources' => $regs->where('model_id', (int) ($args['modelId'] ?? 0))->pluck('finance_source')->unique()->values()->all(),
+                        'modelStandardReasons' => $regs->where('model_id', (int) ($args['modelId'] ?? 0))->pluck('standard_reason')->unique()->values()->all(),
+                        'modelPurchaseDates' => $regs->where('model_id', (int) ($args['modelId'] ?? 0))->pluck('purchase_date')->unique()->values()->all(),
+                        'modelOffices' => $regs->where('model_id', (int) ($args['modelId'] ?? 0))->pluck('location_id')->unique()->values()->all(),
+                    ]);
+
+                case 'asset-tags.tag':
+                    // Where one tag lives: its asset, office and registration (lookup must hide it from other offices).
+                    $tag = (string) ($args['tag'] ?? '');
+                    $reg = DB::table('gov_asset_registrations as r')->leftJoin('assets as a', 'a.id', '=', 'r.asset_id')
+                        ->where('r.asset_tag', $tag)->first(['r.asset_id', 'r.format_version', 'r.gov_code', 'a.location_id', 'a.company_id', 'a.model_id', 'a.deleted_at']);
+                    jsonResponse(['tag' => $tag, 'exists' => (bool) $reg, 'asset_id' => $reg ? (int) $reg->asset_id : null,
+                        'format' => $reg->format_version ?? null, 'gov_code' => $reg->gov_code ?? null,
+                        'location_id' => $reg ? (int) $reg->location_id : null, 'company_id' => $reg ? (int) $reg->company_id : null,
+                        'assetsWithTag' => DB::table('assets')->where('asset_tag', $tag)->count()]);
+
+                case 'asset-tags.finance':
+                    // One Finance item and its product-type default usage.
+                    $code = (string) ($args['code'] ?? '');
+                    $item = DB::table('gov_finance_items')->where('gov_code', $code)->first(['gov_code', 'item_name', 'status', 'unspsc_code', 'updated_by']);
+                    jsonResponse(['code' => $code, 'exists' => (bool) $item, 'status' => $item->status ?? null, 'item_name' => $item->item_name ?? null,
+                        'unspsc_code' => $item->unspsc_code ?? null, 'updated_by' => $item?->updated_by ? (int) $item->updated_by : null,
+                        'activeCount' => DB::table('gov_finance_items')->where('status', 'active')->count()]);
+
+                case 'asset-tags.default':
+                    // A product type's (category's) Finance Code default as stored.
+                    $categoryId = (int) ($args['categoryId'] ?? 0);
+                    $row = DB::table('gov_metadata_values')->where('subject_type', 'category')->where('subject_id', $categoryId)
+                        ->where('namespace', 'asset-tagging.default')->first(['payload', 'revision', 'scope_type', 'scope_id']);
+                    $governance = DB::table('gov_category_governance')->where('category_id', $categoryId)->first(['governance_type', 'created_by_company_id']);
+                    jsonResponse(['category_id' => $categoryId, 'gov_code' => $row ? (json_decode($row->payload, true)['gov_code'] ?? null) : null,
+                        'revision' => $row->revision ?? null, 'scope' => $row ? $row->scope_type : null,
+                        'national' => ! ($governance && $governance->governance_type === 'company' && $governance->created_by_company_id)]);
+
+                case 'rules.effective':
+                    // Who decides one capability for one office and asset model, restated from the published assignments:
+                    // layers GLOBAL > COMPANY > LOCATION > CATEGORY > MODEL; the deepest layer that says ENFORCE or DISABLE wins;
+                    // when none does, issue_govt_tags falls to the built-in DEFAULT layer (on for asset models).
+                    $code = (string) ($args['code'] ?? 'issue_govt_tags');
+                    $officeId = (int) ($args['officeId'] ?? 0);
+                    $modelId = (int) ($args['modelId'] ?? 0);
+                    $companyId = (int) DB::table('locations')->where('id', $officeId)->value('company_id');
+                    $categoryId = (int) DB::table('models')->where('id', $modelId)->value('category_id');
+                    $layers = ['GLOBAL' => [['System'], 1], 'COMPANY' => [['Tenant'], $companyId], 'LOCATION' => [['Location', 'App\Models\Location'], $officeId],
+                        'CATEGORY' => [['App\Models\Category'], $categoryId], 'MODEL' => [['App\Models\AssetModel'], $modelId]];
+                    $decider = null;
+                    $trail = [];
+                    foreach ($layers as $layer => [$types, $targetId]) {
+                        $assignment = DB::table('gov_profile_assignments as a')->join('gov_profiles as p', 'p.id', '=', 'a.profile_id')
+                            ->whereIn('a.target_type', $types)->where('a.target_id', $targetId)
+                            ->where(fn ($q) => $q->whereNull('a.effective_to')->orWhere('a.effective_to', '>', now()))
+                            ->orderByDesc('a.id')->first(['p.id', 'p.name', 'p.status']);
+                        $behavior = $assignment ? DB::table('gov_profile_capabilities')->where('profile_id', $assignment->id)
+                            ->where('capability_code', $code)->value('behavior') : null;
+                        $trail[$layer] = ['policy' => $assignment->name ?? null, 'policy_id' => $assignment ? (int) $assignment->id : null, 'behavior' => $behavior];
+                        if (in_array($behavior, ['ENFORCE', 'DISABLE'], true)) {
+                            $decider = ['layer' => $layer, 'behavior' => $behavior, 'policy' => $assignment->name];
+                        }
+                    }
+                    $defaultOn = $code === 'issue_govt_tags';
+                    jsonResponse(['code' => $code, 'office_id' => $officeId, 'model_id' => $modelId, 'category_id' => $categoryId, 'trail' => $trail,
+                        'decider' => $decider['layer'] ?? ($defaultOn ? 'DEFAULT' : null), 'policy' => $decider['policy'] ?? null,
+                        'on' => $decider ? $decider['behavior'] === 'ENFORCE' : $defaultOn]);
+
+                case 'rules.policy':
+                    // One policy by exact name: status, version, behaviors and its active assignments.
+                    $profile = DB::table('gov_profiles')->where('name', (string) ($args['name'] ?? ''))->orderByDesc('id')->first(['id', 'name', 'status', 'version', 'lineage_id']);
+                    jsonResponse(['exists' => (bool) $profile, 'id' => $profile ? (int) $profile->id : null, 'status' => $profile->status ?? null,
+                        'version' => $profile->version ?? null, 'lineage' => $profile->lineage_id ?? null,
+                        'capabilities' => $profile ? DB::table('gov_profile_capabilities')->where('profile_id', $profile->id)->pluck('behavior', 'capability_code')->all() : [],
+                        'assignments' => $profile ? DB::table('gov_profile_assignments')->where('profile_id', $profile->id)
+                            ->where(fn ($q) => $q->whereNull('effective_to')->orWhere('effective_to', '>', now()))
+                            ->get(['id', 'target_type', 'target_id'])->map(fn ($a) => ['id' => (int) $a->id, 'target_type' => $a->target_type, 'target_id' => (int) $a->target_id])->all() : [],
+                        'activeAssignments' => $profile ? DB::table('gov_profile_assignments')->where('profile_id', $profile->id)->whereNull('effective_to')->count() : 0]);
+
+                case 'storeops.documents':
+                    // Store documents of one type created in one office by one user (proves a refused action created none).
+                    jsonResponse(['count' => DB::table('gov_documents')->where('location_id', (int) ($args['officeId'] ?? 0))
+                        ->where('type', (string) ($args['type'] ?? 'receipt'))->where('created_by', (int) ($args['userId'] ?? 0))->count(),
+                        'posted' => DB::table('gov_documents')->where('location_id', (int) ($args['officeId'] ?? 0))
+                            ->where('type', (string) ($args['type'] ?? 'receipt'))->where('status', 'POSTED')->count(),
+                        'registrations' => DB::table('gov_asset_registrations')->count()]);
 
                 default:
                     jsonError("Unsupported observation check: '{$check}'", 'observation.unsupported');

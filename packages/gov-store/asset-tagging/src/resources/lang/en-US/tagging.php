@@ -145,7 +145,7 @@ return [
         'G3' => ['label' => 'Legacy tags reviewed', 'ok' => 'No unreviewed 18-digit legacy tags.', 'todo' => ':count legacy 18-digit tags need review.'],
         'G4' => ['label' => 'Office tag settings', 'ok' => 'Location and divisions are chosen.', 'todo' => 'Choose a registration location and at least one division.'],
         'G5' => ['label' => 'Single issuing installation', 'ok' => 'This installation is the only place tags are issued.', 'todo' => 'Confirm this is the single issuing installation and clones are fenced.'],
-        'G6' => ['label' => 'Real office', 'ok' => 'Not an experiment office.', 'todo' => 'Experiment offices never issue tags.'],
+        'G6' => ['label' => 'Real office', 'ok' => 'Not an experiment office.', 'todo' => 'Experiment offices never issue tags.', 'rehearsal' => 'Experiment office in rehearsal mode (not production): tags issued here are for testing.'],
     ],
     'enable' => [
         'intro' => 'Enable Govt. Tag issuance one validated office at a time. Every change needs a reason and is reviewed and recorded.',

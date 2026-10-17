@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": "asset-tagging.pause-resume",
+  "title": "The super admin pauses tagging for the office with a reason (national review): the office settings page shows it not enabled and a storekeeper's GRN line has no tag panel, exactly today's behaviour; enabling it again brings the panel back",
+  "features": ["asset-tagging.enablement", "asset-tagging.grn"],
+  "tags": ["seeded", "write", "asset-tagging", "national", "multi-actor"],
+  "execution": { "capability": "write-fixtures", "language": "en-US", "timeoutMs": 300000, "accessMode": "any" },
+  "fixtures": {
+    "office": { "requirements": { "operational": true, "ledgerOpen": true } },
+    "actors": {
+      "superuser": { "role": "superuser", "allowSuperuser": true, "activeMembership": false, "capabilities": { "allOf": ["asset-tags.scope.enable"] } },
+      "storekeeper": { "role": "storekeeper", "capabilities": { "allOf": ["storeops.documents.draft"] } },
+      "officeAdmin": { "role": "office_admin", "capabilities": { "allOf": ["asset-tags.office.configure"] } }
+    },
+    "records": {
+      "desktop": { "kind": "assetModel", "categoryContains": "Desktop Computers" }
+    }
+  },
+  "data": {
+    "pauseReason": { "generate": "markedText", "prefix": "LIVE pause tagging check", "length": 4 },
+    "resumeReason": { "generate": "markedText", "prefix": "LIVE resume tagging check", "length": 4 },
+    "reviewReason": { "generate": "markedText", "prefix": "LIVE pause and resume review", "length": 4 },
+    "voidReason": { "generate": "markedText", "prefix": "LIVE paused GRN check finished", "length": 4 }
+  },
+  "steps": [
+    { "action": "observe", "check": "asset-tags.readiness", "args": { "officeId": "${fixtures.office.id}" }, "as": "before" },
+    { "action": "compare", "actual": "${observed.before.enabled}", "equals": true, "note": "Precondition: the office is enabled" },
+
+    { "use": "auth.login", "with": { "actor": "superuser" } },
+    { "action": "goto", "route": "asset-tags.enablement" },
+    { "action": "fill", "target": "tagging.enableReason", "value": "${data.pauseReason}" },
+    { "action": "submitForm", "target": "tagging.enableSubmit" },
+    { "use": "review.confirm", "with": { "reason": "${data.reviewReason}" } },
+    { "action": "waitObserve", "check": "asset-tags.readiness", "args": { "officeId": "${fixtures.office.id}" }, "path": "enabled", "equals": false, "as": "paused" },
+    { "action": "compare", "actual": "${observed.paused.enablement.reason}", "equals": "${data.pauseReason}", "note": "The reason is kept with the office" },
+    { "action": "ledger", "kind": "office-enablement", "id": "office:${fixtures.office.id}:paused", "effect": "Tagging paused, then resumed below", "cleanup": "retained" },
+
+    { "use": "auth.login", "with": { "actor": "officeAdmin" } },
+    { "action": "goto", "route": "asset-tags.settings" },
+    { "action": "assert", "target": "css=.at-page .gs-tag--secondary", "test": "count", "equals": 1, "note": "Readiness box shows 'not enabled'" },
+
+    { "use": "auth.login", "with": { "actor": "storekeeper" } },
+    { "action": "goto", "route": "storeops.hub", "query": { "start": "receipt" } },
+    { "action": "wait", "target": "storeops.hubStartDialog", "state": "visible" },
+    { "action": "check", "target": "storeops.hubStartReceipt" },
+    { "action": "submitForm", "target": "storeops.hubStartSubmit" },
+    { "action": "capture", "url": true, "pattern": "/documents/receipt/([0-9a-f-]{36})", "as": "pausedDoc" },
+    { "action": "ledger", "kind": "grn", "id": "${captured.pausedDoc}", "effect": "Draft GRN while paused, voided", "cleanup": "retained" },
+    { "action": "select2", "target": "storeops.row0Item", "search": "${fixtures.desktop.name}", "option": "${fixtures.desktop.name}" },
+    { "action": "fill", "target": "storeops.row0Qty", "value": "1" },
+    { "action": "wait" },
+    { "action": "assert", "target": "tagging.anyPanel", "test": "count", "equals": 0, "note": "An office that is not enabled keeps today's GRN exactly" },
+    { "action": "click", "target": "storeops.voidOpen" },
+    { "action": "wait", "target": "storeops.voidReason", "state": "visible" },
+    { "action": "fill", "target": "storeops.voidReason", "value": "${data.voidReason}" },
+    { "action": "submitForm", "target": "storeops.voidSubmit" },
+
+    { "action": "actor", "name": "superuser" },
+    { "action": "goto", "route": "asset-tags.enablement" },
+    { "action": "fill", "target": "tagging.enableReason", "value": "${data.resumeReason}" },
+    { "action": "submitForm", "target": "tagging.enableSubmit" },
+    { "use": "review.confirm", "with": { "reason": "${data.reviewReason}" } },
+    { "action": "waitObserve", "check": "asset-tags.readiness", "args": { "officeId": "${fixtures.office.id}" }, "path": "enabled", "equals": true, "as": "resumed" },
+
+    { "action": "actor", "name": "storekeeper" },
+    { "action": "goto", "route": "storeops.hub", "query": { "start": "receipt" } },
+    { "action": "wait", "target": "storeops.hubStartDialog", "state": "visible" },
+    { "action": "check", "target": "storeops.hubStartReceipt" },
+    { "action": "submitForm", "target": "storeops.hubStartSubmit" },
+    { "action": "capture", "url": true, "pattern": "/documents/receipt/([0-9a-f-]{36})", "as": "resumedDoc" },
+    { "action": "ledger", "kind": "grn", "id": "${captured.resumedDoc}", "effect": "Draft GRN after resuming, voided", "cleanup": "retained" },
+    { "action": "select2", "target": "storeops.row0Item", "search": "${fixtures.desktop.name}", "option": "${fixtures.desktop.name}" },
+    { "action": "fill", "target": "storeops.row0Qty", "value": "1" },
+    { "action": "wait", "target": "tagging.panel0", "state": "visible" },
+    { "action": "click", "target": "storeops.voidOpen" },
+    { "action": "wait", "target": "storeops.voidReason", "state": "visible" },
+    { "action": "fill", "target": "storeops.voidReason", "value": "${data.voidReason}" },
+    { "action": "submitForm", "target": "storeops.voidSubmit" }
+  ],
+  "cleanup": { "policy": "retained-with-report" }
+}

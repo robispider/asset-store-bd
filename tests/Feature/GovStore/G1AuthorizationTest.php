@@ -444,6 +444,7 @@ class G1AuthorizationTest extends TestCase
         $user = $this->actor('superuser');
         $request = Request::create('/admin/catalog/mapping/save', 'POST', ['code' => '123', 'category_id' => 2]);
         $request->headers->set('Accept', 'application/json');
+        $request->headers->set('referer', 'http://localhost/admin/catalog/mapping');
         $request->setUserResolver(fn () => $user);
         $request->setRouteResolver(fn () => Route::getRoutes()->getByName('gov.catalog.mapping.save'));
         $request->setLaravelSession(app('session')->driver('array'));
@@ -456,7 +457,10 @@ class G1AuthorizationTest extends TestCase
         $this->assertHttpStatus(409, fn () => $service->handle($request, 'catalog.master.manage'));
         DB::table('gov_catalog_snipe_mappings')->update(['category_id' => 1]);
         $request->replace(['review_token' => $token, 'confirmation' => 'CHANGE', 'change_reason' => 'Test national change', 'code' => 'tampered', 'category_id' => 999]);
+        // The confirmation is posted from the review page, whose URL is the POST-only action itself.
+        $request->headers->set('referer', 'http://localhost/admin/catalog/mapping/save');
         $this->assertNull($service->handle($request, 'catalog.master.manage'));
+        $this->assertSame('http://localhost/admin/catalog/mapping', $request->headers->get('referer'), 'back() returns to the page the change started from');
         $this->assertSame('123', $request->input('code'));
         $this->assertSame(2, $request->input('category_id'));
         $request->replace(['review_token' => $token, 'confirmation' => 'CHANGE', 'change_reason' => 'Test national change']);

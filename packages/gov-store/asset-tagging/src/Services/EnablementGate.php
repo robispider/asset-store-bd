@@ -59,6 +59,12 @@ class EnablementGate
             ->where('record_key', json_encode(['id' => (string) $officeId]))->exists();
     }
 
+    /** G6 rehearsal (config asset-tagging.rehearsal): experiment offices may issue, never in production. */
+    public function rehearsal(): bool
+    {
+        return (bool) config('asset-tagging.rehearsal') && ! app()->isProduction();
+    }
+
     /** Installation gates G1, G2, G3, G5. */
     public function installation(): array
     {
@@ -77,7 +83,9 @@ class EnablementGate
     {
         return [
             $this->gate('G4', $this->facts->complete($officeId)),
-            $this->gate('G6', ! $this->experimentOffice($officeId)),
+            $this->experimentOffice($officeId) && $this->rehearsal()
+                ? ['key' => 'G6', 'passed' => true, 'label' => __('asset-tagging::tagging.gates.G6.label'), 'detail' => __('asset-tagging::tagging.gates.G6.rehearsal')]
+                : $this->gate('G6', ! $this->experimentOffice($officeId)),
         ];
     }
 

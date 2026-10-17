@@ -251,7 +251,19 @@ class AssetTaggingWorkflowTest extends TestCase
         $gate = app(EnablementGate::class);
         $this->assertTrue($gate->passes(self::OFFICE));
         DB::table('gov_experiment_records')->insert(['run_id' => 'run', 'table_name' => 'locations', 'record_key' => json_encode(['id' => (string) self::OFFICE])]);
+        config(['asset-tagging.rehearsal' => false]);
         $this->assertFalse($gate->passes(self::OFFICE));
+        // G6 rehearsal: experiment offices may issue for a live rehearsal, but never in production.
+        config(['asset-tagging.rehearsal' => true]);
+        $this->assertTrue($gate->passes(self::OFFICE));
+        $environment = app()->environment();
+        app()->instance('env', 'production');
+        try {
+            $this->assertFalse($gate->passes(self::OFFICE));
+        } finally {
+            app()->instance('env', $environment);
+            config(['asset-tagging.rehearsal' => false]);
+        }
 
         // An 18-digit tag can only come from issuance.
         $asset = new Asset(['model_id' => 1, 'status_id' => 1]);

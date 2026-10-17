@@ -62,6 +62,11 @@ export class AssertionEngine {
           if (actualText !== expectedText) {
             throw new Error(`Assertion failed: Target '${targetAlias}' text mismatch. Expected: "${expectedText}", Actual: "${actualText}"`);
           }
+        } else if (step.matches !== undefined) {
+          const pattern = new RegExp(String(varContext.interpolate(step.matches)));
+          if (!pattern.test(actualText)) {
+            throw new Error(`Assertion failed: Target '${targetAlias}' text "${actualText}" does not match ${pattern}`);
+          }
         } else if (step.contains !== undefined) {
           if (!actualText.includes(expectedText)) {
             throw new Error(`Assertion failed: Target '${targetAlias}' does not contain expected substring. Expected substring: "${expectedText}", Actual: "${actualText}"`);
@@ -168,8 +173,18 @@ export class AssertionEngine {
       if (!String(actual).includes(String(contains))) {
         throw new Error(`Comparison failed. Actual "${actual}" does not contain "${contains}"`);
       }
+    } else if (step.matches !== undefined) {
+      const pattern = new RegExp(String(varContext.interpolate(step.matches)));
+      if (!pattern.test(String(actual))) {
+        throw new Error(`Comparison failed. Actual "${actual}" does not match ${pattern}`);
+      }
+    } else if (step.greaterThan !== undefined) {
+      const floor = Number(varContext.interpolate(step.greaterThan));
+      if (!(Number(actual) > floor)) {
+        throw new Error(`Comparison failed. Expected a number greater than ${floor}, Actual: "${actual}"`);
+      }
     }
 
-    return { passed: true, actual, expected: expected ?? contains };
+    return { passed: true, actual, expected: expected ?? contains ?? step.matches ?? step.greaterThan };
   }
 }

@@ -18,14 +18,15 @@
                 </li>
             @endforeach
         </ul>
-        <form method="POST" action="{{ route('hardware.bulkedit.show') }}" target="_blank">
-            @csrf
-            <input type="hidden" name="bulk_actions" value="labels">
-            @foreach ($rows as $row)
-                <input type="hidden" name="ids[]" value="{{ $row->asset_id }}">
-            @endforeach
-            <button type="submit" class="btn btn-default btn-block"><i class="fas fa-print" aria-hidden="true"></i> {{ __('asset-tagging::tagging.posted.print') }}</button>
-        </form>
+        {{-- This box sits inside the workspace's own form, where a nested <form> is dropped by the browser. The button
+             therefore redirects that form (formaction/formtarget) and these inputs travel with it to the label print. --}}
+        <input type="hidden" name="bulk_actions" value="labels">
+        @foreach ($rows as $row)
+            <input type="hidden" name="ids[]" value="{{ $row->asset_id }}">
+        @endforeach
+        <button type="submit" class="btn btn-default btn-block at-issued__print" formaction="{{ route('hardware.bulkedit.show') }}" formmethod="post" formtarget="_blank" formnovalidate>
+            <i class="fas fa-print" aria-hidden="true"></i> {{ __('asset-tagging::tagging.posted.print') }}
+        </button>
         <a class="btn btn-default btn-block" href="{{ route('asset-tags.grn.csv', ['document' => $document->id]) }}">
             <i class="fas fa-file-csv" aria-hidden="true"></i> {{ __('asset-tagging::tagging.posted.csv') }}
         </a>

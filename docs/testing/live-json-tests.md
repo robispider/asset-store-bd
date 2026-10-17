@@ -28,6 +28,7 @@ npm run test:live:targets                         # configured-target and browse
 | `smoke` | observation | fast subset |
 | `journeys` | mutation | `requests.basket-validation`, `requests.submit-approve`; need `--allow-writes` |
 | `native-inventory` | observation | blocked today: no seeded actor holds native `consumables.view` |
+| `asset-tagging` | mutation | full asset-tagging flow over GRN and the Rules studio, 9 journeys in order (roles, national setup, code lists, office settings, enablement, issuance, needs-attention, Rules studio, pause/resume). Needs `--target local --allow-writes --allow-external-mail` (target mode cannot read the mail driver: point `MAIL_MAILER` at `log` first), `ASSET_TAGS_SINGLE_ISSUER=true`, `ASSET_TAGS_REHEARSAL=true` and an office with an opened stock ledger. Run `php artisan config:cache` first on Windows (see below) and `config:clear` afterwards. Issued tags and posted GRNs are permanent and listed as retained. |
 
 ## Environment and policy
 
@@ -69,3 +70,7 @@ npm run test:live -- run --suite smoke --headed --slow-mo 300 --baseUrl http://s
 The dashboard is local only: it binds to `127.0.0.1`, requires the per-start token on every request, checks the Host header and only launches this repository's CLI with validated arguments. It lets you pick a suite or journey, enter the **server URL**, tick **Show the browser** (opens a visible Chromium window, optional slow motion), and watch per-journey status, live steps, console output, failure screenshots, retained records and the HTML report. One run at a time; **Stop run** terminates it.
 
 Server URL rules: choose a configured **Target server** for external testing. Its URL, bootstrap account and optional database connection come from the same private entry. Configured database targets must agree with the browser's downloaded dataset and signed-in identities before assertions. Without a configured target, local hosts (`*.local`, `*.test`, `localhost`) are accepted and other hosts require `LIVE_TEST_ALLOWED_HOSTS`; that allowlist only permits the browser host and does not change the default local fixture database. Ad-hoc mode compares the requested origin with the local application's `APP_URL` and blocks a mismatch before login. Keep `APP_URL` accurate; an origin comparison alone does not prove two servers share a database.
+
+## Windows: requests that lose `.env`
+
+On Windows thread-safe PHP, concurrent requests (a GRN page fires autosave, panel refreshes and select2 searches together) can occasionally boot without `.env`: the log then shows `production.ERROR … Unknown database 'forge'` and the browser lands on `http://localhost/setup`. Run `php artisan config:cache` before a write suite so configuration is not read from `.env` per request, and `php artisan config:clear` afterwards. Never run PHPUnit while the configuration is cached: `phpunit.xml` overrides do not apply to a cached configuration.
