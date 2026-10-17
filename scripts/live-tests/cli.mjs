@@ -285,6 +285,16 @@ async function main() {
       };
       provenance.targetId = selectedTarget?.id || null;
       provenance.fixtureSource = selectedTarget ? 'target-browser' : 'local-database';
+      // Local-database mode: a configured local target for this same server supplies the superadmin that
+      // "supplied superuser" actors need (dataset users are never superadmins), as --target does.
+      if (!selectedTarget) {
+        const origin = new URL(baseUrl).origin;
+        const localProfile = targets.find(target => target.environment === 'local' && new URL(target.baseUrl).origin === origin);
+        if (localProfile) {
+          phpBridge.setSuperadmin(localProfile.bootstrap);
+          provenance.superadminSource = `target:${localProfile.id}`;
+        }
+      }
       const writePrivate = (name, data) => fs.writeFileSync(path.join(runDir, name), JSON.stringify(data, null, 2), 'utf8');
 
       // Determine list of journeys to run
@@ -405,6 +415,11 @@ async function main() {
             resolved = await fixtureBridge.resolveContext(journey.fixtures, datasetOverride);
           } catch (err) {
             console.error(`  [SETUP ERROR] Fixture resolution failed: ${err.message}`);
+            const rejected = Object.entries(err.search?.rejected || {});
+            if (rejected.length) console.error(`  Candidates rejected: ${rejected.map(([reason, count]) => `${reason} ×${count}`).join(', ')}`);
+            if (err.search?.rejected?.['superadmin-not-supplied']) {
+              console.error('  This journey needs a superadmin: add a local target for this server (bootstrap login) to storage/app/private/live-tests/targets.json, or run with --target.');
+            }
             resultsReporter.recordTestResult({
               journeyId: jId,
               status: 'blocked',

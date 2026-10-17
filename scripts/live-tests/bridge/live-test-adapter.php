@@ -106,6 +106,56 @@ function hasCapability(string $alias, array $roles, int $userId): ?bool {
     return null;
 }
 
+/** Verify a supplied superadmin login against this database and the actor's capability requirements; null (with a reason) when it fails. */
+function resolveSuppliedSuperadmin(array $actorDef, ?array $supplied, int $officeId, int $companyId, callable $reject): ?array {
+    if (! $supplied || ! is_string($supplied['password'] ?? null) || (empty($supplied['username']) && empty($supplied['userId']))) {
+        $reject('superadmin-not-supplied');
+
+        return null;
+    }
+    $user = User::withoutGlobalScopes()->where('activated', true)->whereNull('deleted_at')
+        ->when(! empty($supplied['userId']), fn ($q) => $q->whereKey((int) $supplied['userId']))
+        ->when(! empty($supplied['username']), fn ($q) => $q->where('username', $supplied['username']))
+        ->first();
+    if (! $user || ! Hash::check($supplied['password'], $user->password)) {
+        $reject('superadmin-credential-mismatch');
+
+        return null;
+    }
+    if (! $user->isSuperUser()) {
+        $reject('superadmin-not-superuser');
+
+        return null;
+    }
+    $roles = officeRoles((int) $user->id, $officeId, $companyId, true);
+    foreach ($actorDef['capabilities']['allOf'] ?? [] as $cap) {
+        $has = hasCapability((string) $cap, $roles, (int) $user->id);
+        if ($has === null) {
+            jsonError("Capability alias '{$cap}' is not mapped in tests/live/capabilities.json", 'fixtures.unknown-capability');
+        }
+        if (! $has) {
+            $reject('superadmin-missing-capability:'.$cap);
+
+            return null;
+        }
+    }
+    foreach ($actorDef['capabilities']['noneOf'] ?? [] as $cap) {
+        if (hasCapability((string) $cap, $roles, (int) $user->id)) {
+            $reject('superadmin-denied-capability-present:'.$cap);
+
+            return null;
+        }
+    }
+
+    return [
+        'id' => (int) $user->id,
+        'username' => $user->username,
+        'display_name' => $user->display_name ?: trim($user->first_name.' '.$user->last_name),
+        'password' => $supplied['password'],
+        'identitySource' => 'supplied-superadmin-verified-in-database',
+    ];
+}
+
 function jsonResponseError(string $message, string $code, array $extra): void {
     echo json_encode(['status' => 'error', 'code' => $code, 'message' => $message] + $extra, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit(1);
@@ -262,6 +312,10 @@ try {
             $resolveActor = function (array $actorDef, int $officeId, int $companyId, array $usedUserIds) use ($ownedUserIds, $reject, &$search, $input, $target, $run): ?array {
                 $reqRole = $actorDef['role'] ?? null;
                 $reqCaps = $actorDef['capabilities']['allOf'] ?? [];
+                // A supplied superadmin (the configured target's bootstrap login) is never a dataset user: verify it instead of searching.
+                if ($reqRole === 'superuser' && ! empty($actorDef['allowSuperuser']) && ($actorDef['activeMembership'] ?? true) === false) {
+                    return resolveSuppliedSuperadmin($actorDef, $input['superadmin'] ?? null, $officeId, $companyId, $reject);
+                }
                 // activeMembership false declares an area-, company- or nation-scoped actor who need not be a member.
                 $candidateUsers = DB::table('users as u')
                     ->when(($actorDef['activeMembership'] ?? true) !== false, fn ($q) => $q

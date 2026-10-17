@@ -3,6 +3,16 @@
  */
 import Papa from 'papaparse';
 
+/** The HTTP redirect hops behind a navigation response, oldest first ("POST /path → 302"), for failure diagnosis. */
+export async function redirectChain(response) {
+  const hops = [];
+  for (let request = response.request().redirectedFrom(); request; request = request.redirectedFrom()) {
+    const status = (await request.response().catch(() => null))?.status();
+    hops.unshift(`${request.method()} ${new URL(request.url()).pathname} → ${status ?? '?'}`);
+  }
+  return hops;
+}
+
 export class BrowserActionEngine {
   constructor(assertionEngine, captureEngine, locatorResolver) {
     this.assertions = assertionEngine;
@@ -115,7 +125,7 @@ export class BrowserActionEngine {
         if (expected.length && !expected.includes(response.status())) {
           throw new Error(`Assertion failed: submitting '${step.target}' landed on ${page.url()} with status ${response.status()}, expected ${expected.join(',')}`);
         }
-        return { action: 'submitForm', target: step.target, url: page.url(), status: response.status() };
+        return { action: 'submitForm', target: step.target, url: page.url(), status: response.status(), redirects: await redirectChain(response) };
       }
 
       case 'reload': {
