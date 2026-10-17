@@ -1,0 +1,90 @@
+{
+  "as_of": "2026-10-15",
+  "scope": "offline design/source validation only; no application, live database, policy approval or production issuance",
+  "structural_checks": "passed",
+  "production_readiness": "blocked_pending_policy_data_and_implementation",
+  "source_pdf_sha256": "83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89",
+  "pdf_page_count": 170,
+  "pdf_page_count_evidence": "pypdf checked during design review; this stdlib validator verifies exact file hash",
+  "visual_review_pdf_pages": [
+    88,
+    99,
+    103,
+    110
+  ],
+  "finance": {
+    "groups": 18,
+    "subgroup_keys": 171,
+    "items": 490,
+    "duplicate_full_item_keys": 0,
+    "missing_or_invalid_two_digit_codes": 0,
+    "tag_width_digits": 18,
+    "subgroup_label_collisions": [
+      {
+        "group_code": "11",
+        "subgroup_code": "23",
+        "source_labels": [
+          "HUB",
+          "Server"
+        ],
+        "source_pdf_pages": [
+          110
+        ]
+      }
+    ],
+    "flagged_source_item_rows": 8,
+    "approved_item_rows": 0
+  },
+  "unspsc": {
+    "nodes": 158463,
+    "levels": {
+      "1": 58,
+      "2": 559,
+      "3": 7998,
+      "4": 149848
+    },
+    "duplicate_codes": 0,
+    "bundle_sha256": "bb2aac5e760b9418727cc0ea5cd64dd56c2b7d0691edee09beaec223033f1224",
+    "release_label_claim": "UNv260801",
+    "upstream_release_provenance": "unverified; label found in import UI, not encoded in CSV",
+    "candidate_rows": 470,
+    "finance_items_with_candidates": 224,
+    "finance_items_without_candidates": 266,
+    "approved_crosswalk_rows": 0,
+    "candidate_method": "up to three title-token search leads per Finance item; three manually selected search leads; no semantic equivalence asserted"
+  },
+  "organization": {
+    "location_source_examples": 14,
+    "division_source_examples": 17,
+    "completed_organization_onboarding": 0,
+    "approved_live_office_maps": 0,
+    "approved_product_type_maps": 0,
+    "native_ids_in_templates": 0
+  },
+  "policy_decisions_open": 8,
+  "required_fields_documented": 24,
+  "checks": [
+    "source hash",
+    "unique complete Finance keys",
+    "group coverage",
+    "subgroup label variants retained",
+    "UNSPSC code widths and parent levels",
+    "Finance width and segment offsets",
+    "month pattern",
+    "worked example conflict",
+    "candidate existence/level/no approvals",
+    "all Finance rows have review worksheet",
+    "issuance disabled"
+  ],
+  "not_verified": [
+    "all-row semantic correctness",
+    "manual applicability",
+    "live organization/model/legacy inventory",
+    "upstream UNSPSC release/rights",
+    "reviewer-approved crosswalks",
+    "application runtime tests",
+    "MySQL concurrency",
+    "UI and label/printer behavior",
+    "CI or production readiness"
+  ]
+}

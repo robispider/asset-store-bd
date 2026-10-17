@@ -65,6 +65,11 @@ class PostingPipelineManager
             $challanRef = $document->references()->where('reference_type', 'Supplier Challan')->first();
             $voucherNo = $challanRef ? $challanRef->reference_number : $document->document_number;
 
+            // Asset tags are planned and reserved for the whole receipt before any asset is created.
+            if ($document->type === 'receipt') {
+                app(\GovStore\StoreOperations\Contracts\AssetTagIssuer::class)->prepare($document);
+            }
+
             // ATOMIC TRANSACTION BLOCK
             DB::transaction(function () use ($document, $profile, $userId, $trackingCode, $voucherNo) {
 

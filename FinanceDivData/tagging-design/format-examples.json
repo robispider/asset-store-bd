@@ -1,0 +1,32 @@
+{
+  "status": "demonstration_not_issued",
+  "positive": [
+    {
+      "asset_tag": "090809102601090001",
+      "gov_code": "090809",
+      "purchase_date": "2026-10-01",
+      "location_code": "01",
+      "division_code": "09",
+      "sequence": 1
+    }
+  ],
+  "negative": [
+    {
+      "input": "030119012201090001",
+      "reason": "source_worked_example_conflicts_with_codebook; structurally 18 digits but not an approved item"
+    },
+    {
+      "input": "090809132601090001",
+      "reason": "invalid_month"
+    },
+    {
+      "input": "090809102601090000",
+      "reason": "zero_sequence"
+    },
+    {
+      "input": "90809102601090001",
+      "reason": "lost_leading_zero_wrong_length"
+    }
+  ],
+  "organization_codes": "fictional_example_mappings_only"
+}

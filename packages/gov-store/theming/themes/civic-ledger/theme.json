@@ -1,7 +1,7 @@
 {
     "key": "civic-ledger",
     "version": "1.0.0",
-    "status": "draft",
+    "status": "published",
     "extends": "default",
     "label": { "en-US": "Civic Ledger", "bn-BD": "নাগরিক খতিয়ান" },
     "description": {

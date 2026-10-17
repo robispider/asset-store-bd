@@ -1,0 +1,80 @@
+{
+  "revision": 7,
+  "status": "Proposal; no roles/gates implemented",
+  "reuse_abilities": {
+    "storeops.documents.view": "Existing document scope and roles",
+    "storeops.documents.draft": "Scoped receipt inputs, optional line Finance choice, acquisition evidence",
+    "storeops.documents.post": "Existing posting authority; atomic issuance of Finance and standard tags",
+    "catalog.master.manage": "National publisher: Finance activation/extension, Finance-to-UNSPSC links, Finance defaults of global product types, one-UNSPSC reconciliation",
+    "existing scoped product-type edit": "Company product-type editor sets the Finance default of the company's own types",
+    "native model and label policies": "Retain existing narrower authorization and object checks"
+  },
+  "new_abilities": [
+    {
+      "name": "asset-tags.office.configure",
+      "roles": [
+        "office_admin"
+      ],
+      "scope": "Own working office",
+      "actions": [
+        "Select location and divisions from company lists",
+        "View readiness"
+      ],
+      "national": false
+    },
+    {
+      "name": "asset-tags.company.codelists",
+      "roles": [
+        "company_admin"
+      ],
+      "scope": "Own company",
+      "actions": [
+        "Maintain location and division code lists"
+      ],
+      "national": false
+    },
+    {
+      "name": "asset-tags.lookup",
+      "roles": [
+        "authenticated"
+      ],
+      "scope": "Object-level: only assets the viewer can already see",
+      "actions": [
+        "Decode tag and show provenance"
+      ],
+      "national": false
+    },
+    {
+      "name": "asset-tags.scope.enable",
+      "roles": [
+        "superuser"
+      ],
+      "scope": "Installation; audited per office",
+      "actions": [
+        "Preflight, gates G1-G6, enable/pause offices"
+      ],
+      "national": true
+    }
+  ],
+  "no_new_business_roles": true,
+  "role_responsibilities": {
+    "storekeeper": "GRN as today; fix tag warnings in the line panel; post and print; cannot type tags in enabled offices",
+    "office_admin": "Select own office location and divisions from the company lists; readiness",
+    "company product-type editor": "Finance default for own company's product types",
+    "national catalog publisher": "Finance master, Finance-UNSPSC links, global product-type defaults, multi-UNSPSC reconciliation",
+    "company_admin / ict_officer": "Company admin maintains company location/division code lists; otherwise existing scope only",
+    "primary_approver / final_approver": "Existing document duties; no tagging authority",
+    "deployment operator": "Gates, enablement, native prefix configuration; no business-code authority"
+  },
+  "invariants": [
+    "Named gov.can on new GovStore routes",
+    "Active user-owned membership",
+    "ID/office/company/type/state checks even in shadow mode",
+    "Native admin is not superuser",
+    "A tag or QR code never grants access",
+    "Private evidence delivered only through authorized document routes",
+    "Jobs/commands enforce national controls",
+    "No native schema/model/core patches"
+  ],
+  "config_file": "packages/gov-store/asset-tagging/src/config/abilities.php merged into govstore-abilities (theming convention); labels in tenant-scope access.php lang files"
+}

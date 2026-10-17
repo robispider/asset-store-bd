@@ -239,4 +239,27 @@
     [data-gs-surfaces="elevated"] .gs-box__title { font-size: 1.2em !important; }
     [data-gs-surfaces="elevated"] .gs-page-header { border-bottom-color: var(--gs-color-border); }
     [data-gs-surfaces="elevated"] .gs-kpi--link:hover { box-shadow: var(--gs-shadow-2); }
+
+    /* ---------- code segments (<x-gs::code-segments>): a structured code as labelled parts ---------- */
+    .gs-segs { display: inline-flex; flex-wrap: wrap; gap: var(--gs-space-1); align-items: flex-start; }
+    .gs-seg { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; }
+    .gs-seg__v {
+        --gs-seg-tone: var(--gs-color-text-muted);
+        --gs-seg-bg: var(--gs-color-surface-sunken);
+        font-family: var(--gs-font-mono); font-size: 1.15em; font-weight: 600; letter-spacing: 0.08em;
+        padding: var(--gs-space-1) var(--gs-space-2); border-radius: var(--gs-radius-sm);
+        color: var(--gs-seg-tone); background: var(--gs-seg-bg);
+        border: var(--gs-border-width) solid color-mix(in oklab, var(--gs-seg-tone) 35%, var(--gs-seg-bg));
+        min-width: 2.6em; text-align: center;
+    }
+    .gs-seg[data-tone="primary"] .gs-seg__v { --gs-seg-tone: var(--gs-color-primary); --gs-seg-bg: var(--gs-color-primary-subtle); }
+    .gs-seg[data-tone="info"] .gs-seg__v { --gs-seg-tone: var(--gs-color-info); --gs-seg-bg: var(--gs-color-info-subtle); }
+    .gs-seg[data-tone="success"] .gs-seg__v { --gs-seg-tone: var(--gs-color-success); --gs-seg-bg: var(--gs-color-success-subtle); }
+    .gs-seg[data-tone="warning"] .gs-seg__v { --gs-seg-tone: var(--gs-color-warning); --gs-seg-bg: var(--gs-color-warning-subtle); }
+    .gs-seg[data-tone="muted"] .gs-seg__v { --gs-seg-tone: var(--gs-color-text-subtle); --gs-seg-bg: var(--gs-color-surface); }
+    .gs-seg--pending .gs-seg__v { border-style: dashed; background: var(--gs-color-surface); color: var(--gs-color-text-subtle); }
+    .gs-seg__l { font-size: 0.7rem; color: var(--gs-color-text-muted); text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+    .gs-segs--sm { gap: 2px; }
+    .gs-segs--sm .gs-seg__v { font-size: 0.95em; padding: 1px var(--gs-space-1); min-width: 0; }
+    .gs-segs--sm .gs-seg__l { display: none; }
 }

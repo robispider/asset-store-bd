@@ -28,6 +28,9 @@ class MetadataServiceProvider extends ServiceProvider
             return new MetadataRegistry();
         });
 
+        // Typed metadata values: packages register their namespaces in their own providers.
+        $this->app->singleton(\GovStore\Metadata\Services\MetadataValueStore::class);
+
         $this->app->singleton(MetadataCompiler::class, function () {
             return new MetadataCompiler();
         });

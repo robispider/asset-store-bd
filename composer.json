@@ -131,6 +131,7 @@
       "GovStore\\UserOnboarding\\": "packages/gov-store/user-onboarding/src/",
       "GovStore\\Metadata\\": "packages/gov-store/metadata/src/",
       "GovStore\\Tracking\\": "packages/gov-store/tracking/src/",
+      "GovStore\\AssetTagging\\": "packages/gov-store/asset-tagging/src/",
       "App\\": "app/",
       "Database\\Factories\\": "database/factories/",
       "Database\\Seeders\\": "database/seeders/"

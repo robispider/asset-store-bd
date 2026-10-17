@@ -568,3 +568,12 @@
 
 
 
+
+/* Finance catalogue (S6) and the product-type Finance Code (S4). Layout only; colours come from kit tokens. */
+.gs-finance-catalog { display: flex; flex-direction: column; gap: var(--gs-space-4); }
+.gs-finance-catalog__kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--gs-space-3); }
+.gs-finance-capacity { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--gs-space-3); }
+.gs-finance-capacity__note { margin: var(--gs-space-1) 0 0; font-size: var(--gs-font-size-sm); }
+.gs-finance-new__pick { display: flex; flex-wrap: wrap; gap: var(--gs-space-3); align-items: flex-end; }
+.gs-finance-default { display: flex; flex-direction: column; gap: var(--gs-space-2); }
+.gs-finance-default__owner { font-size: var(--gs-font-size-sm); color: var(--gs-color-text-muted); }

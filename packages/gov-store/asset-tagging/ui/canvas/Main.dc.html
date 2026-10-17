@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Asset tagging overview</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/c32d13bc41445ccff8c8156f9d142efa">
+<link rel="stylesheet" href="/_blob/b0140cd2ad3846295c9f5b5830092d19">
+<link rel="stylesheet" href="/_blob/5ce2466269dec07fabc18d249b73b3f3">
+<link rel="stylesheet" href="/_blob/22b274ea2c677e88680fff95f1da730f">
+<link rel="stylesheet" href="/_blob/a22aa64277e2d4b6dd0f0188f59f608f">
+<link rel="stylesheet" href="/_blob/4a8ede88a8bfb06759d0786c392dcd21">
+<link rel="stylesheet" href="/_blob/ac4accb7e1cee1091aaa49053784ac91">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&amp;family=Noto+Sans+Bengali:wght@400;600&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="at-app" data-skin="{{theme}}" data-theme="{{mode}}" data-gs-status-style="tinted" style="width: 100%; min-height: 100%;">
+<header class="at-top">
+<span class="at-top__brand"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>National Asset Register</span>
+<span class="at-top__ctx"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21V10M19 21V10M9 21v-7M15 21v-7M2 10l10-6 10 6"></path></svg>Working office: Example Office, Dhaka</span>
+</header>
+<div class="at-shell">
+<nav class="at-side" aria-label="Asset tagging screens">
+<div class="at-side__head">Asset tagging</div>
+<a href="Main.dc.html" aria-current="page"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>Overview</a>
+<a href="GrnTagging.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"></path><path d="M3 7l9 4 9-4M12 11v10"></path></svg>GRN workspace</a>
+<a href="PostReview.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 3 3 5-6"></path></svg>Post and print</a>
+<a href="TagLookup.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>Tag lookup</a>
+<div class="at-side__head">Administration</div>
+<a href="ProductType.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z"></path><path d="m3 13 9 5 9-5"></path></svg>Product type</a>
+<a href="OfficeSettings.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Office settings</a>
+<a href="FinanceCatalog.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z"></path><path d="M4 16a4 4 0 0 1 4-4h12"></path></svg>Finance catalog</a>
+<a href="Enablement.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"></path><path d="m9 12 2 2 4-4"></path></svg>Enablement</a>
+</nav>
+<main class="at-main">
+<header class="gs-page-header">
+<div class="gs-page-header__text">
+<h1 class="gs-page-header__title">Asset tagging <span class="gs-page-header__bn" lang="bn">সম্পদ ট্যাগিং</span></h1>
+<p class="gs-page-header__subtitle">Every unit received through a GRN gets one permanent tag. The Finance Code is optional: without it, the unit gets a standard tag.</p>
+</div>
+</header>
+
+<div class="at-cols">
+<section class="gs-box">
+<header class="gs-box__header">
+<h2 class="gs-box__title">Govt. Tag</h2>
+<div class="gs-box__tools"><span class="gs-tag gs-tag--primary"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5v14M8 5v14M11 5v14M15 5v14M18 5v14M20 5v14"></path></svg> 18 digits</span></div>
+</header>
+<div class="gs-box__body at-stack">
+<div class="gs-segs" role="img" aria-label="Govt. Tag 090809102601090001">
+<span class="gs-seg" data-tone="primary"><span class="gs-seg__v">09</span><span class="gs-seg__l">Group</span></span>
+<span class="gs-seg" data-tone="primary"><span class="gs-seg__v">08</span><span class="gs-seg__l">Subgroup</span></span>
+<span class="gs-seg" data-tone="primary"><span class="gs-seg__v">09</span><span class="gs-seg__l">Item</span></span>
+<span class="gs-seg" data-tone="info"><span class="gs-seg__v">1026</span><span class="gs-seg__l">Month</span></span>
+<span class="gs-seg" data-tone="success"><span class="gs-seg__v">01</span><span class="gs-seg__l">Location</span></span>
+<span class="gs-seg" data-tone="success"><span class="gs-seg__v">09</span><span class="gs-seg__l">Division</span></span>
+<span class="gs-seg" data-tone="warning"><span class="gs-seg__v">0001</span><span class="gs-seg__l">Sequence</span></span>
+</div>
+<div class="at-legend">
+<span><strong>090809</strong> Laptop · Computer and Computer Equipment</span>
+<span><strong>1026</strong> acquired Oct 2026</span>
+<span><strong>01 · 09</strong> office codes</span>
+</div>
+<p>Issued when the unit has an <strong>active Finance Code</strong> and a <strong>Supplier Challan or Purchase Order date</strong> on a purchase receipt.</p>
+<p class="at-small at-muted">Demonstration values. Office codes are fictional until each office enters its own.</p>
+</div>
+</section>
+
+<section class="gs-box">
+<header class="gs-box__header">
+<h2 class="gs-box__title">Standard tag</h2>
+<div class="gs-box__tools"><span class="gs-tag gs-tag--secondary"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg> native sequence</span></div>
+</header>
+<div class="gs-box__body at-stack">
+<div class="at-preview" style="border-style: solid;">
+<span class="at-standard">GS-004217</span>
+<span class="at-small at-muted">Installation prefix + next number</span>
+</div>
+<p>Issued for every other unit in an enabled office:</p>
+<ul style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px;">
+<li>no Finance Code on the product type or the line</li>
+<li>Finance Code present, but no challan or PO date and the storekeeper chose to keep standard tags</li>
+<li>donation, transfer-in or opening-balance receipts (until decision D-04)</li>
+</ul>
+<p class="at-small at-muted">Both kinds are permanent. Neither is ever regenerated or reused.</p>
+</div>
+</section>
+</div>
+
+<section class="gs-box">
+<header class="gs-box__header"><h2 class="gs-box__title">How a unit's tag is chosen at posting</h2></header>
+<div class="gs-box__body">
+<ol class="gs-stepper gs-stepper--vertical" aria-label="Tag decision">
+<li class="gs-step gs-step--done"><span class="gs-step__marker" aria-hidden="true">1</span><span class="gs-step__label"><strong>Is the office enabled?</strong> If not, nothing changes, except that typed tags shaped like Govt. Tags are rejected.</span></li>
+<li class="gs-step gs-step--done"><span class="gs-step__marker" aria-hidden="true">2</span><span class="gs-step__label"><strong>Does the line have a Finance Code?</strong> Inherited from the product type, or chosen for this line. If not, a warning offers a fix; otherwise the unit gets a <em>standard tag</em>.</span></li>
+<li class="gs-step gs-step--current" aria-current="step"><span class="gs-step__marker" aria-hidden="true">3</span><span class="gs-step__label"><strong>Purchase receipt with a Supplier Challan or Purchase Order date?</strong> If not, the GRN shows <em>Needs attention</em>: fill the existing date, or keep standard tags for that line.</span></li>
+<li class="gs-step"><span class="gs-step__marker" aria-hidden="true">4</span><span class="gs-step__label"><strong>Govt. Tag issued.</strong> The sequence is reserved inside the posting transaction and printed afterwards.</span></li>
+</ol>
+</div>
+</section>
+
+<section class="gs-box">
+<header class="gs-box__header"><h2 class="gs-box__title">Screens in this upgrade</h2></header>
+<div class="gs-box__body">
+<ul class="gs-list gs-list--divided" role="list">
+<li class="gs-list__item"><span class="gs-list__icon" aria-hidden="true"><svg class="at-i" viewBox="0 0 24 24"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"></path><path d="M3 7l9 4 9-4M12 11v10"></path></svg></span><div class="gs-list__text"><a class="gs-list__title" href="GrnTagging.dc.html">S1 · GRN workspace (additions only)</a><span class="gs-list__subtitle">Storekeeper. The existing GRN screen plus a tag panel per line, warnings with fixes and new checklist rows.</span></div><div class="gs-list__meta"><span class="gs-tag gs-tag--light">store-operations</span></div></li>
+<li class="gs-list__item"><span class="gs-list__icon" aria-hidden="true"><svg class="at-i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 3 3 5-6"></path></svg></span><div class="gs-list__text"><a class="gs-list__title" href="PostReview.dc.html">S2–S3 · Posting modal and posted GRN (additions only)</a><span class="gs-list__subtitle">Storekeeper. One tag line in the existing modal; an Issued tags box with printing after posting.</span></div><div class="gs-list__meta"><span class="gs-tag gs-tag--light">store-operations</span></div></li>
+<li class="gs-list__item"><span class="gs-list__icon" aria-hidden="true"><svg class="at-i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg></span><div class="gs-list__text"><a class="gs-list__title" href="TagLookup.dc.html">S7 · Tag lookup</a><span class="gs-list__subtitle">Any authorized viewer. Decoded segments and provenance; nothing leaks for assets they can't see.</span></div><div class="gs-list__meta"><span class="gs-tag gs-tag--light">asset-tagging</span></div></li>
+<li class="gs-list__item"><span class="gs-list__icon" aria-hidden="true"><svg class="at-i" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5z"></path><path d="m3 13 9 5 9-5"></path></svg></span><div class="gs-list__text"><a class="gs-list__title" href="ProductType.dc.html">S4 · Product type</a><span class="gs-list__subtitle">National publisher or company editor. One UNSPSC code; Finance Code (optional) right under it.</span></div><div class="gs-list__meta"><span class="gs-tag gs-tag--light">classification</span></div></li>
+<li class="gs-list__item"><span class="gs-list__icon" aria-hidden="true"><svg class="at-i" viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg></span><div class="gs-list__text"><a class="gs-list__title" href="OfficeSettings.dc.html">S5 · Office tagging settings</a><span class="gs-list__subtitle">Office administrator picks location and divisions from company code lists; company admin keeps the lists.</span></div><div class="gs-list__meta"><span class="gs-tag gs-tag--light">asset-tagging</span></div></li>
+<li class="gs-list__item"><span class="gs-list__icon" aria-hidden="true"><svg class="at-i" viewBox="0 0 24 24"><path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z"></path><path d="M4 16a4 4 0 0 1 4-4h12"></path></svg></span><div class="gs-list__text"><a class="gs-list__title" href="FinanceCatalog.dc.html">S6 · Finance catalog</a><span class="gs-list__subtitle">National publisher. Review and activate items, add new codes, watch the 99-per-group capacity.</span></div><div class="gs-list__meta"><span class="gs-tag gs-tag--light">classification</span></div></li>
+<li class="gs-list__item"><span class="gs-list__icon" aria-hidden="true"><svg class="at-i" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"></path><path d="m9 12 2 2 4-4"></path></svg></span><div class="gs-list__text"><a class="gs-list__title" href="Enablement.dc.html">S8 · Enablement console</a><span class="gs-list__subtitle">Deployment operator. Gates G1–G6, read-only preflight and audited office enablement.</span></div><div class="gs-list__meta"><span class="gs-tag gs-tag--light">asset-tagging</span></div></li>
+</ul>
+</div>
+</section>
+
+<section class="gs-box">
+<header class="gs-box__header"><h2 class="gs-box__title">Design principles</h2></header>
+<div class="gs-box__body at-cols">
+<div class="at-stack" style="gap: 4px;"><strong>Plain words first</strong><span class="at-muted">"Govt. Tag" and "Standard tag". Codes always sit beside names.</span></div>
+<div class="at-stack" style="gap: 4px;"><strong>Optional means optional</strong><span class="at-muted">A missing Finance Code never blocks anything. The consequence is shown instead.</span></div>
+<div class="at-stack" style="gap: 4px;"><strong>Show it before it happens</strong><span class="at-muted">The live preview and posting summary show exactly what will be issued.</span></div>
+<div class="at-stack" style="gap: 4px;"><strong>Say "permanent" once, clearly</strong><span class="at-muted">One honest sentence at posting. Typed confirmation is kept for national changes.</span></div>
+<div class="at-stack" style="gap: 4px;"><strong>Name the owner</strong><span class="at-muted">Read-only values say who sets them and how to ask for a change.</span></div>
+<div class="at-stack" style="gap: 4px;"><strong>Show the least data needed</strong><span class="at-muted">A tag never grants access. Lookup answers "missing" and "forbidden" the same way.</span></div>
+</div>
+</section>
+
+<section class="gs-box">
+<header class="gs-box__header"><h2 class="gs-box__title">New in the kit</h2><div class="gs-box__tools"><span class="gs-tag gs-tag--info gs-tag--outline">proposed</span></div></header>
+<div class="gs-box__body at-stack">
+<div class="at-row"><code class="at-mono at-small">&lt;x-gs::code-segments&gt;</code><span class="at-muted at-small">full, compact and unallocated forms</span></div>
+<div class="at-row at-row--top" style="gap: 32px;">
+<div class="gs-segs">
+<span class="gs-seg" data-tone="primary"><span class="gs-seg__v">05</span><span class="gs-seg__l">Group</span></span>
+<span class="gs-seg" data-tone="primary"><span class="gs-seg__v">03</span><span class="gs-seg__l">Subgroup</span></span>
+<span class="gs-seg" data-tone="primary"><span class="gs-seg__v">10</span><span class="gs-seg__l">Item</span></span>
+<span class="gs-seg" data-tone="info"><span class="gs-seg__v">1026</span><span class="gs-seg__l">Month</span></span>
+<span class="gs-seg" data-tone="success"><span class="gs-seg__v">01</span><span class="gs-seg__l">Location</span></span>
+<span class="gs-seg" data-tone="success"><span class="gs-seg__v">09</span><span class="gs-seg__l">Division</span></span>
+<span class="gs-seg gs-seg--pending"><span class="gs-seg__v">····</span><span class="gs-seg__l">At posting</span></span>
+</div>
+<div class="gs-segs gs-segs--sm" role="img" aria-label="090809102601090001">
+<span class="gs-seg" data-tone="primary"><span class="gs-seg__v">090809</span></span>
+<span class="gs-seg" data-tone="info"><span class="gs-seg__v">1026</span></span>
+<span class="gs-seg" data-tone="success"><span class="gs-seg__v">0109</span></span>
+<span class="gs-seg" data-tone="warning"><span class="gs-seg__v">0001</span></span>
+</div>
+</div>
+<div class="at-chip-row">
+<span class="gs-tag gs-tag--primary"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5v14M8 5v14M11 5v14M15 5v14M18 5v14M20 5v14"></path></svg> Govt. Tag</span>
+<span class="gs-tag gs-tag--secondary"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg> Standard tag</span>
+<span class="gs-badge" data-tone="warning"><span class="gs-badge__label">Needs review</span></span>
+<span class="gs-badge" data-tone="success"><span class="gs-badge__label">Matches UNSPSC</span></span>
+</div>
+</div>
+</section>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender"],"default":"civic-ledger","section":"Theme"},"mode":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"},"$preview":{"width":1280,"height":1500}}'>
+class Component extends DCLogic {
+renderVals() {
+return { theme: this.props.theme ?? 'civic-ledger', mode: this.props.mode ?? 'light' };
+}
+}
+</script>
+</body>
+</html>

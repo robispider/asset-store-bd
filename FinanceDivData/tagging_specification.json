@@ -1,6 +1,8 @@
 {
   "classification": "Source-derived tag format; provisional pending resolution of contradictions in the manual.",
   "format": "GGSSII MMYY LL DD NNNN (remove spaces when encoding as a string)",
+  "total_width_digits": 18,
+  "derived_description_correction": "The segment widths sum to 18 and the worked example contains 18 digits; the previous 16-digit wording in derived documentation was incorrect. Source values are preserved.",
   "segments": [
     {
       "field": "group_code",
@@ -126,11 +128,12 @@
       ]
     },
     {
-      "issue": "Manual narrative describes the segment labels and widths in a diagram with ambiguous alignment; the worked 16-digit example yields a 2+2+2+4+2+2+4 layout.",
-      "source_pdf_pages": [
-        88,
-        99
-      ]
+      "issue": "Annexure-11 assigns subgroup 23 to both HUB and Server within group 11. Full group/subgroup/item keys remain distinct but subgroup labels conflict.",
+      "source_pdf_pages": [110]
+    },
+    {
+      "issue": "Annexures 1-2 contain questionable category/item pairings, including Pond / IPS Rack and Land Improvement entries for sensors, Farming land, IPS Rack and Parks. These are present in the source PDF, not silently corrected extraction values; semantic review is required.",
+      "source_pdf_pages": [103]
     }
   ],
   "recommendation": "Do not issue production tags from the worked example until the responsible authority confirms the controlling code list and validates a canonical tag specification."

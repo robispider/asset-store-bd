@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>GRN workspace with tag additions</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/c32d13bc41445ccff8c8156f9d142efa">
+<link rel="stylesheet" href="/_blob/b0140cd2ad3846295c9f5b5830092d19">
+<link rel="stylesheet" href="/_blob/5ce2466269dec07fabc18d249b73b3f3">
+<link rel="stylesheet" href="/_blob/22b274ea2c677e88680fff95f1da730f">
+<link rel="stylesheet" href="/_blob/a22aa64277e2d4b6dd0f0188f59f608f">
+<link rel="stylesheet" href="/_blob/4a8ede88a8bfb06759d0786c392dcd21">
+<link rel="stylesheet" href="/_blob/ac4accb7e1cee1091aaa49053784ac91">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&amp;family=Noto+Sans+Bengali:wght@400;600&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="at-app" data-skin="{{theme}}" data-theme="{{mode}}" data-gs-status-style="tinted" style="width: 100%; min-height: 100%;">
+<header class="at-top">
+<span class="at-top__brand"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>National Asset Register</span>
+<span class="at-top__ctx"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21V10M19 21V10M9 21v-7M15 21v-7M2 10l10-6 10 6"></path></svg>Working office: Example Office, Dhaka · Storekeeper</span>
+</header>
+<div class="at-shell">
+<nav class="at-side" aria-label="Asset tagging screens">
+<div class="at-side__head">Asset tagging</div>
+<a href="Main.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>Overview</a>
+<a href="GrnTagging.dc.html" aria-current="page"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"></path><path d="M3 7l9 4 9-4M12 11v10"></path></svg>GRN workspace</a>
+<a href="PostReview.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 3 3 5-6"></path></svg>Post and print</a>
+<a href="TagLookup.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>Tag lookup</a>
+<div class="at-side__head">Administration</div>
+<a href="ProductType.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z"></path><path d="m3 13 9 5 9-5"></path></svg>Product type</a>
+<a href="OfficeSettings.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Office settings</a>
+<a href="FinanceCatalog.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z"></path><path d="M4 16a4 4 0 0 1 4-4h12"></path></svg>Finance catalog</a>
+<a href="Enablement.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"></path><path d="m9 12 2 2 4-4"></path></svg>Enablement</a>
+</nav>
+<main class="at-main" style="gap: 12px;">
+<div class="content-header"><h1>Workspace - GR-2026-000412</h1><span class="at-small at-muted">Existing GRN screen. Parts outlined with a dashed line and marked NEW are the only additions.</span></div>
+
+<div class="row">
+<div class="col-md-8">
+
+<div class="box box-solid">
+<div class="box-header with-border"><h3 class="box-title">Administrative Details &amp; Approvals</h3></div>
+<div class="box-body">
+<div class="form-group"><label for="ps">Receiving Source</label><select id="ps" class="form-control"><option>Standard Purchase</option><option>Office Transfer</option><option>Donation</option><option>Confiscated</option></select></div>
+<div class="form-group"><label for="sup">Supplier</label><select id="sup" class="form-control"><option>Example Traders Ltd</option></select><p class="help-block">Required for a standard purchase.</p></div>
+<div class="row">
+<div class="col-md-6"><div class="form-group"><label for="ch">Supplier Challan</label><div class="input-pair"><input id="ch" type="text" class="form-control input-sm" value="CH-5521" readonly><input type="date" aria-label="Supplier Challan date" class="form-control input-sm {{dateAttn}}" value="{{challanDate}}" onChange="{{onChallanDate}}"></div>
+<sc-if value="{{showDateHint}}" hint-placeholder-val="{{ true }}"><p class="help-block at-new" style="color: var(--gs-color-danger); padding: 2px 4px;"><span class="at-new__flag">NEW</span>Needed for Govt. Tags (sets the month). Or fill the Purchase Order date.</p></sc-if>
+</div></div>
+<div class="col-md-6"><div class="form-group"><label for="po">Purchase Order / Tender</label><div class="input-pair"><input id="po" type="text" class="form-control input-sm" placeholder="PO number"><input type="date" aria-label="Purchase Order date" class="form-control input-sm" value="{{poDate}}" onChange="{{onPoDate}}"></div></div></div>
+</div>
+<div class="row">
+<div class="col-md-6"><div class="form-group"><label for="nothi">Nothi / Approval Letter</label><div class="input-pair"><input id="nothi" type="text" class="form-control input-sm" placeholder="Nothi Number"><input type="date" aria-label="Nothi date" class="form-control input-sm"></div></div></div>
+<div class="col-md-6"><div class="form-group"><label for="alloc">Special Ministry Allocation</label><input id="alloc" type="text" class="form-control input-sm" placeholder="Tracking code (optional)"></div></div>
+</div>
+</div>
+</div>
+
+<div class="box box-solid">
+<div class="box-header with-border"><h3 class="box-title">Received Items</h3></div>
+<div class="box-body no-padding at-scroll">
+<table class="table table-bordered">
+<thead><tr><th scope="col">Item Name</th><th scope="col">Current Stock</th><th scope="col">Quantity</th><th scope="col">Unit Cost</th><th scope="col">Balance After</th><th scope="col"><span class="gs-sr-only">Remove</span></th></tr></thead>
+<tbody>
+
+<tr><td><strong>Notebook computer, 14-inch</strong></td><td>4</td><td>3</td><td>85,000.00</td><td>7</td><td><button type="button" class="btn btn-xs btn-danger" aria-label="Remove line"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg></button></td></tr>
+<tr><td colspan="6">
+<div style="font-weight: 600; margin-bottom: 4px;">Physical Serial Numbers Required</div>
+<p class="text-muted at-small" style="margin: 0 0 6px;">Scan or enter one serial number for each unit.</p>
+<div class="row" style="margin-bottom: 6px;">
+<div class="col-md-4"><label class="at-small" style="font-weight: 400;">Unit 1<input type="text" class="form-control input-sm" value="5CD4381KQ2" readonly></label></div>
+<div class="col-md-4"><label class="at-small" style="font-weight: 400;">Unit 2<input type="text" class="form-control input-sm" value="5CD4381KQ7" readonly></label></div>
+<div class="col-md-4"><label class="at-small" style="font-weight: 400;">Unit 3<input type="text" class="form-control input-sm" value="5CD4381KR1" readonly></label></div>
+</div>
+<div class="at-tagpanel at-new"><span class="at-new__flag">NEW</span>
+<div class="at-tagpanel__head"><span class="at-tagpanel__title"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5v14M8 5v14M11 5v14M15 5v14M18 5v14M20 5v14"></path></svg>Asset tags</span>
+<sc-if value="{{l1Govt}}" hint-placeholder-val="{{ true }}"><span class="gs-tag gs-tag--primary">3 Govt. Tags</span></sc-if>
+<sc-if value="{{l1Std}}" hint-placeholder-val="{{ false }}"><span class="gs-tag gs-tag--secondary">3 standard tags</span></sc-if>
+</div>
+<div class="at-row at-small"><span class="at-muted">Finance Code</span><span class="at-mono"><strong>090809</strong></span><span>Laptop</span><span class="gs-tag gs-tag--light">From product type</span><span class="at-owner"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21V10M19 21V10M9 21v-7M15 21v-7M2 10l10-6 10 6"></path></svg>set nationally</span>
+<label class="at-row" style="gap: 6px; margin-left: auto; font-weight: 400;">Division <select class="form-control input-sm" style="width: auto;"><option>09 · Finance and Accounts (default)</option><option>12 · Human Resources and Administration</option></select></label></div>
+<sc-if value="{{l1Attn}}" hint-placeholder-val="{{ true }}">
+<div class="at-note at-note--danger" role="alert"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg><div class="at-note__body"><span><strong>Needs attention:</strong> Govt. Tags need the Supplier Challan or Purchase Order date.</span><div class="at-row"><button type="button" class="btn btn-sm btn-primary" onClick="{{fillDate}}">Add the challan date</button><button type="button" class="btn btn-sm" onClick="{{std1}}">Use standard tags for this line</button></div></div></div>
+</sc-if>
+<sc-if value="{{l1Govt}}" hint-placeholder-val="{{ true }}">
+<div class="gs-segs gs-segs--sm" role="img" aria-label="Tag preview"><span class="gs-seg" data-tone="primary"><span class="gs-seg__v">090809</span></span><span class="gs-seg" data-tone="info"><span class="gs-seg__v">{{mmyy}}</span></span><span class="gs-seg" data-tone="success"><span class="gs-seg__v">0109</span></span><span class="gs-seg gs-seg--pending"><span class="gs-seg__v">····</span></span><span class="at-small at-muted" style="align-self: center;">  the last 4 digits are reserved when you post</span></div>
+</sc-if>
+<sc-if value="{{l1Std}}" hint-placeholder-val="{{ false }}"><div class="at-row at-small"><span class="at-mono"><strong>GS-······</strong></span><span class="at-muted">Standard tags kept for this line (recorded).</span><button type="button" class="btn btn-xs" onClick="{{undo1}}">Undo</button></div></sc-if>
+</div>
+</td></tr>
+
+<tr><td><strong>Revolving office chair with arms</strong></td><td>10</td><td>6</td><td>12,500.00</td><td>16</td><td><button type="button" class="btn btn-xs btn-danger" aria-label="Remove line"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg></button></td></tr>
+<tr><td colspan="6">
+<div class="at-tagpanel at-new"><span class="at-new__flag">NEW</span>
+<div class="at-tagpanel__head"><span class="at-tagpanel__title"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5v14M8 5v14M11 5v14M15 5v14M18 5v14M20 5v14"></path></svg>Asset tags</span>
+<sc-if value="{{l2Govt}}" hint-placeholder-val="{{ false }}"><span class="gs-tag gs-tag--primary">6 Govt. Tags</span></sc-if>
+<sc-if value="{{l2StdChip}}" hint-placeholder-val="{{ true }}"><span class="gs-tag gs-tag--secondary">6 standard tags</span></sc-if>
+</div>
+<sc-if value="{{l2Warn}}" hint-placeholder-val="{{ true }}">
+<div class="at-note at-note--warning" role="status"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path><path d="M12 9v4M12 17h.01"></path></svg>
+<div class="at-note__body"><span><strong>No Finance Code for this product type.</strong> These 6 units will get <strong>standard tags</strong>. You can fix this for this line:</span>
+<div class="at-row"><button type="button" class="btn btn-sm btn-primary" aria-expanded="{{l2OpenStr}}" onClick="{{toggle2}}">Choose a Finance Code for this line</button><button type="button" class="btn btn-sm" onClick="{{keep2}}">Keep standard tags</button></div>
+<sc-if value="{{l2Open}}" hint-placeholder-val="{{ false }}">
+<div class="at-picker" role="listbox" aria-label="Finance Code for this line" style="max-width: 520px;">
+<sc-for list="{{options}}" as="o" hint-placeholder-count="3">
+<button type="button" class="at-picker__opt" role="option" aria-selected="{{o.selected}}" onClick="{{o.pick}}"><span class="at-picker__code">{{o.code}}</span><span class="at-picker__text"><span>{{o.name}}</span><span class="at-small at-muted">{{o.path}}</span></span><sc-if value="{{o.matches}}" hint-placeholder-val="{{ false }}"><span class="gs-badge" data-tone="success"><span class="gs-badge__label">Matches UNSPSC</span></span></sc-if></button>
+</sc-for>
+</div>
+</sc-if>
+</div></div>
+</sc-if>
+<sc-if value="{{l2Kept}}" hint-placeholder-val="{{ false }}"><div class="at-row at-small"><span class="at-mono"><strong>GS-······</strong></span><span class="at-muted">No Finance Code. Standard tags kept for this line (recorded).</span><button type="button" class="btn btn-xs" onClick="{{undo2}}">Undo</button></div></sc-if>
+<sc-if value="{{l2Picked}}" hint-placeholder-val="{{ false }}">
+<div class="at-row at-small"><span class="at-muted">Finance Code</span><span class="at-mono"><strong>{{l2Code}}</strong></span><span>{{l2Name}}</span><span class="gs-tag gs-tag--light">This line only</span><button type="button" class="btn btn-xs" onClick="{{undo2}}">Change</button></div>
+<sc-if value="{{l2Attn}}" hint-placeholder-val="{{ false }}"><div class="at-note at-note--danger" role="alert"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg><div class="at-note__body"><span><strong>Needs attention:</strong> Govt. Tags need the Supplier Challan or Purchase Order date.</span></div></div></sc-if>
+<div class="gs-segs gs-segs--sm" role="img" aria-label="Tag preview"><span class="gs-seg" data-tone="primary"><span class="gs-seg__v">{{l2Code}}</span></span><span class="gs-seg" data-tone="info"><span class="gs-seg__v">{{mmyy}}</span></span><span class="gs-seg" data-tone="success"><span class="gs-seg__v">0109</span></span><span class="gs-seg gs-seg--pending"><span class="gs-seg__v">····</span></span></div>
+</sc-if>
+</div>
+</td></tr>
+
+<tr><td><strong>Multimedia projector</strong></td><td>1</td><td>2</td><td>65,000.00</td><td>3</td><td><button type="button" class="btn btn-xs btn-danger" aria-label="Remove line"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg></button></td></tr>
+<tr><td colspan="6">
+<div style="font-weight: 600; margin-bottom: 4px;">Physical Serial Numbers Required</div>
+<div class="row" style="margin-bottom: 6px;">
+<div class="col-md-4"><label class="at-small" style="font-weight: 400;">Unit 1<input type="text" class="form-control input-sm" value="PJ-88213" readonly></label></div>
+<div class="col-md-4"><label class="at-small" style="font-weight: 400;">Unit 2<input type="text" class="form-control input-sm" value="PJ-88214" readonly></label></div>
+</div>
+<div class="at-tagpanel at-new"><span class="at-new__flag">NEW</span>
+<div class="at-tagpanel__head"><span class="at-tagpanel__title"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5v14M8 5v14M11 5v14M15 5v14M18 5v14M20 5v14"></path></svg>Asset tags</span>
+<sc-if value="{{l3Govt}}" hint-placeholder-val="{{ true }}"><span class="gs-tag gs-tag--primary">2 Govt. Tags</span></sc-if>
+<sc-if value="{{l3Std}}" hint-placeholder-val="{{ false }}"><span class="gs-tag gs-tag--secondary">2 standard tags</span></sc-if>
+</div>
+<div class="at-row at-small"><span class="at-muted">Finance Code</span><span class="at-mono"><strong>080812</strong></span><span>Projector</span><span class="gs-tag gs-tag--light">From product type</span><span class="at-owner">set nationally</span></div>
+<sc-if value="{{l3Attn}}" hint-placeholder-val="{{ true }}">
+<div class="at-note at-note--danger" role="alert"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg><div class="at-note__body"><span><strong>Needs attention:</strong> Govt. Tags need the Supplier Challan or Purchase Order date.</span><div class="at-row"><button type="button" class="btn btn-sm btn-primary" onClick="{{fillDate}}">Add the challan date</button><button type="button" class="btn btn-sm" onClick="{{std3}}">Use standard tags for this line</button></div></div></div>
+</sc-if>
+<sc-if value="{{l3Govt}}" hint-placeholder-val="{{ true }}">
+<div class="gs-segs gs-segs--sm" role="img" aria-label="Tag preview"><span class="gs-seg" data-tone="primary"><span class="gs-seg__v">080812</span></span><span class="gs-seg" data-tone="info"><span class="gs-seg__v">{{mmyy}}</span></span><span class="gs-seg" data-tone="success"><span class="gs-seg__v">0109</span></span><span class="gs-seg gs-seg--pending"><span class="gs-seg__v">····</span></span></div>
+</sc-if>
+<sc-if value="{{l3Std}}" hint-placeholder-val="{{ false }}"><div class="at-row at-small"><span class="at-mono"><strong>GS-······</strong></span><span class="at-muted">Standard tags kept for this line (recorded).</span><button type="button" class="btn btn-xs" onClick="{{undo3}}">Undo</button></div></sc-if>
+</div>
+</td></tr>
+</tbody>
+</table>
+<div style="padding: 10px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;"><button type="button" class="btn btn-sm">+ Add Row</button><span class="text-muted at-small">Item not listed?</span><a href="#" class="at-small">Add stock item</a></div>
+</div>
+</div>
+
+<div class="box box-solid">
+<div class="box-header with-border"><h3 class="box-title">Supporting Documents (Challan / Nothi / Invoice Scans)</h3></div>
+<div class="box-body">
+<div class="row" style="margin-bottom: 10px;"><div class="col-md-5"><select class="form-control input-sm" aria-label="Document category"><option>Challan</option><option>Invoice</option></select></div><div class="col-md-5"><input type="file" class="form-control input-sm" aria-label="File"></div><div class="col-md-2"><button type="button" class="btn btn-sm btn-primary btn-block" style="margin-top: 0;">Upload</button></div></div>
+<ul class="list-group"><li class="list-group-item"><strong>challan-CH-5521.pdf</strong></li></ul>
+</div>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="box box-warning">
+<div class="box-header with-border"><h3 class="box-title">Draft Workspace</h3></div>
+<div class="box-body">
+<h4 class="text-center" style="margin: 4px 0 10px;"><strong>GR-2026-000412</strong></h4>
+<ul class="list-group"><li class="list-group-item"><b>Total Lines</b><a class="pull-right">3</a></li><li class="list-group-item"><b>Total Quantity</b><a class="pull-right">11</a></li></ul>
+<div class="well well-sm">
+<h5 style="margin: 0;"><strong>Validation Checklist</strong></h5>
+<div class="progress"><div class="progress-bar" style="width: {{progress}};"></div></div>
+<ul class="list-unstyled">
+<li class="at-check at-check--ok"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4 10-10"></path></svg><span>Supplier</span></li>
+<li class="at-check at-check--ok"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4 10-10"></path></svg><span>Valid reference (challan or nothi)</span></li>
+<li class="at-check at-check--ok"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4 10-10"></path></svg><span>Valid quantity for every line</span></li>
+<li class="at-check at-check--ok"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4 10-10"></path></svg><span>Notebook computer: Serial Numbers Required</span></li>
+<li class="at-check at-check--ok"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4 10-10"></path></svg><span>Multimedia projector: Serial Numbers Required</span></li>
+<sc-for list="{{tagRows}}" as="r" hint-placeholder-count="3">
+<li class="at-check {{r.cls}}"><sc-if value="{{r.todo}}" hint-placeholder-val="{{ true }}"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg></sc-if><sc-if value="{{r.warn}}" hint-placeholder-val="{{ false }}"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path><path d="M12 9v4M12 17h.01"></path></svg></sc-if><sc-if value="{{r.ok}}" hint-placeholder-val="{{ false }}"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4 10-10"></path></svg></sc-if><span>{{r.label}} <span class="gs-tag gs-tag--info gs-tag--outline" style="font-size: 9px; padding: 0 4px;">NEW</span></span></li>
+</sc-for>
+</ul>
+</div>
+<button type="button" class="btn btn-block">Save draft</button>
+<sc-if value="{{blocked}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn-primary btn-block" disabled>Post to ledger</button></sc-if>
+<sc-if value="{{ready}}" hint-placeholder-val="{{ false }}"><a class="btn btn-primary btn-block" href="PostReview.dc.html">Post to ledger</a></sc-if>
+<button type="button" class="btn btn-danger btn-block">Void Draft</button>
+</div>
+</div>
+<p class="at-small">Drafted by: Example Storekeeper</p>
+<p class="at-small">Posted by: —</p>
+<div class="box box-solid">
+<div class="box-header with-border"><h3 class="box-title">Activity Timeline</h3></div>
+<div class="box-body"><ul class="timeline"><li><strong>Draft</strong> — Example Storekeeper <span class="text-muted">10:12</span></li><li><strong>Draft</strong> — Example Storekeeper <span class="text-muted">09:40</span></li></ul></div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender"],"default":"civic-ledger","section":"Theme"},"mode":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"},"$preview":{"width":1280,"height":2000}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { challanDate: '', poDate: '', std1: false, std3: false, l2: null, l2Keep: false, l2Open: false };
+}
+renderVals() {
+const s = this.state;
+const date = s.challanDate || s.poDate;
+const hasDate = !!date;
+const d = date.split('-');
+const mmyy = d.length === 3 ? d[1] + d[0].slice(2) : '····';
+const options = [
+{ code: '050310', name: 'Revolving Arm Chair', path: 'Furniture and Fixture › Chair', matches: true },
+{ code: '050309', name: 'Revolving Armless Chair', path: 'Furniture and Fixture › Chair', matches: true },
+{ code: '050308', name: 'Plastic Chair', path: 'Furniture and Fixture › Chair · no UNSPSC recorded', matches: false }
+].map((o) => ({ ...o, selected: String(s.l2 === o.code), pick: () => this.setState({ l2: o.code, l2Open: false, l2Keep: false }) }));
+const picked = options.find((o) => o.code === s.l2);
+const l1Attn = !s.std1 && !hasDate;
+const l3Attn = !s.std3 && !hasDate;
+const l2Attn = !!picked && !hasDate;
+const rows = [];
+if (l1Attn) rows.push({ label: 'Notebook computer: Govt. Tag needs the challan or PO date', cls: 'at-check--todo', todo: true, warn: false, ok: false });
+if (l2Attn) rows.push({ label: 'Office chair: Govt. Tag needs the challan or PO date', cls: 'at-check--todo', todo: true, warn: false, ok: false });
+if (l3Attn) rows.push({ label: 'Multimedia projector: Govt. Tag needs the challan or PO date', cls: 'at-check--todo', todo: true, warn: false, ok: false });
+if (!picked && !s.l2Keep) rows.push({ label: 'Office chair: no Finance Code — 6 standard tags', cls: 'at-check--warn', todo: false, warn: true, ok: false });
+if (!rows.some((r) => r.todo)) rows.push({ label: 'Asset tags ready', cls: 'at-check--ok', todo: false, warn: false, ok: true });
+const todo = rows.filter((r) => r.todo).length;
+return {
+theme: this.props.theme ?? 'civic-ledger', mode: this.props.mode ?? 'light',
+challanDate: s.challanDate, poDate: s.poDate,
+onChallanDate: (e) => this.setState({ challanDate: e.target.value }), onPoDate: (e) => this.setState({ poDate: e.target.value }),
+fillDate: () => this.setState({ challanDate: '2026-10-12' }),
+dateAttn: (l1Attn || l2Attn || l3Attn) ? 'at-attn' : '', showDateHint: l1Attn || l2Attn || l3Attn,
+mmyy,
+l1Attn, l1Govt: !s.std1, l1Std: s.std1, std1: () => this.setState({ std1: true }), undo1: () => this.setState({ std1: false }),
+l3Attn, l3Govt: !s.std3, l3Std: s.std3, std3: () => this.setState({ std3: true }), undo3: () => this.setState({ std3: false }),
+options, l2Open: s.l2Open, l2OpenStr: String(s.l2Open), toggle2: () => this.setState({ l2Open: !s.l2Open }),
+keep2: () => this.setState({ l2Keep: true, l2Open: false }), undo2: () => this.setState({ l2: null, l2Keep: false }),
+l2Warn: !picked && !s.l2Keep, l2Kept: !picked && s.l2Keep, l2Picked: !!picked, l2Attn,
+l2Govt: !!picked, l2StdChip: !picked,
+l2Code: picked ? picked.code : '', l2Name: picked ? picked.name : '',
+tagRows: rows, blocked: todo > 0, ready: todo === 0,
+progress: todo > 0 ? '78%' : '100%'
+};
+}
+}
+</script>
+</body>
+</html>

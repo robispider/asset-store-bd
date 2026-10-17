@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tag issuance enablement</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/c32d13bc41445ccff8c8156f9d142efa">
+<link rel="stylesheet" href="/_blob/b0140cd2ad3846295c9f5b5830092d19">
+<link rel="stylesheet" href="/_blob/5ce2466269dec07fabc18d249b73b3f3">
+<link rel="stylesheet" href="/_blob/22b274ea2c677e88680fff95f1da730f">
+<link rel="stylesheet" href="/_blob/a22aa64277e2d4b6dd0f0188f59f608f">
+<link rel="stylesheet" href="/_blob/4a8ede88a8bfb06759d0786c392dcd21">
+<link rel="stylesheet" href="/_blob/ac4accb7e1cee1091aaa49053784ac91">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&amp;family=Noto+Sans+Bengali:wght@400;600&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="at-app" data-skin="{{theme}}" data-theme="{{mode}}" data-gs-status-style="tinted" style="width: 100%; min-height: 100%;">
+<header class="at-top">
+<span class="at-top__brand"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>National Asset Register</span>
+<span class="at-top__ctx"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"></path></svg>Deployment operator</span>
+</header>
+<div class="at-shell">
+<nav class="at-side" aria-label="Asset tagging screens">
+<div class="at-side__head">Asset tagging</div>
+<a href="Main.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>Overview</a>
+<a href="GrnTagging.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"></path><path d="M3 7l9 4 9-4M12 11v10"></path></svg>GRN workspace</a>
+<a href="PostReview.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 3 3 5-6"></path></svg>Post and print</a>
+<a href="TagLookup.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>Tag lookup</a>
+<div class="at-side__head">Administration</div>
+<a href="ProductType.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z"></path><path d="m3 13 9 5 9-5"></path></svg>Product type</a>
+<a href="OfficeSettings.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Office settings</a>
+<a href="FinanceCatalog.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z"></path><path d="M4 16a4 4 0 0 1 4-4h12"></path></svg>Finance catalog</a>
+<a href="Enablement.dc.html" aria-current="page"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"></path><path d="m9 12 2 2 4-4"></path></svg>Enablement</a>
+</nav>
+<main class="at-main">
+<div class="at-crumbs"><span>Administration</span><span aria-hidden="true">›</span><span>System tools</span><span aria-hidden="true">›</span><span>Asset tag issuance</span></div>
+<header class="gs-page-header">
+<div class="gs-page-header__text"><h1 class="gs-page-header__title">Asset tag issuance <span class="gs-page-header__bn" lang="bn">ট্যাগ প্রদান চালু</span></h1><p class="gs-page-header__subtitle">Switch managed tagging on one office at a time, only when every check passes. Each change is audited.</p></div>
+<div class="gs-page-header__actions"><button type="button" class="gs-btn gs-btn--secondary gs-btn--outline" onClick="{{runPreflight}}"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"></path><path d="M21 3v5h-5"></path></svg> Run preflight</button></div>
+</header>
+
+<section class="gs-box">
+<header class="gs-box__header"><h2 class="gs-box__title">This installation</h2><div class="gs-box__tools"><span class="at-small at-muted">Read-only preflight · last run {{lastRun}}</span></div></header>
+<div class="gs-box__body">
+<div class="at-cols">
+<div class="at-stack" style="gap: 6px;"><span class="gs-badge" data-tone="success"><span class="gs-badge__label">G1 passed</span></span><strong>Standard tag sequence</strong><span class="at-small at-muted">Auto-increment on · prefix <span class="at-mono">GS-</span> · 6 digits. Changing these while offices are enabled is blocked.</span></div>
+<div class="at-stack" style="gap: 6px;"><span class="gs-badge" data-tone="success"><span class="gs-badge__label">G2 passed</span></span><strong>Receipt-to-asset links</strong><span class="at-small at-muted">0 duplicate tags · 0 duplicate assets · unique keys present</span></div>
+<div class="at-stack" style="gap: 6px;"><span class="gs-badge" data-tone="success"><span class="gs-badge__label">G5 passed</span></span><strong>Single place of issue</strong><span class="at-small at-muted">Marked as the authoritative allocator · issuance disabled on clones and restores</span></div>
+</div>
+</div>
+</section>
+
+<section class="gs-box">
+<header class="gs-box__header"><h2 class="gs-box__title">Offices</h2></header>
+<div class="gs-box__body">
+<div class="gs-table-wrap at-scroll">
+<table class="gs-table">
+<thead><tr><th scope="col">Office</th><th scope="col">Office codes (G4)</th><th scope="col">Old tag clashes (G3)</th><th scope="col">Live office (G6)</th><th scope="col">State</th><th scope="col"><span class="gs-sr-only">Action</span></th></tr></thead>
+<tbody>
+<sc-for list="{{offices}}" as="o" hint-placeholder-count="4">
+<tr>
+<td><strong>{{o.name}}</strong></td>
+<td class="at-small">{{o.g4}}</td>
+<td class="at-small">{{o.g3}}</td>
+<td class="at-small">{{o.g6}}</td>
+<td><span class="gs-badge" data-tone="{{o.tone}}"><span class="gs-badge__label">{{o.state}}</span></span></td>
+<td>
+<sc-if value="{{o.canEnable}}" hint-placeholder-val="{{ false }}"><button type="button" class="gs-btn gs-btn--primary gs-btn--sm" onClick="{{o.open}}">Enable</button></sc-if>
+<sc-if value="{{o.canDisable}}" hint-placeholder-val="{{ false }}"><button type="button" class="gs-btn gs-btn--light gs-btn--sm">Pause</button></sc-if>
+<sc-if value="{{o.blocked}}" hint-placeholder-val="{{ false }}"><span class="at-small at-muted">{{o.why}}</span></sc-if>
+</td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+
+<sc-if value="{{dialog}}" hint-placeholder-val="{{ false }}">
+<div class="at-scrim">
+<div class="at-dialog" role="dialog" aria-modal="true" aria-labelledby="en-title">
+<div class="at-dialog__head"><h2 id="en-title" style="font-size: 18px;">Enable tag issuance for {{dialogOffice}}?</h2><button type="button" class="gs-btn gs-btn--light gs-btn--sm" aria-label="Close" onClick="{{closeDialog}}"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg></button></div>
+<div class="at-dialog__body at-stack">
+<ul class="gs-readiness__list" style="margin: 0;">
+<li class="gs-readiness__item gs-readiness__item--done"><svg class="at-i gs-readiness__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 3 3 5-6"></path></svg><span class="gs-readiness__label">All six checks passed just now</span></li>
+<li class="gs-readiness__item gs-readiness__item--done"><svg class="at-i gs-readiness__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 3 3 5-6"></path></svg><span class="gs-readiness__label">From now on, every GRN unit in this office gets a Govt. Tag or a standard tag; typed tags are refused</span></li>
+</ul>
+<div class="gs-form-row"><label class="gs-form-row__label" for="why">Reason (kept in the audit log)</label><div class="gs-form-row__control"><input class="form-control" id="why" type="text" value="{{reason}}" onChange="{{onReason}}" placeholder="e.g. Office order 14/2026 received; pilot week 2"></div></div>
+</div>
+<div class="at-dialog__foot"><button type="button" class="gs-btn gs-btn--secondary gs-btn--outline" onClick="{{closeDialog}}">Cancel</button><button type="button" class="gs-btn gs-btn--primary" disabled="{{noReason}}" onClick="{{confirmEnable}}">Enable</button></div>
+</div>
+</div>
+</sc-if>
+
+<section class="gs-box">
+<header class="gs-box__header"><h2 class="gs-box__title">Recent activity</h2></header>
+<div class="gs-box__body">
+<ul class="gs-list gs-list--divided" role="list">
+<sc-for list="{{audit}}" as="a" hint-placeholder-count="3">
+<li class="gs-list__item"><div class="gs-list__text"><span class="gs-list__title">{{a.title}}</span><span class="gs-list__subtitle">{{a.detail}}</span></div><div class="gs-list__meta"><span class="at-small at-muted">{{a.when}}</span></div></li>
+</sc-for>
+</ul>
+</div>
+</section>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender"],"default":"civic-ledger","section":"Theme"},"mode":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"},"$preview":{"width":1280,"height":1400}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { lastRun: 'today 09:05', khulna: false, dialog: false, reason: '' };
+}
+renderVals() {
+const s = this.state;
+const offices = [
+{ name: 'Example Office, Sylhet', g4: 'Complete', g3: 'None found', g6: 'Yes', state: 'Enabled', tone: 'success', canDisable: true },
+{ name: 'Example Office, Khulna', g4: 'Complete', g3: 'None found', g6: 'Yes', state: s.khulna ? 'Enabled' : 'Ready', tone: s.khulna ? 'success' : 'info', canEnable: !s.khulna, canDisable: s.khulna },
+{ name: 'Example Office, Dhaka', g4: 'Complete', g3: '3 to verify', g6: 'Yes', state: 'Blocked', tone: 'warning', blocked: true, why: 'Waiting for the office to verify 3 clashes' },
+{ name: 'Training office', g4: 'Complete', g3: 'None found', g6: 'Experiment', state: 'Not allowed', tone: 'danger', blocked: true, why: 'Experiment offices can never issue tags' }
+].map((o) => ({ canEnable: false, canDisable: false, blocked: false, why: '', ...o, open: () => this.setState({ dialog: true, reason: '' }) }));
+const audit = [];
+if (s.khulna) audit.push({ title: 'Enabled: Example Office, Khulna', detail: 'Reason: ' + s.reason, when: 'just now' });
+audit.push({ title: 'Settings change refused', detail: 'An attempt to clear the auto-increment prefix while 1 office is enabled was blocked by the tag guard.', when: 'yesterday 16:20' });
+audit.push({ title: 'Enabled: Example Office, Sylhet', detail: 'Reason: Pilot office, office order 09/2026', when: '12 Oct 2026' });
+return {
+theme: this.props.theme ?? 'civic-ledger', mode: this.props.mode ?? 'light',
+lastRun: s.lastRun, runPreflight: () => this.setState({ lastRun: 'just now' }),
+offices, audit,
+dialog: s.dialog, dialogOffice: 'Example Office, Khulna', closeDialog: () => this.setState({ dialog: false }),
+reason: s.reason, onReason: (e) => this.setState({ reason: e.target.value }), noReason: s.reason.trim() === '',
+confirmEnable: () => this.setState({ dialog: false, khulna: true })
+};
+}
+}
+</script>
+</body>
+</html>

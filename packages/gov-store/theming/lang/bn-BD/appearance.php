@@ -161,5 +161,6 @@ return [
         'readiness_todo' => 'বাকি',
         'needed' => 'প্রয়োজন',
         'optional' => 'ঐচ্ছিক',
+        'segment_pending' => 'পোস্ট করার সময় বরাদ্দ হবে',
     ],
 ];

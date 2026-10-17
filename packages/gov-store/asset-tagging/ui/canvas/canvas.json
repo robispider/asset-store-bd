@@ -1,0 +1,113 @@
+{
+  "v": 3,
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-10-16T12:00:00Z"
+  },
+  "title": "Asset Tagging Screens",
+  "launch": {
+    "view": "canvas"
+  },
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1280,
+      "h": 1500,
+      "title": "Overview · tag kinds and screen map",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "GrnTagging.dc.html": {
+      "x": 1360,
+      "y": 0,
+      "w": 1280,
+      "h": 2100,
+      "title": "S1 · GRN workspace: additions only (storekeeper)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "PostReview.dc.html": {
+      "x": 2720,
+      "y": 0,
+      "w": 1280,
+      "h": 1400,
+      "title": "S2–S3 · Posting modal and posted GRN: additions only",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TagLookup.dc.html": {
+      "x": 4080,
+      "y": 0,
+      "w": 1280,
+      "h": 1300,
+      "title": "S7 · Tag lookup",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "ProductType.dc.html": {
+      "x": 0,
+      "y": 2560,
+      "w": 1280,
+      "h": 1600,
+      "title": "S4 · Product type: UNSPSC + Finance Code",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "OfficeSettings.dc.html": {
+      "x": 1360,
+      "y": 2560,
+      "w": 1280,
+      "h": 1500,
+      "title": "S5 · Office tag settings and company code lists",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "FinanceCatalog.dc.html": {
+      "x": 2720,
+      "y": 2560,
+      "w": 1280,
+      "h": 1900,
+      "title": "S6 · Finance catalog and group capacity (national)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Enablement.dc.html": {
+      "x": 4080,
+      "y": 2560,
+      "w": 1280,
+      "h": 1400,
+      "title": "S8 · Enablement console (operator)",
+      "expand": "fill",
+      "is_interactive": true
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "GrnTagging.dc.html",
+    "PostReview.dc.html",
+    "TagLookup.dc.html",
+    "ProductType.dc.html",
+    "OfficeSettings.dc.html",
+    "FinanceCatalog.dc.html",
+    "Enablement.dc.html"
+  ],
+  "notes": {
+    "row1": {
+      "x": 0,
+      "y": -300,
+      "text": "Receiving and finding assets",
+      "kind": "title1",
+      "maxW": 5360
+    },
+    "row2": {
+      "x": 0,
+      "y": 2260,
+      "text": "Classification and administration",
+      "kind": "title1",
+      "maxW": 5360
+    }
+  },
+  "designSystems": []
+}

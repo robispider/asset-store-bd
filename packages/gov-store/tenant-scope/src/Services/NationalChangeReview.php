@@ -149,6 +149,19 @@ class NationalChangeReview
         if ($request->routeIs('gov.catalog.mapping.save')) {
             return (array) DB::table('gov_catalog_snipe_mappings')->where('code', $request->input('code'))->first();
         }
+        if ($request->routeIs('gov.catalog.finance.*')) {
+            // Bind the review to the Finance rows it changes (or, for a new item, the whole group).
+            $query = DB::table('gov_finance_items');
+            $request->routeIs('gov.catalog.finance.store')
+                ? $query->where('gov_code', 'like', substr((string) $request->input('group_code'), 0, 2).'%')
+                : $query->whereIn('gov_code', array_filter((array) ($request->input('codes') ?? [$request->route('code')])));
+
+            return $query->orderBy('gov_code')->get()->map(fn ($row) => (array) $row)->all();
+        }
+        if ($request->routeIs('asset-tags.enablement.*')) {
+            return DB::table('gov_metadata_values')->where('subject_type', 'office')->where('subject_id', (int) $request->route('office'))
+                ->whereIn('namespace', ['asset-tagging.office', 'asset-tagging.enablement'])->orderBy('namespace')->get()->map(fn ($row) => (array) $row)->all();
+        }
         if (str_contains($request->path(), '/collections/')) {
             $id = $request->route('id') ?? $request->input('collection_id');
 

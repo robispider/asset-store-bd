@@ -1,0 +1,491 @@
+finance_entry_key,finance_item_name,source_pdf_page,finance_source_blockers,candidate_count,selected_unspsc_code,selected_unspsc_release,relation_after_review,qualifiers_or_no_equivalent_reason,evidence_reference,reviewed_by,reviewed_at,approval_status
+010101,Land Property,103,,0,,,,,,,,pending_review
+010202,Land held under lease,103,,0,,,,,,,,pending_review
+010303,Factory land,103,,0,,,,,,,,pending_review
+010404,"Mall, shop land",103,,0,,,,,,,,pending_review
+010505,Farming land,103,,0,,,,,,,,pending_review
+010606,IPS Rack,103,SOURCE-04,0,,,,,,,,pending_review
+010707,Parks,103,,0,,,,,,,,pending_review
+010808,Forest land,103,,0,,,,,,,,pending_review
+020101,Boundary on Free Land,103,,0,,,,,,,,pending_review
+020202,Lands near river,103,,0,,,,,,,,pending_review
+020303,Concrete flood walls,103,,0,,,,,,,,pending_review
+020404,Water level sensors,103,SOURCE-04,3,,,,,,,,pending_review
+020405,Flow meters,103,SOURCE-04,2,,,,,,,,pending_review
+020506,Farming land,103,SOURCE-04,0,,,,,,,,pending_review
+020607,IPS Rack,103,SOURCE-04,0,,,,,,,,pending_review
+020708,Parks,103,SOURCE-04,0,,,,,,,,pending_review
+030101,Office Building,103,,0,,,,,,,,pending_review
+030202,Residential Quarters,103,,0,,,,,,,,pending_review
+030303,Network Tower,103,,0,,,,,,,,pending_review
+030404,Terminal Building,103,,1,,,,,,,,pending_review
+030505,Factory Building,103,,0,,,,,,,,pending_review
+030606,Cargo and Passenger sheds,103,,0,,,,,,,,pending_review
+040101,Diesel Engine,103,,3,,,,,,,,pending_review
+040202,Cutter Suction Dredger,103,,0,,,,,,,,pending_review
+040203,Bucket Ladder Dredger,103,,0,,,,,,,,pending_review
+040204,Backhoe Dredger,104,,0,,,,,,,,pending_review
+040305,Heavy Equipment,104,,3,,,,,,,,pending_review
+040406,CNC machines,104,,0,,,,,,,,pending_review
+040407,Textiles looms,104,,0,,,,,,,,pending_review
+040408,Conveyor belts,104,,0,,,,,,,,pending_review
+040409,Mixers and blenders,104,,0,,,,,,,,pending_review
+040410,Blowers & Compressors,104,,0,,,,,,,,pending_review
+040411,Cranes and hoists,104,,0,,,,,,,,pending_review
+040412,Air Compressors,104,,1,,,,,,,,pending_review
+040413,Custom molds,104,,0,,,,,,,,pending_review
+040414,Industrial cabinets,104,,1,,,,,,,,pending_review
+040515,Diesel Generators,104,,1,,,,,,,,pending_review
+040516,Natural Gas Generators,104,,2,,,,,,,,pending_review
+040517,Solar Power Generators,104,,3,,,,,,,,pending_review
+040518,Portable Generators,104,,1,,,,,,,,pending_review
+040519,Inverter Generators,104,,0,,,,,,,,pending_review
+040620,Analytical Instruments,104,,0,,,,,,,,pending_review
+040621,General Lab Equipment,104,,3,,,,,,,,pending_review
+040622,Data & Monitoring systems,104,,0,,,,,,,,pending_review
+040623,Specialized Equipment,104,,2,,,,,,,,pending_review
+040624,Measuring & Testing Equipment,104,,0,,,,,,,,pending_review
+040725,CNC machines,104,,0,,,,,,,,pending_review
+040726,Welding Machines,104,,3,,,,,,,,pending_review
+040727,Presses,104,,3,,,,,,,,pending_review
+040728,Conveyors,104,,3,,,,,,,,pending_review
+040729,Injection Molding Machine,104,,3,,,,,,,,pending_review
+040730,Labeling Machines,104,,3,,,,,,,,pending_review
+040731,Assembly Line Equipment,104,,0,,,,,,,,pending_review
+040732,Cutting Machines,104,,3,,,,,,,,pending_review
+040833,Generators,104,,3,,,,,,,,pending_review
+040834,Motors & Pumps,104,,0,,,,,,,,pending_review
+040835,Boilers,104,,3,,,,,,,,pending_review
+040836,Control Panels,104,,3,,,,,,,,pending_review
+040837,Power Distribution Boards,104,,3,,,,,,,,pending_review
+040938,Transformers,104,,3,,,,,,,,pending_review
+040939,Switchgear and Circuit Breakers,104,,3,,,,,,,,pending_review
+040940,Electrical Panel,104,,0,,,,,,,,pending_review
+040941,Meters and Sensors,104,,0,,,,,,,,pending_review
+040942,Battery Banks and UPS,104,,0,,,,,,,,pending_review
+041043,Milling Machines,104,,3,,,,,,,,pending_review
+041044,Lathes,104,,1,,,,,,,,pending_review
+041045,Printing Machines,104,,3,,,,,,,,pending_review
+041046,Mixing and Blending Machine,104,,0,,,,,,,,pending_review
+041047,Extruders,105,,2,,,,,,,,pending_review
+041048,Press Machine,105,,3,,,,,,,,pending_review
+041049,Cutting Machine,105,,3,,,,,,,,pending_review
+041150,Seismographs,105,,1,,,,,,,,pending_review
+041151,Geophones,105,,1,,,,,,,,pending_review
+041152,Electronic Toll Collection Readers,105,,0,,,,,,,,pending_review
+041153,Toll Booths,105,,0,,,,,,,,pending_review
+041154,Ticket Dispensers,105,,0,,,,,,,,pending_review
+041155,Payment Terminals,105,,0,,,,,,,,pending_review
+041156,Toll Plaza Barriers/gates,105,,0,,,,,,,,pending_review
+041257,Power Transformer,105,,1,,,,,,,,pending_review
+041258,Distribution Transfer,105,,3,,,,,,,,pending_review
+041259,Instrument Transformer,105,,0,,,,,,,,pending_review
+041260,Auto Transformer,105,,0,,,,,,,,pending_review
+041261,Isolation Transformer,105,,1,,,,,,,,pending_review
+041262,Dry-type Transformer,105,,0,,,,,,,,pending_review
+050101,Almirah,105,,0,,,,,,,,pending_review
+050202,Table Side Cabinet,105,,3,,,,,,,,pending_review
+050203,Cabinet,105,,3,,,,,,,,pending_review
+050204,Wall Cabinet,105,,0,,,,,,,,pending_review
+050205,Wall Low Cabinet,105,,0,,,,,,,,pending_review
+050206,Bookshelf,105,,1,,,,,,,,pending_review
+050207,Wall High Cabinet,105,,0,,,,,,,,pending_review
+050308,Plastic Chair,105,,0,,,,,,,,pending_review
+050309,Revolving Armless Chair,105,,0,,,,,,,,pending_review
+050310,Revolving Arm Chair,105,,0,,,,,,,,pending_review
+050311,Revolving Arm HOD Chair,105,,0,,,,,,,,pending_review
+050312,Revolving Lobby Chair,105,,0,,,,,,,,pending_review
+050313,Security Chair,105,,0,,,,,,,,pending_review
+050414,Drawer Cabinet Box,105,,0,,,,,,,,pending_review
+050515,Foot Rest,105,,3,,,,,,,,pending_review
+050616,Rack,105,,3,,,,,,,,pending_review
+050717,Sofa,105,,1,,,,,,,,pending_review
+050718,Customer Care Table,105,,0,,,,,,,,pending_review
+050719,Conference Table,105,,0,,,,,,,,pending_review
+050720,Employee Table,105,,0,,,,,,,,pending_review
+050721,Executive Table,105,,0,,,,,,,,pending_review
+050722,Front Desk Table,105,,0,,,,,,,,pending_review
+050823,Kitchen Table,106,,0,,,,,,,,pending_review
+050824,Meeting Table,106,,0,,,,,,,,pending_review
+050825,Restaurant Table,106,,0,,,,,,,,pending_review
+050826,Secretariat Table,106,,1,,,,,,,,pending_review
+050827,Tea Table,106,,0,,,,,,,,pending_review
+050828,Equipment Table,106,,3,,,,,,,,pending_review
+050829,Security Table,106,,0,,,,,,,,pending_review
+050830,Side Table,106,,1,,,,,,,,pending_review
+050831,Printer Table,106,,0,,,,,,,,pending_review
+050832,Round Table,106,,0,,,,,,,,pending_review
+050833,Trolley Table,106,,0,,,,,,,,pending_review
+050934,Round Tool,106,,0,,,,,,,,pending_review
+050935,Revolving Round Tool,106,,0,,,,,,,,pending_review
+050936,Sofa Tool,106,,1,,,,,,,,pending_review
+050937,Tool,106,,3,,,,,,,,pending_review
+051038,Trolley,106,,3,,,,,,,,pending_review
+051139,Ladder,106,,3,,,,,,,,pending_review
+051240,Siting bench,106,,0,,,,,,,,pending_review
+051341,Partitions,106,,2,,,,,,,,pending_review
+060101,Paintings and Wall Arts,106,,0,,,,,,,,pending_review
+060102,Framed Posters,106,,0,,,,,,,,pending_review
+060103,Wall Clocks,106,,3,,,,,,,,pending_review
+060104,3D Wall Panels,106,,0,,,,,,,,pending_review
+060105,Shelve with Décor Pieces,106,,0,,,,,,,,pending_review
+060206,LED Strips lights,106,,0,,,,,,,,pending_review
+060207,Pendant light,106,,3,,,,,,,,pending_review
+060208,Chandeliers,106,,1,,,,,,,,pending_review
+060209,Floor Lamps,106,,0,,,,,,,,pending_review
+060210,Table Lamps,106,,0,,,,,,,,pending_review
+060311,Indoor Plants,106,,0,,,,,,,,pending_review
+060312,Hanging Planters,106,,0,,,,,,,,pending_review
+060313,Bonsai,106,,1,,,,,,,,pending_review
+060314,Flower Vases,106,,0,,,,,,,,pending_review
+060415,Cushions,106,,3,,,,,,,,pending_review
+060416,Table Runners,106,,1,,,,,,,,pending_review
+060417,Poufs or Ottomans,106,,0,,,,,,,,pending_review
+060418,Reception Counters,106,,0,,,,,,,,pending_review
+060419,Centerpieces,106,,0,,,,,,,,pending_review
+060520,Doors,107,,3,,,,,,,,pending_review
+060521,Windows,107,,3,,,,,,,,pending_review
+060522,Curtains,107,,3,,,,,,,,pending_review
+060523,Carpets,107,,0,,,,,,,,pending_review
+060624,Countertops,107,,0,,,,,,,,pending_review
+060625,Kitchen Sinks,107,,0,,,,,,,,pending_review
+060626,Cabinets,107,,3,,,,,,,,pending_review
+060627,Chimneys & Hoods,107,,0,,,,,,,,pending_review
+060628,Backsplashes,107,,0,,,,,,,,pending_review
+060729,Switchboards,107,,0,,,,,,,,pending_review
+060730,Smart Switches,107,,0,,,,,,,,pending_review
+060731,Security Cameras,107,,1,,,,,,,,pending_review
+060732,Intercom systems,107,,3,,,,,,,,pending_review
+060833,Tiles,107,,3,,,,,,,,pending_review
+060834,Vinyl Flooring,107,,1,,,,,,,,pending_review
+060835,Laminate,107,,3,,,,,,,,pending_review
+060836,Hardwood,107,,0,,,,,,,,pending_review
+070101,Binding Machine,107,,3,,,,,,,,pending_review
+070202,Blender Machine,107,,1,,,,,,,,pending_review
+070303,Exhausted Fan,107,,0,,,,,,,,pending_review
+070404,Fire Ball,107,,1,,,,,,,,pending_review
+070505,Fire Extinguisher,107,,3,,,,,,,,pending_review
+070606,Hand Mike,107,,0,,,,,,,,pending_review
+070707,Hanging Clock,107,,0,,,,,,,,pending_review
+070708,Wall Clock,107,,3,,,,,,,,pending_review
+070809,Generator,107,,3,,,,,,,,pending_review
+070910,Juicer Machine,107,,0,,,,,,,,pending_review
+071011,Locker,107,,1,,,,,,,,pending_review
+071112,Water Filter Machine,107,,2,,,,,,,,pending_review
+071213,Vacuum Cleaner,107,,1,,,,,,,,pending_review
+071314,IP Phone,107,,0,,,,,,,,pending_review
+071415,Coffee Machine,107,,3,,,,,,,,pending_review
+071516,Weight Machine,107,,3,,,,,,,,pending_review
+071617,Sewing Machine,107,,3,,,,,,,,pending_review
+071718,QR Code Scanner,107,,0,,,,,,,,pending_review
+071819,Barcode Scanner,107,,0,,,,,,,,pending_review
+080101,Air Conditioner,108,,3,,,,,,,,pending_review
+080202,Air Purifier,108,,3,,,,,,,,pending_review
+080303,Electric Kettle,108,,0,,,,,,,,pending_review
+080404,Wall Fan,108,,0,,,,,,,,pending_review
+080405,Stand Fan,108,,0,,,,,,,,pending_review
+080406,Cooling Fan,108,,1,,,,,,,,pending_review
+080407,Table Fan,108,,0,,,,,,,,pending_review
+080408,Ceiling Fan,108,,3,,,,,,,,pending_review
+080509,Microwave Oven,108,,0,,,,,,,,pending_review
+080610,Access Control,108,,2,,,,,,,,pending_review
+080711,CC Camera,108,,0,,,,,,,,pending_review
+080812,Projector,108,,3,,,,,,,,pending_review
+080913,CC Camera Machine,108,,0,,,,,,,,pending_review
+081014,CC Camera Set Up Box,108,,0,,,,,,,,pending_review
+081115,Paper Shredder,108,,2,,,,,,,,pending_review
+081216,Refrigerator,108,,3,,,,,,,,pending_review
+081317,Electric Heater,108,,1,,,,,,,,pending_review
+081418,Sound Speaker,108,,0,,,,,,,,pending_review
+081519,Hardware,108,,3,,,,,,,,pending_review
+081620,Television,108,,3,,,,,,,,pending_review
+090101,Printer,108,,3,,,,,,,,pending_review
+090102,Printer & Photocopy Machine,108,,0,,,,,,,,pending_review
+090203,IPS & UPS Box,108,,0,,,,,,,,pending_review
+090304,UPS,108,,1,,,,,,,,pending_review
+090405,IPS Battery,108,,0,,,,,,,,pending_review
+090506,IPS,108,,0,,,,,,,,pending_review
+090607,IPS Rack,108,,0,,,,,,,,pending_review
+090708,Desktop Computer,108,,2,,,,,,,,pending_review
+090809,Laptop,108,,1,,,,,,,,pending_review
+090910,Scanner,108,,3,,,,,,,,pending_review
+091011,Monitor,108,,3,,,,,,,,pending_review
+100101,Jeep,109,,0,,,,,,,,pending_review
+100202,Motor Cycle,109,,0,,,,,,,,pending_review
+100303,Car,109,,3,,,,,,,,pending_review
+100404,Microbus,109,,0,,,,,,,,pending_review
+100505,Bus,109,,3,,,,,,,,pending_review
+100606,Crane,109,,3,,,,,,,,pending_review
+100707,Water Tank,109,,3,,,,,,,,pending_review
+100808,Dumper Truck,109,,1,,,,,,,,pending_review
+100909,Excavator,109,,1,,,,,,,,pending_review
+101010,Bulldozer,109,,0,,,,,,,,pending_review
+101111,Road Roller,109,,0,,,,,,,,pending_review
+101212,Fire Truck,109,,3,,,,,,,,pending_review
+101313,Floating Cranes,109,,0,,,,,,,,pending_review
+101414,Lorries,109,,0,,,,,,,,pending_review
+101515,Tractor,109,,3,,,,,,,,pending_review
+101616,Trailer,109,,3,,,,,,,,pending_review
+110101,Automatic Transfer Switch (ATS),109,,0,,,,,,,,pending_review
+110202,Battery Bank Case,109,,0,,,,,,,,pending_review
+110303,DB Box,109,,0,,,,,,,,pending_review
+110404,Battery Bank Rack,109,,0,,,,,,,,pending_review
+110505,Load Balancer,109,,1,,,,,,,,pending_review
+110606,"Protect Server Network, HSM",109,,0,,,,,,,,pending_review
+110707,Network Switch,109,,1,,,,,,,,pending_review
+110708,SAN Switch,109,,1,,,,,,,,pending_review
+110709,ACI Spine Switch,109,,0,,,,,,,,pending_review
+110710,ACI Network Switch,109,,0,,,,,,,,pending_review
+110711,ACI Leaf Switch,109,,0,,,,,,,,pending_review
+110712,SW Switch,109,,0,,,,,,,,pending_review
+110713,Kum Switch,109,,0,,,,,,,,pending_review
+110814,DWDM,109,,1,,,,,,,,pending_review
+110915,Firewall,109,,1,,,,,,,,pending_review
+111016,Fire Power,109,,0,,,,,,,,pending_review
+111117,Maintenance-Free Sealed Lead Acid Battery with Controller,110,,0,,,,,,,,pending_review
+111218,Mass Storage,110,,0,,,,,,,,pending_review
+111319,Online UPS,110,,0,,,,,,,,pending_review
+111420,Patch Panel,110,,2,,,,,,,,pending_review
+111421,Copper Patch Panel,110,,2,,,,,,,,pending_review
+111422,Fiber Patch Panel,110,,3,,,,,,,,pending_review
+111523,Protect Server Network,110,,0,,,,,,,,pending_review
+111624,Cable Manager,110,,1,,,,,,,,pending_review
+111725,APIC Controller,110,,0,,,,,,,,pending_review
+111826,IM Vision Controller,110,,0,,,,,,,,pending_review
+111927,NetApp Storage,110,,0,,,,,,,,pending_review
+112028,DCIM,110,,0,,,,,,,,pending_review
+112129,FMC,110,,0,,,,,,,,pending_review
+112230,Server Network,110,,0,,,,,,,,pending_review
+112331,HUB,110,SOURCE-03,3,,,,,,,,pending_review
+112332,Server,110,SOURCE-03,3,,,,,,,,pending_review
+112433,Router Board,110,,0,,,,,,,,pending_review
+112534,Kum Console,110,,0,,,,,,,,pending_review
+112635,HNAS,110,,0,,,,,,,,pending_review
+112736,Wireless Controller,110,,0,,,,,,,,pending_review
+112837,Router,110,,3,,,,,,,,pending_review
+112938,Server Rack,110,,0,,,,,,,,pending_review
+112939,Storage Rack,110,,3,,,,,,,,pending_review
+112940,Switch Rack,110,,0,,,,,,,,pending_review
+113041,Access Point,110,,1,,,,,,,,pending_review
+120101,Inverters,110,,2,,,,,,,,pending_review
+120102,Washing Machines,110,,3,,,,,,,,pending_review
+120103,Clothes Iron,110,,3,,,,,,,,pending_review
+120104,Hair Dryers,110,,1,,,,,,,,pending_review
+120205,Drawing Boards,110,,2,,,,,,,,pending_review
+120206,Drawing Pens,110,,0,,,,,,,,pending_review
+120207,Drawing Tubes,110,,0,,,,,,,,pending_review
+120208,Erases/Erasing shields,110,,0,,,,,,,,pending_review
+120209,Manual Sketching Kits,110,,0,,,,,,,,pending_review
+120210,Glass Etching Tools,110,,2,,,,,,,,pending_review
+120211,Vinyl Cutter,110,,0,,,,,,,,pending_review
+120212,Frosted Glass Panels,110,,0,,,,,,,,pending_review
+120313,Glass Design Templates,111,,0,,,,,,,,pending_review
+120314,Sandblasting Equipment,111,,0,,,,,,,,pending_review
+120315,Glass Engraving Machines,111,,2,,,,,,,,pending_review
+120316,Laser Etching Equipment,111,,3,,,,,,,,pending_review
+120417,Hammers,111,,3,,,,,,,,pending_review
+120418,Screwdrivers,111,,1,,,,,,,,pending_review
+120419,Pliers,111,,3,,,,,,,,pending_review
+120420,Wrenches,111,,3,,,,,,,,pending_review
+120421,Measuring Tapes,111,,2,,,,,,,,pending_review
+120422,Utility Knives,111,,1,,,,,,,,pending_review
+120423,Chisels,111,,3,,,,,,,,pending_review
+120424,Clamps,111,,3,,,,,,,,pending_review
+120425,Torque Wrenches,111,,1,,,,,,,,pending_review
+120426,Grease Guns,111,,1,,,,,,,,pending_review
+120427,Pipe Wrenches,111,,3,,,,,,,,pending_review
+120428,Bearing Pullers,111,,0,,,,,,,,pending_review
+120429,Oil Cans,111,,0,,,,,,,,pending_review
+120430,Taps and dies,111,,0,,,,,,,,pending_review
+120431,Testers,111,,3,,,,,,,,pending_review
+120432,Wire Strippers,111,,2,,,,,,,,pending_review
+120433,Crimping Tools,111,,3,,,,,,,,pending_review
+120434,Insulation Tape & Tools,111,,0,,,,,,,,pending_review
+120435,Hand Saws,111,,3,,,,,,,,pending_review
+120436,Planers,111,,3,,,,,,,,pending_review
+120437,Files and Rasps,111,,2,,,,,,,,pending_review
+120438,Carpenter Squares,111,,0,,,,,,,,pending_review
+120439,Mallets,111,,3,,,,,,,,pending_review
+120440,Marking Gauges,111,,0,,,,,,,,pending_review
+120441,Try Squares,111,,0,,,,,,,,pending_review
+120442,Chalk Line Tools,111,,1,,,,,,,,pending_review
+120443,Socket Sets,111,,1,,,,,,,,pending_review
+120444,Hex Keys,111,,1,,,,,,,,pending_review
+120445,Vernier Calipers,111,,0,,,,,,,,pending_review
+120546,Blenders/Grinders,111,,0,,,,,,,,pending_review
+120547,Toasters/Sandwich Makers,111,,0,,,,,,,,pending_review
+120548,Rice Cookers,111,,1,,,,,,,,pending_review
+120549,Manual Sewing Machine,111,,3,,,,,,,,pending_review
+120550,Overlock Sewing Machine,111,,1,,,,,,,,pending_review
+120551,Embroidery Machine,111,,2,,,,,,,,pending_review
+120552,Buttonhole Machine,111,,1,,,,,,,,pending_review
+120553,Blind Stitch Machine,111,,1,,,,,,,,pending_review
+120554,Fabric Cutting Table,111,,1,,,,,,,,pending_review
+120555,Tailors Scissors/Shears,111,,0,,,,,,,,pending_review
+120656,Notcher & Hole Punch,112,,0,,,,,,,,pending_review
+120657,Sewing Machine Stand/Table,112,,1,,,,,,,,pending_review
+120658,Needle Set,112,,3,,,,,,,,pending_review
+120659,Tailor Chalk/Marking Pens,112,,0,,,,,,,,pending_review
+120660,Fabric Storage Racks,112,,3,,,,,,,,pending_review
+120661,Cutting Machines,112,,3,,,,,,,,pending_review
+120662,Stitch Counter,112,,0,,,,,,,,pending_review
+120763,Insulation Resistance Tester,112,,3,,,,,,,,pending_review
+120764,Multimeter,112,,1,,,,,,,,pending_review
+120765,Clamp Meter,112,,0,,,,,,,,pending_review
+120766,Earth Resistance Tester,112,,3,,,,,,,,pending_review
+120767,High Voltage Test Set,112,,3,,,,,,,,pending_review
+120768,Continuity Tester,112,,1,,,,,,,,pending_review
+120769,Circuit Breaker Analyzer,112,,3,,,,,,,,pending_review
+120770,Power Analyzer,112,,0,,,,,,,,pending_review
+120771,Compression Testing Machine,112,,3,,,,,,,,pending_review
+120772,Concrete Cube Molds,112,,0,,,,,,,,pending_review
+120773,Slump Cone Test Kit,112,,0,,,,,,,,pending_review
+120774,Bitumen Testing Apparatus,112,,0,,,,,,,,pending_review
+120775,Soil Testing Equipment,112,,1,,,,,,,,pending_review
+120776,Universal Testing Machine,112,,1,,,,,,,,pending_review
+120777,Torque Tester,112,,0,,,,,,,,pending_review
+120778,Vibration Analyzer,112,,0,,,,,,,,pending_review
+120779,Oscilloscope,112,,0,,,,,,,,pending_review
+120780,LCR Meter,112,,1,,,,,,,,pending_review
+120781,Function Generator,112,,1,,,,,,,,pending_review
+120782,Thermometers,112,,3,,,,,,,,pending_review
+120783,pH Meter,112,,1,,,,,,,,pending_review
+120784,Hygrometer,112,,1,,,,,,,,pending_review
+120785,Anemometer,112,,0,,,,,,,,pending_review
+120786,Water Quality Test Kit,112,,1,,,,,,,,pending_review
+120787,Air Quality Monitoring Devices,112,,0,,,,,,,,pending_review
+130101,Partition Walls,112,,0,,,,,,,,pending_review
+130102,False Ceiling,112,,0,,,,,,,,pending_review
+130103,Internal Doors & Frames,112,,0,,,,,,,,pending_review
+130104,Soundproofing Panels,112,,0,,,,,,,,pending_review
+130105,Lighting Fixtures & Fittings,112,,1,,,,,,,,pending_review
+130106,Power Outlets,112,,2,,,,,,,,pending_review
+130207,Electrical Wiring,113,,0,,,,,,,,pending_review
+130208,Server Room Electrical Fit-out,113,,0,,,,,,,,pending_review
+130209,Emergency Lights & Exit Signs,113,,0,,,,,,,,pending_review
+130310,Fire Alarm System,113,,3,,,,,,,,pending_review
+130311,Smoke Detectors,113,,1,,,,,,,,pending_review
+130312,Fire Extinguisher cabinets,113,,3,,,,,,,,pending_review
+130313,CCTV Infrastructures,113,,0,,,,,,,,pending_review
+140101,Roads & Pavements,113,,0,,,,,,,,pending_review
+140102,Bridges & Culverts,113,,0,,,,,,,,pending_review
+140103,Airports & Airstrips,113,,0,,,,,,,,pending_review
+140104,Seaports & Inland River Ports,113,,0,,,,,,,,pending_review
+140105,Bus Terminals,113,,0,,,,,,,,pending_review
+140106,Ferry Terminals,113,,0,,,,,,,,pending_review
+140107,Railway Station,113,,2,,,,,,,,pending_review
+140108,Satellite Ground Stations,113,,1,,,,,,,,pending_review
+140109,Mobile Network Towers,113,,0,,,,,,,,pending_review
+140110,Toll Plaza,113,,0,,,,,,,,pending_review
+140111,Border Check-posts,113,,0,,,,,,,,pending_review
+140112,Underground Cable Trench,113,,0,,,,,,,,pending_review
+140113,Drainage Systems,113,,3,,,,,,,,pending_review
+140114,Water Reservoirs/Tanks,113,,0,,,,,,,,pending_review
+140215,Power Distribution Network,113,,3,,,,,,,,pending_review
+140216,Transformers & Substations,113,,0,,,,,,,,pending_review
+140217,Electrical Duct Banks,113,,0,,,,,,,,pending_review
+140218,Water Supply Lines,113,,2,,,,,,,,pending_review
+140219,Wastewater Pipelines,113,,0,,,,,,,,pending_review
+140220,Telecommunication Ducting,113,,0,,,,,,,,pending_review
+140221,Gas Pipeline Network,113,,1,,,,,,,,pending_review
+140322,Compound Lighting,113,,0,,,,,,,,pending_review
+140323,Watch Towers,113,,0,,,,,,,,pending_review
+140324,Export Processing Zones,113,,0,,,,,,,,pending_review
+140325,Industrial Parks,113,,0,,,,,,,,pending_review
+140326,Government Warehouse & Cold Storage,113,,0,,,,,,,,pending_review
+140327,Internal Roadways & Footpaths,113,,0,,,,,,,,pending_review
+140328,Reticulated Systems,113,,1,,,,,,,,pending_review
+140329,Septic Tanks/Soak Pits,113,,0,,,,,,,,pending_review
+140330,Parking Areas/Carports,113,,0,,,,,,,,pending_review
+140431,Rail Sidings/Tracks,114,,0,,,,,,,,pending_review
+140432,Helipads/Taxiways,114,,0,,,,,,,,pending_review
+140433,Railway Tracks,114,,1,,,,,,,,pending_review
+140434,Mass Transit Systems,114,,0,,,,,,,,pending_review
+140435,Loading Bays/Access Ramps,114,,0,,,,,,,,pending_review
+150101,Airplane,114,,2,,,,,,,,pending_review
+150102,Turbojet Aircraft,114,,0,,,,,,,,pending_review
+150103,High Altitude,114,,3,,,,,,,,pending_review
+150104,Tail wheel,114,,0,,,,,,,,pending_review
+150105,Single Engine Land,114,,1,,,,,,,,pending_review
+150106,Single Engine Sea,114,,1,,,,,,,,pending_review
+150107,Multi Engine Land,114,,0,,,,,,,,pending_review
+150108,Multi Engine Sea,114,,0,,,,,,,,pending_review
+150109,JET,114,,3,,,,,,,,pending_review
+150110,Single Main-Rotor Helicopter,114,,0,,,,,,,,pending_review
+150111,Tandem Rotor Helicopter,114,,0,,,,,,,,pending_review
+150112,Coaxial Helicopter,114,,0,,,,,,,,pending_review
+150113,Compound Helicopter,114,,0,,,,,,,,pending_review
+150114,Tilt Rotor Helicopter,114,,1,,,,,,,,pending_review
+150115,Intermeshing Rotor Helicopter,114,,0,,,,,,,,pending_review
+150116,Tandem Rotor Helicopter,114,,0,,,,,,,,pending_review
+150117,Troop Carrier Helicopter,114,,0,,,,,,,,pending_review
+150218,Inter City Train,114,,0,,,,,,,,pending_review
+150219,Rapid Transit Train,114,,0,,,,,,,,pending_review
+150220,Metro Rail,114,,0,,,,,,,,pending_review
+150221,Cargo Train,114,,0,,,,,,,,pending_review
+150222,Passenger Carrier Train,114,,0,,,,,,,,pending_review
+160101,Aircraft Carrier Ship,114,,1,,,,,,,,pending_review
+160102,Submarines,114,,1,,,,,,,,pending_review
+160103,Frigates,114,,1,,,,,,,,pending_review
+160104,Corvettes,114,,0,,,,,,,,pending_review
+160105,Patrol Vessels,114,,0,,,,,,,,pending_review
+160106,Container Ship,114,,0,,,,,,,,pending_review
+160107,Bulk Carrier,115,,1,,,,,,,,pending_review
+160108,Fishing Vessels,115,,0,,,,,,,,pending_review
+160109,General Cargo Ship,115,,0,,,,,,,,pending_review
+160110,Reefer Ship,115,,0,,,,,,,,pending_review
+160111,Tanker Ship,115,,0,,,,,,,,pending_review
+160112,Passenger Carrier Ship,115,,2,,,,,,,,pending_review
+160113,Yachts,115,,1,,,,,,,,pending_review
+160114,Ferry,115,,1,,,,,,,,pending_review
+160115,Coastal Patrol Boats,115,,1,,,,,,,,pending_review
+160116,"Jetties, Slipways",115,,0,,,,,,,,pending_review
+160117,Dredgers,115,,1,,,,,,,,pending_review
+160118,Fishing Vessels,115,,0,,,,,,,,pending_review
+160119,Speed Boats,115,,0,,,,,,,,pending_review
+160120,"Tugs, Vessels & Launches",115,,0,,,,,,,,pending_review
+170101,Dinner Plates,115,,0,,,,,,,,pending_review
+170102,Soup Bowls,115,,1,,,,,,,,pending_review
+170103,Rice Bowls,115,,0,,,,,,,,pending_review
+170104,Tea Cups & Saucers,115,,1,,,,,,,,pending_review
+170105,Mugs,115,,3,,,,,,,,pending_review
+170106,Glasses,115,,3,,,,,,,,pending_review
+170107,Jugs & Pitchers,115,,0,,,,,,,,pending_review
+170108,Cutlery,115,,3,,,,,,,,pending_review
+170109,Tray Sets,115,,0,,,,,,,,pending_review
+170110,Napkin Holders,115,,1,,,,,,,,pending_review
+170111,Side Plates,115,,0,,,,,,,,pending_review
+170212,Fire Extinguishers,115,,1,,,,,,,,pending_review
+170213,Fire Hose Reels,115,,2,,,,,,,,pending_review
+170214,Fire Dampers,115,,3,,,,,,,,pending_review
+170215,Fire Water Storage Tanks,115,,1,,,,,,,,pending_review
+170216,Fire Buckets,115,,3,,,,,,,,pending_review
+170217,Fire Blankets,115,,1,,,,,,,,pending_review
+170218,Fire Water Storage Tanks,115,,1,,,,,,,,pending_review
+170219,Fire Hydrants,115,,1,,,,,,,,pending_review
+170220,Stethoscopes,115,,3,,,,,,,,pending_review
+170221,Sphygmomanometers,115,,0,,,,,,,,pending_review
+170222,Pulse Oximeters,115,,0,,,,,,,,pending_review
+170223,Glucometers,115,,0,,,,,,,,pending_review
+170224,Syringe Pumps,115,,3,,,,,,,,pending_review
+170325,Dressing Sets,116,,1,,,,,,,,pending_review
+170326,Bandage & Cotton Dispensers,116,,0,,,,,,,,pending_review
+170327,Autoclave containers,116,,0,,,,,,,,pending_review
+170328,Centrifuge Tubes and Racks,116,,2,,,,,,,,pending_review
+170329,First Aid Kits,116,,3,,,,,,,,pending_review
+170330,Thermal Boxes,116,,0,,,,,,,,pending_review
+170431,Diesel Forklift,116,,0,,,,,,,,pending_review
+170432,Electric Forklift,116,,0,,,,,,,,pending_review
+170433,LPG Forklift,116,,0,,,,,,,,pending_review
+170434,Rough Terrain Forklift,116,,1,,,,,,,,pending_review
+170435,Pallet Stackers,116,,0,,,,,,,,pending_review
+170436,Counterbalance Forklift,116,,0,,,,,,,,pending_review
+170537,Sundry assets,116,,1,,,,,,,,pending_review
+170638,Other assets,116,,0,,,,,,,,pending_review
+180101,SOES AND ABS domain,116,,0,,,,,,,,pending_review
+180202,DFS platform hardware,116,,0,,,,,,,,pending_review
+180303,ORACLE database,116,,0,,,,,,,,pending_review
+180404,Operating Software,116,,3,,,,,,,,pending_review
+180405,Application Software,116,,3,,,,,,,,pending_review
+180406,Internet Banking Software,116,,3,,,,,,,,pending_review
+180407,Mobile Banking Software,116,,0,,,,,,,,pending_review

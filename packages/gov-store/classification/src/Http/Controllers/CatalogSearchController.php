@@ -234,14 +234,8 @@ class CatalogSearchController extends Controller
             $code = $request->input('code');
             $categoryId = $request->input('category_id');
 
-            // Secure idempotent upsert using DB builder
-            DB::table('gov_catalog_snipe_mappings')->updateOrInsert(
-                ['code' => $code],
-                [
-                    'category_id' => $categoryId,
-                    'updated_at' => now(),
-                ]
-            );
+            // One UNSPSC code per product type: the single assignment path replaces, never adds.
+            app(\GovStore\Classification\Services\ProductTypeCommodity::class)->assign((int) $categoryId, $code);
 
             $category = Category::find($categoryId);
 

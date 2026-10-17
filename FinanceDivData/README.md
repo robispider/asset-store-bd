@@ -14,9 +14,19 @@ This folder contains machine-readable extractions from the 170-page source manua
 
 ## Proposed tag structure from the manual
 
-The worked example on PDF page 99 has 16 digits: `GG SS II MMYY LL DD NNNN` (spaces shown only for readability). The manual says the parts represent group, subgroup, item, purchase month/year, location, division, and a unique asset ID. It gives Finance and Accounts as division code `09`. The unique ID is assigned at registration and should not change after assignment.
+The worked example on PDF page 99 has **18 digits**: `GG SS II MMYY LL DD NNNN` (spaces shown only for readability; 2+2+2+4+2+2+4=18). The manual says the parts represent group, subgroup, item, purchase month/year, location, division, and a unique asset ID. It gives Finance and Accounts as division code `09`. The unique ID is assigned at registration and should not change after assignment. The previous 16-digit description was a derived-document arithmetic error, not a source requirement.
 
 **The source is internally inconsistent:** its code list assigns `03` to Building and `05` to Furniture and Fixture, while the worked example uses `03` for Furniture and Fixture. The example's subgroup `01` for Table also conflicts with the detailed catalog, which lists Table as subgroup `08`. Therefore the extracted catalog is marked provisional and the example should not be used to issue production tags until the responsible authority confirms the controlling codebook. See `tagging_specification.json`.
+
+Further design review found that PDF p.110 assigns subgroup `23` to both HUB and Server in group `11`; p.103 also contains questionable item pairings, including Pond -> IPS Rack. Unique full group/subgroup/item keys do not establish semantic correctness. Preserve these source values pending authoritative review.
+
+## Tagging service design and prepared data
+
+See [the proposed package](../packages/gov-store/asset-tagging/README.md) and
+[the design data pack](tagging-design/README.md) for the integration plan, normalized
+codebook, UNSPSC candidate review sheets, required-field matrix, organization
+mapping templates, policy decisions and offline validation report. These are
+design artifacts; no runtime package is installed and no production tags are issued.
 
 ## Data use and coverage
 

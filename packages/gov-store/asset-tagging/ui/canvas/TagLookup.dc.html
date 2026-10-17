@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tag lookup</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/c32d13bc41445ccff8c8156f9d142efa">
+<link rel="stylesheet" href="/_blob/b0140cd2ad3846295c9f5b5830092d19">
+<link rel="stylesheet" href="/_blob/5ce2466269dec07fabc18d249b73b3f3">
+<link rel="stylesheet" href="/_blob/22b274ea2c677e88680fff95f1da730f">
+<link rel="stylesheet" href="/_blob/a22aa64277e2d4b6dd0f0188f59f608f">
+<link rel="stylesheet" href="/_blob/4a8ede88a8bfb06759d0786c392dcd21">
+<link rel="stylesheet" href="/_blob/ac4accb7e1cee1091aaa49053784ac91">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&amp;family=Noto+Sans+Bengali:wght@400;600&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="at-app" data-skin="{{theme}}" data-theme="{{mode}}" data-gs-status-style="tinted" style="width: 100%; min-height: 100%;">
+<header class="at-top">
+<span class="at-top__brand"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>National Asset Register</span>
+<span class="at-top__ctx"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21V10M19 21V10M9 21v-7M15 21v-7M2 10l10-6 10 6"></path></svg>Working office: Example Office, Dhaka</span>
+</header>
+<div class="at-shell">
+<nav class="at-side" aria-label="Asset tagging screens">
+<div class="at-side__head">Asset tagging</div>
+<a href="Main.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>Overview</a>
+<a href="GrnTagging.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"></path><path d="M3 7l9 4 9-4M12 11v10"></path></svg>GRN workspace</a>
+<a href="PostReview.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 3 3 5-6"></path></svg>Post and print</a>
+<a href="TagLookup.dc.html" aria-current="page"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>Tag lookup</a>
+<div class="at-side__head">Administration</div>
+<a href="ProductType.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z"></path><path d="m3 13 9 5 9-5"></path></svg>Product type</a>
+<a href="OfficeSettings.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Office settings</a>
+<a href="FinanceCatalog.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z"></path><path d="M4 16a4 4 0 0 1 4-4h12"></path></svg>Finance catalog</a>
+<a href="Enablement.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"></path><path d="m9 12 2 2 4-4"></path></svg>Enablement</a>
+</nav>
+<main class="at-main">
+<header class="gs-page-header"><div class="gs-page-header__text"><h1 class="gs-page-header__title">Find an asset by tag <span class="gs-page-header__bn" lang="bn">ট্যাগ দিয়ে খুঁজুন</span></h1><p class="gs-page-header__subtitle">Scan a label or type the tag. You see only assets you're already allowed to view.</p></div></header>
+
+<section class="gs-box">
+<div class="gs-box__body at-stack">
+<div class="at-row">
+<label class="gs-sr-only" for="q">Tag</label>
+<input class="form-control form-control--code at-grow" id="q" type="search" value="{{q}}" onChange="{{onQ}}" placeholder="090809102601090001 or GS-004218" autocomplete="off" style="flex: 1 1 320px;">
+<button type="button" class="gs-btn gs-btn--primary" onClick="{{search}}"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg> Look up</button>
+</div>
+<div class="at-row at-small"><span class="at-muted">Try:</span>
+<button type="button" class="gs-btn gs-btn--light gs-btn--sm at-mono" onClick="{{tryFinance}}">090809102601090001</button>
+<button type="button" class="gs-btn gs-btn--light gs-btn--sm at-mono" onClick="{{tryStandard}}">GS-004218</button>
+<button type="button" class="gs-btn gs-btn--light gs-btn--sm at-mono" onClick="{{tryOther}}">080812102603020004</button>
+</div>
+</div>
+</section>
+
+<sc-if value="{{isNone}}" hint-placeholder-val="{{ false }}">
+<section class="gs-box"><div class="gs-box__body">
+<div class="gs-empty" role="status">
+<svg class="at-i gs-empty__icon" viewBox="0 0 24 24" aria-hidden="true" style="width: 40px; height: 40px;"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>
+<p class="gs-empty__title">No asset you can view has this tag.</p>
+<p class="at-muted">Check the digits, or ask the office that holds the asset. For security, this message is the same whether the tag doesn't exist or belongs to an asset outside your access.</p>
+</div>
+</div></section>
+</sc-if>
+
+<sc-if value="{{isFinance}}" hint-placeholder-val="{{ true }}">
+<section class="gs-box">
+<header class="gs-box__header"><h2 class="gs-box__title">Notebook computer, 14-inch · Asset #2201</h2><div class="gs-box__tools"><span class="gs-badge" data-tone="status-ready"><span class="gs-badge__label">Ready to deploy</span></span><span class="gs-tag gs-tag--primary">Govt. Tag</span></div></header>
+<div class="gs-box__body at-stack">
+<div class="gs-segs" role="img" aria-label="090809102601090001">
+<span class="gs-seg" data-tone="primary"><span class="gs-seg__v">09</span><span class="gs-seg__l">Group</span></span>
+<span class="gs-seg" data-tone="primary"><span class="gs-seg__v">08</span><span class="gs-seg__l">Subgroup</span></span>
+<span class="gs-seg" data-tone="primary"><span class="gs-seg__v">09</span><span class="gs-seg__l">Item</span></span>
+<span class="gs-seg" data-tone="info"><span class="gs-seg__v">1026</span><span class="gs-seg__l">Month</span></span>
+<span class="gs-seg" data-tone="success"><span class="gs-seg__v">01</span><span class="gs-seg__l">Location</span></span>
+<span class="gs-seg" data-tone="success"><span class="gs-seg__v">09</span><span class="gs-seg__l">Division</span></span>
+<span class="gs-seg" data-tone="warning"><span class="gs-seg__v">0001</span><span class="gs-seg__l">Sequence</span></span>
+<button type="button" class="gs-btn gs-btn--light gs-btn--sm" aria-label="Copy tag" style="align-self: center;"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg></button>
+</div>
+<dl class="gs-kv" style="--gs-kv-columns: 3;">
+<div class="gs-kv__item"><dt class="gs-kv__label">Classification</dt><dd class="gs-kv__value">090809 Laptop · Computer and Computer Equipment</dd></div>
+<div class="gs-kv__item"><dt class="gs-kv__label">Acquired</dt><dd class="gs-kv__value">October 2026</dd></div>
+<div class="gs-kv__item"><dt class="gs-kv__label">Office codes at issue</dt><dd class="gs-kv__value">Location 01 · Division 09 Accounts</dd></div>
+</dl>
+</div>
+</section>
+<div class="at-cols">
+<section class="gs-box">
+<header class="gs-box__header"><h2 class="gs-box__title">Registration</h2></header>
+<div class="gs-box__body">
+<dl class="gs-kv" style="--gs-kv-columns: 1;">
+<div class="gs-kv__item"><dt class="gs-kv__label">Received on</dt><dd class="gs-kv__value"><a href="PostReview.dc.html">GRN-2026-00412</a> · unit 1 of 3 on its line</dd></div>
+<div class="gs-kv__item"><dt class="gs-kv__label">Issued</dt><dd class="gs-kv__value">16 Oct 2026, 10:42 · by the office storekeeper</dd></div>
+<div class="gs-kv__item"><dt class="gs-kv__label">Finance Code came from</dt><dd class="gs-kv__value">Product type (national)</dd></div>
+<div class="gs-kv__item"><dt class="gs-kv__label">Evidence</dt><dd class="gs-kv__value">Invoice INV-2026-118 <span class="at-small at-muted">(reference only; the document stays with the receipt)</span></dd></div>
+<div class="gs-kv__item"><dt class="gs-kv__label">Format</dt><dd class="gs-kv__value">Govt. Tag, version 1</dd></div>
+</dl>
+</div>
+</section>
+<section class="gs-box">
+<header class="gs-box__header"><h2 class="gs-box__title">Now</h2></header>
+<div class="gs-box__body">
+<dl class="gs-kv" style="--gs-kv-columns: 1;">
+<div class="gs-kv__item"><dt class="gs-kv__label">Location</dt><dd class="gs-kv__value">Example Office, Dhaka · Store room 2</dd></div>
+<div class="gs-kv__item"><dt class="gs-kv__label">Assigned to</dt><dd class="gs-kv__value">Not assigned</dd></div>
+<div class="gs-kv__item"><dt class="gs-kv__label">Serial</dt><dd class="gs-kv__value at-mono">5CD4381KQ2</dd></div>
+</dl>
+<p class="at-small at-muted" style="margin-top: 12px;">The tag stays the same if the asset moves, changes custodian or is disposed of.</p>
+</div>
+</section>
+</div>
+</sc-if>
+
+<sc-if value="{{isStandard}}" hint-placeholder-val="{{ false }}">
+<section class="gs-box">
+<header class="gs-box__header"><h2 class="gs-box__title">Multimedia projector · Asset #2210</h2><div class="gs-box__tools"><span class="gs-badge" data-tone="status-ready"><span class="gs-badge__label">Ready to deploy</span></span><span class="gs-tag gs-tag--secondary">Standard tag</span></div></header>
+<div class="gs-box__body at-stack">
+<div class="at-row"><span class="at-standard">GS-004218</span><button type="button" class="gs-btn gs-btn--light gs-btn--sm" aria-label="Copy tag"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg></button></div>
+<dl class="gs-kv" style="--gs-kv-columns: 3;">
+<div class="gs-kv__item"><dt class="gs-kv__label">Why a standard tag</dt><dd class="gs-kv__value">No acquisition evidence at posting</dd></div>
+<div class="gs-kv__item"><dt class="gs-kv__label">Product type's Finance Code</dt><dd class="gs-kv__value">080812 Projector (not used for this unit)</dd></div>
+<div class="gs-kv__item"><dt class="gs-kv__label">Received on</dt><dd class="gs-kv__value"><a href="PostReview.dc.html">GRN-2026-00412</a> · unit 1 of 2</dd></div>
+</dl>
+</div>
+</section>
+</sc-if>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender"],"default":"civic-ledger","section":"Theme"},"mode":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"},"$preview":{"width":1280,"height":1300}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { q: '090809102601090001', shown: 'finance' };
+}
+resolve(q) {
+const v = (q || '').trim().toUpperCase();
+if (v === '090809102601090001') return 'finance';
+if (v === 'GS-004218') return 'standard';
+return 'none';
+}
+renderVals() {
+const s = this.state;
+const go = (q) => this.setState({ q, shown: this.resolve(q) });
+return {
+theme: this.props.theme ?? 'civic-ledger', mode: this.props.mode ?? 'light',
+q: s.q, onQ: (e) => this.setState({ q: e.target.value }),
+search: () => go(s.q),
+tryFinance: () => go('090809102601090001'), tryStandard: () => go('GS-004218'), tryOther: () => go('080812102603020004'),
+isFinance: s.shown === 'finance', isStandard: s.shown === 'standard', isNone: s.shown === 'none'
+};
+}
+}
+</script>
+</body>
+</html>

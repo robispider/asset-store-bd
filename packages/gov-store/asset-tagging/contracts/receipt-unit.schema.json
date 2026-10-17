@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:govstore:asset-tagging:receipt-unit:proposed:7",
+  "title": "GRN unit inputs added by the tag panel",
+  "description": "Saved through the existing items[i][meta][unit][field] naming into gov_document_item_meta (row_index = unit_index). The acquisition date is not entered here: it is derived from the document's existing Supplier Challan date, else Purchase Order date. The service decides the tag kind; a typed asset_tag is rejected in enabled offices.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "source_document_item_id",
+    "unit_index",
+    "finance_source",
+    "tag_choice"
+  ],
+  "properties": {
+    "source_document_item_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "unit_index": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "finance_source": {
+      "enum": [
+        "product_type",
+        "line_choice",
+        "none"
+      ],
+      "description": "Resolved by the server: product_type (valid default, read-only), line_choice (storekeeper chose in the warning's fix), none (no code: standard tag)."
+    },
+    "gov_code": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]{6}$",
+      "description": "Meta key gov_code; only submitted for line_choice. Must be an active Finance item whose UNSPSC is NULL or the product type's code."
+    },
+    "tag_choice": {
+      "enum": [
+        "auto",
+        "standard"
+      ],
+      "description": "auto: Govt. Tag when eligible, else standard. standard: the storekeeper explicitly keeps standard tags for this line (fix for a missing date or no code)."
+    },
+    "standard_tag_reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        null,
+        "no_finance_code",
+        "no_acquisition_date",
+        "receiving_source_not_eligible",
+        "chosen_by_storekeeper"
+      ],
+      "description": "Server-derived; frozen in the registration snapshot."
+    },
+    "division_code": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]{2}$",
+      "description": "Meta key division_code; shown only when the office uses more than one division; defaults to the office default."
+    },
+    "manufacturer_serial": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 191,
+      "description": "Existing serial capability; unchanged."
+    },
+    "warranty_months": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "description": "Existing warranty capability; unchanged."
+    }
+  },
+  "x-derived": {
+    "acquisition_date": "references['Supplier Challan'].reference_date, else references['Purchase Order'].reference_date (D-09)",
+    "eligible_receiving_sources": [
+      "Purchase"
+    ],
+    "needs_attention": "Govt. Tag eligible line (has a Finance Code, tag_choice=auto, receiving source Purchase) but neither date is filled",
+    "warning": "finance_source=none and tag_choice=auto: units get standard tags"
+  },
+  "x-rejected": "asset_tag is not part of this contract; a typed tag in an enabled office is a validation error."
+}

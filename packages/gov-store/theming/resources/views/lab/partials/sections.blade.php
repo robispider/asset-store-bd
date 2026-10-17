@@ -423,6 +423,12 @@
                     </div>
                     <p><x-gs::trail :items="[['label' => 'Dhaka Division', 'bn' => 'ঢাকা বিভাগ'], 'Dhaka District', 'Savar Upazila']" /></p>
                 </x-gs::box>
+                <x-gs::box title="Code segments">
+                    {{-- Inline @php only: this partial already uses the inline form above. --}}
+                    @php($labSegments = [['value' => '09', 'label' => 'Group', 'tone' => 'primary'], ['value' => '08', 'label' => 'Subgroup', 'tone' => 'primary'], ['value' => '09', 'label' => 'Item', 'tone' => 'primary'], ['value' => '1026', 'label' => 'Month', 'tone' => 'info'], ['value' => '01', 'label' => 'Location', 'tone' => 'success'], ['value' => '09', 'label' => 'Division', 'tone' => 'success']])
+                    <x-gs::code-segments :segments="array_merge($labSegments, [['value' => '····', 'label' => 'Sequence', 'tone' => 'muted', 'pending' => true]])" label="Govt. Tag preview" />
+                    <p><x-gs::code-segments size="sm" :segments="array_merge($labSegments, [['value' => '0001', 'label' => 'Sequence', 'tone' => 'warning']])" label="090809102601090001" /></p>
+                </x-gs::box>
             </div>
         </div>
     @endunless

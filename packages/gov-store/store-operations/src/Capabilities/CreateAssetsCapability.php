@@ -2,6 +2,7 @@
 
 namespace GovStore\StoreOperations\Capabilities;
 
+use GovStore\StoreOperations\Contracts\AssetTagIssuer;
 use GovStore\StoreOperations\Contracts\CapabilityInterface;
 use GovStore\StoreOperations\Services\CustomFieldProvisioner;
 use App\Models\Asset;
@@ -55,15 +56,17 @@ class CreateAssetsCapability implements CapabilityInterface
                 $tag = $rowMeta->where('field_key', 'asset_tag')->first()?->value;
             }
 
-            if (!$tag) {
-                $tag = Asset::autoincrement_asset();
-            }
+            // The issuer keeps today's behaviour (typed tag, else auto-increment) unless asset tagging is installed.
+            $issued = app(AssetTagIssuer::class)->tagFor($item, $r, $tag ?: null);
 
             // 1. INSTANTIATE NATIVE ASSET (Purely Transactional)
             $asset = new Asset();
             $asset->model_id    = $item->product_id;
             $asset->serial      = $serial;
-            $asset->asset_tag   = $tag; // FIXED: Assigned required unique asset tag
+            $asset->asset_tag   = $issued->tag; // FIXED: Assigned required unique asset tag
+            if ($issued->purchaseDate) {
+                $asset->purchase_date = $issued->purchaseDate;
+            }
             $statusId = $config['status_id'] ?? Statuslabel::where('deployable', 1)->where('archived', 0)->orderBy('id')->value('id');
             if (! $statusId || ! Statuslabel::whereKey($statusId)->where('deployable', 1)->where('archived', 0)->exists()) {
                 throw new Exception('A valid deployable default asset status must be configured before receipt posting.');
@@ -102,6 +105,10 @@ class CreateAssetsCapability implements CapabilityInterface
                 'asset_id'       => $asset->id,
                 'asset_tag'      => $asset->asset_tag,
                 'serial_number'  => $asset->serial,
+                'unit_index'     => $r,
+                'format_version' => $issued->formatVersion,
+                'gov_code'       => $issued->govCode,
+                'tag_snapshot'   => json_encode($issued->snapshot, JSON_UNESCAPED_UNICODE),
                 'created_at'     => now(),
             ]);
 

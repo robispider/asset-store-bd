@@ -1,0 +1,110 @@
+{
+  "revision": 7,
+  "status": "Design only; no database populated",
+  "new_table_count": 3,
+  "altered_existing_tables": [
+    "gov_asset_registrations",
+    "gov_catalog_snipe_mappings"
+  ],
+  "domains": [
+    {
+      "domain": "Finance master",
+      "available": "490 entries; 18 groups; 171 subgroup keys",
+      "source": "FinanceDivData/tagging-design/finance_items.csv",
+      "target": "gov_finance_items",
+      "preparer": "Developer prepares exact importer; domain reviewer resolves source issues",
+      "writer": "Existing protected catalog publisher/import",
+      "initial": "Held; UNSPSC null; extraction never auto-active"
+    },
+    {
+      "domain": "UNSPSC link",
+      "available": "470 leads for 224 items; 266 without leads; zero approved",
+      "source": "finance_unspsc_review.csv and existing UNSPSC catalog",
+      "target": "gov_finance_items.unspsc_code only",
+      "preparer": "Classification/domain reviewer",
+      "writer": "Existing catalog master process",
+      "initial": "NULL; mapping optional; no reverse column"
+    },
+    {
+      "domain": "Office facts",
+      "available": "14 location / 17 division examples from one organization; no live lists",
+      "source": "Company admin enters real code lists; office admin selects from them",
+      "target": "gov_metadata_values: company subject (asset-tagging.codelists) and office subject (asset-tagging.office)",
+      "preparer": "Company admin, then office admin",
+      "writer": "CompanyCodeListController / OfficeTagSettingsController with revision checks",
+      "initial": "Never copy example lists as defaults; no authority reference"
+    },
+    {
+      "domain": "Product types",
+      "available": "Existing categories and UNSPSC maps; some categories may have several codes",
+      "source": "Product type's single UNSPSC code plus optional Finance default",
+      "target": "gov_catalog_snipe_mappings (one row per category) and gov_metadata_values: subject=category, namespace=asset-tagging.default, scope from category governance",
+      "preparer": "Catalog reviewer reconciles multi-code categories (D-06); national publisher (global types) or company editor (company types) sets Finance default",
+      "writer": "ProductTypeCommodity::assign() and the existing scoped product-type edit / national publisher",
+      "initial": "NULL Finance default; never auto-matched by name; offices do not override"
+    },
+    {
+      "domain": "Receipt units",
+      "available": "Existing lines, quantity, supplier, cost, serial/warranty EAV",
+      "source": "Existing GRN fields; acquisition date from Supplier Challan/PO date; optional line Finance Code and division in the tag panel",
+      "target": "Existing document meta / assets / registrations",
+      "preparer": "Storekeeper",
+      "writer": "Atomic posting service and tagging adapter",
+      "initial": "Draft inputs; no reservation before posting; no Finance Code means standard tag"
+    },
+    {
+      "domain": "Counters",
+      "available": "Legacy tags require reconciliation including deleted assets; native settings sequence for standard tags",
+      "source": "Retained history high-watermark and existing/retired Finance codes",
+      "target": "gov_asset_tag_sequences (FD18 and Finance code extension); native settings row (standard tags)",
+      "preparer": "Developer preflight and controlled initialization",
+      "writer": "Allocator only, under locks",
+      "initial": "Never blindly seed used prefixes at zero"
+    },
+    {
+      "domain": "Legacy",
+      "available": "Native and bridge history; live accuracy unverified",
+      "source": "Read-only collision report and office physical verification",
+      "target": "Retained bridge with nullable enrollment fields",
+      "preparer": "Developer / office custodians",
+      "writer": "Reviewed exact reconciliation",
+      "initial": "No automatic relabel, history removal or arbitrary duplicate merge"
+    },
+    {
+      "domain": "Native settings",
+      "available": "Current auto_increment_assets, auto_increment_prefix, zerofill_count",
+      "source": "Installation settings",
+      "target": "Unchanged schema; gate G1 and Setting saving guard",
+      "preparer": "Deployment operator chooses a non-empty, non-digit-leading prefix (D-03)",
+      "writer": "Existing native settings screen",
+      "initial": "Enablement refused until G1 passes"
+    },
+    {
+      "domain": "Geography",
+      "available": "Existing Geo service and 9111 reference rows; separate historical 625-row CSV",
+      "source": "Existing office profile and GeoAreaService",
+      "target": "Existing geography unchanged",
+      "preparer": "Office verifies current profile",
+      "writer": "No tagging import",
+      "initial": "Leave current codes alone"
+    },
+    {
+      "domain": "CGA",
+      "available": "Digital file-number guide and March 2013 geographic annex",
+      "source": "Historical reference only",
+      "target": "None",
+      "preparer": "None for tagging",
+      "writer": "None",
+      "initial": "Accounts/document numbering not required"
+    }
+  ],
+  "deployment_order": [
+    "Read-only preflight: schema, duplicates, multi-UNSPSC categories, legacy collisions, native settings, experiment offices",
+    "Three new GovStore tables",
+    "Bridge columns and unique keys after duplicate reconciliation; receipt FK RESTRICT; UNIQUE(category_id) after D-06 reconciliation",
+    "Held Finance import; office facts; product-type defaults by their owners",
+    "Formats, planner, allocators, gate and guard; pre-posting hook in GRN",
+    "Concurrency, retry, retention, guard and authorization verification",
+    "Enable validated offices one at a time; non-GRN issuance deferred"
+  ]
+}

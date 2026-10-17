@@ -161,5 +161,6 @@ return [
         'readiness_todo' => 'To do',
         'needed' => 'Needed',
         'optional' => 'Optional',
+        'segment_pending' => 'allocated when posted',
     ],
 ];

@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Posting modal and posted GRN</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/c32d13bc41445ccff8c8156f9d142efa">
+<link rel="stylesheet" href="/_blob/b0140cd2ad3846295c9f5b5830092d19">
+<link rel="stylesheet" href="/_blob/5ce2466269dec07fabc18d249b73b3f3">
+<link rel="stylesheet" href="/_blob/22b274ea2c677e88680fff95f1da730f">
+<link rel="stylesheet" href="/_blob/a22aa64277e2d4b6dd0f0188f59f608f">
+<link rel="stylesheet" href="/_blob/4a8ede88a8bfb06759d0786c392dcd21">
+<link rel="stylesheet" href="/_blob/ac4accb7e1cee1091aaa49053784ac91">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&amp;family=Noto+Sans+Bengali:wght@400;600&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="at-app" data-skin="{{theme}}" data-theme="{{mode}}" data-gs-status-style="tinted" style="width: 100%; min-height: 100%;">
+<header class="at-top">
+<span class="at-top__brand"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>National Asset Register</span>
+<span class="at-top__ctx"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21V10M19 21V10M9 21v-7M15 21v-7M2 10l10-6 10 6"></path></svg>Working office: Example Office, Dhaka · Storekeeper</span>
+</header>
+<div class="at-shell">
+<nav class="at-side" aria-label="Asset tagging screens">
+<div class="at-side__head">Asset tagging</div>
+<a href="Main.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>Overview</a>
+<a href="GrnTagging.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"></path><path d="M3 7l9 4 9-4M12 11v10"></path></svg>GRN workspace</a>
+<a href="PostReview.dc.html" aria-current="page"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 3 3 5-6"></path></svg>Post and print</a>
+<a href="TagLookup.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>Tag lookup</a>
+<div class="at-side__head">Administration</div>
+<a href="ProductType.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z"></path><path d="m3 13 9 5 9-5"></path></svg>Product type</a>
+<a href="OfficeSettings.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Office settings</a>
+<a href="FinanceCatalog.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z"></path><path d="M4 16a4 4 0 0 1 4-4h12"></path></svg>Finance catalog</a>
+<a href="Enablement.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"></path><path d="m9 12 2 2 4-4"></path></svg>Enablement</a>
+</nav>
+<main class="at-main" style="gap: 12px;">
+
+<sc-if value="{{isModal}}" hint-placeholder-val="{{ true }}">
+<div class="content-header"><h1>Workspace - GR-2026-000412</h1><span class="at-small at-muted">The existing posting modal. One line is added (dashed, NEW).</span></div>
+<div class="at-scrim">
+<div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="pm-title" aria-describedby="pm-warn">
+<div class="modal-header bg-yellow"><h4 class="modal-title" id="pm-title" lang="bn">লেজারে পোস্ট নিশ্চিত করুন</h4><p lang="en" style="margin: 2px 0 0;">Confirm ledger posting</p></div>
+<div class="modal-body">
+<p class="lead">You are about to post this document to the immutable inventory ledger.</p>
+<div class="well">
+<strong>GR-2026-000412 (receipt)</strong><br>Office: Example Office, Dhaka
+<ul style="margin: 6px 0; padding-left: 18px;"><li>Notebook computer, 14-inch × 3</li><li>Revolving office chair with arms × 6</li><li>Multimedia projector × 2</li></ul>
+3 Items | 11 Total Quantity<br>Estimated Value: ৳460,000.00<br>Reference: Supplier Challan: CH-5521
+<div class="at-new" style="margin-top: 10px; padding: 6px 8px;"><span class="at-new__flag">NEW</span><strong>Tags:</strong> <span class="gs-tag gs-tag--primary">9 Govt. Tags</span> <span class="gs-tag gs-tag--secondary">2 standard tags</span> <span class="at-small">permanent</span></div>
+</div>
+<div id="pm-warn"><p lang="bn" style="margin: 0 0 4px;">পোস্ট করলে এটি স্থায়ী হবে এবং আর সম্পাদনা করা যাবে না। সংশোধনের জন্য স্টোরকিপারের সঙ্গে যোগাযোগ করুন।</p><p lang="en" style="margin: 0;">Posting is permanent. This document cannot be edited afterwards. Contact your storekeeper to arrange corrections.</p></div>
+</div>
+<div class="modal-footer"><a class="btn" href="GrnTagging.dc.html">Cancel</a><button type="button" class="btn btn-success" onClick="{{post}}">Post to ledger</button></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{isResult}}" hint-placeholder-val="{{ false }}">
+<div class="content-header"><h1>Workspace - GR-2026-000412</h1><span class="at-small at-muted">The existing read-only workspace after posting. One box is added (dashed, NEW).</span></div>
+<div class="alert alert-success" role="status">Post to ledger</div>
+<div class="alert alert-info" role="status">This document is read-only.</div>
+<div class="row">
+<div class="col-md-8">
+<div class="box box-solid"><div class="box-header with-border"><h3 class="box-title">Administrative Details &amp; Approvals</h3></div><div class="box-body at-small at-muted">Receiving Source: Standard Purchase · Supplier: Example Traders Ltd · Supplier Challan CH-5521, 12 Oct 2026</div></div>
+<div class="box box-solid"><div class="box-header with-border"><h3 class="box-title">Received Items</h3></div>
+<div class="box-body no-padding at-scroll"><table class="table table-bordered"><thead><tr><th scope="col">Item Name</th><th scope="col">Current Stock</th><th scope="col">Quantity</th><th scope="col">Unit Cost</th><th scope="col">Balance After</th></tr></thead>
+<tbody><tr><td>Notebook computer, 14-inch</td><td>7</td><td>3</td><td>85,000.00</td><td>7</td></tr><tr><td>Revolving office chair with arms</td><td>16</td><td>6</td><td>12,500.00</td><td>16</td></tr><tr><td>Multimedia projector</td><td>3</td><td>2</td><td>65,000.00</td><td>3</td></tr></tbody></table></div></div>
+</div>
+<div class="col-md-4">
+<div class="box box-success"><div class="box-header with-border"><h3 class="box-title">Posted Document</h3></div>
+<div class="box-body"><h4 class="text-center" style="margin: 4px 0 10px;"><strong>GR-2026-000412</strong></h4>
+<ul class="list-group"><li class="list-group-item"><b>Total Lines</b><a class="pull-right">3</a></li><li class="list-group-item"><b>Total Quantity</b><a class="pull-right">11</a></li></ul>
+<button type="button" class="btn btn-block" disabled>Save draft</button><button type="button" class="btn btn-primary btn-block" disabled>Post to ledger</button><button type="button" class="btn btn-block">Print Official Copy</button></div></div>
+
+<div class="box box-solid at-new"><span class="at-new__flag">NEW</span>
+<div class="box-header with-border"><h3 class="box-title">Issued tags</h3><span class="pull-right at-small at-muted">11</span></div>
+<div class="box-body">
+<ul class="list-group" style="margin-bottom: 8px;">
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+<li class="list-group-item" style="flex-wrap: wrap;">
+<sc-if value="{{r.govt}}" hint-placeholder-val="{{ true }}"><span class="gs-segs gs-segs--sm" role="img" aria-label="{{r.tag}}"><span class="gs-seg" data-tone="primary"><span class="gs-seg__v">{{r.a}}</span></span><span class="gs-seg" data-tone="info"><span class="gs-seg__v">1026</span></span><span class="gs-seg" data-tone="success"><span class="gs-seg__v">0109</span></span><span class="gs-seg" data-tone="warning"><span class="gs-seg__v">{{r.d}}</span></span></span></sc-if>
+<sc-if value="{{r.std}}" hint-placeholder-val="{{ false }}"><span class="at-mono"><strong>{{r.tag}}</strong></span></sc-if>
+<span class="at-small at-muted" style="flex-basis: 100%;">{{r.product}}</span>
+</li>
+</sc-for>
+</ul>
+<p class="at-small at-muted" style="margin: 0 0 6px;">Showing 5 of 11 · 9 Govt. Tags · 2 standard tags</p>
+<button type="button" class="btn btn-primary btn-block"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6"></path><rect x="3" y="9" width="18" height="8" rx="2"></rect><path d="M6 14h12v7H6z"></path></svg> Print labels</button>
+<button type="button" class="btn btn-block">Download list (CSV)</button>
+<p class="help-block">Reprinting later always uses the same tag.</p>
+</div>
+</div>
+</div>
+</div>
+</sc-if>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender"],"default":"civic-ledger","section":"Theme"},"mode":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"},"scenario":{"editor":"enum","options":["modal","posted"],"default":"modal","section":"State"},"$preview":{"width":1280,"height":1400}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { step: null };
+}
+renderVals() {
+const step = this.state.step ?? this.props.scenario ?? 'modal';
+const rows = [
+{ govt: true, std: false, a: '090809', d: '0001', tag: '090809102601090001', product: 'Notebook computer, 14-inch · unit 1' },
+{ govt: true, std: false, a: '090809', d: '0002', tag: '090809102601090002', product: 'Notebook computer, 14-inch · unit 2' },
+{ govt: true, std: false, a: '050310', d: '0001', tag: '050310102601090001', product: 'Revolving office chair · unit 1' },
+{ govt: false, std: true, tag: 'GS-004218', product: 'Multimedia projector · unit 1' },
+{ govt: false, std: true, tag: 'GS-004219', product: 'Multimedia projector · unit 2' }
+];
+return {
+theme: this.props.theme ?? 'civic-ledger', mode: this.props.mode ?? 'light',
+isModal: step !== 'posted', isResult: step === 'posted',
+post: () => this.setState({ step: 'posted' }), rows
+};
+}
+}
+</script>
+</body>
+</html>

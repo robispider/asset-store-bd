@@ -5,7 +5,7 @@
 - Dataset version: `bd-admin-areas-2026-10-07.1`
 - File: `src/database/data/geo_areas.csv`
 - Rows: 9,111 (headerless CSV)
-- SHA-256: `1b1bf5beba43c321262dc587930153eacd7cd0ff6d96f61abb5d013a863edc94d`
+- SHA-256: `1b1bf5beba43c321262dc587930153eac7cd0ff6d96f61abb5d013a863edc94d`
 - Provenance: the repository does not record the publisher, retrieval date, or
   license for this historical file. The per-area `domain` field contains URLs,
   but those URLs are not sufficient evidence that they were the dataset source.
@@ -13,6 +13,13 @@
   upstream refresh.
 
 ## Refresh and compatibility procedure
+
+Local metadata correction, 15 October 2026: recomputed the bundled file hash and
+corrected the previous 65-character transcription in this document. The CSV data
+and application identifiers were not changed; upstream provenance remains
+unverified. The [tagging geography decision](GEOCODE-SUPPLEMENT-DESIGN.md)
+retains the extracted March 2013 codes as offline reference only; it adds no
+geography tables and leaves this dataset unchanged.
 
 1. Obtain a dated source release with documented publisher and reuse terms.
 2. Compare identifiers, hierarchy paths, parent codes, both names, and types

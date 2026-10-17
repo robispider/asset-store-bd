@@ -55,7 +55,8 @@ class TrackingWorkflowTest extends StoreOperationsWorkflowTest
             $t->integer('created_by')->nullable();
             $t->integer('warranty_months')->nullable();
         });
-        Schema::create('gov_asset_registrations', function (Blueprint $t) { $t->increments('id'); $t->uuid('intake_item_id'); $t->integer('asset_id'); $t->string('asset_tag'); $t->string('serial_number')->nullable(); $t->timestamp('created_at'); });
+        Schema::create('gov_asset_registrations', function (Blueprint $t) { $t->increments('id'); $t->uuid('intake_item_id'); $t->unsignedInteger('unit_index')->nullable(); $t->integer('asset_id'); $t->string('asset_tag'); $t->string('serial_number')->nullable();
+            $t->string('format_version', 50)->nullable(); $t->char('gov_code', 6)->nullable(); $t->json('tag_snapshot')->nullable(); $t->timestamp('created_at'); });
         Schema::create('gov_geo_areas', function (Blueprint $t) { $t->unsignedInteger('GeoAreaId')->primary(); $t->string('hid'); });
         Schema::create('gov_tenant_scope_mappings', function (Blueprint $t) {
             $t->increments('id'); $t->string('reference_type'); $t->integer('reference_id'); $t->string('scope_type'); $t->integer('scope_id'); $t->boolean('is_active');

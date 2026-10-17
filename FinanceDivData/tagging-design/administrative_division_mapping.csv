@@ -1,0 +1,18 @@
+source_example_code,source_example_label,source_pdf_page,company_id,office_location_id,administrative_division_key,actual_administrative_division_name,effective_from,order_reference,approved_code,approval_status
+01,SBU-1,98,,,,,,,,unmapped_source_example_not_live_organization
+02,External Affairs,98,,,,,,,,unmapped_source_example_not_live_organization
+03,Technology Transformation & Innovation,98,,,,,,,,unmapped_source_example_not_live_organization
+04,Business Assurance,98,,,,,,,,unmapped_source_example_not_live_organization
+05,IT Infrastructure & Security,98,,,,,,,,unmapped_source_example_not_live_organization
+06,Technology Operation,98,,,,,,,,unmapped_source_example_not_live_organization
+07,Strategy,98,,,,,,,,unmapped_source_example_not_live_organization
+08,Customer Management and Experience,99,,,,,,,,unmapped_source_example_not_live_organization
+09,Finance and Accounts,99,,,,,,,,unmapped_source_example_not_live_organization
+10,Strategic Alliance and Investment,99,,,,,,,,unmapped_source_example_not_live_organization
+11,Corporate and External Affairs,99,,,,,,,,unmapped_source_example_not_live_organization
+12,Human Resources and Administration,99,,,,,,,,unmapped_source_example_not_live_organization
+13,Marketing,99,,,,,,,,unmapped_source_example_not_live_organization
+14,Corporate Communications,99,,,,,,,,unmapped_source_example_not_live_organization
+15,Sales,99,,,,,,,,unmapped_source_example_not_live_organization
+16,Key Stakeholder Relation,99,,,,,,,,unmapped_source_example_not_live_organization
+17,MD Division,99,,,,,,,,unmapped_source_example_not_live_organization

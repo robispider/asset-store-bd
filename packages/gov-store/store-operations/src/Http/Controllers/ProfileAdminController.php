@@ -3,7 +3,9 @@
 namespace GovStore\StoreOperations\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\AssetModel;
 use App\Models\Category;
+use App\Models\Company;
 use App\Models\Location;
 use GovStore\StoreOperations\Enums\AssignmentScope;
 use GovStore\StoreOperations\Enums\DocumentState;
@@ -12,56 +14,89 @@ use GovStore\StoreOperations\Models\Profile;
 use GovStore\StoreOperations\Models\ProfileAssignment;
 use GovStore\StoreOperations\Services\CapabilityRegistry;
 use GovStore\StoreOperations\Services\ProfileCompilerService;
+use GovStore\StoreOperations\Services\RuleTraceService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class ProfileAdminController extends Controller
 {
+    /** Hub views: A = tree + what applies here, B = flow lanes, C = family tree, plus the policy library. */
+    private const STUDIO_VIEWS = ['tree', 'flow', 'family', 'policies'];
+
     /**
-     * Renders the primary Target Assignment Matrix.
+     * The Rules studio: one context (office + item) traced through every layer, shown three ways.
      */
-    public function index()
+    public function index(Request $request, RuleTraceService $trace)
     {
-        // 1. Gather database counts for the Quick Access metrics
-        $counts = [
-            'categories' => Category::count(),
-            'locations' => Location::count(),
-            'policies' => Profile::where('status', 'PUBLISHED')->count(),
+        $view = in_array($request->query('view'), self::STUDIO_VIEWS, true) ? $request->query('view') : 'tree';
+        $pick = fn (string $key, string $class) => ctype_digit((string) $request->query($key)) ? $class::find((int) $request->query($key)) : null;
+        $location = $pick('location', Location::class);
+        $company = $location ? null : $pick('company', Company::class);
+        $model = $pick('model', AssetModel::class);
+        $category = $model ? null : $pick('category', Category::class);
+        if (! $request->hasAny(['location', 'company', 'category', 'model'])) {
+            // First visit: the administrator's own office and the first category that carries a policy.
+            $context = app(\GovStore\TenantScope\Contexts\TenantContext::class);
+            $location = $context->locationId ? Location::find($context->locationId) : null;
+            $category = Category::query()->whereIn('id', ProfileAssignment::query()->where('target_type', 'App\Models\Category')
+                ->whereNull('effective_to')->select('target_id'))->orderBy('name')->first();
+        }
+
+        $result = $trace->trace($company, $location, $category, $model);
+        $query = array_filter(['view' => $view, 'company' => $result['company']?->id && ! $result['location'] ? $result['company']->id : null,
+            'location' => $result['location']?->id, 'category' => $result['model'] ? null : $result['category']?->id,
+            'model' => $result['model']?->id]);
+        $rules = $result['rules'];
+        $selectedRule = array_key_exists((string) $request->query('rule'), $rules) ? $request->query('rule') : array_key_first(array_filter($rules, fn ($r) => $r['replaced'])) ?? array_key_first($rules);
+        $node = $this->studioNode((string) $request->query('node'), $result);
+
+        $locations = Location::query()->orderBy('name')->get(['id', 'name', 'company_id']);
+        $categories = Category::query()->whereIn('category_type', ['asset', 'consumable', 'accessory', 'component'])->orderBy('name')->get(['id', 'name', 'category_type'])->groupBy('category_type');
+        $models = $result['category'] ? AssetModel::query()->where('category_id', $result['category']->id)->orderBy('name')->get(['id', 'name']) : collect();
+
+        $data = compact('view', 'result', 'query', 'rules', 'selectedRule', 'node', 'locations', 'categories', 'models') + [
+            'layers' => $result['layers'],
+            'canPublish' => $this->canPublishRules(),
+            'publishedProfiles' => Profile::query()->where('status', PolicyStatus::PUBLISHED->value)->orderBy('name')->get(),
         ];
+        if (in_array($view, ['tree', 'family'], true)) {
+            $data['orgTree'] = $trace->orgTree($result['company']?->id);
+            $data['productTree'] = $trace->productTree($result['layers'], $result['model']?->id);
+        }
+        if ($view === 'policies') {
+            $data['draftProfiles'] = Profile::query()->where('status', PolicyStatus::DRAFT->value)->orderBy('name')->get();
+            $data['recentActivity'] = ProfileAssignment::with('profile')->latest()->limit(4)->get()
+                ->map(fn ($a) => ['policy' => $a->profile?->name ?? '—', 'target' => $trace->targetName($a), 'when' => $a->created_at?->diffForHumans()]);
+        }
 
-        // 2. Fetch the latest GPO assignments to show as an Activity Feed on the Hub
-        $recentActivity = ProfileAssignment::with(['profile', 'target'])
-            ->orderBy('created_at', 'desc')
-            ->limit(4)
-            ->get()
-            ->map(function ($assign) {
-                // Safely resolve the target name
-                $targetName = $assign->target ? ($assign->target->name ?? 'Unknown Target') : 'System';
+        return view('storeops::admin.rules.index', $data);
+    }
 
-                return [
-                    'policy_name' => $assign->profile->name,
-                    'target_name' => $targetName,
-                    'operator' => 'System Admin',
-                    'date' => $assign->created_at->diffForHumans(),
-                ];
-            });
+    /** The node whose attached policy the studio can change: ?node=type:id, else the deepest chosen level. */
+    private function studioNode(string $requested, array $result): array
+    {
+        [$type, $id] = array_pad(explode(':', $requested, 2), 2, null);
+        $chosen = ['model' => $result['model'], 'category' => $result['category'], 'location' => $result['location'], 'company' => $result['company']];
+        if (! isset($chosen[$type]) && $type !== 'global') {
+            $type = array_key_first(array_filter($chosen)) ?? 'global';
+        }
+        $target = $type === 'global' ? null : $chosen[$type];
+        $layer = ['global' => 'GLOBAL', 'company' => 'COMPANY', 'location' => 'LOCATION', 'category' => 'CATEGORY', 'model' => 'MODEL'][$type];
+        $traced = collect($result['layers'])->firstWhere('key', $layer);
 
-        // 3. Keep the simple tree elements for sidebar directories
-        $tree = [
-            'Locations (Offices)' => Location::orderBy('name')->limit(15)->get()->map(function ($loc) {
-                return ['id' => $loc->id, 'type' => 'LOCATION', 'name' => $loc->name, 'icon' => 'fa-building'];
-            })->toArray(),
-            'Hardware Categories' => Category::where('category_type', 'asset')->orderBy('name')->get()->map(function ($cat) {
-                return ['id' => $cat->id, 'type' => 'CATEGORY', 'name' => $cat->name, 'icon' => 'fa-laptop'];
-            })->toArray(),
-            'Consumable Categories' => Category::where('category_type', 'consumable')->orderBy('name')->get()->map(function ($cat) {
-                return ['id' => $cat->id, 'type' => 'CATEGORY', 'name' => $cat->name, 'icon' => 'fa-tint'];
-            })->toArray(),
+        return [
+            'type' => $type, 'layer' => $layer,
+            'name' => $target?->name ?? __('storeops::studio.whole_country'),
+            'target_type' => ['global' => 'System', 'company' => 'Tenant', 'location' => 'App\Models\Location', 'category' => 'App\Models\Category', 'model' => 'App\Models\AssetModel'][$type],
+            'target_id' => $target?->id ?? 'global',
+            'assignment_id' => $traced['assignment_id'] ?? null,
+            'profile' => $traced['profile'] ?? null,
         ];
+    }
 
-        $publishedProfiles = Profile::where('status', 'PUBLISHED')->orderBy('name')->get();
-
-        return view('storeops::admin.rules.index', compact('tree', 'publishedProfiles', 'counts', 'recentActivity'));
+    private function canPublishRules(): bool
+    {
+        return (bool) auth()->user() && app(\GovStore\TenantScope\Services\GovAccess::class)->decide(auth()->user(), 'storeops.rules.publish')->allowed;
     }
 
     /**
@@ -91,7 +126,8 @@ class ProfileAdminController extends Controller
         $dbTargetType = $targetType === 'CATEGORY' ? 'App\Models\Category' : ($targetType === 'LOCATION' ? 'App\Models\Location' : 'System');
 
         $assignments = ProfileAssignment::with('profile')
-            ->where('target_type', $dbTargetType)
+            // Office layers are stored as 'Location', the key the engine reads.
+            ->whereIn('target_type', $dbTargetType === 'App\Models\Location' ? ['Location', $dbTargetType] : [$dbTargetType])
             ->when($targetId !== 'global', fn ($q) => $q->where('target_id', $targetId))
             ->where(function ($query) {
                 $query->whereNull('effective_to')->orWhere('effective_to', '>', now());
@@ -155,9 +191,11 @@ class ProfileAdminController extends Controller
 
         $now = now();
         $targetId = $data['target_id'] === 'global' ? 1 : (int) $data['target_id'];
+        // The engine looks office layers up as 'Location' (ProfileCompilerService::activeLayers).
+        $storedType = $data['target_type'] === 'App\Models\Location' ? 'Location' : $data['target_type'];
 
         // 1. Soft-expire any currently active assignment for this exact target node
-        ProfileAssignment::where('target_type', $request->target_type)
+        ProfileAssignment::whereIn('target_type', array_unique([$storedType, $data['target_type']]))
             ->where('target_id', $targetId)
             ->whereNull('effective_to')
             ->update(['effective_to' => $now]);
@@ -172,7 +210,7 @@ class ProfileAdminController extends Controller
 
         ProfileAssignment::create([
             'profile_id' => $request->profile_id,
-            'target_type' => $request->target_type,
+            'target_type' => $storedType,
             'target_id' => $targetId,
             'scope_level' => $scopeLevel,
             'scope_id' => in_array($request->target_type, ['Tenant', 'App\Models\Location'], true) ? $targetId : null,
@@ -199,19 +237,107 @@ class ProfileAdminController extends Controller
     /**
      * Renders the Policy Builder Canvas.
      */
-    public function editPolicy($id)
+    public function editPolicy(Request $request, $id, RuleTraceService $trace)
     {
         $policy = Profile::with('capabilities')->findOrFail($id);
 
         $dictionary = CapabilityRegistry::getDictionary();
-        $groupedRules = [];
-        foreach ($dictionary as $code => $dictInfo) {
-            $groupedRules[$dictInfo['group']][$code] = $dictInfo;
-        }
-
         $existingCaps = $policy->capabilities->keyBy('capability_code');
 
-        return view('storeops::admin.rules.edit', compact('policy', 'groupedRules', 'existingCaps'));
+        // Where the policy (or the published version this draft replaces) is attached decides what
+        // reaches it from above. Unattached policies are previewed as a product-category policy,
+        // which is where every policy is attached today.
+        $attachments = $trace->attachments($policy);
+        $anchor = $attachments->first();
+        $anchorKey = $anchor ? $trace->layerOf($anchor) : 'CATEGORY';
+        $officeMatters = in_array($anchorKey, ['CATEGORY', 'MODEL'], true);
+        $office = null;
+        if ($officeMatters) {
+            $officeId = ctype_digit((string) $request->query('office')) ? (int) $request->query('office') : app(\GovStore\TenantScope\Contexts\TenantContext::class)->locationId;
+            $office = $officeId ? Location::find($officeId) : null;
+        }
+        $result = match ($anchorKey) {
+            'GLOBAL' => $trace->trace(null, null, null, null),
+            'COMPANY' => $trace->trace(Company::find($anchor->target_id), null, null, null),
+            'LOCATION' => $trace->trace(null, Location::find($anchor->target_id), null, null),
+            'CATEGORY' => $trace->trace(null, $office, $anchor ? Category::find($anchor->target_id) : null, null),
+            'MODEL' => $trace->trace(null, $office, null, AssetModel::find($anchor->target_id)),
+        };
+        $layers = $result['layers'];
+        $anchorIndex = array_search($anchorKey, array_column($layers, 'key'), true);
+        $above = $trace->fold(array_slice($layers, 0, $anchorIndex));
+        $sources = collect($layers)->mapWithKeys(fn ($l) => [$l['key'] => $l['key'] === 'DEFAULT'
+            ? __('storeops::studio.package_default') : ($l['profile']['name'] ?? $l['target'])]);
+
+        $groupedRules = [];
+        $changes = 0;
+        $warnings = 0;
+        foreach ($dictionary as $code => $dictInfo) {
+            $existing = $existingCaps->get($code);
+            $behavior = $existing ? ($existing->behavior instanceof \BackedEnum ? $existing->behavior->value : $existing->behavior) : 'INHERIT';
+            $from = $above[$code] ?? null;
+            $row = $dictInfo + [
+                'code' => $code,
+                'behavior' => $behavior,
+                'config' => $existing ? (array) ($existing->config_payload ?? []) : [],
+                'above' => $from['behavior'] ?? '',
+                'above_config' => $from['config'] ?? [],
+                'above_label' => $trace->label($code, $from['behavior'] ?? null, $from['config'] ?? []),
+                'above_source' => $from ? $sources[$from['layer']] : null,
+                'on_label' => $trace->label($code, 'ENFORCE'),
+            ];
+            $row += $this->editorOutcome($row, $trace);
+            $changes += $row['differs'] ? 1 : 0;
+            $warnings += $row['tone'] === 'warn' ? 1 : 0;
+            $groupedRules[$dictInfo['group']][$code] = $row;
+        }
+
+        $chain = [];
+        foreach ($layers as $index => $layer) {
+            $chain[] = $layer + ['role' => $index < $anchorIndex ? 'above' : ($index === $anchorIndex ? 'this' : 'after')];
+        }
+
+        return view('storeops::admin.rules.edit', [
+            'policy' => $policy, 'groupedRules' => $groupedRules, 'existingCaps' => $existingCaps,
+            'attachedTo' => $attachments->take(6)->map(fn ($a) => ['layer' => $trace->layerOf($a), 'name' => $trace->targetName($a)]),
+            'attachedCount' => $attachments->count(), 'anchorKey' => $anchorKey, 'chain' => $chain,
+            'officeMatters' => $officeMatters, 'office' => $office, 'changes' => $changes, 'warnings' => $warnings,
+            'locations' => $officeMatters ? Location::query()->orderBy('name')->get(['id', 'name']) : collect(),
+            'editable' => $policy->status === PolicyStatus::DRAFT && $this->canPublishRules(),
+            'canPublish' => $this->canPublishRules(),
+        ]);
+    }
+
+    /**
+     * What the storekeeper gets for one editor row and how to explain it. rules-studio.js repeats
+     * this when a choice changes, so keep the two in step.
+     */
+    private function editorOutcome(array $row, RuleTraceService $trace): array
+    {
+        $above = $row['above'] ?: null;
+        $result = match ($row['behavior']) { 'ENFORCE' => 'ENFORCE', 'DISABLE' => 'DISABLE', default => $above };
+        [$note, $tone] = match (true) {
+            $row['behavior'] === 'INHERIT' && $above !== null => [__('storeops::studio.note_follows', ['source' => $row['above_source']]), 'info'],
+            $row['behavior'] === 'INHERIT' => [__('storeops::studio.note_nobody'), 'info'],
+            $row['behavior'] === $above => [__('storeops::studio.note_repeats'), 'info'],
+            $row['behavior'] === 'DISABLE' && $above === 'ENFORCE' => [__('storeops::studio.note_overrides', ['source' => $row['above_source']]), 'warn'],
+            $row['behavior'] === 'DISABLE' && $above === 'DISABLE' => [__('storeops::studio.note_already_off'), 'info'],
+            $row['behavior'] === 'DISABLE' => [__('storeops::studio.note_off_unset'), 'info'],
+            $above === 'DISABLE' => [__('storeops::studio.note_turns_back_on', ['source' => $row['above_source']]), 'good'],
+            default => [__('storeops::studio.note_adds'), 'good'],
+        };
+
+        return [
+            'result' => $result ?? '',
+            'result_label' => $trace->label($row['code'], $result, match ($row['behavior']) {
+                'ENFORCE' => array_merge($row['above_config'], $row['config']), 'INHERIT' => $row['above_config'], default => [],
+            }),
+            'note' => $note, 'tone' => $tone,
+            // Only a change in what the storekeeper gets counts: on vs not on, or other warranty months.
+            'differs' => ($result === 'ENFORCE') !== ($above === 'ENFORCE')
+                || ($row['behavior'] === 'ENFORCE' && $above === 'ENFORCE' && isset($row['config']['warranty_months'])
+                    && (int) $row['config']['warranty_months'] !== (int) ($row['above_config']['warranty_months'] ?? -1)),
+        ];
     }
 
     /**

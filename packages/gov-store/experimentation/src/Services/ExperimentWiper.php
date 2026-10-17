@@ -213,6 +213,15 @@ class ExperimentWiper
                 $blockers[$table] = 'Unknown dependency: '.$table;
             }
         }
+        // Issued Govt. Tags and standard tags are permanent: a wipe never deletes their evidence.
+        if (! empty($records['gov_asset_registrations']) && Schema::hasColumn('gov_asset_registrations', 'format_version')) {
+            foreach ($rows['gov_asset_registrations'] ?? [] as $row) {
+                if ($row && in_array($row->format_version ?? null, ['fd18-v1', 'native-v1'], true)) {
+                    $blockers['gov_asset_registrations.issued'] = 'gov_asset_registrations: issued asset tags are permanent';
+                    break;
+                }
+            }
+        }
         $counts = array_map('count', $records);
         ksort($counts);
         $hashRecords = $records;
