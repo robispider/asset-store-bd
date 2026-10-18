@@ -11,8 +11,8 @@ class ThemeRepositoryTest extends ThemingTestCase
     {
         $repo = new ThemeRepository(base_path('packages/gov-store/theming/themes'));
         $this->assertSame(['civic-ledger', 'default', 'digital-blue', 'executive-neutral', 'institutional-green', 'lavender'], array_keys($repo->all()));
-        // Civic Ledger ships as a draft: Lab-only until it is reviewed and published.
-        $this->assertSame(['default', 'digital-blue', 'executive-neutral', 'institutional-green', 'lavender'], array_keys($repo->published()));
+        // All six shipped themes are published, including Civic Ledger.
+        $this->assertSame(['civic-ledger', 'default', 'digital-blue', 'executive-neutral', 'institutional-green', 'lavender'], array_keys($repo->published()));
         $this->assertSame([], $repo->loadErrors());
         $this->assertSame('Institutional Green', $repo->find('institutional-green')->label('en-US'));
         $this->assertSame('প্রাতিষ্ঠানিক সবুজ', $repo->find('institutional-green')->label('bn-BD'));
@@ -25,8 +25,8 @@ class ThemeRepositoryTest extends ThemingTestCase
             'extends' => 'institutional-green',
             'variants' => ['table' => 'ledger'],
             'fonts' => ['mono' => 'system-mono'],
-        ], ['seed' => ['$type' => 'color', 'primary' => ['$value' => '#7A1F5C']]], [], "@layer gs-theme { .gs-box { border-width: 2px; } }");
-        file_put_contents($dir.'/institutional-green/overrides.css', "@layer gs-theme { .gs-kpi { gap: 2px; } }");
+        ], ['seed' => ['$type' => 'color', 'primary' => ['$value' => '#7A1F5C']]], [], '@layer gs-theme { .gs-box { border-width: 2px; } }');
+        file_put_contents($dir.'/institutional-green/overrides.css', '@layer gs-theme { .gs-kpi { gap: 2px; } }');
         $repo = new ThemeRepository($dir);
         $child = $repo->find('child');
         $fonts = new FontRegistry(base_path('packages/gov-store/theming/fonts'));

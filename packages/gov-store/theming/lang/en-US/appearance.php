@@ -91,8 +91,21 @@ return [
     'manage_in_appearance' => 'Manage themes in Appearance',
     'unsupported_browser' => 'Your browser is too old to show the National Asset Register colours correctly. Please use Chrome or Edge 123+, Firefox 128+ or Safari 18+.',
 
-
     'status' => [
+        'warning' => 'Warning',
+        'info' => 'Note',
+        'success' => 'On track',
+        'on_pace' => 'On pace',
+        'behind' => 'Behind',
+        'stalled' => 'Stalled',
+        'over_allocation' => 'Over allocation',
+        'complete' => 'Complete',
+        'in_progress' => 'In progress',
+        'waiting' => 'Waiting',
+        'no_target' => 'No target / pace unavailable',
+        'critical' => 'Critical',
+        'serious' => 'Serious',
+
         'draft' => 'Draft',
         'ready' => 'Ready',
         'posted' => 'Posted',

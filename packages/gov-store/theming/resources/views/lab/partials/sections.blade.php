@@ -9,6 +9,7 @@
     $sample = $bengali ? $fixtures->bengaliSample() : $fixtures->englishSample();
     $lines = $fixtures->receiptLines();
     $total = array_sum(array_map(fn ($l) => $l['qty'] * $l['rate'], $lines));
+    $monitoring = $fixtures->monitoring();
 @endphp
 
 {{-- 1 · Colour --}}
@@ -472,4 +473,16 @@
     @else
         <x-gs::table :columns="[['key' => 'level', 'label' => 'Level'], ['key' => 'check', 'label' => 'Check'], ['key' => 'message', 'label' => 'Message']]" :rows="$modeIssues" density="compact" />
     @endif
+</section>
+
+<section class="gs-lab-section" data-lab-section="monitoring" aria-labelledby="{{ $panel }}-monitoring">
+    <h3 class="gs-lab-section__title" id="{{ $panel }}-monitoring">{{ __('gs-theme::kit.monitoring') }}</h3>
+    <x-gs::pace-bar :value="42" :expected="55" :label="__('gs-theme::kit.delivered')" />
+    <x-gs::attention-list :items="$monitoring['attention']" />
+    <x-gs::status-callout status="behind" :verdict="__('gs-theme::kit.attention')" :next="__('gs-theme::kit.next')" forecast="2027-06-30" />
+    <x-gs::tile-map :tiles="$monitoring['tiles']" />
+    <x-gs::price-strip :prices="$monitoring['prices']" />
+    <x-gs::lifecycle :steps="$monitoring['steps']" />
+    <x-gs::scope-why :reasons="[__('gs-theme::kit.scope')]" />
+    <x-gs::level-switch :options="[['label'=>__('gs-theme::kit.level'),'locked'=>true,'reason'=>__('gs-theme::kit.scope')]]" />
 </section>
