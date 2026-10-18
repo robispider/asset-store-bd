@@ -8,6 +8,7 @@ use GovStore\StoreOperations\Models\Profile;
 use GovStore\StoreOperations\Models\ProfileAssignment;
 use GovStore\TenantScope\Models\TenantScopeConfig;
 use GovStore\TenantScope\Models\TenantScopeMapping;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -93,6 +94,20 @@ class NationalChangeReview
 
     private function currentConfiguration(Request $request): array
     {
+        if ($request->routeIs('gov.tracking.funding-types.*')) {
+            $target = $request->route('funding_type') ?? $request->route('fundingType');
+            $id = $target instanceof Model ? $target->getKey() : $target;
+            $query = DB::table('gov_funding_types');
+            if ($id) {
+                $query->where('id', $id);
+            } else {
+                $query->where('primary_type', $request->input('primary_type'));
+            }
+            $rows = $query->orderBy('id')->get()->map(fn ($row) => (array) $row)->all();
+
+            return ['funding_types' => $rows, 'linked_codes' => $id
+                ? DB::table('gov_tracking_codes')->where('funding_type_id', $id)->count() : 0];
+        }
         if ($request->routeIs('gov.membership.override')) {
             $id = $request->input('user_id');
 

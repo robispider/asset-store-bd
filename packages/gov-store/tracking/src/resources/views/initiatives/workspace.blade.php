@@ -2,6 +2,11 @@
 @section('title', __('govtracking::general.ui.extra_workspace') . $initiative->title)
 
 @section('content')
+@include('govtracking::monitor.tabs')
+@php
+    $canEdit=app(\GovStore\Tracking\Services\TrackingAuthorizationService::class)->allows($initiative,['HEAD','OFFICER']);
+    $canHead=app(\GovStore\Tracking\Services\TrackingAuthorizationService::class)->allows($initiative,['HEAD']);
+@endphp
 <!-- Header Banner -->
 <div class="row">
     <div class="col-md-12">
@@ -46,7 +51,7 @@
                         <h4 class="description-header gs-ws-stat-value">
                             {{ $health['percentage'] }}%
                             <small class="text-muted gs-ws-stat-sub">
-                                {{ number_format($health['received']) }} / {{ number_format($health['planned']) }} {{ __('govtracking::general.ui.extra_items') }}
+                                {{ __('govtracking::general.monitor.delivered') }}
                             </small>
                         </h4>
                     </div>
@@ -64,23 +69,24 @@
                 <i class="fa fa-bolt text-yellow"></i> {{ __('govtracking::general.ui.quick_actions') }}
             </span>
             <div class="btn-group-horizontal">
-                <a href="{{ route('gov.tracking.initiatives.tracking-codes.create', $initiative->id) }}" class="btn btn-default btn-flat">
+                @if($canEdit)<a href="{{ route('gov.tracking.initiatives.tracking-codes.create', $initiative->id) }}" class="btn btn-default btn-flat">
                     <i class="fa fa-plus text-green"></i> {{ __('govtracking::general.ui.new_tracking_code_task') }}
-                </a>
+                </a>@endif
                 <a href="{{ route('gov.tracking.initiatives.report', $initiative->id) }}" class="btn btn-default btn-flat">
                     <i class="fa fa-bar-chart text-purple"></i> {{ __('govtracking::general.ui.full_progress_report') }}
                 </a>
-                <a href="{{ route('gov.tracking.initiatives.operation-unit.index', $initiative->id) }}" class="btn btn-default btn-flat">
+                @if($canHead)<a href="{{ route('gov.tracking.initiatives.operation-unit.index', $initiative->id) }}" class="btn btn-default btn-flat">
                     <i class="fa fa-users text-blue"></i> {{ __('govtracking::general.ui.manage_operation_team') }}
-                </a>
-                <a href="{{ route('gov.tracking.initiatives.edit', $initiative->id) }}" class="btn btn-default btn-flat">
+                </a>@endif
+                @if($canHead)<a href="{{ route('gov.tracking.initiatives.edit', $initiative->id) }}" class="btn btn-default btn-flat">
                     <i class="fa fa-cog text-gray"></i> {{ __('govtracking::general.ui.edit_general_properties') }}
-                </a>
+                </a>@endif
             </div>
         </div>
     </div>
 </div>
 
+@if(app(\GovStore\Tracking\Services\TrackingAuthorizationService::class)->allows($initiative,['HEAD','OFFICER','SUPPORT']))<p><a href="{{ route('gov.tracking.initiatives.retrospective.index',$initiative->id) }}">{{ __('govtracking::general.monitor.retrospective') }}</a></p>@endif
 <!-- Main Workspace Layout -->
 <div class="row">
     <!-- Left Column: Tasks and Analytics Snapshots -->
@@ -97,9 +103,9 @@
                         <i class="fa fa-info-circle style-span" style="font-size: 36px; margin-bottom: 15px;"></i>
                         <h4>{{ __('govtracking::general.ui.no_operational_tasks_defined_under_this_umbrella') }}</h4>
                         <p>{{ __('govtracking::general.ui.create_a_tracking_code_to_begin_registering_physical_receipts_and_monitoring_delivery_goals') }}</p>
-                        <a href="{{ route('gov.tracking.initiatives.tracking-codes.create', $initiative->id) }}" class="btn btn-success btn-sm" style="margin-top: 10px;">
+                        @if($canEdit)<a href="{{ route('gov.tracking.initiatives.tracking-codes.create', $initiative->id) }}" class="btn btn-success btn-sm" style="margin-top: 10px;">
                             <i class="fa fa-plus"></i> {{ __('govtracking::general.ui.add_first_tracking_code') }}
-                        </a>
+                        </a>@endif
                     </div>
                 @else
                     <ul class="products-list product-list-in-box">
@@ -109,7 +115,7 @@
                                     <!-- Code Identifier -->
                                     <div class="gs-ws-task-identifier">
                                         <span class="gs-ws-task-code">
-                                            {{ __('govtracking::general.ui.extra_code') }} {{ $code->tracking_code }} <span class="gs-ws-task-sep">|</span> {{ $code->task_title }}
+                                            {{ __('govtracking::general.ui.extra_code') }} <a href="{{ route('gov.tracking.initiatives.tracking-codes.show',[$initiative->id,$code->id]) }}">{{ $code->tracking_code }}</a> <span class="gs-ws-task-sep">|</span> {{ $code->task_title }}
                                         </span>
                                         <div>
                                             <span class="label bg-{{ $code->status == 'ACTIVE' ? 'green' : ($code->status == 'DRAFT' ? 'yellow' : 'gray') }}" style="font-size: 11px;">
@@ -244,15 +250,15 @@
                                             @endif
                                         </div>
                                         <div>
-                                            @if($code->status === 'DRAFT')
+                                            @if($code->status === 'DRAFT' && $canEdit)
                                                 <a href="{{ route('gov.tracking.initiatives.tracking-codes.edit', [$initiative->id, $code->id]) }}" class="btn btn-xs btn-warning" style="margin-right: 5px;"><i class="fa fa-pencil"></i> {{ __('govtracking::general.ui.edit_properties') }}</a>
 
-                                                <form action="{{ route('gov.tracking.initiatives.tracking-codes.activate', [$initiative->id, $code->id]) }}" method="POST" style="display:inline-block; margin-right: 5px;">
+                                                @if($canHead)<form action="{{ route('gov.tracking.initiatives.tracking-codes.activate', [$initiative->id, $code->id]) }}" method="POST" style="display:inline-block; margin-right: 5px;">
                                                     @csrf
                                                     <button type="submit" class="btn btn-xs btn-success" data-tracking-confirm="{{ __('govtracking::general.ui.confirm_activate') }}">
                                                         <i class="fa fa-play"></i> {{ __('govtracking::general.ui.activate_lock') }}
                                                     </button>
-                                                </form>
+                                                </form>@endif
 
                                                 <form action="{{ route('gov.tracking.initiatives.tracking-codes.destroy', [$initiative->id, $code->id]) }}" method="POST" style="display:inline-block;">
                                                     @csrf @method('DELETE')
@@ -260,7 +266,7 @@
                                                         <i class="fa fa-trash"></i> {{ __('govtracking::general.ui.delete') }}
                                                     </button>
                                                 </form>
-                                            @elseif($code->status === 'ACTIVE')
+                                            @elseif($code->status === 'ACTIVE' && $canHead)
                                                 <form action="{{ route('gov.tracking.initiatives.tracking-codes.archive', [$initiative->id, $code->id]) }}" method="POST" style="display:inline-block;">
                                                     @csrf
                                                     <button type="submit" class="btn btn-xs btn-default" data-tracking-confirm="{{ __('govtracking::general.ui.confirm_archive') }}">
@@ -297,7 +303,7 @@
                             </li>
                             <li>
                                 <span class="text-muted">{{ __('govtracking::general.ui.procurement_value') }}</span>
-                                <strong>{{ number_format($snapshot['total_cost'], 2) }} BDT</strong>
+                                <strong>{{ \GovStore\Tracking\Services\TrackingMonitorMetrics::money($snapshot['total_cost']) }}</strong>
                             </li>
                             <li>
                                 <span class="text-muted">{{ __('govtracking::general.ui.shipments_grns') }}</span>
@@ -373,9 +379,9 @@
                             <li><i class="fa fa-times-circle"></i> {{ __('govtracking::general.ui.assign_at_least_one_operation_officer') }}</li>
                         @endif
                     </ul>
-                    <a href="{{ route('gov.tracking.initiatives.operation-unit.index', $initiative->id) }}" class="btn btn-default btn-block btn-sm gs-ws-readiness-cta">
+                    @if($canHead)<a href="{{ route('gov.tracking.initiatives.operation-unit.index', $initiative->id) }}" class="btn btn-default btn-block btn-sm gs-ws-readiness-cta">
                         {{ __('govtracking::general.ui.configure_operation_team') }}
-                    </a>
+                    </a>@endif
                 </div>
             </div>
         @else
@@ -383,7 +389,7 @@
             <div class="box box-solid gs-ws-gov-box">
                 <div class="box-header with-border gs-ws-gov-head">
                     <h3 class="box-title gs-ws-gov-title"><i class="fa fa-shield"></i> {{ __('govtracking::general.ui.governance_rules') }}</h3>
-                    <a href="{{ route('gov.tracking.initiatives.operation-unit.index', $initiative->id) }}" class="pull-right text-muted" title="{{ __('govtracking::general.ui.extra_manage_team') }}"><i class="fa fa-users"></i></a>
+                    @if($canHead)<a href="{{ route('gov.tracking.initiatives.operation-unit.index', $initiative->id) }}" class="pull-right text-muted" title="{{ __('govtracking::general.ui.extra_manage_team') }}"><i class="fa fa-users"></i></a>@endif
                 </div>
                 <div class="box-body gs-ws-gov-body">
                     <ul class="list-unstyled gs-ws-gov-list">

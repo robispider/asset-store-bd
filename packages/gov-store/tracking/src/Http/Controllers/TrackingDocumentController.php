@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use GovStore\Tracking\Models\Initiative;
 use GovStore\Tracking\Models\TrackingCode;
 use GovStore\Tracking\Models\TrackingDocument;
+use GovStore\Tracking\Models\TrackingTimeline;
 use GovStore\Tracking\Services\TrackingAuthorizationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -41,11 +42,17 @@ class TrackingDocumentController extends Controller
                     'file_name' => basename($file->getClientOriginalName()), 'file_path' => $path,
                     'file_size' => $file->getSize(), 'mime_type' => $file->getMimeType(), 'uploaded_by' => auth()->id(),
                 ]);
+                TrackingTimeline::create([
+                    'initiative_id' => $initiative->id, 'event_type' => 'DOCUMENT_ADDED', 'description' => basename($file->getClientOriginalName()),
+                    'actor_id' => auth()->id(), 'metadata' => ['tracking_code' => $task->tracking_code, 'tracking_code_id' => $task->id],
+                    'occurred_at' => now(),
+                ]);
             });
         } catch (\Throwable $e) {
             Storage::disk('local')->delete($path);
             throw $e;
         }
+
         return redirect()->route('gov.tracking.initiatives.tracking-codes.edit', [$initiative, $trackingCode])
             ->with('success', __('govtracking::general.document_uploaded'));
     }
@@ -55,6 +62,7 @@ class TrackingDocumentController extends Controller
         $this->authorizeDocument($initiative, $trackingCode, $document);
         abort_unless(str_starts_with($document->file_path, 'tracking-documents/'.$trackingCode->id.'/')
             && ! str_contains($document->file_path, '..') && Storage::disk('local')->exists($document->file_path), 404);
+
         return Storage::disk('local')->download($document->file_path, $document->file_name);
     }
 
@@ -71,6 +79,7 @@ class TrackingDocumentController extends Controller
             $document->delete();
             DB::afterCommit(fn () => Storage::disk('local')->delete($path));
         });
+
         return redirect()->route('gov.tracking.initiatives.tracking-codes.edit', [$initiative, $trackingCode])
             ->with('success', __('govtracking::general.document_deleted'));
     }

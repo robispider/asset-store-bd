@@ -182,7 +182,8 @@ class PostingPipelineManager
                             $voucherNo,        // Argument #10: (string)
                             $associatables,    // Argument #11: (array)
                             null,              // Argument #12: (string|null)
-                            (string) $movement->id // Durable delivery identity, distinct for each receipt line
+                            (string) $movement->id, // Durable delivery identity, distinct for each receipt line
+                            (string) $item->id
                         ));
                     }
                 }

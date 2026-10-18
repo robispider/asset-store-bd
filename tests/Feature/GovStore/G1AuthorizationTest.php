@@ -110,7 +110,7 @@ class G1AuthorizationTest extends TestCase
     {
         $count = 0;
         foreach (Route::getRoutes() as $route) {
-            if (! preg_match('#^(gov-store/admin/onboard(?:/|$)|gov-store/my-memberships(?:/|$)|gov-store/admin/memberships(?:/|$)|gov-store/office/staff(?:/|$)|gov-store/operations(?:/|$)|gov-store/admin/scope(?:/|$)|gov-store/admin/organization(?:/|$)|gov-store/office(?:/?$|/save$|/company-admins(?:/|$))|directory(?:/|$)|gov-store/committees(?:/|$)|gov-store/access(?:/|$)|gov-requests(?:/|$)|admin/catalog(?:/|$))#', $route->uri())) {
+            if (! preg_match('#^(gov-store/admin/tracking(?:/|$)|gov-store/api/tracking(?:/|$)|gov-store/admin/onboard(?:/|$)|gov-store/my-memberships(?:/|$)|gov-store/admin/memberships(?:/|$)|gov-store/office/staff(?:/|$)|gov-store/operations(?:/|$)|gov-store/admin/scope(?:/|$)|gov-store/admin/organization(?:/|$)|gov-store/office(?:/?$|/save$|/company-admins(?:/|$))|directory(?:/|$)|gov-store/committees(?:/|$)|gov-store/access(?:/|$)|gov-requests(?:/|$)|admin/catalog(?:/|$))#', $route->uri())) {
                 continue;
             }
             $abilities = array_values(array_filter($route->gatherMiddleware(), fn ($m) => str_starts_with($m, 'gov.can:')));
@@ -297,7 +297,9 @@ class G1AuthorizationTest extends TestCase
             base_path('packages/gov-store/classification/src/resources/views/manager/import.blade.php'),
         ]);
         foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(base_path('packages/gov-store/store-operations/src/resources/views'))) as $template) {
-            if ($template->isFile() && str_ends_with($template->getFilename(), '.blade.php')) $templates[] = $template->getPathname();
+            if ($template->isFile() && str_ends_with($template->getFilename(), '.blade.php')) {
+                $templates[] = $template->getPathname();
+            }
         }
         $templates = array_unique($templates);
         foreach ($templates as $file) {

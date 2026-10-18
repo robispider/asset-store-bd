@@ -34,7 +34,9 @@
 <!-- Global Quick Actions Toolbar -->
 <div class="row margin-bottom-15">
     <div class="col-md-12">
+        @if(app(\GovStore\Tracking\Services\TrackingAuthorizationService::class)->canCreate())
         <a href="{{ route('gov.tracking.initiatives.create') }}" class="btn btn-primary"><i class="fa fa-plus"></i> {{ __('govtracking::general.ui.launch_new_initiative') }}</a>
+        @endif
     </div>
 </div>
 
@@ -67,7 +69,7 @@
                     </div>
                     <div class="initiative-card-footer">
                         <a href="{{ route('gov.tracking.initiatives.show', $init->id) }}" class="btn btn-success btn-sm">{{ __('govtracking::general.ui.open_workspace') }}</a>
-                        <a href="{{ route('gov.tracking.initiatives.edit', $init->id) }}" class="btn btn-default btn-sm"><i class="fa fa-cog"></i> {{ __('govtracking::general.ui.properties') }}</a>
+                        @if(app(\GovStore\Tracking\Services\TrackingAuthorizationService::class)->allows($init,['HEAD']))<a href="{{ route('gov.tracking.initiatives.edit', $init->id) }}" class="btn btn-default btn-sm"><i class="fa fa-cog"></i> {{ __('govtracking::general.ui.properties') }}</a>@endif
                     </div>
                 </div>
             </div>
@@ -111,7 +113,7 @@
                     </div>
                     <div class="initiative-card-footer">
                         <a href="{{ route('gov.tracking.initiatives.show', $init->id) }}" class="btn btn-warning btn-sm">{{ __('govtracking::general.ui.continue_setup') }}</a>
-                        <a href="{{ route('gov.tracking.initiatives.edit', $init->id) }}" class="btn btn-default btn-sm"><i class="fa fa-cog"></i></a>
+                        @if(app(\GovStore\Tracking\Services\TrackingAuthorizationService::class)->allows($init,['HEAD']))<a href="{{ route('gov.tracking.initiatives.edit', $init->id) }}" class="btn btn-default btn-sm"><i class="fa fa-cog"></i></a>@endif
                     </div>
                 </div>
             </div>
