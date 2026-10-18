@@ -6,6 +6,8 @@ return [
         'initiative_status' => ['Planning' => 'Planning', 'Active' => 'Active', 'Closed' => 'Closed', 'Archived' => 'Archived'],
 
         'receipt_count' => ':count goods receipts',
+        'product_count' => '{1} :count product|[0,*] :count products',
+        'receipt_count_short' => '{1} :count receipt|[0,*] :count receipts',
         'trend' => 'Receipt activity',
         'who_receives' => 'Who can receive',
         'geography_anywhere' => 'Anywhere in the country',

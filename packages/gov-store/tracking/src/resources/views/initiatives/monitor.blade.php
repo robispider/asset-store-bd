@@ -11,6 +11,9 @@
     if($monitor['value_complete']) foreach(collect($monitor['receipts'])->filter(fn($r)=>$r['date'])->groupBy(fn($r)=>substr($r['date'],0,7))->sortKeys() as $group) { $runningValue+=$group->sum('value'); $valueSpark[]=$runningValue; }
     $head=$monitor['contacts']->firstWhere('designation','HEAD');
     $contact=$head ? trim($head->first_name.' '.$head->last_name) : __('govtracking::general.monitor.operation_head');
+    $codePrefix=null;
+    if(preg_match('/^(.+-)[^-]+-[^-]+$/',$monitor['codes'][0]['code'] ?? '',$parts)
+        && collect($monitor['codes'])->every(fn($c)=>str_starts_with($c['code'],$parts[1]))) $codePrefix=$parts[1];
 @endphp
 <div class="gs-tracking-monitor">
     <x-gs::page-header :title="$initiative->title" :subtitle="$initiative->purpose" />
@@ -41,9 +44,9 @@
     <section class="gs-tracking-panel"><h2>{{ __('govtracking::general.monitor.codes') }}</h2>
         <x-gs::table data-monitor-sortable><thead><tr>@foreach(['code','plan','status','delivered','received','value','offices','last_receipt','trend'] as $heading)<th><button type="button" data-monitor-sort="{{ $loop->index }}">{{ __('govtracking::general.monitor.'.$heading) }} ↕</button></th>@endforeach</tr></thead><tbody>
         @forelse($monitor['codes'] as $c)<tr>
-            <td><a class="gs-tracking-code" href="{{ route('gov.tracking.initiatives.tracking-codes.show',[$initiative->id,$c['id']]) }}">{{ $c['code'] }}</a><strong class="gs-tracking-block">{{ $c['title'] }}</strong><small>{{ collect($c['targets'])->pluck('name')->implode(' · ') }}</small></td>
+            <td data-sort="{{ $c['code'] }}"><a class="gs-tracking-code" aria-label="{{ $c['code'] }}" title="{{ $c['code'] }}" href="{{ route('gov.tracking.initiatives.tracking-codes.show',[$initiative->id,$c['id']]) }}">@if($codePrefix)<x-gs::code-segments size="sm" :segments="[['value'=>$codePrefix,'tone'=>'muted'],['value'=>substr($c['code'],strlen($codePrefix)),'tone'=>'primary']]" />@else{{ $c['code'] }}@endif</a><strong class="gs-tracking-block">{{ $c['title'] }}</strong><small>{{ trans_choice('govtracking::general.monitor.product_count',count($c['targets'])) }}</small></td>
             <td>{{ __('govtracking::general.monitor.plans.'.$c['plan']) }}</td><td><x-gs::status-badge :status="$c['health']" :title="__('govtracking::general.monitor.rule.'.$c['health'])" /></td>
-            <td data-sort="{{ $c['delivered'] ?? -1 }}"><x-gs::pace-bar :value="$c['status']==='ACTIVE' && $c['delivered']!==null ? $c['delivered']*100 : null" :expected="$c['status']==='ACTIVE' && $c['expected']!==null ? $c['expected']*100 : null" /></td>
+            <td data-sort="{{ $c['delivered'] ?? -1 }}"><x-gs::pace-bar compact :value="$c['status']==='ACTIVE' && $c['delivered']!==null ? $c['delivered']*100 : null" :expected="$c['status']==='ACTIVE' && $c['expected']!==null ? $c['expected']*100 : null" /></td>
             <td>@foreach($c['targets'] as $t)<div>{{ number_format($t['received']) }} / {{ $t['planned']>0 ? number_format($t['planned']) : '—' }} <small>{{ $t['name'] }}</small></div>@endforeach</td>
             <td data-sort="{{ $c['value'] ?? -1 }}">{{ $c['status']==='DRAFT' ? '—' : \GovStore\Tracking\Services\TrackingMonitorMetrics::money($c['value']) }}</td>
             <td>{{ count(app(\GovStore\Tracking\Services\TrackingMonitorService::class)->codeOfficeIds($c)) }}</td><td>{{ $c['last'] ? \Carbon\CarbonImmutable::parse($c['last'])->toDateString() : '—' }}@if($c['last'])<small class="gs-tracking-block">{{ \Carbon\CarbonImmutable::parse($c['last'])->diffForHumans() }}</small>@endif</td><td>@include('govtracking::monitor.spark',['code'=>$c])</td>

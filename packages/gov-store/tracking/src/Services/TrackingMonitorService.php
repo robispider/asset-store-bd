@@ -49,7 +49,7 @@ final class TrackingMonitorService
                 $r['code'] = $code->tracking_code;
                 $r['programme'] = $initiative->title;
                 $r['office'] = $locations->get($r['location_id'])->name ?? __('govtracking::general.monitor.unavailable');
-                $r['item'] = $categories->get($r['category_id'])->name ?? __('govtracking::general.monitor.unavailable');
+                $r['item'] = $this->categoryName($categories->get($r['category_id'])->name ?? __('govtracking::general.monitor.unavailable'));
                 $r['supplier'] = $suppliers->get($r['supplier_id']);
                 $r['manufacturer'] = $manufacturers->get($r['manufacturer_id']);
 
@@ -69,7 +69,7 @@ final class TrackingMonitorService
                 }
                 $line = $this->metrics->line((float) $target->planned_qty, (float) $qty->sum('quantity'), $cells);
                 $line += ['id' => $target->id, 'category_id' => $target->category_id,
-                    'name' => $categories->get($target->category_id)->name ?? __('govtracking::general.monitor.unavailable'),
+                    'name' => $this->categoryName($categories->get($target->category_id)->name ?? __('govtracking::general.monitor.unavailable')),
                     'type' => $categories->get($target->category_id)->category_type ?? '',
                     'economic_code' => $target->economic_code, 'cells' => $cells,
                     'prices' => $this->metrics->prices(array_values(array_filter($rows, fn ($r) => $r['category_id'] == $target->category_id)))];
@@ -93,7 +93,7 @@ final class TrackingMonitorService
                 'geography_label' => $geographyLabel, 'participants_label' => $participantsLabel,
             ] + $this->financials($rows);
         }
-        $result = array_values(array_filter($result, function ($c) use ($filters, $locations) {
+        $result = array_values(array_filter($result, function ($c) use ($filters, $locations, $categories) {
             if (($filters['status'] ?? 'all') !== 'all' && $c['status'] !== $filters['status']) {
                 return false;
             }
@@ -102,7 +102,8 @@ final class TrackingMonitorService
             }
             $q = mb_strtolower(trim($filters['q'] ?? ''));
             $officeIds = $this->codeOfficeIds($c);
-            $haystack = $c['code'].' '.$c['title'].' '.implode(' ', array_column($c['targets'], 'name')).' '
+            // Search both stored languages even though the display uses only the current locale.
+            $haystack = $c['code'].' '.$c['title'].' '.$categories->only(array_column($c['targets'], 'category_id'))->pluck('name')->implode(' ').' '
                 .$locations->only($officeIds)->map(fn ($o) => $o->name.' '.($o->name_bn ?? ''))->implode(' ');
 
             return $q === '' || str_contains(mb_strtolower($haystack), $q);
@@ -147,6 +148,17 @@ final class TrackingMonitorService
             'waiting_offices' => count(array_filter($offices, fn ($o) => $o['allocated'] > 0 && $o['done'] == 0)),
             'location_meta' => $locations->map(fn ($o) => ['id' => (int) $o->id, 'name' => $o->name, 'name_bn' => $o->name_bn ?? '', 'company_id' => (int) $o->company_id, 'profile' => $profiles->get($o->id)])->all(),
             'receipts' => $allRows, 'items' => $this->items($result), 'activity' => $this->activity($initiative, $result)] + $this->financials($allRows);
+    }
+
+    private function categoryName(string $name): string
+    {
+        // Legacy catalog labels use "English / বাংলা". Keep ordinary slashes in names intact.
+        $parts = preg_split('/\s+\/\s+(?=[\x{0980}-\x{09FF}])/u', $name, 2);
+        if (count($parts) !== 2) {
+            return $name;
+        }
+
+        return trim($parts[str_starts_with(app()->getLocale(), 'bn') ? 1 : 0]) ?: $name;
     }
 
     public function codeOfficeIds(array $code): array

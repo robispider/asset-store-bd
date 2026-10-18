@@ -218,7 +218,10 @@ $(function () {
         form.on('input change', 'input, select, textarea', changed);
         form.on('change', 'input[name$="[reference_date]"], select[name="purchase_type"]', () => { headerChanged = true; });
         $('#gridBody').on('change', '[data-storeops-refresh] input, [data-storeops-refresh] select', function () {
-            $(this).closest('tr.meta-row').prev('.item-row').data('panelChanged', true);
+            // A refresh requested before this edit would render over it; the next save refreshes the panel instead.
+            const row = $(this).closest('tr.meta-row').prev('.item-row');
+            row.data('metadataRequest')?.abort();
+            row.data('panelChanged', true);
         }).on('click', '[data-storeops-focus]', function () {
             // Fix buttons: move focus to the existing field that resolves the flag.
             form.find(`[name="${$(this).data('storeops-focus')}"]`).trigger('focus');

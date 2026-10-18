@@ -16,6 +16,19 @@ class MonitoringKitComponentsTest extends ThemingTestCase
         $this->assertStringNotContainsString('role="progressbar"', $unknown);
     }
 
+    public function test_compact_pace_keeps_the_full_explanation_and_default_caption_in_both_languages(): void
+    {
+        foreach (['en-US', 'bn-BD'] as $locale) {
+            app()->setLocale($locale);
+            $full = __('gs-theme::kit.expected').' 5.2% · '.__('gs-theme::kit.points', ['points' => '-2.9']);
+            $compact = Blade::render('<x-gs::pace-bar compact :value="2.3" :expected="5.2" />');
+            $this->assertStringContainsString('title="'.$full.'"', $compact);
+            $this->assertStringContainsString('aria-label="'.$full.'"', $compact);
+            $this->assertStringContainsString('5.2% · -2.9 pp</small>', $compact);
+            $this->assertStringContainsString($full.'</small>', Blade::render('<x-gs::pace-bar :value="2.3" :expected="5.2" />'));
+        }
+    }
+
     public function test_all_monitoring_patterns_compile_and_retain_non_colour_status_and_table_alternatives(): void
     {
         $f = (new LabFixtures)->monitoring();

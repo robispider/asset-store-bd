@@ -6,6 +6,7 @@ return [
     'delivered' => 'Delivered',
     'expected' => 'Expected',
     'points' => ':points percentage points from pace',
+    'points_short' => ':points pp',
     'open' => 'Open',
     'no_attention' => 'Nothing needs attention.',
     'next' => 'Next step',

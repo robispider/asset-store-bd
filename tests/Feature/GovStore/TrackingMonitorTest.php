@@ -405,4 +405,59 @@ class TrackingMonitorTest extends TrackingWorkflowTest
         $this->assertStringContainsString(__('govtracking::general.monitor.incomplete_receipts'), $html);
         $this->assertStringNotContainsString('<x-gs::', $html);
     }
+
+    public function test_monitor_localizes_legacy_category_labels_but_searches_both_languages(): void
+    {
+        $this->viewer();
+        [$initiative, $code] = $this->programmeFixture();
+        $this->receipt($code);
+        $service = app(TrackingMonitorService::class);
+        foreach (['Desktop Computers / ডেস্কটপ কম্পিউটার' => ['Desktop Computers', 'ডেস্কটপ কম্পিউটার'],
+            'Audio / Video' => ['Audio / Video', 'Audio / Video'],
+            'শুধু বাংলা' => ['শুধু বাংলা', 'শুধু বাংলা']] as $stored => $names) {
+            DB::table('categories')->where('id', 1)->update(['name' => $stored]);
+            foreach (['en-US', 'bn-BD'] as $index => $locale) {
+                app()->setLocale($locale);
+                $monitor = $service->programme($initiative, ['q' => $names[1-$index]]);
+                $this->assertCount(1, $monitor['codes']);
+                $this->assertSame($names[$index], $monitor['codes'][0]['targets'][0]['name']);
+                $this->assertSame($names[$index], $monitor['receipts'][0]['item']);
+                $this->assertSame($names[$index], $monitor['items'][0]['name']);
+            }
+        }
+    }
+
+    public function test_monitor_table_has_product_counts_segmented_codes_and_single_month_activity(): void
+    {
+        $this->viewer();
+        [$initiative, $code] = $this->programmeFixture();
+        $code->update(['tracking_code' => 'EXP-shared-ADP-6']);
+        $this->receipt($code);
+        $other = $code->replicate();
+        $other->tracking_code = 'EXP-shared-ADP-12';
+        $other->save();
+        $monitor = app(TrackingMonitorService::class)->programme($initiative);
+        $html = view('govtracking::initiatives.monitor', compact('initiative', 'monitor'))->render();
+        $dom = new \DOMDocument;
+        @$dom->loadHTML('<?xml encoding="utf-8" ?>'.$html);
+        $xpath = new \DOMXPath($dom);
+        $rows = $xpath->query('//table[.//button[@data-monitor-sort]]/tbody/tr');
+        $this->assertCount(2, $rows);
+        foreach ($rows as $row) {
+            $cell = $xpath->query('./td[1]', $row)->item(0);
+            $this->assertStringNotContainsString('Equipment', $cell->textContent);
+            $this->assertSame(1, $xpath->query('.//span[@data-tone="muted"]', $cell)->length);
+        }
+        $this->assertStringContainsString(trans_choice('govtracking::general.monitor.product_count', 1), $rows->item(0)->textContent);
+        $this->assertStringContainsString('data-sort="EXP-shared-ADP-6"', $html);
+        $spark = view('govtracking::monitor.spark', ['code' => $monitor['codes'][0]])->render();
+        $this->assertStringContainsString('<circle cx="50"', $spark);
+        $this->assertStringContainsString(trans_choice('govtracking::general.monitor.receipt_count_short', 1).' · 2026-10', $spark);
+        $this->assertStringNotContainsString('<polyline', $spark);
+        $multiple = $monitor['codes'][0];
+        $multiple['receipts'][] = array_replace($multiple['receipts'][0], ['date' => '2026-11-01', 'grn' => 'NEXT-MONTH']);
+        $this->assertStringContainsString('<polyline', view('govtracking::monitor.spark', ['code' => $multiple])->render());
+        $multiple['unknown_count'] = 1;
+        $this->assertStringNotContainsString('<svg', view('govtracking::monitor.spark', ['code' => $multiple])->render());
+    }
 }

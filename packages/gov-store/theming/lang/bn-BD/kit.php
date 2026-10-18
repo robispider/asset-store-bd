@@ -6,6 +6,7 @@ return [
     'delivered' => 'সরবরাহকৃত',
     'expected' => 'প্রত্যাশিত',
     'points' => 'অগ্রগতি থেকে :points শতাংশ পয়েন্ট',
+    'points_short' => ':points pp',
     'open' => 'খুলুন',
     'no_attention' => 'মনোযোগ দেওয়ার মতো কিছু নেই।',
     'next' => 'পরবর্তী পদক্ষেপ',

@@ -527,7 +527,8 @@
 .gs-tracking-meta { color:var(--gs-color-text-muted); font-size:13px; }
 .gs-tracking-title-row { justify-content:space-between; align-items:flex-start; }
 .gs-tracking-actions form { margin:0; }
-.gs-tracking-code { font-family:var(--gs-font-mono); font-weight:600; }
+.gs-tracking-code { font-family:var(--gs-font-mono); font-weight:600; white-space:nowrap; }
+.gs-tracking-code .gs-segs { flex-wrap:nowrap; }
 .gs-tracking-block { display:block; }
 .gs-tracking-muted { color:var(--gs-color-text-muted); }
 .gs-tracking-notice { padding:12px 16px; border-left:3px solid var(--gs-color-warning); background:var(--gs-color-warning-subtle); color:var(--gs-color-text); }
@@ -571,6 +572,7 @@
 
 .gs-tracking-spark svg { display:block; width:90px; height:32px; }
 .gs-tracking-spark polyline { fill:none; stroke:var(--gs-color-primary); stroke-width:2; }
+.gs-tracking-spark circle { fill:var(--gs-color-primary); }
 .gs-tracking-spark summary { cursor:pointer; }
 
 .gs-tracking-chart__area { fill:color-mix(in oklab,var(--gs-color-primary) 13%,transparent); stroke:none; }

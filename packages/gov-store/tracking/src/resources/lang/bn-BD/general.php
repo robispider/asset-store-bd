@@ -6,6 +6,8 @@ return [
         'initiative_status' => ['Planning' => 'পরিকল্পনাধীন', 'Active' => 'সক্রিয়', 'Closed' => 'বন্ধ', 'Archived' => 'আর্কাইভকৃত'],
 
         'receipt_count' => ':count টি পণ্য প্রাপ্তি নথি',
+        'product_count' => ':countটি পণ্য',
+        'receipt_count_short' => ':countটি নথি',
         'trend' => 'প্রাপ্তির কার্যক্রম',
         'who_receives' => 'কারা গ্রহণ করতে পারবেন',
         'geography_anywhere' => 'দেশের যেকোনো এলাকা',
