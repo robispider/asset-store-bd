@@ -586,3 +586,28 @@
 
 .gs-tracking-monitor .gs-price-strip details { overflow:auto; max-width:100%; }
 .gs-tracking-spark table { min-width:0; }
+
+/* Summary rows stay compact; product count only changes the expanded grid. */
+.gs-tracking-monitor .gs-tracking-codes { min-width:1050px; }
+.gs-tracking-codes th { white-space:normal; }
+.gs-tracking-codes > tbody > [data-monitor-code] > td { padding:10px; vertical-align:middle; }
+.gs-tracking-codes__toggle { width:44px; }
+.gs-tracking-codes__identity { min-width:220px; }
+.gs-tracking-codes .gs-tracking-code { font-size:12px; }
+.gs-tracking-codes__title { display:block; max-width:250px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:13px; }
+.gs-tracking-codes .gs-num { text-align:right; white-space:nowrap; }
+.gs-tracking-codes .gs-pace small { white-space:nowrap; }
+.gs-tracking-codes .gs-tracking-spark svg { width:56px; height:20px; }
+.gs-tracking-codes .gs-tracking-spark summary > span { font-size:11px; white-space:nowrap; }
+.gs-tracking-expand { display:inline-grid; place-items:center; width:32px; height:32px; padding:0; border:1px solid var(--gs-color-border-strong); border-radius:var(--gs-radius-sm); background:var(--gs-color-surface); color:var(--gs-color-text); font:18px/1 var(--gs-font-mono); cursor:pointer; }
+.gs-tracking-expand:hover,.gs-tracking-expand[aria-expanded="true"] { border-color:var(--gs-color-primary); background:var(--gs-color-primary-subtle); color:var(--gs-color-primary); }
+.gs-tracking-expand:focus-visible { outline:2px solid var(--gs-color-focus-ring); outline-offset:3px; }
+.gs-tracking-expand[hidden],.gs-tracking-code-detail[hidden] { display:none; }
+.gs-tracking-code-detail > td { padding:16px 20px; background:var(--gs-color-surface-sunken); }
+.gs-tracking-product-detail__heading { display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px 20px; margin-bottom:12px; font-size:12px; color:var(--gs-color-text-muted); }
+.gs-tracking-product-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:8px 28px; list-style:none; margin:0; padding:0; }
+.gs-tracking-product { display:grid; grid-template-columns:minmax(0,1fr) auto; align-content:start; gap:5px 12px; padding:8px 0; border-bottom:1px solid var(--gs-color-border); font-size:13px; }
+.gs-tracking-product__name { overflow-wrap:anywhere; }
+.gs-tracking-product__quantity { white-space:nowrap; font-variant-numeric:tabular-nums; text-align:right; }
+.gs-tracking-product__bar { grid-column:1 / -1; height:5px; border:1px solid var(--gs-color-border); border-radius:var(--gs-radius-sm); background:var(--gs-color-surface); overflow:hidden; }
+.gs-tracking-product__bar > span { display:block; height:100%; background:var(--gs-color-primary); }

@@ -441,10 +441,10 @@ class TrackingMonitorTest extends TrackingWorkflowTest
         $dom = new \DOMDocument;
         @$dom->loadHTML('<?xml encoding="utf-8" ?>'.$html);
         $xpath = new \DOMXPath($dom);
-        $rows = $xpath->query('//table[.//button[@data-monitor-sort]]/tbody/tr');
+        $rows = $xpath->query('//table[.//button[@data-monitor-sort]]/tbody/tr[@data-monitor-code]');
         $this->assertCount(2, $rows);
         foreach ($rows as $row) {
-            $cell = $xpath->query('./td[1]', $row)->item(0);
+            $cell = $xpath->query('./td[2]', $row)->item(0);
             $this->assertStringNotContainsString('Equipment', $cell->textContent);
             $this->assertSame(1, $xpath->query('.//span[@data-tone="muted"]', $cell)->length);
         }
@@ -459,5 +459,56 @@ class TrackingMonitorTest extends TrackingWorkflowTest
         $this->assertStringContainsString('<polyline', view('govtracking::monitor.spark', ['code' => $multiple])->render());
         $multiple['unknown_count'] = 1;
         $this->assertStringNotContainsString('<svg', view('govtracking::monitor.spark', ['code' => $multiple])->render());
+    }
+
+    public function test_expandable_monitor_keeps_fifty_products_out_of_summary_rows_and_preserves_readable_fallback(): void
+    {
+        $this->viewer();
+        [$initiative, $code] = $this->programmeFixture();
+        $code->update(['specificity_level' => '2_CATEGORY']);
+        $this->receipt($code);
+        for ($index = 2; $index <= 50; $index++) {
+            DB::table('categories')->insert(['id' => $index, 'name' => $index === 2 ? '<script>untrusted product</script>' : 'Product '.$index]);
+            DB::table('gov_tracking_targets')->insert(['tracking_code_id' => $code->id, 'category_id' => $index, 'planned_qty' => 10]);
+        }
+        $empty = $code->replicate();
+        $empty->tracking_code = 'DRAFT-EMPTY';
+        $empty->status = 'DRAFT';
+        $empty->save();
+        foreach (['en-US', 'bn-BD'] as $locale) {
+            app()->setLocale($locale);
+            $monitor = app(TrackingMonitorService::class)->programme($initiative);
+            $html = view('govtracking::initiatives.monitor', compact('initiative', 'monitor'))->render();
+            $dom = new \DOMDocument;
+            @$dom->loadHTML('<?xml encoding="utf-8" ?>'.$html);
+            $xpath = new \DOMXPath($dom);
+            $rows = $xpath->query('//tr[@data-monitor-code]');
+            $this->assertCount(2, $rows);
+            $this->assertSame(9, $xpath->query('//table[@data-monitor-sortable]/thead/tr/th')->length);
+            foreach ($rows as $row) {
+                $this->assertSame(9, $xpath->query('./td', $row)->length);
+                $this->assertStringNotContainsString('Equipment', $row->textContent);
+                $this->assertStringNotContainsString('untrusted product', $row->textContent);
+                $toggle = $xpath->query('.//button[@data-monitor-toggle]', $row)->item(0);
+                $detail = $xpath->query('following-sibling::tr[1]', $row)->item(0);
+                $this->assertSame($toggle->getAttribute('aria-controls'), $detail->getAttribute('id'));
+                $this->assertTrue($toggle->hasAttribute('hidden'));
+                $this->assertFalse($detail->hasAttribute('hidden'), 'Without JavaScript the product breakdown stays readable.');
+                $this->assertSame('9', $xpath->query('./td', $detail)->item(0)->getAttribute('colspan'));
+            }
+            $detailId = 'tracking-products-'.$code->id;
+            $products = $xpath->query('//tr[@id="'.$detailId.'"]//li[contains(@class,"gs-tracking-product")]');
+            $this->assertCount(50, $products);
+            $this->assertStringContainsString('Equipment', $products->item(49)->textContent, 'The delivered product follows the 49 waiting products.');
+            $this->assertStringContainsString('10 / 500', $xpath->query('//tr[@data-monitor-code="'.$code->id.'"]')->item(0)->textContent);
+            $this->assertStringContainsString(__('govtracking::general.monitor.no_items'), $xpath->query('//tr[@id="tracking-products-'.$empty->id.'"]')->item(0)->textContent);
+            $this->assertStringContainsString(__('govtracking::general.monitor.draft_receipts'), $html);
+            $this->assertStringNotContainsString('<script>untrusted product</script>', $html);
+            $this->assertStringContainsString('&lt;script&gt;untrusted product&lt;/script&gt;', $html);
+            $this->assertStringNotContainsString('govtracking::general.monitor.', $html);
+        }
+        $en = require base_path('packages/gov-store/tracking/src/resources/lang/en-US/general.php');
+        $bn = require base_path('packages/gov-store/tracking/src/resources/lang/bn-BD/general.php');
+        $this->assertSame(array_keys($en['monitor']), array_keys($bn['monitor']));
     }
 }

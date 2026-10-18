@@ -37,18 +37,42 @@
         document.querySelectorAll('[data-monitor-sortable]').forEach(function (frame) {
             const table = frame.matches('table') ? frame : frame.querySelector('table');
             if (!table || !table.tBodies[0]) return;
+            // Without JS the breakdown remains readable; enhance each pair into a disclosure.
+            table.querySelectorAll('[data-monitor-toggle]').forEach(function (button) {
+                const detail = document.getElementById(button.getAttribute('aria-controls'));
+                if (!detail || button.closest('tr').nextElementSibling !== detail) return;
+                function expand(open) {
+                    button.setAttribute('aria-expanded', String(open));
+                    button.setAttribute('aria-label', open ? button.dataset.collapseLabel : button.dataset.expandLabel);
+                    button.querySelector('[data-monitor-toggle-icon]').textContent = open ? '−' : '+';
+                    detail.hidden = !open;
+                }
+                expand(false);
+                button.hidden = false;
+                button.addEventListener('click', function () { expand(button.getAttribute('aria-expanded') !== 'true'); });
+            });
             frame.querySelectorAll('[data-monitor-sort]').forEach(function (button) {
                 button.addEventListener('click', function () {
                     const index = Number(button.dataset.monitorSort);
+                    const numeric = button.dataset.monitorSortType === 'number';
                     const descending = button.dataset.direction !== 'desc';
-                    const rows = Array.from(table.tBodies[0].rows);
-                    if (rows.some(row => row.cells.length <= index)) return;
-                    rows.sort(function (a, b) {
-                        const left = a.cells[index].dataset.sort ?? a.cells[index].textContent.trim();
-                        const right = b.cells[index].dataset.sort ?? b.cells[index].textContent.trim();
-                        return (descending ? -1 : 1) * left.localeCompare(right, undefined, { numeric: true });
+                    const groups = Array.from(table.tBodies[0].rows).filter(row => !row.hasAttribute('data-monitor-detail')).map(function (row) {
+                        const next = row.nextElementSibling;
+                        const toggle = row.querySelector('[data-monitor-toggle]');
+                        const detail = next?.hasAttribute('data-monitor-detail') && toggle?.getAttribute('aria-controls') === next.id ? next : null;
+                        return { row: row, detail: detail };
                     });
-                    rows.forEach(row => table.tBodies[0].appendChild(row));
+                    if (groups.some(group => group.row.cells.length <= index)) return;
+                    groups.sort(function (a, b) {
+                        const left = a.row.cells[index].dataset.sort ?? a.row.cells[index].textContent.trim();
+                        const right = b.row.cells[index].dataset.sort ?? b.row.cells[index].textContent.trim();
+                        const comparison = numeric ? Number(left) - Number(right) : left.localeCompare(right, undefined, { numeric: true });
+                        return (descending ? -1 : 1) * comparison;
+                    });
+                    groups.forEach(function (group) {
+                        table.tBodies[0].appendChild(group.row);
+                        if (group.detail) table.tBodies[0].appendChild(group.detail);
+                    });
                     table.querySelectorAll('th').forEach(th => th.removeAttribute('aria-sort'));
                     button.closest('th').setAttribute('aria-sort', descending ? 'descending' : 'ascending');
                     button.dataset.direction = descending ? 'desc' : 'asc';
