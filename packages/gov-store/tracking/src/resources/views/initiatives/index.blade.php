@@ -1,202 +1,55 @@
 @extends('layouts/default')
-@section('title', __('govtracking::general.ui.programme_operations_portfolio'))
-
+@section('title', __('govtracking::portfolio.title'))
 @section('content')
-<!-- Top Portfolio Header & Summary -->
-<div class="row">
-    <div class="col-md-12">
-        <div class="portfolio-header">
-            <h2 class="portfolio-title"><i class="fa fa-briefcase text-blue"></i> {{ __('govtracking::general.ui.programme_operations_portfolio') }}</h2>
-            <p class="text-muted" style="font-size: 15px;">{{ __('govtracking::general.ui.manage_development_projects_revenue_programmes_tracking_codes_and_operational_compliance') }}</p>
-
-            <div class="summary-strip">
-                <div class="summary-box">
-                    <span class="count">{{ $initiatives->where('status', 'Active')->count() }}</span>
-                    <span class="label">{{ __('govtracking::general.ui.operational') }}</span>
-                </div>
-                <div class="summary-box">
-                    <span class="count">{{ $initiatives->where('status', 'Planning')->count() }}</span>
-                    <span class="label">{{ __('govtracking::general.ui.in_setup') }}</span>
-                </div>
-                <div class="summary-box">
-                    <span class="count">{{ $initiatives->where('status', 'Closed')->count() }}</span>
-                    <span class="label">{{ __('govtracking::general.ui.closed_ops') }}</span>
-                </div>
-                <div class="summary-box">
-                    <span class="count">{{ $initiatives->where('status', 'Archived')->count() }}</span>
-                    <span class="label">{{ __('govtracking::general.ui.historical') }}</span>
-                </div>
-            </div>
-        </div>
+@php
+    $url=fn(array $changes=[])=>route('gov.tracking.initiatives.index',array_replace($filters,$changes));
+    $money=fn($value)=>\GovStore\Tracking\Services\TrackingMonitorMetrics::money($value);
+    $reviewCount=array_sum(array_intersect_key($summary['health'],array_flip(['attention','behind','no_target'])));
+    $verdict=$reviewCount ? trans_choice('govtracking::portfolio.needs_review',$reviewCount) : __('govtracking::portfolio.'.($summary['operational'] ? 'all_on_pace' : 'no_operational'));
+    $next=$priority ? $priority['title'].' · '.($priority['head']['name'] ?? __('govtracking::portfolio.no_head')).' · '.$priority['next'] : __('govtracking::portfolio.review_setup');
+    $context=app(\GovStore\TenantScope\Contexts\TenantContext::class);
+@endphp
+<div class="gs-tracking-monitor gs-portfolio" data-portfolio-key="{{ auth()->id().'-'.$context->companyId.'-'.$context->locationId }}">
+    <div class="gs-portfolio-heading">
+        <p class="gs-portfolio-subtitle">{{ __('govtracking::portfolio.subtitle') }}</p>
+        @if($can_create)<a class="btn btn-primary" href="{{ route('gov.tracking.initiatives.create') }}"><i class="fas fa-plus" aria-hidden="true"></i> {{ __('govtracking::portfolio.new_programme') }}</a>@endif
     </div>
-</div>
-
-<!-- Global Quick Actions Toolbar -->
-<div class="row margin-bottom-15">
-    <div class="col-md-12">
-        @if(app(\GovStore\Tracking\Services\TrackingAuthorizationService::class)->canCreate())
-        <a href="{{ route('gov.tracking.initiatives.create') }}" class="btn btn-primary"><i class="fa fa-plus"></i> {{ __('govtracking::general.ui.launch_new_initiative') }}</a>
+    <nav class="gs-portfolio-nav gs-level-switch" aria-label="{{ __('govtracking::portfolio.navigation') }}">
+        <a class="gs-level-switch__option" href="{{ route('gov.tracking.initiatives.index') }}" aria-current="page">{{ __('govtracking::general.monitor.programmes') }}</a>
+        @can('tracking.offices.view')<a class="gs-level-switch__option" href="{{ route('gov.tracking.offices.index') }}">{{ __('govtracking::general.monitor.offices') }}</a>@endcan
+        @can('tracking.settings.manage')<a class="gs-level-switch__option" href="{{ route('gov.tracking.funding-types.index') }}">{{ __('govtracking::portfolio.funding_types') }}</a>@endcan
+    </nav>
+    <x-gs::status-callout :status="$reviewCount ? 'warning' : ($summary['operational'] ? 'success' : 'info')" :verdict="$verdict" :next="$next" />
+    <div class="gs-tracking-kpis gs-portfolio-kpis">
+        <div class="gs-kpi"><span class="gs-kpi__main"><span class="gs-kpi__label">{{ __('govtracking::portfolio.operational') }}</span><span class="gs-kpi__value">{{ $summary['operational'] }}</span><span class="gs-portfolio-health-key">@foreach($summary['health'] as $health=>$count)<span>{{ __('govtracking::portfolio.health.'.$health) }}: <b>{{ $count }}</b></span>@endforeach</span></span></div>
+        <div class="gs-kpi"><span class="gs-kpi__main"><span class="gs-kpi__label">{{ __('govtracking::general.monitor.value') }}</span><span class="gs-kpi__value">{{ $money($summary['value']) }}</span><span class="gs-kpi__caption">{{ trans_choice('govtracking::general.monitor.receipt_count_short',$summary['grn_count']) }} · {{ $summary['supplier_count'] }} {{ __('govtracking::general.monitor.suppliers') }}</span>@if(!$summary['value_complete'])<span class="gs-portfolio-incomplete">{{ __('govtracking::portfolio.incomplete') }} · {{ __('govtracking::general.monitor.known_value') }}: {{ $money($summary['known_value']) }}</span>@endif</span></div>
+        <x-gs::kpi :label="__('govtracking::portfolio.offices')" :value="$summary['reached']" :caption="__('govtracking::general.monitor.waiting_count',['count'=>$summary['waiting']])" />
+        <x-gs::kpi :label="__('govtracking::general.monitor.codes')" :value="$summary['active_count'].' · '.$summary['draft_count']" :caption="__('govtracking::general.monitor.active_draft')" />
+    </div>
+    <p class="gs-portfolio-scope">{{ __('govtracking::portfolio.summary_scope') }}</p>
+    <nav class="gs-portfolio-tabs" aria-label="{{ __('govtracking::portfolio.status_filter') }}">
+        @foreach(['all','Active','Planning','Closed','Archived'] as $status)<a href="{{ $url(['status'=>$status,'page'=>1]) }}" @if($filters['status']===$status) aria-current="page" @endif>{{ __('govtracking::portfolio.status.'.$status) }} <span>{{ $status==='all' ? $base_count : $counts[$status] }}</span></a>@endforeach
+    </nav>
+    <section class="gs-tracking-panel gs-portfolio-results" aria-label="{{ __('govtracking::portfolio.results') }}">
+        <form class="gs-tracking-filters gs-portfolio-filters" method="GET" role="search">
+            <input type="hidden" name="view" value="{{ $filters['view'] }}"><input type="hidden" name="status" value="{{ $filters['status'] }}">
+            <label class="gs-tracking-filters__search">{{ __('govtracking::general.monitor.search') }}<input type="search" name="q" value="{{ $filters['q'] ?? '' }}" maxlength="150" placeholder="{{ __('govtracking::portfolio.search_hint') }}"></label>
+            <label>{{ __('govtracking::portfolio.funding') }}<select name="funding">@foreach(['all','ADP','REVENUE','OTHER'] as $funding)<option value="{{ $funding }}" @selected($filters['funding']===$funding)>{{ $funding==='all' ? __('govtracking::portfolio.all_funding') : $funding }}</option>@endforeach</select></label>
+            <label>{{ __('govtracking::portfolio.sort') }}<select name="sort">@foreach(\GovStore\Tracking\Services\TrackingPortfolioService::SORTS as $sort)<option value="{{ $sort }}" @selected($filters['sort']===$sort)>{{ __('govtracking::portfolio.sorts.'.$sort) }}</option>@endforeach</select></label>
+            <label>{{ __('govtracking::portfolio.direction') }}<select name="direction">@foreach(['asc','desc'] as $direction)<option value="{{ $direction }}" @selected($filters['direction']===$direction)>{{ __('govtracking::portfolio.'.$direction) }}</option>@endforeach</select></label>
+            <label class="gs-portfolio-mine"><input type="checkbox" name="mine" value="1" @checked(!empty($filters['mine']))> {{ __('govtracking::portfolio.mine') }}</label>
+            <button class="btn btn-primary" type="submit">{{ __('govtracking::general.monitor.apply') }}</button><a href="{{ route('gov.tracking.initiatives.index',['view'=>$filters['view']]) }}">{{ __('govtracking::general.monitor.reset') }}</a>
+        </form>
+        <div class="gs-portfolio-toolbar">
+            <p role="status">{{ __('govtracking::portfolio.showing',['from'=>$programmes->firstItem() ?? 0,'to'=>$programmes->lastItem() ?? 0,'total'=>$programmes->total()]) }}</p>
+            <nav class="gs-portfolio-view gs-level-switch" aria-label="{{ __('govtracking::portfolio.view') }}">@foreach(['table','cards'] as $view)<a class="gs-level-switch__option" href="{{ $url(['view'=>$view]) }}" @if($filters['view']===$view) aria-current="page" @endif><i class="fas {{ $view==='table' ? 'fa-table-list' : 'fa-grip' }}" aria-hidden="true"></i> {{ __('govtracking::portfolio.'.$view) }}</a>@endforeach</nav>
+        </div>
+        @if($programmes->count())
+            @include('govtracking::portfolio.'.$filters['view'])
+        @else
+            <x-gs::empty-state icon="fa-briefcase" :title="__('govtracking::portfolio.'.($visible_count ? 'no_matches' : 'empty'))"><p>{{ __('govtracking::portfolio.empty_hint') }}</p><x-slot:actions><a class="btn btn-default" href="{{ route('gov.tracking.initiatives.index',['view'=>$filters['view']]) }}">{{ __('govtracking::general.monitor.reset') }}</a>@if($can_create)<a class="btn btn-primary" href="{{ route('gov.tracking.initiatives.create') }}">{{ __('govtracking::portfolio.new_programme') }}</a>@endif</x-slot:actions></x-gs::empty-state>
         @endif
-    </div>
+        @if($programmes->hasPages())<nav class="gs-portfolio-pagination" aria-label="{{ __('govtracking::portfolio.pagination') }}">@if(!$programmes->onFirstPage())<a href="{{ $programmes->previousPageUrl() }}">← {{ __('govtracking::portfolio.previous') }}</a>@endif<span>{{ __('govtracking::portfolio.page_of',['page'=>$programmes->currentPage(),'pages'=>$programmes->lastPage()]) }}</span>@if($programmes->hasMorePages())<a href="{{ $programmes->nextPageUrl() }}">{{ __('govtracking::portfolio.next_page') }} →</a>@endif</nav>@endif
+    </section>
 </div>
-
-<!-- ======================================================================= -->
-<!-- 🟢 OPERATIONAL (Active) -->
-<!-- ======================================================================= -->
-@php $activeInitiatives = $initiatives->where('status', 'Active'); @endphp
-@if($activeInitiatives->count() > 0)
-    <div class="section-divider">
-        <span class="section-title"><i class="fa fa-circle text-green"></i> Ready for Operations ({{ $activeInitiatives->count() }})</span>
-    </div>
-
-    <div class="row">
-        @foreach($activeInitiatives as $init)
-            <div class="col-md-4 col-sm-6">
-                <div class="initiative-card">
-                    <div class="initiative-card-body">
-                        <h3 class="initiative-card-title">🏫 {{ $init->title }}</h3>
-                        <p class="initiative-card-purpose">
-                            {{ \Illuminate\Support\Str::limit($init->purpose ?? __('govtracking::general.ui.extra_no_purpose_defined'), 110) }}
-                        </p>
-
-                        <ul class="initiative-meta">
-                            <li><span>{{ __('govtracking::general.ui.status') }}</span> <strong><span class="text-green">🟢 Ready for Operations</span></strong></li>
-                            <li><span>{{ __('govtracking::general.ui.funding') }}</span> <strong class="text-muted">{{ $init->primary_funding }} {{ __('govtracking::general.ui.extra_budget') }}</strong></li>
-                            <li><span>{{ __('govtracking::general.ui.owner') }}</span> <strong class="text-muted">{{ $init->ownerCompany->name ?? __('govtracking::general.ui.extra_unknown') }}</strong></li>
-                            <li><span>{{ __('govtracking::general.ui.trackers') }}</span> <strong class="text-muted">{{ $init->tracking_codes_count }} Tracking Codes</strong></li>
-                            <li><span>{{ __('govtracking::general.ui.updated') }}</span> <strong class="text-muted">{{ $init->updated_at->diffForHumans() }}</strong></li>
-                        </ul>
-                    </div>
-                    <div class="initiative-card-footer">
-                        <a href="{{ route('gov.tracking.initiatives.show', $init->id) }}" class="btn btn-success btn-sm">{{ __('govtracking::general.ui.open_workspace') }}</a>
-                        @if(app(\GovStore\Tracking\Services\TrackingAuthorizationService::class)->allows($init,['HEAD']))<a href="{{ route('gov.tracking.initiatives.edit', $init->id) }}" class="btn btn-default btn-sm"><i class="fa fa-cog"></i> {{ __('govtracking::general.ui.properties') }}</a>@endif
-                    </div>
-                </div>
-            </div>
-        @endforeach
-    </div>
-@endif
-
-<!-- ======================================================================= -->
-<!-- 🟡 SETUP IN PROGRESS (Planning) -->
-<!-- ======================================================================= -->
-@php $planningInitiatives = $initiatives->where('status', 'Planning'); @endphp
-@if($planningInitiatives->count() > 0)
-    <div class="section-divider">
-        <span class="section-title"><i class="fa fa-circle text-yellow"></i> Setup in Progress ({{ $planningInitiatives->count() }})</span>
-    </div>
-
-    <div class="row">
-        @foreach($planningInitiatives as $init)
-            <div class="col-md-4 col-sm-6">
-                <div class="initiative-card initiative-card--planning">
-                    <div class="initiative-card-body">
-                        <h3 class="initiative-card-title">🚧 {{ $init->title }}</h3>
-                        <p class="initiative-card-purpose">
-                            {{ \Illuminate\Support\Str::limit($init->purpose ?? __('govtracking::general.ui.extra_project_under_initial_drafting_and_configuration'), 110) }}
-                        </p>
-
-                        <ul class="initiative-meta">
-                            <li><span>{{ __('govtracking::general.ui.status') }}</span> <strong><span class="text-yellow">🟡 Setup in Progress</span></strong></li>
-                            <li><span>{{ __('govtracking::general.ui.owner') }}</span> <strong class="text-muted">{{ $init->ownerCompany->name ?? __('govtracking::general.ui.extra_unknown') }}</strong></li>
-
-                            <!-- Dynamic Operations Readiness Check -->
-                            <li>
-                                <span>{{ __('govtracking::general.ui.alert') }}</span>
-                                @if($init->operation_units_count > 0)
-                                    <strong class="text-muted">{{ __('govtracking::general.ui.drafting_planning_goals') }}</strong>
-                                @else
-                                    <strong class="text-red"><i class="fa fa-warning"></i> {{ __('govtracking::general.ui.needs_operation_team_assigned') }}</strong>
-                                @endif
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="initiative-card-footer">
-                        <a href="{{ route('gov.tracking.initiatives.show', $init->id) }}" class="btn btn-warning btn-sm">{{ __('govtracking::general.ui.continue_setup') }}</a>
-                        @if(app(\GovStore\Tracking\Services\TrackingAuthorizationService::class)->allows($init,['HEAD']))<a href="{{ route('gov.tracking.initiatives.edit', $init->id) }}" class="btn btn-default btn-sm"><i class="fa fa-cog"></i></a>@endif
-                    </div>
-                </div>
-            </div>
-        @endforeach
-    </div>
-@endif
-
-<!-- ======================================================================= -->
-<!-- 🔵 OPERATIONS COMPLETE (Closed) -->
-<!-- ======================================================================= -->
-@php $closedInitiatives = $initiatives->where('status', 'Closed'); @endphp
-@if($closedInitiatives->count() > 0)
-    <div class="section-divider">
-        <span class="section-title"><i class="fa fa-circle text-blue"></i> Operations {{ __('govtracking::general.ui.extra_complete') }} ({{ $closedInitiatives->count() }})</span>
-    </div>
-
-    <div class="row">
-        @foreach($closedInitiatives as $init)
-            <div class="col-md-4 col-sm-6">
-                <div class="initiative-card initiative-card--closed">
-                    <div class="initiative-card-body">
-                        <h3 class="initiative-card-title text-muted">🏁 {{ $init->title }}</h3>
-                        <ul class="initiative-meta initiative-meta--flush">
-                            <li><span>{{ __('govtracking::general.ui.status') }}</span> <strong><span class="text-blue">🔵 Operations {{ __('govtracking::general.ui.extra_complete') }}</span></strong></li>
-                            <li><span>{{ __('govtracking::general.ui.trackers') }}</span> <strong class="text-muted">{{ $init->tracking_codes_count }} Executed Tasks</strong></li>
-                        </ul>
-                    </div>
-                    <div class="initiative-card-footer">
-                        <a href="{{ route('gov.tracking.initiatives.show', $init->id) }}" class="btn btn-info btn-sm">{{ __('govtracking::general.ui.view_analytics') }}</a>
-                    </div>
-                </div>
-            </div>
-        @endforeach
-    </div>
-@endif
-
-<!-- ======================================================================= -->
-<!-- ⚫ HISTORICAL RECORDS (Archived) -->
-<!-- ======================================================================= -->
-@php $archivedInitiatives = $initiatives->where('status', 'Archived'); @endphp
-@if($archivedInitiatives->count() > 0)
-    <div class="section-divider">
-        <span class="section-title"><i class="fa fa-circle text-gray"></i> Historical Records ({{ $archivedInitiatives->count() }})</span>
-    </div>
-
-    <div class="row">
-        @foreach($archivedInitiatives as $init)
-            <div class="col-md-4 col-sm-6">
-                <div class="initiative-card initiative-card--archived">
-                    <div class="initiative-card-body">
-                        <h3 class="initiative-card-title text-muted">📁 {{ $init->title }}</h3>
-                        <ul class="initiative-meta initiative-meta--flush">
-                            <li><span>{{ __('govtracking::general.ui.status') }}</span> <strong><span class="text-muted">⚫ Historical Record</span></strong></li>
-                            <li><span>{{ __('govtracking::general.ui.closed_on') }}</span> <strong class="text-muted">{{ $init->updated_at->format('M d, Y') }}</strong></li>
-                        </ul>
-                    </div>
-                    <div class="initiative-card-footer">
-                        <a href="{{ route('gov.tracking.initiatives.show', $init->id) }}" class="btn btn-default btn-sm">{{ __('govtracking::general.ui.view_archive') }}</a>
-                    </div>
-                </div>
-            </div>
-        @endforeach
-    </div>
-@endif
-
-<!-- ======================================================================= -->
-<!-- EMPTY STATE (No Initiatives Exist) -->
-<!-- ======================================================================= -->
-@if($initiatives->count() === 0)
-    <div class="row">
-        <div class="col-md-6 col-md-offset-3">
-            <x-gs::empty-state icon="fa-briefcase" :title="__('govtracking::general.ui.extra_no_initiatives_yet')">
-                {{ __('govtracking::general.ui.programme_tracking_helps_you') }}<br>
-                <i class="fa fa-check text-green"></i> {{ __('govtracking::general.ui.organize_projects_and_revenue_budgets') }}<br>
-                <i class="fa fa-check text-green"></i> {{ __('govtracking::general.ui.create_operational_tracking_codes') }}<br>
-                <i class="fa fa-check text-green"></i> {{ __('govtracking::general.ui.monitor_physical_deliveries') }}<br>
-                <i class="fa fa-check text-green"></i> {{ __('govtracking::general.ui.produce_executive_fiscal_reports') }}
-                <x-slot:actions>
-                    <a href="{{ route('gov.tracking.initiatives.create') }}" class="btn btn-primary btn-lg">{{ __('govtracking::general.ui.launch_first_initiative') }}</a>
-                </x-slot:actions>
-            </x-gs::empty-state>
-        </div>
-    </div>
-@endif
-
-@stop
+@endsection

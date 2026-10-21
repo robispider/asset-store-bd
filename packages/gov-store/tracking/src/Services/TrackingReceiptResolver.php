@@ -5,6 +5,7 @@ namespace GovStore\Tracking\Services;
 use App\Models\Asset;
 use GovStore\StoreOperations\Models\Document;
 use GovStore\StoreOperations\Models\InventoryMovement;
+use GovStore\StoreOperations\Services\StockLedgerReader;
 use GovStore\Tracking\Models\TrackingDelivery;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -65,8 +66,9 @@ final class TrackingReceiptResolver
                 $movement = null;
             }
             if (! $item && $movement && $movement->document_type === Document::class) {
+                $movementType = StockLedgerReader::typeKey($movement->stockable_type);
                 $matches = $movementItems->get($movement->document_id, collect())->filter(fn ($i) => $i->product_id == $movement->stockable_id
-                    && strtolower(class_basename($i->product_type)) === strtolower(class_basename($movement->stockable_type)));
+                    && $movementType !== null && StockLedgerReader::typeKey($i->product_type) === $movementType);
                 if ($matches->count() === 1) {
                     $item = $matches->first();
                 }
@@ -86,10 +88,15 @@ final class TrackingReceiptResolver
                     'category_id' => (int) $a->category_id, 'location_id' => (int) $a->location_id,
                     'date' => $document ? ($document->posted_at ?? $document->created_at) : ($snapshot['occurred_at'] ?? null),
                     'grn' => $document->document_number ?? ($snapshot['grn'] ?? null),
-                    'document_id' => $document->id ?? null, 'quantity' => 0, 'value' => $value === null ? null : 0,
+                    'document_id' => $document->id ?? null, 'document_item_id' => $document && $item ? $item->id : null,
+                    'quantity' => 0, 'value' => $value === null ? null : 0,
                     'supplier_id' => $document->supplier_id ?? ($snapshot['supplier_id'] ?? null),
                     'manufacturer_id' => $snapshot['manufacturer_id'] ?? null, 'model_id' => $snapshot['model_id'] ?? null,
                 ];
+            }
+            // A delivery cannot establish a single line when its links disagree.
+            if ($rows[$key]['document_item_id'] !== ($document && $item ? $item->id : null)) {
+                $rows[$key]['document_item_id'] = null;
             }
             $rows[$key]['quantity'] += (float) $a->quantity;
             if ($value === null) {

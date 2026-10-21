@@ -1,0 +1,53 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<script>
+(function(){
+  var root=document.documentElement, skin='civic-ledger', lang='en';
+  try{ skin=localStorage.getItem('mg-skin')||skin; lang=localStorage.getItem('mg-lang')||lang; }catch(e){}
+  root.setAttribute('data-skin',skin); root.setAttribute('lang',lang==='bn'?'bn':'en');
+  if(!root.getAttribute('data-theme')){
+    var dark=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches;
+    root.setAttribute('data-theme',dark?'dark':'light');
+  }
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&family=Noto+Serif+Bengali:wght@400;600&family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:wght@400;600&family=Inter:wght@400;500;600;700&family=Nunito:wght@500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Fallback tokens (civic-ledger) used only until the embedded theme applies.
+   Every colour on the page comes from the GovStore --gs theme contract: 6 themes x light/dark. */
+:root{
+  --gs-color-bg:#F5F6F3; --gs-color-surface:#FFFFFF; --gs-color-surface-raised:#FFFFFF; --gs-color-surface-sunken:#F1F3EF;
+  --gs-color-border:#DADFD8; --gs-color-border-strong:#7C8780; --gs-color-text:#1D2420; --gs-color-text-muted:#4A5650; --gs-color-text-subtle:#66706B;
+  --gs-color-primary:#0B5E45; --gs-color-primary-subtle:#E3F0EA; --gs-color-on-primary:#FFFFFF;
+  --gs-color-success:#0B6B4F; --gs-color-success-subtle:#E2F0E9; --gs-color-warning:#A0560A; --gs-color-warning-subtle:#FBEEDD;
+  --gs-color-danger:#A3261B; --gs-color-danger-subtle:#FBE7E4; --gs-color-info:#1D4F91; --gs-color-info-subtle:#E4ECF7;
+  --gs-color-link:#0B5E45; --gs-color-focus-ring:#1D4F91; --gs-chart-grid:rgba(0,0,0,.08); --gs-chart-label:#4A5650;
+  --gs-header-bg:#0B5E45; --gs-header-fg:#FFFFFF;
+  --gs-radius-sm:2px; --gs-radius-md:3px; --gs-radius-lg:6px;
+  --gs-font-sans:"Noto Sans","Segoe UI",Roboto,Arial,"Noto Sans Bengali",sans-serif;
+  --gs-font-mono:"IBM Plex Mono",Consolas,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ color-scheme:dark;
+    --gs-color-bg:#101512; --gs-color-surface:#171E1A; --gs-color-surface-raised:#1D2621; --gs-color-surface-sunken:#0C110E;
+    --gs-color-border:#2C3830; --gs-color-border-strong:#66766C; --gs-color-text:#E6ECE8; --gs-color-text-muted:#A7B4AC; --gs-color-text-subtle:#85948B;
+    --gs-color-primary:#5CC79E; --gs-color-primary-subtle:#1F3A2F; --gs-color-on-primary:#062118;
+    --gs-color-success:#5CC79E; --gs-color-success-subtle:#1F3A2F; --gs-color-warning:#F2B35C; --gs-color-warning-subtle:#3B2F1D;
+    --gs-color-danger:#F28B80; --gs-color-danger-subtle:#40231F; --gs-color-info:#8DB6EE; --gs-color-info-subtle:#1D2A3D;
+    --gs-color-link:#5CC79E; --gs-chart-grid:rgba(255,255,255,.12); --gs-chart-label:#A7B4AC; --gs-header-bg:#0E2A20; --gs-header-fg:#E6ECE8; }
+}
+:root[data-theme="dark"]{ color-scheme:dark;
+    --gs-color-bg:#101512; --gs-color-surface:#171E1A; --gs-color-surface-raised:#1D2621; --gs-color-surface-sunken:#0C110E;
+    --gs-color-border:#2C3830; --gs-color-border-strong:#66766C; --gs-color-text:#E6ECE8; --gs-color-text-muted:#A7B4AC; --gs-color-text-subtle:#85948B;
+    --gs-color-primary:#5CC79E; --gs-color-primary-subtle:#1F3A2F; --gs-color-on-primary:#062118;
+    --gs-color-success:#5CC79E; --gs-color-success-subtle:#1F3A2F; --gs-color-warning:#F2B35C; --gs-color-warning-subtle:#3B2F1D;
+    --gs-color-danger:#F28B80; --gs-color-danger-subtle:#40231F; --gs-color-info:#8DB6EE; --gs-color-info-subtle:#1D2A3D;
+    --gs-color-link:#5CC79E; --gs-chart-grid:rgba(255,255,255,.12); --gs-chart-label:#A7B4AC; --gs-header-bg:#0E2A20; --gs-header-fg:#E6ECE8; }
+</style>
+<style id="gs-themes">
+/*GS_THEMES*/
+</style>
+<style id="gs-kit">
+/*GS_KIT*/
+</style>

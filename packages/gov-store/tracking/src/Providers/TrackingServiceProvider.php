@@ -108,10 +108,14 @@ class TrackingServiceProvider extends ServiceProvider
     {
         if ($this->app->bound('gs.theme')) {
             GsTheme::assets()->css('tracking', __DIR__.'/../resources/css/tracking.css');
+            GsTheme::assets()->css('tracking', __DIR__.'/../resources/css/portfolio.css');
+            GsTheme::assets()->css('tracking', __DIR__.'/../resources/css/report.css');
             GsTheme::assets()->js('tracking', __DIR__.'/../resources/js/matrix.js');
             GsTheme::assets()->js('tracking', __DIR__.'/../resources/js/task-form.js');
             GsTheme::assets()->js('tracking', __DIR__.'/../resources/js/workspace.js');
             GsTheme::assets()->js('tracking', __DIR__.'/../resources/js/monitor.js');
+            GsTheme::assets()->js('tracking', __DIR__.'/../resources/js/portfolio.js');
+            GsTheme::assets()->js('tracking', __DIR__.'/../resources/js/report.js');
         }
     }
 

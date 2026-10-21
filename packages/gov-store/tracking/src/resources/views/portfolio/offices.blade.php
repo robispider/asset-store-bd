@@ -1,0 +1,3 @@
+@php($covered=count(array_intersect($p['reached_ids'],$p['allocated_ids'])))
+@if($p['status']==='Planning')—@elseif($p['allocated_ids']){{ $covered }} / {{ count($p['allocated_ids']) }}<small class="gs-tracking-block gs-tracking-muted">{{ __('govtracking::general.monitor.waiting_count',['count'=>count(array_diff($p['allocated_ids'],$p['done_ids']))]) }}</small>@if(count($p['reached_ids'])>$covered)<small class="gs-tracking-block gs-tracking-muted">{{ __('govtracking::portfolio.additional_offices',['count'=>count($p['reached_ids'])-$covered]) }}</small>@endif
+@else{{ count($p['reached_ids']) }}<small class="gs-tracking-block gs-tracking-muted">{{ __('govtracking::portfolio.no_allocation') }}</small>@endif

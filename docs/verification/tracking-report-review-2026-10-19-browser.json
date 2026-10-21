@@ -1,0 +1,37 @@
+{
+  "recorded": "2026-10-19",
+  "checks": [
+    {
+      "scenario": "4-en-US-institutional-green",
+      "offices": 4,
+      "overflow": 0,
+      "pages": 4,
+      "ready": "true",
+      "strandedBands": 0
+    },
+    {
+      "scenario": "1000-bn-BD-institutional-green",
+      "offices": 1000,
+      "overflow": 0,
+      "pages": 63,
+      "ready": "true",
+      "strandedBands": 0
+    },
+    {
+      "scenario": "1000-en-US-digital-blue",
+      "offices": 1000,
+      "overflow": 0,
+      "pages": 63,
+      "ready": "true",
+      "strandedBands": 0
+    },
+    {
+      "scenario": "120-bn-BD-default",
+      "offices": 1,
+      "overflow": 0,
+      "pages": 22,
+      "ready": "true",
+      "strandedBands": 0
+    }
+  ]
+}

@@ -307,6 +307,7 @@ class TrackingCodeController extends Controller
                 'target_type' => $participantOverride,
                 'target_id' => null,
             ]);
+            $this->log($initiative, $trackingCode, 'CODE_CREATED');
         });
 
         return redirect()->route('gov.tracking.initiatives.show', $initiative->id)
@@ -416,6 +417,7 @@ class TrackingCodeController extends Controller
 
         $paths = $trackingCode->documents()->pluck('file_path')->all();
         $orderPath = $trackingCode->order_pdf_path;
+        $this->log($initiative, $trackingCode, 'CODE_DELETED');
         $trackingCode->delete();
         DB::afterCommit(function () use ($paths, $orderPath) {
             foreach ($paths as $path) {
@@ -426,7 +428,10 @@ class TrackingCodeController extends Controller
             }
         });
 
-        return redirect()->route('gov.tracking.initiatives.show', $initiative->id)
+        // The Manage tab deletes drafts in place; elsewhere the programme monitor is the landing page.
+        $manage = route('gov.tracking.initiatives.manage', $initiative->id);
+
+        return redirect()->to(str_starts_with(url()->previous(), $manage) ? url()->previous() : route('gov.tracking.initiatives.show', $initiative->id))
             ->with('success', 'Tracking Code deleted.');
     }
 
@@ -440,12 +445,7 @@ class TrackingCodeController extends Controller
         }
 
         $trackingCode->update(['status' => 'ACTIVE', 'activated_at' => now(), 'activation_is_approximate' => false]);
-        TrackingTimeline::create([
-            'initiative_id' => $initiative->id, 'event_type' => 'CODE_ACTIVATED',
-            'description' => $trackingCode->tracking_code, 'actor_id' => auth()->id(),
-            'metadata' => ['tracking_code' => $trackingCode->tracking_code, 'tracking_code_id' => $trackingCode->id],
-            'occurred_at' => now(),
-        ]);
+        $this->log($initiative, $trackingCode, 'CODE_ACTIVATED');
 
         return redirect()->back()->with('success', "Tracking Code '{$trackingCode->tracking_code}' has been turned ACTIVE and is now locked.");
     }
@@ -460,8 +460,50 @@ class TrackingCodeController extends Controller
         }
 
         $trackingCode->update(['status' => 'ARCHIVED']);
+        $this->log($initiative, $trackingCode, 'CODE_ARCHIVED');
 
         return redirect()->back()->with('success', "Tracking Code '{$trackingCode->tracking_code}' has been ARCHIVED.");
+    }
+
+    /**
+     * Attach the order PDF a programme requires to a code that has none yet. Drafts may also replace it;
+     * an active code's order is evidence for receipts already counted, so it is only ever added, never swapped.
+     */
+    public function attachOrder(Request $request, Initiative $initiative, TrackingCode $trackingCode)
+    {
+        abort_unless((int) $trackingCode->initiative_id === (int) $initiative->id, 404);
+        $this->authService->authorize($initiative, ['HEAD', 'OFFICER']);
+        $request->validate(['order_pdf' => 'required|file|mimes:pdf|max:10240']);
+        $path = $request->file('order_pdf')->store('tracking-orders/'.$initiative->id, 'local');
+        try {
+            $previous = DB::transaction(function () use ($initiative, $trackingCode, $request, $path) {
+                $task = $this->assertTask($initiative, $trackingCode, true);
+                abort_unless($task->status === 'DRAFT' || ($task->status === 'ACTIVE' && ! $task->order_pdf_path), 409);
+                $previous = $task->order_pdf_path;
+                $task->update(['order_pdf_path' => $path]);
+                $this->log($initiative, $task, 'ORDER_ATTACHED', basename($request->file('order_pdf')->getClientOriginalName()));
+
+                return $previous;
+            });
+        } catch (\Throwable $e) {
+            Storage::disk('local')->delete($path);
+            throw $e;
+        }
+        if ($previous) {
+            Storage::disk('local')->delete($previous);
+        }
+
+        return redirect()->back()->with('success', __('govtracking::general.manage.order_attached', ['code' => $trackingCode->tracking_code]));
+    }
+
+    private function log(Initiative $initiative, TrackingCode $code, string $event, ?string $description = null): void
+    {
+        TrackingTimeline::create([
+            'initiative_id' => $initiative->id, 'event_type' => $event,
+            'description' => $description ?? $code->tracking_code, 'actor_id' => auth()->id(),
+            'metadata' => ['tracking_code' => $code->tracking_code, 'tracking_code_id' => $code->id],
+            'occurred_at' => now(),
+        ]);
     }
 
     public function downloadPdf(TrackingCode $trackingCode)

@@ -3,10 +3,26 @@
 namespace GovStore\Tracking\Services;
 
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Collection;
 
 /** Unit-aware calculations. Null means the evidence does not define a denominator/date. */
 final class TrackingMonitorMetrics
 {
+    /** Shared allocation arithmetic for the monitor and the portfolio. */
+    public function targetLine(float $planned, Collection $allocations, Collection $associations, bool $matrix): array
+    {
+        $cells = null;
+        if ($matrix) {
+            $cells = [];
+            foreach ($allocations->pluck('location_id')->merge($associations->pluck('location_id'))->unique() as $id) {
+                $cells[$id] = ['allocated' => (float) $allocations->where('location_id', $id)->sum('allocated_qty'),
+                    'received' => (float) $associations->where('location_id', $id)->sum('quantity')];
+            }
+        }
+
+        return $this->line($planned, (float) $associations->sum('quantity'), $cells) + ['cells' => $cells];
+    }
+
     public function plan(string $value): string
     {
         return match (strtoupper($value)) {

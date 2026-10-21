@@ -1,17 +1,33 @@
 @extends('layouts/default')
-@section('title', __('govtracking::general.report_title'))
+@section('title', __('govtracking::report.title'))
 @section('content')
-<div class="gs-tracking-monitor">
-    <div class="hidden-print">@include('govtracking::monitor.tabs')<button type="button" class="btn btn-default" data-tracking-print>{{ __('govtracking::general.monitor.print') }}</button></div>
-    <x-gs::document :title="$initiative->title">
-        <h2>{{ __('govtracking::general.monitor.delivered') }}: {{ $monitor['delivered']===null ? '—' : number_format($monitor['delivered']*100,1).'%' }}</h2>
-        <p>{{ __('govtracking::general.monitor.programme_required') }}</p>
-        <x-gs::table><thead><tr>@foreach(['item','allocated','received','delivered','economic_code'] as $heading)<th>{{ __('govtracking::general.monitor.'.$heading) }}</th>@endforeach</tr></thead><tbody>
-        @forelse($monitor['codes'] as $code)@if($code['status']==='ACTIVE')@foreach($code['targets'] as $target)<tr><td>{{ $target['name'] }} <small>{{ $code['code'] }}</small></td><td>{{ $target['planned'] }}</td><td>{{ $target['received'] }}</td><td>{{ $target['fulfilment']===null ? '—' : number_format($target['fulfilment']*100,1).'%' }}</td><td>{{ $target['economic_code'] ?: '—' }}</td></tr>@endforeach @endif @empty<tr><td colspan="5">{{ __('govtracking::general.monitor.no_active') }}</td></tr>@endforelse
-        </tbody></x-gs::table>
-        <h2>{{ __('govtracking::general.monitor.receipts') }}</h2>
-        @if(!$monitor['value_complete'])<p>{{ __('govtracking::general.monitor.incomplete_receipts') }}</p>@endif
-        @include('govtracking::monitor.receipts',['receipts'=>$monitor['receipts']])
-    </x-gs::document>
+@php
+    $digits = fn ($value) => str_starts_with(app()->getLocale(), 'bn') ? strtr((string) $value, array_combine(range(0, 9), preg_split('//u', '০১২৩৪৫৬৭৮৯', -1, PREG_SPLIT_NO_EMPTY))) : (string) $value;
+    $n = fn ($value, $places = 4) => $value === null ? '—' : $digits($places ? rtrim(rtrim(number_format($value, $places), '0'), '.') : number_format($value));
+    $money = fn ($row) => $n($row['known_value'], 2).($row['value_complete'] ? '' : '*');
+    $percent = fn ($actual, $plan) => $plan !== null && $plan > 0 ? $n(100 * $actual / $plan, 1).'%' : '—';
+    $usePercent = fn ($row) => $row['unknown'] == 0 ? $percent($row['used'], $row['received']) : '—';
+@endphp
+<div class="gs-tracking-report" data-programme-report data-page-label="{{ __('govtracking::report.page', ['page' => '{page}', 'total' => '{total}']) }}" data-continued="{{ __('govtracking::report.continued') }}" data-pagination-failed="{{ __('govtracking::report.pagination_failed') }}" data-print-failed="{{ __('govtracking::report.print_failed') }}" data-preparing="{{ __('govtracking::report.print_preparing') }}" lang="{{ app()->getLocale() }}">
+    <div class="gs-tracking-report__toolbar hidden-print">
+        @include('govtracking::monitor.tabs')
+        <x-gs::button data-report-print>{{ __('govtracking::report.print') }}</x-gs::button>
+        <p data-report-message role="status"></p>
+    </div>
+    <div data-report-source>
+        <x-gs::document :title="__('govtracking::report.title')" :date="$digits($report['generated']->format('Y-m-d'))">
+            <x-slot:office><strong>{{ $report['owner'] ?: __('govtracking::report.unknown') }}</strong></x-slot:office>
+            <x-slot:meta>
+                <span>{{ __('govtracking::report.reference') }}: {{ $report['reference'] }}</span>
+                <span>{{ __('govtracking::report.as_of') }}: {{ $digits($report['generated']->format('Y-m-d H:i:s T')) }}</span>
+            </x-slot:meta>
+            @include('govtracking::initiatives.report.summary')
+            @include('govtracking::initiatives.report.codes-items')
+            @include('govtracking::initiatives.report.distribution')
+            @include('govtracking::initiatives.report.quality')
+        </x-gs::document>
+    </div>
+    <div data-report-pages tabindex="0" role="region" aria-label="{{ __('govtracking::report.title') }}"></div>
+    <template data-report-running><div class="gs-tracking-report__running"><strong>{{ $initiative->title }}</strong><span>{{ $report['reference'] }}</span></div></template>
 </div>
 @endsection

@@ -6,13 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Company;
 use GovStore\Organization\Models\CompanyAdmin;
 use GovStore\Tracking\Models\Initiative;
-use GovStore\Tracking\Models\TrackingCode; // Added
-use GovStore\Tracking\Models\TrackingTimeline; // Added
-use GovStore\Tracking\Repositories\TrackingProjectionRepositoryInterface;
+use GovStore\Tracking\Services\ProgrammeReportService;
 use GovStore\Tracking\Services\TrackingAuthorizationService;
+use GovStore\Tracking\Services\TrackingManageService;
 use GovStore\Tracking\Services\TrackingMonitorService;
+use GovStore\Tracking\Services\TrackingPortfolioService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class InitiativeController extends Controller
@@ -24,16 +23,20 @@ class InitiativeController extends Controller
         $this->authService = $authService;
     }
 
-    public function index()
+    public function index(Request $request, TrackingPortfolioService $portfolio)
     {
-        // Add high-performance subqueries to count relations without N+1 bottlenecks
-        $initiatives = Initiative::with('ownerCompany')
-            ->withCount('trackingCodes')
-            ->withCount('operationUnits')
-            ->orderBy('updated_at', 'desc') // Ensure most recently active projects sit at the top
-            ->get();
+        $filters = $request->validate([
+            'q' => 'nullable|string|max:150', 'status' => 'nullable|in:all,Active,Planning,Closed,Archived',
+            'funding' => 'nullable|in:all,ADP,REVENUE,OTHER', 'mine' => 'nullable|boolean',
+            'sort' => 'nullable|in:'.implode(',', TrackingPortfolioService::SORTS), 'direction' => 'nullable|in:asc,desc',
+            'view' => 'nullable|in:table,cards', 'page' => 'nullable|integer|min:1|max:1000000',
+        ]);
+        $preference = 'tracking.portfolio.view.'.auth()->id();
+        if (isset($filters['view'])) $request->session()->put($preference, $filters['view']);
+        $filters = array_replace(['status' => 'all', 'funding' => 'all', 'sort' => 'priority', 'direction' => 'asc',
+            'view' => $request->session()->get($preference, 'table')], array_filter($filters, fn ($v) => $v !== null));
 
-        return view('govtracking::initiatives.index', compact('initiatives'));
+        return view('govtracking::initiatives.index', $portfolio->portfolio($filters));
     }
 
     public function create()
@@ -79,62 +82,19 @@ class InitiativeController extends Controller
             ->with('success', 'Initiative created successfully. Please assign an Operation Unit team.');
     }
 
-    public function manage(Initiative $initiative)
+    public function manage(Initiative $initiative, Request $request, TrackingManageService $manage)
     {
         $this->authService->authorize($initiative, ['HEAD', 'OFFICER', 'SUPPORT', 'MONITOR']);
-        $initiative->load(['ownerCompany', 'operationUnits.user']);
+        $filters = $request->validate(['tab' => 'nullable|in:'.implode(',', TrackingManageService::TABS),
+            'q' => 'nullable|string|max:150', 'activity' => 'nullable|in:'.implode(',', TrackingManageService::ACTIVITY)]);
+        // Writes are refused (409) once a programme is closed or archived, so the page offers none.
+        $open = in_array($initiative->status, ['Planning', 'Active'], true);
+        $can = ['edit' => $open && $this->authService->allows($initiative, ['HEAD', 'OFFICER']),
+            'head' => $open && $this->authService->allows($initiative, ['HEAD']),
+            'retro' => $this->authService->allows($initiative, ['HEAD', 'OFFICER', 'SUPPORT']),
+            'settings' => $this->authService->allows($initiative, ['HEAD'])];
 
-        // 1. Load the active Tracking Codes (Tasks) and their specific goals
-        $trackingCodes = TrackingCode::with([
-            'targets.category' => function ($query) {
-                $query->withoutGlobalScopes();
-            },
-            'scopes',
-            'fundingType',
-        ])
-            ->where('initiative_id', $initiative->id)
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        // 2. Load Recent Activity Timeline
-        $recentActivity = TrackingTimeline::with('actor')
-            ->where('initiative_id', $initiative->id)
-            ->orderBy('occurred_at', 'desc')
-            ->limit(20)
-            ->get();
-
-        // 3. Compile Progress Percentages for the Active Tasks
-        $projectionRepo = app(TrackingProjectionRepositoryInterface::class);
-        $health = $projectionRepo->getLifecycleSummary($initiative);
-
-        foreach ($trackingCodes as $code) {
-            if ($code->specificity_level === '3_MATRIX') {
-                $code->matrixProgress = $projectionRepo->getMatrixProgress($code->id);
-            } else {
-                foreach ($code->targets as $target) {
-                    $target->progress = $projectionRepo->getTargetProgress($code->id, $target->category_id);
-                }
-            }
-        }
-
-        // =====================================================================
-        // 4. NEW: COMPILE THE PROGRAMME SNAPSHOT (The OLAP Cube Aggregator)
-        // =====================================================================
-        // Runs ultra-fast aggregate queries directly on our pre-compiled Fact Table
-
-        $monitor = app(TrackingMonitorService::class)->programme($initiative);
-        $rows = collect($monitor['receipts']);
-        $snapshot = [
-            'total_received_qty' => $monitor['received'], 'total_cost' => $monitor['value'],
-            'total_shipments' => $monitor['grn_count'], 'distinct_locations' => $monitor['reached'],
-            'distinct_geo_areas' => DB::table('gov_location_profiles')->whereIn('location_id', $rows->pluck('location_id'))->distinct()->count('geo_area_id'), 'distinct_categories' => $rows->pluck('category_id')->unique()->count(),
-            'distinct_manufacturers' => $rows->pluck('manufacturer_id')->filter()->unique()->count(),
-            'distinct_suppliers' => $monitor['supplier_count'],
-        ];
-
-        return view('govtracking::initiatives.workspace', compact(
-            'initiative', 'health', 'trackingCodes', 'recentActivity', 'snapshot'
-        ));
+        return view('govtracking::initiatives.workspace', $manage->workspace($initiative, array_filter($filters, fn ($v) => $v !== null), $can) + ['can' => $can]);
     }
 
     public function show(Initiative $initiative, Request $request)
@@ -146,11 +106,11 @@ class InitiativeController extends Controller
         return view('govtracking::initiatives.monitor', compact('initiative', 'monitor'));
     }
 
-    public function report(Initiative $initiative, TrackingProjectionRepositoryInterface $projectionRepo)
+    public function report(Initiative $initiative, ProgrammeReportService $reports)
     {
-        $monitor = app(TrackingMonitorService::class)->programme($initiative);
+        $report = $reports->programme($initiative);
 
-        return view('govtracking::initiatives.report', compact('initiative', 'monitor'));
+        return view('govtracking::initiatives.report', compact('initiative', 'report'));
     }
 
     public function edit(Initiative $initiative)

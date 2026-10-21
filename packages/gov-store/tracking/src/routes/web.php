@@ -48,6 +48,7 @@ Route::resource('initiatives.tracking-codes', TrackingCodeController::class)->ex
 // State Transitions
 Route::post('initiatives/{initiative}/tracking-codes/{trackingCode}/activate', [TrackingCodeController::class, 'activate'])->name('initiatives.tracking-codes.activate')->middleware('gov.can:tracking.codes.activate');
 Route::post('initiatives/{initiative}/tracking-codes/{trackingCode}/archive', [TrackingCodeController::class, 'archive'])->name('initiatives.tracking-codes.archive')->middleware('gov.can:tracking.codes.archive');
+Route::post('initiatives/{initiative}/tracking-codes/{trackingCode}/order', [TrackingCodeController::class, 'attachOrder'])->name('initiatives.tracking-codes.order')->middleware('gov.can:tracking.codes.manage');
 
 // =========================================================================
 // 5. Retrospective Tagging Console

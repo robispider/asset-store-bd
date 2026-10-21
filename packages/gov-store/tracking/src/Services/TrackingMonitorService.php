@@ -58,20 +58,11 @@ final class TrackingMonitorService
             $targets = [];
             foreach ($code->targets as $target) {
                 $qty = $associations->where('tracking_code_id', $code->id)->where('category_id', $target->category_id);
-                $cells = null;
-                if ($plan === '3_MATRIX') {
-                    $cells = [];
-                    $cellIds = $target->allocations->pluck('location_id')->merge($qty->pluck('location_id'))->unique();
-                    foreach ($cellIds as $id) {
-                        $cells[$id] = ['allocated' => (float) $target->allocations->where('location_id', $id)->sum('allocated_qty'),
-                            'received' => (float) $qty->where('location_id', $id)->sum('quantity')];
-                    }
-                }
-                $line = $this->metrics->line((float) $target->planned_qty, (float) $qty->sum('quantity'), $cells);
+                $line = $this->metrics->targetLine((float) $target->planned_qty, $target->allocations, $qty, $plan === '3_MATRIX');
                 $line += ['id' => $target->id, 'category_id' => $target->category_id,
                     'name' => $this->categoryName($categories->get($target->category_id)->name ?? __('govtracking::general.monitor.unavailable')),
                     'type' => $categories->get($target->category_id)->category_type ?? '',
-                    'economic_code' => $target->economic_code, 'cells' => $cells,
+                    'economic_code' => $target->economic_code,
                     'prices' => $this->metrics->prices(array_values(array_filter($rows, fn ($r) => $r['category_id'] == $target->category_id)))];
                 $targets[] = $line;
             }
@@ -271,7 +262,8 @@ final class TrackingMonitorService
         return array_values($items);
     }
 
-    private function attention(Initiative $initiative, array $codes, array $offices): array
+    /** Callers pass only codes/offices belonging to an already authorized programme. */
+    public function attention(Initiative $initiative, array $codes, array $offices): array
     {
         $items = [];
         foreach ($codes as $c) {

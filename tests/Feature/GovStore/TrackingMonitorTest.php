@@ -9,6 +9,7 @@ use GovStore\TenantScope\Contexts\TenantContext;
 use GovStore\TenantScope\Http\Middleware\RequireGovAbility;
 use GovStore\TenantScope\Services\GovAccess;
 use GovStore\TenantScope\Services\NationalChangeReview;
+use GovStore\Tracking\Http\Controllers\InitiativeController;
 use GovStore\Tracking\Http\Controllers\TrackingCodeController;
 use GovStore\Tracking\Http\Controllers\TrackingOfficeController;
 use GovStore\Tracking\Http\Middleware\SafeTrackingResponse;
@@ -16,15 +17,18 @@ use GovStore\Tracking\Models\Initiative;
 use GovStore\Tracking\Models\TrackingCode;
 use GovStore\Tracking\Models\TrackingDelivery;
 use GovStore\Tracking\Services\TrackingAuthorizationService;
+use GovStore\Tracking\Services\TrackingManageService;
 use GovStore\Tracking\Services\TrackingMonitorCharts;
 use GovStore\Tracking\Services\TrackingMonitorService;
 use GovStore\Tracking\Services\TrackingOfficeAccess;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Session\ArraySessionHandler;
 use Illuminate\Session\Store;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Mockery;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
@@ -337,6 +341,7 @@ class TrackingMonitorTest extends TrackingWorkflowTest
 
     public function test_monitor_code_office_and_report_blade_render_without_uncompiled_tags(): void
     {
+        (require base_path('packages/gov-store/organization/src/database/migrations/2026_10_19_000001_add_office_level_to_location_profiles.php'))->up();
         $this->viewer();
         [$i,$c] = $this->programmeFixture();
         $this->receipt($c);
@@ -344,7 +349,7 @@ class TrackingMonitorTest extends TrackingWorkflowTest
         $monitor = app(TrackingMonitorService::class)->programme($i);
         $views = [view('govtracking::initiatives.monitor', compact('i', 'monitor') + ['initiative' => $i]),
             app(TrackingCodeController::class)->show($i, $c), app(TrackingOfficeController::class)->programme($i, 10),
-            view('govtracking::initiatives.report', ['initiative' => $i, 'monitor' => $monitor]), app(TrackingOfficeController::class)->index()];
+            app(\GovStore\Tracking\Http\Controllers\InitiativeController::class)->report($i, app(\GovStore\Tracking\Services\ProgrammeReportService::class)), app(TrackingOfficeController::class)->index()];
         foreach ($views as $view) {
             $html = $view->render();
             $this->assertStringNotContainsString('<x-gs::', $html);
@@ -510,5 +515,127 @@ class TrackingMonitorTest extends TrackingWorkflowTest
         $en = require base_path('packages/gov-store/tracking/src/resources/lang/en-US/general.php');
         $bn = require base_path('packages/gov-store/tracking/src/resources/lang/bn-BD/general.php');
         $this->assertSame(array_keys($en['monitor']), array_keys($bn['monitor']));
+    }
+
+    private function scoped(TrackingCode $code): void
+    {
+        DB::table('gov_tracking_scopes')->insert([['tracking_code_id' => $code->id, 'dimension' => 'GEOGRAPHY', 'target_type' => 'Inherit', 'target_id' => null],
+            ['tracking_code_id' => $code->id, 'dimension' => 'PARTICIPANTS', 'target_type' => 'Inherit', 'target_id' => null]]);
+    }
+
+    private function manageHtml(Initiative $initiative): string
+    {
+        return app(InitiativeController::class)->manage($initiative, Request::create('/manage'), app(TrackingManageService::class))->render();
+    }
+
+    private function expectStatus(int $status, callable $call): void
+    {
+        try {
+            $call();
+            $this->fail('Expected HTTP '.$status);
+        } catch (HttpExceptionInterface $e) {
+            $this->assertSame($status, $e->getStatusCode());
+        }
+    }
+
+    public function test_manage_tab_shows_setup_gaps_real_rules_legacy_targets_and_grouped_receipts(): void
+    {
+        $this->viewer();
+        [$i, $c] = $this->programmeFixture('Manage programme', 20, 'HEAD');
+        $i->update(['require_documents' => true, 'allow_overshoot' => false]);
+        DB::table('users')->updateOrInsert(['id' => 1], ['first_name' => 'Rifat', 'last_name' => 'Hasan']);
+        // Fixture data stored the plan as "CATEGORY"; the old page compared against "2_CATEGORY" and hid its targets.
+        $legacy = TrackingCode::create(['initiative_id' => $i->id, 'funding_type_id' => $c->funding_type_id, 'tracking_code' => 'CODE-LEGACY',
+            'task_title' => 'Legacy plan', 'specificity_level' => 'CATEGORY', 'fiscal_year' => '2026-2027', 'status' => 'ACTIVE', 'activated_at' => '2026-07-01']);
+        DB::table('gov_tracking_targets')->insert(['tracking_code_id' => $legacy->id, 'category_id' => 1, 'planned_qty' => 200]);
+        $this->scoped($legacy);
+        foreach ([4, 5, 6] as $quantity) {
+            DB::table('gov_tracking_timeline')->insert(['initiative_id' => $i->id, 'event_type' => 'GRN_RECEIVED', 'actor_id' => 1,
+                'description' => "Received {$quantity} units via GRN (GRN-1) using Tracking Code 'CODE-LEGACY'.", 'occurred_at' => '2026-10-04 08:00:00',
+                'metadata' => json_encode(['tracking_code' => 'CODE-LEGACY', 'grn_reference' => 'GRN-1', 'quantity' => $quantity])]);
+        }
+
+        $html = $this->manageHtml($i);
+
+        $this->assertStringNotContainsString('<x-gs::', $html);
+        $this->assertStringNotContainsString('govtracking::general.', $html);
+        $this->assertStringContainsString(e(__('govtracking::general.manage.blocked')), $html, 'Rules read allow_overshoot instead of always saying advisory.');
+        $this->assertStringNotContainsString(e(__('govtracking::general.manage.allowed_warning')), $html);
+        $this->assertStringContainsString(e(trans_choice('govtracking::general.manage.products', 1, ['count' => 1])), $html);
+        $this->assertStringContainsString(e(__('govtracking::general.monitor.plans.2_CATEGORY')), $html);
+        $this->assertSame(1, substr_count($html, e(__('govtracking::general.manage.received', ['units' => '15']))), 'Three product lines form one receipt.');
+        $this->assertStringContainsString(e(trans_choice('govtracking::general.manage.lines', 3, ['count' => 3])), $html);
+        $this->assertStringContainsString(e(__('govtracking::general.manage.todo.order', ['code' => 'CODE-LEGACY'])), $html);
+        $this->assertStringContainsString(route('gov.tracking.initiatives.tracking-codes.order', [$i->id, $legacy->id]), $html);
+        $this->assertStringContainsString('0 / 2', $html);
+        $this->assertStringContainsString(e(__('govtracking::general.manage.from_record')), $html, 'Activations that predate logging come from the code record.');
+    }
+
+    public function test_manage_actions_follow_the_operation_role(): void
+    {
+        $this->viewer();
+        [$i, $active] = $this->programmeFixture('Role programme', 20, 'OFFICER');
+        $draft = TrackingCode::create(['initiative_id' => $i->id, 'funding_type_id' => $active->funding_type_id, 'tracking_code' => 'DRAFT-1',
+            'task_title' => 'Ready draft', 'specificity_level' => '2_CATEGORY', 'fiscal_year' => '2026-2027', 'status' => 'DRAFT', 'order_pdf_path' => 'tracking-orders/x.pdf']);
+        DB::table('gov_tracking_targets')->insert(['tracking_code_id' => $draft->id, 'category_id' => 1, 'planned_qty' => 5]);
+        $this->scoped($draft);
+        $activate = route('gov.tracking.initiatives.tracking-codes.activate', [$i->id, $draft->id]);
+        $archive = route('gov.tracking.initiatives.tracking-codes.archive', [$i->id, $active->id]);
+        $edit = route('gov.tracking.initiatives.tracking-codes.edit', [$i->id, $draft->id]);
+
+        $html = $this->manageHtml($i);
+        $this->assertStringContainsString($edit, $html);
+        $this->assertStringNotContainsString($activate, $html, 'Officers see activation as head-only.');
+        $this->assertStringNotContainsString($archive, $html);
+        $this->assertStringContainsString(e(__('govtracking::general.manage.lock_head')), $html);
+
+        DB::table('gov_tracking_operation_units')->where('initiative_id', $i->id)->update(['designation' => 'MONITOR']);
+        $html = $this->manageHtml($i);
+        $this->assertStringNotContainsString($edit, $html);
+        $this->assertStringNotContainsString(route('gov.tracking.initiatives.tracking-codes.order', [$i->id, $active->id]), $html);
+        $this->assertStringContainsString(e(__('govtracking::general.manage.read_only')), $html);
+
+        DB::table('gov_tracking_operation_units')->where('initiative_id', $i->id)->update(['designation' => 'HEAD']);
+        $html = $this->manageHtml($i);
+        $this->assertStringContainsString($activate, $html);
+        $this->assertStringContainsString($archive, $html);
+    }
+
+    public function test_order_pdf_is_added_once_to_an_active_code_and_lifecycle_changes_are_logged(): void
+    {
+        Storage::fake('local');
+        $this->viewer();
+        [$i, $c] = $this->programmeFixture('Order programme', 20, 'HEAD');
+        $controller = app(TrackingCodeController::class);
+        $upload = function () {
+            $request = Request::create('/', 'POST');
+            $request->files->set('order_pdf', UploadedFile::fake()->create('order.pdf', 1, 'application/pdf'));
+
+            return $request;
+        };
+
+        $controller->attachOrder($upload(), $i, $c);
+        $path = $c->fresh()->order_pdf_path;
+        $this->assertNotNull($path);
+        Storage::disk('local')->assertExists($path);
+        $this->assertSame(1, DB::table('gov_tracking_timeline')->where('event_type', 'ORDER_ATTACHED')->count());
+        $this->expectStatus(409, fn () => $controller->attachOrder($upload(), $i, $c->fresh()));
+        $this->assertSame($path, $c->fresh()->order_pdf_path, 'An active code keeps the order its receipts were counted against.');
+        $this->assertCount(1, Storage::disk('local')->allFiles('tracking-orders/'.$i->id), 'The refused upload is removed.');
+
+        $controller->archive($i, $c->fresh());
+        $this->assertSame(1, DB::table('gov_tracking_timeline')->where('event_type', 'CODE_ARCHIVED')->count());
+        $workspace = app(TrackingManageService::class)->workspace($i, [], ['edit' => true, 'head' => true]);
+        $this->assertNotNull(collect($workspace['all_codes'])->firstWhere('id', $c->id)['archived_at']);
+
+        $draft = $c->replicate();
+        $draft->fill(['tracking_code' => 'DRAFT-DELETE', 'status' => 'DRAFT', 'order_pdf_path' => null])->save();
+        $controller->destroy($i, $draft);
+        $this->assertSame(1, DB::table('gov_tracking_timeline')->where('event_type', 'CODE_DELETED')->count());
+
+        $other = $c->replicate();
+        $other->fill(['tracking_code' => 'ACTIVE-2', 'status' => 'ACTIVE', 'order_pdf_path' => null])->save();
+        DB::table('gov_tracking_operation_units')->where('initiative_id', $i->id)->update(['designation' => 'MONITOR']);
+        $this->expectStatus(403, fn () => $controller->attachOrder($upload(), $i, $other));
     }
 }

@@ -395,6 +395,14 @@ return [
     // Sidebar / Menu Integration
     // ==========================================
     'office_type_label' => 'Office type',
+    'office_level_label' => 'Administrative office level',
+    'office_profile_edit' => 'Edit office name and administrative level',
+    'office_level_inferred' => 'Not set — infer from mapped area',
+    'office_level_headquarters' => 'Headquarters',
+    'office_level_regional' => 'Regional',
+    'office_level_divisional' => 'Divisional',
+    'office_level_district' => 'District',
+    'office_level_upazila' => 'Upazila',
     'office_type_default' => 'General office',
     'office_type_hospital' => 'Hospital',
     'office_type_school' => 'School',
