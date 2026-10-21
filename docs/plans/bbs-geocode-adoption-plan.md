@@ -4,7 +4,7 @@
 > missing areas down to mauza/village, and ship it as seed data that a fresh install loads in one step.
 > Work lives in `packages/gov-store/geo-areas` only. Snipe-IT core is untouched.
 > **Status:** approved 2026-10-21 (D1–D4 as recommended: D2 replace junk English, D3 `P` serials,
-> D4 localities in `gov_geo_areas`); implementation in progress · **Updated:** 2026-10-21
+> D4 localities in `gov_geo_areas`); **implemented 2026-10-21** (phases 0–5; see §9) · **Updated:** 2026-10-21
 > **Inputs:** `src/database/data/bbs-geocode-2017/` (extracted BBS volumes + crosswalk), `geo_areas.csv`,
 > `DATASET.md`, `GEOCODE-SUPPLEMENT-DESIGN.md`, `docs/plans/geo-monitoring-plan.md`.
 > **Owner rules (2026-10-21):** keep areas newer than the BBS data; matched areas get the correct geocode;
@@ -206,3 +206,29 @@ nothing references them (`gov_location_profiles`, `gov_ict_jurisdictions`, track
 - **Bangla repair:** unmapped glyphs and PDF-dropped glyphs affect only added rows. They are listed for
   correction before release.
 - **Table size:** about 178k rows. Name indexes already exist, and the D4 search guard keeps typeahead behaviour unchanged.
+
+## 9. Implementation record (2026-10-21)
+
+Dataset `bd-admin-areas-2026-10-21.1`. Every one of 177,685 rows has a geocode:
+`bbs_2017` 175,946 · `provisional` 1,722 · `duplicate` 16 · `national` 1.
+
+| Item | Result |
+|---|---|
+| Crosswalk | 8,793 of 9,111 existing areas linked automatically (tiers `reviewed`, `exact`, `alias`, `bangla`, `skeleton`, `ward_set`, and a new `city_ward` tier for wards of thanas reorganised after 2017) |
+| Review (`review/decisions.csv`) | Current side: 78 link · 32 moved · 191 newer · 16 duplicate · 1 national. BBS side: 110 linked · 86 add · 33 superseded. Assisted review under this approved plan; rows whose `note` says "verify" are inferences |
+| Seed | 86 areas added (incl. Pirganj Pourasabha, Thakurgaon, given the missing `geo_code` 58845 so the 9 orphan wards 7829–7837 have a parent), 173 English names fixed, 168,488 localities. 375 localities held back (257 under areas superseded after 2017, 118 whose mauza/union the volumes do not print) |
+| Code | `GeoAreaDatasetSync` + `govstore:geo-areas-sync` (added to tenant-scope `global_commands`), migration `2026_10_21_000001_add_bbs_codes_to_gov_geo_areas`, model casts, `getByBbsCode()`, locality search guard, `bbs_code`/`code_status` in the search API, office hub "area code" shows `bbs_code` |
+| Tests | `GeoAreaDatasetSyncTest` (fresh and existing install, invariants, decisions, localities, tamper refusal, command); GovStore suite 645 tests green |
+| Local rollout | Backup → dry run → `migrate` (15 s) → re-sync no-op; zero rows without a code |
+
+Deviations from the plan text:
+
+- Command name `govstore:geo-areas-sync` (package naming convention), not `gov-store:geo-areas:sync`.
+- `geo_areas.base.csv` holds the hand-maintained base; `geo_areas.csv` is generated (build idempotency).
+- The dataset version is recorded on the country row's `bbs_attributes`, not in a settings row (no new table).
+- The sync detaches query listeners while bulk-loading: Ignition's query recorder otherwise exhausts a 128 MB CLI.
+- Found and fixed on the way: the 2024 importer skips GeoAreaId 1 (BOM in the first field); the sync inserts it.
+
+Open follow-ups: verify the "verify" notes (absorbed Rangpur/Gazipur unions, Varella, geo_code 58845);
+fix the moved-unions' GovStore parents (they sit under the pre-split upazila) together with plan D6;
+replace provisional codes when BBS publishes a newer geocode edition.

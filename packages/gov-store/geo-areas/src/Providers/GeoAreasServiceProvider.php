@@ -14,6 +14,10 @@ class GeoAreasServiceProvider extends ServiceProvider
 
         // Load library routing endpoints (NEW)
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([\GovStore\GeoAreas\Console\Commands\GeoAreasSyncCommand::class]);
+        }
     }
 
     public function register()

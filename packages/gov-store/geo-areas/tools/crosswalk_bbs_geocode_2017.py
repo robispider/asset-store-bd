@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Crosswalk the bundled geo_areas.csv to the BBS June 2017 geocode dataset.
+"""Crosswalk the hand-maintained geo_areas.base.csv to the BBS June 2017 geocode dataset.
 
 Python 3.10+, standard library only. Offline: never writes the source files or
 connects to a database. Writes review files to
@@ -75,6 +75,7 @@ REVIEWED_LINKS = {
     '1133': ('50-10-_-33', 'Dupchachia / Dupchanchia spelling'),
     '108': ('10-42-_-43', 'Kanthalia / Kathalia spelling'),
     '3280': ('20-46-_-61', 'Lakkhichhari / Laxmichhari spelling'),
+    '58599': ('20-19-_-33', 'Cumilla city thana Sadar Dakkhin = BBS Comilla Sadar Dakkhin'),
 }
 REVIEWED_BY_PATH = {path: code for code, (path, _) in REVIEWED_LINKS.items()}
 
@@ -103,7 +104,7 @@ KIND = {'divison': 'division', 'district': 'district', 'upazilla': 'upazila_than
 ORDER = ['divison', 'district', 'upazilla', 'city', 'city_thana', 'pourasabha', 'union',
          'pouro_ward', 'thana_ward']
 TIERS = ['reviewed', 'exact', 'alias', 'bangla', 'skeleton']
-ALL_TIERS = TIERS + ['ward_set']
+ALL_TIERS = TIERS + ['ward_set', 'city_ward']
 BBS_CODES = ['division_code', 'zila_code', 'city_corporation_code', 'upazila_thana_code',
              'paurashava_code', 'union_ward_code_old', 'union_ward_code_new']
 
@@ -129,6 +130,8 @@ def alias_keys(name, kind, district_key=''):
     keys = set()
     for v in variants:
         k = normalize(v, kind)
+        if kind == 'union':
+            k = strip_union_noise(k)
         for old, new in SPELLING_ALIASES.items():
             k = k.replace(old, new)
         keys.add(canon_direction(k))
@@ -137,14 +140,26 @@ def alias_keys(name, kind, district_key=''):
     return keys
 
 
-BN_SUFFIX = re.compile(r'(জেলা|উপজেলা|ইউনিয়ন|পৌরসভা|থানা|বিভাগ)$')
+BN_SUFFIX = re.compile(r'\s*(জেলা|উপজেলা|ই্?উনিয়ন|ইয়নিয়ন|পৌরসভা|থানা|বিভাগ|সদর)$')
+# Spelling variants that are not significant inside one parent area.
+BN_VARIANTS = (('ী', 'ি'), ('ূ', 'ু'), ('ঙ্গ', 'ংগ'), ('ঙ্ক', 'ংক'), ('ঁ', ''), ('ক্ষ্ম', 'ক্ষ'), ('ণ', 'ন'),
+               ('ড়', 'র'), ('ঢ়', 'ঢ'), ('ৎ', 'ত'))
+
+
+def strip_union_noise(key):
+    """'7nosofapur' / 'narayanpurup10' / 'lamasadar' -> the union's own name."""
+    key = re.sub(r'^\d+no', '', key)
+    key = re.sub(r'up\d*$', '', key)
+    return re.sub(r'(?<=.{3})sadar$', '', key)
 
 
 def bn_key(name):
     """Bangla comparison key: spacing, serial prefix, type suffix and common
     spelling variants (ী/ি, ূ/ু, ঙ্গ/ংগ, ঙ্ক/ংক) are not significant."""
     text = re.sub(r'^\s*[০-৯0-9]+\s*নং\s*', '', unicodedata.normalize('NFC', name or ''))
-    text = BN_SUFFIX.sub('', re.sub(r'[\s‌‍]+', ' ', text).strip()).strip()
+    text = re.sub(r'[\s‌‍]+', ' ', text).strip()
+    for _ in range(2):  # 'X সদর ইউনিয়ন'
+        text = BN_SUFFIX.sub('', text).strip()
     words = '|'.join(re.escape(w) for w in BN_DIRECTIONS)
     m = (re.fullmatch(rf'(.+?)\s*\(?({words})\)?', text) or re.fullmatch(rf'\(?({words})\)?\s*(.+)', text))
     prefix = ''
@@ -152,7 +167,7 @@ def bn_key(name):
         word, rest = (m.group(2), m.group(1)) if m.re.pattern.startswith('(.+?)') else (m.group(1), m.group(2))
         prefix, text = BN_DIRECTIONS[word] + '|', rest
     text = re.sub(r'[\s.\-()]', '', text)
-    for a, b in (('ী', 'ি'), ('ূ', 'ু'), ('ঙ্গ', 'ংগ'), ('ঙ্ক', 'ংক')):
+    for a, b in BN_VARIANTS:
         text = text.replace(a, b)
     return prefix + unicodedata.normalize('NFD', text)
 
@@ -161,6 +176,8 @@ def skeleton(name, kind):
     k = en_key(name, kind)
     if kind == 'ward' or not k:
         return k
+    if kind == 'union':
+        k = strip_union_noise(k)
     for old, new in SPELLING_ALIASES.items():
         k = k.replace(old, new)
     direction, _, k = canon_direction(re.sub(r'\d', '', k)).rpartition('|')
@@ -238,6 +255,11 @@ class BbsIndex:
                          source_file='(unnamed thana: code from ward rows)')
                 self.synthetic.append(r)
                 self.by[('city_thana', d, z, c)].append(r)
+
+    def city_wards(self, city):
+        d, z, c = city['division_code'], city['zila_code'], city['city_corporation_code']
+        return [r for k, rows in sorted(self.by.items(), key=lambda kv: str(kv[0]))
+                if k[0] == 'thana_ward' and k[1:4] == (d, z, c) for r in rows]
 
     def wards_of(self, thana):
         t = thana
@@ -341,6 +363,30 @@ def candidates(name, kind, others, key=lambda o: o['name']):
     return scored[:3]
 
 
+def city_ward_pass(base, bycode, index, match, reason, seen_in_scope):
+    """Tier 'city_ward': city wards whose thana was reorganised after 2017 (Sylhet,
+    Gazipur, Chattogram, Dhaka metro thanas). The ward itself is unchanged, so it
+    is matched by its label across the whole, already matched city corporation."""
+    linked = {id(b) for b, _ in match.values()}
+    by_city = defaultdict(list)
+    for r in base:
+        if r['geo_type'] != 'thana_ward' or r['GeoAreaId'] in match:
+            continue
+        thana = bycode.get(r['parent_geo_code'])
+        city = bycode.get(thana['parent_geo_code']) if thana else None
+        if city and city['GeoAreaId'] in match:
+            by_city[city['GeoAreaId']].append(r)
+    for city_id, group in sorted(by_city.items()):
+        pool = [b for b in index.city_wards(match[city_id][0]) if id(b) not in linked]
+        seen_in_scope.update(id(b) for b in pool)
+        got, left, _ = match_scope(group, pool, 'ward', '')
+        for rid, (b, _) in got.items():
+            match[rid] = (b, 'city_ward')
+            reason.pop(rid, None)
+        for r in left:
+            reason[r['GeoAreaId']] = 'no_counterpart_in_matched_city'
+
+
 def crosswalk(current_path, bbs_path):
     with current_path.open(encoding='utf-8-sig', newline='') as f:
         base = [dict(zip(BASE_FIELDS, r)) for r in csv.reader(f)]
@@ -403,6 +449,7 @@ def crosswalk(current_path, bbs_path):
             for b in right:
                 bbs_cands[id(b)] = [dict(GeoAreaId=c['GeoAreaId'], en_name=c['en_name'], similarity=round(s, 3))
                                     for s, c in candidates(b['name'], kind, left, key=lambda o: o['en_name'])]
+    city_ward_pass(base, bycode, index, match, reason, seen_in_scope)
     for r in base:
         if r['geo_type'] == 'country':
             reason[r['GeoAreaId']] = 'country_not_in_bbs'
@@ -439,7 +486,7 @@ def write_csv(path, fields, rows):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--current', type=Path, default=DATA / 'geo_areas.csv')
+    ap.add_argument('--current', type=Path, default=DATA / 'geo_areas.base.csv')
     ap.add_argument('--bbs', type=Path, default=DATA / 'bbs-geocode-2017/bbs_geocode_2017_admin.csv')
     ap.add_argument('--output', type=Path, default=DATA / 'bbs-geocode-2017/crosswalk')
     args = ap.parse_args()
@@ -532,17 +579,18 @@ def write_report(path, s):
              'exclude it if you need strict links. Children of a skeleton match are matched normally.',
              '5. `ward_set` — city thanas only. Some volumes (Dhaka) never name their metropolitan thanas; the thana code '
              'appears only on ward rows, so `bbs_en_name` is blank. A thana is linked when its ward numbers and the BBS '
-             'thana\'s ward numbers are each other\'s unique best overlap (Jaccard ≥ 0.5).', '',
+             'thana\'s ward numbers are each other\'s unique best overlap (Jaccard ≥ 0.5).',
+             '6. `city_ward` — city wards whose thana was reorganised after 2017: matched by ward label across the whole '
+             '(matched) city corporation, unique on both sides. The ward keeps its 2017 code; its current thana may differ.', '',
              'City thanas are matched against BBS thanas listed under the city and against upazila/thana rows referenced by '
              'that city\'s wards. One BBS area can be linked from two current types (e.g. a Sadar upazila and the city '
              'thana of the same code); `notes` names the other row.', '',
              '## Coverage by current type', '',
-             '| Type | Current | Matched | reviewed | exact | alias | bangla | skeleton | ward_set | Unmatched |',
-             '| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |']
+             '| Type | Current | Matched | ' + ' | '.join(ALL_TIERS) + ' | Unmatched |',
+             '| --- | ---: | ---: | ' + ' | '.join('---:' for _ in ALL_TIERS) + ' | ---: |']
     for t in s['by_type']:
-        lines.append(f"| {t['geo_type']} | {t['total']:,} | {t['matched']:,} | {t['by_reviewed']:,} | "
-                     f"{t['by_exact']:,} | {t['by_alias']:,} | "
-                     f"{t['by_bangla']:,} | {t['by_skeleton']:,} | {t['by_ward_set']:,} | {t['unmatched']:,} |")
+        lines.append(f"| {t['geo_type']} | {t['total']:,} | {t['matched']:,} | "
+                     + ' | '.join(f"{t['by_' + tier]:,}" for tier in ALL_TIERS) + f" | {t['unmatched']:,} |")
     lines += ['', '## BBS admin rows by level', '', '| Level | Rows | Linked |', '| --- | ---: | ---: |']
     lines += [f'| {k} | {v["total"]:,} | {v["linked"]:,} |' for k, v in s['bbs_by_level'].items()]
     lines += ['', '## Unmatched reasons', '', '| Side | Reason | Rows |', '| --- | --- | ---: |']

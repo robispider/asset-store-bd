@@ -7,8 +7,10 @@ Every cover is dated **June 2017**. BBS published the PDFs in December 2024 on
 retrieved on 21 October 2026. `sources.json` records each URL, SHA-256, page count
 and row count.
 
-These files are reference data only. They are not imported into `gov_geo_areas`
-and do not change any `GeoAreaId` (see [DATASET.md](../../../../DATASET.md)).
+These files are the extracted source. The seed build (`tools/build_geo_seed.py`)
+turns them, the crosswalk and the reviewed `review/decisions.csv` into the geocodes
+and localities loaded into `gov_geo_areas`; no existing `GeoAreaId` changes (see
+[DATASET.md](../../../../DATASET.md)).
 
 ## Files
 
@@ -78,7 +80,14 @@ python packages/gov-store/geo-areas/tools/fetch_bbs_geocode_pdfs.py          # s
 pip install -r packages/gov-store/geo-areas/tools/requirements-bbs-pdf.txt
 python packages/gov-store/geo-areas/tools/extract_bbs_geocode_pdfs.py        # writes this folder
 python packages/gov-store/geo-areas/tools/crosswalk_bbs_geocode_2017.py      # stdlib; writes crosswalk/
+python packages/gov-store/geo-areas/tools/prefill_geo_decisions.py           # stdlib; drafts review/decisions.csv
+python packages/gov-store/geo-areas/tools/build_geo_seed.py                  # stdlib; writes geo_areas.csv + seed/
 ```
+
+`review/decisions.csv` holds one confirmed decision per unlinked area (`link`,
+`moved`, `newer`, `duplicate`, `national`; BBS side `linked`, `superseded`, `add`).
+The first review (21 October 2026) was an assisted review under the approved plan;
+rows marked "verify" in `note` are inferences worth a human check.
 
 The extractor checks every PDF against the SHA-256 in the fetch manifest
 before reading it.

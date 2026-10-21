@@ -11,4 +11,7 @@ return [
     'pourasabha' => 'Municipality',
     'pouro_ward' => 'Municipal ward',
     'thana_ward' => 'Police-station ward',
+    'special_area' => 'Special area',
+    'mauza' => 'Mauza',
+    'village' => 'Village',
 ];

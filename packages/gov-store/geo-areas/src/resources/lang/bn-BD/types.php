@@ -11,4 +11,7 @@ return [
     'pourasabha' => 'পৌরসভা',
     'pouro_ward' => 'পৌর ওয়ার্ড',
     'thana_ward' => 'থানা ওয়ার্ড',
+    'special_area' => 'বিশেষ এলাকা',
+    'mauza' => 'মৌজা',
+    'village' => 'গ্রাম',
 ];

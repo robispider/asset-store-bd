@@ -1,0 +1,3 @@
+# Verified byte-for-byte against manifest.json: keep exact bytes on every checkout.
+* -text
+*.gz binary

@@ -1027,7 +1027,7 @@
 1027,/36/3238/3290/5638/,union,3290,5638,গুইমারা ইউনিয়ন,http://guimaraup.khagrachhari.gov.bd,Guimara,4
 1028,/36/3238/3290/5639/,union,3290,5639,আমতলি ইউনিয়ন,http://amtaliup.khagrachhari.gov.bd,Amtali,4
 1029,/36/3238/6190/,upazilla,3238,6190,গুইমারা উপজেলা,http://guimara.khagrachhari.gov.bd,Guimara Upazilla,3
-1030,/36/3245/,district,36,3245,বান্দরবান জেলা,http://www.bandarban.gov.bd,Bandarban Distric,2
+1030,/36/3245/,district,36,3245,বান্দরবান জেলা,http://www.bandarban.gov.bd,Bandarban District,2
 1031,/36/3245/3269/,upazilla,3245,3269,বান্দরবান সদর উপজেলা,http://sadar.bandarban.gov.bd,Sadar Upazilla,3
 1032,/36/3245/3269/5414/,union,3269,5414,রাজবিলা ইউনিয়ন,http://rajbilaup.bandarban.gov.bd,Rajbila,4
 1033,/36/3245/3269/5419/,union,3269,5419,টংকাবতী ইউনিয়ন,http://tongkabotyup.bandarban.gov.bd,Tongkaboty,4
@@ -1594,115 +1594,115 @@
 1594,/60/1867/1886/2034/,union,1886,2034,শ্যামপুর ইউনিয়ন,http://shyampurup.chapainawabganj.gov.bd,Shyampur,4
 1595,/60/1867/1886/2036/,union,1886,2036,কানসাট ইউনিয়ন,http://kansatup.bdgovportal.com,Kansat,4
 1596,/60/1867/1886/2072/,union,1886,2072,উজিরপুর ইউনিয়ন,http://ujirpurup.chapainawabganj.gov.bd,Ujirpur,4
-1597,/60/1990/,district,60,1990,নওগাঁ জেলা,http://www.naogaon.gov.bd,Naogaon Distric,2
+1597,/60/1990/,district,60,1990,নওগাঁ জেলা,http://www.naogaon.gov.bd,Naogaon District,2
 1598,/60/1990/2037/,upazilla,1990,2037,মহাদেবপুর উপজেলা,http://mohadevpur.naogaon.gov.bd,Mohadevpur Upazilla,3
-1599,/60/1990/2037/2314/,union,2037,2314,মহাদেবপুর ইউনিয়ন,http://1nomohadevpurup.naogaon.gov.bd,1nomohadevpur,4
-1600,/60/1990/2037/2317/,union,2037,2317,হাতুড় ইউনিয়ন,http://2nohaturup.naogaon.gov.bd,2nohatur,4
-1601,/60/1990/2037/2318/,union,2037,2318,খাজুর ইউনিয়ন,http://3nokhajurup.naogaon.gov.bd,3nokhajur,4
-1602,/60/1990/2037/2319/,union,2037,2319,চাঁন্দাশ ইউনিয়ন,http://4nochandasup.naogaon.gov.bd,4nochandas,4
-1603,/60/1990/2037/2323/,union,2037,2323,এনায়েতপুর ইউনিয়ন,http://6noenayetpurup.naogaon.gov.bd,6noenayetpur,4
-1604,/60/1990/2037/2324/,union,2037,2324,সফাপুর ইউনিয়ন,http://7nosofapurup.naogaon.gov.bd,7nosofapur,4
-1605,/60/1990/2037/2325/,union,2037,2325,উত্তরগ্রাম ইউনিয়ন,http://8nouttargramup.naogaon.gov.bd,8nouttargram,4
-1606,/60/1990/2037/2327/,union,2037,2327,চেরাগপুর ইউনিয়ন,http://9nocheragpurup.naogaon.gov.bd,9nocheragpur,4
-1607,/60/1990/2037/2328/,union,2037,2328,ভীমপুর ইউনিয়ন,http://10novimpurup.naogaon.gov.bd,10novimpur,4
+1599,/60/1990/2037/2314/,union,2037,2314,মহাদেবপুর ইউনিয়ন,http://1nomohadevpurup.naogaon.gov.bd,Mahadebpur,4
+1600,/60/1990/2037/2317/,union,2037,2317,হাতুড় ইউনিয়ন,http://2nohaturup.naogaon.gov.bd,Hatur,4
+1601,/60/1990/2037/2318/,union,2037,2318,খাজুর ইউনিয়ন,http://3nokhajurup.naogaon.gov.bd,Khajur,4
+1602,/60/1990/2037/2319/,union,2037,2319,চাঁন্দাশ ইউনিয়ন,http://4nochandasup.naogaon.gov.bd,Chandash,4
+1603,/60/1990/2037/2323/,union,2037,2323,এনায়েতপুর ইউনিয়ন,http://6noenayetpurup.naogaon.gov.bd,Enayetpur,4
+1604,/60/1990/2037/2324/,union,2037,2324,সফাপুর ইউনিয়ন,http://7nosofapurup.naogaon.gov.bd,Safapur,4
+1605,/60/1990/2037/2325/,union,2037,2325,উত্তরগ্রাম ইউনিয়ন,http://8nouttargramup.naogaon.gov.bd,Uttargram,4
+1606,/60/1990/2037/2327/,union,2037,2327,চেরাগপুর ইউনিয়ন,http://9nocheragpurup.naogaon.gov.bd,Cheragpur,4
+1607,/60/1990/2037/2328/,union,2037,2328,ভীমপুর ইউনিয়ন,http://10novimpurup.naogaon.gov.bd,Vimpur,4
 1608,/60/1990/2037/2478/,union,2037,2478,রাইগাঁ ইউনিয়ন,http://roygonup.naogaon.gov.bd,Roygon,4
 1609,/60/1990/2041/,upazilla,1990,2041,বদলগাছী উপজেলা,http://badalgachi.naogaon.gov.bd,Badalgachi Upazilla,3
-1610,/60/1990/2041/2117/,union,2041,2117,বদলগাছী ইউনিয়ন,http://1nobadalgachiup.naogaon.gov.bd,1nobadalgachi,4
-1611,/60/1990/2041/2118/,union,2041,2118,মথুরাপুর ইউনিয়ন,http://2nomothurapurup.naogaon.gov.bd,2nomothurapur,4
-1612,/60/1990/2041/2119/,union,2041,2119,পাহারপুর ইউনিয়ন,http://3nopaharpurup.naogaon.gov.bd,3nopaharpur,4
-1613,/60/1990/2041/2120/,union,2041,2120,মিঠাপুর ইউনিয়ন,http://4nomithapurup.naogaon.gov.bd,4nomithapur,4
-1614,/60/1990/2041/2121/,union,2041,2121,কোলা ইউনিয়ন,http://5nokolaup.naogaon.gov.bd,5nokola,4
-1615,/60/1990/2041/2122/,union,2041,2122,বিলাশবাড়ী ইউনিয়ন,http://6nobilashbariup.naogaon.gov.bd,6nobilashbari,4
-1616,/60/1990/2041/2123/,union,2041,2123,আধাইপুর ইউনিয়ন,http://7noadhaipurup.naogaon.gov.bd,7noadhaipur,4
-1617,/60/1990/2041/2124/,union,2041,2124,বালুভরা ইউনিয়ন,http://8nobalubharaup.naogaon.gov.bd,8nobalubhara,4
+1610,/60/1990/2041/2117/,union,2041,2117,বদলগাছী ইউনিয়ন,http://1nobadalgachiup.naogaon.gov.bd,Badalgachhi,4
+1611,/60/1990/2041/2118/,union,2041,2118,মথুরাপুর ইউনিয়ন,http://2nomothurapurup.naogaon.gov.bd,Mathurapur,4
+1612,/60/1990/2041/2119/,union,2041,2119,পাহারপুর ইউনিয়ন,http://3nopaharpurup.naogaon.gov.bd,Paharpur,4
+1613,/60/1990/2041/2120/,union,2041,2120,মিঠাপুর ইউনিয়ন,http://4nomithapurup.naogaon.gov.bd,Mithapur,4
+1614,/60/1990/2041/2121/,union,2041,2121,কোলা ইউনিয়ন,http://5nokolaup.naogaon.gov.bd,Kola,4
+1615,/60/1990/2041/2122/,union,2041,2122,বিলাশবাড়ী ইউনিয়ন,http://6nobilashbariup.naogaon.gov.bd,Bilashbari,4
+1616,/60/1990/2041/2123/,union,2041,2123,আধাইপুর ইউনিয়ন,http://7noadhaipurup.naogaon.gov.bd,Adhaipur,4
+1617,/60/1990/2041/2124/,union,2041,2124,বালুভরা ইউনিয়ন,http://8nobalubharaup.naogaon.gov.bd,Balubhara,4
 1618,/60/1990/2042/,upazilla,1990,2042,পত্নিতলা উপজেলা,http://patnitala.naogaon.gov.bd,Patnitala Upazilla,3
-1619,/60/1990/2042/2125/,union,2042,2125,পত্নীতলা ইউনিয়ন,http://1nopatnitalaup.naogaon.gov.bd,1nopatnitala,4
-1620,/60/1990/2042/2126/,union,2042,2126,নিমইল ইউনিয়ন,http://2nonirmailup.naogaon.gov.bd,2nonirmail,4
-1621,/60/1990/2042/2127/,union,2042,2127,দিবর ইউনিয়ন,http://3nodibarup.naogaon.gov.bd,3nodibar,4
-1622,/60/1990/2042/2128/,union,2042,2128,আকবরপুর ইউনিয়ন,http://4noakbarpurup.naogaon.gov.bd,4noakbarpur,4
-1623,/60/1990/2042/2129/,union,2042,2129,মাটিন্দর ইউনিয়ন,http://5nomatindarup.naogaon.gov.bd,5nomatindar,4
-1624,/60/1990/2042/2130/,union,2042,2130,কৃষ্ণপুর ইউনিয়ন,http://6nokrishnapurup.naogaon.gov.bd,6nokrishnapur,4
-1625,/60/1990/2042/2131/,union,2042,2131,পাটিচড়া ইউনিয়ন,http://7nopatichraraup.naogaon.gov.bd,7nopatichrara,4
-1626,/60/1990/2042/2132/,union,2042,2132,নজিপুর ইউনিয়ন,http://8nonazipurup.naogaon.gov.bd,8nonazipur,4
-1627,/60/1990/2042/2133/,union,2042,2133,ঘষনগর ইউনিয়ন,http://9noghasnagarup.naogaon.gov.bd,9noghasnagar,4
-1628,/60/1990/2042/2134/,union,2042,2134,আমাইড় ইউনিয়ন,http://10noamairup.naogaon.gov.bd,10noamair,4
-1629,/60/1990/2042/2135/,union,2042,2135,শিহারা ইউনিয়ন,http://11noahiharaup.naogaon.gov.bd,11noahihara,4
+1619,/60/1990/2042/2125/,union,2042,2125,পত্নীতলা ইউনিয়ন,http://1nopatnitalaup.naogaon.gov.bd,Patnitala,4
+1620,/60/1990/2042/2126/,union,2042,2126,নিমইল ইউনিয়ন,http://2nonirmailup.naogaon.gov.bd,Nirmail,4
+1621,/60/1990/2042/2127/,union,2042,2127,দিবর ইউনিয়ন,http://3nodibarup.naogaon.gov.bd,Dibar,4
+1622,/60/1990/2042/2128/,union,2042,2128,আকবরপুর ইউনিয়ন,http://4noakbarpurup.naogaon.gov.bd,Akbarpur,4
+1623,/60/1990/2042/2129/,union,2042,2129,মাটিন্দর ইউনিয়ন,http://5nomatindarup.naogaon.gov.bd,Matiandar,4
+1624,/60/1990/2042/2130/,union,2042,2130,কৃষ্ণপুর ইউনিয়ন,http://6nokrishnapurup.naogaon.gov.bd,Krishnapur,4
+1625,/60/1990/2042/2131/,union,2042,2131,পাটিচড়া ইউনিয়ন,http://7nopatichraraup.naogaon.gov.bd,Patichara,4
+1626,/60/1990/2042/2132/,union,2042,2132,নজিপুর ইউনিয়ন,http://8nonazipurup.naogaon.gov.bd,Nazipur,4
+1627,/60/1990/2042/2133/,union,2042,2133,ঘষনগর ইউনিয়ন,http://9noghasnagarup.naogaon.gov.bd,Ghoshnagar,4
+1628,/60/1990/2042/2134/,union,2042,2134,আমাইড় ইউনিয়ন,http://10noamairup.naogaon.gov.bd,Amair,4
+1629,/60/1990/2042/2135/,union,2042,2135,শিহারা ইউনিয়ন,http://11noahiharaup.naogaon.gov.bd,Shihara,4
 1630,/60/1990/2043/,upazilla,1990,2043,ধামইরহাট উপজেলা,http://dhamoirhat.naogaon.gov.bd,Dhamoirhat Upazilla,3
-1631,/60/1990/2043/2077/,union,2043,2077,ধামইরহাট ইউনিয়ন,http://1nodhamoirhatup.naogaon.gov.bd,1nodhamoirhat,4
-1632,/60/1990/2043/2079/,union,2043,2079,আলমপুর ইউনিয়ন,http://3noalampurup.naogaon.gov.bd,3noalampur,4
-1633,/60/1990/2043/2080/,union,2043,2080,উমার ইউনিয়ন,http://4noumarup.naogaon.gov.bd,4noumar,4
-1634,/60/1990/2043/2081/,union,2043,2081,আড়ানগর ইউনিয়ন,http://5noaranagarup.naogaon.gov.bd,5noaranagar,4
-1635,/60/1990/2043/2082/,union,2043,2082,জাহানপুর ইউনিয়ন,http://6nojahanpurup.naogaon.gov.bd,6nojahanpur,4
-1636,/60/1990/2043/2084/,union,2043,2084,ইসবপুর ইউনিয়ন,http://7noisabpurup.naogaon.gov.bd,7noisabpur,4
-1637,/60/1990/2043/2085/,union,2043,2085,খেলনা ইউনিয়ন,http://8nokhelnaup.naogaon.gov.bd,8nokhelna,4
-1638,/60/1990/2043/2172/,union,2043,2172,আগ্রাদ্বিগুন ইউনিয়ন,http://2noagradigunup.naogaon.gov.bd,2noagradigun,4
+1631,/60/1990/2043/2077/,union,2043,2077,ধামইরহাট ইউনিয়ন,http://1nodhamoirhatup.naogaon.gov.bd,Dhamoirhat,4
+1632,/60/1990/2043/2079/,union,2043,2079,আলমপুর ইউনিয়ন,http://3noalampurup.naogaon.gov.bd,Alampur,4
+1633,/60/1990/2043/2080/,union,2043,2080,উমার ইউনিয়ন,http://4noumarup.naogaon.gov.bd,Umar,4
+1634,/60/1990/2043/2081/,union,2043,2081,আড়ানগর ইউনিয়ন,http://5noaranagarup.naogaon.gov.bd,Aranagar,4
+1635,/60/1990/2043/2082/,union,2043,2082,জাহানপুর ইউনিয়ন,http://6nojahanpurup.naogaon.gov.bd,Jahanpur,4
+1636,/60/1990/2043/2084/,union,2043,2084,ইসবপুর ইউনিয়ন,http://7noisabpurup.naogaon.gov.bd,Isabpur,4
+1637,/60/1990/2043/2085/,union,2043,2085,খেলনা ইউনিয়ন,http://8nokhelnaup.naogaon.gov.bd,Khelna,4
+1638,/60/1990/2043/2172/,union,2043,2172,আগ্রাদ্বিগুন ইউনিয়ন,http://2noagradigunup.naogaon.gov.bd,Agra Dwigun,4
 1639,/60/1990/2149/,upazilla,1990,2149,নিয়ামতপুর উপজেলা,http://niamatpur.naogaon.gov.bd,Niamatpur Upazilla,3
-1640,/60/1990/2149/2242/,union,2149,2242,হাজীনগর ইউনিয়ন,http://1nohajinagarup.naogaon.gov.bd,1nohajinagar,4
-1641,/60/1990/2149/2244/,union,2149,2244,চন্দননগর ইউনিয়ন,http://2nochandannagarup.naogaon.gov.bd,2nochandannagar,4
-1642,/60/1990/2149/2245/,union,2149,2245,ভাবিচা ইউনিয়ন,http://3nobhabichaup.naogaon.gov.bd,3nobhabicha,4
-1643,/60/1990/2149/2247/,union,2149,2247,নিয়ামতপুর ইউনিয়ন,http://4noniamatpurup.naogaon.gov.bd,4noniamatpur,4
-1644,/60/1990/2149/2248/,union,2149,2248,রসুলপুর ইউনিয়ন,http://5norasulpurup.naogaon.gov.bd,5norasulpur,4
-1645,/60/1990/2149/2264/,union,2149,2264,পাড়ইল ইউনিয়ন,http://6noparoilup.naogaon.gov.bd,6noparoil,4
-1646,/60/1990/2149/2292/,union,2149,2292,শ্রীমন্তপুর ইউনিয়ন,http://7nosremantapurup.naogaon.gov.bd,7nosremantapur,4
-1647,/60/1990/2149/2293/,union,2149,2293,বাহাদুরপুর ইউনিয়ন,http://8nobahadurpurup.naogaon.gov.bd,8nobahadurpur,4
+1640,/60/1990/2149/2242/,union,2149,2242,হাজীনগর ইউনিয়ন,http://1nohajinagarup.naogaon.gov.bd,Hajinagar,4
+1641,/60/1990/2149/2244/,union,2149,2244,চন্দননগর ইউনিয়ন,http://2nochandannagarup.naogaon.gov.bd,Chandannagar,4
+1642,/60/1990/2149/2245/,union,2149,2245,ভাবিচা ইউনিয়ন,http://3nobhabichaup.naogaon.gov.bd,Bhabicha,4
+1643,/60/1990/2149/2247/,union,2149,2247,নিয়ামতপুর ইউনিয়ন,http://4noniamatpurup.naogaon.gov.bd,Niamatpur,4
+1644,/60/1990/2149/2248/,union,2149,2248,রসুলপুর ইউনিয়ন,http://5norasulpurup.naogaon.gov.bd,Rasulpur,4
+1645,/60/1990/2149/2264/,union,2149,2264,পাড়ইল ইউনিয়ন,http://6noparoilup.naogaon.gov.bd,Parail,4
+1646,/60/1990/2149/2292/,union,2149,2292,শ্রীমন্তপুর ইউনিয়ন,http://7nosremantapurup.naogaon.gov.bd,Sreemantapur,4
+1647,/60/1990/2149/2293/,union,2149,2293,বাহাদুরপুর ইউনিয়ন,http://8nobahadurpurup.naogaon.gov.bd,Bahadurpur,4
 1648,/60/1990/2150/,upazilla,1990,2150,মান্দা উপজেলা,http://manda.naogaon.gov.bd,Manda Upazilla,3
-1649,/60/1990/2150/2333/,union,2150,2333,ভারশো ইউনিয়ন,http://1novarshoup.naogaon.gov.bd,1novarsho,4
-1650,/60/1990/2150/2334/,union,2150,2334,ভালাইন ইউনিয়ন,http://2novalainup.naogaon.gov.bd,2novalain,4
-1651,/60/1990/2150/2335/,union,2150,2335,পরানপুর ইউনিয়ন,http://3noparanpurup.naogaon.gov.bd,3noparanpur,4
-1652,/60/1990/2150/2337/,union,2150,2337,মান্দা ইউনিয়ন,http://4nomandaup.naogaon.gov.bd,4nomanda,4
-1653,/60/1990/2150/2340/,union,2150,2340,গনেশপুর ইউনিয়ন,http://5nogoneshpurup.naogaon.gov.bd,5nogoneshpur,4
-1654,/60/1990/2150/2341/,union,2150,2341,মৈনম ইউনিয়ন,http://6nomoinomup.naogaon.gov.bd,6nomoinom,4
-1655,/60/1990/2150/2448/,union,2150,2448,প্রসাদপুর ইউনিয়ন,http://7noproshadpurup.naogaon.gov.bd,7noproshadpur,4
-1656,/60/1990/2150/2451/,union,2150,2451,কুসুম্বা ইউনিয়ন,http://8nokosombaup.naogaon.gov.bd,8nokosomba,4
-1657,/60/1990/2150/2454/,union,2150,2454,তেঁতুলিয়া ইউনিয়ন,http://9notetuliaup.naogaon.gov.bd,9notetulia,4
-1658,/60/1990/2150/2456/,union,2150,2456,নূরুল্যাবাদ ইউনিয়ন,http://10nonurullabadup.naogaon.gov.bd,10nonurullabad,4
-1659,/60/1990/2150/2463/,union,2150,2463,কালিকাপুর ইউনিয়ন,http://11nokalikapurup.naogaon.gov.bd,11nokalikapur,4
-1660,/60/1990/2150/2466/,union,2150,2466,কাঁশোকাপুর ইউনিয়ন,http://12nokashoparaup.naogaon.gov.bd,12nokashopara,4
-1661,/60/1990/2150/2469/,union,2150,2469,কশব ইউনিয়ন,http://13nokoshobup.naogaon.gov.bd,13nokoshob,4
-1662,/60/1990/2150/2473/,union,2150,2473,বিষ্ণপুর ইউনিয়ন,http://14nobisnopurup.naogaon.gov.bd,14nobisnopur,4
+1649,/60/1990/2150/2333/,union,2150,2333,ভারশো ইউনিয়ন,http://1novarshoup.naogaon.gov.bd,Bharsho,4
+1650,/60/1990/2150/2334/,union,2150,2334,ভালাইন ইউনিয়ন,http://2novalainup.naogaon.gov.bd,Bhalain,4
+1651,/60/1990/2150/2335/,union,2150,2335,পরানপুর ইউনিয়ন,http://3noparanpurup.naogaon.gov.bd,Paranpur,4
+1652,/60/1990/2150/2337/,union,2150,2337,মান্দা ইউনিয়ন,http://4nomandaup.naogaon.gov.bd,Manda,4
+1653,/60/1990/2150/2340/,union,2150,2340,গনেশপুর ইউনিয়ন,http://5nogoneshpurup.naogaon.gov.bd,Ganeshpur,4
+1654,/60/1990/2150/2341/,union,2150,2341,মৈনম ইউনিয়ন,http://6nomoinomup.naogaon.gov.bd,Mainam,4
+1655,/60/1990/2150/2448/,union,2150,2448,প্রসাদপুর ইউনিয়ন,http://7noproshadpurup.naogaon.gov.bd,Prasadpur,4
+1656,/60/1990/2150/2451/,union,2150,2451,কুসুম্বা ইউনিয়ন,http://8nokosombaup.naogaon.gov.bd,Kusumba,4
+1657,/60/1990/2150/2454/,union,2150,2454,তেঁতুলিয়া ইউনিয়ন,http://9notetuliaup.naogaon.gov.bd,Tentulia,4
+1658,/60/1990/2150/2456/,union,2150,2456,নূরুল্যাবাদ ইউনিয়ন,http://10nonurullabadup.naogaon.gov.bd,Nurullabad,4
+1659,/60/1990/2150/2463/,union,2150,2463,কালিকাপুর ইউনিয়ন,http://11nokalikapurup.naogaon.gov.bd,Kalikapur,4
+1660,/60/1990/2150/2466/,union,2150,2466,কাঁশোকাপুর ইউনিয়ন,http://12nokashoparaup.naogaon.gov.bd,Kanshopara,4
+1661,/60/1990/2150/2469/,union,2150,2469,কশব ইউনিয়ন,http://13nokoshobup.naogaon.gov.bd,Kashab,4
+1662,/60/1990/2150/2473/,union,2150,2473,বিষ্ণপুর ইউনিয়ন,http://14nobisnopurup.naogaon.gov.bd,Bishnupur,4
 1663,/60/1990/2151/,upazilla,1990,2151,আত্রাই উপজেলা,http://atrai.naogaon.gov.bd,Atrai Upazilla,3
-1664,/60/1990/2151/2594/,union,2151,2594,শাহাগোলা ইউনিয়ন,http://1noshahagolaup.naogaon.gov.bd,1noshahagola,4
-1665,/60/1990/2151/2596/,union,2151,2596,ভোঁপড়া ইউনিয়ন,http://2nobhonparaup.naogaon.gov.bd,2nobhonpara,4
-1666,/60/1990/2151/2597/,union,2151,2597,আহসানগঞ্জ ইউনিয়ন,http://3noahsanganjup.naogaon.gov.bd,3noahsanganj,4
-1667,/60/1990/2151/2598/,union,2151,2598,পাঁচুপুর ইউনিয়ন,http://4nopanchupurup.naogaon.gov.bd,4nopanchupur,4
-1668,/60/1990/2151/2599/,union,2151,2599,বিশা ইউনিয়ন,http://5nobishaup.naogaon.gov.bd,5nobisha,4
-1669,/60/1990/2151/2601/,union,2151,2601,মনিয়ারী ইউনিয়ন,http://6nomaniaryup.naogaon.gov.bd,6nomaniary,4
-1670,/60/1990/2151/2602/,union,2151,2602,কালিকাপুর ইউনিয়ন,http://7nokalikapurup.naogaon.gov.bd,7nokalikapur,4
-1671,/60/1990/2151/2604/,union,2151,2604,হাটকালুপাড়া ইউনিয়ন,http://8nohatkaluparaup.naogaon.gov.bd,8nohatkalupara,4
+1664,/60/1990/2151/2594/,union,2151,2594,শাহাগোলা ইউনিয়ন,http://1noshahagolaup.naogaon.gov.bd,Sahagola,4
+1665,/60/1990/2151/2596/,union,2151,2596,ভোঁপড়া ইউনিয়ন,http://2nobhonparaup.naogaon.gov.bd,Bhonpara,4
+1666,/60/1990/2151/2597/,union,2151,2597,আহসানগঞ্জ ইউনিয়ন,http://3noahsanganjup.naogaon.gov.bd,Ahsanganj,4
+1667,/60/1990/2151/2598/,union,2151,2598,পাঁচুপুর ইউনিয়ন,http://4nopanchupurup.naogaon.gov.bd,Panchupur,4
+1668,/60/1990/2151/2599/,union,2151,2599,বিশা ইউনিয়ন,http://5nobishaup.naogaon.gov.bd,Bisha,4
+1669,/60/1990/2151/2601/,union,2151,2601,মনিয়ারী ইউনিয়ন,http://6nomaniaryup.naogaon.gov.bd,Maniari,4
+1670,/60/1990/2151/2602/,union,2151,2602,কালিকাপুর ইউনিয়ন,http://7nokalikapurup.naogaon.gov.bd,Kalikapur,4
+1671,/60/1990/2151/2604/,union,2151,2604,হাটকালুপাড়া ইউনিয়ন,http://8nohatkaluparaup.naogaon.gov.bd,Hatkalupara,4
 1672,/60/1990/2533/,upazilla,1990,2533,রাণীনগর উপজেলা,http://raninagar.naogaon.gov.bd,Raninagar Upazilla,3
-1673,/60/1990/2533/2653/,union,2533,2653,খট্টেশ্বর রাণীনগর ইউনিয়ন,http://1nokhatteshawrup.naogaon.gov.bd,1nokhatteshawr,4
-1674,/60/1990/2533/2654/,union,2533,2654,কাশিমপুর ইউনিয়ন,http://2nokashimpurup.naogaon.gov.bd,2nokashimpur,4
-1675,/60/1990/2533/2655/,union,2533,2655,গোনা ইউনিয়ন,http://3nogonaup.naogaon.gov.bd,3nogona,4
-1676,/60/1990/2533/2656/,union,2533,2656,পারইল ইউনিয়ন,http://4noparoilup.naogaon.gov.bd,4noparoil,4
-1677,/60/1990/2533/2657/,union,2533,2657,বরগাছা ইউনিয়ন,http://5noborgocaup.naogaon.gov.bd,5noborgoca,4
-1678,/60/1990/2533/2658/,union,2533,2658,কালিগ্রাম ইউনিয়ন,http://6nokaligramup.naogaon.gov.bd,6nokaligram,4
-1679,/60/1990/2533/2659/,union,2533,2659,একডালা ইউনিয়ন,http://7noekdalaup.naogaon.gov.bd,7noekdala,4
-1680,/60/1990/2533/2660/,union,2533,2660,মিরাট ইউনিয়ন,http://8nomiratup.naogaon.gov.bd,8nomirat,4
+1673,/60/1990/2533/2653/,union,2533,2653,খট্টেশ্বর রাণীনগর ইউনিয়ন,http://1nokhatteshawrup.naogaon.gov.bd,Raninagar,4
+1674,/60/1990/2533/2654/,union,2533,2654,কাশিমপুর ইউনিয়ন,http://2nokashimpurup.naogaon.gov.bd,Kashimpur,4
+1675,/60/1990/2533/2655/,union,2533,2655,গোনা ইউনিয়ন,http://3nogonaup.naogaon.gov.bd,Gona,4
+1676,/60/1990/2533/2656/,union,2533,2656,পারইল ইউনিয়ন,http://4noparoilup.naogaon.gov.bd,Parail,4
+1677,/60/1990/2533/2657/,union,2533,2657,বরগাছা ইউনিয়ন,http://5noborgocaup.naogaon.gov.bd,Baragachha,4
+1678,/60/1990/2533/2658/,union,2533,2658,কালিগ্রাম ইউনিয়ন,http://6nokaligramup.naogaon.gov.bd,Kaligram,4
+1679,/60/1990/2533/2659/,union,2533,2659,একডালা ইউনিয়ন,http://7noekdalaup.naogaon.gov.bd,Ekdala,4
+1680,/60/1990/2533/2660/,union,2533,2660,মিরাট ইউনিয়ন,http://8nomiratup.naogaon.gov.bd,Mirat,4
 1681,/60/1990/2534/,upazilla,1990,2534,নওগাঁ সদর উপজেলা,http://naogaonsadar.naogaon.gov.bd,Naogaonsadar Upazilla,3
-1682,/60/1990/2534/2552/,union,2534,2552,বর্ষাইল ইউনিয়ন,http://1nobarshailup.naogaon.gov.bd,1nobarshail,4
-1683,/60/1990/2534/2554/,union,2534,2554,কির্ত্তিপুর ইউনিয়ন,"http://2nokritipurup.naogaon.gov.bd ",2nokritipur,4
-1684,/60/1990/2534/2557/,union,2534,2557,বক্তারপুর ইউনিয়ন,http://3nobaktiarpurup.naogaon.gov.bd,3nobaktiarpur,4
-1685,/60/1990/2534/2581/,union,2534,2581,তিলোকপুর ইউনিয়ন,http://4notilakpurup.naogaon.gov.bd,4notilakpur,4
-1686,/60/1990/2534/2584/,union,2534,2584,হাপানিয়া ইউনিয়ন,http://5nohapaniyaup.naogaon.gov.bd,5nohapaniya,4
-1687,/60/1990/2534/2585/,union,2534,2585,দুবলহাটী ইউনিয়ন,http://6nodubalhatiup.naogaon.gov.bd,6nodubalhati,4
-1688,/60/1990/2534/2586/,union,2534,2586,বোয়ালিয়া ইউনিয়ন,http://7noboaliaup.naogaon.gov.bd,7noboalia,4
-1689,/60/1990/2534/2587/,union,2534,2587,হাঁসাইগাড়ী ইউনিয়ন,http://8nohashaigariup.naogaon.gov.bd,8nohashaigari,4
-1690,/60/1990/2534/2589/,union,2534,2589,চন্ডিপুর ইউনিয়ন,http://9nochandipurup.naogaon.gov.bd,9nochandipur,4
-1691,/60/1990/2534/2590/,union,2534,2590,বলিহার ইউনিয়ন,http://10noboliharup.naogaon.gov.bd,10nobolihar,4
-1692,/60/1990/2534/2592/,union,2534,2592,শিকারপুর ইউনিয়ন,http://11noshekerpurup.naogaon.gov.bd,11noshekerpur,4
-1693,/60/1990/2534/2593/,union,2534,2593,শৈলগাছী ইউনিযন,http://12noshailgachhiup.naogaon.gov.bd,12noshailgachhi,4
+1682,/60/1990/2534/2552/,union,2534,2552,বর্ষাইল ইউনিয়ন,http://1nobarshailup.naogaon.gov.bd,Barshail,4
+1683,/60/1990/2534/2554/,union,2534,2554,কির্ত্তিপুর ইউনিয়ন,http://2nokritipurup.naogaon.gov.bd ,Kirtipur,4
+1684,/60/1990/2534/2557/,union,2534,2557,বক্তারপুর ইউনিয়ন,http://3nobaktiarpurup.naogaon.gov.bd,Baktarpur,4
+1685,/60/1990/2534/2581/,union,2534,2581,তিলোকপুর ইউনিয়ন,http://4notilakpurup.naogaon.gov.bd,Tilakpur,4
+1686,/60/1990/2534/2584/,union,2534,2584,হাপানিয়া ইউনিয়ন,http://5nohapaniyaup.naogaon.gov.bd,Hapania,4
+1687,/60/1990/2534/2585/,union,2534,2585,দুবলহাটী ইউনিয়ন,http://6nodubalhatiup.naogaon.gov.bd,Dubalhati,4
+1688,/60/1990/2534/2586/,union,2534,2586,বোয়ালিয়া ইউনিয়ন,http://7noboaliaup.naogaon.gov.bd,Boalia,4
+1689,/60/1990/2534/2587/,union,2534,2587,হাঁসাইগাড়ী ইউনিয়ন,http://8nohashaigariup.naogaon.gov.bd,Hansaigari,4
+1690,/60/1990/2534/2589/,union,2534,2589,চন্ডিপুর ইউনিয়ন,http://9nochandipurup.naogaon.gov.bd,Chandipur,4
+1691,/60/1990/2534/2590/,union,2534,2590,বলিহার ইউনিয়ন,http://10noboliharup.naogaon.gov.bd,Balihar,4
+1692,/60/1990/2534/2592/,union,2534,2592,শিকারপুর ইউনিয়ন,http://11noshekerpurup.naogaon.gov.bd,Shikarpur,4
+1693,/60/1990/2534/2593/,union,2534,2593,শৈলগাছী ইউনিযন,http://12noshailgachhiup.naogaon.gov.bd,Shailgachhi,4
 1694,/60/1990/2537/,upazilla,1990,2537,পোরশা উপজেলা,http://porsha.naogaon.gov.bd,Porsha Upazilla,3
 1695,/60/1990/2537/2829/,union,2537,2829,নিতপুর ইউনিয়ন,http://nitpurup.naogaon.gov.bd,Nitpur,4
-1696,/60/1990/2537/2830/,union,2537,2830,তেঁতুলিয়া ইউনিয়ন,http://2notetuliaup.naogaon.gov.bd,2notetulia,4
-1697,/60/1990/2537/2831/,union,2537,2831,ছাওড় ইউনিয়ন,http://3nochhaorup.naogaon.gov.bd,3nochhaor,4
-1698,/60/1990/2537/2832/,union,2537,2832,গাঙ্গুরিয়া ইউনিয়ন,http://4noganguriaup.naogaon.gov.bd,4noganguria,4
-1699,/60/1990/2537/2833/,union,2537,2833,ঘাটনগর ইউনিয়ন,http://5noghatnagarup.naogaon.gov.bd,5noghatnagar,4
-1700,/60/1990/2537/2834/,union,2537,2834,মশিদপুর ইউনিয়ন,http://6nomoshidpurup.naogaon.gov.bd,6nomoshidpur,4
+1696,/60/1990/2537/2830/,union,2537,2830,তেঁতুলিয়া ইউনিয়ন,http://2notetuliaup.naogaon.gov.bd,Tentulia,4
+1697,/60/1990/2537/2831/,union,2537,2831,ছাওড় ইউনিয়ন,http://3nochhaorup.naogaon.gov.bd,Chhaor,4
+1698,/60/1990/2537/2832/,union,2537,2832,গাঙ্গুরিয়া ইউনিয়ন,http://4noganguriaup.naogaon.gov.bd,Ganguria,4
+1699,/60/1990/2537/2833/,union,2537,2833,ঘাটনগর ইউনিয়ন,http://5noghatnagarup.naogaon.gov.bd,Ghatnagar,4
+1700,/60/1990/2537/2834/,union,2537,2834,মশিদপুর ইউনিয়ন,http://6nomoshidpurup.naogaon.gov.bd,Mashidpur,4
 1701,/60/1990/2538/,upazilla,1990,2538,সাপাহার উপজেলা,http://sapahar.naogaon.gov.bd,Sapahar Upazilla,3
-1702,/60/1990/2538/2863/,union,2538,2863,সাপাহার ইউনিয়ন,http://1nosapaharup.naogaon.gov.bd,1nosapahar,4
-1703,/60/1990/2538/2865/,union,2538,2865,তিলনা ইউনিয়ন,http://3notilnaup.naogaon.gov.bd,3notilna,4
-1704,/60/1990/2538/2866/,union,2538,2866,আইহাই ইউনিয়ন,http://4noaihaiup.naogaon.gov.bd,4noaihai,4
-1705,/60/1990/2538/2868/,union,2538,2868,শিরন্টী ইউনিয়ন,http://6noshirontiup.naogaon.gov.bd,6noshironti,4
+1702,/60/1990/2538/2863/,union,2538,2863,সাপাহার ইউনিয়ন,http://1nosapaharup.naogaon.gov.bd,Sapahar,4
+1703,/60/1990/2538/2865/,union,2538,2865,তিলনা ইউনিয়ন,http://3notilnaup.naogaon.gov.bd,Tilna,4
+1704,/60/1990/2538/2866/,union,2538,2866,আইহাই ইউনিয়ন,http://4noaihaiup.naogaon.gov.bd,Aihai,4
+1705,/60/1990/2538/2868/,union,2538,2868,শিরন্টী ইউনিয়ন,http://6noshirontiup.naogaon.gov.bd,Shiranti,4
 1706,/60/1990/2538/2869/,union,2538,2869,গোয়ালা ইউনিয়ন,http://goalaup.naogaon.gov.bd,Goala,4
 1707,/60/1990/2538/2870/,union,2538,2870,পাতাড়ী ইউনিয়ন,http://patariup.naogaon.gov.bd,Patari,4
 1708,/65/,divison,10000001,65,খুলনা,http://www.khulnadiv.gov.bd/,Khulna,1
@@ -1999,41 +1999,41 @@
 1999,/65/1037/1044/6169/,union,1044,6169,হাসাদাহ ইউনিয়ন,http://hasadahup.chuadanga.gov.bd,Hasadah,4
 2000,/65/1038/,district,65,1038,কুষ্টিয়া জেলা,http://www.kushtia.gov.bd,Kushtia District,2
 2001,/65/1038/1051/,upazilla,1038,1051,কুষ্টিয়া সদর উপজেলা,http://kushtiasadar.kushtia.gov.bd,Kushtiasadar Upazilla,3
-2002,/65/1038/1051/2038/,union,1051,2038,১ নং হাটশ হরিপুর ইউনিয়ন,http://1nohatashharipurup.kushtia.gov.bd,1nohatashharipur,4
-2003,/65/1038/1051/2039/,union,1051,2039,২ নং বারখাদা ইউনিয়ন,http://2nobarkhadaup.kushtia.gov.bd,2nobarkhada,4
-2004,/65/1038/1051/2040/,union,1051,2040,৩ নং মজমপুর ইউনিয়ন,http://3nomazampurup.kushtia.gov.bd,3nomazampur,4
-2005,/65/1038/1051/2087/,union,1051,2087,৪ নং বটতৈল ইউনিয়ন,http://4nobottailup.kushtia.gov.bd,4nobottail,4
-2006,/65/1038/1051/2088/,union,1051,2088,৫ নং আলামপুর ইউনিয়ন,http://5noalampurup.kushtia.gov.bd,5noalampur,4
-2007,/65/1038/1051/2089/,union,1051,2089,৬ নং জিয়ারাখী ইউনিয়ন,http://6noziaraakhiup.kushtia.gov.bd,6noziaraakhi,4
-2008,/65/1038/1051/2090/,union,1051,2090,৭ নং আইলচারা ইউনিয়ন,http://7noailcharaup.kushtia.gov.bd,7noailchara,4
-2009,/65/1038/1051/2091/,union,1051,2091,৮ নং পাটিকাবাড়ী ইউনিয়ন,http://8nopatikabariup.kushtia.gov.bd,8nopatikabari,4
-2010,/65/1038/1051/2092/,union,1051,2092,৯ নং ঝাউদিয়া ইউনিয়ন,http://9nojhaudiaup.kushtia.gov.bd,9nojhaudia,4
-2011,/65/1038/1051/2093/,union,1051,2093,১০ নং উজানগ্রাম ইউনিযন,http://10noujangramup.kushtia.gov.bd,10noujangram,4
-2012,/65/1038/1051/2094/,union,1051,2094,১১ নং আব্দালপুর ইউনিয়ন,http://11noabdulpurup.kushtia.gov.bd,11noabdulpur,4
-2013,/65/1038/1051/2095/,union,1051,2095,১২ নং হরিনারায়নপুর ইউনিয়ন,http://12noharinarayanpurup.kushtia.gov.bd,12noharinarayanpur,4
-2014,/65/1038/1051/2096/,union,1051,2096,১৩ নং মনোহরদিয়া ইউনিয়ন,http://13nomonohardiaup.kushtia.gov.bd,13nomonohardia,4
-2015,/65/1038/1051/6166/,union,1051,6166,১৪ নং গোস্বামী দুর্গাপুর ইউনিয়ন,http://14nogoswamidurgapurup.kushtia.gov.bd,14nogoswamidurgapur,4
+2002,/65/1038/1051/2038/,union,1051,2038,১ নং হাটশ হরিপুর ইউনিয়ন,http://1nohatashharipurup.kushtia.gov.bd,Hatash Haripur,4
+2003,/65/1038/1051/2039/,union,1051,2039,২ নং বারখাদা ইউনিয়ন,http://2nobarkhadaup.kushtia.gov.bd,Barokhada,4
+2004,/65/1038/1051/2040/,union,1051,2040,৩ নং মজমপুর ইউনিয়ন,http://3nomazampurup.kushtia.gov.bd,Majampur,4
+2005,/65/1038/1051/2087/,union,1051,2087,৪ নং বটতৈল ইউনিয়ন,http://4nobottailup.kushtia.gov.bd,Battail,4
+2006,/65/1038/1051/2088/,union,1051,2088,৫ নং আলামপুর ইউনিয়ন,http://5noalampurup.kushtia.gov.bd,Alampur,4
+2007,/65/1038/1051/2089/,union,1051,2089,৬ নং জিয়ারাখী ইউনিয়ন,http://6noziaraakhiup.kushtia.gov.bd,Jiarkhi,4
+2008,/65/1038/1051/2090/,union,1051,2090,৭ নং আইলচারা ইউনিয়ন,http://7noailcharaup.kushtia.gov.bd,Ailchara,4
+2009,/65/1038/1051/2091/,union,1051,2091,৮ নং পাটিকাবাড়ী ইউনিয়ন,http://8nopatikabariup.kushtia.gov.bd,Patikabari,4
+2010,/65/1038/1051/2092/,union,1051,2092,৯ নং ঝাউদিয়া ইউনিয়ন,http://9nojhaudiaup.kushtia.gov.bd,Jhaudia,4
+2011,/65/1038/1051/2093/,union,1051,2093,১০ নং উজানগ্রাম ইউনিযন,http://10noujangramup.kushtia.gov.bd,Ujangram,4
+2012,/65/1038/1051/2094/,union,1051,2094,১১ নং আব্দালপুর ইউনিয়ন,http://11noabdulpurup.kushtia.gov.bd,Abdalpur,4
+2013,/65/1038/1051/2095/,union,1051,2095,১২ নং হরিনারায়নপুর ইউনিয়ন,http://12noharinarayanpurup.kushtia.gov.bd,Harinarayanpur,4
+2014,/65/1038/1051/2096/,union,1051,2096,১৩ নং মনোহরদিয়া ইউনিয়ন,http://13nomonohardiaup.kushtia.gov.bd,Manohardia,4
+2015,/65/1038/1051/6166/,union,1051,6166,১৪ নং গোস্বামী দুর্গাপুর ইউনিয়ন,http://14nogoswamidurgapurup.kushtia.gov.bd,Goswami Durgapur,4
 2016,/65/1038/1052/,upazilla,1038,1052,কুমারখালী উপজেলা,http://kumarkhali.kushtia.gov.bd,Kumarkhali Upazilla,3
-2017,/65/1038/1052/1821/,union,1052,1821,১ নং কয়া ইউনিয়ন,http://1nokayaup.kushtia.gov.bd,1nokaya,4
-2018,/65/1038/1052/1824/,union,1052,1824,৩ নং জগন্নাথপুর ইউনিয়ন,http://3nojagonnathpurup.kushtia.gov.bd,3nojagonnathpur,4
-2019,/65/1038/1052/1825/,union,1052,1825,৪ নং সদকী ইউনিয়ন,http://4nosadkiup.kushtia.gov.bd,4nosadki,4
-2020,/65/1038/1052/1827/,union,1052,1827,২ নং শিলাইদহ ইউনিয়ন,http://2noshelaidahup.kushtia.gov.bd,2noshelaidah,4
-2021,/65/1038/1052/1831/,union,1052,1831,৫ নং নন্দলালপুর ইউনিয়ন,http://5nonandolalpurup.kushtia.gov.bd,5nonandolalpur,4
-2022,/65/1038/1052/1837/,union,1052,1837,৬ নং চাপড়া ইউনিয়ন,http://6nochapraup.kushtia.gov.bd,6nochapra,4
-2023,/65/1038/1052/1838/,union,1052,1838,৭ নং বাগুলাট ইউনিয়ন,http://7nobagulatup.kushtia.gov.bd,7nobagulat,4
-2024,/65/1038/1052/1839/,union,1052,1839,৮ নং যদুবয়রা ইউনিয়ন,http://8nojaduboyraup.kushtia.gov.bd,8nojaduboyra,4
-2025,/65/1038/1052/1840/,union,1052,1840,৯ নং চাঁদপুর ইউনিয়ন,http://9nochadpurup.kushtia.gov.bd,9nochadpur,4
-2026,/65/1038/1052/1841/,union,1052,1841,১০ নং পান্টি ইউনিয়ন,http://10nopantiup.kushtia.gov.bd,10nopanti,4
-2027,/65/1038/1052/1842/,union,1052,1842,১১ নং চরসাদীপুর ইউনিয়ন,http://11nocharsadipurup.kushtia.gov.bd,11nocharsadipur,4
+2017,/65/1038/1052/1821/,union,1052,1821,১ নং কয়া ইউনিয়ন,http://1nokayaup.kushtia.gov.bd,Kaya,4
+2018,/65/1038/1052/1824/,union,1052,1824,৩ নং জগন্নাথপুর ইউনিয়ন,http://3nojagonnathpurup.kushtia.gov.bd,Jagannathpur,4
+2019,/65/1038/1052/1825/,union,1052,1825,৪ নং সদকী ইউনিয়ন,http://4nosadkiup.kushtia.gov.bd,Sadaki,4
+2020,/65/1038/1052/1827/,union,1052,1827,২ নং শিলাইদহ ইউনিয়ন,http://2noshelaidahup.kushtia.gov.bd,Shilaidaha,4
+2021,/65/1038/1052/1831/,union,1052,1831,৫ নং নন্দলালপুর ইউনিয়ন,http://5nonandolalpurup.kushtia.gov.bd,Nandalalpur,4
+2022,/65/1038/1052/1837/,union,1052,1837,৬ নং চাপড়া ইউনিয়ন,http://6nochapraup.kushtia.gov.bd,Chapra,4
+2023,/65/1038/1052/1838/,union,1052,1838,৭ নং বাগুলাট ইউনিয়ন,http://7nobagulatup.kushtia.gov.bd,Bagulat,4
+2024,/65/1038/1052/1839/,union,1052,1839,৮ নং যদুবয়রা ইউনিয়ন,http://8nojaduboyraup.kushtia.gov.bd,Jadubayra,4
+2025,/65/1038/1052/1840/,union,1052,1840,৯ নং চাঁদপুর ইউনিয়ন,http://9nochadpurup.kushtia.gov.bd,Chandpur,4
+2026,/65/1038/1052/1841/,union,1052,1841,১০ নং পান্টি ইউনিয়ন,http://10nopantiup.kushtia.gov.bd,Panti,4
+2027,/65/1038/1052/1842/,union,1052,1842,১১ নং চরসাদীপুর ইউনিয়ন,http://11nocharsadipurup.kushtia.gov.bd,Sadipur,4
 2028,/65/1038/1053/,upazilla,1038,1053,খোকসা উপজেলা,http://khoksa.kushtia.gov.bd,Khoksa Upazilla,3
-2029,/65/1038/1053/1843/,union,1053,1843,১ নং খোকসা ইউনিয়ন,http://1nokhoksaup.kushtia.gov.bd,1nokhoksa,4
-2030,/65/1038/1053/1844/,union,1053,1844,২ নং ওসমানপুর ইউনিয়ন,http://2noosmanpurup.kushtia.gov.bd,2noosmanpur,4
-2031,/65/1038/1053/1846/,union,1053,1846,৪ নং জানিপুর ইউনিয়ন,http://4nojanipurup.kushtia.gov.bd,4nojanipur,4
-2032,/65/1038/1053/1847/,union,1053,1847,৫ নং শিমুলিয়া ইউনিয়ন,http://5noshimuliaup.kushtia.gov.bd,5noshimulia,4
-2033,/65/1038/1053/1868/,union,1053,1868,৮ নং জয়ন্তীহাজরা ইউনিয়ন,http://8nojoyntihazraup.kushtia.gov.bd,8nojoyntihazra,4
-2034,/65/1038/1053/1875/,union,1053,1875,৯ নং আমবাড়ীয়া ইউনিয়ন,http://9noambariaup.kushtia.gov.bd,9noambaria,4
-2035,/65/1038/1053/1876/,union,1053,1876,৩ নং বেতবাড়ীয়া ইউনিয়ন,http://3nobethbariaup.kushtia.gov.bd,3nobethbaria,4
-2036,/65/1038/1053/1877/,union,1053,1877,৬ নং শোমসপুর ইউনিয়ন,http://6noshomospurup.kushtia.gov.bd,6noshomospur,4
+2029,/65/1038/1053/1843/,union,1053,1843,১ নং খোকসা ইউনিয়ন,http://1nokhoksaup.kushtia.gov.bd,Khoksa,4
+2030,/65/1038/1053/1844/,union,1053,1844,২ নং ওসমানপুর ইউনিয়ন,http://2noosmanpurup.kushtia.gov.bd,Osmanpur,4
+2031,/65/1038/1053/1846/,union,1053,1846,৪ নং জানিপুর ইউনিয়ন,http://4nojanipurup.kushtia.gov.bd,Janipur,4
+2032,/65/1038/1053/1847/,union,1053,1847,৫ নং শিমুলিয়া ইউনিয়ন,http://5noshimuliaup.kushtia.gov.bd,Shimulia,4
+2033,/65/1038/1053/1868/,union,1053,1868,৮ নং জয়ন্তীহাজরা ইউনিয়ন,http://8nojoyntihazraup.kushtia.gov.bd,Joyantihajra,4
+2034,/65/1038/1053/1875/,union,1053,1875,৯ নং আমবাড়ীয়া ইউনিয়ন,http://9noambariaup.kushtia.gov.bd,Ambaria,4
+2035,/65/1038/1053/1876/,union,1053,1876,৩ নং বেতবাড়ীয়া ইউনিয়ন,http://3nobethbariaup.kushtia.gov.bd,Betbaria,4
+2036,/65/1038/1053/1877/,union,1053,1877,৬ নং শোমসপুর ইউনিয়ন,http://6noshomospurup.kushtia.gov.bd,Shamaspur,4
 2037,/65/1038/1053/1879/,union,1053,1879,৭ নং গোপগ্রাম ইউনিয়ন,http://gopgram7up.kushtia.gov.bd,Gopgram7,4
 2038,/65/1038/1054/,upazilla,1038,1054,মিরপুর উপজেলা,http://mirpurkushtia.kushtia.gov.bd,Mirpurkushtia Upazilla,3
 2039,/65/1038/1054/1478/,union,1054,1478,চিথলিয়া ইউনিয়ন,http://chithaliaup.kushtia.gov.bd,Chithalia,4
@@ -2048,7 +2048,7 @@
 2048,/65/1038/1054/1499/,union,1054,1499,কুর্শা ইউনিয়ন,http://kurshaup.kushtia.gov.bd,Kursha,4
 2049,/65/1038/1054/1501/,union,1054,1501,আমবাড়ীয়া ইউনিয়ন,http://ambariaup.kushtia.gov.bd,Ambaria,4
 2050,/65/1038/1054/1502/,union,1054,1502,ধূবইল ইউনিয়ন,http://dhubailup.kushtia.gov.bd,Dhubail,4
-2051,/65/1038/1054/1526/,union,1054,1526,১১ নং মালিহাদ ইউনিয়ন,http://11nomalihadup.kushtia.gov.bd,11nomalihad,4
+2051,/65/1038/1054/1526/,union,1054,1526,১১ নং মালিহাদ ইউনিয়ন,http://11nomalihadup.kushtia.gov.bd,Malihad,4
 2052,/65/1038/1055/,upazilla,1038,1055,দৌলতপুর উপজেলা,http://daulatpur.kushtia.gov.bd,Daulatpur Upazilla,3
 2053,/65/1038/1055/1528/,union,1055,1528,দৌলতপুর ইউনিয়ন,http://daulatpurup.kushtia.gov.bd,Daulatpur,4
 2054,/65/1038/1055/1531/,union,1055,1531,আদাবাড়ীয়া ইউনিয়ন,http://adabariaup.kushtia.gov.bd,Adabaria,4
@@ -2062,15 +2062,15 @@
 2062,/65/1038/1055/1543/,union,1055,1543,প্রাগপুর ইউনিয়ন,http://pragpurup.kushtia.gov.bd,Pragpur,4
 2063,/65/1038/1055/1544/,union,1055,1544,পিয়ারপুর ইউনিয়ন,http://piarpurup.kushtia.gov.bd,Piarpur,4
 2064,/65/1038/1055/1545/,union,1055,1545,মরিচা ইউনিয়ন,http://morichaup.kushtia.gov.bd,Moricha,4
-2065,/65/1038/1055/1547/,union,1055,1547,৯ নং রিফাইতপুর ইউনিয়ন,http://9norefaitpurup.kushtia.gov.bd,9norefaitpur,4
-2066,/65/1038/1055/1585/,union,1055,1585,৫ নং রামকৃষ্ণপুর ইউনিয়ন,http://5noramkrishnopurup.kushtia.gov.bd,5noramkrishnopur,4
+2065,/65/1038/1055/1547/,union,1055,1547,৯ নং রিফাইতপুর ইউনিয়ন,http://9norefaitpurup.kushtia.gov.bd,Refayetpur,4
+2066,/65/1038/1055/1585/,union,1055,1585,৫ নং রামকৃষ্ণপুর ইউনিয়ন,http://5noramkrishnopurup.kushtia.gov.bd,Ramkrishnapur,4
 2067,/65/1038/1056/,upazilla,1038,1056,ভেড়ামারা উপজেলা,http://bheramara.kushtia.gov.bd,Bheramara Upazilla,3
-2068,/65/1038/1056/1628/,union,1056,1628,৫ নং ধরমপুর ইউনিয়ন,http://5nodharampurup.kushtia.gov.bd,5nodharampur,4
-2069,/65/1038/1056/1629/,union,1056,1629,৩ নং বাহিরচর ইউনিয়ন,http://3nobahircharup.kushtia.gov.bd,3nobahirchar,4
-2070,/65/1038/1056/1630/,union,1056,1630,২ নং মোকারিমপুর ইউনিয়ন,http://2nomukarimpurup.kushtia.gov.bd,2nomukarimpur,4
-2071,/65/1038/1056/1631/,union,1056,1631,৬ নং জুনিয়াদহ ইউনিয়ন,http://6nojuniadahup.kushtia.gov.bd,6nojuniadah,4
-2072,/65/1038/1056/1632/,union,1056,1632,চাঁদগ্রাম ইউনিয়ন,http://4nochandgramup.kushtia.gov.bd,4nochandgram,4
-2073,/65/1038/1056/1633/,union,1056,1633,১ নং বাহাদুরপুর ইউনিয়ন,http://1nobahadurpurup.kushtia.gov.bd,1nobahadurpur,4
+2068,/65/1038/1056/1628/,union,1056,1628,৫ নং ধরমপুর ইউনিয়ন,http://5nodharampurup.kushtia.gov.bd,Dharampur,4
+2069,/65/1038/1056/1629/,union,1056,1629,৩ নং বাহিরচর ইউনিয়ন,http://3nobahircharup.kushtia.gov.bd,Bahirchar,4
+2070,/65/1038/1056/1630/,union,1056,1630,২ নং মোকারিমপুর ইউনিয়ন,http://2nomukarimpurup.kushtia.gov.bd,Mokarimpur,4
+2071,/65/1038/1056/1631/,union,1056,1631,৬ নং জুনিয়াদহ ইউনিয়ন,http://6nojuniadahup.kushtia.gov.bd,Juniadaha,4
+2072,/65/1038/1056/1632/,union,1056,1632,চাঁদগ্রাম ইউনিয়ন,http://4nochandgramup.kushtia.gov.bd,Chandgram,4
+2073,/65/1038/1056/1633/,union,1056,1633,১ নং বাহাদুরপুর ইউনিয়ন,http://1nobahadurpurup.kushtia.gov.bd,Bahadurpur,4
 2074,/65/1039/,district,65,1039,মাগুরা জেলা,http://www.magura.gov.bd,Magura District,2
 2075,/65/1039/1057/,upazilla,1039,1057,শালিখা উপজেলা,http://shalikha.magura.gov.bd,Shalikha Upazilla,3
 2076,/65/1039/1057/1226/,union,1057,1226,ধনেশ্বরগাতী ইউনিয়ন,http://dhaneshwargatiup.magura.gov.bd,Dhaneshwargati,4
@@ -2121,21 +2121,21 @@
 2121,/65/2056/2136/2777/,union,2136,2777,দেলুটি ইউনিয়ন,http://delutiup.khulna.gov.bd,Deluti,4
 2122,/65/2056/2136/2778/,union,2136,2778,লস্কর ইউনিয়ন,http://loskorup.khulna.gov.bd,Loskor,4
 2123,/65/2056/2136/2779/,union,2136,2779,গদাইপুর ইউনিয়ন,http://godaipurup.khulna.gov.bd,Godaipur,4
-2124,/65/2056/2136/2780/,union,2136,2780,রাড়ুলী ইউনিয়ন,http://www.raruliup.khulna.gov.bd,Www,4
+2124,/65/2056/2136/2780/,union,2136,2780,রাড়ুলী ইউনিয়ন,http://www.raruliup.khulna.gov.bd,Raruli,4
 2125,/65/2056/2136/2781/,union,2136,2781,চাঁদখালী ইউনিয়ন,http://chandkhaliup.khulna.gov.bd,Chandkhali,4
 2126,/65/2056/2136/2782/,union,2136,2782,সোলাদানা ইউনিয়ন,http://soladanaup.khulna.gov.bd,Soladana,4
 2127,/65/2056/2137/,upazilla,2056,2137,ফুলতলা উপজেলা,http://fultola.khulna.gov.bd,Fultola Upazilla,3
-2128,/65/2056/2137/2336/,union,2137,2336,ফুলতলা ইউনিয়ন,http://www.fultolaup.khulna.gov.bd,Www,4
-2129,/65/2056/2137/2338/,union,2137,2338,দামোদর ইউনিয়ন,http://www.damodarup.khulna.gov.bd,Www,4
-2130,/65/2056/2137/2342/,union,2137,2342,আটরা গিলাতলা ইউনিয়ন,http://www.atragilatolaup.khulna.gov.bd,Www,4
-2131,/65/2056/2137/2343/,union,2137,2343,জামিরা ইউনিয়ন,http://www.jamiraup.khulna.gov.bd,Www,4
+2128,/65/2056/2137/2336/,union,2137,2336,ফুলতলা ইউনিয়ন,http://www.fultolaup.khulna.gov.bd,Phultala,4
+2129,/65/2056/2137/2338/,union,2137,2338,দামোদর ইউনিয়ন,http://www.damodarup.khulna.gov.bd,Damodar,4
+2130,/65/2056/2137/2342/,union,2137,2342,আটরা গিলাতলা ইউনিয়ন,http://www.atragilatolaup.khulna.gov.bd,Atra Gilatala,4
+2131,/65/2056/2137/2343/,union,2137,2343,জামিরা ইউনিয়ন,http://www.jamiraup.khulna.gov.bd,Jamira,4
 2132,/65/2056/2138/,upazilla,2056,2138,দিঘলিয়া উপজেলা,http://digholia.khulna.gov.bd,Digholia Upazilla,3
-2133,/65/2056/2138/2322/,union,2138,2322,সেনহাটি ইউনিয়ন,http://www.senhatiup.khulna.gov.bd,Www,4
-2134,/65/2056/2138/2326/,union,2138,2326,গাজীরহাট ইউনিয়ন,http://www.gajirhatup.khulna.gov.bd,Www,4
-2135,/65/2056/2138/2329/,union,2138,2329,বারাকপুর ইউনিয়ন,http://www.barakpurup.khulna.gov.bd,Www,4
-2136,/65/2056/2138/2330/,union,2138,2330,আড়ংঘাটা ইউনিয়ন,http://www.aronghataup.khulna.gov.bd,Www,4
-2137,/65/2056/2138/2332/,union,2138,2332,যোগীপোল ইউনিয়ন,http://www.jogipolup.khulna.gov.bd,Www,4
-2138,/65/2056/2138/2727/,union,2138,2727,দিঘলিয়া ইউনিয়ন,http://www.digholiaup.khulna.gov.bd,Www,4
+2133,/65/2056/2138/2322/,union,2138,2322,সেনহাটি ইউনিয়ন,http://www.senhatiup.khulna.gov.bd,Senhati,4
+2134,/65/2056/2138/2326/,union,2138,2326,গাজীরহাট ইউনিয়ন,http://www.gajirhatup.khulna.gov.bd,Gazirhat,4
+2135,/65/2056/2138/2329/,union,2138,2329,বারাকপুর ইউনিয়ন,http://www.barakpurup.khulna.gov.bd,Barakpur,4
+2136,/65/2056/2138/2330/,union,2138,2330,আড়ংঘাটা ইউনিয়ন,http://www.aronghataup.khulna.gov.bd,Arangghata,4
+2137,/65/2056/2138/2332/,union,2138,2332,যোগীপোল ইউনিয়ন,http://www.jogipolup.khulna.gov.bd,Jogipol,4
+2138,/65/2056/2138/2727/,union,2138,2727,দিঘলিয়া ইউনিয়ন,http://www.digholiaup.khulna.gov.bd,Dighalia,4
 2139,/65/2056/2139/,upazilla,2056,2139,রূপসা উপজেলা,http://rupsha.khulna.gov.bd,Rupsha Upazilla,3
 2140,/65/2056/2139/2294/,union,2139,2294,আইচগাতী ইউনিয়ন,http://aichgatiup.khulna.gov.bd,Aichgati,4
 2141,/65/2056/2139/2296/,union,2139,2296,শ্রীফলতলা ইউনিয়ন,http://srifoltolaup.khulna.gov.bd,Srifoltola,4
@@ -2145,10 +2145,10 @@
 2145,/65/2056/2140/,upazilla,2056,2140,তেরখাদা উপজেলা,http://terokhada.khulna.gov.bd,Terokhada Upazilla,3
 2146,/65/2056/2140/2302/,union,2140,2302,তেরখাদা ইউনিয়ন,http://terokhadaup.khulna.gov.bd,Terokhada,4
 2147,/65/2056/2140/2310/,union,2140,2310,ছাগলাদহ ইউনিয়ন,http://chagladohoup.khulna.gov.bd,Chagladoho,4
-2148,/65/2056/2140/2311/,union,2140,2311,বারাসাত ইউনিয়ন,http://www.barasatup.khulna.gov.bd,Www,4
-2149,/65/2056/2140/2312/,union,2140,2312,সাচিয়াদাহ ইউনিয়ন,http://www.sochiadahoup.khulna.gov.bd,Www,4
-2150,/65/2056/2140/2315/,union,2140,2315,মধুপুর ইউনিয়ন,http://www.modhupurup.khulna.gov.bd,Www,4
-2151,/65/2056/2140/2316/,union,2140,2316,আজগড়া ইউনিয়ন,http://www.ajgoraup.khulna.gov.bd,Www,4
+2148,/65/2056/2140/2311/,union,2140,2311,বারাসাত ইউনিয়ন,http://www.barasatup.khulna.gov.bd,Barasat,4
+2149,/65/2056/2140/2312/,union,2140,2312,সাচিয়াদাহ ইউনিয়ন,http://www.sochiadahoup.khulna.gov.bd,Sachiadah,4
+2150,/65/2056/2140/2315/,union,2140,2315,মধুপুর ইউনিয়ন,http://www.modhupurup.khulna.gov.bd,Madhupur,4
+2151,/65/2056/2140/2316/,union,2140,2316,আজগড়া ইউনিয়ন,http://www.ajgoraup.khulna.gov.bd,Ajugara,4
 2152,/65/2056/2141/,upazilla,2056,2141,ডুমুরিয়া উপজেলা,http://dumuria.khulna.gov.bd,Dumuria Upazilla,3
 2153,/65/2056/2141/3064/,union,2141,3064,ডুমুরিয়া ইউনিয়ন,http://dumuriaup.khulna.gov.bd,Dumuria,4
 2154,/65/2056/2141/3065/,union,2141,3065,মাগুরাঘোনা ইউনিয়ন,http://magurghonaup.khulna.gov.bd,Magurghona,4
@@ -2165,19 +2165,19 @@
 2165,/65/2056/2141/3077/,union,2141,3077,শরাফপুর ইউনিয়ন,http://shorafpurup.khulna.gov.bd,Shorafpur,4
 2166,/65/2056/2141/3078/,union,2141,3078,মাগুরখালি ইউনিয়ন,http://magurkhaliup.khulna.gov.bd,Magurkhali,4
 2167,/65/2056/2142/,upazilla,2056,2142,বটিয়াঘাটা উপজেলা,http://botiaghata.khulna.gov.bd,Botiaghata Upazilla,3
-2168,/65/2056/2142/2737/,union,2142,2737,বটিয়াঘাটা ইউনিয়ন,http://www.botiaghataup.khulna.gov.bd,Www,4
-2169,/65/2056/2142/2740/,union,2142,2740,আমিরপুর ইউনিয়ন,http://www.amirpurup.khulna.gov.bd,Www,4
-2170,/65/2056/2142/2741/,union,2142,2741,গঙ্গারামপুর ইউনিয়ন,http://www.gongarampurup.khulna.gov.bd,Www,4
-2171,/65/2056/2142/2742/,union,2142,2742,সুরখালী ইউনিয়ন,http://www.surkhaliup.khulna.gov.bd,Www,4
-2172,/65/2056/2142/2746/,union,2142,2746,ভান্ডারকোট ইউনিয়ন,http://www.vandarkotup.khulna.gov.bd,Www,4
-2173,/65/2056/2142/2747/,union,2142,2747,বালিয়াডাঙ্গা ইউনিয়ন,http://www.baliadangaup.khulna.gov.bd,Www,4
-2174,/65/2056/2142/2748/,union,2142,2748,জলমা ইউনিয়ন,http://www.jolmaup.khulna.gov.bd,Www,4
+2168,/65/2056/2142/2737/,union,2142,2737,বটিয়াঘাটা ইউনিয়ন,http://www.botiaghataup.khulna.gov.bd,Batiaghata,4
+2169,/65/2056/2142/2740/,union,2142,2740,আমিরপুর ইউনিয়ন,http://www.amirpurup.khulna.gov.bd,Amirpur,4
+2170,/65/2056/2142/2741/,union,2142,2741,গঙ্গারামপুর ইউনিয়ন,http://www.gongarampurup.khulna.gov.bd,Gangarampur,4
+2171,/65/2056/2142/2742/,union,2142,2742,সুরখালী ইউনিয়ন,http://www.surkhaliup.khulna.gov.bd,Surkhali,4
+2172,/65/2056/2142/2746/,union,2142,2746,ভান্ডারকোট ইউনিয়ন,http://www.vandarkotup.khulna.gov.bd,Bhandarkot,4
+2173,/65/2056/2142/2747/,union,2142,2747,বালিয়াডাঙ্গা ইউনিয়ন,http://www.baliadangaup.khulna.gov.bd,Baliadanga,4
+2174,/65/2056/2142/2748/,union,2142,2748,জলমা ইউনিয়ন,http://www.jolmaup.khulna.gov.bd,Jalma,4
 2175,/65/2056/2143/,upazilla,2056,2143,দাকোপ উপজেলা,http://dakop.khulna.gov.bd,Dakop Upazilla,3
-2176,/65/2056/2143/2749/,union,2143,2749,দাকোপ ইউনিয়ন,http://www.dakopup.khulna.gov.bd,Www,4
+2176,/65/2056/2143/2749/,union,2143,2749,দাকোপ ইউনিয়ন,http://www.dakopup.khulna.gov.bd,Dacope,4
 2177,/65/2056/2143/2762/,union,2143,2762,বাজুয়া ইউনিয়ন,http://bajuaup.khulna.gov.bd,Bajua,4
-2178,/65/2056/2143/2763/,union,2143,2763,কামারখোলা ইউনিয়ন,http://www.kamarkholaup.khulna.gov.bd,Www,4
-2179,/65/2056/2143/2764/,union,2143,2764,তিলডাঙ্গা ইউনিয়ন,http://www.tildangaup.khulna.gov.bd,Www,4
-2180,/65/2056/2143/2765/,union,2143,2765,সুতারখালী ইউনিয়ন,http://www.sutarkhaliup.khulna.gov.bd,Www,4
+2178,/65/2056/2143/2763/,union,2143,2763,কামারখোলা ইউনিয়ন,http://www.kamarkholaup.khulna.gov.bd,Kamarkhola,4
+2179,/65/2056/2143/2764/,union,2143,2764,তিলডাঙ্গা ইউনিয়ন,http://www.tildangaup.khulna.gov.bd,Tildanga,4
+2180,/65/2056/2143/2765/,union,2143,2765,সুতারখালী ইউনিয়ন,http://www.sutarkhaliup.khulna.gov.bd,Sutarkhali,4
 2181,/65/2056/2143/2766/,union,2143,2766,লাউডোব ইউনিয়ন,http://laudobaup.khulna.gov.bd,Laudoba,4
 2182,/65/2056/2143/2767/,union,2143,2767,পানখালী ইউনিয়ন,http://pankhaliup.khulna.gov.bd,Pankhali,4
 2183,/65/2056/2143/2768/,union,2143,2768,বানিশান্তা ইউনিয়ন,http://banishantaup.khulna.gov.bd,Banishanta,4
@@ -2275,7 +2275,7 @@
 2275,/65/3240/3268/5242/,union,3268,5242,চিতলমারী ইউনিয়ন,http://chitalmariup.bagerhat.gov.bd,Chitalmari,4
 2276,/65/3240/3268/5243/,union,3268,5243,চরবানিয়ারী ইউনিয়ন,http://charbaniriup.bagerhat.gov.bd,Charbaniri,4
 2277,/65/3240/3268/5244/,union,3268,5244,সন্তোষপুর ইউনিয়ন,http://shantoshpurup.bagerhat.gov.bd,Shantoshpur,4
-2278,/65/3247/,district,65,3247,ঝিনাইদহ জেলা,http://www.jhenaidah.gov.bd,Jhenaidah Distric,2
+2278,/65/3247/,district,65,3247,ঝিনাইদহ জেলা,http://www.jhenaidah.gov.bd,Jhenaidah District,2
 2279,/65/3247/3283/,upazilla,3247,3283,ঝিনাইদহ সদর উপজেলা,http://sadar.jhenaidah.gov.bd,Sadar Upazilla,3
 2280,/65/3247/3283/5153/,union,3283,5153,সাধুহাটী ইউনিয়ন,http://sadhuhatiup.jhenaidah.gov.bd,Sadhuhati,4
 2281,/65/3247/3283/5155/,union,3283,5155,মধুহাটী ইউনিয়ন,http://modhuhatiup.jhenaidah.gov.bd,Modhuhati,4
@@ -2706,7 +2706,7 @@
 2706,/66/1187/5162/5399/,union,5162,5399,রমাগঞ্জ ইউনিয়ন,http://ramagonjup.bhola.gov.bd,Ramagonj,4
 2707,/66/1187/5162/5400/,union,5162,5400,পশ্চিম চর উমেদ ইউনিয়ন,http://paschimcharumedup.bhola.gov.bd,Paschimcharumed,4
 2708,/66/1187/5162/5401/,union,5162,5401,ফরাজগঞ্জ ইউনিয়ন,http://farajgonjup.bhola.gov.bd,Farajgonj,4
-2709,/66/3107/,district,66,3107,বরগুনা জেলা,http://www.barguna.gov.bd,Barguna Distric,2
+2709,/66/3107/,district,66,3107,বরগুনা জেলা,http://www.barguna.gov.bd,Barguna District,2
 2710,/66/3107/4350/,upazilla,3107,4350,আমতলী উপজেলা,http://amtali.barguna.gov.bd,Amtali Upazilla,3
 2711,/66/3107/4350/4467/,union,4350,4467,আমতলী ইউনিয়ন,http://amtaliup.barguna.gov.bd,Amtali,4
 2712,/66/3107/4350/4468/,union,4350,4468,গুলিশাখালী ইউনিয়ন,http://gulishakhaliup.barguna.gov.bd,Gulishakhali,4
@@ -2802,7 +2802,7 @@
 2802,/67/128/132/886/,union,132,886,দক্ষিন রনিখাই ইউনিয়ন,http://dakkinronikhaiup.sylhet.gov.bd,Dakkinronikhai,4
 2803,/67/128/133/,upazilla,128,133,ফেঞ্চুগঞ্জ উপজেলা,http://fenchuganj.sylhet.gov.bd,Fenchuganj Upazilla,3
 2804,/67/128/133/253/,union,133,253,ঘিলাছড়া ইউনিয়ন,http://ghilachoraup.sylhet.gov.bd,Ghilachora,4
-2805,/67/128/133/628/,union,133,628,ফেঞ্চুগঞ্জ ইউনিয়ন,http://1nofenchuganjup.sylhet.gov.bd,1nofenchuganj,4
+2805,/67/128/133/628/,union,133,628,ফেঞ্চুগঞ্জ ইউনিয়ন,http://1nofenchuganjup.sylhet.gov.bd,Fenchuganj,4
 2806,/67/128/133/635/,union,133,635,উত্তর কুশিয়ারা ইউনিয়ন,http://uttarkushiaraup.sylhet.gov.bd,Uttarkushiara,4
 2807,/67/128/133/636/,union,133,636,উত্তর ফেঞ্চুগঞ্জ ইউনিয়ন,http://uttarfenchuganjup.sylhet.gov.bd,Uttarfenchuganj,4
 2808,/67/128/133/716/,union,133,716,মাইজগাঁও ইউনিয়ন,http://maijgaonup.sylhet.gov.bd,Maijgaon,4
@@ -3039,7 +3039,7 @@
 3039,/67/1000/6205/3005/,union,6205,3005,নুরপুর ইউনিয়ন,http://nurpurup.habiganj.gov.bd,Nurpur,4
 3040,/67/1000/6205/3006/,union,6205,3006,শায়েস্তাগঞ্জ ইউনিয়ন,http://shayestaganjup.habiganj.gov.bd,Shayestaganj,4
 3041,/67/1000/6205/6206/,union,6205,6206,ব্রাহ্মণডুরা ইউনিয়ন,http://brahmanduraup.habiganj.gov.bd,Brahmandura,4
-3042,/67/1008/,district,67,1008,সুনামগঞ্জ জেলা,http://www.sunamganj.gov.bd,Sunamganj Distric,2
+3042,/67/1008/,district,67,1008,সুনামগঞ্জ জেলা,http://www.sunamganj.gov.bd,Sunamganj District,2
 3043,/67/1008/1176/,upazilla,1008,1176,সুনামগঞ্জ সদর উপজেলা,http://sadar.sunamganj.gov.bd,Sadar Upazilla,3
 3044,/67/1008/1176/2371/,union,1176,2371,জাহাঙ্গীরনগর ইউনিয়ন,http://jahangirnagarup.sunamganj.gov.bd,Jahangirnagar,4
 3045,/67/1008/1176/2461/,union,1176,2461,রংগারচর ইউনিয়ন,http://rangarcharup.sunamganj.gov.bd,Rangarchar,4
@@ -4029,7 +4029,7 @@
 4029,/68/3027/3054/3730/,union,3054,3730,গোহালা ইউনিয়ন,http://gohalaup.gopalganj.gov.bd,Gohala,4
 4030,/68/3027/3054/3731/,union,3054,3731,মোচনা ইউনিয়ন,http://mochnaup.gopalganj.gov.bd,Mochna,4
 4031,/68/3027/3054/3732/,union,3054,3732,কাশালিয়া ইউনিয়ন,http://kashaliaup.gopalganj.gov.bd,Kashalia,4
-4032,/68/3028/,district,68,3028,ফরিদপুর জেলা,http://www.faridpur.gov.bd,Faridpur Distric,2
+4032,/68/3028/,district,68,3028,ফরিদপুর জেলা,http://www.faridpur.gov.bd,Faridpur District,2
 4033,/68/3028/3055/,upazilla,3028,3055,ফরিদপুর সদর উপজেলা,http://sadar.faridpur.gov.bd,Sadar Upazilla,3
 4034,/68/3028/3055/4232/,union,3055,4232,ঈশানগোপালপুর ইউনিয়ন,http://ishangopalpurup.faridpur.gov.bd,Ishangopalpur,4
 4035,/68/3028/3055/4233/,union,3055,4233,চরমাধবদিয়া ইউনিয়ন,http://charmadbdiaup.faridpur.gov.bd,Charmadbdia,4
@@ -4644,7 +4644,7 @@
 4644,/69/1987/1942/2911/,union,1942,2911,অন্নদানগর ইউনিয়ন,http://annodanagarup.rangpur.gov.bd,Annodanagar,4
 4645,/69/1987/1942/2912/,union,1942,2912,তাম্বুলপুর ইউনিয়ন,http://tambulpurup.rangpur.gov.bd,Tambulpur,4
 4646,/69/1987/1942/2913/,union,1942,2913,কৈকুড়ী ইউনিয়ন,http://koikuriup.rangpur.gov.bd,Koikuri,4
-4647,/69/3323/,district,69,3323,কুড়িগ্রাম জেলা,http://www.kurigram.gov.bd,Kurigram Distric,2
+4647,/69/3323/,district,69,3323,কুড়িগ্রাম জেলা,http://www.kurigram.gov.bd,Kurigram District,2
 4648,/69/3323/1951/,upazilla,3323,1951,কুড়িগ্রাম সদর উপজেলা,http://kurigramsadar.kurigram.gov.bd,Kurigramsadar Upazilla,3
 4649,/69/3323/1951/3362/,union,1951,3362,হলোখানা ইউনিয়ন,http://holokhanaup.kurigram.gov.bd,Holokhana,4
 4650,/69/3323/1951/3364/,union,1951,3364,ঘোগাদহ ইউনিয়ন,http://ghogadhohup.kurigram.gov.bd,Ghogadhoh,4
@@ -4808,7 +4808,7 @@
 4808,/6175/2001/2067/2193/,union,2067,2193,কানিহারী ইউনিয়ন,http://kanihariup.mymensingh.gov.bd,Kanihari,4
 4809,/6175/2001/2067/2195/,union,2067,2195,ত্রিশাল ইউনিয়ন,http://trishalup.mymensingh.gov.bd,Trishal,4
 4810,/6175/2001/2067/2210/,union,2067,2210,হরিরামপুর ইউনিয়ন,http://harirampurup.mymensingh.gov.bd,Harirampur,4
-4811,/6175/2001/2067/2211/,union,2067,2211,সাখুয়া ইউনিয়ন,http://www.sakhuaup.mymensingh.gov.bd,Www,4
+4811,/6175/2001/2067/2211/,union,2067,2211,সাখুয়া ইউনিয়ন,http://www.sakhuaup.mymensingh.gov.bd,Sakhua,4
 4812,/6175/2001/2067/2212/,union,2067,2212,বালিপাড়া ইউনিয়ন,http://baliparaup.mymensingh.gov.bd,Balipara,4
 4813,/6175/2001/2067/2213/,union,2067,2213,মোক্ষপুর ইউনিয়ন,http://mokshapurup.mymensingh.gov.bd,Mokshapur,4
 4814,/6175/2001/2067/2214/,union,2067,2214,মঠবাড়ী ইউনিয়ন,http://mathbariup.mymensingh.gov.bd,Mathbari,4
@@ -5022,7 +5022,7 @@
 5022,/6175/2257/4191/4212/,union,4191,4212,৫নং বকসীগঞ্জ ইউনিয়ন,http://bakshigonjup.jamalpur.gov.bd,Bakshigonj,4
 5023,/6175/2257/4191/4213/,union,4191,4213,৬নং নিলক্ষিয়া ইউনিয়ন,http://nilakhiaup.jamalpur.gov.bd,Nilakhia,4
 5024,/6175/2257/4191/4214/,union,4191,4214,৭নং মেরুরচর ইউনিয়ন,http://merurcharup.jamalpur.gov.bd,Merurchar,4
-5025,/6175/2262/,district,6175,2262,নেত্রকোণা জেলা,http://www.netrokona.gov.bd,Netrokona Distric,2
+5025,/6175/2262/,district,6175,2262,নেত্রকোণা জেলা,http://www.netrokona.gov.bd,Netrakona District,2
 5026,/6175/2262/2267/,upazilla,2262,2267,বারহাট্টা উপজেলা,http://barhatta.netrokona.gov.bd,Barhatta Upazilla,3
 5027,/6175/2262/2267/3776/,union,2267,3776,আসমা ইউনিয়ন,http://asma.netrokona.gov.bd,Asma,4
 5028,/6175/2262/2267/3777/,union,2267,3777,চিরাম ইউনিয়ন,http://chhiram.netrokona.gov.bd,Chhiram,4
@@ -9109,3 +9109,89 @@
 9356,,thana_ward,58565,62483,ওয়ার্ড নং ১৭,,WARD NO. 17,5
 9357,,thana_ward,58565,62484,ওয়ার্ড নং ১৮,,WARD NO. 18,5
 9358,,country,0,10000001,বাংলাদেশ,,Bangladesh,0
+9359,,pourasabha,1930,58845,পীরগঞ্জ পৌরসভা,,PIRGANJ POURASABHA,4
+9360,,pourasabha,1931,900001,রানীশংকৈল পৌরসভা,,RANISHANKAIL POURASABHA,4
+9361,/66/996/235/900002/,union,235,900002,চন্দ্রদ্বীপ,,Chandradwip,4
+9362,/36/3245/3291/900003/,union,3291,900003,কুরু কপাতা,,Kurukpata,4
+9363,/36/3245/3291/900004/,union,3291,900004,নয়াপাড়া,,Nayapara,4
+9364,/36/3245/3291/900005/,special_area,3291,900005,ক্যান্টনমেন্ট,,Cantonment,4
+9365,/36/2075/2532/900006/,union,2532,900006,দ্বাদশগ্রাম,,Dwadashgram,4
+9366,/36/3152/4976/900007/,union,4976,900007,খিরাম,,Khiram,4
+9367,/36/3152/3458/900008/,union,3458,900008,পদুয়া,,Padua,4
+9368,/36/3152/4968/900009/,union,4968,900009,দীর্ঘাপাড়,,Dirghapar,4
+9369,/36/3152/4973/900010/,union,4973,900010,ধর্মপুর,,Dharmapur,4
+9370,/36/3152/4838/900011/,special_area,4838,900011,বাংলাদেশ মিলিটারি একাডেমি,,Bangladesh Military Academy,4
+9371,/36/28/111/900012/,union,111,900012,ভারেল্লা দক্ষিণ,,Bharella Dakshin,4
+9372,/36/28/111/900013/,union,111,900013,ভারেল্লাউত্তর,,Bharella Uttar,4
+9373,/36/28/83/900014/,union,83,900014,মালীগাঁও,,Maligaon,4
+9374,/36/28/88/900015/,special_area,88,900015,কুমিল্লা ক্যান্টনমেন্ট,,Comilla Cantonment,4
+9375,/36/3237/3252/900016/,union,3252,900016,লক্ষ্যারচর,,Lakkhyarchar,4
+9376,/36/3237/3252/900017/,union,3252,900017,পূর্ব বড় ভেওলা,,Purba Bara Bheola,4
+9377,/36/3238/6190/900018/,union,6190,900018,সিন্দুকছড়ি,,Sindukchhari,4
+9378,/36/3238/3279/900019/,union,3279,900019,উ̣াছড়ি,,Ultachhari,4
+9379,/36/1006/4427/900020/,union,4427,900020,চানন্দী,,Chanandi,4
+9380,/36/1006/4427/900021/,union,4427,900021,হরণী,,Harni,4
+9381,/36/1002/4892/900022/,union,4892,900022,বড়থলী,,Barathali,4
+9382,/68/2942/2379/900023/,special_area,2379,900023,সাভার ক্যান্টনমেন্ট,,Savar Cantonment,4
+9383,/68/3028/3062/900024/,union,3062,900024,আড়পাড়া,,Arpara,4
+9384,/68/3028/3062/900025/,union,3062,900025,কোরকদি,,Korakdi,4
+9385,/68/150/158/900026/,union,158,900026,ভাওয়ালগড়,,Bhawalgar,4
+9386,/68/150/158/900027/,union,158,900027,পিরু জালী,,Pirujali,4
+9387,/68/150/158/900028/,special_area,158,900028,গাজীপুর সেনানিবাস,,Gazipur Cantonment,4
+9388,/68/3027/3053/900029/,union,3053,900029,সু য়াগ্রাম,,Suagram,4
+9389,/68/3026/3048/900030/,union,3048,900030,পূর্বএনায়েতনগর,,Purbaenayetnagar,4
+9390,/68/3024/3032/900031/,union,3032,900031,ধাইদিয়া,,Dhaidia,4
+9391,/68/1007/1178/900032/,union,1178,900032,ফতুল্লা,,Fatullah,4
+9392,/68/71/77/900033/,union,77,900033,মির্জাপুর,,Mirzapur,4
+9393,/68/71/77/900034/,union,77,900034,রাধানগর,,Radhanagar,4
+9394,/68/991/3041/900035/,union,3041,900035,চামটা,,Chamta,4
+9395,/68/1960/1964/900036/,union,1964,900036,লক্ষ্মীন্দর,,Lakkhindar,4
+9396,/68/1960/1964/900037/,union,1964,900037,সাগরদিঘী,,Sagardighi,4
+9397,/68/1960/1964/900038/,union,1964,900038,সংগ্রামপুর,,Sangrampur,4
+9398,/68/1960/1964/900039/,special_area,1964,900039,শহীদ সালাহউদ্দিন সেনানিবাস,,Shaheed Salahuddin Senanibas,4
+9399,/68/1960/1967/900040/,union,1967,900040,বেরীবাইদ,,Beribaid,4
+9400,/68/1960/1967/900041/,union,1967,900041,ফুলবাগচালা,,Fulbagchala,4
+9401,/68/1960/1967/900042/,union,1967,900042,কুড়াগাছা,,Kuragachha,4
+9402,/68/1960/1967/900043/,union,1967,900043,কুড়ালিয়া,,Kuralia,4
+9403,/68/1960/1967/900044/,union,1967,900044,মহিষমারা,,Mahishmara,4
+9404,/65/3240/3267/900045/,special_area,3267,900045,চাঁদপাই রেঞ্জ,,Chandpai Range,4
+9405,/65/3240/3263/900046/,special_area,3263,900046,ন্দরবন (সংরক্ষিতসু বনাঞ্চল),,Sundarban (reserve Forest),4
+9406,/65/1037/1041/900047/,union,1041,900047,গড়াইটুপি,,Garaitupi,4
+9407,/65/1037/1041/900048/,union,1041,900048,মাখালডাঙ্গা,,Makhaldanga,4
+9408,/65/1037/1041/900049/,union,1041,900049,নেহালপুর,,Nehalpur,4
+9409,/65/1037/1043/900050/,union,1043,900050,নাটুদহ,,Natudaha,4
+9410,/65/1037/1044/900051/,union,1044,900051,কেডিকে,,Kdk,4
+9411,/65/1037/1044/900052/,union,1044,900052,মনোহরপুর,,Manoharpur,4
+9412,/65/61/97/900053/,union,97,900053,হাসানপুর,,Hasanpur,4
+9413,/65/61/97/900054/,union,97,900054,সাতবাড়িয়া,,Satbaria,4
+9414,/65/61/98/900055/,special_area,98,900055,যশোর ক্যান্টনমেন্ট,,Jessore Cantonment,4
+9415,/65/2056/2143/900056/,special_area,2143,900056,নলিয়ান রেঞ্জ,,Nalian Range,4
+9416,/65/2056/2137/900057/,special_area,2137,900057,জাহানাবাদ ক্যান্টনমেন্ট,,Jahanabad Cantonment,4
+9417,/65/70/105/900058/,special_area,105,900058,সাতক্ষীরা রেঞ্জ,,Satkhira Range,4
+9418,/60/993/1131/900059/,special_area,1131,900059,বগুড়া ক্যান্টনমেন্ট,,Bogra Cantonment,4
+9419,/60/160/169/900060/,union,169,900060,কয়ড়া,,Kayra,4
+9420,/69/994/1120/900061/,union,1120,900061,পলাশবাড়ি,,Palashbari,4
+9421,/69/1080/1094/900062/,special_area,1094,900062,সৈয়দপুর ক্যান্টনমেন্ট,,Saidpur Cantonment,4
+9422,/69/1987/1935/900063/,special_area,1935,900063,রংপুর ক্যান্টনমেন্ট,,Rangpur Cantonment,4
+9423,,pouro_ward,900001,900064,ওয়ার্ড নং ০১,,WARD NO. 01,5
+9424,,pouro_ward,900001,900065,ওয়ার্ড নং ০২,,WARD NO. 02,5
+9425,,pouro_ward,900001,900066,ওয়ার্ড নং ০৩,,WARD NO. 03,5
+9426,,pouro_ward,900001,900067,ওয়ার্ড নং ০৪,,WARD NO. 04,5
+9427,,pouro_ward,900001,900068,ওয়ার্ড নং ০৫,,WARD NO. 05,5
+9428,,pouro_ward,900001,900069,ওয়ার্ড নং ০৬,,WARD NO. 06,5
+9429,,pouro_ward,900001,900070,ওয়ার্ড নং ০৭,,WARD NO. 07,5
+9430,,pouro_ward,900001,900071,ওয়ার্ড নং ০৮,,WARD NO. 08,5
+9431,,pouro_ward,900001,900072,ওয়ার্ড নং ০৯,,WARD NO. 09,5
+9432,,pouro_ward,58850,900073,ওয়ার্ড নং ০১,,WARD NO. 01,5
+9433,,pouro_ward,58850,900074,ওয়ার্ড নং ০২,,WARD NO. 02,5
+9434,,pouro_ward,58850,900075,ওয়ার্ড নং ০৩,,WARD NO. 03,5
+9435,,pouro_ward,58850,900076,ওয়ার্ড নং ০৪,,WARD NO. 04,5
+9436,,pouro_ward,58850,900077,ওয়ার্ড নং ০৫,,WARD NO. 05,5
+9437,,pouro_ward,58850,900078,ওয়ার্ড নং ০৬,,WARD NO. 06,5
+9438,,pouro_ward,58850,900079,ওয়ার্ড নং ০৭,,WARD NO. 07,5
+9439,,pouro_ward,58850,900080,ওয়ার্ড নং ০৮,,WARD NO. 08,5
+9440,,pouro_ward,58850,900081,ওয়ার্ড নং ০৯,,WARD NO. 09,5
+9441,/67/1008/2801/900082/,union,2801,900082,জামালগঞ্জ উত্তর,,Jamalganj Uttar,4
+9442,/67/1008/1176/900083/,union,1176,900083,কুরবাননগর,,Kurbannagar,4
+9443,/67/128/134/900084/,union,134,900084,বাঘা,,Bagha,4
+9444,/67/128/138/900085/,special_area,138,900085,জালালাবাদ সেনানিবাস,,Jalalabad Cantonment,4

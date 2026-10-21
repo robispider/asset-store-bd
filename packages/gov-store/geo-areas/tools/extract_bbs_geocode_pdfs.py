@@ -159,27 +159,48 @@ GLYPHS = {
     'ͼ': 'স্থ', 'Ή': 'স্ব', 'α': '্য',
     # learned from English transliterations of mauza/village names
     '͔': 'ষ্ণ', '͵': 'স্ট', 'Ι': 'হ্ম', 'ʒ': 'ন্স', 'ˊ': 'ব্ব', 'ˌ': 'ব্ল', '̪': 'ল্প',
-    'ǈ': 'জ্জ', 'ɲ': 'ন্ট', 'Ȗ': 'ণ্ঠ', 'ș': 'ন্ডু',
+    'ǈ': 'জ্জ', 'ɲ': 'ন্ট', 'Ȗ': 'ণ্ঠ', 'ș': 'ন্ডু', 'Ǐ': 'জ্ঞ', 'Ń': 'আঁ', 'Ŭ': 'ক্',
     # reph forms
     'Ǆ': 'র্জ', 'ǫ': 'র্ট', 'ǿ': 'র্ড', 'Ȑ': 'র্ণ', 'ʗ': 'র্প', 'ʻ': 'র্ব', '˨': 'র্ম',
     '̹': 'র্শ', 'Ə': 'র্ঘ', 'Ź': 'র্গ', 'Ɇ': 'র্দ', 'Ȧ': 'র্ত', '̎': 'র্য', '̝': 'র্ল',
     'Ŋ': 'র্ক', 'ɰ': 'র্ন',
-    # candrabindu
-    'ȶ': 'ঁ',
+    # consonant + candrabindu ('έȶȣিলয়া' -> 'তেঁতুলিয়া')
+    'ȶ': 'তঁ',
 }
 PREFIX_SIGNS = 'িেৈ'  # ি ে ৈ are drawn before their consonant
 CONSONANT = re.compile(r'[ক-হড়-য়ৎ]')
+
+
+REPH = 'ί'  # a standalone reph, drawn after the cluster it belongs before
+
+
+def move_reph(text):
+    """'অজুίন' -> 'অর্জুন', 'সাকুίলার' -> 'সার্কুলার'."""
+    chars = list(text)
+    while REPH in chars:
+        k = chars.index(REPH)
+        del chars[k]
+        j = k - 1
+        while j >= 0 and not CONSONANT.match(chars[j]):
+            j -= 1
+        while j >= 2 and chars[j - 1] == '্' and CONSONANT.match(chars[j - 2]):
+            j -= 2
+        chars[max(j, 0):max(j, 0)] = ['র', '্']
+    return ''.join(chars)
 
 
 def repair_bangla(raw):
     if not raw:
         return '', set()
     text = ''.join(GLYPHS.get(ch, ch) for ch in raw)
-    unknown = {ch for ch in text if ord(ch) > 0x7f and not BENGALI.match(ch) and ch not in ' -().,/'}
     out, i = [], 0
     chars = list(text)
     while i < len(chars):
         ch = chars[i]
+        # A candrabindu can sit between the sign and its consonant ('েঁতুলিয়া').
+        bindu = 'ঁ' if ch in PREFIX_SIGNS and i + 2 < len(chars) and chars[i + 1] == 'ঁ' else ''
+        if bindu:
+            del chars[i + 1]
         if ch in PREFIX_SIGNS and i + 1 < len(chars) and CONSONANT.match(chars[i + 1]):
             # Move the sign after the following consonant cluster (C(্C)*).
             j = i + 2
@@ -193,12 +214,14 @@ def repair_bangla(raw):
                 sign, j = 'ো', j + 1
             elif ch == 'ে' and j < len(chars) and chars[j] == 'ৗ':  # ে + ৗ -> ৌ
                 sign, j = 'ৌ', j + 1
-            out.append(cluster + sign)
+            out.append(cluster + sign + bindu)
             i = j
             continue
-        out.append(ch)
+        out.append(ch + bindu)
         i += 1
-    text = ''.join(out)
+    text = move_reph(''.join(out))
+    unknown = {ch for ch in text if ord(ch) > 0x7f and not BENGALI.match(ch) and ch not in ' -().,/'}
+    text = re.sub(r'্\s+', '্', text)  # a hasanta never ends a word here
     # A dependent vowel sign never starts a word: the space is a PDF word split.
     text = re.sub(r'\s+(?=[া-ৌৗ])', '', text)
     # So is a lone consonant after a Bangla word ('পশ্চি ম' -> 'পশ্চিম').

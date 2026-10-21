@@ -117,7 +117,7 @@
                     @if ($geo)
                         <details class="govorg-muted">
                             <summary>{{ __('organization_labels::office.technical_details') }}</summary>
-                            <p class="govorg-mono govorg-flush">{{ __('organization_labels::office.area_code') }} {{ $geo->hid }} · {{ __('organization_labels::office.area_level') }} {{ $geo->GeoLevel }} · {{ __('organization_labels::office.location_id') }} {{ $location->id }}</p>
+                            <p class="govorg-mono govorg-flush">{{ __('organization_labels::office.area_code') }} {{ $geo->bbs_code ?? $geo->hid }} · {{ __('organization_labels::office.area_level') }} {{ $geo->GeoLevel }} · {{ __('organization_labels::office.location_id') }} {{ $location->id }}</p>
                         </details>
                     @endif
                 </div>
