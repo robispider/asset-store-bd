@@ -60,6 +60,7 @@ class TrackingServiceProvider extends ServiceProvider
         $this->registerObservers();
         $this->registerConsoleCommands();
         $this->registerMetadataBridge();
+        $this->registerGeoView();
         $this->registerEvents();
         $this->registerThemeAssets();
 
@@ -146,6 +147,17 @@ class TrackingServiceProvider extends ServiceProvider
                 TrackingRebuildDeliveryFactsCommand::class,
                 TrackingRebuildProjectionsCommand::class, // Added Rebuilder Command
             ]);
+        }
+    }
+
+    /** Programme map source and preset for the geo view (geo-view plan phase E), only when geo-view is installed. */
+    protected function registerGeoView(): void
+    {
+        if ($this->app->bound(\GovStore\GeoView\Registry\GeoSourceRegistry::class)) {
+            $this->app->make(\GovStore\GeoView\Registry\GeoSourceRegistry::class)
+                ->register(\GovStore\Tracking\Geo\TrackingProgrammeGeoSource::class, 'tracking.programme');
+            $this->app->make(\GovStore\GeoView\Registry\GeoPresetRegistry::class)
+                ->merge(require __DIR__.'/../config/geo-view-presets.php');
         }
     }
 

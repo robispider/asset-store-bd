@@ -5,7 +5,7 @@
     $authz=app(\GovStore\Tracking\Services\TrackingAuthorizationService::class);
     $digits=fn($value)=>\GovStore\Tracking\Services\TrackingMonitorMetrics::digits($value);
     $charts=app(\GovStore\Tracking\Services\TrackingMonitorCharts::class)->programme($monitor);
-    $tiles=app(\GovStore\Tracking\Services\TrackingTileMap::class)->tiles($monitor['offices'],$initiative->id);
+    $geoView=app()->bound(\GovStore\GeoView\Registry\GeoSourceRegistry::class);
     $healthCounts=collect($monitor['codes'])->where('status','ACTIVE')->countBy('health');
     $firstAttention=$monitor['attention'][0] ?? null;
     $valueSpark=[]; $runningValue=0;
@@ -57,8 +57,9 @@
         @empty<tr><td colspan="9">{{ __('govtracking::general.monitor.no_codes') }}</td></tr>@endforelse
         </tbody></x-gs::table>
     </section>
-    <section class="gs-tracking-panel"><h2>{{ __('govtracking::general.monitor.where') }}</h2><p class="gs-tracking-muted">{{ __('govtracking::general.monitor.schematic') }}</p>
-        <div class="gs-tracking-split"><x-gs::tile-map :tiles="$tiles" /><div>@foreach($monitor['offices'] as $office)<a class="gs-tracking-office-rank" href="{{ route('gov.tracking.initiatives.offices.show',[$initiative->id,$office['id']]) }}"><strong>{{ $office['name'] }}</strong><span>{{ number_format($office['received']) }} {{ __('govtracking::general.monitor.received') }}</span><span>{{ $office['share']===null ? __('govtracking::general.monitor.no_target') : number_format($office['share']*100,1).'%' }}</span></a>@endforeach</div></div>
+    <section class="gs-tracking-panel gs-tracking-where"><h2>{{ __('govtracking::general.monitor.where') }}</h2><p class="gs-tracking-muted">{{ __('govtracking::general.geo.note') }}</p>
+        @if($geoView)<x-geoview::map id="programme-map" preset="tracking.programme" :params="['initiative' => $initiative->id] + $monitor['filters']" bind-filters=".gs-tracking-filters" :label="__('govtracking::general.geo.map_label')" />@endif
+        <div class="gs-tracking-office-ranks">@foreach($monitor['offices'] as $office)<a class="gs-tracking-office-rank" href="{{ route('gov.tracking.initiatives.offices.show',[$initiative->id,$office['id']]) }}"><strong>{{ $office['name'] }}</strong><span>{{ number_format($office['received']) }} {{ __('govtracking::general.monitor.received') }}</span><span>{{ $office['share']===null ? __('govtracking::general.monitor.no_target') : number_format($office['share']*100,1).'%' }}</span></a>@endforeach</div>
     </section>
     <section class="gs-tracking-panel"><h2>{{ __('govtracking::general.monitor.what') }}</h2>@include('govtracking::monitor.items',['items'=>$monitor['items']]) @include('govtracking::monitor.suppliers',['receipts'=>$monitor['receipts']])</section>
     <div class="gs-tracking-split"><section class="gs-tracking-panel"><h2>{{ __('govtracking::general.monitor.activity') }}</h2><ol class="gs-tracking-activity">@forelse($monitor['activity'] as $event)<li><time>{{ $event->occurred_at }}</time><span>{{ __('govtracking::general.monitor.events.'.$event->event_type) }}</span><small>{{ (json_decode($event->metadata ?? '{}',true)['tracking_code'] ?? '') }}</small></li>@empty<li>{{ __('govtracking::general.monitor.no_activity') }}</li>@endforelse</ol></section>

@@ -3,7 +3,6 @@
 namespace Tests\Feature\GovStore\GeoView;
 
 use GovStore\GeoAreas\Services\GeoTree;
-use GovStore\GeoView\Http\Controllers\GeoDataController;
 use GovStore\GeoView\Registry\GeoSourceRegistry;
 use GovStore\GeoView\Services\OfficeLocator;
 use App\Models\User;
@@ -11,7 +10,6 @@ use Mockery;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\TestCase;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -94,29 +92,5 @@ abstract class GeoViewTestCase extends TestCase
         auth()->setUser($user);
 
         return $user;
-    }
-
-    /** Calls the data API controller the way the route does (the route adds web, auth and throttle). */
-    protected function api(string $action, string $source, array $query): \Symfony\Component\HttpFoundation\Response
-    {
-        $request = Request::create('/gov-store/api/geo-view/sources/'.$source.'/'.$action, 'GET', $query);
-        $request->headers->set('Accept', 'application/json');
-        $request->setUserResolver(fn () => auth()->user());
-        app()->instance('request', $request);
-        try {
-            return app(GeoDataController::class)->$action($request, $source);
-        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
-            return response()->json(['message' => $e->getMessage()], $e->getStatusCode());
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['message' => 'invalid', 'errors' => $e->errors()], 422);
-        }
-    }
-
-    protected function payload(string $source, array $query): array
-    {
-        $response = $this->api('data', $source, $query);
-        $this->assertSame(200, $response->getStatusCode(), (string) $response->getContent());
-
-        return json_decode((string) $response->getContent(), true);
     }
 }

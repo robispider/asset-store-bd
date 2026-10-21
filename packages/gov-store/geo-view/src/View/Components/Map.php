@@ -64,11 +64,20 @@ class Map extends Component
         } catch (\Illuminate\Validation\ValidationException) {
             return null;
         }
-        if (! $source->authorize($request)) {
+        try {
+            if (! $source->authorize($request)) {
+                return null;
+            }
+
+            return app(GeoDataService::class)->payload($source, $request);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface) {
+            return null;
+        } catch (\Throwable $e) {
+            // The host page must still render; the browser retries through the data API.
+            report($e);
+
             return null;
         }
-
-        return app(GeoDataService::class)->payload($source, $request);
     }
 
     private function startArea(): int|string

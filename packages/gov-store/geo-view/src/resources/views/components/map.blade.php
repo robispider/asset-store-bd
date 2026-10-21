@@ -1,15 +1,16 @@
 {{-- <x-geoview::map>: x-gs::geo-map with the resolved config, the first payload and the server-rendered table. --}}
 @php
     $geoRows = [];
+    $geoDigits = fn ($v) => str_starts_with(app()->getLocale(), 'bn') ? strtr((string) $v, ['0' => '০', '1' => '১', '2' => '২', '3' => '৩', '4' => '৪', '5' => '৫', '6' => '৬', '7' => '৭', '8' => '৮', '9' => '৯']) : (string) $v;
     $geoLayer = $payload['layer'] ?? null;
     foreach (($payload['areas'] ?? []) as $geoId => $geoArea) {
         $geoValue = null;
         if (in_array($geoArea['state'], ['ok', 'partial'], true) && ($geoArea['value'] ?? null) !== null) {
-            $geoValue = $geoArea['display'] ?? match ($geoLayer['format'] ?? 'integer') {
+            $geoValue = $geoArea['display'] ?? $geoDigits(match ($geoLayer['format'] ?? 'integer') {
                 'percent' => number_format($geoArea['value'] * 100, 1).'%',
                 'decimal' => number_format($geoArea['value'], 2),
                 default => number_format($geoArea['value']),
-            };
+            });
         }
         $geoRows[] = ['id' => $geoId, 'name' => $geoArea['name'], 'value' => $geoValue, 'offices' => $geoArea['offices'] ?? null, 'state' => $geoArea['state']];
     }
@@ -32,14 +33,14 @@
                     <tr>
                         <td>{{ $geoRow['name'] }}</td>
                         <td class="gs-geo__num">{{ $geoRow['value'] ?? '—' }}</td>
-                        <td class="gs-geo__num">{{ $geoRow['offices'] ?: '—' }}</td>
+                        <td class="gs-geo__num">{{ $geoRow['offices'] ? $geoDigits($geoRow['offices']) : '—' }}</td>
                         <td>{{ $geoRow['state'] === 'ok' ? '' : __('gs-theme::kit.geo.'.$geoRow['state']) }}</td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
         @if (($payload['here']['offices'] ?? 0) > 0)
-            <p>{{ __('gs-theme::kit.geo.here') }}: {{ $payload['here']['offices'] }}</p>
+            <p>{{ __('gs-theme::kit.geo.here') }}: {{ $geoDigits($payload['here']['offices']) }}</p>
         @endif
     @else
         <p>{{ __('gs-theme::kit.geo.denied') }}</p>

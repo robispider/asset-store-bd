@@ -233,6 +233,11 @@ class GeoDataService
         if ($requested === 'auto' || $requested === '' || $requested === null) {
             $placed = array_values(array_filter(array_column($offices, 'area')));
             $area = $placed ? $this->tree->commonAncestor($placed) : ($scope->areas ? $this->tree->commonAncestor($scope->areas) : $root);
+            // An office placed on the common area itself would only show as "at this level": open one level up
+            // so that area is drawn and coloured.
+            if ($placed && in_array($area, $placed, true) && ($parent = $this->tree->node($area)['parent'] ?? null)) {
+                $area = $parent;
+            }
         } else {
             $area = $this->tree->node((int) $requested) ? (int) $requested : $root;
         }

@@ -544,6 +544,8 @@
 .gs-tracking-chart summary,.gs-price-strip summary { cursor:pointer; color:var(--gs-color-link); }
 .gs-tracking-office-rank { display:flex; align-items:center; gap:12px; justify-content:space-between; border-bottom:1px solid var(--gs-color-border); padding:12px 0; color:var(--gs-color-text); }
 .gs-tracking-office-rank > strong { flex:1; }
+.gs-tracking-where .gs-geo { margin-top:12px; }
+.gs-tracking-office-ranks { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); column-gap:22px; margin-top:12px; }
 .gs-tracking-item-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; }
 .gs-tracking-item { display:block; padding:16px; border:1px solid var(--gs-color-border); border-radius:var(--gs-radius-md); background:var(--gs-color-surface-sunken); min-width:0; }
 .gs-tracking-item p { margin:10px 0; }

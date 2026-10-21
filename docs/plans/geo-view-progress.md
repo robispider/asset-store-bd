@@ -69,10 +69,10 @@ Schedule: every hour (`7 * * * *`), working folder `D:\git repo\asset-store-bd`.
 - [x] `GeoViewTest`; commit + push phase D
 
 ### Phase E — Tracking pilot
-- [ ] `TrackingProgrammeGeoSource` + presets, registered when geo-view is bound
-- [ ] Replace "where" section on `initiatives/{id}`; then the code dashboard
-- [ ] Retire `TrackingTileMap` and `naogaon.json`
-- [ ] §11.2 acceptance on initiative 30; viewer matrix; commit + push phase E
+- [x] `TrackingProgrammeGeoSource` + presets, registered when geo-view is bound
+- [x] Replace "where" section on `initiatives/{id}`; then the code dashboard
+- [x] Retire `TrackingTileMap` and `naogaon.json`
+- [x] §11.2 acceptance on initiative 30; viewer matrix; commit + push phase E
 
 ### Phase F — National host
 - [ ] Geo monitor page + breadcrumb + menu; organization source
@@ -113,3 +113,12 @@ Schedule: every hour (`7 * * * *`), working folder `D:\git repo\asset-store-bd`.
   GeoDataSourceContract.php, fixtures tests/Feature/GovStore/GeoView/. Full GovStore suite 673 green.
   Local: boundaries published to public/vendor/geo-areas (ignored via committed .gitignore).
   NEXT: phase E — TrackingProgrammeGeoSource on initiative 30; reuse tracking plan §5 metric definitions.
+- 2026-10-22 05:40 — Phase E done: TrackingProgrammeGeoSource (figures from TrackingMonitorService::programme →
+  officeSummary; programme-key scope; code filter + param; CachesFacts 60 s), tracking/src/config/geo-view-presets.php,
+  monitor "where" and code page use <x-geoview::map>; TrackingTileMap + naogaon.json removed (x-gs::tile-map kit
+  component kept for the Lab). Auto start opens one level up when an office sits on the common area. Live walk on
+  initiatives/30 (bn): country view, fallback note, 55 in Dhaka/Barishal/Rajshahi/Mymensingh, Barishal→Patuakhali,
+  Dhaka "at this level 1", code ADP-12 filter → Barishal only, Back/Forward. TrackingGeoViewTest (contract trait +
+  pilot acceptance) green; full GovStore suite 701 green.
+  NOT done here: live walk as company 547 admin / district ICT officer (needs their sessions); covered by tests.
+  NEXT: phase F — national geo monitor page + organization source.

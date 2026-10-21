@@ -113,7 +113,7 @@ class GeoViewTest extends GeoViewTestCase
     public function test_pilot_shape_opens_on_the_country_and_falls_back_to_received_quantity(): void
     {
         $this->actAs(FixtureProgrammeSource::MEMBER);
-        $p = $this->payload('fixture.programme', ['initiative' => 30, 'area' => 'auto', 'fallback' => 'delivered_share,received_qty']);
+        $p = $this->geoPayload('fixture.programme', ['initiative' => 30, 'area' => 'auto', 'fallback' => 'delivered_share,received_qty']);
 
         $this->assertSame(9358, $p['area']['id']);                       // offices in four divisions → the country
         $this->assertSame('received_qty', $p['layer']['key']);
@@ -130,16 +130,16 @@ class GeoViewTest extends GeoViewTestCase
     public function test_office_on_the_viewed_area_is_counted_at_this_level(): void
     {
         $this->actAs(FixtureProgrammeSource::MEMBER);
-        $dhaka = $this->payload('fixture.programme', ['initiative' => 30, 'area' => 3142, 'layer' => 'received_qty']);
+        $dhaka = $this->geoPayload('fixture.programme', ['initiative' => 30, 'area' => 3142, 'layer' => 'received_qty']);
         $this->assertSame(1, $dhaka['here']['offices']);
         $this->assertSame(55, $dhaka['here']['value']);
         $this->assertSame([], collect($dhaka['areas'])->where('state', 'ok')->all());
         $this->assertSame(['Bangladesh', 'Dhaka'], array_column($dhaka['area']['trail'], 'name'));
 
-        $barishal = $this->payload('fixture.programme', ['initiative' => 30, 'area' => 2352, 'layer' => 'received_qty']);
+        $barishal = $this->geoPayload('fixture.programme', ['initiative' => 30, 'area' => 2352, 'layer' => 'received_qty']);
         $this->assertSame('ok', $barishal['areas']['2390']['state']);
         $this->assertSame(1, $barishal['areas']['2390']['offices']);
-        $details = json_decode($this->api('details', 'fixture.programme', ['initiative' => 30, 'area' => 2390, 'layer' => 'received_qty'])->getContent(), true);
+        $details = json_decode($this->geoApi('details', 'fixture.programme', ['initiative' => 30, 'area' => 2390, 'layer' => 'received_qty'])->getContent(), true);
         $this->assertSame([171], array_column($details['offices'], 'id'));   // office 175 is outside the programme
         $this->assertSame('/gov-store/admin/tracking/initiatives/30/offices/171', $details['offices'][0]['link']);
     }
@@ -147,21 +147,21 @@ class GeoViewTest extends GeoViewTestCase
     public function test_filters_restrict_facts_and_unknown_values_are_rejected(): void
     {
         $this->actAs(FixtureProgrammeSource::MEMBER);
-        $p = $this->payload('fixture.programme', ['initiative' => 30, 'area' => 'auto', 'layer' => 'received_qty', 'filters' => ['code' => '104']]);
-        $this->assertSame(2390, $p['area']['id']);   // one office left: auto opens on its district
+        $p = $this->geoPayload('fixture.programme', ['initiative' => 30, 'area' => 'auto', 'layer' => 'received_qty', 'filters' => ['code' => '104']]);
+        $this->assertSame(2352, $p['area']['id']);   // one office on its district: auto opens on the division so it is drawn
         $this->assertSame('104', $p['filters'][0]['value']);
-        $this->assertSame(422, $this->api('data', 'fixture.programme', ['initiative' => 30, 'filters' => ['code' => '1']])->getStatusCode());
+        $this->assertSame(422, $this->geoApi('data', 'fixture.programme', ['initiative' => 30, 'filters' => ['code' => '1']])->getStatusCode());
     }
 
     public function test_ratio_count_money_display_and_suppression(): void
     {
         $this->actAs(FixtureProgrammeSource::MEMBER);
-        $p = $this->payload('fixture.programme', ['initiative' => 30, 'targets' => 1, 'area' => 9358, 'layer' => 'delivered_share']);
+        $p = $this->geoPayload('fixture.programme', ['initiative' => 30, 'targets' => 1, 'area' => 9358, 'layer' => 'delivered_share']);
         $this->assertEqualsWithDelta(0.3, $p['areas']['2352']['value'], 1e-9);           // 30 / 100
         $this->assertEqualsWithDelta(60 / 400, $p['stats']['total'], 1e-9);              // Σnum/Σden, not mean of %
-        $money = $this->payload('fixture.programme', ['initiative' => 30, 'area' => 9358, 'layer' => 'value']);
+        $money = $this->geoPayload('fixture.programme', ['initiative' => 30, 'area' => 9358, 'layer' => 'value']);
         $this->assertSame('৳2,575,000', $money['areas']['2352']['display']);
-        $waiting = $this->payload('fixture.programme', ['initiative' => 30, 'targets' => 1, 'area' => 9358, 'layer' => 'waiting_offices']);
+        $waiting = $this->geoPayload('fixture.programme', ['initiative' => 30, 'targets' => 1, 'area' => 9358, 'layer' => 'waiting_offices']);
         $this->assertSame('suppressed', $waiting['areas']['1069']['state']);              // 1 office < suppress_below 2
         $this->assertArrayNotHasKey('value', array_filter($waiting['areas']['1069'], fn ($v) => $v !== null));
     }
@@ -169,7 +169,7 @@ class GeoViewTest extends GeoViewTestCase
     public function test_etag_revalidation_answers_304(): void
     {
         $this->actAs(FixtureProgrammeSource::MEMBER);
-        $first = $this->api('data', 'fixture.programme', ['initiative' => 30, 'area' => 'auto']);
+        $first = $this->geoApi('data', 'fixture.programme', ['initiative' => 30, 'area' => 'auto']);
         $this->assertTrue($first->headers->hasCacheControlDirective('private') && $first->headers->hasCacheControlDirective('no-cache'));
         $etag = $first->headers->get('ETag');
         $request = \Illuminate\Http\Request::create('/x', 'GET', ['initiative' => 30, 'area' => 'auto']);
@@ -183,27 +183,27 @@ class GeoViewTest extends GeoViewTestCase
     public function test_area_grain_scope_marks_partial_and_no_access_and_withholds_partial_values(): void
     {
         $this->actAs(FixtureProgrammeSource::MEMBER);
-        $country = $this->payload('fixture.areas', ['area' => 'auto']);
+        $country = $this->geoPayload('fixture.areas', ['area' => 'auto']);
         $this->assertSame(1246, $country['area']['id']);   // auto opens on the scope (Bogura)
-        $root = $this->payload('fixture.areas', ['area' => 9358]);
+        $root = $this->geoPayload('fixture.areas', ['area' => 9358]);
         $this->assertSame('partial', $root['areas']['1069']['state']);
         $this->assertNull($root['areas']['1069']['value']);                 // area grain: withheld
         $this->assertTrue($root['areas']['1069']['drillable']);
         $this->assertSame('no_access', $root['areas']['3142']['state']);
         $this->assertArrayNotHasKey('value', $root['areas']['3142']);
         $this->assertTrue($root['scope']['partial']);
-        $outside = $this->payload('fixture.areas', ['area' => 3142]);
+        $outside = $this->geoPayload('fixture.areas', ['area' => 3142]);
         $this->assertSame(['no_access'], array_values(array_unique(array_column($outside['areas'], 'state'))));
-        $this->assertSame([], json_decode($this->api('details', 'fixture.areas', ['area' => 3142])->getContent(), true)['offices']);
-        $inside = $this->payload('fixture.areas', ['area' => 1246]);
+        $this->assertSame([], json_decode($this->geoApi('details', 'fixture.areas', ['area' => 3142])->getContent(), true)['offices']);
+        $inside = $this->geoPayload('fixture.areas', ['area' => 1246]);
         $this->assertSame(['ok'], array_values(array_unique(array_column($inside['areas'], 'state'))));
     }
 
     public function test_unknown_source_is_404(): void
     {
         $this->actAs(FixtureProgrammeSource::MEMBER);
-        $this->assertSame(404, $this->api('data', 'nope.source', ['area' => 'auto'])->getStatusCode());
-        $this->assertSame(404, $this->api('data', '../etc', ['area' => 'auto'])->getStatusCode());
+        $this->assertSame(404, $this->geoApi('data', 'nope.source', ['area' => 'auto'])->getStatusCode());
+        $this->assertSame(404, $this->geoApi('data', '../etc', ['area' => 'auto'])->getStatusCode());
     }
 
     // ---- component and doctor ---------------------------------------------------------------------------------

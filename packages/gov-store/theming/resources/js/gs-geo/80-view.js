@@ -73,7 +73,8 @@
         this.layerSel = el('select', { class: 'gs-geo__select', 'aria-label': t('layer'), onchange: function (e) { self.setLayer(e.target.value, 'user'); } });
         this.filterBox = el('span', { class: 'gs-geo__filters' });
         if (tb.layers !== false) { this.tools.appendChild(this.layerSel); }
-        if (tb.filters !== false && !c.bind_filters) { this.tools.appendChild(this.filterBox); }
+        // Source filters (e.g. a programme's codes) live in the toolbar; bind_filters links the host's own form params.
+        if (tb.filters !== false) { this.tools.appendChild(this.filterBox); }
         this.extraTools = el('span', { class: 'gs-geo__group gs-geo__extra' });
         this.tools.appendChild(this.extraTools);
         if (tb.zoom !== false) {
@@ -818,7 +819,7 @@
         this.panel.appendChild(el('h3', { class: 'gs-geo__panel-title', text: a ? a.name : p.area.name }));
         var summary = a ? this.value(a) : (p.stats && typeof p.stats.total === 'number' ? fmt(p.stats.total, p.layer.format) : null);
         if (summary) { this.panel.appendChild(el('p', { class: 'gs-geo__panel-value' }, [el('strong', { text: summary }), ' ', el('span', { class: 'gs-geo__muted', text: p.layer.label })])); }
-        if (!a && p.coverage && p.coverage.offices) {
+        if (!a && p.coverage && p.coverage.offices && (p.area.id === this.rootArea || p.area.id === this.autoArea)) {
             this.panel.appendChild(el('p', { class: 'gs-geo__muted', text: t('offices') + ': ' + fmt.int(p.coverage.offices) + (p.unplaced && p.unplaced.offices ? ' · ' + t('unplaced') + ': ' + fmt.int(p.unplaced.offices) : '') }));
         }
         if (a && a.state === 'no_access') { return; }
