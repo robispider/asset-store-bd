@@ -1,0 +1,17 @@
+{
+  "contract": "gs-geo-data/1",
+  "source": "organization.offices",
+  "area": { "id": 9358, "level": 0, "name": "বাংলাদেশ", "trail": [ { "id": 9358, "name": "বাংলাদেশ" } ] },
+  "level": 1,
+  "boundary": { "version": "bd-boundaries-2026-10-21.1", "children": null },
+  "layer": { "key": "offices", "label": "নিবন্ধিত কার্যালয়", "format": "integer", "aggregation": "sum" },
+  "layers": [ { "key": "offices", "label": "নিবন্ধিত কার্যালয়", "applicable": true } ],
+  "stats": { "min": 3, "max": 3, "national": null },
+  "areas": {
+    "1069": { "state": "partial", "name": "রাজশাহী", "value": 3, "offices": 3, "drillable": true, "shape": true, "partial": true },
+    "3142": { "state": "no_access", "name": "ঢাকা", "drillable": false, "shape": true }
+  },
+  "here": { "offices": 0 },
+  "unplaced": { "offices": 0 },
+  "attribution": "Boundaries: BBS and OCHA 2015"
+}

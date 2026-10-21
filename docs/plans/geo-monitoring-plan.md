@@ -4,7 +4,9 @@
 > union) coloured by monitoring metrics that other gov-store packages supply. Reference-data parts go in
 > `packages/gov-store/geo-areas`; the map, metric contract and aggregation go in a new
 > `packages/gov-store/geo-monitoring`. Nothing here writes business data.
-> **Status:** proposal; nothing implemented · **Updated:** 2026-10-21
+> **Status:** proposal; nothing implemented · **Updated:** 2026-10-22
+> **Superseded in part (2026-10-22):** `docs/plans/geo-view-plan.md` replaces this plan's metric contract and package
+> (§3.3, §4.2–4.4, §5; see geo-view §3). Still current here: the access table (§4.6) and the metric roadmap (§6).
 > **Phase 0 (boundary data) done:** `docs/plans/geo-boundary-data-plan.md`; boundary set `bd-boundaries-2026-10-21.1`
 > in `geo-areas/src/database/data/boundaries/`.
 > **Reference model:** `docs/plans/tracking-monitor-redesign-plan.md` (scope keys, read-only monitor views),

@@ -1,0 +1,27 @@
+{
+  "contract": "gs-geo-data/1",
+  "source": "tracking.programme",
+  "area": { "id": 9358, "level": 0, "name": "Bangladesh", "type": "country", "parent": null, "trail": [ { "id": 9358, "name": "Bangladesh" } ] },
+  "level": 1,
+  "boundary": { "version": "bd-boundaries-2026-10-21.1", "children": "/vendor/geo-areas/boundaries/bd-boundaries-2026-10-21.1/children/9358.json" },
+  "layer": { "key": "received_qty", "label": "Items received", "unit": "items", "format": "integer", "aggregation": "sum", "fallback_from": "delivered_share", "fallback_reason": "no_office_targets" },
+  "layers": [ { "key": "delivered_share", "label": "Delivered against office targets", "applicable": false }, { "key": "received_qty", "label": "Items received", "applicable": true } ],
+  "stats": { "min": 55, "max": 55, "national": 220, "total": 220, "values": [55, 55, 55, 55] },
+  "areas": {
+    "3142": { "state": "ok", "name": "Dhaka", "value": 55, "offices": 1, "drillable": true, "shape": true },
+    "2352": { "state": "ok", "name": "Barisal", "value": 55, "offices": 1, "drillable": true, "shape": true },
+    "1069": { "state": "ok", "name": "Rajshahi", "value": 55, "offices": 1, "drillable": true, "shape": true },
+    "4730": { "state": "ok", "name": "Mymensingh", "value": 55, "offices": 1, "drillable": true, "shape": true },
+    "1": { "state": "no_data", "name": "Chittagong", "value": null, "offices": 0, "drillable": true, "shape": true },
+    "1708": { "state": "no_data", "name": "Khulna", "value": null, "offices": 0, "drillable": true, "shape": true },
+    "2759": { "state": "no_data", "name": "Sylhet", "value": null, "offices": 0, "drillable": true, "shape": true },
+    "4121": { "state": "no_data", "name": "Rangpur", "value": null, "offices": 0, "drillable": true, "shape": true }
+  },
+  "here": { "offices": 0 },
+  "unplaced": { "offices": 0 },
+  "coverage": { "offices": 4, "placed": 4, "verified": 0, "rolled_up": 0 },
+  "filters": [ { "key": "code", "label": "Code", "value": null, "options": [ { "value": 104, "label": "ADP-12" } ] } ],
+  "scope": { "kind": "offices", "partial": false },
+  "attribution": "Boundaries: BBS and OCHA 2015",
+  "links": { "details": "/gov-store/api/geo-view/sources/tracking.programme/details?initiative=30" }
+}

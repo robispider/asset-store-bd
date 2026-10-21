@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://govstore.local/contracts/gs-geo-config/1",
+  "title": "gs-geo-config/1",
+  "description": "Resolved configuration of one Geo View instance (plan §5.3). The server merges engine defaults, intent, preset and host attributes, validates the result against this schema and embeds it in the page. URL state and runtime calls may change only keys that are not locked.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract", "id", "intent", "source", "layers", "levels", "interaction", "toolbar", "panels", "scale", "size", "url_state", "locked"],
+  "properties": {
+    "contract": { "const": "gs-geo-config/1" },
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,47}$" },
+    "preset": { "type": ["string", "null"] },
+    "intent": { "enum": ["progress", "coverage", "distribution", "compare", "locate", "pick"] },
+    "locale": { "type": "string", "pattern": "^[a-z]{2}(-[A-Z]{2})?$" },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key"],
+      "properties": {
+        "key": { "type": ["string", "null"], "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$" },
+        "mode": { "enum": ["remote", "inline", "function"] },
+        "params": { "type": "object", "additionalProperties": { "type": ["string", "integer", "number", "boolean", "null"] } },
+        "param_keys": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "layers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["default", "allow"],
+      "properties": {
+        "default": { "type": "array", "items": { "type": "string" } },
+        "allow": { "oneOf": [{ "const": "*" }, { "type": "array", "items": { "type": "string" } }] }
+      }
+    },
+    "levels": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "min", "max", "urban"],
+      "properties": {
+        "start": { "oneOf": [{ "enum": ["auto", "root"] }, { "type": "integer", "minimum": 1 }] },
+        "root": { "type": ["integer", "null"], "minimum": 1 },
+        "min": { "type": "integer", "minimum": 0, "maximum": 4 },
+        "max": { "type": "integer", "minimum": 1, "maximum": 4 },
+        "urban": { "enum": ["colour", "hide", "drill"] },
+        "flat": { "type": ["integer", "null"], "minimum": 2, "maximum": 3 }
+      }
+    },
+    "interaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["click", "leaf_click", "wheel", "select"],
+      "properties": {
+        "click": { "enum": ["drill", "select", "details", "navigate", "none"] },
+        "leaf_click": { "enum": ["details", "select", "navigate", "none"] },
+        "wheel": { "enum": ["modifier", "always", "off"] },
+        "select": { "enum": ["none", "single", "multi"] },
+        "touch": { "enum": ["tap-select-tap-drill", "tap-drill"] }
+      }
+    },
+    "toolbar": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "zoom": { "type": "boolean" },
+        "reset": { "type": "boolean" },
+        "layers": { "type": "boolean" },
+        "filters": { "type": "boolean" },
+        "search": { "type": "boolean" },
+        "table": { "type": "boolean" },
+        "export": { "type": "boolean" },
+        "fullscreen": { "type": "boolean" },
+        "help": { "type": "boolean" }
+      }
+    },
+    "panels": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "breadcrumb": { "type": "boolean" },
+        "legend": { "type": "boolean" },
+        "details": { "enum": ["side", "below", "none"] },
+        "table": { "enum": ["toggle", "always", "none"] },
+        "labels": { "type": "boolean" },
+        "markers": { "type": "boolean" }
+      }
+    },
+    "scale": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": { "enum": ["sequential", "quantile", "threshold", "categorical", "diverging", "none"] },
+        "steps": { "type": "integer", "minimum": 2, "maximum": 7 },
+        "domain": { "oneOf": [{ "const": "auto" }, { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 }] },
+        "thresholds": { "type": "array", "items": { "type": "number" } },
+        "reference": { "oneOf": [{ "const": "national" }, { "type": "number" }, { "type": "null" }] }
+      }
+    },
+    "size": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "height": { "type": "integer", "minimum": 280, "maximum": 1200 },
+        "aspect": { "type": ["number", "null"] }
+      }
+    },
+    "url_state": { "type": "boolean" },
+    "locked": { "type": "array", "items": { "type": "string" } },
+    "bind_filters": { "type": ["string", "null"] },
+    "input": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "value": { "type": ["integer", "null"] }
+      }
+    },
+    "boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "base_url", "root"],
+      "properties": {
+        "version": { "type": "string", "pattern": "^bd-boundaries-\\d{4}-\\d{2}-\\d{2}\\.\\d+$" },
+        "base_url": { "type": "string" },
+        "root": { "type": "integer" },
+        "attribution": { "type": "string" }
+      }
+    },
+    "endpoints": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "data": { "type": ["string", "null"] },
+        "details": { "type": ["string", "null"] },
+        "children": { "type": ["string", "null"] },
+        "search": { "type": ["string", "null"] }
+      }
+    },
+    "strings": { "type": "object", "additionalProperties": { "type": "string" } }
+  }
+}

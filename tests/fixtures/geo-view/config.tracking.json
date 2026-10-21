@@ -1,0 +1,22 @@
+{
+  "contract": "gs-geo-config/1",
+  "id": "programme-map",
+  "preset": "tracking.programme",
+  "intent": "progress",
+  "locale": "en",
+  "source": { "key": "tracking.programme", "mode": "remote", "params": { "initiative": 30 }, "param_keys": ["initiative", "code", "status", "plan", "q"] },
+  "layers": { "default": ["delivered_share", "received_qty"], "allow": ["delivered_share", "received_qty", "value", "waiting_offices"] },
+  "levels": { "start": "auto", "root": 9358, "min": 1, "max": 3, "urban": "colour", "flat": null },
+  "interaction": { "click": "drill", "leaf_click": "details", "wheel": "modifier", "select": "single", "touch": "tap-select-tap-drill" },
+  "toolbar": { "zoom": true, "reset": true, "layers": true, "filters": true, "search": false, "table": true, "export": false, "fullscreen": false, "help": true },
+  "panels": { "breadcrumb": true, "legend": true, "details": "side", "table": "toggle", "labels": false, "markers": false },
+  "scale": { "type": "sequential", "steps": 5, "domain": [0, 1] },
+  "size": { "height": 420, "aspect": null },
+  "url_state": true,
+  "locked": ["source.key", "levels.max"],
+  "bind_filters": ".gs-tracking-filters",
+  "input": null,
+  "boundary": { "version": "bd-boundaries-2026-10-21.1", "base_url": "/vendor/geo-areas/boundaries/bd-boundaries-2026-10-21.1", "root": 9358 },
+  "endpoints": { "data": "/gov-store/api/geo-view/sources/tracking.programme/data", "details": "/gov-store/api/geo-view/sources/tracking.programme/details", "children": null, "search": null },
+  "strings": { "no_data": "No data" }
+}
