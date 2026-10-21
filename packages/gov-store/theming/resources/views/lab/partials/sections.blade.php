@@ -481,6 +481,13 @@
     <x-gs::attention-list :items="$monitoring['attention']" />
     <x-gs::status-callout status="behind" :verdict="__('gs-theme::kit.attention')" :next="__('gs-theme::kit.next')" forecast="2027-06-30" />
     <x-gs::tile-map :tiles="$monitoring['tiles']" />
+    <h4 class="gs-lab-section__sub">{{ __('gs-theme::kit.geo_lab') }}</h4>
+    <p class="gs-lab-note">{{ __('gs-theme::kit.geo_lab_note') }}</p>
+    @foreach (\GovStore\Theming\Http\Controllers\ThemeLabController::geoDemos($panel, $compact, $bengali) as $geoDemo)
+        <x-gs::geo-map :config="$geoDemo['config']" data-lab-geo="{{ $geoDemo['title'] }}">
+            <p>{{ __('gs-theme::kit.geo_lab_note') }}</p>
+        </x-gs::geo-map>
+    @endforeach
     <x-gs::price-strip :prices="$monitoring['prices']" />
     <x-gs::lifecycle :steps="$monitoring['steps']" />
     <x-gs::scope-why :reasons="[__('gs-theme::kit.scope')]" />

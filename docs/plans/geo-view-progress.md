@@ -51,12 +51,12 @@ Schedule: every hour (`7 * * * *`), working folder `D:\git repo\asset-store-bd`.
 - [x] `GeoAreasPackageTest` additions; commit + push phase B
 
 ### Phase C — Engine (theming kit)
-- [ ] Lazy bundle support in `AssetRegistry` / `ThemeCompiler` / manifest / dev route + loader in `gs-theme.js` (< 1 KB)
-- [ ] `resources/js/gs-geo/*.js` modules (store, config, boundaries, source, scale, camera, render, ui/*, url, api)
-- [ ] `components/18-geo.css`, `x-gs::geo-map`, kit translations (en-US, bn-BD)
-- [ ] Lab demo with fixture shapes and fixture source
-- [ ] `tests/js/geo/*.test.mjs` (node --test): scale, camera, url, store
-- [ ] Playwright Lab spec; compliance baseline unchanged; commit + push phase C
+- [x] Lazy bundle support in `AssetRegistry` / `ThemeCompiler` / manifest / dev route + loader in `gs-theme.js` (< 1 KB)
+- [x] `resources/js/gs-geo/*.js` modules (store, config, boundaries, source, scale, camera, render, ui/*, url, api)
+- [x] `components/18-geo.css`, `x-gs::geo-map`, kit translations (en-US, bn-BD)
+- [x] Lab demo with fixture shapes and fixture source
+- [x] `tests/js/geo/*.test.mjs` (node --test): scale, camera, url, store
+- [x] Playwright Lab spec; compliance baseline unchanged; commit + push phase C
 
 ### Phase D — geo-view package
 - [ ] Package skeleton, composer wiring, provider, config
@@ -97,3 +97,12 @@ Schedule: every hour (`7 * * * *`), working folder `D:\git repo\asset-store-bd`.
   old 2026-10-21.1 kept one release), GeoTree + BoundarySet services, gov.geo.children, geo-areas:publish-boundaries,
   9 GeoAreasPackageTest tests green. NEXT: phase C, first item (lazy bundle in theming AssetRegistry/ThemeCompiler/Manifest/DevAssetController).
   Prototype engine extracted from the artifact is the reference for the gs-geo modules.
+- 2026-10-22 03:20 — Phase C done: lazy bundles (AssetRegistry::lazy, manifest `lazy`, dev route lazy-<name>.js, loader
+  GS.lazy in gs-theme.js), engine modules 00-core…90-api, 18-geo.css, x-gs::geo-map, kit strings en/bn, Lab demos
+  (GeoLabFixture: progress with every state, compare, pick), GeoKitTest + 118 theming tests green, 16 node tests.
+  Walked in the browser pane (bn locale, light/dark): drill, Up, Back/Forward, Esc, help, table, layer, compare.
+  NOT run: scripts/live-tests/theme-visual/geo-view.spec.mjs (needs the user-recorded storage state).
+  OPEN for phase H: geo bundle is 85 KB raw / 22.6 KB gzip unminified (budget 45 KB min / 15 KB gzip) → add minify.
+  Engine already has labels/markers at label points and multi-select (phase G items still need Lab demo + spec each).
+  NEXT: phase D (geo-view package). Data payload contract: areas[id] needs name; details API returns
+  {area, offices:[{id,name,area,area_name,value,display?,link,here?}]}.

@@ -32,6 +32,12 @@ Route::middleware(['web', 'auth'])->prefix('gov')->group(function () {
         ->name('gs-theme.lab')
         ->breadcrumbs(fn (Trail $trail) => $trail->parent('home')
             ->push(trans('gs-theme::appearance.lab_title'), route('gs-theme.lab')));
+    // Geo view demo fixtures (static shapes, synthetic values) for the Lab's x-gs::geo-map sections.
+    Route::get('theme-lab/geo-fixture/'.\GovStore\Theming\Lab\GeoLabFixture::VERSION.'/children/{area}.json', [ThemeLabController::class, 'geoChildren'])
+        ->whereNumber('area')
+        ->name('gs-theme.lab.geo.children');
+    Route::get('theme-lab/geo-fixture/data', [ThemeLabController::class, 'geoData'])->name('gs-theme.lab.geo.data');
+    Route::get('theme-lab/geo-fixture/details', [ThemeLabController::class, 'geoDetails'])->name('gs-theme.lab.geo.details');
     Route::get('theme-lab/{theme}', [ThemeLabController::class, 'focus'])
         ->where('theme', '[a-z0-9-]+')
         ->name('gs-theme.lab.focus')

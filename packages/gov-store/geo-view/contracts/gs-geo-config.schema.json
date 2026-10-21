@@ -120,7 +120,7 @@
       "additionalProperties": false,
       "required": ["version", "base_url", "root"],
       "properties": {
-        "version": { "type": "string", "pattern": "^bd-boundaries-\\d{4}-\\d{2}-\\d{2}\\.\\d+$" },
+        "version": { "type": "string", "pattern": "^[a-z0-9][a-z0-9.-]{2,63}$" },
         "base_url": { "type": "string" },
         "root": { "type": "integer" },
         "attribution": { "type": "string" }

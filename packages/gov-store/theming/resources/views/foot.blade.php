@@ -13,6 +13,7 @@
             'appearanceUrl' => auth()->check() ? route('gs-theme.appearance') : null,
             'csrf' => csrf_token(),
             'fallbackPalette' => $gsManager->chartFallbackPalette(),
+            'lazy' => $gsManager->lazyAssets(),
             'brandingNotice' => ! $gsManager->isClassic() && request()->routeIs('settings.branding.index', 'profile'),
             'i18n' => [
                 'appearance' => __('gs-theme::appearance.menu_appearance'),

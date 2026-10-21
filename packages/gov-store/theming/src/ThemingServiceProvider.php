@@ -45,6 +45,11 @@ class ThemingServiceProvider extends ServiceProvider
     {
         Blade::precompiler(new LayoutHook);
 
+        // Geo view engine: loaded only on pages with a map (geo-view plan D2), modules in file order.
+        $geo = glob(self::PACKAGE_PATH.'/resources/js/gs-geo/*.js') ?: [];
+        sort($geo);
+        $this->app->make(AssetRegistry::class)->lazy('geo', ...$geo);
+
         $this->loadViewsFrom(self::PACKAGE_PATH.'/resources/views', 'gs-theme');
         // Namespace lookup requires the gs:: prefix. Path lookup also considers
         // unprefixed names and can capture Snipe-IT's tabs, table and container.
