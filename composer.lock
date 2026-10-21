@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f8a398c8624ecc7a1c0aac4a86b4d64e",
+    "content-hash": "bc1574a1792d787081f7cd464bf471ce",
     "packages": [
         {
             "name": "alek13/slack",
@@ -1939,6 +1939,40 @@
             }
         },
         {
+            "name": "gov-store/geo-view",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "./packages/gov-store/geo-view",
+                "reference": "d20edfbbed4b4fe8f286b07455a1a29b812a07e6"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "GovStore\\GeoView\\Providers\\GeoViewServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "GovStore\\GeoView\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "DoICT"
+                }
+            ],
+            "description": "Gov-Store geo view: pluggable geographic data view wiring (data sources, presets, scope, aggregation, data API)",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "gov-store/metadata",
             "version": "dev-master",
             "dist": {
@@ -2032,6 +2066,11 @@
         {
             "name": "gov-store/store-operations",
             "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "./packages/gov-store/store-operations",
+                "reference": "6dcab91735aa3de8147732356da58cfbd3b6958b"
+            },
             "require": {
                 "gov-store/metadata": "dev-master",
                 "gov-store/tenant-scope": "dev-master",
@@ -2044,11 +2083,6 @@
             "suggest": {
                 "gov-store/committee": "Optional committee purpose registry for future receipt inspection",
                 "gov-store/tracking": "Programme verification and atomic receipt delivery integration"
-            },
-            "dist": {
-                "type": "path",
-                "url": "./packages/gov-store/store-operations",
-                "reference": "b1a44f60c5f6af75faca7cd36d884d55c19cd982"
             },
             "type": "library",
             "extra": {
@@ -2116,7 +2150,7 @@
             "dist": {
                 "type": "path",
                 "url": "./packages/gov-store/theming",
-                "reference": "66bd39de3672040643cf889b8412654bc4109333"
+                "reference": "80fb5053219581d4190944b9088ea11cbaf0fe1e"
             },
             "type": "library",
             "extra": {
@@ -2153,7 +2187,7 @@
             "dist": {
                 "type": "path",
                 "url": "./packages/gov-store/tracking",
-                "reference": "f243859807aa0714a75cdaf14dd5097951d464a4"
+                "reference": "2387feeaa5689425fe78dd369d87b52af8291350"
             },
             "require": {
                 "laravel/framework": "^12.0",
@@ -2166,7 +2200,7 @@
                 }
             },
             "license": [
-                "proprietary"
+                "AGPL-3.0-or-later"
             ],
             "authors": [
                 {
@@ -17291,6 +17325,7 @@
         "gov-store/classification": 20,
         "gov-store/custom-requests": 20,
         "gov-store/geo-areas": 20,
+        "gov-store/geo-view": 20,
         "gov-store/metadata": 20,
         "gov-store/office-membership": 20,
         "gov-store/organization": 20,

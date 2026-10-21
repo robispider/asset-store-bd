@@ -59,14 +59,14 @@ Schedule: every hour (`7 * * * *`), working folder `D:\git repo\asset-store-bd`.
 - [x] Playwright Lab spec; compliance baseline unchanged; commit + push phase C
 
 ### Phase D — geo-view package
-- [ ] Package skeleton, composer wiring, provider, config
-- [ ] Contracts/Data/Registry classes
-- [ ] `GeoViewConfigResolver` + intents
-- [ ] `GeoDataService`, `GeoAggregator`, `GeoScopeMask`
-- [ ] `GeoDataController` data/details routes, throttle, ETag
-- [ ] `<x-geoview::map>` with inline first payload + server table
-- [ ] `GeoDataSourceContract` trait, `geo-view:doctor`
-- [ ] `GeoViewTest`; commit + push phase D
+- [x] Package skeleton, composer wiring, provider, config
+- [x] Contracts/Data/Registry classes
+- [x] `GeoViewConfigResolver` + intents
+- [x] `GeoDataService`, `GeoAggregator`, `GeoScopeMask`
+- [x] `GeoDataController` data/details routes, throttle, ETag
+- [x] `<x-geoview::map>` with inline first payload + server table
+- [x] `GeoDataSourceContract` trait, `geo-view:doctor`
+- [x] `GeoViewTest`; commit + push phase D
 
 ### Phase E — Tracking pilot
 - [ ] `TrackingProgrammeGeoSource` + presets, registered when geo-view is bound
@@ -106,3 +106,10 @@ Schedule: every hour (`7 * * * *`), working folder `D:\git repo\asset-store-bd`.
   Engine already has labels/markers at label points and multi-select (phase G items still need Lab demo + spec each).
   NEXT: phase D (geo-view package). Data payload contract: areas[id] needs name; details API returns
   {area, offices:[{id,name,area,area_name,value,display?,link,here?}]}.
+- 2026-10-22 04:30 — Phase D done: packages/gov-store/geo-view (composer require + PSR-4 in root composer.json/lock),
+  GeoDataSource (+AreaGrainSource, CachesFacts), GeoScope (all/offices/tenant/of), resolver with locks + intents,
+  GeoAggregator, GeoDataService, data/details API (403 ability, 404 object, 422 params, ETag), <x-geoview::map>,
+  geo-view:doctor, JsonSchema (PHP). Tests: GeoViewTest 18 + contract trait tests/Feature/GovStore/Concerns/
+  GeoDataSourceContract.php, fixtures tests/Feature/GovStore/GeoView/. Full GovStore suite 673 green.
+  Local: boundaries published to public/vendor/geo-areas (ignored via committed .gitignore).
+  NEXT: phase E — TrackingProgrammeGeoSource on initiative 30; reuse tracking plan §5 metric definitions.

@@ -88,7 +88,8 @@
     "gov-store/metadata":"dev-master",
     "gov-store/user-onboarding": "dev-master",
     "gov-store/tracking": "dev-master",
-    "gov-store/theming": "dev-master"
+    "gov-store/theming": "dev-master",
+    "gov-store/geo-view": "dev-master"
   },
   "suggest": {
     "ext-ldap": "*",
@@ -124,6 +125,7 @@
       "GovStore\\CustomRequests\\": "packages/gov-store/custom-requests/src/",
       "GovStore\\Organization\\": "packages/gov-store/organization/src/",
       "GovStore\\GeoAreas\\": "packages/gov-store/geo-areas/src/",
+      "GovStore\\GeoView\\": "packages/gov-store/geo-view/src/",
       "GovStore\\TenantScope\\": "packages/gov-store/tenant-scope/src/",
       "GovStore\\OfficeMembership\\": "packages/gov-store/office-membership/src/",
       "GovStore\\StoreOperations\\": "packages/gov-store/store-operations/src/",
