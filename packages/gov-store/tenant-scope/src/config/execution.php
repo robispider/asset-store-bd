@@ -17,6 +17,9 @@ return [
         // unscoped inventory/ledger query by that explicit office (no writes).
         'gov-requests:reconcile',
         'govstore:ledger-open', 'govstore:experiment', 'govstore:experiment-worker',
+        // Loads the bundled national geography reference data (gov_geo_areas);
+        // no actor, office or inventory involved, never deletes rows.
+        'govstore:geo-areas-sync',
         'committee:expire', 'committee:health', 'committee:verify-ledger',
     ],
 ];

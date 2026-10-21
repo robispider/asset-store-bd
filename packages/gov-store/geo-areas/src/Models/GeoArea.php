@@ -23,5 +23,20 @@ class GeoArea extends Model
         'bn_name',
         'en_name',
         'GeoLevel',
+        'bbs_code',
+        'bbs_code_legacy',
+        'code_status',
+        'code_source',
+        'bbs_attributes',
     ];
+
+    protected $casts = [
+        'bbs_attributes' => 'array',
+    ];
+
+    /** True when the area has no official BBS 2017 code yet (newer or moved area). */
+    public function isProvisional(): bool
+    {
+        return $this->code_status === 'provisional';
+    }
 }

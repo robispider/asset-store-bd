@@ -1,0 +1,36 @@
+{
+  "version": "bd-admin-areas-2026-10-21.1",
+  "source": "BBS Bangladesh Geocode district volumes, June 2017 (bbs-geocode-2017/)",
+  "rows": {
+    "admin_existing": 9111,
+    "admin_added": 86,
+    "localities": 168488,
+    "by_type": {
+      "divison": 8,
+      "district": 64,
+      "upazilla": 494,
+      "union": 4605,
+      "city": 12,
+      "city_thana": 95,
+      "pourasabha": 327,
+      "pouro_ward": 3054,
+      "thana_ward": 521,
+      "country": 1,
+      "special_area": 16,
+      "mauza": 63266,
+      "village": 105222
+    }
+  },
+  "code_status": {
+    "national": 1,
+    "bbs_2017": 175946,
+    "provisional": 1722,
+    "duplicate": 16
+  },
+  "english_fixes": 173,
+  "sha256": {
+    "geo_areas.csv": "70875a00cd1a90f23a5962d95894e37d2a71c7c8e65b1bac7c4811fc9928e2eb",
+    "seed/geo_area_codes.csv": "d52a3461055db2d7b0d08d3e0e9ae7026468ff0771e7f03faeb1ae0522b91d40",
+    "seed/geo_area_localities.csv.gz": "2cb8e6264f9b159ee6e290a54804d6d57f8428c4f3c915b01fb454260c012e0f"
+  }
+}

@@ -1,0 +1,2 @@
+# Only needed by extract_bbs_geocode_pdfs.py. The fetch and crosswalk scripts use the standard library.
+pymupdf>=1.24

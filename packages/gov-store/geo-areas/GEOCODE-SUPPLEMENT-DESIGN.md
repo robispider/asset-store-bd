@@ -1,5 +1,11 @@
 # Geography decision for asset tagging — revision 3
 
+> **21 October 2026:** the geocode part is superseded by
+> [bbs-geocode-adoption-plan.md](../../../docs/plans/bbs-geocode-adoption-plan.md):
+> every `gov_geo_areas` row now carries a BBS geocode in new columns (still no new
+> geography tables; `GeoAreaId`, `geo_code` and `hid` unchanged). The tagging
+> decisions below stand.
+
 15 October 2026. The earlier external-geocode table/service supplement proposal
 is withdrawn from the tagging plan. **No new geography tables, historical
 crosswalk import, office-purpose geocode assignment or CGA numbering service

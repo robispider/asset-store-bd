@@ -7,6 +7,9 @@ use Illuminate\Support\Collection;
 
 class GeoAreaService
 {
+    /** Mauza and village rows; searched only when a caller asks for them by type. */
+    public const LOCALITY_TYPES = ['mauza', 'village'];
+
     /** Normalize the historic source spelling without changing persisted identifiers. */
     public static function canonicalType(string $type): string
     {
@@ -19,6 +22,12 @@ class GeoAreaService
     public function getById(int $id): ?GeoArea
     {
         return GeoArea::find($id);
+    }
+
+    /** Resolves an area by its BBS geocode (e.g. '10-06-_-02-_-142'). */
+    public function getByBbsCode(string $code): ?GeoArea
+    {
+        return GeoArea::where('bbs_code', $code)->where('code_status', '!=', 'duplicate')->first();
     }
   /**
      * Returns all registered District-level territories in Bangladesh.
@@ -84,6 +93,9 @@ class GeoAreaService
                 }
             }
             $query->whereIn('geo_type', array_values(array_unique($acceptedTypes)));
+        } else {
+            // 168k mauza/village rows would drown every existing typeahead.
+            $query->whereNotIn('geo_type', self::LOCALITY_TYPES);
         }
 
         // 3. Structural Boundary Scoping (O(1) tree containment)

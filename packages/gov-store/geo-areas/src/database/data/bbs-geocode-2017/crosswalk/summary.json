@@ -1,0 +1,190 @@
+{
+  "current_csv_sha256": "1b1bf5beba43c321262dc587930153eac7cd0ff6d96f61abb5d013a863edc94d",
+  "bbs_csv_sha256": "571564309cfcb709cb181b0cf0f6f2493931fe202132d5f95cff2a69417b57da",
+  "current_rows": 9111,
+  "matched_current_rows": 8793,
+  "unmatched_current_rows": 318,
+  "matched_by_tier": {
+    "exact": 6521,
+    "alias": 336,
+    "bangla": 1584,
+    "skeleton": 208,
+    "reviewed": 11,
+    "ward_set": 47,
+    "city_ward": 86
+  },
+  "by_type": [
+    {
+      "geo_type": "divison",
+      "total": 8,
+      "matched": 8,
+      "unmatched": 0,
+      "by_reviewed": 0,
+      "by_exact": 8,
+      "by_alias": 0,
+      "by_bangla": 0,
+      "by_skeleton": 0,
+      "by_ward_set": 0,
+      "by_city_ward": 0
+    },
+    {
+      "geo_type": "district",
+      "total": 64,
+      "matched": 64,
+      "unmatched": 0,
+      "by_reviewed": 0,
+      "by_exact": 56,
+      "by_alias": 7,
+      "by_bangla": 1,
+      "by_skeleton": 0,
+      "by_ward_set": 0,
+      "by_city_ward": 0
+    },
+    {
+      "geo_type": "upazilla",
+      "total": 494,
+      "matched": 490,
+      "unmatched": 4,
+      "by_reviewed": 10,
+      "by_exact": 361,
+      "by_alias": 35,
+      "by_bangla": 84,
+      "by_skeleton": 0,
+      "by_ward_set": 0,
+      "by_city_ward": 0
+    },
+    {
+      "geo_type": "city",
+      "total": 12,
+      "matched": 11,
+      "unmatched": 1,
+      "by_reviewed": 0,
+      "by_exact": 8,
+      "by_alias": 3,
+      "by_bangla": 0,
+      "by_skeleton": 0,
+      "by_ward_set": 0,
+      "by_city_ward": 0
+    },
+    {
+      "geo_type": "city_thana",
+      "total": 95,
+      "matched": 73,
+      "unmatched": 22,
+      "by_reviewed": 1,
+      "by_exact": 23,
+      "by_alias": 2,
+      "by_bangla": 0,
+      "by_skeleton": 0,
+      "by_ward_set": 47,
+      "by_city_ward": 0
+    },
+    {
+      "geo_type": "pourasabha",
+      "total": 325,
+      "matched": 318,
+      "unmatched": 7,
+      "by_reviewed": 0,
+      "by_exact": 309,
+      "by_alias": 3,
+      "by_bangla": 6,
+      "by_skeleton": 0,
+      "by_ward_set": 0,
+      "by_city_ward": 0
+    },
+    {
+      "geo_type": "union",
+      "total": 4555,
+      "matched": 4407,
+      "unmatched": 148,
+      "by_reviewed": 0,
+      "by_exact": 2480,
+      "by_alias": 255,
+      "by_bangla": 1464,
+      "by_skeleton": 208,
+      "by_ward_set": 0,
+      "by_city_ward": 0
+    },
+    {
+      "geo_type": "pouro_ward",
+      "total": 3036,
+      "matched": 2952,
+      "unmatched": 84,
+      "by_reviewed": 0,
+      "by_exact": 2921,
+      "by_alias": 3,
+      "by_bangla": 28,
+      "by_skeleton": 0,
+      "by_ward_set": 0,
+      "by_city_ward": 0
+    },
+    {
+      "geo_type": "thana_ward",
+      "total": 521,
+      "matched": 470,
+      "unmatched": 51,
+      "by_reviewed": 0,
+      "by_exact": 355,
+      "by_alias": 28,
+      "by_bangla": 1,
+      "by_skeleton": 0,
+      "by_ward_set": 0,
+      "by_city_ward": 86
+    },
+    {
+      "geo_type": "country",
+      "total": 1,
+      "matched": 0,
+      "unmatched": 1,
+      "by_reviewed": 0,
+      "by_exact": 0,
+      "by_alias": 0,
+      "by_bangla": 0,
+      "by_skeleton": 0,
+      "by_ward_set": 0,
+      "by_city_ward": 0
+    }
+  ],
+  "bbs_admin_rows": 9016,
+  "bbs_linked_rows": 8787,
+  "bbs_unlinked_rows": 229,
+  "bbs_by_level": {
+    "zila": {
+      "total": 64,
+      "linked": 64
+    },
+    "city_corporation": {
+      "total": 11,
+      "linked": 11
+    },
+    "union_ward": {
+      "total": 8049,
+      "linked": 7829
+    },
+    "upazila_thana": {
+      "total": 563,
+      "linked": 557
+    },
+    "paurashava": {
+      "total": 321,
+      "linked": 318
+    },
+    "division": {
+      "total": 8,
+      "linked": 8
+    }
+  },
+  "current_unmatched_reasons": {
+    "no_counterpart_in_matched_parent": 186,
+    "parent_not_matched": 96,
+    "no_bbs_areas_under_matched_parent": 8,
+    "missing_current_parent": 9,
+    "no_counterpart_in_matched_city": 18,
+    "country_not_in_bbs": 1
+  },
+  "bbs_unlinked_reasons": {
+    "no_current_counterpart_in_matched_parent": 152,
+    "parent_not_linked": 77
+  },
+  "shared_bbs_links": 6
+}

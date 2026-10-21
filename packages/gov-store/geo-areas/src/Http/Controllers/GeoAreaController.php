@@ -33,6 +33,8 @@ class GeoAreaController extends Controller
                 'bn_name' => $area->bn_name,
                 'geo_type' => GeoAreaService::canonicalType($area->geo_type),
                 'geo_type_label' => __('geo_areas::types.' . GeoAreaService::canonicalType($area->geo_type)),
+                'bbs_code' => $area->bbs_code,
+                'code_status' => $area->code_status,
             ];
         })->values());
     }
