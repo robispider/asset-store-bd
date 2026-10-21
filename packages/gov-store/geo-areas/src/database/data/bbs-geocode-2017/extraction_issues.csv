@@ -1,0 +1,36 @@
+﻿source_file,page,card,bbs_path,en_name,issues
+01_BARISAL_BARISHAL.pdf,2,2,10-06,BARISAL,land_acres:wrapped_value_joined:688188.4|874
+02_BARISAL_BHOLA.pdf,2,2,10-09,BHOLA,land_acres:wrapped_value_joined:840899.|61
+02_BARISAL_BHOLA.pdf,2,4,10-09-_-18,BHOLA SADAR,land_acres:wrapped_value_joined:102093.|90
+04_BARISAL_JHALAKHATI.pdf,2,2,10-42,JHALOKATI,land_acres:wrapped_value_joined:185081.|93
+05_BARISAL_PATUAKHALI.pdf,25,6,10-78-_-57-_-109,AMKHOLA,forest_acres:wrapped_value_joined:0|500
+06_BARISAL_BARGUNA.pdf,2,2,10-04,BARGUNA,land_acres:wrapped_value_joined:452449.|9535
+15_CHATTOGRAM_CUMILLA.pdf,2,2,20-19,COMILLA,land_acres:wrapped_value_joined:762320.1|018
+15_CHATTOGRAM_CUMILLA.pdf,247,7,20-19-_-75-_-311-119,CHAR KUMARI,jl_no:multiple_values:(kha)|13
+18_DHAKA_DHAKA.pdf,158,8,30-26-_-62-_-170-090-130,,missing:en_name
+19_DHAKA_NARAYANGAN.pdf,2,2,30-67,NARAYANGANJ,land_acres:wrapped_value_joined:187552|.99
+20_DHAKA_GAZIPUR.pdf,2,2,30-33,GAZIPUR,land_acres:wrapped_value_joined:444789.|69
+21_DHAKA_MUNSHIGANJ.pdf,2,2,30-59,MUNSHIGANJ,land_acres:wrapped_value_joined:23598|5.64
+25_DHAKA_MADARIPUR.pdf,16,7,30-54-_-40-_-615-035,ALIPUR,total_parts:wrapped_value_joined:1|0
+25_DHAKA_MADARIPUR.pdf,17,8,30-54-_-40-_-615-035-001,PURBA ALIPUR,total_parts:wrapped_value_joined:1|0
+25_DHAKA_MADARIPUR.pdf,17,8,30-54-_-40-_-615-035-002,PASHCHIM ALIPUR,total_parts:wrapped_value_joined:1|0
+25_DHAKA_MADARIPUR.pdf,17,7,30-54-_-40-_-615-425,KALAI SARDARERCHAR,total_parts:wrapped_value_joined:1|0
+25_DHAKA_MADARIPUR.pdf,17,8,30-54-_-40-_-615-425-001,KALAI SARDARERCHAR,total_parts:wrapped_value_joined:1|0
+25_DHAKA_MADARIPUR.pdf,17,7,30-54-_-40-_-615-508,MAHARADDIRCHAR,total_parts:wrapped_value_joined:1|0
+25_DHAKA_MADARIPUR.pdf,17,8,30-54-_-40-_-615-508-001,MAHARADDIRCHAR,total_parts:wrapped_value_joined:1|0
+29_DHAKA_TANGAIL.pdf,2,2,30-93,TANGAIL,land_acres:wrapped_value_joined:843717.|77
+33_DHAKA_MYMENSINGH.pdf,2,4,45-61-_-13,BHALUKA,forest_acres:wrapped_value_joined:22921|.08
+33_DHAKA_MYMENSINGH.pdf,27,4,45-61-_-20,FULBARIA,forest_acres:wrapped_value_joined:6494.|69
+33_DHAKA_MYMENSINGH.pdf,92,4,45-61-_-24,HALUAGHAT,forest_acres:wrapped_value_joined:1255.|21
+33_DHAKA_MYMENSINGH.pdf,164,4,45-61-_-65,MUKTAGACHHA,forest_acres:wrapped_value_joined:7645.|06
+35_KHULNA_KHULNA.pdf,2,2,40-47,KHULNA,land_acres:wrapped_value_joined:1085781|.05
+35_KHULNA_KHULNA.pdf,62,4,40-47-_-53,KOYRA,forest_acres:wrapped_value_joined:315278.|21
+41_KHULNA_MAGURA.pdf,2,2,40-55,MAGURA,land_acres:wrapped_value_joined:259213.4|6
+44_KHULNA_MEHERPUR.pdf,2,2,40-57,MEHERPUR,land_acres:wrapped_value_joined:125776.|64
+48_RAJSHAHI_CHAPAI_NAWABGANJ.pdf,51,6,50-70-_-66-_-109,ALATULI,land_acres:wrapped_value_joined:3|9042.77;river_acres:wrapped_value_joined:01|0
+54_RANGPUR_GAIBANDHA.pdf,2,2,55-32,GAIBANDHA,land_acres:wrapped_value_joined:538424.|62
+57_RANGPUR_KURIGRAM.pdf,2,2,55-49,KURIGRAM,land_acres:wrapped_value_joined:567353.9|6
+61_SYLHET_SYLHET.pdf,75,4,60-91-_-27,COMPANIGANJ,forest_acres:wrapped_value_joined:5400.3|5
+61_SYLHET_SYLHET.pdf,130,4,60-91-_-41,GOWAINGHAT,forest_acres:wrapped_value_joined:1044|2.62
+61_SYLHET_SYLHET.pdf,130,6,60-91-_-41-_-109,ALIRGAON,forest_acres:wrapped_value_joined:1388.|94
+61_SYLHET_SYLHET.pdf,143,6,60-91-_-41-_-609,PASHCHIM JAFLONG,river_acres:wrapped_value_joined:0|0

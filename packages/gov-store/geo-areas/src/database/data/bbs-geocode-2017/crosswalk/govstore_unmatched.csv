@@ -1,0 +1,529 @@
+﻿GeoAreaId,hid,geo_type,parent_geo_code,geo_code,bn_name,domain,en_name,GeoLevel,reason,review_candidates_json
+34,/36/28/78/919/,union,78,919,লক্ষীপুর ইউনিয়ন,http://laxmipurup.comilla.gov.bd,Laxmipur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-19-_-09-_-482"", ""bbs_name"": ""LAKKHIPUR"", ""similarity"": 0.706}]"
+39,/36/28/79/575/,union,79,575,দুলালপুর (২) ইউনিয়ন,http://dulalpurup2.comilla.gov.bd,Dulalpurup2,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-19-_-15-_-210"", ""bbs_name"": ""DULALPUR"", ""similarity"": 0.842}, {""bbs_path"": ""20-19-_-15-_-142"", ""bbs_name"": ""BRAHMANPARA"", ""similarity"": 0.273}]"
+40,/36/28/79/576/,union,79,576,ব্রাহ্মনপাড়া সদর ইউনিয়ন,http://brahmanparasadarup.comilla.gov.bd,Brahmanparasadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-19-_-15-_-142"", ""bbs_name"": ""BRAHMANPARA"", ""similarity"": 0.815}, {""bbs_path"": ""20-19-_-15-_-210"", ""bbs_name"": ""DULALPUR"", ""similarity"": 0.083}]"
+80,/36/28/83/500/,union,83,500,মোহাম্মদপুর (পুর্ব) ইউনিয়ন,http://mohammadpureastup.comilla.gov.bd,Mohammadpureast,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-19-_-36-_-625"", ""bbs_name"": ""PANCHGACHHIA PASHCHIM"", ""similarity"": 0.343}, {""bbs_path"": ""20-19-_-36-_-514"", ""bbs_name"": ""MALIGAON"", ""similarity"": 0.261}]"
+86,/36/28/83/507/,union,83,507,পাচঁগাছিয়া (পশ্চিম) ইউনিয়ন,http://passgaciawestup.comilla.gov.bd,Passgaciawest,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-19-_-36-_-625"", ""bbs_name"": ""PANCHGACHHIA PASHCHIM"", ""similarity"": 0.303}, {""bbs_path"": ""20-19-_-36-_-514"", ""bbs_name"": ""MALIGAON"", ""similarity"": 0.286}]"
+99,/36/28/85/1216/,union,85,1216,বাকই ইউনিয়ন,http://bakoiup.comilla.gov.bd,Bakoi,4,no_counterpart_in_matched_parent,[]
+119,/36/28/86/1084/,union,86,1084,১১ নং মুরাদনগর সদর ইউনিয়ন,http://muradnagarsadarup.comilla.gov.bd,Muradnagarsadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-19-_-81-_-504"", ""bbs_name"": ""MURADNAGAR"", ""similarity"": 0.8}]"
+142,/36/28/87/6204/,union,87,6204,বটতলী ইউনিয়ন,http://battaliup.comilla.gov.bd,Battali,4,no_counterpart_in_matched_parent,[]
+177,/36/28/91/476/,union,91,476,বাগমারা (উত্তর) ইউনিয়ন,http://bagmaranorthup.comilla.gov.bd,Bagmaranorth,4,no_counterpart_in_matched_parent,[]
+178,/36/28/91/477/,union,91,477,বাগমারা (দক্ষিন) ইউনিয়ন,http://bagmarasouthup.comilla.gov.bd,Bagmarasouth,4,no_counterpart_in_matched_parent,[]
+179,/36/28/91/478/,union,91,478,ভূলইন (উত্তর) ইউনিয়ন,http://bhuloinnorthup.comilla.gov.bd,Bhuloinnorth,4,no_counterpart_in_matched_parent,[]
+180,/36/28/91/479/,union,91,479,ভূলইন (দক্ষিন) ইউনিয়ন,http://bhuloinsouthup.comilla.gov.bd,Bhuloinsouth,4,no_counterpart_in_matched_parent,[]
+181,/36/28/91/480/,union,91,480,বেলঘর (উত্তর) ইউনিয়ন,http://belgornorthup.comilla.gov.bd,Belgornorth,4,no_counterpart_in_matched_parent,[]
+182,/36/28/91/481/,union,91,481,বেলঘর (দক্ষিন) ইউনিয়ন,http://belgorsouthup.comilla.gov.bd,Belgorsouth,4,no_counterpart_in_matched_parent,[]
+183,/36/28/91/482/,union,91,482,পেরুল (উত্তর) ইউনিয়ন,http://perulnorthup.comilla.gov.bd,Perulnorth,4,no_counterpart_in_matched_parent,[]
+195,/36/28/92/1024/,union,92,1024,৯নং মজিদপুর ইউনিয়ন,http://majidpurup.comilla.gov.bd,Majidpur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-19-_-94-_-510"", ""bbs_name"": ""MAJITPUR"", ""similarity"": 0.875}]"
+198,/36/28/111/776/,union,111,776,ভারেল্লা ইউনিয়ন,http://varellaup.comilla.gov.bd,Varella,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-19-_-18-_-160"", ""bbs_name"": ""BHARELLA UTTAR"", ""similarity"": 0.6}, {""bbs_path"": ""20-19-_-18-_-151"", ""bbs_name"": ""BHARELLA DAKSHIN"", ""similarity"": 0.545}, {""bbs_path"": ""20-19-_-18-_-169"", ""bbs_name"": ""BURICHANG"", ""similarity"": 0.125}]"
+200,/36/28/111/778/,union,111,778,বুড়িচং সদর ইউনিয়ন,http://burichangsadarup.comilla.gov.bd,Burichangsadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-19-_-18-_-169"", ""bbs_name"": ""BURICHANG"", ""similarity"": 0.783}, {""bbs_path"": ""20-19-_-18-_-160"", ""bbs_name"": ""BHARELLA UTTAR"", ""similarity"": 0.444}, {""bbs_path"": ""20-19-_-18-_-151"", ""bbs_name"": ""BHARELLA DAKSHIN"", ""similarity"": 0.414}]"
+271,/36/998/4791/4820/,union,4791,4820,তালশহর ইউনিয়ন,http://talsahar.brahmanbaria.gov.bd,Talsahar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-12-_-13-_-609"", ""bbs_name"": ""PURBA TALSHAHAR"", ""similarity"": 0.727}]"
+366,/36/998/4986/5080/,union,4986,5080,ইছাপুরা ইউনিয়ন,http://ichapuraup.brahmanbaria.gov.bd,Ichapura,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-12-_-07-_-778"", ""bbs_name"": ""UTTAR ICHHAPUR"", ""similarity"": 0.667}, {""bbs_path"": ""20-12-_-07-_-213"", ""bbs_name"": ""DAKKHIN SINGARBIL"", ""similarity"": 0.25}]"
+370,/36/998/4986/5104/,union,4986,5104,সিংগারবিল ইউনিয়ন,http://singerbilup.brahmanbaria.gov.bd,Singerbil,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-12-_-07-_-213"", ""bbs_name"": ""DAKKHIN SINGARBIL"", ""similarity"": 0.64}, {""bbs_path"": ""20-12-_-07-_-778"", ""bbs_name"": ""UTTAR ICHHAPUR"", ""similarity"": 0.182}]"
+443,/36/1006/4215/4356/,union,4215,4356,কালাদরপ ইউনিয়ন,http://kaladarapup.noakhali.gov.bd,Kaladara,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-75-_-87-_-455"", ""bbs_name"": ""KALADARAP"", ""similarity"": 0.941}]"
+574,/36/2075/2411/2511/,union,2411,2511,লক্ষীপুর মডেল ইউনিয়ন,http://laxmipurmodelup.chandpur.gov.bd,Laxmipurmodel,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-13-_-22-_-480"", ""bbs_name"": ""LAKKHIPUR MODEL"", ""similarity"": 0.815}]"
+591,/36/2075/2532/2540/,union,2532,2540,হাজীগঞ্জ সদর ইউনিয়ন,http://hajiganjsadarup.chandpur.gov.bd,Hajiganjsadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-13-_-49-_-346"", ""bbs_name"": ""HAJIGANJ"", ""similarity"": 0.762}, {""bbs_path"": ""20-13-_-49-_-211"", ""bbs_name"": ""DWADASHGRAM"", ""similarity"": 0.333}]"
+632,/36/3108/4706/4713/,union,4706,4713,উত্তর হামছাদী ইউনিয়ন,http://northhamsadiup.lakshmipur.gov.bd,Northhamsadi,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-51-_-43-_-788"", ""bbs_name"": ""UTTAR HAMCHADI"", ""similarity"": 0.56}, {""bbs_path"": ""20-51-_-43-_-215"", ""bbs_name"": ""DAKKHIN HAMCHADI"", ""similarity"": 0.519}, {""bbs_path"": ""20-51-_-43-_-187"", ""bbs_name"": ""CHAR RAMANI"", ""similarity"": 0.455}]"
+633,/36/3108/4706/4714/,union,4706,4714,দক্ষিন হামছাদী ইউনিয়ন,http://southhamsadiup.lakshmipur.gov.bd,Southhamsadi,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-51-_-43-_-788"", ""bbs_name"": ""UTTAR HAMCHADI"", ""similarity"": 0.64}, {""bbs_path"": ""20-51-_-43-_-215"", ""bbs_name"": ""DAKKHIN HAMCHADI"", ""similarity"": 0.519}, {""bbs_path"": ""20-51-_-43-_-187"", ""bbs_name"": ""CHAR RAMANI"", ""similarity"": 0.455}]"
+651,/36/3108/4706/4733/,union,4706,4733,চররমনী মোহন ইউনিয়ন,http://charramonimohonup.lakshmipur.gov.bd,Charramonimohon,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-51-_-43-_-187"", ""bbs_name"": ""CHAR RAMANI"", ""similarity"": 0.72}, {""bbs_path"": ""20-51-_-43-_-788"", ""bbs_name"": ""UTTAR HAMCHADI"", ""similarity"": 0.286}, {""bbs_path"": ""20-51-_-43-_-215"", ""bbs_name"": ""DAKKHIN HAMCHADI"", ""similarity"": 0.267}]"
+678,/36/3108/4709/4737/,union,4709,4737,আলেকজান্ডার ইউনিয়ন,http://alxendarup.lakshmipur.gov.bd,Alxendar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-51-_-73-_-185"", ""bbs_name"": ""CHAR ALEXANDER"", ""similarity"": 0.571}]"
+698,/36/3152/3458/4936/,union,3458,4936,স্বনির্ভর রাঙ্গুনিয়া ইউনিয়ন,http://swanirborranguniaup.chittagong.gov.bd,Swanirborrangunia,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-15-_-70-_-690"", ""bbs_name"": ""RANGUNIA"", ""similarity"": 0.64}, {""bbs_path"": ""20-15-_-70-_-176"", ""bbs_name"": ""CHANDRAGHONA KADAMTALI"", ""similarity"": 0.316}, {""bbs_path"": ""20-15-_-70-_-612"", ""bbs_name"": ""PADUA"", ""similarity"": 0.182}]"
+705,/36/3152/3458/4945/,union,3458,4945,চন্দ্রঘোনা ইউনিয়ন,http://chandraghonaup.chittagong.gov.bd,Chandraghona,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-15-_-70-_-176"", ""bbs_name"": ""CHANDRAGHONA KADAMTALI"", ""similarity"": 0.727}, {""bbs_path"": ""20-15-_-70-_-612"", ""bbs_name"": ""PADUA"", ""similarity"": 0.353}, {""bbs_path"": ""20-15-_-70-_-690"", ""bbs_name"": ""RANGUNIA"", ""similarity"": 0.3}]"
+745,/36/3152/4889/4920/,union,4889,4920,চরপাথরঘাটা ইউনিয়ন,http://charpatharghataup.chittagong.gov.bd,Charpatharghata,4,no_counterpart_in_matched_parent,[]
+746,/36/3152/4889/4925/,union,4889,4925,চরলক্ষ্যা ইউনিয়ন,http://charlakshyaup.chittagong.gov.bd,Charlakshya,4,no_counterpart_in_matched_parent,[]
+750,/36/3152/4889/4956/,union,4889,4956,জুলধা ইউনিয়ন,http://juldhaup.chittagong.gov.bd,Juldha,4,no_counterpart_in_matched_parent,[]
+753,/36/3152/4889/4960/,union,4889,4960,বড় উঠান ইউনিয়ন,http://barauthanup.chittagong.gov.bd,Barauthan,4,no_counterpart_in_matched_parent,[]
+756,/36/3152/4889/4963/,union,4889,4963,শিকলবাহা ইউনিয়ন,http://sikalbahaup.chittagong.gov.bd,Sikalbaha,4,no_counterpart_in_matched_parent,[]
+793,/36/3152/4970/5038/,union,4970,5038,পুর্ব গোমদন্ডী ইউনিয়ন,http://purbagomdandiup.chittagong.gov.bd,Purbagomdandi,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-15-_-12-_-727"", ""bbs_name"": ""SREEPUR KHARANDWIP"", ""similarity"": 0.533}, {""bbs_path"": ""20-15-_-12-_-177"", ""bbs_name"": ""CHARANDWIP"", ""similarity"": 0.435}]"
+797,/36/3152/4970/5042/,union,4970,5042,চরনদ্বীপ ইউনিয়ন,http://charandwipup.chittagong.gov.bd,Charandwi,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-15-_-12-_-177"", ""bbs_name"": ""CHARANDWIP"", ""similarity"": 0.947}, {""bbs_path"": ""20-15-_-12-_-727"", ""bbs_name"": ""SREEPUR KHARANDWIP"", ""similarity"": 0.615}]"
+798,/36/3152/4970/5043/,union,4970,5043,শ্রীপুর-খরন্দীপ ইউনিয়ন,http://sreepurkharandwipup.chittagong.gov.bd,Sreepurkharandwi,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-15-_-12-_-727"", ""bbs_name"": ""SREEPUR KHARANDWIP"", ""similarity"": 0.97}, {""bbs_path"": ""20-15-_-12-_-177"", ""bbs_name"": ""CHARANDWIP"", ""similarity"": 0.615}]"
+864,/36/3152/4975/6053/,union,4975,6053,বুডিরশ্চর ইউনিয়ন,http://budircharup.chittagong.gov.bd,Budirchar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-15-_-37-_-142"", ""bbs_name"": ""BURISHCHAR"", ""similarity"": 0.737}]"
+900,/36/3152/6180/,upazilla,3152,6180,কর্ণফুলী উপজেলা,http://karnafuli.chittagong.gov.bd,Karnafuli Upazilla,3,no_counterpart_in_matched_parent,[]
+901,/36/3152/6180/6182/,union,6180,6182,চরপাথরঘাটা ইউনিয়ন,http://charpatharghataup.chittagong.gov.bd,Charpatharghata,4,parent_not_matched,[]
+902,/36/3152/6180/6185/,union,6180,6185,চরলক্ষ্যা ইউনিয়ন,http://charlakshyaup.chittagong.gov.bd,Charlakshya,4,parent_not_matched,[]
+903,/36/3152/6180/6187/,union,6180,6187,জুলধা ইউনিয়ন,http://juldhaup.chittagong.gov.bd,Juldha,4,parent_not_matched,[]
+904,/36/3152/6180/6188/,union,6180,6188,বড় উঠান ইউনিয়ন,http://barauthanup.chittagong.gov.bd,Barauthan,4,parent_not_matched,[]
+905,/36/3152/6180/6189/,union,6180,6189,শিকলবাহা ইউনিয়ন,http://sikalbahaup.chittagong.gov.bd,Sikalbaha,4,parent_not_matched,[]
+915,/36/3237/3251/5481/,union,3251,5481,পিএমখালী ইউনিয়ন,http://pmkhaliup.coxsbazar.gov.bd,Pmkhali,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-22-_-24-_-612"", ""bbs_name"": ""PATALI MACHHUAKHALI (PM KHALI)"", ""similarity"": 0.438}]"
+983,/36/3237/3258/5463/,union,3258,5463,টেকনাফ সদর ইউনিয়ন,http://teknafsadarup.coxsbazar.gov.bd,Teknafsadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-22-_-90-_-740"", ""bbs_name"": ""TEKNAF"", ""similarity"": 0.706}]"
+986,/36/3238/3270/5451/,union,3270,5451,খাগরাছড়ি সদর ইউনিয়ন,http://sadarup.khagrachhari.gov.bd,Sadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-46-_-49-_-450"", ""bbs_name"": ""KHAGRACHHARI"", ""similarity"": 0.353}, {""bbs_path"": ""20-46-_-49-_-142"", ""bbs_name"": ""BHAIBONCHHARA"", ""similarity"": 0.333}]"
+1004,/36/3238/3280/5446/,union,3280,5446,লক্ষীছড়ি ইউনিয়ন,http://laxmichhariup.khagrachhari.gov.bd,Laxmichhari,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-46-_-61-_-474"", ""bbs_name"": ""LAKKHICHHARI"", ""similarity"": 0.783}]"
+1006,/36/3238/3281/5452/,union,3281,5452,ভাইবোনছড়া ইউনিয়ন,http://bhaiboncharaup.khagrachhari.gov.bd,Bhaibonchara,4,no_counterpart_in_matched_parent,[]
+1019,/36/3238/3289/5621/,union,3289,5621,হাফছড়ি ইউনিয়ন,http://hafchariup.khagrachhari.gov.bd,Hafchari,4,no_counterpart_in_matched_parent,[]
+1027,/36/3238/3290/5638/,union,3290,5638,গুইমারা ইউনিয়ন,http://guimaraup.khagrachhari.gov.bd,Guimara,4,no_counterpart_in_matched_parent,[]
+1035,/36/3245/3269/5423/,union,3269,5423,বান্দরবান সদর ইউনিয়ন,http://bandarbansadarup.bandarban.gov.bd,Bandarbansadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-03-_-14-_-142"", ""bbs_name"": ""BANDARBAN"", ""similarity"": 0.783}]"
+1038,/36/3245/3291/5438/,union,3291,5438,আলীকদম সদর ইউনিয়ন,http://alikadamsadarup.bandarban.gov.bd,Alikadamsadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-03-_-04-_-109"", ""bbs_name"": ""ALIKADAM"", ""similarity"": 0.762}, {""bbs_path"": ""20-03-_-04-_-542"", ""bbs_name"": ""NAYAPARA"", ""similarity"": 0.381}, {""bbs_path"": ""20-03-_-04-_-442"", ""bbs_name"": ""KURUKPATA"", ""similarity"": 0.182}]"
+1041,/36/3245/3292/5464/,union,3292,5464,নাইক্ষ্যংছড়ি সদর ইউনিয়ন,http://naikhyongcharisadarup.bandarban.gov.bd,Naikhyongcharisadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-03-_-73-_-541"", ""bbs_name"": ""NAIKKHYONGCHHARI"", ""similarity"": 0.8}]"
+1047,/36/3245/3293/5434/,union,3293,5434,রোয়াংছড়ি সদর ইউনিয়ন,http://rowangcharisadarup.bandarban.gov.bd,Rowangcharisadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-03-_-89-_-672"", ""bbs_name"": ""ROANGCHHARI"", ""similarity"": 0.741}]"
+1053,/36/3245/3294/5498/,union,3294,5498,লামা সদর ইউনিয়ন,http://lamasadarup.bandarban.gov.bd,Lamasadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-03-_-51-_-476"", ""bbs_name"": ""LAMA"", ""similarity"": 0.615}, {""bbs_path"": ""20-03-_-51-_-284"", ""bbs_name"": ""FANSIAKHALI"", ""similarity"": 0.1}]"
+1054,/36/3245/3294/5499/,union,3294,5499,ফাসিয়াখালী ইউনিয়ন,http://fasiakhaliup.bandarban.gov.bd,Fasiakhali,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-03-_-51-_-284"", ""bbs_name"": ""FANSIAKHALI"", ""similarity"": 0.952}, {""bbs_path"": ""20-03-_-51-_-476"", ""bbs_name"": ""LAMA"", ""similarity"": 0.286}]"
+1061,/36/3245/3295/5441/,union,3295,5441,রুমা সদর ইউনিয়ন,http://rumasadarup.bandarban.gov.bd,Rumasadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-03-_-91-_-681"", ""bbs_name"": ""RUMA"", ""similarity"": 0.615}]"
+1067,/36/3245/3296/5449/,union,3296,5449,থানচি সদর ইউনিয়ন,http://thanchisadarup.bandarban.gov.bd,Thanchisadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-03-_-95-_-738"", ""bbs_name"": ""THANCHI"", ""similarity"": 0.737}]"
+1074,/60/160/161/246/,union,161,246,বেলকুচি সদর ইউনিয়ন,http://belkuchisadarup.sirajganj.gov.bd,Belkuchisadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-88-_-11-_-151"", ""bbs_name"": ""BELKUCHI"", ""similarity"": 0.762}]"
+1095,/60/160/164/282/,union,164,282,কাজিপুর সদর ইউনিয়ন,http://kazipursadarup.sirajganj.gov.bd,Kazipursadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-88-_-50-_-442"", ""bbs_name"": ""KAZIPUR"", ""similarity"": 0.737}]"
+1145,/60/160/168/718/,union,168,718,তাড়াশ সদর ইউনিয়ন,http://tarashsadarup.sirajganj.gov.bd,Tarashsadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-88-_-89-_-751"", ""bbs_name"": ""TARASH"", ""similarity"": 0.706}]"
+1149,/60/160/169/208/,union,169,208,উল্লাপাড়া সদর ইউনিয়ন,http://ullaparasadarup.sirajganj.gov.bd,Ullaparasadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-88-_-94-_-790"", ""bbs_name"": ""ULLAPARA"", ""similarity"": 0.762}, {""bbs_path"": ""50-88-_-94-_-444"", ""bbs_name"": ""KAYRA"", ""similarity"": 0.333}, {""bbs_path"": ""50-88-_-94-_-620"", ""bbs_name"": ""PURNIMAGANTI"", ""similarity"": 0.24}]"
+1155,/60/160/169/730/,union,169,730,পূর্ণিমাগাতী ইউনিয়ন,http://purnimagatiup.sirajganj.gov.bd,Purnimagati,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-88-_-94-_-620"", ""bbs_name"": ""PURNIMAGANTI"", ""similarity"": 0.957}, {""bbs_path"": ""50-88-_-94-_-790"", ""bbs_name"": ""ULLAPARA"", ""similarity"": 0.316}, {""bbs_path"": ""50-88-_-94-_-444"", ""bbs_name"": ""KAYRA"", ""similarity"": 0.25}]"
+1181,/60/989/1068/1377/,union,1068,1377,লক্ষীকুন্ডা ইউনিয়ন,http://luxmikundaup.pabna.gov.bd,Luxmikunda,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-76-_-39-_-473"", ""bbs_name"": ""LAKKHIKUNDI"", ""similarity"": 0.571}]"
+1215,/60/989/1072/1382/,union,1072,1382,লক্ষীপুর ইউনিয়ন,http://laxshmipurup.pabna.gov.bd,Laxshmipur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-76-_-05-_-475"", ""bbs_name"": ""LAKKHIPUR"", ""similarity"": 0.737}]"
+1233,/60/989/1074/1734/,union,1074,1734,করমজা ইউনিয়ন,http://karamjaup.pabna.gov.bd,Karamja,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-76-_-72-_-443"", ""bbs_name"": ""KARANJA"", ""similarity"": 0.857}]"
+1270,/60/993/1130/1976/,union,1130,1976,সারিয়াকান্দি সদর ইউনিয়ন,http://sariakandisadarup.bogra.gov.bd,Sariakandisadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-10-_-81-_-714"", ""bbs_name"": ""SARIAKANDI"", ""similarity"": 0.8}, {""bbs_path"": ""50-10-_-81-_-278"", ""bbs_name"": ""FULBARI"", ""similarity"": 0.273}]"
+1275,/60/993/1130/1982/,union,1130,1982,হাটফুলবাড়ী ইউনিয়ন,http://hatfulbariup.bogra.gov.bd,Hatfulbari,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-10-_-81-_-278"", ""bbs_name"": ""FULBARI"", ""similarity"": 0.824}, {""bbs_path"": ""50-10-_-81-_-714"", ""bbs_name"": ""SARIAKANDI"", ""similarity"": 0.3}]"
+1295,/60/993/1133/1685/,union,1133,1685,দুপচাঁচিয়া ইউনিয়ন,http://dupchanchiaup.bogra.gov.bd,Dupchanchia,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-10-_-33-_-209"", ""bbs_name"": ""DUPCHACHIA"", ""similarity"": 0.952}]"
+1330,/60/993/1139/2106/,union,1139,2106,৬নং ধুনট সদর ইউনিয়ন,http://dhunatsadarup.bogra.gov.bd,Dhunatsadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-10-_-27-_-211"", ""bbs_name"": ""DHUNAT"", ""similarity"": 0.706}]"
+1422,/60/1004/2190/2396/,union,2190,2396,০৯ নং আষাড়িয়াদহ ইউনিয়ন,http://asariadahaup.rajshahi.gov.bd,Asariadaha,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-81-_-34-_-176"", ""bbs_name"": ""CHAR ASHARIADAHA"", ""similarity"": 0.8}]"
+1426,/60/1004/2191/2437/,union,2191,2437,০৩ নং পাঁচন্দর ইউনিয়ন,http://panchandarup.rajshahi.gov.bd,Panchandar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-81-_-94-_-608"", ""bbs_name"": ""PACHANDAR"", ""similarity"": 0.947}]"
+1450,/60/1040/1061/1231/,union,1061,1231,১ নং  ব্রহ্মপুর ইউনিয়ন,http://brahmapurup.natore.gov.bd,Brahmapur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-69-_-63-_-477"", ""bbs_name"": ""LAKKHIPUR KHOLABARIA"", ""similarity"": 0.357}]"
+1451,/60/1040/1061/1252/,union,1061,1252,০২ নং মাধনগর ইউনিয়ন,http://madhnagar.natore.gov.bd,Madhnagar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-69-_-63-_-477"", ""bbs_name"": ""LAKKHIPUR KHOLABARIA"", ""similarity"": 0.357}]"
+1452,/60/1040/1061/1253/,union,1061,1253,০৩ নং খাজুরা ইউনিয়ন,http://khajura.bdgovportal.com,Khajura,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-69-_-63-_-477"", ""bbs_name"": ""LAKKHIPUR KHOLABARIA"", ""similarity"": 0.385}]"
+1453,/60/1040/1061/1254/,union,1061,1254,০৪ নং পিপরুল ইউনিয়ন,http://piprulup.natore.gov.bd,Piprul,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-69-_-63-_-477"", ""bbs_name"": ""LAKKHIPUR KHOLABARIA"", ""similarity"": 0.32}]"
+1454,/60/1040/1061/1255/,union,1061,1255,০৫ নং বিপ্রবেলঘড়িয়া ইউনিয়ন,http://biprobelghoria.bdgovportal.com,Biprobelghoria,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-69-_-63-_-477"", ""bbs_name"": ""LAKKHIPUR KHOLABARIA"", ""similarity"": 0.485}]"
+1458,/60/1040/1061/1259/,union,1061,1259,০৯ নং লক্ষীপুর খোলাবাড়িয়া ইউনিয়ন,http://luxmipurkholabariaup.natore.gov.bd,Luxmipurkholabaria,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-69-_-63-_-477"", ""bbs_name"": ""LAKKHIPUR KHOLABARIA"", ""similarity"": 0.811}]"
+1498,/60/1040/1065/1397/,union,1065,1397,০৯ নং অর্জুনপুর বরমহাটী ইউনিয়ন,http://arjunpurup.natore.gov.bd,Arjunpur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-69-_-44-_-118"", ""bbs_name"": ""ARJUNPUR BARAMHATI"", ""similarity"": 0.64}]"
+1592,/60/1867/1886/2032/,union,1886,2032,ছত্রাজিতপুর ইউনিয়ন,http://chhatrajitpurup.chapainawabganj.gov.bd,Chhatrajitpur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-70-_-88-_-714"", ""bbs_name"": ""SATRAJITPUR"", ""similarity"": 0.833}]"
+1602,/60/1990/2037/2319/,union,2037,2319,চাঁন্দাশ ইউনিয়ন,http://4nochandasup.naogaon.gov.bd,4nochandas,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-64-_-50-_-175"", ""bbs_name"": ""CHANDASH"", ""similarity"": 0.778}]"
+1623,/60/1990/2042/2129/,union,2042,2129,মাটিন্দর ইউনিয়ন,http://5nomatindarup.naogaon.gov.bd,5nomatindar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-64-_-75-_-510"", ""bbs_name"": ""MATIANDAR"", ""similarity"": 0.8}, {""bbs_path"": ""50-64-_-75-_-612"", ""bbs_name"": ""PATICHARA"", ""similarity"": 0.5}, {""bbs_path"": ""50-64-_-75-_-310"", ""bbs_name"": ""GHOSHNAGAR"", ""similarity"": 0.381}]"
+1625,/60/1990/2042/2131/,union,2042,2131,পাটিচড়া ইউনিয়ন,http://7nopatichraraup.naogaon.gov.bd,7nopatichrara,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-64-_-75-_-612"", ""bbs_name"": ""PATICHARA"", ""similarity"": 0.818}, {""bbs_path"": ""50-64-_-75-_-713"", ""bbs_name"": ""SHIHARA"", ""similarity"": 0.5}, {""bbs_path"": ""50-64-_-75-_-510"", ""bbs_name"": ""MATIANDAR"", ""similarity"": 0.455}]"
+1627,/60/1990/2042/2133/,union,2042,2133,ঘষনগর ইউনিয়ন,http://9noghasnagarup.naogaon.gov.bd,9noghasnagar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-64-_-75-_-310"", ""bbs_name"": ""GHOSHNAGAR"", ""similarity"": 0.727}, {""bbs_path"": ""50-64-_-75-_-713"", ""bbs_name"": ""SHIHARA"", ""similarity"": 0.316}, {""bbs_path"": ""50-64-_-75-_-510"", ""bbs_name"": ""MATIANDAR"", ""similarity"": 0.286}]"
+1629,/60/1990/2042/2135/,union,2042,2135,শিহারা ইউনিয়ন,http://11noahiharaup.naogaon.gov.bd,11noahihara,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-64-_-75-_-713"", ""bbs_name"": ""SHIHARA"", ""similarity"": 0.667}, {""bbs_path"": ""50-64-_-75-_-612"", ""bbs_name"": ""PATICHARA"", ""similarity"": 0.6}, {""bbs_path"": ""50-64-_-75-_-310"", ""bbs_name"": ""GHOSHNAGAR"", ""similarity"": 0.381}]"
+1638,/60/1990/2043/2172/,union,2043,2172,আগ্রাদ্বিগুন ইউনিয়ন,http://2noagradigunup.naogaon.gov.bd,2noagradigun,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-64-_-28-_-109"", ""bbs_name"": ""AGRA DWIGUN"", ""similarity"": 0.818}]"
+1645,/60/1990/2149/2264/,union,2149,2264,পাড়ইল ইউনিয়ন,http://6noparoilup.naogaon.gov.bd,6noparoil,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-64-_-69-_-609"", ""bbs_name"": ""PARAIL"", ""similarity"": 0.667}]"
+1653,/60/1990/2150/2340/,union,2150,2340,গনেশপুর ইউনিয়ন,http://5nogoneshpurup.naogaon.gov.bd,5nogoneshpur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-64-_-47-_-310"", ""bbs_name"": ""GANESHPUR"", ""similarity"": 0.762}, {""bbs_path"": ""50-64-_-47-_-160"", ""bbs_name"": ""BISHNUPUR"", ""similarity"": 0.476}, {""bbs_path"": ""50-64-_-47-_-452"", ""bbs_name"": ""KANSHOPARA"", ""similarity"": 0.455}]"
+1657,/60/1990/2150/2454/,union,2150,2454,তেঁতুলিয়া ইউনিয়ন,http://9notetuliaup.naogaon.gov.bd,9notetulia,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-64-_-47-_-749"", ""bbs_name"": ""TENTULIA"", ""similarity"": 0.778}, {""bbs_path"": ""50-64-_-47-_-310"", ""bbs_name"": ""GANESHPUR"", ""similarity"": 0.316}, {""bbs_path"": ""50-64-_-47-_-452"", ""bbs_name"": ""KANSHOPARA"", ""similarity"": 0.3}]"
+1660,/60/1990/2150/2466/,union,2150,2466,কাঁশোকাপুর ইউনিয়ন,http://12nokashoparaup.naogaon.gov.bd,12nokashopara,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-64-_-47-_-452"", ""bbs_name"": ""KANSHOPARA"", ""similarity"": 0.783}, {""bbs_path"": ""50-64-_-47-_-310"", ""bbs_name"": ""GANESHPUR"", ""similarity"": 0.455}, {""bbs_path"": ""50-64-_-47-_-160"", ""bbs_name"": ""BISHNUPUR"", ""similarity"": 0.364}]"
+1662,/60/1990/2150/2473/,union,2150,2473,বিষ্ণপুর ইউনিয়ন,http://14nobisnopurup.naogaon.gov.bd,14nobisnopur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-64-_-47-_-160"", ""bbs_name"": ""BISHNUPUR"", ""similarity"": 0.667}, {""bbs_path"": ""50-64-_-47-_-310"", ""bbs_name"": ""GANESHPUR"", ""similarity"": 0.476}, {""bbs_path"": ""50-64-_-47-_-452"", ""bbs_name"": ""KANSHOPARA"", ""similarity"": 0.455}]"
+1664,/60/1990/2151/2594/,union,2151,2594,শাহাগোলা ইউনিয়ন,http://1noshahagolaup.naogaon.gov.bd,1noshahagola,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-64-_-03-_-710"", ""bbs_name"": ""SAHAGOLA"", ""similarity"": 0.8}]"
+1673,/60/1990/2533/2653/,union,2533,2653,খট্টেশ্বর রাণীনগর ইউনিয়ন,http://1nokhatteshawrup.naogaon.gov.bd,1nokhatteshawr,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-64-_-85-_-677"", ""bbs_name"": ""RANINAGAR"", ""similarity"": 0.348}, {""bbs_path"": ""50-64-_-85-_-142"", ""bbs_name"": ""BARAGACHHA"", ""similarity"": 0.167}]"
+1677,/60/1990/2533/2657/,union,2533,2657,বরগাছা ইউনিয়ন,http://5noborgocaup.naogaon.gov.bd,5noborgoca,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-64-_-85-_-142"", ""bbs_name"": ""BARAGACHHA"", ""similarity"": 0.5}, {""bbs_path"": ""50-64-_-85-_-677"", ""bbs_name"": ""RANINAGAR"", ""similarity"": 0.211}]"
+1683,/60/1990/2534/2554/,union,2534,2554,কির্ত্তিপুর ইউনিয়ন,http://2nokritipurup.naogaon.gov.bd ,2nokritipur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-64-_-60-_-447"", ""bbs_name"": ""KIRTIPUR"", ""similarity"": 0.737}]"
+1696,/60/1990/2537/2830/,union,2537,2830,তেঁতুলিয়া ইউনিয়ন,http://2notetuliaup.naogaon.gov.bd,2notetulia,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""50-64-_-79-_-741"", ""bbs_name"": ""TENTULIA"", ""similarity"": 0.778}]"
+1719,/65/61/62/450/,union,62,450,ভোজগাতি ইউনিয়ন,http://bhojgatiup.jessore.gov.bd,Bhojgati,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-41-_-61-_-142"", ""bbs_name"": ""BHOJGANTI"", ""similarity"": 0.941}]"
+1751,/65/61/95/794/,union,95,794,নারায়নপুর ইউনিয়ন,http://narayanpurup10.jessore.gov.bd,Narayanpurup10,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-41-_-11-_-542"", ""bbs_name"": ""NARAYANPUR"", ""similarity"": 0.833}, {""bbs_path"": ""40-41-_-11-_-729"", ""bbs_name"": ""SWARUPDAHA"", ""similarity"": 0.333}, {""bbs_path"": ""40-41-_-11-_-627"", ""bbs_name"": ""PHULSARA"", ""similarity"": 0.273}]"
+1754,/65/61/95/797/,union,95,797,ফুলসারা ইউনিয়ন,http://fulsaraup1.jessore.gov.bd,Fulsaraup1,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-41-_-11-_-627"", ""bbs_name"": ""PHULSARA"", ""similarity"": 0.667}, {""bbs_path"": ""40-41-_-11-_-729"", ""bbs_name"": ""SWARUPDAHA"", ""similarity"": 0.5}, {""bbs_path"": ""40-41-_-11-_-542"", ""bbs_name"": ""NARAYANPUR"", ""similarity"": 0.4}]"
+1757,/65/61/95/800/,union,95,800,সরুপদাহ ইউনিয়ন,http://swarupdahaup9.jessore.gov.bd,Swarupdahaup9,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-41-_-11-_-729"", ""bbs_name"": ""SWARUPDAHA"", ""similarity"": 0.87}, {""bbs_path"": ""40-41-_-11-_-627"", ""bbs_name"": ""PHULSARA"", ""similarity"": 0.381}, {""bbs_path"": ""40-41-_-11-_-542"", ""bbs_name"": ""NARAYANPUR"", ""similarity"": 0.261}]"
+1773,/65/61/97/841/,union,97,841,সাগরদাড়ী ইউনিয়ন,http://sagardariup2.jessore.gov.bd,Sagardariup2,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-41-_-38-_-710"", ""bbs_name"": ""SAGARDARI"", ""similarity"": 0.857}, {""bbs_path"": ""40-41-_-38-_-719"", ""bbs_name"": ""SATBARIA"", ""similarity"": 0.5}, {""bbs_path"": ""40-41-_-38-_-342"", ""bbs_name"": ""HASANPUR"", ""similarity"": 0.3}]"
+1775,/65/61/97/843/,union,97,843,মঙ্গলকোর্ট ইউনিয়ন,http://mongolkotup5.jessore.gov.bd,Mongolkotup5,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-41-_-38-_-518"", ""bbs_name"": ""MANGALKOT"", ""similarity"": 0.667}, {""bbs_path"": ""40-41-_-38-_-342"", ""bbs_name"": ""HASANPUR"", ""similarity"": 0.2}, {""bbs_path"": ""40-41-_-38-_-610"", ""bbs_name"": ""PANJIA"", ""similarity"": 0.111}]"
+1777,/65/61/97/845/,union,97,845,পাজিয়া ইউনিয়ন,http://panjiaup7.jessore.gov.bd,Panjiaup7,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-41-_-38-_-610"", ""bbs_name"": ""PANJIA"", ""similarity"": 0.8}, {""bbs_path"": ""40-41-_-38-_-342"", ""bbs_name"": ""HASANPUR"", ""similarity"": 0.353}, {""bbs_path"": ""40-41-_-38-_-719"", ""bbs_name"": ""SATBARIA"", ""similarity"": 0.353}]"
+1796,/65/61/98/2521/,union,98,2521,দেয়ারা মডেল ইউনিয়ন,http://dearamodelup.jessore.gov.bd,Dearamodel,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-41-_-47-_-212"", ""bbs_name"": ""DIARA"", ""similarity"": 0.533}, {""bbs_path"": ""40-41-_-47-_-998"", ""bbs_name"": ""JESSORE CANTONMENT"", ""similarity"": 0.296}]"
+1798,/65/61/99/821/,union,99,821,উলশী ইউনিয়ন,http://ulshiup9.jessore.gov.bd,Ulshiup9,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-41-_-90-_-779"", ""bbs_name"": ""ULASI"", ""similarity"": 0.615}, {""bbs_path"": ""40-41-_-90-_-160"", ""bbs_name"": ""BENAPOLE (PART)"", ""similarity"": 0.2}, {""bbs_path"": ""40-41-_-90-_-142"", ""bbs_name"": ""BAG ANCHRA"", ""similarity"": 0.118}]"
+1800,/65/61/99/823/,union,99,823,লক্ষণপুর ইউনিয়ন,http://lakshmanpurup2.jessore.gov.bd,Lakshmanpurup2,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-41-_-90-_-478"", ""bbs_name"": ""LAKKHANPUR"", ""similarity"": 0.75}, {""bbs_path"": ""40-41-_-90-_-142"", ""bbs_name"": ""BAG ANCHRA"", ""similarity"": 0.348}, {""bbs_path"": ""40-41-_-90-_-779"", ""bbs_name"": ""ULASI"", ""similarity"": 0.316}]"
+1801,/65/61/99/824/,union,99,824,বেনাপোল ইউনিয়ন,http://benapoleup4.jessore.gov.bd,Benapoleup4,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-41-_-90-_-160"", ""bbs_name"": ""BENAPOLE (PART)"", ""similarity"": 0.783}, {""bbs_path"": ""40-41-_-90-_-142"", ""bbs_name"": ""BAG ANCHRA"", ""similarity"": 0.3}, {""bbs_path"": ""40-41-_-90-_-478"", ""bbs_name"": ""LAKKHANPUR"", ""similarity"": 0.286}]"
+1803,/65/61/99/826/,union,99,826,বাগআচড়া ইউনিয়ন,http://bagachraup8.jessore.gov.bd,Bagachraup8,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-41-_-90-_-142"", ""bbs_name"": ""BAG ANCHRA"", ""similarity"": 0.8}, {""bbs_path"": ""40-41-_-90-_-160"", ""bbs_name"": ""BENAPOLE (PART)"", ""similarity"": 0.348}, {""bbs_path"": ""40-41-_-90-_-478"", ""bbs_name"": ""LAKKHANPUR"", ""similarity"": 0.286}]"
+1874,/65/70/106/766/,union,106,766,তেতুলিয়া ইউনিয়ন,http://tentuliaup5.satkhira.gov.bd,Tentuliaup5,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-87-_-90-_-755"", ""bbs_name"": ""TENTULIA"", ""similarity"": 0.842}]"
+1923,/65/995/1048/1322/,union,1048,1322,বাশগ্রাম ইউনিয়ন,http://bashgramup.narail.gov.bd,Bashgram,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-65-_-76-_-143"", ""bbs_name"": ""BANSHGRAM"", ""similarity"": 0.941}]"
+1940,/65/995/1049/1894/,union,1049,1894,লক্ষীপাশা ইউনিয়ন,http://lakshmipashaup.narail.gov.bd,Lakshmipasha,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-65-_-52-_-486"", ""bbs_name"": ""LAKKHIPASHA"", ""similarity"": 0.87}]"
+1951,/65/995/1050/1906/,union,1050,1906,চাচুড়ী ইউনিয়ন,http://chacuriup.narail.gov.bd,Chacuri,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-65-_-28-_-178"", ""bbs_name"": ""CHANCHURI"", ""similarity"": 0.875}]"
+2003,/65/1038/1051/2039/,union,1051,2039,২ নং বারখাদা ইউনিয়ন,http://2nobarkhadaup.kushtia.gov.bd,2nobarkhada,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-50-_-79-_-145"", ""bbs_name"": ""BAROKHADA"", ""similarity"": 0.8}, {""bbs_path"": ""40-50-_-79-_-423"", ""bbs_name"": ""JIARKHI"", ""similarity"": 0.444}]"
+2007,/65/1038/1051/2089/,union,1051,2089,৬ নং জিয়ারাখী ইউনিয়ন,http://6noziaraakhiup.kushtia.gov.bd,6noziaraakhi,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-50-_-79-_-423"", ""bbs_name"": ""JIARKHI"", ""similarity"": 0.632}, {""bbs_path"": ""40-50-_-79-_-145"", ""bbs_name"": ""BAROKHADA"", ""similarity"": 0.381}]"
+2027,/65/1038/1052/1842/,union,1052,1842,১১ নং চরসাদীপুর ইউনিয়ন,http://11nocharsadipurup.kushtia.gov.bd,11nocharsadipur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-50-_-71-_-720"", ""bbs_name"": ""SADIPUR"", ""similarity"": 0.636}]"
+2036,/65/1038/1053/1877/,union,1053,1877,৬ নং শোমসপুর ইউনিয়ন,http://6noshomospurup.kushtia.gov.bd,6noshomospur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-50-_-63-_-710"", ""bbs_name"": ""SHAMASPUR"", ""similarity"": 0.667}]"
+2065,/65/1038/1055/1547/,union,1055,1547,৯ নং রিফাইতপুর ইউনিয়ন,http://9norefaitpurup.kushtia.gov.bd,9norefaitpur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-50-_-39-_-691"", ""bbs_name"": ""REFAYETPUR"", ""similarity"": 0.727}]"
+2124,/65/2056/2136/2780/,union,2136,2780,রাড়ুলী ইউনিয়ন,http://www.raruliup.khulna.gov.bd,Www,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-47-_-64-_-678"", ""bbs_name"": ""RARULI"", ""similarity"": 0.0}]"
+2140,/65/2056/2139/2294/,union,2139,2294,আইচগাতী ইউনিয়ন,http://aichgatiup.khulna.gov.bd,Aichgati,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-47-_-75-_-109"", ""bbs_name"": ""AICHGANTI"", ""similarity"": 0.941}, {""bbs_path"": ""40-47-_-75-_-740"", ""bbs_name"": ""TILAK SWALPA BAHIRDIA"", ""similarity"": 0.148}]"
+2143,/65/2056/2139/2298/,union,2139,2298,টিএসবি ইউনিয়ন,http://tsbup.khulna.gov.bd,Tsb,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-47-_-75-_-740"", ""bbs_name"": ""TILAK SWALPA BAHIRDIA"", ""similarity"": 0.273}, {""bbs_path"": ""40-47-_-75-_-109"", ""bbs_name"": ""AICHGANTI"", ""similarity"": 0.167}]"
+2149,/65/2056/2140/2312/,union,2140,2312,সাচিয়াদাহ ইউনিয়ন,http://www.sochiadahoup.khulna.gov.bd,Www,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-47-_-94-_-109"", ""bbs_name"": ""AJUGARA"", ""similarity"": 0.0}, {""bbs_path"": ""40-47-_-94-_-707"", ""bbs_name"": ""SACHIADAH"", ""similarity"": 0.0}]"
+2151,/65/2056/2140/2316/,union,2140,2316,আজগড়া ইউনিয়ন,http://www.ajgoraup.khulna.gov.bd,Www,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-47-_-94-_-109"", ""bbs_name"": ""AJUGARA"", ""similarity"": 0.0}, {""bbs_path"": ""40-47-_-94-_-707"", ""bbs_name"": ""SACHIADAH"", ""similarity"": 0.0}]"
+2239,/65/3240/3265/5188/,union,3265,5188,তেলিগাতী ইউনিয়ন,http://teligatiup.bagerhat.gov.bd,Teligati,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-01-_-60-_-715"", ""bbs_name"": ""TELIGANTI"", ""similarity"": 0.941}, {""bbs_path"": ""40-01-_-60-_-213"", ""bbs_name"": ""DAIBAGYAATI"", ""similarity"": 0.526}]"
+2242,/65/3240/3265/5191/,union,3265,5191,দৈবজ্ঞহাটি ইউনিয়ন,http://daibagnyahatiup.bagerhat.gov.bd,Daibagnyahati,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""40-01-_-60-_-213"", ""bbs_name"": ""DAIBAGYAATI"", ""similarity"": 0.917}, {""bbs_path"": ""40-01-_-60-_-715"", ""bbs_name"": ""TELIGANTI"", ""similarity"": 0.364}]"
+2478,/66/997/3271/4581/,union,3271,4581,শরিকতলা ইউনিয়ন,http://shariktolaup.pirojpur.gov.bd,Shariktola,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""10-79-_-80-_-715"", ""bbs_name"": ""SHARIKTALA DUMIRTALA"", ""similarity"": 0.621}]"
+2488,/66/997/3272/4590/,union,3272,4590,নাজিরপুর সদর ইউনিয়ন,http://nazirpursadarup.pirojpur.gov.bd,Nazirpursadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""10-79-_-76-_-543"", ""bbs_name"": ""NAZIRPUR"", ""similarity"": 0.762}, {""bbs_path"": ""10-79-_-76-_-709"", ""bbs_name"": ""SHANKHARIKATI"", ""similarity"": 0.231}]"
+2489,/66/997/3272/4591/,union,3272,4591,শাখারীকাঠী ইউনিয়ন,http://shakharikathiup.pirojpur.gov.bd,Shakharikathi,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""10-79-_-76-_-709"", ""bbs_name"": ""SHANKHARIKATI"", ""similarity"": 0.923}, {""bbs_path"": ""10-79-_-76-_-543"", ""bbs_name"": ""NAZIRPUR"", ""similarity"": 0.19}]"
+2493,/66/997/3273/4595/,union,3273,4595,কাউখালি সদর ইউনিয়ন,http://kawkhalisadarup.pirojpur.gov.bd,Kawkhalisadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""10-79-_-47-_-441"", ""bbs_name"": ""KAUKHALI"", ""similarity"": 0.667}, {""bbs_path"": ""10-79-_-47-_-176"", ""bbs_name"": ""CHIRAPARA PARSATURIA"", ""similarity"": 0.312}]"
+2494,/66/997/3273/4596/,union,3273,4596,চিরাপাড়া ইউনিয়ন,http://chiraparaup.pirojpur.gov.bd,Chirapara,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""10-79-_-47-_-176"", ""bbs_name"": ""CHIRAPARA PARSATURIA"", ""similarity"": 0.643}, {""bbs_path"": ""10-79-_-47-_-441"", ""bbs_name"": ""KAUKHALI"", ""similarity"": 0.235}]"
+2502,/66/997/3275/4695/,union,3275,4695,ভান্ডারিয়া সদর ইউনিয়ন,http://vandariasadarup.pirojpur.gov.bd,Vandariasadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""10-79-_-14-_-142"", ""bbs_name"": ""BHANDARIA"", ""similarity"": 0.636}]"
+2515,/66/997/3276/4814/,union,3276,4814,হলতাগুলিশাখালী ইউনিয়ন,http://haltagulishakhaliup.pirojpur.gov.bd,Haltagulishakhali,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""10-79-_-58-_-312"", ""bbs_name"": ""GULISHAKHALI"", ""similarity"": 0.828}]"
+2526,/66/997/3277/4653/,union,3277,4653,স্বরুপকাঠী ইউনিয়ন,http://shorupkathiup.pirojpur.gov.bd,Shorupkathi,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""10-79-_-87-_-543"", ""bbs_name"": ""NESARABAD (SWARUPKATI)"", ""similarity"": 0.533}]"
+2531,/66/997/33274/58486/,union,33274,58486,ইন্দুরকানী সদর ইউনিয়ন,http://indurkanisadarup.pirojpur.gov.bd,Indurkanisadar,4,no_counterpart_in_matched_parent,[]
+2532,/66/997/33274/58487/,union,33274,58487,চন্ডিপুর ইউনিয়ন,http://chandipurup.pirojpur.gov.bd,Chandipur,4,no_counterpart_in_matched_parent,[]
+2575,/66/999/4059/4117/,union,4059,4117,শিকারপুর উজিরপুর ইউনিয়ন,http://shikerpurwazirpurup.barisal.gov.bd,Shikerpurwazirpur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""10-06-_-94-_-718"", ""bbs_name"": ""SHIKARPUR"", ""similarity"": 0.615}]"
+2604,/66/999/4063/4166/,union,4063,4166,উত্তর উলানিয়া ইউনিয়ন,http://northulaniaup.barisal.gov.bd,Northulania,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""10-06-_-62-_-783"", ""bbs_name"": ""ULANIA"", ""similarity"": 0.706}, {""bbs_path"": ""10-06-_-62-_-153"", ""bbs_name"": ""BIDYANANDANPUR"", ""similarity"": 0.24}]"
+2606,/66/999/4063/4171/,union,4063,4171,বিদ্যানন্দনপুর ইউনিয়ন,http://biddanandapurup.barisal.gov.bd,Biddanandapur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""10-06-_-62-_-153"", ""bbs_name"": ""BIDYANANDANPUR"", ""similarity"": 0.889}, {""bbs_path"": ""10-06-_-62-_-783"", ""bbs_name"": ""ULANIA"", ""similarity"": 0.316}]"
+2614,/66/999/4063/6209/,union,4063,6209,দক্ষিণ উলানিয়া ইউনিয়ন,http://southulaniaup.barisal.gov.bd,Southulania,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""10-06-_-62-_-783"", ""bbs_name"": ""ULANIA"", ""similarity"": 0.706}, {""bbs_path"": ""10-06-_-62-_-153"", ""bbs_name"": ""BIDYANANDANPUR"", ""similarity"": 0.24}]"
+2622,/66/999/4064/4154/,union,4064,4154,চরকালেখা ইউনিয়ন,http://charkalekhaup.barisal.gov.bd,Charkalekha,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""10-06-_-69-_-176"", ""bbs_name"": ""CHAR KALEKHAN"", ""similarity"": 0.957}]"
+2664,/66/1187/5062/5523/,union,5062,5523,আওয়াজপুর ইউনিয়ন,http://awajpurup.bhola.gov.bd,Awajpur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""10-09-_-25-_-251"", ""bbs_name"": ""EWAJPUR"", ""similarity"": 0.857}, {""bbs_path"": ""10-09-_-25-_-127"", ""bbs_name"": ""ADHYKKHA NAZRULNAGAR"", ""similarity"": 0.308}, {""bbs_path"": ""10-09-_-25-_-189"", ""bbs_name"": ""CHAR KUKRIMUKRI"", ""similarity"": 0.286}]"
+2665,/66/1187/5062/5524/,union,5062,5524,আওয়াজপুর ইউনিয়ন,http://awajpurup.bhola.gov.bd,Awajpur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""10-09-_-25-_-251"", ""bbs_name"": ""EWAJPUR"", ""similarity"": 0.857}, {""bbs_path"": ""10-09-_-25-_-127"", ""bbs_name"": ""ADHYKKHA NAZRULNAGAR"", ""similarity"": 0.308}, {""bbs_path"": ""10-09-_-25-_-189"", ""bbs_name"": ""CHAR KUKRIMUKRI"", ""similarity"": 0.286}]"
+2672,/66/1187/5062/5531/,union,5062,5531,কুকরীমূকরী ইউনিয়ন,http://kukrimukriup.bhola.gov.bd,Kukrimukri,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""10-09-_-25-_-189"", ""bbs_name"": ""CHAR KUKRIMUKRI"", ""similarity"": 0.833}, {""bbs_path"": ""10-09-_-25-_-251"", ""bbs_name"": ""EWAJPUR"", ""similarity"": 0.235}, {""bbs_path"": ""10-09-_-25-_-127"", ""bbs_name"": ""ADHYKKHA NAZRULNAGAR"", ""similarity"": 0.207}]"
+2675,/66/1187/5062/5534/,union,5062,5534,নজরুল নগর ইউনিয়ন,http://nazrulnagarup.bhola.gov.bd,Nazrulnagar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""10-09-_-25-_-127"", ""bbs_name"": ""ADHYKKHA NAZRULNAGAR"", ""similarity"": 0.733}, {""bbs_path"": ""10-09-_-25-_-251"", ""bbs_name"": ""EWAJPUR"", ""similarity"": 0.222}, {""bbs_path"": ""10-09-_-25-_-189"", ""bbs_name"": ""CHAR KUKRIMUKRI"", ""similarity"": 0.16}]"
+2713,/66/3107/4350/4469/,union,4350,4469,আঠারগাছিয়া ইউনিয়ন,http://athrogasiaup.barguna.gov.bd,Athrogasia,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""10-04-_-09-_-127"", ""bbs_name"": ""ATHAROGACHHIA"", ""similarity"": 0.783}]"
+2716,/66/3107/4350/4476/,union,4350,4476,ছোটবগী ইউনিয়ন,http://chotobogiup.barguna.gov.bd,Chotobogi,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""10-04-_-09-_-127"", ""bbs_name"": ""ATHAROGACHHIA"", ""similarity"": 0.273}]"
+2750,/66/3107/4486/4521/,union,4486,4521,কাঠালতলী ইউনিয়ন,http://kathaltaliup.barguna.gov.bd,Kathaltali,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""10-04-_-85-_-458"", ""bbs_name"": ""KANTHALTALI"", ""similarity"": 0.952}]"
+2753,/66/3107/6155/4479/,union,6155,4479,পচাকোড়ালিয়া ইউনিয়ন,http://panchakoraliaup.barguna.gov.bd,Panchakoralia,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""10-04-_-90-_-608"", ""bbs_name"": ""PACHAKORALIA"", ""similarity"": 0.96}]"
+2762,/67/128/129/217/,union,129,217,তাজপুর ইউনিয়ন,http://tazpurup.sylhet.gov.bd,Tazpur,4,no_counterpart_in_matched_parent,[]
+2763,/67/128/129/809/,union,129,809,উমরপুর ইউনিয়ন,http://umorpurup.sylhet.gov.bd,Umorpur,4,no_counterpart_in_matched_parent,[]
+2764,/67/128/129/811/,union,129,811,পশ্চিম পৈলনপুর ইউনিয়ন,http://westpoilanpurup.sylhet.gov.bd,Westpoilanpur,4,no_counterpart_in_matched_parent,[]
+2767,/67/128/129/814/,union,129,814,বুরুঙ্গাবাজার ইউনিয়ন,http://burungabazarup.sylhet.gov.bd,Burungabazar,4,no_counterpart_in_matched_parent,[]
+2768,/67/128/129/815/,union,129,815,গোয়ালাবাজার ইউনিয়ন,http://goalabazarup.sylhet.gov.bd,Goalabazar,4,no_counterpart_in_matched_parent,[]
+2769,/67/128/129/816/,union,129,816,দয়ামীর ইউনিয়ন,http://doyamirup.sylhet.gov.bd,Doyamir,4,no_counterpart_in_matched_parent,[]
+2770,/67/128/129/817/,union,129,817,উসমানপুর ইউনিয়ন,http://usmanpurup.sylhet.gov.bd,Usmanpur,4,no_counterpart_in_matched_parent,[]
+2775,/67/128/129/1436/,union,129,1436,সাদিরপুর ইউনিয়ন,http://sadipurup.sylhet.gov.bd,Sadipur,4,no_counterpart_in_matched_parent,[]
+2800,/67/128/132/884/,union,132,884,ইসাকলস ইউনিয়ন,http://isakalasup.sylhet.gov.bd,Isakalas,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-91-_-27-_-374"", ""bbs_name"": ""ICHHAKALAS"", ""similarity"": 0.778}, {""bbs_path"": ""60-91-_-27-_-774"", ""bbs_name"": ""UTTAR RANIKHAI"", ""similarity"": 0.19}]"
+2801,/67/128/132/885/,union,132,885,উত্তর রনিখাই ইউনিয়ন,http://uttorronikhaiup.sylhet.gov.bd,Uttorronikhai,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-91-_-27-_-774"", ""bbs_name"": ""UTTAR RANIKHAI"", ""similarity"": 0.846}, {""bbs_path"": ""60-91-_-27-_-374"", ""bbs_name"": ""ICHHAKALAS"", ""similarity"": 0.261}]"
+2817,/67/128/134/856/,union,134,856,লক্ষনাবন্দ ইউনিয়ন,http://lakshanabandup.sylhet.gov.bd,Lakshanaband,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-91-_-38-_-478"", ""bbs_name"": ""LAKKHANABAND"", ""similarity"": 0.917}, {""bbs_path"": ""60-91-_-38-_-142"", ""bbs_name"": ""BAGHA"", ""similarity"": 0.353}]"
+2839,/67/128/137/933/,union,137,933,লক্ষীপ্রাসাদ পূর্ব ইউনিয়ন,http://lakshiprashadpurboup.sylhet.gov.bd,Lakshiprashadpurbo,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-91-_-59-_-626"", ""bbs_name"": ""PURBA LAKKHIPRASAD"", ""similarity"": 0.629}, {""bbs_path"": ""60-91-_-59-_-608"", ""bbs_name"": ""PASHCHIM LAKKHIPRASAD"", ""similarity"": 0.579}, {""bbs_path"": ""60-91-_-59-_-617"", ""bbs_name"": ""PURBA DIGHIRPAR"", ""similarity"": 0.25}]"
+2840,/67/128/137/934/,union,137,934,লক্ষীপ্রাসাদ পশ্চিম ইউনিয়ন,http://lakshiprashadpashimup.sylhet.gov.bd,Lakshiprashadpashim,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-91-_-59-_-626"", ""bbs_name"": ""PURBA LAKKHIPRASAD"", ""similarity"": 0.611}, {""bbs_path"": ""60-91-_-59-_-608"", ""bbs_name"": ""PASHCHIM LAKKHIPRASAD"", ""similarity"": 0.564}, {""bbs_path"": ""60-91-_-59-_-617"", ""bbs_name"": ""PURBA DIGHIRPAR"", ""similarity"": 0.364}]"
+2841,/67/128/137/935/,union,137,935,দিঘিরপার পূর্ব ইউনিয়ন,http://digirparpurboup.sylhet.gov.bd,Digirparpurbo,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-91-_-59-_-617"", ""bbs_name"": ""PURBA DIGHIRPAR"", ""similarity"": 0.593}, {""bbs_path"": ""60-91-_-59-_-626"", ""bbs_name"": ""PURBA LAKKHIPRASAD"", ""similarity"": 0.267}, {""bbs_path"": ""60-91-_-59-_-711"", ""bbs_name"": ""SATBANK"", ""similarity"": 0.2}]"
+2842,/67/128/137/936/,union,137,936,সাতবাক ইউনিয়ন,http://satbakhup.sylhet.gov.bd,Satbakh,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-91-_-59-_-711"", ""bbs_name"": ""SATBANK"", ""similarity"": 0.857}, {""bbs_path"": ""60-91-_-59-_-617"", ""bbs_name"": ""PURBA DIGHIRPAR"", ""similarity"": 0.286}, {""bbs_path"": ""60-91-_-59-_-626"", ""bbs_name"": ""PURBA LAKKHIPRASAD"", ""similarity"": 0.167}]"
+2861,/67/128/139/803/,union,139,803,কাজলশার ইউনিয়ন,http://kajalshah.sylhet.gov.bd,Kajalshah,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-91-_-94-_-442"", ""bbs_name"": ""KAJALSAR"", ""similarity"": 0.824}]"
+2880,/67/140/141/321/,union,141,321,তালিমপুর ইউনিয়ন,http://talimpurup.moulvibazar.gov.bd,Talimpur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-58-_-14-_-744"", ""bbs_name"": ""TALIMPUR"", ""similarity"": 1.0}]"
+2886,/67/140/141/674/,union,141,674,তালিমপুর ইউনিয়ন,http://talimpurup.moulvibazar.gov.bd,Talimpur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-58-_-14-_-744"", ""bbs_name"": ""TALIMPUR"", ""similarity"": 1.0}]"
+2963,/67/1000/2428/2735/,union,2428,2735,নবীগঞ্জ সদর ইউনিয়ন,http://nabiganjsadarup.habiganj.gov.bd,Nabiganjsadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-36-_-77-_-547"", ""bbs_name"": ""NABIGANJ"", ""similarity"": 0.762}]"
+2973,/67/1000/2430/2553/,union,2430,2553,বাহুবল সদর ইউনিয়ন,http://bahubalsadarup.habiganj.gov.bd,Bahubalsadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-36-_-05-_-142"", ""bbs_name"": ""BAHUBAL"", ""similarity"": 0.737}]"
+2980,/67/1000/2432/2826/,union,2432,2826,আজমিরীগঞ্জ সদর ইউনিয়ন,http://ajmiriganjsadarup.habiganj.gov.bd,Ajmiriganjsadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-36-_-02-_-109"", ""bbs_name"": ""AJMIRIGANJ"", ""similarity"": 0.8}]"
+2984,/67/1000/2435/2972/,union,2435,2972,বানিয়াচং উত্তর পূর্ব ইউনিয়ন,http://baniachongnortheastup.habiganj.gov.bd,Baniachongnortheast,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-36-_-11-_-791"", ""bbs_name"": ""UTTAR PURBA BANIACHONG"", ""similarity"": 0.513}, {""bbs_path"": ""60-36-_-11-_-218"", ""bbs_name"": ""DAKKHIN PURBA BANIACHONG"", ""similarity"": 0.488}, {""bbs_path"": ""60-36-_-11-_-782"", ""bbs_name"": ""UTTAR PASHCHIM BANIACHONG"", ""similarity"": 0.476}]"
+2985,/67/1000/2435/2973/,union,2435,2973,বানিয়াচং উত্তর পশ্চিম ইউনিয়ন,http://baniachongnorthwestup.habiganj.gov.bd,Baniachongnorthwest,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-36-_-11-_-791"", ""bbs_name"": ""UTTAR PURBA BANIACHONG"", ""similarity"": 0.513}, {""bbs_path"": ""60-36-_-11-_-218"", ""bbs_name"": ""DAKKHIN PURBA BANIACHONG"", ""similarity"": 0.488}, {""bbs_path"": ""60-36-_-11-_-782"", ""bbs_name"": ""UTTAR PASHCHIM BANIACHONG"", ""similarity"": 0.476}]"
+2986,/67/1000/2435/2974/,union,2435,2974,বানিয়াচং দক্ষিণ পূর্ব ইউনিয়ন,http://baniachongsoutheastup.habiganj.gov.bd,Baniachongsoutheast,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-36-_-11-_-791"", ""bbs_name"": ""UTTAR PURBA BANIACHONG"", ""similarity"": 0.513}, {""bbs_path"": ""60-36-_-11-_-218"", ""bbs_name"": ""DAKKHIN PURBA BANIACHONG"", ""similarity"": 0.488}, {""bbs_path"": ""60-36-_-11-_-782"", ""bbs_name"": ""UTTAR PASHCHIM BANIACHONG"", ""similarity"": 0.476}]"
+2987,/67/1000/2435/2975/,union,2435,2975,বানিয়াচং দক্ষিণ পশ্চিম ইউনিয়ন,http://baniachongsouthwestup.habiganj.gov.bd,Baniachongsouthwest,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-36-_-11-_-791"", ""bbs_name"": ""UTTAR PURBA BANIACHONG"", ""similarity"": 0.513}, {""bbs_path"": ""60-36-_-11-_-218"", ""bbs_name"": ""DAKKHIN PURBA BANIACHONG"", ""similarity"": 0.488}, {""bbs_path"": ""60-36-_-11-_-782"", ""bbs_name"": ""UTTAR PASHCHIM BANIACHONG"", ""similarity"": 0.476}]"
+3038,/67/1000/6205/,upazilla,1000,6205,শায়েস্তাগঞ্জ উপজেলা,http://shayestaganj.habiganj.gov.bd,Shayestaganj Upazilla,3,no_counterpart_in_matched_parent,[]
+3039,/67/1000/6205/3005/,union,6205,3005,নুরপুর ইউনিয়ন,http://nurpurup.habiganj.gov.bd,Nurpur,4,parent_not_matched,[]
+3040,/67/1000/6205/3006/,union,6205,3006,শায়েস্তাগঞ্জ ইউনিয়ন,http://shayestaganjup.habiganj.gov.bd,Shayestaganj,4,parent_not_matched,[]
+3041,/67/1000/6205/6206/,union,6205,6206,ব্রাহ্মণডুরা ইউনিয়ন,http://brahmanduraup.habiganj.gov.bd,Brahmandura,4,parent_not_matched,[]
+3046,/67/1008/1176/2471/,union,1176,2471,আপ্তাবনগর ইউনিয়ন,http://aptabnagarup.sunamganj.gov.bd,Aptabnagar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-90-_-89-_-450"", ""bbs_name"": ""KURBANNAGAR"", ""similarity"": 0.571}]"
+3054,/67/1008/2217/2509/,union,2217,2509,শিমুলবাক ইউনিয়ন,http://shimulbak.sunamganj.gov.bd,Shimulbak,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-90-_-27-_-710"", ""bbs_name"": ""SHIMULBANK"", ""similarity"": 0.947}]"
+3071,/67/1008/2559/2568/,union,2559,2568,ছাতক সদর ইউনিয়ন,http://chhataksadarup.sunamganj.gov.bd,Chhataksadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-90-_-23-_-194"", ""bbs_name"": ""CHHATAK"", ""similarity"": 0.737}]"
+3098,/67/1008/2561/2669/,union,2561,2669,লক্ষীপুর ইউনিয়ন,http://laxmipurup.sunamganj.gov.bd,Laxmipur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-90-_-33-_-476"", ""bbs_name"": ""LAKKHIPUR"", ""similarity"": 0.706}]"
+3107,/67/1008/2798/2841/,union,2798,2841,তাহিরপুর সদর ইউনিয়ন,http://tahirpursadarup.sunamganj.gov.bd,Tahirpursadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-90-_-92-_-740"", ""bbs_name"": ""TAHIRPUR"", ""similarity"": 0.762}]"
+3116,/67/1008/2800/2848/,union,2800,2848,ধর্মপাশা সদর ইউনিয়ন,http://dharmapashasadarup.sunamganj.gov.bd,Dharmapashasadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-90-_-32-_-218"", ""bbs_name"": ""DHARMAPASHA"", ""similarity"": 0.815}, {""bbs_path"": ""60-90-_-32-_-676"", ""bbs_name"": ""RAJAPUR"", ""similarity"": 0.348}, {""bbs_path"": ""60-90-_-32-_-719"", ""bbs_name"": ""SUKHAIR"", ""similarity"": 0.261}]"
+3118,/67/1008/2800/2851/,union,2800,2851,সুখাইড় রাজাপুর উত্তর ইউনিয়ন,http://sukhairrajapurnorthup.sunamganj.gov.bd,Sukhairrajapurnorth,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-90-_-32-_-676"", ""bbs_name"": ""RAJAPUR"", ""similarity"": 0.538}, {""bbs_path"": ""60-90-_-32-_-719"", ""bbs_name"": ""SUKHAIR"", ""similarity"": 0.538}, {""bbs_path"": ""60-90-_-32-_-218"", ""bbs_name"": ""DHARMAPASHA"", ""similarity"": 0.4}]"
+3119,/67/1008/2800/2853/,union,2800,2853,সুখাইড় রাজাপুর দক্ষিণ ইউনিয়ন,http://sukhairrajapursouthup.sunamganj.gov.bd,Sukhairrajapursouth,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-90-_-32-_-676"", ""bbs_name"": ""RAJAPUR"", ""similarity"": 0.538}, {""bbs_path"": ""60-90-_-32-_-719"", ""bbs_name"": ""SUKHAIR"", ""similarity"": 0.538}, {""bbs_path"": ""60-90-_-32-_-218"", ""bbs_name"": ""DHARMAPASHA"", ""similarity"": 0.467}]"
+3124,/67/1008/2801/2825/,union,2801,2825,ফেনারবাক ইউনিয়ন,http://fenerbakup.sunamganj.gov.bd,Fenerbak,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-90-_-50-_-275"", ""bbs_name"": ""FENARBANK"", ""similarity"": 0.824}, {""bbs_path"": ""60-90-_-50-_-417"", ""bbs_name"": ""JAMALGANJ UTTAR"", ""similarity"": 0.182}]"
+3130,/67/1008/2956/2960/,union,2956,2960,শাল্লা সদর ইউনিয়ন,http://shallasadarup.sunamganj.gov.bd,Shallasadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-90-_-86-_-706"", ""bbs_name"": ""SHALLA"", ""similarity"": 0.706}]"
+3141,/67/1008/58493/,upazilla,1008,58493,মধ্যনগর,http://madhyanagar.sunamganj.gov.bd,Madhyanagar Upazilla,3,no_counterpart_in_matched_parent,[]
+3153,/68/71/73/520/,union,73,520,দেয়ারা মডেল,http://diaraup.narsingdi.gov.bd,Diara,4,no_counterpart_in_matched_parent,[]
+3173,/68/71/75/386/,union,75,386,কাঠালিয়া ইউনিয়ন,http://khathaliaup.narsingdi.gov.bd,Khathalia,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-68-_-60-_-444"", ""bbs_name"": ""KANTHALIA"", ""similarity"": 0.889}]"
+3253,/68/150/158/178/,union,158,178,বাসন ইউনিয়ন,http://basanup.gazipur.gov.bd,Basan,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-33-_-30-_-151"", ""bbs_name"": ""BHAWALGAR"", ""similarity"": 0.429}, {""bbs_path"": ""30-33-_-30-_-998"", ""bbs_name"": ""GAZIPUR CANTONMENT"", ""similarity"": 0.273}, {""bbs_path"": ""30-33-_-30-_-608"", ""bbs_name"": ""PIRUJALI"", ""similarity"": 0.154}]"
+3254,/68/150/158/179/,union,158,179,গাছা ইউনিয়ন,http://gachhaup.gazipur.gov.bd,Gachha,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-33-_-30-_-998"", ""bbs_name"": ""GAZIPUR CANTONMENT"", ""similarity"": 0.348}, {""bbs_path"": ""30-33-_-30-_-151"", ""bbs_name"": ""BHAWALGAR"", ""similarity"": 0.267}, {""bbs_path"": ""30-33-_-30-_-608"", ""bbs_name"": ""PIRUJALI"", ""similarity"": 0.143}]"
+3255,/68/150/158/180/,union,158,180,কাশিমপুর ইউনিয়ন,http://kashimpurup.gazipur.gov.bd,Kashimpur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-33-_-30-_-998"", ""bbs_name"": ""GAZIPUR CANTONMENT"", ""similarity"": 0.385}, {""bbs_path"": ""30-33-_-30-_-608"", ""bbs_name"": ""PIRUJALI"", ""similarity"": 0.235}, {""bbs_path"": ""30-33-_-30-_-151"", ""bbs_name"": ""BHAWALGAR"", ""similarity"": 0.222}]"
+3256,/68/150/158/181/,union,158,181,কাউলতিয়া ইউনিয়ন,http://kayaltiaup.gazipur.gov.bd,Kayaltia,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-33-_-30-_-151"", ""bbs_name"": ""BHAWALGAR"", ""similarity"": 0.471}, {""bbs_path"": ""30-33-_-30-_-608"", ""bbs_name"": ""PIRUJALI"", ""similarity"": 0.375}, {""bbs_path"": ""30-33-_-30-_-998"", ""bbs_name"": ""GAZIPUR CANTONMENT"", ""similarity"": 0.24}]"
+3257,/68/150/158/182/,union,158,182,কোনাবাড়ী ইউনিয়ন,http://konabariup.gazipur.gov.bd,Konabari,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-33-_-30-_-151"", ""bbs_name"": ""BHAWALGAR"", ""similarity"": 0.353}, {""bbs_path"": ""30-33-_-30-_-608"", ""bbs_name"": ""PIRUJALI"", ""similarity"": 0.25}, {""bbs_path"": ""30-33-_-30-_-998"", ""bbs_name"": ""GAZIPUR CANTONMENT"", ""similarity"": 0.16}]"
+3259,/68/150/158/185/,union,158,185,পূবাইল ইউনিয়ন,http://pubailup.gazipur.gov.bd,Pubail,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-33-_-30-_-608"", ""bbs_name"": ""PIRUJALI"", ""similarity"": 0.571}, {""bbs_path"": ""30-33-_-30-_-151"", ""bbs_name"": ""BHAWALGAR"", ""similarity"": 0.4}, {""bbs_path"": ""30-33-_-30-_-998"", ""bbs_name"": ""GAZIPUR CANTONMENT"", ""similarity"": 0.261}]"
+3292,/68/991/3041/4271/,union,3041,4271,ফতেজংপুর ইউনিয়ন,http://fategongpurup.shariatpur.gov.bd,Fategongpur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-86-_-65-_-280"", ""bbs_name"": ""FATEJANGAPUR"", ""similarity"": 0.783}, {""bbs_path"": ""30-86-_-65-_-178"", ""bbs_name"": ""CHAMTA"", ""similarity"": 0.235}]"
+3297,/68/991/3042/4180/,union,3042,4180,জাজিরা সদর ইউনিয়ন,http://zajirasadarup.shariatpur.gov.bd,Zajirasadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-86-_-94-_-945"", ""bbs_name"": ""ZAJIRA"", ""similarity"": 0.706}, {""bbs_path"": ""30-86-_-94-_-151"", ""bbs_name"": ""BARA KRISHNANAGAR"", ""similarity"": 0.519}]"
+3306,/68/991/3042/4259/,union,3042,4259,বি. কে. নগর ইউনিয়ন,http://bknagarup.shariatpur.gov.bd,Bknagar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-86-_-94-_-151"", ""bbs_name"": ""BARA KRISHNANAGAR"", ""similarity"": 0.609}, {""bbs_path"": ""30-86-_-94-_-945"", ""bbs_name"": ""ZAJIRA"", ""similarity"": 0.308}]"
+3323,/68/991/3044/4323/,union,3044,4323,ডি.এম খালি ইউনিয়ন,http://dmkhaliup.shariatpur.gov.bd,Dmkhali,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-86-_-14-_-222"", ""bbs_name"": ""DIGAR MAHISHKHALI"", ""similarity"": 0.609}, {""bbs_path"": ""30-86-_-14-_-185"", ""bbs_name"": ""CHAR CENSUS"", ""similarity"": 0.235}]"
+3331,/68/991/3044/4349/,union,3044,4349,চরসেনসাস ইউনিয়ন,http://charsensasup.shariatpur.gov.bd,Charsensas,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-86-_-14-_-185"", ""bbs_name"": ""CHAR CENSUS"", ""similarity"": 0.8}, {""bbs_path"": ""30-86-_-14-_-222"", ""bbs_name"": ""DIGAR MAHISHKHALI"", ""similarity"": 0.154}]"
+3351,/68/1007/1173/3104/,union,1173,3104,খাগকান্দা ইউনিয়ন,http://kagkandaUP.narayanganj.gov.bd,KagkandaUP,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-67-_-02-_-453"", ""bbs_name"": ""KHAKKANDA"", ""similarity"": 0.737}]"
+3441,/68/1960/1968/3205/,union,1968,3205,ওয়ার্শী ইউনিয়ন,http://warshiup.tangail.gov.bd,Warshi,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-93-_-66-_-782"", ""bbs_name"": ""UARSHI"", ""similarity"": 0.833}]"
+3459,/68/1960/1969/3162/,union,1969,3162,বেকরা আটগ্রাম ইউনিয়ন,http://bekrahatgramup.tangail.gov.bd,Bekrahatgram,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-93-_-76-_-142"", ""bbs_name"": ""BEKRA"", ""similarity"": 0.588}]"
+3556,/68/2256/2284/3832/,union,2284,3832,পটুয়াভাঙ্গা ইউনিয়ন,http://patuavabgaup.kishoreganj.gov.bd,Patuavabga,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-48-_-79-_-611"", ""bbs_name"": ""PATUABHANGA"", ""similarity"": 0.762}]"
+3561,/68/2256/2284/3838/,union,2284,3838,পাকন্দিয়া ইউনিয়ন,http://pakundiaup.kishoreganj.gov.bd,Pakundia,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-48-_-79-_-611"", ""bbs_name"": ""PATUABHANGA"", ""similarity"": 0.526}]"
+3608,/68/2256/2289/3975/,union,2289,3975,অষ্টগ্রাম সদর ইউনিয়ন,http://austagramsadarup.kishoreganj.gov.bd,Austagramsadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-48-_-02-_-118"", ""bbs_name"": ""AUSTAGRAM"", ""similarity"": 0.783}]"
+3626,/68/2256/2291/3534/,union,2291,3534,নিকলী সদর ইউনিয়ন,http://niklisadarup.kishoreganj.gov.bd,Niklisadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-48-_-76-_-543"", ""bbs_name"": ""NIKLI"", ""similarity"": 0.667}]"
+3715,/68/2942/2379/4107/,union,2379,4107,তেঁতুলঝোড়া ইউনিয়ন,http://tetuljhora.dhaka.gov.bd,Tetuljhora,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-26-_-72-_-747"", ""bbs_name"": ""TENTULJHORA"", ""similarity"": 0.952}, {""bbs_path"": ""30-26-_-72-_-998"", ""bbs_name"": ""SAVAR CANTONMENT"", ""similarity"": 0.24}]"
+3784,/68/3024/3030/4523/,union,3030,4523,হাসাড়া ইউনিয়ন,http://hasharaup.munshiganj.gov.bd,Hashara,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-59-_-84-_-345"", ""bbs_name"": ""HANSARA"", ""similarity"": 0.857}]"
+3821,/68/3024/3032/4423/,union,3032,4423,গাওদিয়া ইউনিয়ন,http://gaodiaup.munshiganj.gov.bd,Gaodia,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-59-_-44-_-310"", ""bbs_name"": ""GAONDIA"", ""similarity"": 0.923}, {""bbs_path"": ""30-59-_-44-_-210"", ""bbs_name"": ""DHAIDIA"", ""similarity"": 0.615}]"
+3886,/68/3025/3039/3755/,union,3039,3755,কালুখালী ইউনিয়ন,http://kalukhaliup.rajbari.gov.bd,Kalukhali,4,no_counterpart_in_matched_parent,[]
+3941,/68/3026/3048/3451/,union,3048,3451,লক্ষীপুর ইউনিয়ন,http://laxmipurup.madaripur.gov.bd,Laxmipur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-54-_-40-_-481"", ""bbs_name"": ""LAKKHIPUR"", ""similarity"": 0.706}, {""bbs_path"": ""30-54-_-40-_-615"", ""bbs_name"": ""PURBAENAYETNAGAR"", ""similarity"": 0.25}]"
+3958,/68/3026/58492/,upazilla,3026,58492,ডাসার,http://dasar.madaripur.gov.bd,Dasar Upazilla,3,no_counterpart_in_matched_parent,[]
+4019,/68/3027/3054/3720/,union,3054,3720,পশারগাতি ইউনিয়ন,http://poshargatiup.gopalganj.gov.bd,Poshargati,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-35-_-58-_-617"", ""bbs_name"": ""PASHARGANTI"", ""similarity"": 0.857}]"
+4057,/68/3028/3057/4005/,union,3057,4005,গুনবহা ইউনিয়ন,http://gunbahaup.faridpur.gov.bd,Gunbaha,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-29-_-18-_-320"", ""bbs_name"": ""GUHABAHA"", ""similarity"": 0.8}]"
+4124,/69/146/149/271/,union,149,271,পঞ্চগড় সদর ইউনিয়ন,http://panchagarhsadarup.panchagarh.gov.bd,Panchagarhsadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""55-77-_-73-_-612"", ""bbs_name"": ""PANCHAGARH"", ""similarity"": 0.8}]"
+4137,/69/146/151/872/,union,151,872,দেবীগঞ্জ সদর ইউনিয়ন,http://debiganjsadarup.panchagarh.gov.bd,Debiganjsadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""55-77-_-34-_-228"", ""bbs_name"": ""DEBIGANJ"", ""similarity"": 0.762}]"
+4148,/69/146/153/260/,union,153,260,বেংহারী ইউনিয়ন,http://banghariup.panchagarh.gov.bd,Banghari,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""55-77-_-25-_-151"", ""bbs_name"": ""BENGHARI BANAGRAM"", ""similarity"": 0.583}, {""bbs_path"": ""55-77-_-25-_-612"", ""bbs_name"": ""PANCHPIR"", ""similarity"": 0.5}]"
+4155,/69/146/153/904/,union,153,904,পাচপীর ইউনিয়ন,http://pachpirup.panchagarh.gov.bd,Pachpir,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""55-77-_-25-_-612"", ""bbs_name"": ""PANCHPIR"", ""similarity"": 0.933}, {""bbs_path"": ""55-77-_-25-_-151"", ""bbs_name"": ""BENGHARI BANAGRAM"", ""similarity"": 0.261}]"
+4165,/69/146/156/210/,union,156,210,ভজনপুর ইউনিয়ন,http://bhojoanpurup.panchagarh.gov.bd,Bhojoanpur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""55-77-_-90-_-151"", ""bbs_name"": ""BHAJANPUR"", ""similarity"": 0.842}, {""bbs_path"": ""55-77-_-90-_-750"", ""bbs_name"": ""TIRNAIHAT"", ""similarity"": 0.211}]"
+4166,/69/146/156/212/,union,156,212,ভজনপুর ইউনিয়ন,http://bhojoanpur.gazipur.gov.bd,Bhojoanpur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""55-77-_-90-_-151"", ""bbs_name"": ""BHAJANPUR"", ""similarity"": 0.842}, {""bbs_path"": ""55-77-_-90-_-750"", ""bbs_name"": ""TIRNAIHAT"", ""similarity"": 0.211}]"
+4171,/69/146/156/234/,union,156,234,তিমাইহাট ইউনিয়ন,http://timaihat.panchagarh.gov.bd,Timaihat,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""55-77-_-90-_-750"", ""bbs_name"": ""TIRNAIHAT"", ""similarity"": 0.824}, {""bbs_path"": ""55-77-_-90-_-151"", ""bbs_name"": ""BHAJANPUR"", ""similarity"": 0.235}]"
+4225,/69/994/1113/1534/,union,1113,1534,মুর্শিদহাট ইউনিয়ন,http://murshidhatup.dinajpur.gov.bd,Murshidhat,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""55-27-_-21-_-508"", ""bbs_name"": ""MUSHIDHAT"", ""similarity"": 0.947}]"
+4230,/69/994/1114/1357/,union,1114,1357,তারগাঁও ইউনিয়ন,http://targaoup.dinajpur.gov.bd,Targao,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""55-27-_-56-_-741"", ""bbs_name"": ""TARGAON"", ""similarity"": 0.923}]"
+4274,/69/994/1120/6194/,union,1120,6194,রাজারামপুর ইউনিয়ন,http://rajarampurup.dinajpur.gov.bd,Rajarampur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""55-27-_-17-_-612"", ""bbs_name"": ""PALASHBARI"", ""similarity"": 0.3}]"
+4283,/69/994/1144/1715/,union,1144,1715,সাইতারা ইউনিয়ন,http://saitaraup.dinajpur.gov.bd,Saitara,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""55-27-_-30-_-712"", ""bbs_name"": ""SAINTARA"", ""similarity"": 0.933}, {""bbs_path"": ""55-27-_-30-_-747"", ""bbs_name"": ""TENTULIA"", ""similarity"": 0.133}]"
+4286,/69/994/1144/1718/,union,1144,1718,তেতুলিয়া ইউনিয়ন,http://tetuliaup.dinajpur.gov.bd,Tetulia,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""55-27-_-30-_-747"", ""bbs_name"": ""TENTULIA"", ""similarity"": 0.933}, {""bbs_path"": ""55-27-_-30-_-712"", ""bbs_name"": ""SAINTARA"", ""similarity"": 0.267}]"
+4360,/69/1080/1096/1722/,union,1096,1722,৩নং ডিমলা সদর ইউনিয়ন,http://dimlasadarup.nilphamari.gov.bd,Dimlasadar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""55-73-_-12-_-209"", ""bbs_name"": ""DIMLA"", ""similarity"": 0.667}]"
+4376,/69/1080/1097/1480/,union,1097,1480,৮নং কাঠালী ইউনিয়ন,http://kathaliup.nilphamari.gov.bd,Kathali,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""55-73-_-36-_-453"", ""bbs_name"": ""KANTHALI"", ""similarity"": 0.933}]"
+4403,/69/1080/1099/1468/,union,1099,1468,১৪ নং চাপড়া সরঞ্জানী,http://chaprasarnjami.nilphamari.gov.bd,Chaprasarnjami,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""55-73-_-64-_-184"", ""bbs_name"": ""CHAPRA SARAMJANI"", ""similarity"": 0.828}]"
+4418,/69/1081/1121/1308/,union,1121,1308,খোদকোমরপুর ইউনিয়ন,http://khodkomorup.gaibandha.gov.bd,Khodkomor,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""55-32-_-82-_-455"", ""bbs_name"": ""KHORDA KOMARPUR"", ""similarity"": 0.696}]"
+4500,/69/1928/1929/3535/,union,1929,3535,আকচা ইউনিয়ন,http://ahchaup.thakurgaon.gov.bd,Ahcha,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""55-94-_-94-_-109"", ""bbs_name"": ""AKCHA"", ""similarity"": 0.8}]"
+4559,/69/1987/1935/2880/,union,1935,2880,উত্তম ইউনিয়ন,http://uttamup.rangpur.gov.bd,Uttam,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""55-85-_-49-_-998"", ""bbs_name"": ""RANGPUR CANTONMENT"", ""similarity"": 0.273}]"
+4560,/69/1987/1935/2881/,union,1935,2881,পরশুরাম  ইউনিয়ন,http://porshuramup.rangpur.gov.bd,Porshuram,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""55-85-_-49-_-998"", ""bbs_name"": ""RANGPUR CANTONMENT"", ""similarity"": 0.385}]"
+4561,/69/1987/1935/2882/,union,1935,2882,তপোধন ইউনিয়ন,http://topodhanup.rangpur.gov.bd,Topodhan,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""55-85-_-49-_-998"", ""bbs_name"": ""RANGPUR CANTONMENT"", ""similarity"": 0.24}]"
+4562,/69/1987/1935/2883/,union,1935,2883,সাতগারা ইউনিয়ন,http://satgaraup.rangpur.gov.bd,Satgara,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""55-85-_-49-_-998"", ""bbs_name"": ""RANGPUR CANTONMENT"", ""similarity"": 0.167}]"
+4563,/69/1987/1935/2886/,union,1935,2886,রাজেন্দ্রপুর ইউনিয়ন,http://rajendrapurup.rangpur.gov.bd,Rajendrapur,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""55-85-_-49-_-998"", ""bbs_name"": ""RANGPUR CANTONMENT"", ""similarity"": 0.429}]"
+4566,/69/1987/1935/2909/,union,1935,2909,দর্শানা ইউনিয়ন,http://dorshonaup.rangpur.gov.bd,Dorshona,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""55-85-_-49-_-998"", ""bbs_name"": ""RANGPUR CANTONMENT"", ""similarity"": 0.24}]"
+4567,/69/1987/1935/2910/,union,1935,2910,তামপাট ইউনিয়ন,http://tampatup.rangpur.gov.bd,Tampat,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""55-85-_-49-_-998"", ""bbs_name"": ""RANGPUR CANTONMENT"", ""similarity"": 0.261}]"
+4632,/69/1987/1941/2906/,union,1941,2906,বালাপাড়া ইউনিয়ন,http://balaparaup.rangpur.gov.bd,Balapara,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""55-85-_-42-_-440"", ""bbs_name"": ""KAUNIA BALAPARA"", ""similarity"": 0.727}]"
+4748,/6175/1944/1946/4493/,union,1946,4493,পোড়াগাও ইউনিয়ন,http://puragauup.sherpur.gov.bd,Puraga,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""45-89-_-70-_-612"", ""bbs_name"": ""PORAGAON"", ""similarity"": 0.714}, {""bbs_path"": ""45-89-_-70-_-688"", ""bbs_name"": ""RAMCHANDRAKURA MANDALIAPARA"", ""similarity"": 0.25}]"
+4753,/6175/1944/1946/4615/,union,1946,4615,রামচন্দ্রকুড়া ইউনিয়ন,http://ramchondrokuraup.sherpur.gov.bd,Ramchondrokura,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""45-89-_-70-_-688"", ""bbs_name"": ""RAMCHANDRAKURA MANDALIAPARA"", ""similarity"": 0.6}, {""bbs_path"": ""45-89-_-70-_-612"", ""bbs_name"": ""PORAGAON"", ""similarity"": 0.364}]"
+4764,/6175/1944/1947/4364/,union,1947,4364,তাতীহাটি ইউনিয়ন,http://tatihatiup.sherpur.gov.bd,Tatihati,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""45-89-_-90-_-745"", ""bbs_name"": ""TANTIHATI"", ""similarity"": 0.941}]"
+4786,/6175/1944/1949/4560/,union,1949,4560,ঝিনাইগাতী ইউনিয়ন,http://jhenaigatiup.sherpur.gov.bd,Jhenaigati,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""45-89-_-37-_-409"", ""bbs_name"": ""JHENAIGANTI"", ""similarity"": 0.952}]"
+4834,/6175/2001/2154/2221/,union,2154,2221,বাশাটি ইউনিয়ন,http://basatiup.mymensingh.gov.bd,Basati,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""45-61-_-65-_-142"", ""bbs_name"": ""BANSHATI"", ""similarity"": 0.857}]"
+4868,/6175/2001/2374/2613/,union,2374,2613,বানিহালা ইউনিয়ন,http://banihalaup.mymensingh.gov.bd,Banihala,4,no_counterpart_in_matched_parent,[]
+4869,/6175/2001/2374/2614/,union,2374,2614,বিস্কা ইউনিয়ন,http://biskaup.mymensingh.gov.bd,Biska,4,no_counterpart_in_matched_parent,[]
+4874,/6175/2001/2374/2821/,union,2374,2821,বালিখা ইউনিয়ন,http://balikhaup.mymensingh.gov.bd,Balikha,4,no_counterpart_in_matched_parent,[]
+4875,/6175/2001/2374/2822/,union,2374,2822,কাকনী ইউনিয়ন,http://kakniup.mymensingh.gov.bd,Kakni,4,no_counterpart_in_matched_parent,[]
+4876,/6175/2001/2374/2823/,union,2374,2823,ঢাকুয়া ইউনিয়ন,http://dhakuaup.mymensingh.gov.bd,Dhakua,4,no_counterpart_in_matched_parent,[]
+4878,/6175/2001/2374/3019/,union,2374,3019,তারাকান্দা ইউনিয়ন,http://tarakandaup.mymensingh.gov.bd,Tarakanda,4,no_counterpart_in_matched_parent,[]
+4879,/6175/2001/2374/3020/,union,2374,3020,গালাগাঁও ইউনিয়ন,http://galagaonup.mymensingh.gov.bd,Galagaon,4,no_counterpart_in_matched_parent,[]
+4880,/6175/2001/2374/3021/,union,2374,3021,কামারগাঁও ইউনিয়ন,http://kamargaonup.mymensingh.gov.bd,Kamargaon,4,no_counterpart_in_matched_parent,[]
+4881,/6175/2001/2374/3023/,union,2374,3023,কামারিয়া ইউনিয়ন,http://kamariaup.mymensingh.gov.bd,Kamaria,4,no_counterpart_in_matched_parent,[]
+4882,/6175/2001/2374/5945/,union,2374,5945,রামপুর ইউনিয়ন,http://rampurup2.mymensingh.gov.bd,Rampurup2,4,no_counterpart_in_matched_parent,[]
+4940,/6175/2001/2705/2816/,union,2705,2816,রাজগাতী ইউনিয়ন,http://rajgatiup.mymensingh.gov.bd,Rajgati,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""45-61-_-72-_-679"", ""bbs_name"": ""RAJGANTI"", ""similarity"": 0.933}]"
+4953,/6175/2257/2390/3845/,union,2390,3845,৩নং লক্ষীরচর ইউনিয়ন,http://laxircharup.jamalpur.gov.bd,Laxirchar,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""45-39-_-36-_-477"", ""bbs_name"": ""LAKKHIRCHAR"", ""similarity"": 0.8}, {""bbs_path"": ""45-39-_-36-_-142"", ""bbs_name"": ""BANSHCHARA"", ""similarity"": 0.526}]"
+4958,/6175/2257/2390/3850/,union,2390,3850,৮নং বাশঁচড়া ইউনিয়ন,http://bashcharaup.jamalpur.gov.bd,Bashchara,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""45-39-_-36-_-142"", ""bbs_name"": ""BANSHCHARA"", ""similarity"": 0.947}, {""bbs_path"": ""45-39-_-36-_-477"", ""bbs_name"": ""LAKKHIRCHAR"", ""similarity"": 0.6}]"
+4985,/6175/2257/2395/4050/,union,2395,4050,৭নং পাথশী ইউনিয়ন,http://partharshiup.jamalpur.gov.bd,Partharshi,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""45-39-_-29-_-622"", ""bbs_name"": ""PATHARSHI"", ""similarity"": 0.947}]"
+5053,/6175/2262/2269/3504/,union,2269,3504,রোয়াইলবাড়ী আমতলা ইউনিয়ন,http://roailbariamtalaup.netrokona.gov.bd,Roailbariamtala,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""45-72-_-47-_-681"", ""bbs_name"": ""ROAILBARI"", ""similarity"": 0.75}]"
+5061,/6175/2262/2270/3349/,union,2270,3349,তেলিগাতী ইউনিয়ন,http://teligatiup.netrokona.gov.bd,Teligati,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""45-72-_-04-_-742"", ""bbs_name"": ""TELIGANTI"", ""similarity"": 0.941}]"
+5112,/6175/2262/2276/3328/,union,2276,3328,দক্ষিণ বিশিউড়া ই্‌উনিয়ন,http://dokkhinbishiuraup.netrokona.gov.bd,Dokkhinbishiura,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""45-72-_-74-_-210"", ""bbs_name"": ""DAKKHIN BISHIURA"", ""similarity"": 0.933}, {""bbs_path"": ""45-72-_-74-_-451"", ""bbs_name"": ""KALIARA GABRAGANTI"", ""similarity"": 0.25}, {""bbs_path"": ""45-72-_-74-_-520"", ""bbs_name"": ""MAUGANTI"", ""similarity"": 0.087}]"
+5118,/6175/2262/2276/3334/,union,2276,3334,মৌগাতি ইউনিয়ন,http://mougatiup.netrokona.gov.bd,Mougati,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""45-72-_-74-_-520"", ""bbs_name"": ""MAUGANTI"", ""similarity"": 0.8}, {""bbs_path"": ""45-72-_-74-_-451"", ""bbs_name"": ""KALIARA GABRAGANTI"", ""similarity"": 0.333}, {""bbs_path"": ""45-72-_-74-_-210"", ""bbs_name"": ""DAKKHIN BISHIURA"", ""similarity"": 0.182}]"
+5121,/6175/2262/2276/3337/,union,2276,3337,কালিয়ারা গাবরাগাতি ইউনিয়ন,http://kaliaragabragatiup.netrokona.gov.bd,Kaliaragabragati,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""45-72-_-74-_-451"", ""bbs_name"": ""KALIARA GABRAGANTI"", ""similarity"": 0.97}, {""bbs_path"": ""45-72-_-74-_-520"", ""bbs_name"": ""MAUGANTI"", ""similarity"": 0.417}, {""bbs_path"": ""45-72-_-74-_-210"", ""bbs_name"": ""DAKKHIN BISHIURA"", ""similarity"": 0.258}]"
+5379,,city,2001,58504,ময়মনসিংহ সিটি কর্পোরেশন,,MYMENSINGH CITY CORPORATION,3,no_bbs_areas_under_matched_parent,[]
+5403,,city_thana,58494,58528,শেরে বাংলা নগর,,SHERE BANGLA NAGAR,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-26-20-80"", ""bbs_name"": """", ""similarity"": 0.0}]"
+5416,,city_thana,58495,58541,হাতিরঝিল,,HATIRJHEEL,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-26-25-66"", ""bbs_name"": """", ""similarity"": 0.0}, {""bbs_path"": ""30-26-25-80"", ""bbs_name"": """", ""similarity"": 0.0}, {""bbs_path"": ""30-26-25-94"", ""bbs_name"": """", ""similarity"": 0.0}]"
+5428,,city_thana,58495,58553,উত্তরা পশ্চিম,,UTTRA PASHCHIM,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-26-25-66"", ""bbs_name"": """", ""similarity"": 0.0}, {""bbs_path"": ""30-26-25-80"", ""bbs_name"": """", ""similarity"": 0.0}, {""bbs_path"": ""30-26-25-94"", ""bbs_name"": """", ""similarity"": 0.0}]"
+5429,,city_thana,58495,58554,উত্তরা পূর্ব,,UTTARA PURBA,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-26-25-66"", ""bbs_name"": """", ""similarity"": 0.0}, {""bbs_path"": ""30-26-25-80"", ""bbs_name"": """", ""similarity"": 0.0}, {""bbs_path"": ""30-26-25-94"", ""bbs_name"": """", ""similarity"": 0.0}]"
+5431,,city_thana,58497,58556,বাসন,,BASAN,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-33-33-99"", ""bbs_name"": ""JOYDEBPUR"", ""similarity"": 0.143}]"
+5432,,city_thana,58497,58557,গাছা,,GACHHA,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-33-33-99"", ""bbs_name"": ""JOYDEBPUR"", ""similarity"": 0.0}]"
+5433,,city_thana,58497,58558,কাশিমপুর,,KASHIMPUR,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-33-33-99"", ""bbs_name"": ""JOYDEBPUR"", ""similarity"": 0.333}]"
+5434,,city_thana,58497,58559,কোনাবাড়ী,,KONABARI,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-33-33-99"", ""bbs_name"": ""JOYDEBPUR"", ""similarity"": 0.353}]"
+5435,,city_thana,58497,58560,পুবাইল,,PUBAIL,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-33-33-99"", ""bbs_name"": ""JOYDEBPUR"", ""similarity"": 0.267}]"
+5436,,city_thana,58497,58561,সদর,,SADAR,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-33-33-99"", ""bbs_name"": ""JOYDEBPUR"", ""similarity"": 0.286}]"
+5437,,city_thana,58497,58562,টঙ্গী পশ্চিম,,TONGI PASHCHIM,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""30-33-33-99"", ""bbs_name"": ""JOYDEBPUR"", ""similarity"": 0.182}]"
+5446,,city_thana,58504,58571,ময়মনসিংহ সদর,,MYMENSINGH SADAR,4,parent_not_matched,[]
+5452,,city_thana,58496,58577,এয়ারপোর্ট,,AIRPORT,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-91-_-62"", ""bbs_name"": ""SYLHET SADAR"", ""similarity"": 0.222}]"
+5453,,city_thana,58496,58578,দক্ষিণ সুরমা,,DAKKHIN SURMA,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-91-_-62"", ""bbs_name"": ""SYLHET SADAR"", ""similarity"": 0.261}]"
+5454,,city_thana,58496,58579,জালালাবাদ,,JALALABAD,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-91-_-62"", ""bbs_name"": ""SYLHET SADAR"", ""similarity"": 0.3}]"
+5455,,city_thana,58496,58580,কোতয়ালী,,KOTWALI,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-91-_-62"", ""bbs_name"": ""SYLHET SADAR"", ""similarity"": 0.222}]"
+5456,,city_thana,58496,58581,মোগলাবাজার,,MOGLABAZAR,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-91-_-62"", ""bbs_name"": ""SYLHET SADAR"", ""similarity"": 0.381}]"
+5457,,city_thana,58496,58582,শাহপরান,,SHAHPARAN,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""60-91-_-62"", ""bbs_name"": ""SYLHET SADAR"", ""similarity"": 0.5}]"
+5459,,city_thana,58502,58584,আকবরশাহ,,AKBARSHAH,4,no_counterpart_in_matched_parent,[]
+5462,,city_thana,58502,58587,চক বাজার,,CHALK BAZAR,4,no_counterpart_in_matched_parent,[]
+5466,,city_thana,58502,58591,ইপিজেড,,EPZ,4,no_counterpart_in_matched_parent,[]
+5473,,city_thana,58502,58598,সদরঘাট,,SADARGHAT,4,no_counterpart_in_matched_parent,[]
+5474,,city_thana,58503,58599,সদর দক্ষিণ,,SADAR DAKKHIN,4,no_counterpart_in_matched_parent,"[{""bbs_path"": ""20-19-_-33"", ""bbs_name"": ""COMILLA SADAR DAKKHIN"", ""similarity"": 0.774}]"
+5480,,pourasabha,4062,58605,বাকেরগঞ্জ পৌরসভা,,BAKERGANJ POURASABHA,4,no_bbs_areas_under_matched_parent,[]
+5506,,pourasabha,3056,58631,আলফাডাঙ্গা পৌরসভা,,ALFADANGA POURASABHA,4,no_bbs_areas_under_matched_parent,[]
+5602,,pourasabha,4191,58727,বকশীগঞ্জ পৌরসভা,,BAKSHIGANJ POURASABHA,4,no_bbs_areas_under_matched_parent,[]
+5689,,pourasabha,168,58815,তাড়াশ পৌরসভা,,TARASH POURASABHA,4,no_bbs_areas_under_matched_parent,[]
+5702,,pourasabha,1123,58828,পলাশবাড়ী পৌরসভা,,PALASHBARI POURASABHA,4,no_bbs_areas_under_matched_parent,[]
+5714,,pourasabha,151,58840,দেবীগঞ্জ পৌরসভা,,DEBIGANJ POURASABHA,4,no_bbs_areas_under_matched_parent,[]
+5758,,pourasabha,4975,58885,হাটহাজারী পৌরসভা,,HATHAZARI POURASABHA,4,no_bbs_areas_under_matched_parent,[]
+5828,,pouro_ward,58631,58955,ওয়ার্ড নং-০১,,WARD NO.01,5,parent_not_matched,[]
+5829,,pouro_ward,58631,58956,ওয়ার্ড নং-০২,,WARD NO. 02,5,parent_not_matched,[]
+5830,,pouro_ward,58631,58957,ওয়ার্ড নং-০৩,,WARD NO. 03,5,parent_not_matched,[]
+5831,,pouro_ward,58631,58958,ওয়ার্ড নং-০৪,,WARD NO. 04,5,parent_not_matched,[]
+5832,,pouro_ward,58631,58959,ওয়ার্ড নং-০৫,,WARD NO. 05,5,parent_not_matched,[]
+5833,,pouro_ward,58631,58960,ওয়ার্ড নং-০৬,,WARD NO. 06,5,parent_not_matched,[]
+5834,,pouro_ward,58631,58961,ওয়ার্ড নং-০৭,,WARD NO. 07,5,parent_not_matched,[]
+5835,,pouro_ward,58631,58962,ওয়ার্ড নং-০৮,,WARD NO. 08,5,parent_not_matched,[]
+5836,,pouro_ward,58631,58963,ওয়ার্ড নং-০৯,,WARD NO. 09,5,parent_not_matched,[]
+5864,,pouro_ward,58634,58991,ওয়ার্ড নং ১০,,WARD NO. 10,5,no_counterpart_in_matched_parent,[]
+5865,,pouro_ward,58634,58992,ওয়ার্ড নং ১১,,WARD NO. 11,5,no_counterpart_in_matched_parent,[]
+5866,,pouro_ward,58634,58993,ওয়ার্ড নং ১২,,WARD NO. 12,5,no_counterpart_in_matched_parent,[]
+5867,,pouro_ward,58634,58994,ওয়ার্ড নং ১৩,,WARD NO.13,5,no_counterpart_in_matched_parent,[]
+5868,,pouro_ward,58634,58995,ওয়ার্ড নং ১৪,,WARD NO. 14,5,no_counterpart_in_matched_parent,[]
+5869,,pouro_ward,58634,58996,ওয়ার্ড নং ১৫,,WARD NO. 15,5,no_counterpart_in_matched_parent,[]
+5870,,pouro_ward,58634,58997,ওয়ার্ড নং ১৬,,WARD NO. 16,5,no_counterpart_in_matched_parent,[]
+5871,,pouro_ward,58634,58998,ওয়ার্ড নং ১৭,,WARD NO.17,5,no_counterpart_in_matched_parent,[]
+5872,,pouro_ward,58634,58999,ওয়ার্ড নং ১৮,,WARD NO. 18,5,no_counterpart_in_matched_parent,[]
+5873,,pouro_ward,58634,59000,ওয়ার্ড নং ১৯,,WARD NO. 19,5,no_counterpart_in_matched_parent,[]
+5874,,pouro_ward,58634,59001,ওয়ার্ড নং ২০,,WARD NO. 20,5,no_counterpart_in_matched_parent,[]
+5875,,pouro_ward,58634,59002,ওয়ার্ড নং ২১,,WARD NO. 21,5,no_counterpart_in_matched_parent,[]
+5876,,pouro_ward,58634,59003,ওয়ার্ড নং ২২,,WARD NO. 22,5,no_counterpart_in_matched_parent,[]
+5877,,pouro_ward,58634,59004,ওয়ার্ড নং ২৩,,WARD NO. 23,5,no_counterpart_in_matched_parent,[]
+5878,,pouro_ward,58634,59005,ওয়ার্ড নং ২৪,,WARD NO. 24,5,no_counterpart_in_matched_parent,[]
+5879,,pouro_ward,58634,59006,ওয়ার্ড নং ২৫,,WARD NO. 25,5,no_counterpart_in_matched_parent,[]
+5880,,pouro_ward,58634,59007,ওয়ার্ড নং ২৬,,WARD NO. 26,5,no_counterpart_in_matched_parent,[]
+5881,,pouro_ward,58634,59008,ওয়ার্ড নং ২৭,,WARD NO. 27,5,no_counterpart_in_matched_parent,[]
+6737,,pouro_ward,58727,59864,ওয়ার্ড নং-০১,,WARD NO. 01,5,parent_not_matched,[]
+6738,,pouro_ward,58727,59865,ওয়ার্ড নং-০২,,WARD NO. 02,5,parent_not_matched,[]
+6739,,pouro_ward,58727,59866,ওয়ার্ড নং-০৩,,WARD NO. 03,5,parent_not_matched,[]
+6740,,pouro_ward,58727,59867,ওয়ার্ড নং-০৪,,WARD NO. 04,5,parent_not_matched,[]
+6741,,pouro_ward,58727,59868,ওয়ার্ড নং-০৫,,WARD NO. 05,5,parent_not_matched,[]
+6742,,pouro_ward,58727,59869,ওয়ার্ড নং-০৬,,WARD NO. 06,5,parent_not_matched,[]
+6743,,pouro_ward,58727,59870,ওয়ার্ড নং-০৭,,WARD NO. 07,5,parent_not_matched,[]
+6744,,pouro_ward,58727,59871,ওয়ার্ড নং-০৮,,WARD NO. 08,5,parent_not_matched,[]
+6745,,pouro_ward,58727,59872,ওয়ার্ড নং-০৯,,WARD NO. 09,5,parent_not_matched,[]
+7184,,pouro_ward,58776,60311,ওয়ার্ড নং-১০,,WARD NO. 10,5,no_counterpart_in_matched_parent,[]
+7185,,pouro_ward,58776,60312,ওয়ার্ড নং-১১,,WARD NO. 11,5,no_counterpart_in_matched_parent,[]
+7186,,pouro_ward,58776,60313,ওয়ার্ড নং-১২,,WARD NO. 12,5,no_counterpart_in_matched_parent,[]
+7550,,pouro_ward,58815,60677,ওয়ার্ড নং ০১,,WARD NO. 01,5,parent_not_matched,[]
+7551,,pouro_ward,58815,60678,ওয়ার্ড নং ০২,,WARD NO. 02,5,parent_not_matched,[]
+7552,,pouro_ward,58815,60679,ওয়ার্ড নং ০৩,,WARD NO. 03,5,parent_not_matched,[]
+7553,,pouro_ward,58815,60680,ওয়ার্ড নং ০৪,,WARD NO. 04,5,parent_not_matched,[]
+7554,,pouro_ward,58815,60681,ওয়ার্ড নং ০৫,,WARD NO. 05,5,parent_not_matched,[]
+7555,,pouro_ward,58815,60682,ওয়ার্ড নং ০৬,,WARD NO. 06,5,parent_not_matched,[]
+7556,,pouro_ward,58815,60683,ওয়ার্ড নং ০৭,,WARD NO. 07,5,parent_not_matched,[]
+7557,,pouro_ward,58815,60684,ওয়ার্ড নং ০৮,,WARD NO. 08,5,parent_not_matched,[]
+7558,,pouro_ward,58815,60685,ওয়ার্ড নং ০৯,,WARD NO. 09,5,parent_not_matched,[]
+7670,,pouro_ward,58828,60797,ওয়ার্ড নং ০১,,WARD NO. 01,5,parent_not_matched,[]
+7671,,pouro_ward,58828,60798,ওয়ার্ড নং ০২,,WARD NO. 02,5,parent_not_matched,[]
+7672,,pouro_ward,58828,60799,ওয়ার্ড নং ০৩,,WARD NO. 03,5,parent_not_matched,[]
+7673,,pouro_ward,58828,60800,ওয়ার্ড নং ০৪,,WARD NO. 04,5,parent_not_matched,[]
+7674,,pouro_ward,58828,60801,ওয়ার্ড নং ০৫,,WARD NO. 05,5,parent_not_matched,[]
+7675,,pouro_ward,58828,60802,ওয়ার্ড নং ০৬,,WARD NO. 06,5,parent_not_matched,[]
+7676,,pouro_ward,58828,60803,ওয়ার্ড নং ০৭,,WARD NO. 07,5,parent_not_matched,[]
+7677,,pouro_ward,58828,60804,ওয়ার্ড নং ০৮,,WARD NO. 08,5,parent_not_matched,[]
+7678,,pouro_ward,58828,60805,ওয়ার্ড নং ০৯,,WARD NO. 09,5,parent_not_matched,[]
+7784,,pouro_ward,58840,60911,ওয়ার্ড নং ০১,,WARD NO. 01,5,parent_not_matched,[]
+7785,,pouro_ward,58840,60912,ওয়ার্ড নং ০২,,WARD NO. 02,5,parent_not_matched,[]
+7786,,pouro_ward,58840,60913,ওয়ার্ড নং ০৩,,WARD NO. 03,5,parent_not_matched,[]
+7787,,pouro_ward,58840,60914,ওয়ার্ড নং ০৪,,WARD NO. 04,5,parent_not_matched,[]
+7788,,pouro_ward,58840,60915,ওয়ার্ড নং ০৫,,WARD NO. 05,5,parent_not_matched,[]
+7789,,pouro_ward,58840,60916,ওয়ার্ড নং ০৬,,WARD NO. 06,5,parent_not_matched,[]
+7790,,pouro_ward,58840,60917,ওয়ার্ড নং ০৭,,WARD NO. 07,5,parent_not_matched,[]
+7791,,pouro_ward,58840,60918,ওয়ার্ড নং ০৮,,WARD NO. 08,5,parent_not_matched,[]
+7792,,pouro_ward,58840,60919,ওয়ার্ড নং ০৯,,WARD NO. 09,5,parent_not_matched,[]
+7829,,pouro_ward,58845,60956,ওয়ার্ড নং ০১,,WARD NO. 01,5,missing_current_parent,[]
+7830,,pouro_ward,58845,60957,ওয়ার্ড নং ০২,,WARD NO. 02,5,missing_current_parent,[]
+7831,,pouro_ward,58845,60958,ওয়ার্ড নং ০৩,,WARD NO. 03,5,missing_current_parent,[]
+7832,,pouro_ward,58845,60959,ওয়ার্ড নং ০৪,,WARD NO. 04,5,missing_current_parent,[]
+7833,,pouro_ward,58845,60960,ওয়ার্ড নং ০৫,,WARD NO. 05,5,missing_current_parent,[]
+7834,,pouro_ward,58845,60961,ওয়ার্ড নং ০৬,,WARD NO. 06,5,missing_current_parent,[]
+7835,,pouro_ward,58845,60962,ওয়ার্ড নং ০৭,,WARD NO. 07,5,missing_current_parent,[]
+7836,,pouro_ward,58845,60963,ওয়ার্ড নং ০৮,,WARD NO. 08,5,missing_current_parent,[]
+7837,,pouro_ward,58845,60964,ওয়ার্ড নং ০৯,,WARD NO. 09,5,missing_current_parent,[]
+8432,,pouro_ward,58885,61559,ওয়ার্ড নং ০১,,WARD NO. 01,5,parent_not_matched,[]
+8433,,pouro_ward,58885,61560,ওয়ার্ড নং ০২,,WARD NO. 02,5,parent_not_matched,[]
+8434,,pouro_ward,58885,61561,ওয়ার্ড নং ০৩,,WARD NO. 03,5,parent_not_matched,[]
+8435,,pouro_ward,58885,61562,ওয়ার্ড নং ০৪,,WARD NO. 04,5,parent_not_matched,[]
+8436,,pouro_ward,58885,61563,ওয়ার্ড নং ০৫,,WARD NO. 05,5,parent_not_matched,[]
+8437,,pouro_ward,58885,61564,ওয়ার্ড নং ০৬,,WARD NO. 06,5,parent_not_matched,[]
+8438,,pouro_ward,58885,61565,ওয়ার্ড নং ০৭,,WARD NO. 07,5,parent_not_matched,[]
+8439,,pouro_ward,58885,61566,ওয়ার্ড নং ০৮,,WARD NO. 08,5,parent_not_matched,[]
+8440,,pouro_ward,58885,61567,ওয়ার্ড নং ০৯,,WARD NO. 09,5,parent_not_matched,[]
+8903,,thana_ward,58577,62030,ওয়ার্ড নং ০৪,,WARD NO. 04,5,parent_not_matched,[]
+8904,,thana_ward,58577,62031,ওয়ার্ড নং ০৫,,WARD NO. 05,5,parent_not_matched,[]
+8905,,thana_ward,58577,62032,ওয়ার্ড নং ০৬,,WARD NO. 06,5,parent_not_matched,[]
+8906,,thana_ward,58577,62033,ওয়ার্ড নং ০৭,,WARD NO. 07,5,parent_not_matched,[]
+8907,,thana_ward,58578,62034,ওয়ার্ড নং ২৫,,WARD NO. 25,5,parent_not_matched,[]
+8908,,thana_ward,58578,62035,ওয়ার্ড নং ২৬,,WARD NO. 26,5,parent_not_matched,[]
+8909,,thana_ward,58579,62036,ওয়ার্ড নং ০৮,,WARD NO. 08,5,parent_not_matched,[]
+8910,,thana_ward,58580,62037,ওয়ার্ড নং ০১,,WARD NO. 01,5,parent_not_matched,[]
+8911,,thana_ward,58580,62038,ওয়ার্ড নং ০২,,WARD NO. 02,5,parent_not_matched,[]
+8912,,thana_ward,58580,62039,ওয়ার্ড নং ০৩,,WARD NO. 03,5,parent_not_matched,[]
+8913,,thana_ward,58580,62040,ওয়ার্ড নং ০৯,,WARD NO. 09,5,parent_not_matched,[]
+8914,,thana_ward,58580,62041,ওয়ার্ড নং ১০,,WARD NO. 10,5,parent_not_matched,[]
+8915,,thana_ward,58580,62042,ওয়ার্ড নং ১১,,WARD NO. 11,5,parent_not_matched,[]
+8916,,thana_ward,58580,62043,ওয়ার্ড নং ১২,,WARD NO. 12,5,parent_not_matched,[]
+8917,,thana_ward,58580,62044,ওয়ার্ড নং ১৩,,WARD NO. 13,5,parent_not_matched,[]
+8918,,thana_ward,58580,62045,ওয়ার্ড নং ১৪,,WARD NO. 14,5,parent_not_matched,[]
+8919,,thana_ward,58580,62046,ওয়ার্ড নং ১৫,,WARD NO. 15,5,parent_not_matched,[]
+8920,,thana_ward,58580,62047,ওয়ার্ড নং ১৬,,WARD NO. 16,5,parent_not_matched,[]
+8921,,thana_ward,58580,62048,ওয়ার্ড নং ১৭,,WARD NO. 17,5,parent_not_matched,[]
+8922,,thana_ward,58580,62049,ওয়ার্ড নং ১৮,,WARD NO. 18,5,parent_not_matched,[]
+8923,,thana_ward,58580,62050,ওয়ার্ড নং ১৯,,WARD NO. 19,5,parent_not_matched,[]
+8924,,thana_ward,58580,62051,ওয়ার্ড নং ২৩,,WARD NO. 23,5,parent_not_matched,[]
+8925,,thana_ward,58581,62052,ওয়ার্ড নং ২৭,,WARD NO. 27,5,parent_not_matched,[]
+8926,,thana_ward,58582,62053,ওয়ার্ড নং ২০,,WARD NO. 20,5,parent_not_matched,[]
+8927,,thana_ward,58582,62054,ওয়ার্ড নং ২১,,WARD NO. 21,5,parent_not_matched,[]
+8928,,thana_ward,58582,62055,ওয়ার্ড নং ২২,,WARD NO. 22,5,parent_not_matched,[]
+8929,,thana_ward,58582,62056,ওয়ার্ড নং ২৪,,WARD NO. 24,5,parent_not_matched,[]
+8960,,thana_ward,58584,62087,ওয়ার্ড নং ০৯,,WARD NO. 09,5,parent_not_matched,[]
+8961,,thana_ward,58584,62088,ওয়ার্ড নং ১০,,WARD NO. 10,5,parent_not_matched,[]
+8969,,thana_ward,58587,62096,ওয়ার্ড নং ০৬,,WARD NO. 06,5,parent_not_matched,[]
+8970,,thana_ward,58587,62097,ওয়ার্ড নং ১৬,,WARD NO. 16,5,parent_not_matched,[]
+8971,,thana_ward,58587,62098,ওয়ার্ড নং ১৭,,WARD NO. 17,5,parent_not_matched,[]
+8981,,thana_ward,58591,62108,ওয়ার্ড নং ৩৯,,WARD NO. 39,5,parent_not_matched,[]
+9003,,thana_ward,58598,62130,ওয়ার্ড নং-২৮ (অংশ),,WARD NO.28 (PART),5,parent_not_matched,[]
+9004,,thana_ward,58598,62131,ওয়ার্ড নং ২৯,,WARD NO. 29,5,parent_not_matched,[]
+9005,,thana_ward,58598,62132,ওয়ার্ড নং ৩০,,WARD NO. 30,5,parent_not_matched,[]
+9006,,thana_ward,58598,62133,ওয়ার্ড নং ৩১,,WARD NO. 31,5,parent_not_matched,[]
+9007,,thana_ward,58598,62134,ওয়ার্ড নং ৩৩,,WARD NO. 33,5,parent_not_matched,[]
+9008,,thana_ward,58599,62135,ওয়ার্ড নং ১৯,,WARD NO. 19,5,parent_not_matched,[]
+9009,,thana_ward,58599,62136,ওয়ার্ড নং ২০,,WARD NO. 20,5,parent_not_matched,[]
+9010,,thana_ward,58599,62137,ওয়ার্ড নং ২১,,WARD NO. 21,5,parent_not_matched,[]
+9011,,thana_ward,58599,62138,ওয়ার্ড নং ২২,,WARD NO. 22,5,parent_not_matched,[]
+9012,,thana_ward,58599,62139,ওয়ার্ড নং ২৩,,WARD NO. 23,5,parent_not_matched,[]
+9013,,thana_ward,58599,62140,ওয়ার্ড নং ২৪,,WARD NO. 24,5,parent_not_matched,[]
+9014,,thana_ward,58599,62141,ওয়ার্ড নং ২৫,,WARD NO. 25,5,parent_not_matched,[]
+9015,,thana_ward,58599,62142,ওয়ার্ড নং ২৬,,WARD NO. 26,5,parent_not_matched,[]
+9016,,thana_ward,58599,62143,ওয়ার্ড নং ২৭,,WARD NO. 27,5,parent_not_matched,[]
+9047,,thana_ward,58508,62174,ওয়ার্ড নং ৬৫ (অংশ),,WARD NO. 65 (PART),5,no_counterpart_in_matched_parent,[]
+9079,,thana_ward,58513,62206,ওয়ার্ড নং ৬৫ (অংশ),,WARD NO. 65 (PART),5,no_counterpart_in_matched_parent,[]
+9117,,thana_ward,58528,62244,ওয়ার্ড নং ১৭ (৫১) (অংশ),,WARD NO. 17 (51) (PART),5,parent_not_matched,[]
+9152,,thana_ward,58541,62279,ওয়ার্ড নং ২০ (অংশ),,WARD NO. 20 (PART),5,parent_not_matched,[]
+9153,,thana_ward,58541,62280,ওয়ার্ড নং ২১ (অংশ),,WARD NO. 21 (PART),5,parent_not_matched,[]
+9154,,thana_ward,58541,62281,ওয়ার্ড নং ২২ (অংশ),,WARD NO. 22 (PART),5,parent_not_matched,[]
+9155,,thana_ward,58541,62282,ওয়ার্ড নং ২৪ (অংশ),,WARD NO. 24 (PART),5,parent_not_matched,[]
+9156,,thana_ward,58541,62283,ওয়ার্ড নং ২৬ (অংশ),,WARD NO. 26 (PART),5,parent_not_matched,[]
+9157,,thana_ward,58541,62284,ওয়ার্ড নং ৩৫ (অংশ),,WARD NO. 35 (PART),5,parent_not_matched,[]
+9158,,thana_ward,58541,62285,ওয়ার্ড নং ৩৬ (অংশ),,WARD NO. 36 (PART),5,parent_not_matched,[]
+9180,,thana_ward,58523,62307,ওয়ার্ড নং ৩৫ (৫৪),,WARD NO. 35 (54),5,no_counterpart_in_matched_parent,[]
+9181,,thana_ward,58523,62308,ওয়ার্ড নং ৩৬ (৫৫),,WARD NO. 36 (55),5,no_counterpart_in_matched_parent,[]
+9189,,thana_ward,58528,62316,ওয়ার্ড নং ১৬ (অংশ),,WARD NO. 16 (PART),5,parent_not_matched,[]
+9190,,thana_ward,58528,62317,ওয়ার্ড নং ২৭ (৪০) (অংশ),,WARD NO. 27 (40) (PART),5,parent_not_matched,[]
+9191,,thana_ward,58528,62318,ওয়ার্ড নং ২৮ (৪১),,WARD NO. 28 (41),5,parent_not_matched,[]
+9200,,thana_ward,58553,62327,ওয়ার্ড নং ০১ (অংশ),,WARD NO. 01 (PART),5,parent_not_matched,[]
+9201,,thana_ward,58554,62328,ওয়ার্ড নং ০১ (অংশ),,WARD NO. 01 (PART),5,parent_not_matched,[]
+9205,,thana_ward,58556,62332,ওয়ার্ড নং ১৩,,WARD NO. 13,5,parent_not_matched,[]
+9206,,thana_ward,58556,62333,ওয়ার্ড নং ১৪,,WARD NO. 14,5,parent_not_matched,[]
+9207,,thana_ward,58556,62334,ওয়ার্ড নং ১৫,,WARD NO. 15,5,parent_not_matched,[]
+9208,,thana_ward,58556,62335,ওয়ার্ড নং ১৬,,WARD NO. 16,5,parent_not_matched,[]
+9209,,thana_ward,58556,62336,ওয়ার্ড নং ১৭,,WARD NO. 17,5,parent_not_matched,[]
+9210,,thana_ward,58556,62337,ওয়ার্ড নং ১৮,,WARD NO. 18,5,parent_not_matched,[]
+9211,,thana_ward,58557,62338,ওয়ার্ড নং ৩২,,WARD NO. 32,5,parent_not_matched,[]
+9212,,thana_ward,58557,62339,ওয়ার্ড নং ৩৩,,WARD NO. 33,5,parent_not_matched,[]
+9213,,thana_ward,58557,62340,ওয়ার্ড নং ৩৪,,WARD NO. 34,5,parent_not_matched,[]
+9214,,thana_ward,58557,62341,ওয়ার্ড নং ৩৫,,WARD NO. 35,5,parent_not_matched,[]
+9215,,thana_ward,58557,62342,ওয়ার্ড নং ৩৬,,WARD NO. 36,5,parent_not_matched,[]
+9216,,thana_ward,58557,62343,ওয়ার্ড নং ৩৭,,WARD NO. 37,5,parent_not_matched,[]
+9217,,thana_ward,58557,62344,ওয়ার্ড নং ৩৮,,WARD NO. 38,5,parent_not_matched,[]
+9218,,thana_ward,58558,62345,ওয়ার্ড নং ০১,,WARD NO. 01,5,parent_not_matched,[]
+9219,,thana_ward,58558,62346,ওয়ার্ড নং ০২,,WARD NO. 02,5,parent_not_matched,[]
+9220,,thana_ward,58558,62347,ওয়ার্ড নং ০৩,,WARD NO. 03,5,parent_not_matched,[]
+9221,,thana_ward,58558,62348,ওয়ার্ড নং ০৪,,WARD NO. 04,5,parent_not_matched,[]
+9222,,thana_ward,58558,62349,ওয়ার্ড নং ০৫,,WARD NO. 05,5,parent_not_matched,[]
+9223,,thana_ward,58558,62350,ওয়ার্ড নং ০৬,,WARD NO. 06,5,parent_not_matched,[]
+9224,,thana_ward,58559,62351,ওয়ার্ড নং ০৭,,WARD NO. 07,5,parent_not_matched,[]
+9225,,thana_ward,58559,62352,ওয়ার্ড নং ০৮,,WARD NO. 08,5,parent_not_matched,[]
+9226,,thana_ward,58559,62353,ওয়ার্ড নং ০৯,,WARD NO. 09,5,parent_not_matched,[]
+9227,,thana_ward,58559,62354,ওয়ার্ড নং ১০,,WARD NO. 10,5,parent_not_matched,[]
+9228,,thana_ward,58559,62355,ওয়ার্ড নং ১১,,WARD NO. 11,5,parent_not_matched,[]
+9229,,thana_ward,58559,62356,ওয়ার্ড নং ১২,,WARD NO. 12,5,parent_not_matched,[]
+9230,,thana_ward,58560,62357,ওয়ার্ড নং ৩৯,,WARD NO. 39,5,parent_not_matched,[]
+9231,,thana_ward,58560,62358,ওয়ার্ড নং ৪০,,WARD NO. 40,5,parent_not_matched,[]
+9232,,thana_ward,58560,62359,ওয়ার্ড নং ৪১,,WARD NO. 41,5,parent_not_matched,[]
+9233,,thana_ward,58560,62360,ওয়ার্ড নং ৪২,,WARD NO. 42,5,parent_not_matched,[]
+9234,,thana_ward,58561,62361,ওয়ার্ড নং ১৯,,WARD NO. 19,5,parent_not_matched,[]
+9235,,thana_ward,58561,62362,ওয়ার্ড নং ২০,,WARD NO. 20,5,parent_not_matched,[]
+9236,,thana_ward,58561,62363,ওয়ার্ড নং ২১,,WARD NO. 21,5,parent_not_matched,[]
+9237,,thana_ward,58561,62364,ওয়ার্ড নং ২২,,WARD NO. 22,5,parent_not_matched,[]
+9238,,thana_ward,58561,62365,ওয়ার্ড নং ২৩,,WARD NO. 23,5,parent_not_matched,[]
+9239,,thana_ward,58561,62366,ওয়ার্ড নং ২৪,,WARD NO. 24,5,parent_not_matched,[]
+9240,,thana_ward,58561,62367,ওয়ার্ড নং ২৫,,WARD NO. 25,5,parent_not_matched,[]
+9241,,thana_ward,58561,62368,ওয়ার্ড নং ২৬,,WARD NO. 26,5,parent_not_matched,[]
+9242,,thana_ward,58561,62369,ওয়ার্ড নং ২৭,,WARD NO. 27,5,parent_not_matched,[]
+9243,,thana_ward,58561,62370,ওয়ার্ড নং ২৮,,WARD NO. 28,5,parent_not_matched,[]
+9244,,thana_ward,58561,62371,ওয়ার্ড নং ২৯,,WARD NO. 29,5,parent_not_matched,[]
+9245,,thana_ward,58561,62372,ওয়ার্ড নং ৩০,,WARD NO. 30,5,parent_not_matched,[]
+9246,,thana_ward,58561,62373,ওয়ার্ড নং ৩১,,WARD NO. 31,5,parent_not_matched,[]
+9247,,thana_ward,58562,62374,ওয়ার্ড নং ৫০ (অংশ),,WARD NO. 50 (PART),5,parent_not_matched,[]
+9248,,thana_ward,58562,62375,ওয়ার্ড নং ৫১,,WARD NO. 51,5,parent_not_matched,[]
+9249,,thana_ward,58562,62376,ওয়ার্ড নং ৫২,,WARD NO. 52,5,parent_not_matched,[]
+9250,,thana_ward,58562,62377,ওয়ার্ড নং ৫৩,,WARD NO. 53,5,parent_not_matched,[]
+9251,,thana_ward,58562,62378,ওয়ার্ড নং ৫৪,,WARD NO. 54,5,parent_not_matched,[]
+9252,,thana_ward,58562,62379,ওয়ার্ড নং ৫৫ (অংশ),,WARD NO. 55 (PART),5,parent_not_matched,[]
+9253,,thana_ward,58562,62380,ওয়ার্ড নং ৫৭ (অংশ),,WARD NO. 57 (PART),5,parent_not_matched,[]
+9311,,thana_ward,58571,62438,ওয়ার্ড নং ০১,,WARD NO. 01,5,parent_not_matched,[]
+9312,,thana_ward,58571,62439,ওয়ার্ড নং ০২,,WARD NO. 02,5,parent_not_matched,[]
+9313,,thana_ward,58571,62440,ওয়ার্ড নং ০৩,,WARD NO. 03,5,parent_not_matched,[]
+9314,,thana_ward,58571,62441,ওয়ার্ড নং ০৪,,WARD NO. 04,5,parent_not_matched,[]
+9315,,thana_ward,58571,62442,ওয়ার্ড নং ০৫,,WARD NO. 05,5,parent_not_matched,[]
+9316,,thana_ward,58571,62443,ওয়ার্ড নং ০৬,,WARD NO. 06,5,parent_not_matched,[]
+9317,,thana_ward,58571,62444,ওয়ার্ড নং ০৭,,WARD NO. 07,5,parent_not_matched,[]
+9318,,thana_ward,58571,62445,ওয়ার্ড নং ০৮,,WARD NO. 08,5,parent_not_matched,[]
+9319,,thana_ward,58571,62446,ওয়ার্ড নং ০৯,,WARD NO. 09,5,parent_not_matched,[]
+9320,,thana_ward,58571,62447,ওয়ার্ড নং ১০,,WARD NO. 10,5,parent_not_matched,[]
+9321,,thana_ward,58571,62448,ওয়ার্ড নং ১১,,WARD NO. 11,5,parent_not_matched,[]
+9322,,thana_ward,58571,62449,ওয়ার্ড নং ১২,,WARD NO. 12,5,parent_not_matched,[]
+9323,,thana_ward,58571,62450,ওয়ার্ড নং ১৩,,WARD NO. 13,5,parent_not_matched,[]
+9324,,thana_ward,58571,62451,ওয়ার্ড নং ১৪,,WARD NO. 14,5,parent_not_matched,[]
+9325,,thana_ward,58571,62452,ওয়ার্ড নং ১৫,,WARD NO. 15,5,parent_not_matched,[]
+9326,,thana_ward,58571,62453,ওয়ার্ড নং ১৬,,WARD NO. 16,5,parent_not_matched,[]
+9327,,thana_ward,58571,62454,ওয়ার্ড নং ১৭,,WARD NO. 17,5,parent_not_matched,[]
+9328,,thana_ward,58571,62455,ওয়ার্ড নং ১৮,,WARD NO. 18,5,parent_not_matched,[]
+9329,,thana_ward,58571,62456,ওয়ার্ড নং ১৯,,WARD NO. 19,5,parent_not_matched,[]
+9330,,thana_ward,58571,62457,ওয়ার্ড নং ২০,,WARD NO. 20,5,parent_not_matched,[]
+9331,,thana_ward,58571,62458,ওয়ার্ড নং ২১,,WARD NO. 21,5,parent_not_matched,[]
+9332,,thana_ward,58571,62459,ওয়ার্ড নং ২২,,WARD NO. 22,5,parent_not_matched,[]
+9333,,thana_ward,58571,62460,ওয়ার্ড নং ২৩,,WARD NO. 23,5,parent_not_matched,[]
+9334,,thana_ward,58571,62461,ওয়ার্ড নং ২৪,,WARD NO. 24,5,parent_not_matched,[]
+9335,,thana_ward,58571,62462,ওয়ার্ড নং ২৫,,WARD NO. 25,5,parent_not_matched,[]
+9336,,thana_ward,58571,62463,ওয়ার্ড নং ২৬,,WARD NO. 26,5,parent_not_matched,[]
+9337,,thana_ward,58571,62464,ওয়ার্ড নং ২৭,,WARD NO. 27,5,parent_not_matched,[]
+9338,,thana_ward,58571,62465,ওয়ার্ড নং ২৮,,WARD NO. 28,5,parent_not_matched,[]
+9339,,thana_ward,58571,62466,ওয়ার্ড নং ২৯,,WARD NO. 29,5,parent_not_matched,[]
+9340,,thana_ward,58571,62467,ওয়ার্ড নং ৩০,,WARD NO. 30,5,parent_not_matched,[]
+9341,,thana_ward,58571,62468,ওয়ার্ড নং ৩১,,WARD NO. 31,5,parent_not_matched,[]
+9342,,thana_ward,58571,62469,ওয়ার্ড নং ৩২,,WARD NO. 32,5,parent_not_matched,[]
+9343,,thana_ward,58571,62470,ওয়ার্ড নং ৩৩,,WARD NO. 33,5,parent_not_matched,[]
+9358,,country,0,10000001,বাংলাদেশ,,Bangladesh,0,country_not_in_bbs,[]

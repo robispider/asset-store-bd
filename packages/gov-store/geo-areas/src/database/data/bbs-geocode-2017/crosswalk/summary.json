@@ -1,0 +1,178 @@
+{
+  "current_csv_sha256": "1b1bf5beba43c321262dc587930153eac7cd0ff6d96f61abb5d013a863edc94d",
+  "bbs_csv_sha256": "b195fbadc2a17ca1fd86fc6696d2d68bfb68d71996d0f2a1643a41a18eea8628",
+  "current_rows": 9111,
+  "matched_current_rows": 8583,
+  "unmatched_current_rows": 528,
+  "matched_by_tier": {
+    "exact": 6512,
+    "alias": 259,
+    "bangla": 1512,
+    "skeleton": 243,
+    "reviewed": 10,
+    "ward_set": 47
+  },
+  "by_type": [
+    {
+      "geo_type": "divison",
+      "total": 8,
+      "matched": 8,
+      "unmatched": 0,
+      "by_reviewed": 0,
+      "by_exact": 8,
+      "by_alias": 0,
+      "by_bangla": 0,
+      "by_skeleton": 0,
+      "by_ward_set": 0
+    },
+    {
+      "geo_type": "district",
+      "total": 64,
+      "matched": 64,
+      "unmatched": 0,
+      "by_reviewed": 0,
+      "by_exact": 56,
+      "by_alias": 7,
+      "by_bangla": 1,
+      "by_skeleton": 0,
+      "by_ward_set": 0
+    },
+    {
+      "geo_type": "upazilla",
+      "total": 494,
+      "matched": 490,
+      "unmatched": 4,
+      "by_reviewed": 10,
+      "by_exact": 361,
+      "by_alias": 35,
+      "by_bangla": 83,
+      "by_skeleton": 1,
+      "by_ward_set": 0
+    },
+    {
+      "geo_type": "city",
+      "total": 12,
+      "matched": 11,
+      "unmatched": 1,
+      "by_reviewed": 0,
+      "by_exact": 8,
+      "by_alias": 3,
+      "by_bangla": 0,
+      "by_skeleton": 0,
+      "by_ward_set": 0
+    },
+    {
+      "geo_type": "city_thana",
+      "total": 95,
+      "matched": 72,
+      "unmatched": 23,
+      "by_reviewed": 0,
+      "by_exact": 23,
+      "by_alias": 2,
+      "by_bangla": 0,
+      "by_skeleton": 0,
+      "by_ward_set": 47
+    },
+    {
+      "geo_type": "pourasabha",
+      "total": 325,
+      "matched": 318,
+      "unmatched": 7,
+      "by_reviewed": 0,
+      "by_exact": 309,
+      "by_alias": 3,
+      "by_bangla": 6,
+      "by_skeleton": 0,
+      "by_ward_set": 0
+    },
+    {
+      "geo_type": "union",
+      "total": 4555,
+      "matched": 4293,
+      "unmatched": 262,
+      "by_reviewed": 0,
+      "by_exact": 2480,
+      "by_alias": 178,
+      "by_bangla": 1393,
+      "by_skeleton": 242,
+      "by_ward_set": 0
+    },
+    {
+      "geo_type": "pouro_ward",
+      "total": 3036,
+      "matched": 2952,
+      "unmatched": 84,
+      "by_reviewed": 0,
+      "by_exact": 2921,
+      "by_alias": 3,
+      "by_bangla": 28,
+      "by_skeleton": 0,
+      "by_ward_set": 0
+    },
+    {
+      "geo_type": "thana_ward",
+      "total": 521,
+      "matched": 375,
+      "unmatched": 146,
+      "by_reviewed": 0,
+      "by_exact": 346,
+      "by_alias": 28,
+      "by_bangla": 1,
+      "by_skeleton": 0,
+      "by_ward_set": 0
+    },
+    {
+      "geo_type": "country",
+      "total": 1,
+      "matched": 0,
+      "unmatched": 1,
+      "by_reviewed": 0,
+      "by_exact": 0,
+      "by_alias": 0,
+      "by_bangla": 0,
+      "by_skeleton": 0,
+      "by_ward_set": 0
+    }
+  ],
+  "bbs_admin_rows": 9016,
+  "bbs_linked_rows": 8578,
+  "bbs_unlinked_rows": 438,
+  "bbs_by_level": {
+    "zila": {
+      "total": 64,
+      "linked": 64
+    },
+    "city_corporation": {
+      "total": 11,
+      "linked": 11
+    },
+    "union_ward": {
+      "total": 8049,
+      "linked": 7620
+    },
+    "upazila_thana": {
+      "total": 563,
+      "linked": 557
+    },
+    "paurashava": {
+      "total": 321,
+      "linked": 318
+    },
+    "division": {
+      "total": 8,
+      "linked": 8
+    }
+  },
+  "current_unmatched_reasons": {
+    "no_counterpart_in_matched_parent": 305,
+    "parent_not_matched": 205,
+    "no_bbs_areas_under_matched_parent": 8,
+    "missing_current_parent": 9,
+    "country_not_in_bbs": 1
+  },
+  "bbs_unlinked_reasons": {
+    "no_current_counterpart_in_matched_parent": 275,
+    "parent_not_linked": 163
+  },
+  "shared_bbs_links": 5
+}

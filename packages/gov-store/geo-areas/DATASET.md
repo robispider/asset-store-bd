@@ -35,6 +35,17 @@ geography tables and leaves this dataset unchanged.
    the service/API. Do not rewrite stored types until all SQL consumers and
    existing identifiers have been reviewed.
 
+## BBS geocode reference (June 2017) and crosswalk
+
+`src/database/data/bbs-geocode-2017/` holds the 64 BBS district geocode volumes
+(covers dated June 2017, published on bbs.gov.bd in December 2024), extracted to
+CSV down to mauza and village level. `crosswalk/` links this bundled dataset to
+BBS codes and keeps both sides' unmatched rows with reasons. It is offline
+reference data. It adds no tables, and `GeoAreaId`, `geo_code` and
+`geo_areas.csv` are unchanged. See that folder's README for columns, limitations
+and the `tools/*bbs_geocode*` scripts that regenerate it. A BBS link is a review
+aid toward step 2 above, not a new official identifier.
+
 The search endpoint uses English and Bangla prefix matching. Dedicated name
 indexes support typeahead on the 9,111-row bundled dataset. Substring search is
 intentionally not used because it cannot use these indexes.
