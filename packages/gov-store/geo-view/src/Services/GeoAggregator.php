@@ -19,7 +19,7 @@ final class GeoAggregator
      * @param  int[]  $children  child area ids of A that the view shows
      * @return array{children: array<int, int[]>, here: int[], unplaced: int[], inside: int[]}
      */
-    public function bucket(array $offices, int $area, array $children, string $urban = 'colour'): array
+    public function bucket(array $offices, int $area, array $children, string $urban = 'colour', ?int $level = null): array
     {
         $childSet = array_flip($children);
         $out = ['children' => array_fill_keys($children, []), 'here' => [], 'unplaced' => [], 'inside' => []];
@@ -45,7 +45,13 @@ final class GeoAggregator
 
                 continue;
             }
-            $child = $chain[$at + 1];
+            // Flat mode: the shown areas are the descendants at one level, not the direct children.
+            $child = $level === null ? $chain[$at + 1] : (array_values(array_filter($chain, fn ($id) => ($this->tree->node($id)['level'] ?? -1) === $level))[0] ?? null);
+            if ($child === null) {
+                $out['here'][] = $id;
+
+                continue;
+            }
             if (isset($childSet[$child])) {
                 $out['children'][$child][] = $id;
             } else {

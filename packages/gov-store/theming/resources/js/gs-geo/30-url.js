@@ -7,13 +7,14 @@
 
     /** read('programme-map', '?gv-programme-map[area]=3142') → { area: 3142, layer: null, filters: {}, select: [] } */
     U.read = function (id, search) {
-        var out = { area: null, layer: null, filters: {}, select: [], mode: null };
+        var out = { area: null, layer: null, filters: {}, select: [], mode: null, flat: null };
         new URLSearchParams(search || '').forEach(function (value, key) {
             var m = KEY.exec(key);
             if (!m || m[1] !== id) { return; }
             if (m[2] === 'area' && /^\d+$/.test(value)) { out.area = Number(value); }
             else if (m[2] === 'layer' && /^[a-z][a-z0-9_]*$/.test(value)) { out.layer = value; }
             else if (m[2] === 'mode' && (value === 'map' || value === 'table')) { out.mode = value; }
+            else if (m[2] === 'flat' && /^[23]$/.test(value)) { out.flat = Number(value); }
             else if (m[2] === 'select') { out.select = value.split(',').filter(function (v) { return /^\d+$/.test(v); }).map(Number); }
             else if (m[2] === 'f' && m[3]) { out.filters[m[3]] = value; }
         });
@@ -30,6 +31,7 @@
         if (state.area !== null && state.area !== undefined && state.area !== state.root) { params.set(p + '[area]', String(state.area)); }
         if (state.layer) { params.set(p + '[layer]', state.layer); }
         if (state.mode === 'table') { params.set(p + '[mode]', 'table'); }
+        if (state.flat) { params.set(p + '[flat]', String(state.flat)); }
         if (state.select && state.select.length) { params.set(p + '[select]', state.select.join(',')); }
         Object.keys(state.filters || {}).sort().forEach(function (k) {
             var v = state.filters[k];

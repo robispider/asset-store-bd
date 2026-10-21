@@ -83,6 +83,7 @@ return [
         'theming_assign_company' => 'Choose the default theme for my ministry', 'theming_assign_organization' => 'Choose the organisation default theme',
         'theming_lab_view' => 'Review shipped themes in the Theme Lab',
         'geo_monitor_view' => 'Geo monitor: map of offices and programme figures by area',
+        'geo_areas_view' => 'Browse administrative areas on maps (open reference data)',
         'catalog_finance_default' => 'Set the Finance Code of a product type',
         'asset-tags_office_configure' => 'Choose the office\'s asset tag location and divisions',
         'asset-tags_company_codelists' => 'Maintain the company\'s asset tag code lists',

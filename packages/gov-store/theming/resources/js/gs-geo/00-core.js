@@ -47,7 +47,7 @@
         h_table: 'Table|Switch to Table to see the same figures as a sortable list.', h_compare: 'Compare|Hold Shift and click areas to compare them side by side.',
         h_pick: 'Choose|Click an area to choose it. Click it again to open it.', h_states: 'Patterns|Hatched: outside your access. Grey: no data. Pale: only partly in your access.',
         export_csv: 'Download CSV', export_png: 'Download image', labels: 'Labels', compare: 'Compare', reference: 'Reference',
-        none_cat: 'None', partial_cat: 'Partial', full: 'Full'
+        none_cat: 'None', partial_cat: 'Partial', full: 'Full', flat: 'Show the whole country at this level'
     };
 
     G.strings = function (overrides) {

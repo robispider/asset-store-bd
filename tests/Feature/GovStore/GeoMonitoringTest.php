@@ -183,6 +183,30 @@ class GeoMonitoringTest extends GeoViewTestCase
         $this->assertSame('no_access', $country['areas']['1069']['state']);
     }
 
+    public function test_flat_mode_shows_every_district_and_counts_offices_by_district(): void
+    {
+        $p = $this->geoPayload('organization.offices', ['area' => 9358, 'level' => 2, 'layer' => 'offices']);
+        $this->assertSame(2, $p['flat']);
+        $this->assertSame(2, $p['level']);
+        $this->assertCount(64, $p['areas']);
+        $this->assertStringEndsWith('/flat/level-2.json', $p['boundary']['children']);
+        $this->assertSame(2, $p['areas']['1246']['value']);     // Bogura: the district office and its upazila office
+        $this->assertSame(1, $p['areas']['2390']['value']);
+        $this->assertSame(1, $p['here']['offices']);             // the Dhaka division office sits above district level
+        $this->assertSame([], JsonSchema::validate(JsonSchema::contract('gs-geo-data.schema.json'), $p));
+        $this->assertSame(422, $this->geoApi('data', 'organization.offices', ['area' => 9358, 'level' => 4])->getStatusCode());
+        // Flat mode is a country view: elsewhere the level is ignored.
+        $this->assertNull($this->geoPayload('organization.offices', ['area' => 1069, 'level' => 2])['flat']);
+    }
+
+    public function test_union_level_opens_below_an_upazila(): void
+    {
+        $p = $this->geoPayload('organization.offices', ['area' => $this->boguraUpazila]);
+        $this->assertSame(4, $p['level']);
+        $this->assertNotEmpty($p['areas']);
+        $this->assertContains(app(GeoTree::class)->node((int) array_key_first($p['areas']))['type'], ['union', 'pourasabha']);
+    }
+
     public function test_monitor_page_lists_national_presets_and_has_a_breadcrumb(): void
     {
         $route = Route::getRoutes()->getByName('gov.geo-monitor.index');

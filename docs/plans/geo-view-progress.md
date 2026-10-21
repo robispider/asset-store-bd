@@ -79,8 +79,8 @@ Schedule: every hour (`7 * * * *`), working folder `D:\git repo\asset-store-bd`.
 - [x] Tests; commit + push phase F
 
 ### Phase G — Depth
-- [ ] Search, labels, markers, flat mode, multi-select, export, fullscreen, picker intent, upazila/union levels
-- [ ] Lab demo + Playwright step per feature; commit + push phase G
+- [x] Search, labels, markers, flat mode, multi-select, export, fullscreen, picker intent, upazila/union levels
+- [x] Lab demo + Playwright step per feature; commit + push phase G
 
 ### Phase H — Hardening
 - [ ] Profiling, facts cache, rate-limit review
@@ -128,3 +128,12 @@ Schedule: every hour (`7 * * * *`), working folder `D:\git repo\asset-store-bd`.
   parent is fully in scope. Quantile scale falls back to distinct-value breaks on ties. GeoMonitoringTest 11 green.
   Live: 58 offices, 57 placed, 1 unplaced, Rajshahi 13 distinct tone. Full suite was 712 with 1 nav failure → fixed.
   NEXT: phase G — search, flat mode, export, fullscreen, picker intent (labels/markers/multi-select exist already).
+- 2026-10-22 07:45 — Phase G done: 85-tools.js (find box over gov.geo.search?with_parent=1, flat mode from
+  flat/level-N.json with server `level` param + payload `flat`, CSV/PNG export client-side, full screen), picker
+  source geo.areas + preset geo.pick (ability geo.areas.view, authenticated), organization preset max level 4 +
+  flat 2 + search/export/full screen, Lab fixture flat/search endpoints. Tones now 2–7. Live: 64-district flat
+  view, search Bogura → union 2306 selected in upazila 2297, union level under Bogura Sadar. 717 tests green.
+  DEFERRED (owner decision): remaining metric providers from geo-monitoring §6 (storekeeper share, posted
+  receipts/issues, asset verification rate) — the plan requires an agreed metric definition before each is
+  shown nationally. The source contract and contract trait make each a small addition once defined.
+  NEXT: phase H — minify lazy bundle (currently ~100 KB raw), profiling, guide, runbook.

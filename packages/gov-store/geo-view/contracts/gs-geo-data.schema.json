@@ -31,6 +31,7 @@
       }
     },
     "level": { "type": "integer", "minimum": 1, "maximum": 4 },
+    "flat": { "type": ["integer", "null"], "minimum": 2, "maximum": 3 },
     "boundary": {
       "type": "object",
       "additionalProperties": false,

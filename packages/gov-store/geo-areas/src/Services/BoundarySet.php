@@ -55,6 +55,12 @@ class BoundarySet
         return $this->hasChildrenFile($areaId) ? $this->baseUrl().'/children/'.$areaId.'.json' : null;
     }
 
+    /** Projected national file of one level (flat mode), when the set has it. */
+    public function flatUrl(int $level): ?string
+    {
+        return $this->exists() && isset($this->manifest()['files']['flat/level-'.$level.'.json']) ? $this->baseUrl().'/flat/level-'.$level.'.json' : null;
+    }
+
     public function root(): ?int
     {
         return $this->exists() ? (int) ($this->index()['root'] ?? 0) ?: null : null;

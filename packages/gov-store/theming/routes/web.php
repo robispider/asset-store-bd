@@ -36,6 +36,10 @@ Route::middleware(['web', 'auth'])->prefix('gov')->group(function () {
     Route::get('theme-lab/geo-fixture/'.\GovStore\Theming\Lab\GeoLabFixture::VERSION.'/children/{area}.json', [ThemeLabController::class, 'geoChildren'])
         ->whereNumber('area')
         ->name('gs-theme.lab.geo.children');
+    Route::get('theme-lab/geo-fixture/'.\GovStore\Theming\Lab\GeoLabFixture::VERSION.'/flat/level-{level}.json', [ThemeLabController::class, 'geoFlat'])
+        ->whereNumber('level')
+        ->name('gs-theme.lab.geo.flat');
+    Route::get('theme-lab/geo-fixture/search', [ThemeLabController::class, 'geoSearch'])->name('gs-theme.lab.geo.search');
     Route::get('theme-lab/geo-fixture/data', [ThemeLabController::class, 'geoData'])->name('gs-theme.lab.geo.data');
     Route::get('theme-lab/geo-fixture/details', [ThemeLabController::class, 'geoDetails'])->name('gs-theme.lab.geo.details');
     Route::get('theme-lab/{theme}', [ThemeLabController::class, 'focus'])

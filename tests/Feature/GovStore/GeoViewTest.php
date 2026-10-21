@@ -6,6 +6,7 @@ use GovStore\GeoView\Config\GeoViewConfigResolver;
 use GovStore\GeoView\Registry\GeoPresetRegistry;
 use GovStore\GeoView\Support\JsonSchema;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Gate;
 use Tests\Feature\GovStore\Concerns\GeoDataSourceContract;
 use Tests\Feature\GovStore\GeoView\FixtureProgrammeSource;
 use Tests\Feature\GovStore\GeoView\GeoViewTestCase;
@@ -222,6 +223,21 @@ class GeoViewTest extends GeoViewTestCase
         $denied = Blade::render('<x-geoview::map id="programme-map" preset="fixture.programme" :params="[\'initiative\' => 30]" />');
         $this->assertStringNotContainsString('data-gs-geo-payload', $denied);
         $this->assertStringContainsString(__('gs-theme::kit.geo.denied'), $denied);
+    }
+
+    public function test_picker_writes_the_chosen_area_into_a_named_input(): void
+    {
+        Gate::define('geo.areas.view', fn () => true);
+        $this->actAs(FixtureProgrammeSource::MEMBER);
+        $html = Blade::render('<x-geoview::map id="location-picker" preset="geo.pick" name="geo_area_id" :value="2390" />');
+        $config = json_decode(html_entity_decode(\Illuminate\Support\Str::betweenFirst($html, 'data-gs-geo-config>', '</script>')), true);
+        $this->assertSame('pick', $config['intent']);
+        $this->assertSame(['name' => 'geo_area_id', 'value' => 2390], $config['input']);
+        $this->assertSame('none', $config['scale']['type']);
+        $this->assertSame(4, $config['levels']['max']);
+        $this->assertStringContainsString('data-gs-geo-payload', $html);
+        $areas = $this->geoPayload('geo.areas', ['area' => 9358]);
+        $this->assertSame(['ok'], array_values(array_unique(array_column($areas['areas'], 'state'))));
     }
 
     public function test_doctor_checks_presets_and_sources(): void

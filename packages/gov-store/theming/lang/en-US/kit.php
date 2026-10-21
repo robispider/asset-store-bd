@@ -101,6 +101,7 @@ return [
         'reference' => 'Reference',
         'none_cat' => 'None',
         'partial_cat' => 'Partial',
+        'flat' => 'Show the whole country at this level',
         'full' => 'Full',
     ],
 ];

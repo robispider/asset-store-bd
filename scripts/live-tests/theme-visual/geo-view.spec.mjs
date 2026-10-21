@@ -90,6 +90,31 @@ test('compare selects several areas; picker writes the chosen id', async ({ page
     await expect(page.locator('#geo-focus-pick .gs-geo__crumb')).toHaveCount(2);
 });
 
+test('depth tools: find, flat mode, export and full screen', async ({ page }) => {
+    await page.goto(LAB('institutional-green'));
+    await ready(page);
+    const find = map(page).locator('.gs-geo__search input');
+    await find.fill(await page.evaluate(() => document.documentElement.lang.startsWith('bn') ? 'দক্ষিণ ২ক' : 'South 2a'));
+    await map(page).locator('.gs-geo__results button').first().click();
+    await expect(map(page).locator('svg .gs-geo__area.is-selected')).toHaveCount(1);
+    await expect(page).toHaveURL(/\[select\]=1310/);
+
+    await map(page).locator('.gs-geo__extra .gs-geo__btn').first().click();   // flat mode
+    await expect(page).toHaveURL(/\[flat\]=2/);
+    await expect(map(page).locator('svg .gs-geo__area')).toHaveCount(12);
+
+    const csv = page.waitForEvent('download');
+    await map(page).getByRole('button', { name: /CSV/ }).click();
+    expect((await csv).suggestedFilename()).toMatch(/\.csv$/);
+    const png = page.waitForEvent('download');
+    await map(page).getByRole('button', { name: /image|ছবি/ }).click();
+    expect((await png).suggestedFilename()).toMatch(/\.png$/);
+
+    await map(page).getByRole('button', { name: /Full screen|পূর্ণ পর্দা/ }).click();
+    await expect.poll(() => page.evaluate(() => document.fullscreenElement && document.fullscreenElement.id)).toBe('geo-focus-progress');
+    await page.keyboard.press('Escape');
+});
+
 test('phone width keeps the panel below the map and 44 px targets', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto(LAB('institutional-green'));

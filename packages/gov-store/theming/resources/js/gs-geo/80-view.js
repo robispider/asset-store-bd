@@ -40,7 +40,8 @@
         var ls = store();
         if (ls && cfg.toolbar && cfg.toolbar.help !== false) { try { helpOpen = ls.getItem('gs-geo-help') === '1'; } catch (e) { helpOpen = false; } }
         this.store = G.store({ layer: init.layer, filters: init.filters, select: init.select, mode: init.mode, help: helpOpen });
-        this.initialArea = init.area || (cfg.levels.start === 'auto' ? 'auto' : cfg.levels.start === 'root' ? this.rootArea : cfg.levels.start);
+        this.flatLevel = cfg.levels.flat && urlState.flat === cfg.levels.flat ? cfg.levels.flat : null;
+        this.initialArea = this.flatLevel ? this.rootArea : init.area || (cfg.levels.start === 'auto' ? 'auto' : cfg.levels.start === 'root' ? this.rootArea : cfg.levels.start);
         this.build();
         this.bindHost();
         this.go(this.initialArea, { initial: true });
@@ -77,6 +78,7 @@
         if (tb.filters !== false) { this.tools.appendChild(this.filterBox); }
         this.extraTools = el('span', { class: 'gs-geo__group gs-geo__extra' });
         this.tools.appendChild(this.extraTools);
+        if (this.buildExtras) { this.buildExtras(); }   // 85-tools.js: search, flat, export, full screen
         if (tb.zoom !== false) {
             this.tools.appendChild(el('span', { class: 'gs-geo__group' }, [
                 this.button(ICONS.minus, t('zoom_out'), function () { self.zoomBy(1 / 1.6); }),
@@ -151,7 +153,7 @@
     /* ------------------------------------------------------------------ navigation */
     V.query = function (area) {
         var s = this.store.get();
-        return { area: area, layer: s.layer, fallback: s.layer ? [] : (this.cfg.layers.default || []), filters: s.filters };
+        return { area: area, layer: s.layer, fallback: s.layer ? [] : (this.cfg.layers.default || []), filters: s.filters, level: this.flatLevel || null };
     };
 
     V.go = function (area, opts) {
@@ -163,7 +165,8 @@
             if (token !== self.navToken) { return null; }
             if (res.status !== 200 || !res.body || res.body.contract !== 'gs-geo-data/1') { self.fail(res.status); return null; }
             var p = res.body;
-            var fileP = p.boundary && p.boundary.children ? G.boundaries.children(self.boundary, p.area.id) : Promise.resolve(null);
+            var fileP = p.flat ? G.boundaries.flat(self.boundary, p.flat)
+                : p.boundary && p.boundary.children ? G.boundaries.children(self.boundary, p.area.id) : Promise.resolve(null);
             return fileP.then(function (file) {
                 if (token !== self.navToken) { return null; }
                 self.show(p, file, opts);
@@ -217,7 +220,7 @@
     V.writeUrl = function (how) {
         if (!this.cfg.url_state || !root.history || !root.location) { return; }
         var s = this.store.get();
-        var qs = G.url.write(this.id, { area: s.area, root: this.autoArea || this.rootArea, layer: s.layer, filters: s.filters, select: s.select, mode: s.mode }, root.location.search);
+        var qs = G.url.write(this.id, { area: s.area, root: this.autoArea || this.rootArea, layer: s.layer, filters: s.filters, select: s.select, mode: s.mode, flat: this.flatLevel }, root.location.search);
         var url = root.location.pathname + qs + root.location.hash;
         if (url === root.location.pathname + root.location.search + root.location.hash) { return; }
         try { root.history[how === 'push' ? 'pushState' : 'replaceState']({ gsGeo: this.id }, '', url); } catch (e) { /* sandboxed frame */ }
@@ -748,6 +751,7 @@
         var s = this.store.get(), p = s.payload, c = this.cfg;
         var a = p && p.areas[id];
         if (!a || a.state === 'no_access') { return; }
+        if (p.flat && c.intent !== 'pick' && !(additive && c.interaction.select === 'multi')) { if (a.drillable) { this.setFlat(null, id); } else { this.toggle(id, false); } return; }
         var canDrill = a.drillable && p.level < c.levels.max && c.interaction.click !== 'none';
         var multi = c.interaction.select === 'multi';
         if (c.intent === 'pick') {

@@ -2,6 +2,7 @@
 
 return [
     'sources' => [
+        'geo_areas' => 'প্রশাসনিক এলাকা',
         'organization_offices' => 'কার্যালয় নেটওয়ার্ক',
     ],
     'layers' => [

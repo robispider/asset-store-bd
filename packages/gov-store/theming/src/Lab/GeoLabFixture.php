@@ -84,6 +84,42 @@ final class GeoLabFixture
         ];
     }
 
+    /** flat/level-<n>.json: every area at one level across the fixture country (flat mode). */
+    public static function flatFile(int $level): ?array
+    {
+        $nodes = array_values(array_filter(self::tree(), fn ($n) => $n['level'] === $level));
+        if (! $nodes || $level < 1) {
+            return null;
+        }
+        $root = self::childrenFile(self::ROOT);
+        $areas = [];
+        foreach ($nodes as $n) {
+            $file = self::childrenFile($n['parent']);
+            foreach ($file['areas'] as $a) {
+                if ($a['id'] === $n['id']) {
+                    $areas[] = $a + ['parent' => $n['parent']];
+                }
+            }
+        }
+
+        return ['version' => self::VERSION, 'level' => $level, 'id' => self::ROOT, 'viewBox' => $root['viewBox'], 'outline' => $root['outline'], 'areas' => $areas];
+    }
+
+    /** Rows shaped like gov.geo.search with parent ids, for the find box. */
+    public static function search(string $q, string $locale): array
+    {
+        $bn = str_starts_with($locale, 'bn');
+        $out = [];
+        foreach (self::tree() as $id => $n) {
+            $name = $bn ? $n['bn'] : $n['en'];
+            if ($n['level'] > 0 && mb_stripos($name, $q) !== false) {
+                $out[] = ['id' => $id, 'text' => $name, 'geo_type_label' => ['', 'Region', 'District', 'Sub-area'][$n['level']], 'parent_id' => $n['parent'], 'level' => $n['level'], 'trail' => []];
+            }
+        }
+
+        return array_slice($out, 0, 10);
+    }
+
     /** Synthetic value in [0.03, 0.98], correlated with the parent's value. */
     public static function value(int $id, string $layer): ?float
     {
@@ -101,10 +137,11 @@ final class GeoLabFixture
      * gs-geo-data/1 for one area. $states adds every area state for review: one region outside access, one
      * partly inside, a district without data, one not applicable and one without a shape.
      */
-    public static function payload(int $area, string $layer, bool $states, string $locale, string $source = 'lab.synthetic'): ?array
+    public static function payload(int $area, string $layer, bool $states, string $locale, string $source = 'lab.synthetic', ?int $level = null): ?array
     {
         $tree = self::tree();
-        if (! isset($tree[$area]) || ! self::childrenFile($area)) {
+        $flat = $level !== null && $area === self::ROOT && self::flatFile($level) ? $level : null;
+        if (! isset($tree[$area]) || (! $flat && ! self::childrenFile($area))) {
             return null;
         }
         $bn = str_starts_with($locale, 'bn');
@@ -112,7 +149,7 @@ final class GeoLabFixture
         $layer = in_array($layer, ['progress', 'assets'], true) ? $layer : 'progress';
         $areas = [];
         $values = [];
-        foreach (array_filter($tree, fn ($n) => $n['parent'] === $area) as $id => $node) {
+        foreach (array_filter($tree, fn ($n) => $flat ? $n['level'] === $flat : $n['parent'] === $area) as $id => $node) {
             $state = 'ok';
             if ($states) {
                 $state = match ($id) {
@@ -146,8 +183,9 @@ final class GeoLabFixture
             'contract' => 'gs-geo-data/1',
             'source' => $source,
             'area' => ['id' => $area, 'level' => $tree[$area]['level'], 'name' => $name($area), 'parent' => $tree[$area]['parent'], 'trail' => $chain],
-            'level' => $tree[$area]['level'] + 1,
-            'boundary' => ['version' => self::VERSION, 'children' => 'children/'.$area.'.json'],
+            'level' => $flat ?? $tree[$area]['level'] + 1,
+            'flat' => $flat,
+            'boundary' => ['version' => self::VERSION, 'children' => $flat ? 'flat/level-'.$flat.'.json' : 'children/'.$area.'.json'],
             'layer' => ['key' => $layer, 'label' => $labels[$layer], 'format' => $layer === 'progress' ? 'percent' : 'integer', 'aggregation' => 'area'],
             'layers' => [['key' => 'progress', 'label' => $labels['progress'], 'applicable' => true], ['key' => 'assets', 'label' => $labels['assets'], 'applicable' => true]],
             'stats' => ['min' => $values ? min($values) : null, 'max' => $values ? max($values) : null, 'national' => self::value(self::ROOT, $layer), 'total' => self::value($area, $layer)],
@@ -191,7 +229,7 @@ final class GeoLabFixture
             'locale' => $locale,
             'source' => ['key' => 'lab.synthetic', 'mode' => 'remote', 'params' => ['states' => $intent === 'progress' ? 1 : 0]],
             'layers' => ['default' => ['progress'], 'allow' => $intent === 'pick' ? ['progress'] : ['progress', 'assets']],
-            'levels' => ['start' => 'root', 'root' => self::ROOT, 'min' => 1, 'max' => 3, 'urban' => 'colour', 'flat' => null],
+            'levels' => ['start' => 'root', 'root' => self::ROOT, 'min' => 1, 'max' => 3, 'urban' => 'colour', 'flat' => $intent === 'progress' ? 2 : null],
             'interaction' => [
                 'click' => $intent === 'compare' ? 'select' : ($intent === 'pick' ? 'select' : 'drill'),
                 'leaf_click' => $intent === 'pick' ? 'select' : 'details',
@@ -199,7 +237,7 @@ final class GeoLabFixture
                 'select' => $intent === 'compare' ? 'multi' : 'single',
                 'touch' => 'tap-select-tap-drill',
             ],
-            'toolbar' => ['zoom' => true, 'reset' => true, 'layers' => $intent !== 'pick', 'filters' => false, 'search' => false, 'table' => $intent !== 'pick', 'export' => false, 'fullscreen' => false, 'help' => true],
+            'toolbar' => ['zoom' => true, 'reset' => true, 'layers' => $intent !== 'pick', 'filters' => false, 'search' => $intent !== 'compare', 'table' => $intent !== 'pick', 'export' => $intent === 'progress', 'fullscreen' => $intent === 'progress', 'help' => true],
             'panels' => ['breadcrumb' => true, 'legend' => true, 'details' => 'side', 'table' => $intent === 'pick' ? 'none' : 'toggle', 'labels' => true, 'markers' => $intent === 'progress'],
             'scale' => $scale,
             'size' => ['height' => 380, 'aspect' => null],
@@ -208,7 +246,7 @@ final class GeoLabFixture
             'bind_filters' => null,
             'input' => $intent === 'pick' ? ['name' => $id.'-area', 'value' => null] : null,
             'boundary' => ['version' => self::VERSION, 'base_url' => $endpoints['boundary'], 'root' => self::ROOT, 'attribution' => 'Fixture shapes'],
-            'endpoints' => ['data' => $endpoints['data'], 'details' => $endpoints['details'], 'children' => null, 'search' => null],
+            'endpoints' => ['data' => $endpoints['data'], 'details' => $endpoints['details'], 'children' => null, 'search' => $endpoints['search'] ?? null],
             'strings' => $strings,
         ];
 

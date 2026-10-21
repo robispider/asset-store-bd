@@ -21,6 +21,7 @@
         if (q.fallback && q.fallback.length) { params.set('fallback', q.fallback.join(',')); }
         Object.keys(q.filters || {}).sort().forEach(function (k) { params.set('filters[' + k + ']', String(q.filters[k])); });
         if (q.level) { params.set('level', String(q.level)); }
+        if (cfg.levels && cfg.levels.urban && cfg.levels.urban !== 'colour') { params.set('urban', cfg.levels.urban); }
         return params;
     }
 
@@ -48,7 +49,7 @@
             mode: mode,
             /** data({area, layer, fallback, filters}) → Promise<{status, body}> */
             data: function (q) {
-                if (first && (q.area === 'auto' || q.area === first.area.id) && !q.layer && !Object.keys(q.filters || {}).length) {
+                if (first && (q.area === 'auto' || q.area === first.area.id) && !q.layer && !q.level && !Object.keys(q.filters || {}).length) {
                     var p = first;
                     first = null;
                     return Promise.resolve({ status: 200, body: p });

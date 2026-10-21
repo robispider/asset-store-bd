@@ -86,12 +86,33 @@ class ThemeLabController extends Controller
         if ($response = $this->guard($request)) {
             return $response;
         }
-        $v = $request->validate(['area' => ['required', 'integer'], 'layer' => ['nullable', 'string', 'max:30'], 'states' => ['nullable', 'boolean'], 'fallback' => ['nullable', 'string', 'max:200']]);
+        $v = $request->validate(['area' => ['required', 'integer'], 'layer' => ['nullable', 'string', 'max:30'], 'states' => ['nullable', 'boolean'], 'fallback' => ['nullable', 'string', 'max:200'], 'level' => ['nullable', 'integer', 'in:2,3']]);
         $layer = $v['layer'] ?? explode(',', $v['fallback'] ?? 'progress')[0];
-        $payload = GeoLabFixture::payload((int) $v['area'], $layer, (bool) ($v['states'] ?? false), app()->getLocale());
+        $payload = GeoLabFixture::payload((int) $v['area'], $layer, (bool) ($v['states'] ?? false), app()->getLocale(), 'lab.synthetic', isset($v['level']) ? (int) $v['level'] : null);
         abort_unless($payload, 404);
 
         return response()->json($payload, 200, ['Cache-Control' => 'private, no-cache']);
+    }
+
+    public function geoFlat(Request $request, int $level)
+    {
+        if ($response = $this->guard($request)) {
+            return $response;
+        }
+        $file = GeoLabFixture::flatFile($level);
+        abort_unless($file, 404);
+
+        return response()->json($file, 200, ['Cache-Control' => 'public, max-age=3600']);
+    }
+
+    public function geoSearch(Request $request)
+    {
+        if ($response = $this->guard($request)) {
+            return $response;
+        }
+        $v = $request->validate(['q' => ['required', 'string', 'max:60']]);
+
+        return response()->json(GeoLabFixture::search($v['q'], app()->getLocale()));
     }
 
     public function geoDetails(Request $request)
@@ -114,6 +135,7 @@ class ThemeLabController extends Controller
             'boundary' => '/'.trim(parse_url(url('gov/theme-lab/geo-fixture/'.GeoLabFixture::VERSION), PHP_URL_PATH), '/'),
             'data' => parse_url(route('gs-theme.lab.geo.data'), PHP_URL_PATH),
             'details' => parse_url(route('gs-theme.lab.geo.details'), PHP_URL_PATH),
+            'search' => parse_url(route('gs-theme.lab.geo.search'), PHP_URL_PATH),
         ];
         $base = 'geo-'.substr(preg_replace('/[^a-z0-9-]/', '', str_replace('gs-panel-', '', $panel)), 0, 30);
         $demos = [['config' => GeoLabFixture::config($base.'-progress', 'progress', $endpoints, $locale, is_array($strings) ? $strings : [], ['url_state' => ! $compact]), 'title' => 'progress']];

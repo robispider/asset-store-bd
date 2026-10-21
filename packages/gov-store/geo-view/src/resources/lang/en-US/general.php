@@ -2,6 +2,7 @@
 
 return [
     'sources' => [
+        'geo_areas' => 'Administrative areas',
         'organization_offices' => 'Office network',
     ],
     'layers' => [

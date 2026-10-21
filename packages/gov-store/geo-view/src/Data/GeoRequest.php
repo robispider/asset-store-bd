@@ -22,6 +22,7 @@ final class GeoRequest
         public readonly array $filters = [],
         public readonly ?string $locale = null,
         public readonly string $urban = 'colour',
+        public readonly ?int $level = null,
     ) {}
 
     public function param(string $key, mixed $default = null): mixed
@@ -41,7 +42,7 @@ final class GeoRequest
 
     public function withArea(int|string $area): self
     {
-        return new self($this->user, $this->params, $area, $this->layer, $this->fallback, $this->filters, $this->locale, $this->urban);
+        return new self($this->user, $this->params, $area, $this->layer, $this->fallback, $this->filters, $this->locale, $this->urban, $this->level);
     }
 
     /** Cache key part for facts: everything that changes them except the area. */

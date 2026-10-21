@@ -29,11 +29,11 @@ test('scale: progress intent uses the fixed 0–100% domain only for percent lay
   assert.equal(qty.breaks.at(-1), 60);
 });
 
-test('scale: quantile tones spread from 1 to 7 and empty/none classify nothing', () => {
+test('scale: quantile tones spread from 2 to 7 and empty/none classify nothing', () => {
   const s = G.scale({ type: 'quantile', steps: 3 }, payload([1, 2, 3, 4, 5, 6]));
   assert.equal(s.bins, 3);
-  assert.deepEqual([0, 1, 2].map(s.tone), [1, 4, 7]);
-  assert.equal(s.classify(1).bin, 1);
+  assert.deepEqual([0, 1, 2].map(s.tone), [2, 5, 7]);
+  assert.equal(s.classify(1).bin, 2);
   assert.equal(s.classify(6).bin, 7);
   assert.equal(G.scale({ type: 'quantile' }, payload([null, null])).type, 'empty');
   assert.deepEqual(plain(G.scale({ type: 'none' }, payload([3])).classify(3)), {});
@@ -80,7 +80,9 @@ test('url: namespaced params round-trip and keep foreign params', () => {
   const qs = G.url.write('programme-map', { area: 3142, layer: 'value', filters: { code: 104, empty: '' }, select: [2390], mode: 'table', root: 9358 }, '?tab=where&gv-other[area]=5');
   assert.equal(qs, '?tab=where&gv-other[area]=5&gv-programme-map[area]=3142&gv-programme-map[layer]=value&gv-programme-map[mode]=table&gv-programme-map[select]=2390&gv-programme-map[f][code]=104');
   const back = G.url.read('programme-map', qs);
-  assert.deepEqual(plain(back), { area: 3142, layer: 'value', filters: { code: '104' }, select: [2390], mode: 'table' });
+  assert.deepEqual(plain(back), { area: 3142, layer: 'value', filters: { code: '104' }, select: [2390], mode: 'table', flat: null });
+  assert.equal(G.url.read('m', G.url.write('m', { flat: 3, root: 1 }, '')).flat, 3);
+  assert.equal(G.url.read('m', '?gv-m[flat]=9').flat, null);
   assert.equal(G.url.read('other', qs).area, 5);
   assert.equal(G.url.write('programme-map', { area: 9358, root: 9358 }, '?gv-programme-map[area]=1'), '');
   assert.equal(G.url.read('m', '?gv-m[area]=1;drop&gv-m[layer]=<x>').area, null);

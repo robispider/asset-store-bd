@@ -39,10 +39,11 @@ class GeoDataService
         [$layer, $requested] = $this->chooseLayer($layers, $applicable, $request);
         $locale = $request->locale();
 
-        $children = $this->children($area, $request->urban);
+        $flat = $request->level !== null && $area === (int) ($this->boundaries->root() ?? $this->tree->root()) ? $request->level : null;
+        $children = $flat ? $this->descendants($area, $flat, $request->urban) : $this->children($area, $request->urban);
         $areaState = $scope->areaState($area, $this->tree);
         $entries = [];
-        $buckets = $office ? $this->aggregator->bucket($offices, $area, $children, $request->urban) : null;
+        $buckets = $office ? $this->aggregator->bucket($offices, $area, $children, $request->urban, $flat) : null;
         $areaValues = ! $office && $source instanceof AreaGrainSource && $areaState !== 'out'
             ? $source->areaValues($request, $children, $layer->key) : [];
         foreach ($children as $child) {
@@ -108,8 +109,9 @@ class GeoDataService
                 'parent' => $this->tree->node($area)['parent'] ?? null,
                 'trail' => array_map(fn ($id) => ['id' => $id, 'name' => $this->tree->name($id, $locale), 'short' => $this->tree->name($id, $locale, true)], $this->tree->chain($area)),
             ],
-            'level' => min(4, ($this->tree->node($area)['level'] ?? 0) + 1),
-            'boundary' => ['version' => $this->boundaries->version(), 'children' => $this->boundaries->childrenUrl($area)],
+            'level' => $flat ?? min(4, ($this->tree->node($area)['level'] ?? 0) + 1),
+            'flat' => $flat,
+            'boundary' => ['version' => $this->boundaries->version(), 'children' => $flat ? $this->boundaries->flatUrl($flat) : $this->boundaries->childrenUrl($area)],
             'layer' => $layerOut,
             'layers' => array_map(fn (LayerDefinition $l) => ['key' => $l->key, 'label' => $l->label, 'applicable' => $applicable[$l->key]], $layers),
             'stats' => [
@@ -250,6 +252,21 @@ class GeoDataService
         }
 
         return (int) $root;
+    }
+
+    /** Flat mode: every area at one level under $area (districts, or upazilas and city corporations). */
+    private function descendants(int $area, int $level, string $urban): array
+    {
+        $out = [];
+        foreach ($this->tree->nodes() as $id => $node) {
+            if ($node['level'] === $level && in_array($node['type'], ['district', 'upazilla', 'city'], true)
+                && ! ($urban === 'hide' && $this->tree->isUrban($id)) && $this->tree->isUnder($id, $area)) {
+                $out[] = $id;
+            }
+        }
+        sort($out);
+
+        return $out;
     }
 
     /** Child areas the view shows: administrative children down to unions (no wards). */

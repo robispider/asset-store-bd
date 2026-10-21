@@ -136,6 +136,19 @@ class GeoAreasPackageTest extends TestCase
         $this->assertSame(9358, $tree->commonAncestor([]));
     }
 
+    public function test_search_can_return_parent_and_trail_for_the_map_find_box(): void
+    {
+        $this->seedTree();
+        app()->setLocale('en-US');
+        $rows = app(GeoAreaController::class)->search(Request::create('/', 'GET', ['q' => 'Debidwar', 'with_parent' => 1]), app(GeoAreaService::class))->getData(true);
+        $upazila = collect($rows)->firstWhere('id', 3);
+        $this->assertSame(2, $upazila['parent_id']);
+        $this->assertSame(3, $upazila['level']);
+        $this->assertSame(['Chattogram', 'Cumilla'], $upazila['trail']);
+        $plain = app(GeoAreaController::class)->search(Request::create('/', 'GET', ['q' => 'Debidwar']), app(GeoAreaService::class))->getData(true);
+        $this->assertArrayNotHasKey('parent_id', $plain[0]);
+    }
+
     public function test_children_endpoint_returns_trail_and_404_for_unknown_areas(): void
     {
         $this->seedTree();

@@ -73,6 +73,20 @@ class GeoKitTest extends ThemingTestCase
         $this->assertSame('gs-geo-data/1', $payload['contract']);
     }
 
+    public function test_fixture_flat_file_search_and_level_payload(): void
+    {
+        $flat = GeoLabFixture::flatFile(2);
+        $this->assertCount(12, $flat['areas']);
+        $this->assertSame(10, $flat['areas'][0]['parent']);
+        $payload = GeoLabFixture::payload(GeoLabFixture::ROOT, 'progress', false, 'en-US', 'lab.synthetic', 2);
+        $this->assertSame(2, $payload['flat']);
+        $this->assertCount(12, $payload['areas']);
+        $this->assertSame([1310], array_column(array_filter(GeoLabFixture::search('South 2a', 'en-US'), fn ($r) => $r['level'] === 3), 'id'));
+        $config = GeoLabFixture::config('lab-p', 'progress', ['boundary' => '/b', 'data' => '/d', 'details' => '/x', 'search' => '/s'], 'en-US', []);
+        $this->assertTrue($config['toolbar']['search'] && $config['toolbar']['export'] && $config['toolbar']['fullscreen']);
+        $this->assertSame(2, $config['levels']['flat']);
+    }
+
     public function test_fixture_endpoints_follow_lab_access(): void
     {
         $call = function (string $method, array $query = [], ...$args) {

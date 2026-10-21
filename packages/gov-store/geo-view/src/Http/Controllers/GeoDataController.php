@@ -56,6 +56,7 @@ class GeoDataController extends Controller
             'filters' => ['nullable', 'array', 'max:10'],
             'filters.*' => ['nullable', 'string', 'max:60'],
             'urban' => ['nullable', 'in:colour,hide,drill'],
+            'level' => ['nullable', 'integer', 'in:2,3'],
         ];
         $validator = Validator::make($request->query(), $common + $source->rules());
         $validated = $validator->validate();   // 422 on tampered params
@@ -69,6 +70,7 @@ class GeoDataController extends Controller
             filters: array_filter((array) ($validated['filters'] ?? []), fn ($v) => $v !== null && $v !== ''),
             locale: app()->getLocale(),
             urban: $validated['urban'] ?? 'colour',
+            level: isset($validated['level']) ? (int) $validated['level'] : null,
         );
         // Unknown filter values are rejected like any other tampered input.
         foreach ($source->filters($geo) as $filter) {

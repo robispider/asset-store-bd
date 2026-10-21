@@ -46,6 +46,9 @@ class GeoViewServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([\GovStore\GeoView\Console\GeoViewDoctorCommand::class]);
         }
+        // The area picker (plan §4.3): reference areas, no business data.
+        $this->app->make(GeoSourceRegistry::class)->register(\GovStore\GeoView\Sources\GeoAreasReferenceSource::class, 'geo.areas');
+        $this->app->make(GeoPresetRegistry::class)->merge(require __DIR__.'/../../config/presets.php');
         $this->app->booted(fn () => $this->registerMenu());
     }
 

@@ -80,7 +80,8 @@
         }
         breaks = unique(breaks);
         var bins = breaks.length - 1;
-        var tone = function (k) { return bins === 1 ? 4 : Math.round(1 + (k * 6) / (bins - 1)); };
+        // Tones 2–7: the palest data tone (26% mix) stays distinct from the no-data ground.
+        var tone = function (k) { return bins === 1 ? 4 : Math.round(2 + (k * 5) / (bins - 1)); };
         return {
             type: type, breaks: breaks, bins: bins, tone: tone,
             classify: function (v) {
