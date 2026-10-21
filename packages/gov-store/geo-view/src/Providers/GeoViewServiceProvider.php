@@ -22,7 +22,7 @@ class GeoViewServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/geo-view.php', 'geo-view');
+        $this->mergeConfigFrom(__DIR__.'/../../config/geo-view.php', 'geo-view');
         $this->app->singleton(GeoSourceRegistry::class);
         $this->app->singleton(GeoPresetRegistry::class);
         $this->app->singleton(OfficeLocator::class);
