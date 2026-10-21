@@ -44,11 +44,11 @@ Schedule: every hour (`7 * * * *`), working folder `D:\git repo\asset-store-bd`.
 - [x] Commit + push phase A
 
 ### Phase B — Boundary service (geo-areas)
-- [ ] `GeoAreaService::children()`, `rollupArea()`
-- [ ] `GET gov-store/api/geo/areas/{area}/children` (`gov.geo.children`)
-- [ ] `geo-areas:publish-boundaries` (copy to `public/vendor/geo-areas/boundaries/<version>`, verify SHA-256)
-- [ ] Boundary build: `bbox` + `label` per area, projected flat level-2/3 files → new boundary version, gates pass
-- [ ] `GeoAreasPackageTest` additions; commit + push phase B
+- [x] `GeoAreaService::children()`, `rollupArea()`
+- [x] `GET gov-store/api/geo/areas/{area}/children` (`gov.geo.children`)
+- [x] `geo-areas:publish-boundaries` (copy to `public/vendor/geo-areas/boundaries/<version>`, verify SHA-256)
+- [x] Boundary build: `bbox` + `label` per area, projected flat level-2/3 files → new boundary version, gates pass
+- [x] `GeoAreasPackageTest` additions; commit + push phase B
 
 ### Phase C — Engine (theming kit)
 - [ ] Lazy bundle support in `AssetRegistry` / `ThemeCompiler` / manifest / dev route + loader in `gs-theme.js` (< 1 KB)
@@ -93,3 +93,7 @@ Schedule: every hour (`7 * * * *`), working folder `D:\git repo\asset-store-bd`.
   reference (artifact https://claude.ai/artifact/5XusBkkRhHrm4intGdmFBj, read it with the Artifact tool if needed).
 - 2026-10-22 01:40 — Phase A done: schemas, fixtures in `tests/fixtures/geo-view/`, node validator `tests/js/geo/schema.mjs`
   (run `node --test "tests/js/geo/*.test.mjs"`; a bare directory argument fails on Windows).
+- 2026-10-22 02:30 — Phase B done: boundary set bd-boundaries-2026-10-22.1 (bbox + label per area, flat/level-2|3.json, index.json;
+  old 2026-10-21.1 kept one release), GeoTree + BoundarySet services, gov.geo.children, geo-areas:publish-boundaries,
+  9 GeoAreasPackageTest tests green. NEXT: phase C, first item (lazy bundle in theming AssetRegistry/ThemeCompiler/Manifest/DevAssetController).
+  Prototype engine extracted from the artifact is the reference for the gs-geo modules.

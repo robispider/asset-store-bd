@@ -5,9 +5,24 @@ namespace GovStore\GeoAreas\Http\Controllers;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use GovStore\GeoAreas\Services\GeoAreaService;
+use GovStore\GeoAreas\Services\GeoTree;
 
 class GeoAreaController extends Controller
 {
+    /** Names, types and drill hints of an area's children (reference data; no business data). */
+    public function children(int $area, GeoAreaService $geoService, GeoTree $tree)
+    {
+        abort_unless($tree->node($area), 404);
+        $locale = app()->getLocale();
+
+        return response()->json([
+            'id' => $area,
+            'name' => $tree->name($area, $locale),
+            'trail' => array_map(fn ($id) => ['id' => $id, 'name' => $tree->name($id, $locale, true)], $tree->chain($area)),
+            'children' => $geoService->children($area, $locale),
+        ]);
+    }
+
     /** Shared geographical typeahead. */
     public function search(Request $request, GeoAreaService $geoService)
     {
