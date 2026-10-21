@@ -104,7 +104,7 @@ final class GeoViewConfigResolver
             $preset['source']['param_keys'] = $preset['source']['params'];
             unset($preset['source']['params']);
         }
-        unset($preset['title'], $preset['description']);
+        unset($preset['title'], $preset['description'], $preset['national']);
 
         return $preset;
     }

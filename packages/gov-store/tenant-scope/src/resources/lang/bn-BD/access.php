@@ -82,6 +82,7 @@ return [
         'theming_appearance_self' => 'নিজের থিম ও আলো/অন্ধকার মোড বাছাই', 'theming_assign_office' => 'আমার অফিসের ডিফল্ট থিম বাছাই',
         'theming_assign_company' => 'আমার মন্ত্রণালয়ের ডিফল্ট থিম বাছাই', 'theming_assign_organization' => 'প্রতিষ্ঠানের ডিফল্ট থিম বাছাই',
         'theming_lab_view' => 'থিম ল্যাবে প্রকাশিত থিম পর্যালোচনা',
+        'geo_monitor_view' => 'ভৌগোলিক মনিটর: এলাকাভিত্তিক কার্যালয় ও কর্মসূচির মানচিত্র',
         'catalog_finance_default' => 'পণ্যের ধরনের অর্থ বিভাগ কোড নির্ধারণ',
         'asset-tags_office_configure' => 'অফিসের সম্পদ ট্যাগের অবস্থান ও বিভাগ বাছাই',
         'asset-tags_company_codelists' => 'কোম্পানির সম্পদ ট্যাগ কোড তালিকা রক্ষণাবেক্ষণ',

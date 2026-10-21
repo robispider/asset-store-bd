@@ -234,8 +234,9 @@ class GeoDataService
             $placed = array_values(array_filter(array_column($offices, 'area')));
             $area = $placed ? $this->tree->commonAncestor($placed) : ($scope->areas ? $this->tree->commonAncestor($scope->areas) : $root);
             // An office placed on the common area itself would only show as "at this level": open one level up
-            // so that area is drawn and coloured.
-            if ($placed && in_array($area, $placed, true) && ($parent = $this->tree->node($area)['parent'] ?? null)) {
+            // so that area is drawn and coloured — unless that would open an area the viewer only partly sees.
+            $parent = $this->tree->node($area)['parent'] ?? null;
+            if ($placed && $parent && in_array($area, $placed, true) && $scope->areaState($parent, $this->tree) === 'in') {
                 $area = $parent;
             }
         } else {

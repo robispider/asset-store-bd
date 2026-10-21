@@ -23,6 +23,8 @@ class GeoViewServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../../config/geo-view.php', 'geo-view');
+        // Merged in register() so tenant-scope (boot) defines the Gate and lists it in the Access matrix.
+        $this->mergeConfigFrom(__DIR__.'/../../config/abilities.php', 'govstore-abilities');
         $this->app->singleton(GeoSourceRegistry::class);
         $this->app->singleton(GeoPresetRegistry::class);
         $this->app->singleton(OfficeLocator::class);
@@ -44,5 +46,22 @@ class GeoViewServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([\GovStore\GeoView\Console\GeoViewDoctorCommand::class]);
         }
+        $this->app->booted(fn () => $this->registerMenu());
+    }
+
+    private function registerMenu(): void
+    {
+        if (! class_exists(\GovStore\TenantScope\Navigation\MenuRegistry::class) || ! $this->app->bound(\GovStore\TenantScope\Navigation\MenuRegistry::class)) {
+            return;
+        }
+        $this->app->make(\GovStore\TenantScope\Navigation\MenuRegistry::class)->register([
+            'id' => 'gov-geo-monitor',
+            'group' => 'gov-workspace',
+            'label' => 'geoview::general.monitor.menu',
+            'icon' => 'fas fa-map',
+            'route' => 'gov.geo-monitor.index',
+            'match' => ['gov.geo-monitor.*'],
+            'order' => 60,
+        ]);
     }
 }

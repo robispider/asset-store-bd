@@ -70,6 +70,13 @@
             breaks = [vals[0]];
             for (var j = 1; j < n; j++) { breaks.push(vals[Math.floor((j * vals.length) / n)]); }
             breaks.push(vals[vals.length - 1]);
+            // Many tied values collapse quantile breaks (six divisions with 6 offices, one with 13): fall back to
+            // breaks over the distinct values so outliers still get their own tone.
+            if (unique(breaks).length - 1 < Math.min(n, uniq.length - 1)) {
+                breaks = [uniq[0]];
+                for (var u = 1; u < n; u++) { breaks.push(uniq[Math.floor((u * uniq.length) / n)]); }
+                breaks.push(uniq[uniq.length - 1]);
+            }
         }
         breaks = unique(breaks);
         var bins = breaks.length - 1;

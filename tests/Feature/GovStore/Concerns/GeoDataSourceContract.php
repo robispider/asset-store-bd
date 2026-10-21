@@ -125,7 +125,8 @@ trait GeoDataSourceContract
                 $this->assertEqualsWithDelta($area['den'] > 0 ? $area['num'] / $area['den'] : null, $area['value'], 1e-6);
             }
         }
-        if ($den > 0) {
+        // Offices placed on the viewed area itself count in the total but in no child area.
+        if ($den > 0 && $payload['here']['offices'] === 0) {
             $this->assertEqualsWithDelta($num / $den, $payload['stats']['total'], 1e-6);
         }
     }

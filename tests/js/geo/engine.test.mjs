@@ -39,6 +39,12 @@ test('scale: quantile tones spread from 1 to 7 and empty/none classify nothing',
   assert.deepEqual(plain(G.scale({ type: 'none' }, payload([3])).classify(3)), {});
 });
 
+test('scale: tied values fall back to breaks over distinct values', () => {
+  const s = G.scale({ type: 'quantile', steps: 4 }, payload([6, 6, 6, 6, 6, 6, 7, 13]));
+  assert.ok(s.bins >= 2);
+  assert.notEqual(s.classify(6).bin, s.classify(13).bin);
+});
+
 test('scale: diverging centres on the national ratio', () => {
   const s = G.scale({ type: 'diverging', reference: 'national' }, payload([0.2, 0.5, 0.8], { format: 'percent', aggregation: 'ratio' }, { stats: { national: 0.5 } }));
   assert.equal(s.ref, 0.5);

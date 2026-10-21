@@ -75,8 +75,8 @@ Schedule: every hour (`7 * * * *`), working folder `D:\git repo\asset-store-bd`.
 - [x] §11.2 acceptance on initiative 30; viewer matrix; commit + push phase E
 
 ### Phase F — National host
-- [ ] Geo monitor page + breadcrumb + menu; organization source
-- [ ] Tests; commit + push phase F
+- [x] Geo monitor page + breadcrumb + menu; organization source
+- [x] Tests; commit + push phase F
 
 ### Phase G — Depth
 - [ ] Search, labels, markers, flat mode, multi-select, export, fullscreen, picker intent, upazila/union levels
@@ -122,3 +122,9 @@ Schedule: every hour (`7 * * * *`), working folder `D:\git repo\asset-store-bd`.
   pilot acceptance) green; full GovStore suite 701 green.
   NOT done here: live walk as company 547 admin / district ICT officer (needs their sessions); covered by tests.
   NEXT: phase F — national geo monitor page + organization source.
+- 2026-10-22 06:40 — Phase F done: /gov-store/geo-monitor (gov.geo-monitor.index, gov.can:geo.monitor.view, breadcrumb,
+  menu gov-workspace), ability geo.monitor.view (+ tenant-scope labels en/bn), OrganizationOfficesGeoSource
+  (offices, verified_share; tenant scope) + preset flagged `national`. Auto start moves up a level only when the
+  parent is fully in scope. Quantile scale falls back to distinct-value breaks on ties. GeoMonitoringTest 11 green.
+  Live: 58 offices, 57 placed, 1 unplaced, Rajshahi 13 distinct tone. Full suite was 712 with 1 nav failure → fixed.
+  NEXT: phase G — search, flat mode, export, fullscreen, picker intent (labels/markers/multi-select exist already).
