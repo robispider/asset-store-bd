@@ -142,7 +142,7 @@ final class ThemeCompiler
         $manifest['js'] = $this->writeHashed($output, 'gs-theme', 'js', $this->js());
         $manifest['lazy'] = [];
         foreach (array_keys($this->assets->lazyBundles()) as $bundle) {
-            $manifest['lazy'][$bundle] = $this->writeHashed($output, 'lazy/'.$bundle, 'js', $this->lazyJs($bundle));
+            $manifest['lazy'][$bundle] = $this->writeHashed($output, 'lazy/'.$bundle, 'js', $this->minify($this->lazyJs($bundle)));
         }
         $skipped = [];
         $fontKeys = [];
@@ -174,6 +174,28 @@ final class ThemeCompiler
         $this->removeStale($output, $previous, $manifest);
 
         return ['manifest' => $manifest, 'skipped' => $skipped];
+    }
+
+    /**
+     * Minify a lazy bundle with the project's terser (geo-view plan §7.5 budget). Without node or terser the
+     * bundle ships unminified and the build says so; dev mode always serves the readable sources.
+     */
+    public function minify(string $js): string
+    {
+        $terser = base_path('node_modules/terser/bin/terser');
+        if (! config('gs-theme.minify_lazy', true) || ! is_file($terser)) {
+            return $js;
+        }
+        $process = new \Symfony\Component\Process\Process(['node', $terser, '--compress', 'passes=3,unsafe_arrows=true,unsafe_methods=true', '--mangle', '--ecma', '2019', '--comments', 'false']);
+        $process->setInput($js);
+        $process->setTimeout(60);
+        try {
+            $process->run();
+        } catch (\Throwable) {
+            return $js;
+        }
+
+        return $process->isSuccessful() && trim($process->getOutput()) !== '' ? $process->getOutput() : $js;
     }
 
     private function writeHashed(string $output, string $name, string $extension, string $contents): string

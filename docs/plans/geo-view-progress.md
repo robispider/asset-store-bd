@@ -83,9 +83,9 @@ Schedule: every hour (`7 * * * *`), working folder `D:\git repo\asset-store-bd`.
 - [x] Lab demo + Playwright step per feature; commit + push phase G
 
 ### Phase H — Hardening
-- [ ] Profiling, facts cache, rate-limit review
-- [ ] Developer guide "Add a data source in five steps", boundary upgrade runbook
-- [ ] Doctor clean; full suite green; commit + push phase H
+- [x] Profiling, facts cache, rate-limit review
+- [x] Developer guide "Add a data source in five steps", boundary upgrade runbook
+- [x] Doctor clean; full suite green; commit + push phase H
 
 ## Session log
 
@@ -137,3 +137,23 @@ Schedule: every hour (`7 * * * *`), working folder `D:\git repo\asset-store-bd`.
   receipts/issues, asset verification rate) — the plan requires an agreed metric definition before each is
   shown nationally. The source contract and contract trait make each a small addition once defined.
   NEXT: phase H — minify lazy bundle (currently ~100 KB raw), profiling, guide, runbook.
+- 2026-10-22 08:50 — Phase H done: lazy bundles minified by gs-theme:build with node_modules/terser (geo 48.1 KB /
+  15.4 KB gzip, geo-tools 7.0 / 3.0 KB loaded only by maps with search/export/full screen/flat); engine default
+  strings dropped (server sends them); scale gives each distinct value its own class when values are few.
+  Profiling and rate-limit notes in packages/gov-store/geo-view/README.md (guide "Add a data source in five
+  steps"); runbook packages/gov-store/geo-areas/BOUNDARY-UPGRADE.md; AGENTS.md pointer. 717 PHP + 20 node green,
+  doctor clean.
+
+## Final summary (2026-10-22)
+
+All phases A–H are on `geo-view` and pushed. Open items for the owner:
+
+- **Bundle budget:** engine is 48.1 KB minified / 15.4 KB gzip against the plan target 45 / 15 KB (guarded at
+  50 / 16 KB). Meeting it exactly would mean moving labels or help out of the core bundle.
+- **Metric providers deferred:** storekeeper share, posted receipts/issues and asset verification rate
+  (geo-monitoring §6) need agreed definitions before national display.
+- **Not run here:** `scripts/live-tests/theme-visual/geo-view.spec.mjs` (needs the recorded super admin storage
+  state), pa11y, and live walks as company 547 admin / a district ICT officer (covered by feature tests).
+- **Picker on a real form:** the `geo.pick` preset works (Lab, tests) but is not yet placed on the office
+  location profile form.
+- The scheduled task `geo-view-build-resume`, if you created it, can be deleted.

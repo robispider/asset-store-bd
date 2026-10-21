@@ -45,6 +45,13 @@ test('scale: tied values fall back to breaks over distinct values', () => {
   assert.notEqual(s.classify(6).bin, s.classify(13).bin);
 });
 
+test('scale: two distinct values get two classes', () => {
+  const s = G.scale({ type: 'quantile', steps: 4 }, payload([6, 6, 13]));
+  assert.equal(s.bins, 2);
+  assert.deepEqual(plain(s.breaks), [6, 6, 13]);
+  assert.notEqual(s.classify(6).bin, s.classify(13).bin);
+});
+
 test('scale: diverging centres on the national ratio', () => {
   const s = G.scale({ type: 'diverging', reference: 'national' }, payload([0.2, 0.5, 0.8], { format: 'percent', aggregation: 'ratio' }, { stats: { national: 0.5 } }));
   assert.equal(s.ref, 0.5);

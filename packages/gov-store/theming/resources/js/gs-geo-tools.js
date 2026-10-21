@@ -21,6 +21,7 @@
 
     V.buildExtras = function () {
         var self = this, c = this.cfg, tb = c.toolbar || {}, t = this.t;
+        this.toolsBuilt = true;
         if (tb.search && c.endpoints && c.endpoints.search) { this.tools.insertBefore(this.buildSearch(), this.extraTools); }
         if (c.levels && c.levels.flat) {
             this.flatBtn = el('button', { type: 'button', class: 'gs-geo__btn', 'aria-pressed': this.flatLevel ? 'true' : 'false', title: t('flat'), 'aria-label': t('flat'),
@@ -42,14 +43,6 @@
             };
             doc.addEventListener('fullscreenchange', this.onFullscreen);
         }
-    };
-
-    /* ---- flat mode: one level nationally from the projected level file (plan §4.1) ---- */
-    V.setFlat = function (level, thenArea) {
-        this.flatLevel = level || null;
-        if (this.flatBtn) { this.flatBtn.setAttribute('aria-pressed', this.flatLevel ? 'true' : 'false'); }
-        this.emit('flat', { level: this.flatLevel });
-        return this.go(thenArea || this.rootArea);
     };
 
     /* ---- find an area: typeahead over gov.geo.search, then open its parent and select it ---- */
@@ -204,6 +197,9 @@
         var p = on ? doc.exitFullscreen() : this.rootEl.requestFullscreen();
         if (p && p.catch) { p.catch(function () { /* refused by the browser */ }); }
     };
+
+    // Maps mounted before this bundle arrived get their tools now.
+    if (G.registry) { G.registry.forEach(function (view) { view.loadTools(); }); }
 
     var destroy = V.destroy;
     V.destroy = function (keep) {

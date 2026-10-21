@@ -49,6 +49,8 @@ class ThemingServiceProvider extends ServiceProvider
         $geo = glob(self::PACKAGE_PATH.'/resources/js/gs-geo/*.js') ?: [];
         sort($geo);
         $this->app->make(AssetRegistry::class)->lazy('geo', ...$geo);
+        // Search, flat mode, export and full screen: only for maps that enable them (keeps 'geo' in budget).
+        $this->app->make(AssetRegistry::class)->lazy('geo-tools', self::PACKAGE_PATH.'/resources/js/gs-geo-tools.js');
 
         $this->loadViewsFrom(self::PACKAGE_PATH.'/resources/views', 'gs-theme');
         // Namespace lookup requires the gs:: prefix. Path lookup also considers

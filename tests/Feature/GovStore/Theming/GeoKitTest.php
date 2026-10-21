@@ -17,6 +17,8 @@ class GeoKitTest extends ThemingTestCase
         $manifest = json_decode(file_get_contents($out.'/manifest.json'), true);
 
         $this->assertMatchesRegularExpression('/^lazy\/geo\.[0-9a-f]{10}\.js$/', $manifest['lazy']['geo']);
+        $this->assertMatchesRegularExpression('/^lazy\/geo-tools\.[0-9a-f]{10}\.js$/', $manifest['lazy']['geo-tools']);
+        $this->assertStringNotContainsString('exportPng', file_get_contents($out.'/'.$manifest['lazy']['geo']));   // tools load only on maps that use them
         $geo = file_get_contents($out.'/'.$manifest['lazy']['geo']);
         $this->assertStringContainsString('GsGeoView', $geo);
         $main = file_get_contents($out.'/'.$manifest['js']);
@@ -29,7 +31,8 @@ class GeoKitTest extends ThemingTestCase
         $order = array_map('basename', app('gs.theme')->assets()->lazyBundles()['geo']);
         $this->assertSame('00-core.js', $order[0]);
         $this->assertSame('90-api.js', end($order));
-        $this->assertSame(['geo' => route('gs-theme.dev', ['file' => 'lazy-geo.js', 'v' => app('gs.theme')->devVersion()])], app('gs.theme')->lazyAssets());
+        $this->assertSame(route('gs-theme.dev', ['file' => 'lazy-geo.js', 'v' => app('gs.theme')->devVersion()]), app('gs.theme')->lazyAssets()['geo']);
+        $this->assertArrayHasKey('geo-tools', app('gs.theme')->lazyAssets());
     }
 
     public function test_lazy_bundle_names_are_checked(): void

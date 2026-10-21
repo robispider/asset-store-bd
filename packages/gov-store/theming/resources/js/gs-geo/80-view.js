@@ -78,7 +78,7 @@
         if (tb.filters !== false) { this.tools.appendChild(this.filterBox); }
         this.extraTools = el('span', { class: 'gs-geo__group gs-geo__extra' });
         this.tools.appendChild(this.extraTools);
-        if (this.buildExtras) { this.buildExtras(); }   // 85-tools.js: search, flat, export, full screen
+        this.loadTools();   // 85-tools.js (lazy bundle geo-tools): search, flat, export, full screen
         if (tb.zoom !== false) {
             this.tools.appendChild(el('span', { class: 'gs-geo__group' }, [
                 this.button(ICONS.minus, t('zoom_out'), function () { self.zoomBy(1 / 1.6); }),
@@ -144,6 +144,25 @@
             this.resizeObs = new root.ResizeObserver(function () { self.onCamera(); });
             this.resizeObs.observe(this.stage);
         }
+    };
+
+    V.needsTools = function () {
+        var tb = this.cfg.toolbar || {};
+        return !!(tb.search || tb.export || tb.fullscreen || (this.cfg.levels && this.cfg.levels.flat));
+    };
+
+    V.loadTools = function () {
+        if (!this.needsTools() || this.toolsBuilt) { return; }
+        if (this.buildExtras) { this.buildExtras(); return; }
+        if (root.GS && root.GS.lazy) { root.GS.lazy('geo-tools').catch(function (e) { root.console && root.console.error(e); }); }
+    };
+
+    /** Flat mode: one level nationally from the projected level file (plan §4.1); null returns to drilling. */
+    V.setFlat = function (level, thenArea) {
+        this.flatLevel = level || null;
+        if (this.flatBtn) { this.flatBtn.setAttribute('aria-pressed', this.flatLevel ? 'true' : 'false'); }
+        this.emit('flat', { level: this.flatLevel });
+        return this.go(thenArea || this.rootArea);
     };
 
     V.button = function (path, label, onclick) {
@@ -352,7 +371,8 @@
         } else if (s.breaks) {
             for (var i = 0; i < s.bins; i++) {
                 (function (k) {
-                    var label = fmt.short(s.breaks[k], f) + '–' + fmt.short(s.breaks[k + 1], f) + (f === 'percent' ? '%' : '');
+                    var label = (s.breaks[k] === s.breaks[k + 1] || (k > 0 && s.breaks.length === s.bins + 1 && s.breaks[0] === s.breaks[1])
+                        ? fmt.short(s.breaks[k + 1], f) : fmt.short(s.breaks[k], f) + '–' + fmt.short(s.breaks[k + 1], f)) + (f === 'percent' ? '%' : '');
                     bins.appendChild(self.binButton(self.swatch({ 'data-bin': s.tone(k) }), label, k,
                         function (a) { return (a.state === 'ok' || a.state === 'partial') && s.classify(a.value).index === k; }));
                 })(i);

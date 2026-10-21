@@ -65,6 +65,9 @@
             var lo = cfg.domain[0], hi = cfg.domain[1];
             breaks = [];
             for (var i = 0; i <= steps; i++) { breaks.push(lo + ((hi - lo) * i) / steps); }
+        } else if (uniq.length <= steps) {
+            // Few distinct values: one class per value, so 6 and 13 never share a tone.
+            breaks = [uniq[0]].concat(uniq);
         } else {
             var n = Math.min(steps, uniq.length);
             breaks = [vals[0]];
@@ -78,7 +81,7 @@
                 breaks.push(uniq[uniq.length - 1]);
             }
         }
-        breaks = unique(breaks);
+        if (!(uniq.length <= steps && breaks.length === uniq.length + 1 && breaks[0] === breaks[1])) { breaks = unique(breaks); }
         var bins = breaks.length - 1;
         // Tones 2–7: the palest data tone (26% mix) stays distinct from the no-data ground.
         var tone = function (k) { return bins === 1 ? 4 : Math.round(2 + (k * 5) / (bins - 1)); };

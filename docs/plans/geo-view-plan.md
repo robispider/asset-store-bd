@@ -4,7 +4,7 @@
 > inventory and asset register can embed. It covers drill-down (division → district → upazila → union), zoom and pan,
 > area selection, legend, tooltip, table fallback and deep links. Data comes from a JavaScript API backed by
 > server-side **data sources** that domain packages register. It reads data only and writes no business data.
-> **Status:** approved 2026-10-22 (D1–D8 as recommended, §10); implementation in progress on branch `geo-view` (log: `docs/plans/geo-view-progress.md`) · **Updated:** 2026-10-22
+> **Status:** approved 2026-10-22 (D1–D8 as recommended, §10); implemented on branch `geo-view`, phases A–H (log and open items: `docs/plans/geo-view-progress.md`) · **Updated:** 2026-10-22
 > **Pilot page:** tracking programme monitor `gov-store/admin/tracking/initiatives/30`
 > **Builds on:** `docs/plans/geo-boundary-data-plan.md` (boundary set `bd-boundaries-2026-10-21.1`, data contract §8),
 > `docs/plans/geo-monitoring-plan.md` (this plan generalises its metric contract and replaces its §3.3, §4.2–4.4 and §5;
