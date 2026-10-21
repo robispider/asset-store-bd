@@ -2,6 +2,8 @@
 
 namespace GovStore\Tracking\Models;
 
+use App\Models\Category;
+use App\Models\Location;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -12,6 +14,7 @@ class TrackingAssociation extends Model
 
     protected $fillable = [
         'tracking_code_id',
+        'delivery_id',
         'category_id',
         'location_id',
         'quantity',
@@ -24,8 +27,16 @@ class TrackingAssociation extends Model
     {
         return $this->belongsTo(TrackingCode::class, 'tracking_code_id');
     }
-    public function category(): BelongsTo { return $this->belongsTo(\App\Models\Category::class); }
-    public function location(): BelongsTo { return $this->belongsTo(\App\Models\Location::class); }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function location(): BelongsTo
+    {
+        return $this->belongsTo(Location::class);
+    }
 
     public function associatable(): MorphTo
     {

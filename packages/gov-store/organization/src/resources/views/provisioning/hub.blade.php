@@ -67,7 +67,7 @@
                 <p class="govorg-muted govorg-small"><i class="fas fa-lock" aria-hidden="true"></i> {{ __('organization_labels::office.ministry_locked') }}</p>
                 @if ($active)
                     <details>
-                        <summary>{{ __('organization_labels::office.rename') }}</summary>
+                        <summary>{{ __('organization_labels::orglabel.office_profile_edit') }}</summary>
                         <form method="POST" action="{{ route('gov.org.hub.update', $location->id) }}" class="govorg-filters">
                             @csrf
                             <input type="hidden" name="company_id" value="{{ $location->company_id }}">
@@ -76,6 +76,14 @@
                             <input type="hidden" name="office_admin_id" value="{{ $profile->office_admin_id }}">
                             <label class="sr-only" for="rename">{{ __('organization_labels::office.name') }}</label>
                             <input type="text" class="form-control govorg-filters__search" id="rename" name="name" value="{{ old('name', $location->name) }}" required maxlength="255">
+                            <label for="office-level">{{ __('organization_labels::orglabel.office_level_label') }}</label>
+                            <select class="form-control" id="office-level" name="office_level">
+                                <option value="">{{ __('organization_labels::orglabel.office_level_inferred') }}</option>
+                                @foreach (\GovStore\Organization\Models\LocationProfile::OFFICE_LEVELS as $level)
+                                    <option value="{{ $level }}" @selected(old('office_level', $profile->office_level) === $level)>{{ __('organization_labels::orglabel.office_level_'.$level) }}</option>
+                                @endforeach
+                            </select>
+                            @error('office_level')<p class="gs-form-row__error" role="alert">{{ $message }}</p>@enderror
                             <x-gs::button type="submit" tone="light" outline>{{ __('organization_labels::office.rename_save') }}</x-gs::button>
                         </form>
                         @error('name')<p class="gs-form-row__error" role="alert">{{ $message }}</p>@enderror

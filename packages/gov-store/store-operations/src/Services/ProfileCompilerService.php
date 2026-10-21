@@ -68,18 +68,16 @@ class ProfileCompilerService
         }
 
         $mergedCapabilities = [];
-        
+
         // 1. Determine the Hierarchy Chain (What categories/models apply to this item?)
 
         // 2. Define the exact cascading resolution order (Lowest precedence to Highest)
-        // Defensive: Only attempt lookup if the scope ID exists (handles Super Admins with no location/company)
-        $layers = [
-            'GLOBAL'   => $this->getActiveAssignment(AssignmentScope::GLOBAL, null, 'System', 1),
-            'COMPANY'  => $this->tenantContext->companyId ? $this->getActiveAssignment(AssignmentScope::COMPANY, $this->tenantContext->companyId, 'Tenant', $this->tenantContext->companyId) : null,
-            'LOCATION' => $this->tenantContext->locationId ? $this->getActiveAssignment(AssignmentScope::LOCATION, $this->tenantContext->locationId, 'Location', $this->tenantContext->locationId) : null,
-            'CATEGORY' => $hierarchy['category_id'] ? $this->getActiveAssignment(AssignmentScope::NATIVE, null, 'App\Models\Category', $hierarchy['category_id']) : null,
-            'MODEL'    => $hierarchy['is_model'] ? $this->getActiveAssignment(AssignmentScope::NATIVE, null, 'App\Models\AssetModel', $productId) : null,
-        ];
+        $layers = $this->activeLayers(
+            $this->tenantContext->companyId,
+            $this->tenantContext->locationId,
+            $hierarchy['category_id'],
+            $hierarchy['is_model'] ? $productId : null,
+        );
 
         // 3. Merge rules top-down
         foreach ($layers as $layerName => $assignment) {
@@ -124,8 +122,32 @@ class ProfileCompilerService
             }
         }
 
+        // 4. Package defaults (CapabilityRegistry::extend) sit beneath every profile layer: any layer that
+        // enforced or disabled the code already decided it. Appended last, so their UI follows the core sub-grids.
+        foreach (CapabilityRegistry::defaultsFor($productType) as $code) {
+            $mergedCapabilities[$code] ??= ['enforced' => true, 'config' => [], 'source_policy' => 'default', 'layer' => 'DEFAULT', 'behavior' => 'ENFORCE'];
+        }
+
         self::$resolvedCache[$cacheKey] = $mergedCapabilities;
         return $mergedCapabilities;
+    }
+
+    /**
+     * The active assignment of each layer, lowest precedence first. The engine and the Rules
+     * studio's trace both read this, so the studio always shows the order the engine merges in.
+     * Defensive: a layer without a target ID (Super Admins with no location/company) is null.
+     *
+     * @return array{GLOBAL: ?ProfileAssignment, COMPANY: ?ProfileAssignment, LOCATION: ?ProfileAssignment, CATEGORY: ?ProfileAssignment, MODEL: ?ProfileAssignment}
+     */
+    public function activeLayers(?int $companyId, ?int $locationId, ?int $categoryId, ?int $modelId): array
+    {
+        return [
+            'GLOBAL'   => $this->getActiveAssignment(AssignmentScope::GLOBAL, null, 'System', 1),
+            'COMPANY'  => $companyId ? $this->getActiveAssignment(AssignmentScope::COMPANY, $companyId, 'Tenant', $companyId) : null,
+            'LOCATION' => $locationId ? $this->getActiveAssignment(AssignmentScope::LOCATION, $locationId, 'Location', $locationId) : null,
+            'CATEGORY' => $categoryId ? $this->getActiveAssignment(AssignmentScope::NATIVE, null, 'App\Models\Category', $categoryId) : null,
+            'MODEL'    => $modelId ? $this->getActiveAssignment(AssignmentScope::NATIVE, null, 'App\Models\AssetModel', $modelId) : null,
+        ];
     }
 
     /**

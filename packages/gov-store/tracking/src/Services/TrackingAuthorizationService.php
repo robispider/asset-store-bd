@@ -3,13 +3,28 @@
 namespace GovStore\Tracking\Services;
 
 use App\Models\User;
+use GovStore\Organization\Models\CompanyAdmin;
 use GovStore\Tracking\Models\Initiative;
 use GovStore\Tracking\Models\OperationUnit;
-use GovStore\Organization\Models\CompanyAdmin;
-use Illuminate\Support\Facades\DB;
 
 class TrackingAuthorizationService
 {
+    public function allows(Initiative $initiative, array $designations = ['HEAD', 'OFFICER', 'SUPPORT', 'MONITOR']): bool
+    {
+        $user = auth()->user();
+
+        return $user && ($user->isSuperUser()
+            || CompanyAdmin::where('user_id', $user->id)->where('company_id', $initiative->owner_company_id)->exists()
+            || OperationUnit::where('initiative_id', $initiative->id)->where('user_id', $user->id)->whereIn('designation', $designations)->exists());
+    }
+
+    public function canCreate(): bool
+    {
+        $user = auth()->user();
+
+        return $user && ($user->isSuperUser() || CompanyAdmin::where('user_id', $user->id)->exists());
+    }
+
     /**
      * Centralized security gate enforcing the GovStore permission matrix.
      * Throws a 403 HttpException if the user fails authorization.
@@ -17,7 +32,7 @@ class TrackingAuthorizationService
     public function authorize(Initiative $initiative, array $allowedDesignations = ['HEAD']): void
     {
         $user = auth()->user();
-        if (!$user) {
+        if (! $user) {
             abort(403, 'Unauthenticated.');
         }
 

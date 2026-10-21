@@ -56,6 +56,8 @@
                 @endif
             </div>
         </div>
+
+        @include('gov-classification::finance.product-type-default')
     </div>
 
     <!-- RIGHT: Governance & Analytics -->

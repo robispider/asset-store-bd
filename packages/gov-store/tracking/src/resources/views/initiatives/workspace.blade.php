@@ -1,462 +1,289 @@
 @extends('layouts/default')
-@section('title', __('govtracking::general.ui.extra_workspace') . $initiative->title)
-
+@section('title', $initiative->title.' · '.__('govtracking::general.monitor.manage'))
 @section('content')
-<!-- Header Banner -->
-<div class="row">
-    <div class="col-md-12">
-        <div class="box box-solid gs-ws-header-box">
-            <div class="box-body gs-ws-header-body">
-                <h2 class="text-blue" style="margin-top: 0; font-weight: bold; letter-spacing: 0.5px;">
-                    <i class="fa fa-university"></i> {{ strtoupper($initiative->title) }}
-                </h2>
-                <p class="lead text-muted gs-ws-header-lead">
-                    {{ $initiative->purpose ?? __('govtracking::general.ui.extra_no_objective_described_for_this_programme') }}
-                </p>
-                <hr class="gs-ws-header-divider">
-                <div class="row text-center">
-                    <div class="col-sm-3 border-right">
-                        <span class="description-text text-muted gs-ws-stat-label">{{ __('govtracking::general.ui.status') }}</span>
-                        <h4 class="description-header gs-ws-stat-value">
-                            @if($initiative->status == 'Active')
-                                <span class="text-green"><i class="fa fa-circle"></i> {{ __('govtracking::general.ui.ready_for_operations') }}</span>
-                            @elseif($initiative->status == 'Planning')
-                                <span class="text-yellow"><i class="fa fa-wrench"></i> {{ __('govtracking::general.ui.setup_in_progress') }}</span>
-                            @elseif($initiative->status == 'Closed')
-                                <span class="text-blue"><i class="fa fa-check-circle"></i> {{ __('govtracking::general.ui.completed') }}</span>
-                            @else
-                                <span class="text-gray"><i class="fa fa-archive"></i> {{ __('govtracking::general.ui.archived') }}</span>
-                            @endif
-                        </h4>
-                    </div>
-                    <div class="col-sm-3 border-right">
-                        <span class="description-text text-muted gs-ws-stat-label">{{ __('govtracking::general.ui.owning_dept_ministry') }}</span>
-                        <h4 class="description-header gs-ws-stat-value">
-                            {{ $initiative->ownerCompany->name ?? 'Unassigned' }}
-                        </h4>
-                    </div>
-                    <div class="col-sm-3 border-right">
-                        <span class="description-text text-muted gs-ws-stat-label">{{ __('govtracking::general.ui.funding_segment') }}</span>
-                        <h4 class="description-header gs-ws-stat-value">
-                            {{ $initiative->primary_funding }} {{ __('govtracking::general.ui.extra_budget') }}
-                        </h4>
-                    </div>
-                    <div class="col-sm-3">
-                        <span class="description-text text-muted gs-ws-stat-label">{{ __('govtracking::general.ui.umbrella_delivery') }}</span>
-                        <h4 class="description-header gs-ws-stat-value">
-                            {{ $health['percentage'] }}%
-                            <small class="text-muted gs-ws-stat-sub">
-                                {{ number_format($health['received']) }} / {{ number_format($health['planned']) }} {{ __('govtracking::general.ui.extra_items') }}
-                            </small>
-                        </h4>
-                    </div>
+@php
+    $m = 'govtracking::general.manage.';
+    $codePrefix = null;
+    if (preg_match('/^(.+-)[^-]+-[^-]+$/', $all_codes[0]['code'] ?? '', $parts)
+        && collect($all_codes)->every(fn ($c) => str_starts_with($c['code'], $parts[1]))) $codePrefix = $parts[1];
+    $short = fn (?string $code) => $code && $codePrefix && str_starts_with($code, $codePrefix) ? substr($code, strlen($codePrefix)) : $code;
+    $num = fn ($n) => number_format((float) $n, fmod((float) $n, 1.0) ? 2 : 0);
+    $date = fn ($d) => $d ? \Carbon\Carbon::parse($d)->isoFormat('D MMM YYYY') : null;
+    $head = $team->get('HEAD', collect())->first();
+    $headName = $head ? trim($head->first_name.' '.$head->last_name) : null;
+    $activeReady = collect($readiness)->firstWhere('key', 'active')['done'] ?? false;
+    $gaps = count($todos) + ($activeReady ? 0 : 1);
+    $open = in_array($initiative->status, ['Planning', 'Active'], true);
+    $next = ! $open ? __($m.'next_closed', ['status' => __('govtracking::general.monitor.initiative_status.'.$initiative->status)])
+        : (! $headName ? __($m.'next_no_head')
+        : ($can['head'] ? __($m.'next_head') : ($can['edit'] ? __($m.'next_officer', ['person' => $headName]) : __($m.'next_read', ['person' => $headName]))));
+    $teamUrl = route('gov.tracking.initiatives.operation-unit.index', $initiative->id);
+    $readinessItems = collect($readiness)->map(fn ($r) => ['label' => __($m.'ready.'.$r['key']), 'value' => $r['value'] ?? null, 'done' => $r['done'],
+        'action' => ! $r['done'] && $can['head'] && in_array($r['key'], ['head', 'officer'], true) ? ['label' => __($m.'assign'), 'href' => $teamUrl] : null])->all();
+    $manageUrl = fn (array $change = [], string $anchor = '') => route('gov.tracking.initiatives.manage', array_filter(array_merge(['initiative' => $initiative->id,
+        'tab' => $filters['tab'], 'q' => $filters['q'], 'activity' => $filters['activity']], $change), fn ($v) => $v !== null && $v !== '' && $v !== 'all')).$anchor;
+    $ruleItems = [
+        ['label' => __($m.'rule.documents'), 'value' => __($m.($rules['documents'] ? 'required' : 'not_required'))],
+        ['label' => __($m.'rule.overshoot'), 'value' => __($m.($rules['overshoot'] ? 'allowed_warning' : 'blocked'))],
+        ['label' => __($m.'rule.metadata'), 'value' => __($m.($rules['metadata'] ? 'required' : 'not_required'))],
+    ];
+    $missingText = fn (array $c) => collect($c['missing'])->map(fn ($k) => __($m.'missing.'.$k))->implode(', ');
+    $shownActivity = array_slice($activity['items'], 0, 10);
+    $moreActivity = array_slice($activity['items'], 10);
+@endphp
+<div class="gs-tracking-monitor gs-tracking-manage">
+    <x-gs::page-header :title="$initiative->title" :subtitle="$initiative->purpose">
+        @if($can['edit'] || $can['settings'])
+            <x-slot:actions>
+                @if($can['edit'])<a class="gs-btn gs-btn--primary" href="{{ route('gov.tracking.initiatives.tracking-codes.create', $initiative->id) }}"><i class="fas fa-plus" aria-hidden="true"></i> {{ __($m.'new_code') }}</a>@endif
+                @if($can['settings'])<a class="gs-btn gs-btn--secondary gs-btn--outline" href="{{ route('gov.tracking.initiatives.edit', $initiative->id) }}"><i class="fas fa-gear" aria-hidden="true"></i> {{ __($m.'settings') }}</a>@endif
+            </x-slot:actions>
+        @endif
+    </x-gs::page-header>
+    <div class="gs-tracking-meta"><x-gs::status-badge :status="strtolower($initiative->status)" :label="__('govtracking::general.monitor.initiative_status.'.$initiative->status)" /><span>{{ $initiative->primary_funding }} · {{ $owner }}</span>@if($fiscal_years)<span>{{ implode(' · ', $fiscal_years) }}</span>@endif<span>{{ count($all_codes) }} {{ __('govtracking::general.monitor.codes') }}</span></div>
+
+    <div class="gs-tracking-manage__tabsrow">
+        @include('govtracking::monitor.tabs')
+        <p class="gs-tracking-manage__snap">
+            @if($snapshot['delivered'] !== null)<span>{{ __($m.'snap_delivered', ['value' => number_format($snapshot['delivered'] * 100, 1).'%']) }}</span>@endif
+            @if($snapshot['planned'] > 0)<strong>{{ __($m.'snap_units', ['received' => $num($snapshot['received']), 'planned' => $num($snapshot['planned'])]) }}</strong>@endif
+            <span>{{ trans_choice($m.'snap_receipts', $snapshot['receipts'], ['count' => $snapshot['receipts']]) }}@if($snapshot['last']) · {{ __($m.'snap_last', ['date' => $date($snapshot['last'])]) }}@endif</span>
+            <a href="{{ route('gov.tracking.initiatives.show', $initiative->id) }}">{{ __($m.'open_monitor') }} <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+        </p>
+    </div>
+
+    @if(isset($errors) && $errors->has('order_pdf'))<x-gs::alert tone="danger">{{ $errors->first('order_pdf') }}</x-gs::alert>@endif
+    <div class="gs-tracking-manage__band">
+        <div class="gs-tracking-panel gs-tracking-manage__todo-panel">
+            <x-gs::status-callout :status="$gaps ? 'warning' : 'success'" :verdict="$gaps ? trans_choice($m.'callout_gaps', $gaps, ['count' => $gaps]) : __($m.'callout_ok')" :next="$next" />
+            @if($todos)
+                <ul class="gs-tracking-manage__todo">
+                    @foreach($todos as $todo)
+                        @php
+                            $code = $todo['code'] ?? null;
+                            $title = match ($todo['key']) {
+                                'team' => __($m.'todo.team', ['role' => mb_strtolower(__('govtracking::general.monitor.designations.'.$todo['role']))]),
+                                'orders' => __($m.'todo.orders', ['count' => $todo['count']]),
+                                default => __($m.'todo.'.$todo['key'], ['code' => $short($code['code'])]),
+                            };
+                            $why = $todo['key'] === 'finish' ? __($m.'todo.finish_why', ['missing' => $missingText($code)]) : __($m.'todo.'.$todo['key'].'_why');
+                        @endphp
+                        <li class="gs-tracking-manage__todo-item" data-tone="{{ $todo['tone'] }}">
+                            <i class="fas {{ $todo['icon'] }}" aria-hidden="true"></i>
+                            <div><strong>{{ $title }}</strong><small>{{ $why }}</small></div>
+                            @switch($todo['action'])
+                                @case('team')<a class="gs-btn gs-btn--primary gs-btn--sm" href="{{ $teamUrl }}">{{ __($m.'assign') }}</a>@break
+                                @case('setup')<a class="gs-btn gs-btn--secondary gs-btn--outline gs-btn--sm" href="{{ $manageUrl(['tab' => 'setup'], '#manage-codes') }}">{{ __($m.'show_codes') }}</a>@break
+                                @case('attach')<a class="gs-btn gs-btn--warning gs-btn--sm" href="#order-{{ $code['id'] }}" data-manage-open="{{ $code['id'] }}">{{ __($m.'attach') }}</a>@break
+                                @case('edit')<a class="gs-btn gs-btn--primary gs-btn--sm" href="{{ route('gov.tracking.initiatives.tracking-codes.edit', [$initiative->id, $code['id']]) }}">{{ __($m.'edit') }}</a>@break
+                                @case('activate')
+                                    <form method="POST" action="{{ route('gov.tracking.initiatives.tracking-codes.activate', [$initiative->id, $code['id']]) }}">@csrf<button type="submit" class="gs-btn gs-btn--success gs-btn--sm" data-tracking-confirm="{{ __($m.'confirm.activate', ['code' => $code['code']]) }}">{{ __($m.'activate') }}</button></form>
+                                    @break
+                                @default<span class="gs-tracking-manage__who"><i class="fas fa-lock" aria-hidden="true"></i> {{ __($m.'who.'.$todo['who']) }}</span>
+                            @endswitch
+                        </li>
+                    @endforeach
+                </ul>
+            @else
+                <p class="gs-tracking-muted gs-tracking-manage__todo-none">{{ __($m.'todo_none') }}</p>
+            @endif
+        </div>
+        <x-gs::readiness :items="$readinessItems" :title="__($m.'readiness')" :caption="__($m.'readiness_caption')" />
+    </div>
+
+    <div class="gs-tracking-manage__work">
+        <div class="gs-tracking-manage__main">
+            <div class="gs-tracking-panel gs-tracking-manage__codes" id="manage-codes">
+                <div class="gs-tracking-manage__head">
+                    <h2>{{ __($m.'codes') }}</h2>
+                    <span class="gs-tracking-muted">{{ __($m.'codes_hint') }}</span>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Quick Actions Toolbar -->
-<div class="row">
-    <div class="col-md-12" style="margin-bottom: 15px;">
-        <div class="gs-ws-toolbar">
-            <span class="text-muted gs-ws-toolbar-label">
-                <i class="fa fa-bolt text-yellow"></i> {{ __('govtracking::general.ui.quick_actions') }}
-            </span>
-            <div class="btn-group-horizontal">
-                <a href="{{ route('gov.tracking.initiatives.tracking-codes.create', $initiative->id) }}" class="btn btn-default btn-flat">
-                    <i class="fa fa-plus text-green"></i> {{ __('govtracking::general.ui.new_tracking_code_task') }}
-                </a>
-                <a href="{{ route('gov.tracking.initiatives.report', $initiative->id) }}" class="btn btn-default btn-flat">
-                    <i class="fa fa-bar-chart text-purple"></i> {{ __('govtracking::general.ui.full_progress_report') }}
-                </a>
-                <a href="{{ route('gov.tracking.initiatives.operation-unit.index', $initiative->id) }}" class="btn btn-default btn-flat">
-                    <i class="fa fa-users text-blue"></i> {{ __('govtracking::general.ui.manage_operation_team') }}
-                </a>
-                <a href="{{ route('gov.tracking.initiatives.edit', $initiative->id) }}" class="btn btn-default btn-flat">
-                    <i class="fa fa-cog text-gray"></i> {{ __('govtracking::general.ui.edit_general_properties') }}
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Main Workspace Layout -->
-<div class="row">
-    <!-- Left Column: Tasks and Analytics Snapshots -->
-    <div class="col-md-8">
-
-        <!-- 1. Current Execution Tasks -->
-        <div class="box box-primary">
-            <div class="box-header with-border">
-                <h3 class="box-title" style="font-weight: bold;"><i class="fa fa-tasks"></i> {{ __('govtracking::general.ui.current_execution_tasks_tracking_codes') }}</h3>
-            </div>
-            <div class="box-body" style="padding: 0;">
-                @if($trackingCodes->isEmpty())
-                    <div class="text-center text-muted gs-ws-empty-tasks">
-                        <i class="fa fa-info-circle style-span" style="font-size: 36px; margin-bottom: 15px;"></i>
-                        <h4>{{ __('govtracking::general.ui.no_operational_tasks_defined_under_this_umbrella') }}</h4>
-                        <p>{{ __('govtracking::general.ui.create_a_tracking_code_to_begin_registering_physical_receipts_and_monitoring_delivery_goals') }}</p>
-                        <a href="{{ route('gov.tracking.initiatives.tracking-codes.create', $initiative->id) }}" class="btn btn-success btn-sm" style="margin-top: 10px;">
-                            <i class="fa fa-plus"></i> {{ __('govtracking::general.ui.add_first_tracking_code') }}
-                        </a>
-                    </div>
-                @else
-                    <ul class="products-list product-list-in-box">
-                        @foreach($trackingCodes as $code)
-                            <li class="item gs-ws-task-item">
-                                <div class="product-info" style="margin-left: 0;">
-                                    <!-- Code Identifier -->
-                                    <div class="gs-ws-task-identifier">
-                                        <span class="gs-ws-task-code">
-                                            {{ __('govtracking::general.ui.extra_code') }} {{ $code->tracking_code }} <span class="gs-ws-task-sep">|</span> {{ $code->task_title }}
-                                        </span>
-                                        <div>
-                                            <span class="label bg-{{ $code->status == 'ACTIVE' ? 'green' : ($code->status == 'DRAFT' ? 'yellow' : 'gray') }}" style="font-size: 11px;">
-                                                {{ $code->status }}
-                                            </span>
-                                            @if($code->order_pdf_path)
-                                                <a href="{{ route('gov.tracking.tracking-codes.download', $code->id) }}" class="label label-info" style="margin-left: 5px; font-size: 11px;"><i class="fa fa-file-pdf-o"></i> {{ __('govtracking::general.ui.view_pdf') }}</a>
-                                            @endif
-                                        </div>
-                                    </div>
-
-                                    <!-- Segment Metadata -->
-                                    <div class="gs-ws-task-meta">
-                                        <i class="fa fa-calendar-o text-muted"></i> {{ __('govtracking::general.ui.extra_fiscal_year') }} <strong>{{ $code->fiscal_year }}</strong>
-                                        <span class="gs-ws-task-meta-sep">•</span>
-                                        <i class="fa fa-money text-muted"></i> {{ __('govtracking::general.ui.extra_budget') }} <strong>{{ $code->fundingType->name ?? 'N/A' }}</strong>
-                                        <span class="gs-ws-task-meta-sep">•</span>
-
-                                        @php
-                                            $geoScope = $code->scopes->where('dimension', 'GEOGRAPHY')->first();
-                                            $partScope = $code->scopes->where('dimension', 'PARTICIPANTS')->first();
-
-                                            $geoDisplay = ($geoScope && $geoScope->target_type === 'GeoArea' && class_exists('GovStore\GeoAreas\Models\GeoArea'))
-                                                ? \GovStore\GeoAreas\Models\GeoArea::find($geoScope->target_id)->en_name ?? __('govtracking::general.ui.extra_specific_region')
-                                                : __('govtracking::general.ui.extra_nationwide');
-
-                                            $partDisplay = ($partScope && $partScope->target_type === 'CrossTenant')
-                                                ? '<span class="label label-warning" style="font-size:10px;"><i class="fa fa-exchange"></i> ' . e(__('govtracking::general.task.cross_ministry')) . '</span>'
-                                                : ($partScope && $partScope->target_type === 'SpecificLocations'
-                                                    ? '<span class="label label-primary" style="font-size:10px;"><i class="fa fa-map-marker"></i> ' . e(__('govtracking::general.task.specific_offices')) . '</span>'
-                                                    : '<span class="label label-default" style="font-size:10px;">' . e(__('govtracking::general.task.internal')) . '</span>');
-                                        @endphp
-                                        {{ __('govtracking::general.ui.extra_scope') }} <strong>{{ $geoDisplay }}</strong> {!! $partDisplay !!}
-                                    </div>
-
-                                    <!-- Targets and Adaptive Progress -->
-                                    <div style="margin-top: 10px;">
-                                        @if($code->specificity_level === '1_BLANKET')
-                                            <div class="gs-ws-strategy-blanket">
-                                                <p>
-                                                    <i class="fa fa-info-circle text-blue"></i> <strong>{{ __('govtracking::general.task.blanket_title') }}</strong>
-                                                    {{ __('govtracking::general.task.blanket_description') }}
-                                                </p>
-                                            </div>
-                                        @elseif($code->specificity_level === '2_CATEGORY')
-                                            <div class="gs-ws-strategy-category">
-                                                <h5>{{ __('govtracking::general.task.category_mode') }}</h5>
-                                                <div class="row">
-                                                    @foreach($code->targets as $target)
-                                                        @php
-                                                            $prog = $target->progress ?? ['percentage' => 0, 'is_exceeded' => false, 'received' => 0, 'planned' => $target->planned_qty];
-                                                            $barColor = $prog['is_exceeded'] ? 'progress-bar-yellow' : ($prog['percentage'] >= 100 ? 'progress-bar-success' : 'progress-bar-aqua');
-                                                            $textColor = $prog['is_exceeded'] ? 'text-yellow' : ($prog['percentage'] >= 100 ? 'text-green' : 'text-muted');
-                                                            $categoryName = $target->category->name ?? __('govtracking::general.ui.extra_undefined_category');
-                                                        @endphp
-
-                                                        <div class="col-sm-6 gs-ws-target-row">
-                                                            <div class="gs-ws-target-row-head">
-                                                                <span>
-                                                                    <i class="fa fa-cube text-muted"></i> <strong>{{ $categoryName }}</strong>
-                                                                    @if($target->economic_code)
-                                                                        <span class="text-muted gs-ws-target-econ">({{ __('govtracking::general.ui.extra_econ') }} {{ $target->economic_code }})</span>
-                                                                    @endif
-                                                                </span>
-                                                                <span class="{{ $textColor }}" style="font-weight: bold;">{{ $prog['percentage'] }}%</span>
-                                                            </div>
-                                                            <div class="progress progress-xs gs-ws-target-bar">
-                                                                <div class="progress-bar {{ $barColor }}" style="width: {{ $prog['percentage'] > 100 ? 100 : $prog['percentage'] }}%"></div>
-                                                            </div>
-                                                            <span class="text-muted text-sm gs-ws-target-foot">
-                                                                {{ __('govtracking::general.ui.extra_received') }} <strong>{{ number_format($prog['received']) }}</strong> / {{ number_format($prog['planned']) }} {{ __('govtracking::general.ui.extra_units') }}
-                                                            </span>
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                            </div>
-                                        @elseif($code->specificity_level === '3_MATRIX')
-                                            <!-- Structured Office Level Breakdown -->
-                                            <div class="panel-group gs-ws-matrix-panel" id="accordion-{{ $code->id }}">
-                                                <div class="panel panel-default gs-ws-matrix-heading">
-                                                    <div class="panel-heading gs-ws-matrix-heading-bar">
-                                                        <h4 class="panel-title gs-ws-matrix-heading-title">
-                                                            <a data-toggle="collapse" data-parent="#accordion-{{ $code->id }}" href="#collapse-{{ $code->id }}" class="gs-ws-matrix-heading-link">
-                                                                <span><i class="fa fa-map-marker text-purple"></i> {{ __('govtracking::general.ui.view_segmented_delivery_progress_per_office') }}</span>
-                                                                <i class="fa fa-chevron-down"></i>
-                                                            </a>
-                                                        </h4>
-                                                    </div>
-                                                    <div id="collapse-{{ $code->id }}" class="panel-collapse collapse">
-                                                        <div class="panel-body gs-ws-matrix-body">
-                                                            @forelse($code->matrixProgress ?? [] as $locationId => $data)
-                                                                <div class="gs-ws-matrix-office">
-                                                                    <h5><i class="fa fa-building text-muted"></i> {{ $data['location_name'] }}</h5>
-                                                                    <div class="row">
-                                                                        @foreach($data['items'] as $item)
-                                                                            @php
-                                                                                $barColor = $item['is_exceeded'] ? 'progress-bar-yellow' : ($item['percentage'] >= 100 ? 'progress-bar-success' : 'progress-bar-primary');
-                                                                                $textColor = $item['is_exceeded'] ? 'text-yellow' : ($item['percentage'] >= 100 ? 'text-green' : 'text-muted');
-                                                                            @endphp
-                                                                            <div class="col-sm-6 gs-ws-matrix-item">
-                                                                                <div class="gs-ws-matrix-item-head">
-                                                                                    <strong>{{ $item['category_name'] }}</strong>
-                                                                                    <span class="{{ $textColor }}">{{ $item['percentage'] }}%</span>
-                                                                                </div>
-                                                                                <div class="progress progress-xs gs-ws-matrix-item-bar">
-                                                                                    <div class="progress-bar {{ $barColor }}" style="width: {{ $item['percentage'] > 100 ? 100 : $item['percentage'] }}%"></div>
-                                                                                </div>
-                                                                                <span class="text-muted gs-ws-matrix-item-foot">
-                                                                                    {{ __('govtracking::general.ui.extra_received') }} {{ $item['received'] }} / {{ $item['allocated'] }}
-                                                                                </span>
-                                                                            </div>
-                                                                        @endforeach
-                                                                    </div>
-                                                                </div>
-                                                            @empty
-                                                                <p class="text-center text-muted" style="margin-bottom: 0;">{{ __('govtracking::general.ui.no_delivery_cells_configured_within_this_matrix_scope') }}</p>
-                                                            @endforelse
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endif
-                                    </div>
-
-                                    <!-- Actions & Transitions -->
-                                    <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
-                                        <div>
-                                            @if($code->status === 'ACTIVE')
-                                                <small class="text-muted"><i class="fa fa-lock"></i> {{ __('govtracking::general.ui.ledger_status_locked_storekeeper_execution_authorized') }}</small>
-                                            @elseif($code->status === 'DRAFT')
-                                                <small class="text-muted"><i class="fa fa-info-circle"></i> {{ __('govtracking::general.ui.work_draft_edit_properties_prior_to_publication') }}</small>
-                                            @endif
-                                        </div>
-                                        <div>
-                                            @if($code->status === 'DRAFT')
-                                                <a href="{{ route('gov.tracking.initiatives.tracking-codes.edit', [$initiative->id, $code->id]) }}" class="btn btn-xs btn-warning" style="margin-right: 5px;"><i class="fa fa-pencil"></i> {{ __('govtracking::general.ui.edit_properties') }}</a>
-
-                                                <form action="{{ route('gov.tracking.initiatives.tracking-codes.activate', [$initiative->id, $code->id]) }}" method="POST" style="display:inline-block; margin-right: 5px;">
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-xs btn-success" data-tracking-confirm="{{ __('govtracking::general.ui.confirm_activate') }}">
-                                                        <i class="fa fa-play"></i> {{ __('govtracking::general.ui.activate_lock') }}
-                                                    </button>
-                                                </form>
-
-                                                <form action="{{ route('gov.tracking.initiatives.tracking-codes.destroy', [$initiative->id, $code->id]) }}" method="POST" style="display:inline-block;">
-                                                    @csrf @method('DELETE')
-                                                    <button type="submit" class="btn btn-xs btn-danger" data-tracking-confirm="{{ __('govtracking::general.ui.confirm_task') }}">
-                                                        <i class="fa fa-trash"></i> {{ __('govtracking::general.ui.delete') }}
-                                                    </button>
-                                                </form>
-                                            @elseif($code->status === 'ACTIVE')
-                                                <form action="{{ route('gov.tracking.initiatives.tracking-codes.archive', [$initiative->id, $code->id]) }}" method="POST" style="display:inline-block;">
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-xs btn-default" data-tracking-confirm="{{ __('govtracking::general.ui.confirm_archive') }}">
-                                                        <i class="fa fa-archive"></i> {{ __('govtracking::general.ui.archive_task') }}
-                                                    </button>
-                                                </form>
-                                            @else
-                                                <span class="text-muted text-sm" style="font-size: 11px;"><i class="fa fa-archive"></i> {{ __('govtracking::general.ui.archival_view_historic_logs_saved_for_audit_logs') }}</span>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
+                <div class="gs-tracking-manage__filters">
+                    <nav class="gs-tracking-manage__chips" aria-label="{{ __($m.'filter_label') }}">
+                        @foreach(\GovStore\Tracking\Services\TrackingManageService::TABS as $tab)
+                            <a href="{{ $manageUrl(['tab' => $tab], '#manage-codes') }}" @if($filters['tab'] === $tab) aria-current="true" @endif>{{ __($m.'tabs.'.$tab) }} <b>{{ $counts[$tab] }}</b></a>
                         @endforeach
-                    </ul>
+                    </nav>
+                    <form method="GET" action="{{ route('gov.tracking.initiatives.manage', $initiative->id) }}#manage-codes" class="gs-tracking-manage__search" role="search">
+                        @if($filters['tab'] !== 'all')<input type="hidden" name="tab" value="{{ $filters['tab'] }}">@endif
+                        @if($filters['activity'] !== 'all')<input type="hidden" name="activity" value="{{ $filters['activity'] }}">@endif
+                        <label class="gs-sr-only" for="manage-q">{{ __($m.'search') }}</label>
+                        <input type="search" id="manage-q" name="q" value="{{ $filters['q'] }}" maxlength="150" placeholder="{{ __($m.'search') }}">
+                        <button type="submit" class="gs-btn gs-btn--secondary gs-btn--outline gs-btn--sm">{{ __($m.'search_button') }}</button>
+                    </form>
+                </div>
+                @if(! $codes)
+                    <x-gs::empty-state :icon="$all_codes ? 'fa-filter' : 'fa-barcode'" :title="$all_codes ? __($m.'no_match') : __($m.'no_codes')">
+                        @unless($all_codes){{ __($m.'no_codes_hint') }}@endunless
+                        <x-slot:actions>
+                            @if($all_codes)<a class="gs-btn gs-btn--secondary gs-btn--outline" href="{{ $manageUrl(['tab' => null, 'q' => null], '#manage-codes') }}">{{ __($m.'clear') }}</a>
+                            @elseif($can['edit'])<a class="gs-btn gs-btn--primary" href="{{ route('gov.tracking.initiatives.tracking-codes.create', $initiative->id) }}">{{ __($m.'new_code') }}</a>@endif
+                        </x-slot:actions>
+                    </x-gs::empty-state>
+                @else
+                    <x-gs::table class="gs-tracking-manage-codes" data-monitor-sortable>
+                        <thead><tr>
+                            <th scope="col"><span class="gs-sr-only">{{ __($m.'th.details') }}</span></th>
+                            <th scope="col">{{ __($m.'th.code') }}</th>
+                            <th scope="col">{{ __($m.'th.plan') }}</th>
+                            <th scope="col">{{ __($m.'th.checks') }}</th>
+                            <th scope="col">{{ __($m.'th.status') }}</th>
+                            <th scope="col" class="gs-tracking-manage__actions-head">{{ __($m.'th.actions') }}</th>
+                        </tr></thead>
+                        <tbody>
+                        @foreach($codes as $c)
+                            @php
+                                $planLabel = in_array($c['plan'], ['1_BLANKET', '2_CATEGORY', '3_MATRIX'], true) ? __('govtracking::general.monitor.plans.'.$c['plan']) : __($m.'plan_unknown');
+                                $badge = ['DRAFT' => 'draft', 'ACTIVE' => 'success', 'ARCHIVED' => 'archived'][$c['status']] ?? 'info';
+                                $canAttach = $can['edit'] && ($c['status'] === 'DRAFT' || ($c['status'] === 'ACTIVE' && ! $c['order_pdf']));
+                                $activateWhy = ! $can['head'] ? __($m.'lock_head') : (! $c['ready'] ? __($m.'lock_checks', ['missing' => $missingText($c)]) : null);
+                            @endphp
+                            <tr id="code-{{ $c['id'] }}" @class(['gs-tracking-manage__row--archived' => $c['status'] === 'ARCHIVED'])>
+                                <td class="gs-tracking-codes__toggle"><button type="button" class="gs-tracking-expand" data-monitor-toggle hidden aria-expanded="true" aria-controls="manage-detail-{{ $c['id'] }}" aria-label="{{ __($m.'collapse', ['code' => $c['code']]) }}" data-expand-label="{{ __($m.'expand', ['code' => $c['code']]) }}" data-collapse-label="{{ __($m.'collapse', ['code' => $c['code']]) }}"><span data-monitor-toggle-icon aria-hidden="true">−</span></button></td>
+                                <td>
+                                    <div class="gs-tracking-manage__id">
+                                        <a class="gs-tracking-code" href="{{ route('gov.tracking.initiatives.tracking-codes.show', [$initiative->id, $c['id']]) }}" title="{{ $c['code'] }}" aria-label="{{ $c['code'] }}">@if($codePrefix)<x-gs::code-segments size="sm" :segments="[['value' => $codePrefix, 'tone' => 'muted'], ['value' => $short($c['code']), 'tone' => 'primary']]" />@else{{ $c['code'] }}@endif</a>
+                                        <strong>{{ $c['title'] }}</strong>
+                                        <small>@if($c['plan'] === '1_BLANKET'){{ $planLabel }}@else{{ trans_choice($m.'products', count($c['targets']), ['count' => count($c['targets'])]) }}@if($c['planned'] > 0) · {{ __($m.'units_planned', ['count' => $num($c['planned'])]) }}@endif @endif</small>
+                                    </div>
+                                </td>
+                                <td class="gs-tracking-manage__plan">{{ $planLabel }}<small>{{ $c['geography_label'] }} · {{ $c['participants_label'] }}</small><small>{{ __($m.'fy', ['year' => $c['fy']]) }}</small></td>
+                                <td>
+                                    @if($c['status'] === 'ARCHIVED')<span class="gs-tracking-muted">—</span>
+                                    @else
+                                        <ul class="gs-tracking-manage__checks">
+                                            @foreach($c['checks'] as $check => $ok)
+                                                <li data-ok="{{ $ok ? 'true' : 'false' }}"><i class="fas {{ $ok ? 'fa-check' : 'fa-circle-exclamation' }}" aria-hidden="true"></i> {{ __($m.'check.'.$check) }}<span class="gs-sr-only"> ({{ __($m.($ok ? 'check_ok' : 'check_missing')) }})</span></li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                </td>
+                                <td class="gs-tracking-manage__status">
+                                    <x-gs::status-badge :status="$badge" :label="__($m.'status.'.$c['status'])" />
+                                    @if($c['status'] === 'ACTIVE')
+                                        @if($c['activated'])<small>{{ __($m.'since', ['date' => $date($c['activated'])]) }}</small>@endif
+                                        @if($c['plan'] !== '1_BLANKET' && $c['planned'] > 0)<small>{{ __($m.'received_of', ['received' => $num($c['received']), 'planned' => $num($c['planned'])]) }}</small>@endif
+                                    @elseif($c['status'] === 'DRAFT')
+                                        @if($c['created'])<small>{{ __($m.'created_on', ['date' => $date($c['created'])]) }}</small>@endif
+                                    @elseif($c['archived_at'])
+                                        <small>{{ __($m.'archived_on', ['date' => $date($c['archived_at'])]) }}</small>
+                                    @endif
+                                </td>
+                                <td>
+                                    <div class="gs-tracking-manage__actions">
+                                        @if($c['status'] === 'DRAFT' && $can['head'] && $c['ready'])
+                                            <form method="POST" action="{{ route('gov.tracking.initiatives.tracking-codes.activate', [$initiative->id, $c['id']]) }}">@csrf<button type="submit" class="gs-btn gs-btn--success gs-btn--sm" data-tracking-confirm="{{ __($m.'confirm.activate', ['code' => $c['code']]) }}"><i class="fas fa-circle-play" aria-hidden="true"></i> {{ __($m.'activate') }}</button></form>
+                                        @elseif($c['status'] === 'DRAFT' && $can['edit'])
+                                            <a class="gs-btn gs-btn--primary gs-btn--outline gs-btn--sm" href="{{ route('gov.tracking.initiatives.tracking-codes.edit', [$initiative->id, $c['id']]) }}"><i class="fas fa-pen" aria-hidden="true"></i> {{ __($m.'edit') }}</a>
+                                        @elseif($c['status'] === 'ACTIVE' && in_array('order', $c['missing'], true) && $can['edit'])
+                                            <a class="gs-btn gs-btn--warning gs-btn--sm" href="#order-{{ $c['id'] }}" data-manage-open="{{ $c['id'] }}"><i class="fas fa-file-arrow-up" aria-hidden="true"></i> {{ __($m.'attach') }}</a>
+                                        @else
+                                            <a class="gs-btn gs-btn--secondary gs-btn--outline gs-btn--sm" href="{{ route('gov.tracking.initiatives.tracking-codes.show', [$initiative->id, $c['id']]) }}">{{ __($m.'open') }}<span class="gs-sr-only"> {{ $c['code'] }}</span></a>
+                                        @endif
+                                        <details class="gs-tracking-more">
+                                            <summary class="gs-btn gs-btn--secondary gs-btn--outline gs-btn--sm" aria-label="{{ __($m.'more', ['code' => $c['code']]) }}"><i class="fas fa-ellipsis" aria-hidden="true"></i></summary>
+                                            <div class="gs-tracking-more__menu">
+                                                <a href="{{ route('gov.tracking.initiatives.tracking-codes.show', [$initiative->id, $c['id']]) }}"><i class="fas fa-up-right-from-square" aria-hidden="true"></i> {{ __($m.'action.open') }}</a>
+                                                @if($c['status'] !== 'DRAFT')<a href="{{ route('gov.tracking.initiatives.show', $initiative->id) }}#tracking-products-{{ $c['id'] }}"><i class="fas fa-chart-line" aria-hidden="true"></i> {{ __($m.'action.monitor') }}</a>@endif
+                                                @if($c['order_pdf'])<a href="{{ route('gov.tracking.tracking-codes.download', $c['id']) }}"><i class="fas fa-file-pdf" aria-hidden="true"></i> {{ __($m.'action.download') }}</a>@endif
+                                                @if($c['status'] === 'DRAFT' && $can['edit'])
+                                                    <a href="{{ route('gov.tracking.initiatives.tracking-codes.edit', [$initiative->id, $c['id']]) }}"><i class="fas fa-pen" aria-hidden="true"></i> {{ __($m.'action.edit') }}</a>
+                                                    @if($activateWhy)
+                                                        <span class="gs-tracking-more__locked"><i class="fas fa-circle-play" aria-hidden="true"></i> {{ __($m.'action.activate') }}<small><i class="fas fa-lock" aria-hidden="true"></i> {{ $activateWhy }}</small></span>
+                                                    @else
+                                                        <form method="POST" action="{{ route('gov.tracking.initiatives.tracking-codes.activate', [$initiative->id, $c['id']]) }}">@csrf<button type="submit" data-tracking-confirm="{{ __($m.'confirm.activate', ['code' => $c['code']]) }}"><i class="fas fa-circle-play" aria-hidden="true"></i> {{ __($m.'action.activate') }}</button></form>
+                                                    @endif
+                                                @endif
+                                                @if($canAttach)<a href="#order-{{ $c['id'] }}" data-manage-open="{{ $c['id'] }}"><i class="fas fa-file-arrow-up" aria-hidden="true"></i> {{ __($m.'action.'.($c['order_pdf'] ? 'replace' : 'attach')) }}</a>@endif
+                                                @if($c['status'] === 'DRAFT' && $can['edit'])
+                                                    <hr>
+                                                    <form method="POST" action="{{ route('gov.tracking.initiatives.tracking-codes.destroy', [$initiative->id, $c['id']]) }}">@csrf @method('DELETE')<button type="submit" class="gs-tracking-more__danger" data-tracking-confirm="{{ __($m.'confirm.delete', ['code' => $c['code']]) }}"><i class="fas fa-trash" aria-hidden="true"></i> {{ __($m.'action.delete') }}</button></form>
+                                                @endif
+                                                @if($c['status'] === 'ACTIVE' && $can['edit'])
+                                                    <hr>
+                                                    @if($can['head'])
+                                                        <form method="POST" action="{{ route('gov.tracking.initiatives.tracking-codes.archive', [$initiative->id, $c['id']]) }}">@csrf<button type="submit" class="gs-tracking-more__danger" data-tracking-confirm="{{ __($m.'confirm.archive', ['code' => $c['code']]) }}"><i class="fas fa-box-archive" aria-hidden="true"></i> {{ __($m.'action.archive') }}</button></form>
+                                                    @else
+                                                        <span class="gs-tracking-more__locked"><i class="fas fa-box-archive" aria-hidden="true"></i> {{ __($m.'action.archive') }}<small><i class="fas fa-lock" aria-hidden="true"></i> {{ __($m.'lock_head') }}</small></span>
+                                                    @endif
+                                                @endif
+                                                @unless($can['edit'])<span class="gs-tracking-more__locked"><i class="fas fa-eye" aria-hidden="true"></i> {{ __($m.'read_only') }}</span>@endunless
+                                            </div>
+                                        </details>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="gs-tracking-code-detail" data-monitor-detail id="manage-detail-{{ $c['id'] }}"><td colspan="6">@include('govtracking::initiatives.manage.code-detail', ['c' => $c, 'planLabel' => $planLabel, 'canAttach' => $canAttach, 'activateWhy' => $activateWhy])</td></tr>
+                        @endforeach
+                        </tbody>
+                    </x-gs::table>
+                @endif
+            </div>
+
+            <div class="gs-tracking-panel gs-tracking-manage__activity" id="manage-activity">
+                <div class="gs-tracking-manage__head">
+                    <h2>{{ __($m.'activity') }}</h2>
+                    <nav class="gs-tracking-manage__chips" aria-label="{{ __($m.'activity') }}">
+                        @foreach(\GovStore\Tracking\Services\TrackingManageService::ACTIVITY as $kind)
+                            <a href="{{ $manageUrl(['activity' => $kind], '#manage-activity') }}" @if($filters['activity'] === $kind) aria-current="true" @endif>{{ __($m.'activity_tabs.'.$kind) }} <b>{{ $activity['counts'][$kind] }}</b></a>
+                        @endforeach
+                    </nav>
+                </div>
+                @if($activity['items'])
+                    <ol class="gs-tracking-manage__events">@foreach($shownActivity as $event)@include('govtracking::initiatives.manage.event', ['event' => $event])@endforeach</ol>
+                    @if($moreActivity)
+                        <details class="gs-tracking-manage__more-events">
+                            <summary>{{ __($m.'activity_more', ['count' => count($moreActivity)]) }}</summary>
+                            <ol class="gs-tracking-manage__events">@foreach($moreActivity as $event)@include('govtracking::initiatives.manage.event', ['event' => $event])@endforeach</ol>
+                        </details>
+                    @endif
+                @else
+                    <p class="gs-tracking-muted">{{ __($m.'activity_none') }}</p>
                 @endif
             </div>
         </div>
 
-        <!-- 2. Programme Snapshot (The Pre-Aggregated OLAP Cube Data) -->
-        <div class="box box-solid gs-ws-snapshot-box">
-            <div class="box-header with-border gs-ws-snapshot-head">
-                <h3 class="box-title gs-ws-snapshot-title"><i class="fa fa-bar-chart"></i> {{ __('govtracking::general.ui.programme_snapshot_executive_fact_aggregates') }}</h3>
-            </div>
-            <div class="box-body gs-ws-snapshot-body">
-                <div class="row">
-                    <!-- Deliverables and Fiscal Aggregates -->
-                    <div class="col-sm-4 gs-ws-snapshot-col">
-                        <h5><i class="fa fa-truck text-muted"></i> {{ __('govtracking::general.ui.deliveries_fiscal_value') }}</h5>
-                        <ul class="list-unstyled gs-ws-snapshot-list">
-                            <li>
-                                <span class="text-muted">{{ __('govtracking::general.ui.total_received') }}</span>
-                                <strong>{{ number_format($snapshot['total_received_qty']) }} {{ __('govtracking::general.ui.extra_units') }}</strong>
-                            </li>
-                            <li>
-                                <span class="text-muted">{{ __('govtracking::general.ui.procurement_value') }}</span>
-                                <strong>{{ number_format($snapshot['total_cost'], 2) }} BDT</strong>
-                            </li>
-                            <li>
-                                <span class="text-muted">{{ __('govtracking::general.ui.shipments_grns') }}</span>
-                                <strong>{{ $snapshot['total_shipments'] }} {{ __('govtracking::general.ui.extra_documents') }}</strong>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <!-- Geographic Operational Range -->
-                    <div class="col-sm-4 gs-ws-snapshot-col">
-                        <h5><i class="fa fa-globe text-muted"></i> {{ __('govtracking::general.ui.geographic_reach') }}</h5>
-                        <ul class="list-unstyled gs-ws-snapshot-list">
-                            <li>
-                                <span class="text-muted">{{ __('govtracking::general.ui.receiving_offices') }}</span>
-                                <strong>{{ $snapshot['distinct_locations'] }} {{ __('govtracking::general.ui.extra_locations') }}</strong>
-                            </li>
-                            <li>
-                                <span class="text-muted">{{ __('govtracking::general.ui.districts_covered') }}</span>
-                                <strong>{{ $snapshot['distinct_geo_areas'] }} {{ __('govtracking::general.ui.extra_areas') }}</strong>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <!-- Procurement Diversity -->
-                    <div class="col-sm-4 gs-ws-snapshot-col">
-                        <h5><i class="fa fa-tags text-muted"></i> {{ __('govtracking::general.ui.procurement_diversity') }}</h5>
-                        <ul class="list-unstyled gs-ws-snapshot-list">
-                            <li>
-                                <span class="text-muted">{{ __('govtracking::general.ui.item_categories') }}</span>
-                                <strong>{{ $snapshot['distinct_categories'] }} {{ __('govtracking::general.ui.extra_types') }}</strong>
-                            </li>
-                            <li>
-                                <span class="text-muted">{{ __('govtracking::general.ui.brands_makers') }}</span>
-                                <strong>{{ $snapshot['distinct_manufacturers'] }} {{ __('govtracking::general.ui.extra_brands') }}</strong>
-                            </li>
-                            <li>
-                                <span class="text-muted">{{ __('govtracking::general.ui.contracted_vendors') }}</span>
-                                <strong>{{ $snapshot['distinct_suppliers'] }} {{ __('govtracking::general.ui.extra_suppliers') }}</strong>
-                            </li>
-                        </ul>
-                    </div>
+        <div class="gs-tracking-manage__rail">
+            <div class="gs-tracking-panel">
+                <div class="gs-tracking-manage__head">
+                    <h2>{{ __($m.'team') }}</h2>
+                    @if($can['head'])<a class="gs-tracking-manage__link" href="{{ $teamUrl }}">{{ __($m.'team_manage') }}</a>@endif
                 </div>
+                <div class="gs-roles">
+                    @foreach(['HEAD' => true, 'OFFICER' => true, 'SUPPORT' => false, 'MONITOR' => false] as $designation => $required)
+                        @forelse($team->get($designation, collect()) as $person)
+                            <x-gs::role-slot :role="__('govtracking::general.monitor.designations.'.$designation)" :person="trim($person->first_name.' '.$person->last_name)" :action-label="$can['head'] ? __($m.'change') : null" :action-href="$can['head'] ? $teamUrl : null" />
+                        @empty
+                            <x-gs::role-slot :role="__('govtracking::general.monitor.designations.'.$designation)" :description="__($m.'role_help.'.$designation)" :required="$required" :optional="! $required" :action-label="$can['head'] ? __($m.'assign') : null" :action-href="$can['head'] ? $teamUrl : null" />
+                        @endforelse
+                    @endforeach
+                </div>
+            </div>
+            <div class="gs-tracking-panel">
+                <div class="gs-tracking-manage__head">
+                    <h2>{{ __($m.'rules') }}</h2>
+                    @if($can['settings'])<a class="gs-tracking-manage__link" href="{{ route('gov.tracking.initiatives.edit', $initiative->id) }}">{{ __($m.'edit_rules') }}</a>@endif
+                </div>
+                <x-gs::key-value :items="$ruleItems" :columns="1" />
+                <p class="gs-tracking-muted gs-tracking-manage__note">{{ __($m.'rules_why') }}</p>
+            </div>
+            <div class="gs-tracking-panel gs-tracking-manage__tools">
+                <h2>{{ __($m.'tools') }}</h2>
+                @if($can['retro'])
+                    <x-gs::action-row :title="__($m.'tool.retro')" :description="__($m.'tool.retro_why')" id="manage-tool-retro">
+                        <x-slot:actions><a class="gs-btn gs-btn--secondary gs-btn--outline gs-btn--sm" href="{{ route('gov.tracking.initiatives.retrospective.index', $initiative->id) }}">{{ __($m.'open') }}</a></x-slot:actions>
+                    </x-gs::action-row>
+                @endif
+                <x-gs::action-row :title="__($m.'tool.report')" :description="__($m.'tool.report_why')" id="manage-tool-report">
+                    <x-slot:actions><a class="gs-btn gs-btn--secondary gs-btn--outline gs-btn--sm" href="{{ route('gov.tracking.initiatives.report', $initiative->id) }}">{{ __($m.'open') }}</a></x-slot:actions>
+                </x-gs::action-row>
+                @if($can['settings'])
+                    <x-gs::action-row :title="__($m.'tool.properties')" :description="__($m.'tool.properties_why')" id="manage-tool-properties">
+                        <x-slot:actions><a class="gs-btn gs-btn--secondary gs-btn--outline gs-btn--sm" href="{{ route('gov.tracking.initiatives.edit', $initiative->id) }}">{{ __($m.'open') }}</a></x-slot:actions>
+                    </x-gs::action-row>
+                @endif
             </div>
         </div>
-
-    </div>
-
-    <!-- Right Column: Governance, Rules, Timeline and Exceptions -->
-    <div class="col-md-4">
-
-        <!-- 1. Operational Readiness Checker & Governance -->
-        @php
-            $headCount = $initiative->operationUnits()->where('designation', 'HEAD')->count();
-            $officerCount = $initiative->operationUnits()->where('designation', 'OFFICER')->count();
-            $isReady = ($headCount === 1 && $officerCount >= 1);
-        @endphp
-
-        @if($initiative->status === 'Planning' && !$isReady)
-            <div class="box box-solid bg-red-gradient gs-ws-readiness-box">
-                <div class="box-header">
-                    <h3 class="box-title" style="font-weight: bold;"><i class="fa fa-shield"></i> {{ __('govtracking::general.ui.readiness_requirements') }}</h3>
-                </div>
-                <div class="box-body">
-                    <p class="gs-ws-readiness-title">{{ __('govtracking::general.ui.operation_unit_assignments_pending') }}</p>
-                    <p class="gs-ws-readiness-copy">
-                        {{ __('govtracking::general.ui.this_program_cannot_move_to_an_active_operational_status_until_a_valid_managerial_context_is_defined_resolve_these_targets') }}
-                    </p>
-                    <ul class="gs-ws-readiness-list">
-                        @if($headCount === 0)
-                            <li><i class="fa fa-times-circle"></i> {{ __('govtracking::general.ui.assign_an_operation_head_1_required') }}</li>
-                        @endif
-                        @if($officerCount === 0)
-                            <li><i class="fa fa-times-circle"></i> {{ __('govtracking::general.ui.assign_at_least_one_operation_officer') }}</li>
-                        @endif
-                    </ul>
-                    <a href="{{ route('gov.tracking.initiatives.operation-unit.index', $initiative->id) }}" class="btn btn-default btn-block btn-sm gs-ws-readiness-cta">
-                        {{ __('govtracking::general.ui.configure_operation_team') }}
-                    </a>
-                </div>
-            </div>
-        @else
-            <!-- Governance Policy Summary Panel -->
-            <div class="box box-solid gs-ws-gov-box">
-                <div class="box-header with-border gs-ws-gov-head">
-                    <h3 class="box-title gs-ws-gov-title"><i class="fa fa-shield"></i> {{ __('govtracking::general.ui.governance_rules') }}</h3>
-                    <a href="{{ route('gov.tracking.initiatives.operation-unit.index', $initiative->id) }}" class="pull-right text-muted" title="{{ __('govtracking::general.ui.extra_manage_team') }}"><i class="fa fa-users"></i></a>
-                </div>
-                <div class="box-body gs-ws-gov-body">
-                    <ul class="list-unstyled gs-ws-gov-list">
-                        <li>
-                            <span class="text-muted text-sm gs-ws-gov-label">{{ __('govtracking::general.task.head') }}</span>
-                            <strong>
-                                @if($headCount === 1)
-                                    {{ $initiative->operationUnits->where('designation', 'HEAD')->first()->user->first_name ?? 'N/A' }}
-                                    {{ $initiative->operationUnits->where('designation', 'HEAD')->first()->user->last_name ?? '' }}
-                                @else
-                                    <span class="text-red">{{ __('govtracking::general.ui.unassigned') }}</span>
-                                @endif
-                            </strong>
-                        </li>
-                        <li>
-                            <span class="text-muted text-sm gs-ws-gov-label">{{ __('govtracking::general.ui.verification_documents_required') }}</span>
-                            <span class="label label-{{ $initiative->require_documents ? 'success' : 'default' }}">{{ __('govtracking::general.task.' . ($initiative->require_documents ? 'yes' : 'no')) }}</span>
-                        </li>
-                        <li>
-                            <span class="text-muted text-sm gs-ws-gov-label">{{ __('govtracking::general.ui.target_overshoot_rules') }}</span>
-                            <span class="label label-warning">{{ __('govtracking::general.ui.allocation_advisory') }}</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        @endif
-
-        <!-- 2. Recent Operational Activity Timeline -->
-        <div class="box box-solid gs-ws-gov-box">
-            <div class="box-header with-border gs-ws-gov-head">
-                <h3 class="box-title gs-ws-gov-title"><i class="fa fa-clock-o"></i> {{ __('govtracking::general.ui.operational_activity_log') }}</h3>
-            </div>
-            <div class="box-body gs-ws-timeline-body">
-                <ul class="timeline timeline-inverse" style="margin-bottom: 0;">
-                    @forelse($recentActivity as $event)
-                        <li>
-                            @php
-                                $icon = 'fa-exchange bg-aqua';
-                                if($event->event_type === 'OVERSHOOT_OVERRIDE_LOGGED') {
-                                    $icon = 'fa-warning bg-yellow';
-                                }
-                            @endphp
-
-                            <i class="fa {{ $icon }}"></i>
-                            <div class="timeline-item border-0 gs-ws-timeline-item">
-                                <span class="time gs-ws-timeline-time"><i class="fa fa-clock-o"></i> {{ $event->occurred_at->diffForHumans() }}</span>
-                                <h3 class="timeline-header no-border gs-ws-timeline-header">
-                                    <strong>{{ str_replace('_', ' ', $event->event_type) }}</strong>
-                                </h3>
-                                <div class="timeline-body gs-ws-timeline-copy">
-                                    {{ $event->description }}
-                                    @if($event->actor)
-                                        <br><small class="text-muted">— by {{ $event->actor->first_name }} {{ $event->actor->last_name }}</small>
-                                    @endif
-                                </div>
-                            </div>
-                        </li>
-                    @empty
-                        <li class="text-center text-muted gs-ws-timeline-empty">{{ __('govtracking::general.ui.no_events_logged_against_this_scope_yet') }}</li>
-                    @endforelse
-
-                    <li>
-                        <i class="fa fa-flag bg-blue"></i>
-                        <div class="timeline-item border-0 gs-ws-timeline-item">
-                            <span class="time gs-ws-timeline-time"><i class="fa fa-clock-o"></i> {{ $initiative->created_at->format('M d, Y') }}</span>
-                            <h3 class="timeline-header no-border gs-ws-timeline-header">{{ __('govtracking::general.ui.project_umbrella_launched') }}</h3>
-                        </div>
-                    </li>
-                    <li><i class="fa fa-clock-o bg-gray"></i></li>
-                </ul>
-            </div>
-        </div>
-
     </div>
 </div>
 @stop

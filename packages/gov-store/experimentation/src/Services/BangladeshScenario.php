@@ -486,7 +486,7 @@ class BangladeshScenario
                 $initiative = $initiatives[$i % count($initiatives)];
                 $fiscalStart = $this->run->anchor_date->month >= 7 ? $this->run->anchor_date->year : $this->run->anchor_date->year - 1;
                 $code = $this->create(TrackingCode::class, ['initiative_id' => $initiative->id, 'funding_type_id' => $fundId, 'tracking_code' => $this->prefix.'-ADP-'.($i + 1),
-                    'task_title' => 'অফিস সরঞ্জাম বরাদ্দ / Office Equipment Allocation '.($i + 1), 'specificity_level' => 'CATEGORY', 'fiscal_year' => $fiscalStart.'-'.($fiscalStart + 1), 'status' => 'ACTIVE'], 'code-'.$i);
+                    'task_title' => 'অফিস সরঞ্জাম বরাদ্দ / Office Equipment Allocation '.($i + 1), 'specificity_level' => '2_CATEGORY', 'fiscal_year' => $fiscalStart.'-'.($fiscalStart + 1), 'status' => 'ACTIVE'], 'code-'.$i);
                 $office = $this->offices[$i % $this->operationalCount()];
                 $profile = DB::table('gov_location_profiles')->where('location_id', $office->id)->first();
                 $this->create(TrackingScope::class, ['tracking_code_id' => $code->id, 'dimension' => 'GEOGRAPHY', 'target_type' => 'GeoArea', 'target_id' => $profile->geo_area_id], 'code-'.$i.'-geo');

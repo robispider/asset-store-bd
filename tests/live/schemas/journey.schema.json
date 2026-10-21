@@ -2,7 +2,13 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "GovStore Live Journey Schema",
   "type": "object",
-  "required": ["schemaVersion", "id", "title", "execution", "steps"],
+  "required": [
+    "schemaVersion",
+    "id",
+    "title",
+    "execution",
+    "steps"
+  ],
   "additionalProperties": false,
   "properties": {
     "schemaVersion": {
@@ -19,22 +25,31 @@
     },
     "features": {
       "type": "array",
-      "items": { "type": "string" },
+      "items": {
+        "type": "string"
+      },
       "default": []
     },
     "tags": {
       "type": "array",
-      "items": { "type": "string" },
+      "items": {
+        "type": "string"
+      },
       "default": []
     },
     "execution": {
       "type": "object",
-      "required": ["capability"],
+      "required": [
+        "capability"
+      ],
       "additionalProperties": false,
       "properties": {
         "capability": {
           "type": "string",
-          "enum": ["observe", "write-fixtures"]
+          "enum": [
+            "observe",
+            "write-fixtures"
+          ]
         },
         "language": {
           "type": "string",
@@ -47,7 +62,11 @@
         },
         "accessMode": {
           "type": "string",
-          "enum": ["enforce", "shadow", "any"],
+          "enum": [
+            "enforce",
+            "shadow",
+            "any"
+          ],
           "default": "any"
         }
       }
@@ -78,16 +97,43 @@
               "capabilities": {
                 "type": "object",
                 "properties": {
-                  "allOf": { "type": "array", "items": { "type": "string" } },
-                  "noneOf": { "type": "array", "items": { "type": "string" } }
+                  "allOf": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "noneOf": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
                 }
               },
-              "office": { "type": "string" },
-              "role": { "type": "string" },
-              "activeMembership": { "type": "boolean", "default": true },
+              "office": {
+                "type": "string"
+              },
+              "role": {
+                "type": "string"
+              },
+              "activeMembership": {
+                "type": "boolean",
+                "default": true
+              },
               "distinctFrom": {
                 "type": "array",
-                "items": { "type": "string" }
+                "items": {
+                  "type": "string"
+                }
+              },
+              "allowSuperuser": {
+                "type": "boolean",
+                "default": false
+              },
+              "emptyBasket": {
+                "type": "boolean",
+                "default": false
               }
             }
           }
@@ -96,16 +142,47 @@
           "type": "object",
           "additionalProperties": {
             "type": "object",
-            "required": ["kind"],
+            "required": [
+              "kind"
+            ],
             "additionalProperties": false,
             "properties": {
-              "kind": { "type": "string" },
-              "office": { "type": "string" },
-              "ownedByDataset": { "type": "boolean", "default": true },
-              "minimumAvailable": { "type": "integer", "default": 0 },
-              "selection": { "type": "string", "default": "lowest-id" },
-              "state": { "type": "string" },
-              "id": { "type": "integer" }
+              "kind": {
+                "type": "string"
+              },
+              "office": {
+                "type": "string"
+              },
+              "ownedByDataset": {
+                "type": "boolean",
+                "default": true
+              },
+              "minimumAvailable": {
+                "type": "integer",
+                "default": 0
+              },
+              "selection": {
+                "type": "string",
+                "default": "lowest-id"
+              },
+              "state": {
+                "type": "string"
+              },
+              "id": {
+                "type": "integer"
+              },
+              "sameCompany": {
+                "type": "boolean"
+              },
+              "ledgerOpen": {
+                "type": "boolean"
+              },
+              "categoryContains": {
+                "type": "string"
+              },
+              "itemName": {
+                "type": "string"
+              }
             }
           }
         }
@@ -117,11 +194,15 @@
     },
     "matrix": {
       "type": "array",
-      "items": { "type": "object" }
+      "items": {
+        "type": "object"
+      }
     },
     "preconditions": {
       "type": "array",
-      "items": { "type": "object" }
+      "items": {
+        "type": "object"
+      }
     },
     "steps": {
       "type": "array",
@@ -132,20 +213,36 @@
     },
     "postconditions": {
       "type": "array",
-      "items": { "type": "object" }
+      "items": {
+        "type": "object"
+      }
     },
     "cleanup": {
       "type": "object",
-      "required": ["policy"],
+      "required": [
+        "policy"
+      ],
       "additionalProperties": false,
       "properties": {
         "policy": {
           "type": "string",
-          "enum": ["no-business-records-created", "supported-actions", "retained-with-report"]
+          "enum": [
+            "no-business-records-created",
+            "supported-actions",
+            "retained-with-report"
+          ]
         },
         "actions": {
           "type": "array",
-          "items": { "type": "object" }
+          "items": {
+            "type": "object"
+          }
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
         }
       }
     }

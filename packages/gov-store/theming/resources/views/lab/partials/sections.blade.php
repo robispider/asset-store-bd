@@ -9,6 +9,7 @@
     $sample = $bengali ? $fixtures->bengaliSample() : $fixtures->englishSample();
     $lines = $fixtures->receiptLines();
     $total = array_sum(array_map(fn ($l) => $l['qty'] * $l['rate'], $lines));
+    $monitoring = $fixtures->monitoring();
 @endphp
 
 {{-- 1 · Colour --}}
@@ -423,6 +424,12 @@
                     </div>
                     <p><x-gs::trail :items="[['label' => 'Dhaka Division', 'bn' => 'ঢাকা বিভাগ'], 'Dhaka District', 'Savar Upazila']" /></p>
                 </x-gs::box>
+                <x-gs::box title="Code segments">
+                    {{-- Inline @php only: this partial already uses the inline form above. --}}
+                    @php($labSegments = [['value' => '09', 'label' => 'Group', 'tone' => 'primary'], ['value' => '08', 'label' => 'Subgroup', 'tone' => 'primary'], ['value' => '09', 'label' => 'Item', 'tone' => 'primary'], ['value' => '1026', 'label' => 'Month', 'tone' => 'info'], ['value' => '01', 'label' => 'Location', 'tone' => 'success'], ['value' => '09', 'label' => 'Division', 'tone' => 'success']])
+                    <x-gs::code-segments :segments="array_merge($labSegments, [['value' => '····', 'label' => 'Sequence', 'tone' => 'muted', 'pending' => true]])" label="Govt. Tag preview" />
+                    <p><x-gs::code-segments size="sm" :segments="array_merge($labSegments, [['value' => '0001', 'label' => 'Sequence', 'tone' => 'warning']])" label="090809102601090001" /></p>
+                </x-gs::box>
             </div>
         </div>
     @endunless
@@ -466,4 +473,16 @@
     @else
         <x-gs::table :columns="[['key' => 'level', 'label' => 'Level'], ['key' => 'check', 'label' => 'Check'], ['key' => 'message', 'label' => 'Message']]" :rows="$modeIssues" density="compact" />
     @endif
+</section>
+
+<section class="gs-lab-section" data-lab-section="monitoring" aria-labelledby="{{ $panel }}-monitoring">
+    <h3 class="gs-lab-section__title" id="{{ $panel }}-monitoring">{{ __('gs-theme::kit.monitoring') }}</h3>
+    <x-gs::pace-bar :value="42" :expected="55" :label="__('gs-theme::kit.delivered')" />
+    <x-gs::attention-list :items="$monitoring['attention']" />
+    <x-gs::status-callout status="behind" :verdict="__('gs-theme::kit.attention')" :next="__('gs-theme::kit.next')" forecast="2027-06-30" />
+    <x-gs::tile-map :tiles="$monitoring['tiles']" />
+    <x-gs::price-strip :prices="$monitoring['prices']" />
+    <x-gs::lifecycle :steps="$monitoring['steps']" />
+    <x-gs::scope-why :reasons="[__('gs-theme::kit.scope')]" />
+    <x-gs::level-switch :options="[['label'=>__('gs-theme::kit.level'),'locked'=>true,'reason'=>__('gs-theme::kit.scope')]]" />
 </section>

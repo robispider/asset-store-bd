@@ -450,6 +450,7 @@ return [
         GovStore\Metadata\Providers\MetadataServiceProvider::class,
         GovStore\Tracking\Providers\TrackingServiceProvider::class,
         GovStore\Committee\Providers\CommitteeServiceProvider::class,
+        GovStore\AssetTagging\Providers\AssetTaggingServiceProvider::class,
 
 
     ],

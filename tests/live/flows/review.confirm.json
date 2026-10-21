@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "review.confirm",
+  "title": "National change review: the frozen change is shown, then confirmed with a reason and the typed word CHANGE",
+  "params": {
+    "reason": { "type": "string", "required": true }
+  },
+  "steps": [
+    { "action": "wait", "target": "tagging.reviewToken", "state": "attached" },
+    { "action": "assert", "target": "tagging.reviewConfirm", "test": "invalid", "note": "The typed confirmation is required" },
+    { "action": "fill", "target": "tagging.reviewReason", "value": "${params.reason}" },
+    { "action": "fill", "target": "tagging.reviewConfirm", "value": "change" },
+    { "action": "assert", "target": "tagging.reviewConfirm", "test": "invalid", "note": "Only the exact word CHANGE confirms" },
+    { "action": "fill", "target": "tagging.reviewConfirm", "value": "CHANGE" },
+    { "action": "assert", "target": "tagging.reviewConfirm", "test": "valid" },
+    { "action": "submitForm", "target": "tagging.reviewSubmit", "expectStatus": [200], "note": "The confirmed change returns to a working page, not an error" },
+    { "action": "assert", "target": "tagging.reviewToken", "test": "count", "equals": 0, "note": "The review page has gone: the change was applied" }
+  ]
+}

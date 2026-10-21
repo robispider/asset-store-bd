@@ -1,0 +1,67 @@
+{
+  "status": "source_review_findings_not_authoritative_corrections",
+  "scope_note": "Known findings only; not an exhaustive semantic review of all source items.",
+  "issues": [
+    {
+      "id": "SOURCE-01",
+      "description": "Furniture group is 05 in group list but 03 in worked example",
+      "pdf_pages": [
+        89,
+        99
+      ],
+      "blocks": "use_of_worked_example_as_authority",
+      "decision": "D02"
+    },
+    {
+      "id": "SOURCE-02",
+      "description": "Table subgroup is 08 in code list/Annexure 5 but 01 and item 19 Employee Table in worked example",
+      "pdf_pages": [
+        91,
+        99,
+        106
+      ],
+      "blocks": "use_of_worked_example_as_authority",
+      "decision": "D02"
+    },
+    {
+      "id": "SOURCE-03",
+      "description": "Group 11 subgroup 23 has both HUB and Server source labels",
+      "pdf_pages": [
+        110
+      ],
+      "affected_item_keys": [
+        "112331",
+        "112332"
+      ],
+      "blocks": "affected_subgroup_and_items",
+      "decision": "D02"
+    },
+    {
+      "id": "SOURCE-04",
+      "description": "Questionable source pairings: Pond / IPS Rack and Land Improvement entries for sensors, Farming land, IPS Rack and Parks",
+      "pdf_pages": [
+        103
+      ],
+      "affected_item_keys": [
+        "010606",
+        "020404",
+        "020405",
+        "020506",
+        "020607",
+        "020708"
+      ],
+      "blocks": "affected_items_pending_semantic_review",
+      "decision": "D02"
+    }
+  ],
+  "resolved_derived_corrections": [
+    {
+      "description": "18-digit segment total and worked example previously described as 16 digits in derived documentation",
+      "pdf_pages": [
+        88,
+        99
+      ],
+      "status": "derived_description_corrected_source_values_preserved"
+    }
+  ]
+}

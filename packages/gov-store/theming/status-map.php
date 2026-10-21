@@ -3,6 +3,17 @@
 // Single source for badge and stepper semantics: status → token tone + Font Awesome icon.
 // Labels are translated through gs-theme::appearance.status.<key>.
 return [
+    'on_pace' => ['tone' => 'success', 'icon' => 'fa-check'],
+    'behind' => ['tone' => 'warning', 'icon' => 'fa-clock'],
+    'stalled' => ['tone' => 'danger', 'icon' => 'fa-pause'],
+    'over_allocation' => ['tone' => 'danger', 'icon' => 'fa-triangle-exclamation'],
+    'complete' => ['tone' => 'success', 'icon' => 'fa-check'],
+    'in_progress' => ['tone' => 'info', 'icon' => 'fa-truck'],
+    'waiting' => ['tone' => 'warning', 'icon' => 'fa-hourglass-half'],
+    'no_target' => ['tone' => 'status-archived', 'icon' => 'fa-circle-info'],
+    'critical' => ['tone' => 'danger', 'icon' => 'fa-circle-exclamation'],
+    'serious' => ['tone' => 'danger', 'icon' => 'fa-triangle-exclamation'],
+
     // Documents
     'draft' => ['tone' => 'doc-draft', 'icon' => 'fa-pen'],
     'ready' => ['tone' => 'doc-ready', 'icon' => 'fa-circle-check'],

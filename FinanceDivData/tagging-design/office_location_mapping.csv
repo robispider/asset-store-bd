@@ -1,0 +1,15 @@
+source_example_code,source_example_label,source_pdf_page,company_id,office_location_id,actual_registration_location_name,effective_from,order_reference,approved_code,approval_status
+01,Head Office,98,,,,,,,unmapped_source_example_not_live_organization
+02,Warehouse,98,,,,,,,unmapped_source_example_not_live_organization
+03,Data Center – 01,98,,,,,,,unmapped_source_example_not_live_organization
+04,Data Center – 02,98,,,,,,,unmapped_source_example_not_live_organization
+05,Regional Office – Chittagong,98,,,,,,,unmapped_source_example_not_live_organization
+06,Regional Office – Cumilla,98,,,,,,,unmapped_source_example_not_live_organization
+07,Regional Office – Barisal,98,,,,,,,unmapped_source_example_not_live_organization
+08,Regional Office – Sylhet,98,,,,,,,unmapped_source_example_not_live_organization
+09,Regional Office – Rangpur,98,,,,,,,unmapped_source_example_not_live_organization
+10,Regional Office – Khulna,98,,,,,,,unmapped_source_example_not_live_organization
+11,Regional Office – Mymensingh,98,,,,,,,unmapped_source_example_not_live_organization
+12,Regional Office - Bogura,98,,,,,,,unmapped_source_example_not_live_organization
+13,Sub Office - 1,98,,,,,,,unmapped_source_example_not_live_organization
+14,Sub Office – 2 (Please add more if any or if required),98,,,,,,,unmapped_source_example_not_live_organization

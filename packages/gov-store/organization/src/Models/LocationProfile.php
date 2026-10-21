@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class LocationProfile extends Model
 {
+    public const OFFICE_LEVELS = ['headquarters', 'regional', 'divisional', 'district', 'upazila'];
+
     protected $table = 'gov_location_profiles';
 
     protected $fillable = [
@@ -18,6 +20,7 @@ class LocationProfile extends Model
         'location_id',
         'geo_area_id',
         'office_type',
+        'office_level',
         'office_admin_id',
         'lifecycle_status',
         'geo_area_verified_at',

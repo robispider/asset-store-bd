@@ -1,0 +1,491 @@
+entry_key,group_code,subgroup_code,item_code,item_name,subgroup_name_source,abbreviation_source,source_pdf_page,source_manual_page,review_status,blocking_issue_ids,source_sha256
+010101,01,01,01,Land Property,Freehold land,L,103,101,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+010202,01,02,02,Land held under lease,Leasehold Land,L,103,101,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+010303,01,03,03,Factory land,Industrial Land,L,103,101,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+010404,01,04,04,"Mall, shop land",Commercial Land,L,103,101,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+010505,01,05,05,Farming land,Agricultural land,L,103,101,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+010606,01,06,06,IPS Rack,Pond,L,103,101,blocked_source_review,SOURCE-04,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+010707,01,07,07,Parks,Recreational land,L,103,101,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+010808,01,08,08,Forest land,Land with Timber rights,L,103,101,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+020101,02,01,01,Boundary on Free Land,Boundary Wall,LI,103,101,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+020202,02,02,02,Lands near river,Embankment,LI,103,101,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+020303,02,03,03,Concrete flood walls,Flood Embankment,LI,103,101,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+020404,02,04,04,Water level sensors,Pond Excavation,LI,103,101,blocked_source_review,SOURCE-04,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+020405,02,04,05,Flow meters,Pond Excavation,LI,103,101,blocked_source_review,SOURCE-04,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+020506,02,05,06,Farming land,Sewerage & Drainage,LI,103,101,blocked_source_review,SOURCE-04,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+020607,02,06,07,IPS Rack,Signage,LI,103,101,blocked_source_review,SOURCE-04,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+020708,02,07,08,Parks,Store yard,LI,103,101,blocked_source_review,SOURCE-04,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+030101,03,01,01,Office Building,Office Building,B,103,101,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+030202,03,02,02,Residential Quarters,Residential Building,B,103,101,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+030303,03,03,03,Network Tower,Network Tower,B,103,101,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+030404,03,04,04,Terminal Building,Terminal Building,B,103,101,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+030505,03,05,05,Factory Building,Factory Building,B,103,101,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+030606,03,06,06,Cargo and Passenger sheds,Cargo and Passenger Sheds,B,103,101,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040101,04,01,01,Diesel Engine,Diesel Generator,P&M,103,101,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040202,04,02,02,Cutter Suction Dredger,Dredgers,P&M,103,101,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040203,04,02,03,Bucket Ladder Dredger,Dredgers,P&M,103,101,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040204,04,02,04,Backhoe Dredger,Dredgers,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040305,04,03,05,Heavy Equipment,Equipment,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040406,04,04,06,CNC machines,Factory Equipment,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040407,04,04,07,Textiles looms,Factory Equipment,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040408,04,04,08,Conveyor belts,Factory Equipment,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040409,04,04,09,Mixers and blenders,Factory Equipment,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040410,04,04,10,Blowers & Compressors,Factory Equipment,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040411,04,04,11,Cranes and hoists,Factory Equipment,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040412,04,04,12,Air Compressors,Factory Equipment,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040413,04,04,13,Custom molds,Factory Equipment,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040414,04,04,14,Industrial cabinets,Factory Equipment,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040515,04,05,15,Diesel Generators,Generator,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040516,04,05,16,Natural Gas Generators,Generator,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040517,04,05,17,Solar Power Generators,Generator,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040518,04,05,18,Portable Generators,Generator,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040519,04,05,19,Inverter Generators,Generator,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040620,04,06,20,Analytical Instruments,Laboratory Equipment,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040621,04,06,21,General Lab Equipment,Laboratory Equipment,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040622,04,06,22,Data & Monitoring systems,Laboratory Equipment,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040623,04,06,23,Specialized Equipment,Laboratory Equipment,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040624,04,06,24,Measuring & Testing Equipment,Laboratory Equipment,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040725,04,07,25,CNC machines,Machinery and Equipment,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040726,04,07,26,Welding Machines,Machinery and Equipment,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040727,04,07,27,Presses,Machinery and Equipment,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040728,04,07,28,Conveyors,Machinery and Equipment,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040729,04,07,29,Injection Molding Machine,Machinery and Equipment,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040730,04,07,30,Labeling Machines,Machinery and Equipment,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040731,04,07,31,Assembly Line Equipment,Machinery and Equipment,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040732,04,07,32,Cutting Machines,Machinery and Equipment,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040833,04,08,33,Generators,Power House,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040834,04,08,34,Motors & Pumps,Power House,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040835,04,08,35,Boilers,Power House,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040836,04,08,36,Control Panels,Power House,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040837,04,08,37,Power Distribution Boards,Power House,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040938,04,09,38,Transformers,Power Plant,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040939,04,09,39,Switchgear and Circuit Breakers,Power Plant,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040940,04,09,40,Electrical Panel,Power Plant,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040941,04,09,41,Meters and Sensors,Power Plant,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+040942,04,09,42,Battery Banks and UPS,Power Plant,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+041043,04,10,43,Milling Machines,Production Machinery,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+041044,04,10,44,Lathes,Production Machinery,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+041045,04,10,45,Printing Machines,Production Machinery,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+041046,04,10,46,Mixing and Blending Machine,Production Machinery,P&M,104,102,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+041047,04,10,47,Extruders,Production Machinery,P&M,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+041048,04,10,48,Press Machine,Production Machinery,P&M,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+041049,04,10,49,Cutting Machine,Production Machinery,P&M,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+041150,04,11,50,Seismographs,Seismic and Toll Equipment,P&M,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+041151,04,11,51,Geophones,Seismic and Toll Equipment,P&M,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+041152,04,11,52,Electronic Toll Collection Readers,Seismic and Toll Equipment,P&M,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+041153,04,11,53,Toll Booths,Seismic and Toll Equipment,P&M,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+041154,04,11,54,Ticket Dispensers,Seismic and Toll Equipment,P&M,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+041155,04,11,55,Payment Terminals,Seismic and Toll Equipment,P&M,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+041156,04,11,56,Toll Plaza Barriers/gates,Seismic and Toll Equipment,P&M,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+041257,04,12,57,Power Transformer,Transformer,P&M,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+041258,04,12,58,Distribution Transfer,Transformer,P&M,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+041259,04,12,59,Instrument Transformer,Transformer,P&M,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+041260,04,12,60,Auto Transformer,Transformer,P&M,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+041261,04,12,61,Isolation Transformer,Transformer,P&M,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+041262,04,12,62,Dry-type Transformer,Transformer,P&M,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050101,05,01,01,Almirah,Almirah,F&F,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050202,05,02,02,Table Side Cabinet,Cabinet,F&F,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050203,05,02,03,Cabinet,Cabinet,F&F,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050204,05,02,04,Wall Cabinet,Cabinet,F&F,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050205,05,02,05,Wall Low Cabinet,Cabinet,F&F,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050206,05,02,06,Bookshelf,Cabinet,F&F,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050207,05,02,07,Wall High Cabinet,Cabinet,F&F,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050308,05,03,08,Plastic Chair,Chair,F&F,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050309,05,03,09,Revolving Armless Chair,Chair,F&F,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050310,05,03,10,Revolving Arm Chair,Chair,F&F,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050311,05,03,11,Revolving Arm HOD Chair,Chair,F&F,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050312,05,03,12,Revolving Lobby Chair,Chair,F&F,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050313,05,03,13,Security Chair,Chair,F&F,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050414,05,04,14,Drawer Cabinet Box,Drawer Cabinet Box,F&F,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050515,05,05,15,Foot Rest,Foot Rest,F&F,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050616,05,06,16,Rack,Rack,F&F,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050717,05,07,17,Sofa,Sofa,F&F,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050718,05,07,18,Customer Care Table,Sofa,F&F,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050719,05,07,19,Conference Table,Sofa,F&F,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050720,05,07,20,Employee Table,Sofa,F&F,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050721,05,07,21,Executive Table,Sofa,F&F,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050722,05,07,22,Front Desk Table,Sofa,F&F,105,103,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050823,05,08,23,Kitchen Table,Table,F&F,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050824,05,08,24,Meeting Table,Table,F&F,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050825,05,08,25,Restaurant Table,Table,F&F,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050826,05,08,26,Secretariat Table,Table,F&F,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050827,05,08,27,Tea Table,Table,F&F,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050828,05,08,28,Equipment Table,Table,F&F,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050829,05,08,29,Security Table,Table,F&F,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050830,05,08,30,Side Table,Table,F&F,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050831,05,08,31,Printer Table,Table,F&F,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050832,05,08,32,Round Table,Table,F&F,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050833,05,08,33,Trolley Table,Table,F&F,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050934,05,09,34,Round Tool,Tool,F&F,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050935,05,09,35,Revolving Round Tool,Tool,F&F,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050936,05,09,36,Sofa Tool,Tool,F&F,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+050937,05,09,37,Tool,Tool,F&F,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+051038,05,10,38,Trolley,Trolley,F&F,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+051139,05,11,39,Ladder,Ladder,F&F,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+051240,05,12,40,Siting bench,Bench,F&F,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+051341,05,13,41,Partitions,Plywood Board,F&F,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060101,06,01,01,Paintings and Wall Arts,Wall Decoration,D&R,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060102,06,01,02,Framed Posters,Wall Decoration,D&R,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060103,06,01,03,Wall Clocks,Wall Decoration,D&R,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060104,06,01,04,3D Wall Panels,Wall Decoration,D&R,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060105,06,01,05,Shelve with Décor Pieces,Wall Decoration,D&R,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060206,06,02,06,LED Strips lights,Lighting,D&R,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060207,06,02,07,Pendant light,Lighting,D&R,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060208,06,02,08,Chandeliers,Lighting,D&R,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060209,06,02,09,Floor Lamps,Lighting,D&R,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060210,06,02,10,Table Lamps,Lighting,D&R,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060311,06,03,11,Indoor Plants,Natural Elements,D&R,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060312,06,03,12,Hanging Planters,Natural Elements,D&R,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060313,06,03,13,Bonsai,Natural Elements,D&R,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060314,06,03,14,Flower Vases,Natural Elements,D&R,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060415,06,04,15,Cushions,Furniture Decoration,D&R,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060416,06,04,16,Table Runners,Furniture Decoration,D&R,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060417,06,04,17,Poufs or Ottomans,Furniture Decoration,D&R,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060418,06,04,18,Reception Counters,Furniture Decoration,D&R,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060419,06,04,19,Centerpieces,Furniture Decoration,D&R,106,104,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060520,06,05,20,Doors,Fixtures and Fittings,D&R,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060521,06,05,21,Windows,Fixtures and Fittings,D&R,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060522,06,05,22,Curtains,Fixtures and Fittings,D&R,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060523,06,05,23,Carpets,Fixtures and Fittings,D&R,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060624,06,06,24,Countertops,Kitchen Renovation,D&R,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060625,06,06,25,Kitchen Sinks,Kitchen Renovation,D&R,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060626,06,06,26,Cabinets,Kitchen Renovation,D&R,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060627,06,06,27,Chimneys & Hoods,Kitchen Renovation,D&R,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060628,06,06,28,Backsplashes,Kitchen Renovation,D&R,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060729,06,07,29,Switchboards,Electrical & Smart Assets,D&R,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060730,06,07,30,Smart Switches,Electrical & Smart Assets,D&R,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060731,06,07,31,Security Cameras,Electrical & Smart Assets,D&R,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060732,06,07,32,Intercom systems,Electrical & Smart Assets,D&R,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060833,06,08,33,Tiles,Flooring,D&R,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060834,06,08,34,Vinyl Flooring,Flooring,D&R,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060835,06,08,35,Laminate,Flooring,D&R,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+060836,06,08,36,Hardwood,Flooring,D&R,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+070101,07,01,01,Binding Machine,Binding Machine,OE,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+070202,07,02,02,Blender Machine,Blender Machine,OE,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+070303,07,03,03,Exhausted Fan,Exhausted Fan,OE,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+070404,07,04,04,Fire Ball,Fire Ball,OE,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+070505,07,05,05,Fire Extinguisher,Fire Extinguisher,OE,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+070606,07,06,06,Hand Mike,Hand Mike,OE,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+070707,07,07,07,Hanging Clock,Clock,OE,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+070708,07,07,08,Wall Clock,Clock,OE,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+070809,07,08,09,Generator,Generator,OE,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+070910,07,09,10,Juicer Machine,Juicer Machine,OE,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+071011,07,10,11,Locker,Locker,OE,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+071112,07,11,12,Water Filter Machine,Water Filter Machine,OE,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+071213,07,12,13,Vacuum Cleaner,Vacuum Cleaner,OE,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+071314,07,13,14,IP Phone,IP Phone,OE,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+071415,07,14,15,Coffee Machine,Coffee Machine,OE,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+071516,07,15,16,Weight Machine,Weight Machine,OE,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+071617,07,16,17,Sewing Machine,Sewing Machine,OE,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+071718,07,17,18,QR Code Scanner,QR Code Scanner,OE,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+071819,07,18,19,Barcode Scanner,Barcode Scanner,OE,107,105,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+080101,08,01,01,Air Conditioner,Air Conditioner,EE,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+080202,08,02,02,Air Purifier,Air Purifier,EE,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+080303,08,03,03,Electric Kettle,Electric Kettle,EE,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+080404,08,04,04,Wall Fan,Fan,EE,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+080405,08,04,05,Stand Fan,Fan,EE,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+080406,08,04,06,Cooling Fan,Fan,EE,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+080407,08,04,07,Table Fan,Fan,EE,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+080408,08,04,08,Ceiling Fan,Fan,EE,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+080509,08,05,09,Microwave Oven,Oven,EE,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+080610,08,06,10,Access Control,Access Control,EE,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+080711,08,07,11,CC Camera,CC Camera,EE,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+080812,08,08,12,Projector,Projector,EE,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+080913,08,09,13,CC Camera Machine,CC Camera Machine,EE,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+081014,08,10,14,CC Camera Set Up Box,CC Camera Set Up Box,EE,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+081115,08,11,15,Paper Shredder,Paper Shredder,EE,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+081216,08,12,16,Refrigerator,Refrigerator,EE,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+081317,08,13,17,Electric Heater,Electric Heater,EE,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+081418,08,14,18,Sound Speaker,Sound Speaker,EE,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+081519,08,15,19,Hardware,External Hard disk & SSD,EE,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+081620,08,16,20,Television,Television,EE,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+090101,09,01,01,Printer,Printer,C,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+090102,09,01,02,Printer & Photocopy Machine,Printer,C,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+090203,09,02,03,IPS & UPS Box,IPS & UPS Box,C,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+090304,09,03,04,UPS,UPS,C,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+090405,09,04,05,IPS Battery,IPS Battery,C,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+090506,09,05,06,IPS,IPS,C,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+090607,09,06,07,IPS Rack,IPS Rack,C,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+090708,09,07,08,Desktop Computer,Desktop Computer,C,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+090809,09,08,09,Laptop,Laptop,C,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+090910,09,09,10,Scanner,Scanner,C,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+091011,09,10,11,Monitor,Monitor,C,108,106,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+100101,10,01,01,Jeep,Jeep,MV,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+100202,10,02,02,Motor Cycle,Motor Cycle,MV,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+100303,10,03,03,Car,Car,MV,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+100404,10,04,04,Microbus,Microbus,MV,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+100505,10,05,05,Bus,Bus,MV,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+100606,10,06,06,Crane,Crane,MV,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+100707,10,07,07,Water Tank,Water Tank,MV,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+100808,10,08,08,Dumper Truck,Dumper Truck,MV,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+100909,10,09,09,Excavator,Excavator,MV,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+101010,10,10,10,Bulldozer,Bulldozer,MV,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+101111,10,11,11,Road Roller,Road Roller,MV,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+101212,10,12,12,Fire Truck,Fire Truck,MV,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+101313,10,13,13,Floating Cranes,Floating Cranes,MV,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+101414,10,14,14,Lorries,Lorries,MV,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+101515,10,15,15,Tractor,Tractor,MV,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+101616,10,16,16,Trailer,Trailer,MV,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+110101,11,01,01,Automatic Transfer Switch (ATS),Automatic Transfer Switch (ATS),N&IT,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+110202,11,02,02,Battery Bank Case,Battery Bank Case,N&IT,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+110303,11,03,03,DB Box,DB Box,N&IT,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+110404,11,04,04,Battery Bank Rack,Battery Bank Rack,N&IT,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+110505,11,05,05,Load Balancer,Load Balancer,N&IT,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+110606,11,06,06,"Protect Server Network, HSM","Protect Server Network, HSM",N&IT,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+110707,11,07,07,Network Switch,Switch,N&IT,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+110708,11,07,08,SAN Switch,Switch,N&IT,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+110709,11,07,09,ACI Spine Switch,Switch,N&IT,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+110710,11,07,10,ACI Network Switch,Switch,N&IT,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+110711,11,07,11,ACI Leaf Switch,Switch,N&IT,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+110712,11,07,12,SW Switch,Switch,N&IT,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+110713,11,07,13,Kum Switch,Switch,N&IT,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+110814,11,08,14,DWDM,Dense Wavelength Division Multiplexing (DWDM),N&IT,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+110915,11,09,15,Firewall,Firewall,N&IT,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+111016,11,10,16,Fire Power,Fire Power,N&IT,109,107,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+111117,11,11,17,Maintenance-Free Sealed Lead Acid Battery with Controller,Maintenance-Free Sealed Lead Acid Battery with Controller,N&IT,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+111218,11,12,18,Mass Storage,Mass Storage,N&IT,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+111319,11,13,19,Online UPS,UPS,N&IT,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+111420,11,14,20,Patch Panel,Patch Panel,N&IT,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+111421,11,14,21,Copper Patch Panel,Patch Panel,N&IT,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+111422,11,14,22,Fiber Patch Panel,Patch Panel,N&IT,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+111523,11,15,23,Protect Server Network,Protect Server Network,N&IT,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+111624,11,16,24,Cable Manager,Cable Manager,N&IT,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+111725,11,17,25,APIC Controller,APIC Controller,N&IT,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+111826,11,18,26,IM Vision Controller,IM Vision Controller,N&IT,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+111927,11,19,27,NetApp Storage,NetApp Storage,N&IT,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+112028,11,20,28,DCIM,DCIM,N&IT,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+112129,11,21,29,FMC,Fixed Mobile Convergence (FMC),N&IT,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+112230,11,22,30,Server Network,Server Network,N&IT,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+112331,11,23,31,HUB,HUB,N&IT,110,108,blocked_source_review,SOURCE-03,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+112332,11,23,32,Server,Server,N&IT,110,108,blocked_source_review,SOURCE-03,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+112433,11,24,33,Router Board,Router Board,N&IT,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+112534,11,25,34,Kum Console,Kum Console,N&IT,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+112635,11,26,35,HNAS,HNAS,N&IT,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+112736,11,27,36,Wireless Controller,Wireless Controller,N&IT,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+112837,11,28,37,Router,Router,N&IT,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+112938,11,29,38,Server Rack,Rack,N&IT,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+112939,11,29,39,Storage Rack,Rack,N&IT,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+112940,11,29,40,Switch Rack,Rack,N&IT,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+113041,11,30,41,Access Point,Access Point,N&IT,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120101,12,01,01,Inverters,Domestic Appliances,T,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120102,12,01,02,Washing Machines,Domestic Appliances,T,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120103,12,01,03,Clothes Iron,Domestic Appliances,T,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120104,12,01,04,Hair Dryers,Domestic Appliances,T,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120205,12,02,05,Drawing Boards,Drawing Equipment,T,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120206,12,02,06,Drawing Pens,Drawing Equipment,T,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120207,12,02,07,Drawing Tubes,Drawing Equipment,T,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120208,12,02,08,Erases/Erasing shields,Drawing Equipment,T,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120209,12,02,09,Manual Sketching Kits,Drawing Equipment,T,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120210,12,02,10,Glass Etching Tools,Drawing Equipment,T,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120211,12,02,11,Vinyl Cutter,Drawing Equipment,T,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120212,12,02,12,Frosted Glass Panels,Drawing Equipment,T,110,108,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120313,12,03,13,Glass Design Templates,Frosting and designing,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120314,12,03,14,Sandblasting Equipment,Frosting and designing,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120315,12,03,15,Glass Engraving Machines,Frosting and designing,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120316,12,03,16,Laser Etching Equipment,Frosting and designing,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120417,12,04,17,Hammers,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120418,12,04,18,Screwdrivers,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120419,12,04,19,Pliers,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120420,12,04,20,Wrenches,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120421,12,04,21,Measuring Tapes,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120422,12,04,22,Utility Knives,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120423,12,04,23,Chisels,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120424,12,04,24,Clamps,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120425,12,04,25,Torque Wrenches,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120426,12,04,26,Grease Guns,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120427,12,04,27,Pipe Wrenches,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120428,12,04,28,Bearing Pullers,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120429,12,04,29,Oil Cans,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120430,12,04,30,Taps and dies,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120431,12,04,31,Testers,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120432,12,04,32,Wire Strippers,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120433,12,04,33,Crimping Tools,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120434,12,04,34,Insulation Tape & Tools,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120435,12,04,35,Hand Saws,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120436,12,04,36,Planers,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120437,12,04,37,Files and Rasps,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120438,12,04,38,Carpenter Squares,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120439,12,04,39,Mallets,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120440,12,04,40,Marking Gauges,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120441,12,04,41,Try Squares,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120442,12,04,42,Chalk Line Tools,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120443,12,04,43,Socket Sets,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120444,12,04,44,Hex Keys,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120445,12,04,45,Vernier Calipers,Loose tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120546,12,05,46,Blenders/Grinders,Kitchen Tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120547,12,05,47,Toasters/Sandwich Makers,Kitchen Tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120548,12,05,48,Rice Cookers,Kitchen Tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120549,12,05,49,Manual Sewing Machine,Kitchen Tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120550,12,05,50,Overlock Sewing Machine,Kitchen Tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120551,12,05,51,Embroidery Machine,Kitchen Tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120552,12,05,52,Buttonhole Machine,Kitchen Tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120553,12,05,53,Blind Stitch Machine,Kitchen Tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120554,12,05,54,Fabric Cutting Table,Kitchen Tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120555,12,05,55,Tailors Scissors/Shears,Kitchen Tools,T,111,109,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120656,12,06,56,Notcher & Hole Punch,Tailoring Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120657,12,06,57,Sewing Machine Stand/Table,Tailoring Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120658,12,06,58,Needle Set,Tailoring Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120659,12,06,59,Tailor Chalk/Marking Pens,Tailoring Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120660,12,06,60,Fabric Storage Racks,Tailoring Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120661,12,06,61,Cutting Machines,Tailoring Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120662,12,06,62,Stitch Counter,Tailoring Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120763,12,07,63,Insulation Resistance Tester,Testing Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120764,12,07,64,Multimeter,Testing Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120765,12,07,65,Clamp Meter,Testing Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120766,12,07,66,Earth Resistance Tester,Testing Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120767,12,07,67,High Voltage Test Set,Testing Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120768,12,07,68,Continuity Tester,Testing Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120769,12,07,69,Circuit Breaker Analyzer,Testing Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120770,12,07,70,Power Analyzer,Testing Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120771,12,07,71,Compression Testing Machine,Testing Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120772,12,07,72,Concrete Cube Molds,Testing Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120773,12,07,73,Slump Cone Test Kit,Testing Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120774,12,07,74,Bitumen Testing Apparatus,Testing Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120775,12,07,75,Soil Testing Equipment,Testing Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120776,12,07,76,Universal Testing Machine,Testing Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120777,12,07,77,Torque Tester,Testing Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120778,12,07,78,Vibration Analyzer,Testing Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120779,12,07,79,Oscilloscope,Testing Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120780,12,07,80,LCR Meter,Testing Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120781,12,07,81,Function Generator,Testing Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120782,12,07,82,Thermometers,Testing Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120783,12,07,83,pH Meter,Testing Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120784,12,07,84,Hygrometer,Testing Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120785,12,07,85,Anemometer,Testing Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120786,12,07,86,Water Quality Test Kit,Testing Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+120787,12,07,87,Air Quality Monitoring Devices,Testing Equipment,T,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+130101,13,01,01,Partition Walls,Structural & Interior Fittings,LI,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+130102,13,01,02,False Ceiling,Structural & Interior Fittings,LI,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+130103,13,01,03,Internal Doors & Frames,Structural & Interior Fittings,LI,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+130104,13,01,04,Soundproofing Panels,Structural & Interior Fittings,LI,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+130105,13,01,05,Lighting Fixtures & Fittings,Structural & Interior Fittings,LI,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+130106,13,01,06,Power Outlets,Structural & Interior Fittings,LI,112,110,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+130207,13,02,07,Electrical Wiring,Electrical & Lighting,LI,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+130208,13,02,08,Server Room Electrical Fit-out,Electrical & Lighting,LI,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+130209,13,02,09,Emergency Lights & Exit Signs,Electrical & Lighting,LI,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+130310,13,03,10,Fire Alarm System,Safety & Compliance,LI,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+130311,13,03,11,Smoke Detectors,Safety & Compliance,LI,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+130312,13,03,12,Fire Extinguisher cabinets,Safety & Compliance,LI,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+130313,13,03,13,CCTV Infrastructures,Safety & Compliance,LI,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140101,14,01,01,Roads & Pavements,Civil & Structural Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140102,14,01,02,Bridges & Culverts,Civil & Structural Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140103,14,01,03,Airports & Airstrips,Civil & Structural Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140104,14,01,04,Seaports & Inland River Ports,Civil & Structural Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140105,14,01,05,Bus Terminals,Civil & Structural Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140106,14,01,06,Ferry Terminals,Civil & Structural Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140107,14,01,07,Railway Station,Civil & Structural Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140108,14,01,08,Satellite Ground Stations,Civil & Structural Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140109,14,01,09,Mobile Network Towers,Civil & Structural Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140110,14,01,10,Toll Plaza,Civil & Structural Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140111,14,01,11,Border Check-posts,Civil & Structural Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140112,14,01,12,Underground Cable Trench,Civil & Structural Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140113,14,01,13,Drainage Systems,Civil & Structural Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140114,14,01,14,Water Reservoirs/Tanks,Civil & Structural Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140215,14,02,15,Power Distribution Network,Utilities Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140216,14,02,16,Transformers & Substations,Utilities Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140217,14,02,17,Electrical Duct Banks,Utilities Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140218,14,02,18,Water Supply Lines,Utilities Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140219,14,02,19,Wastewater Pipelines,Utilities Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140220,14,02,20,Telecommunication Ducting,Utilities Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140221,14,02,21,Gas Pipeline Network,Utilities Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140322,14,03,22,Compound Lighting,Building Support Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140323,14,03,23,Watch Towers,Building Support Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140324,14,03,24,Export Processing Zones,Building Support Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140325,14,03,25,Industrial Parks,Building Support Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140326,14,03,26,Government Warehouse & Cold Storage,Building Support Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140327,14,03,27,Internal Roadways & Footpaths,Building Support Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140328,14,03,28,Reticulated Systems,Building Support Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140329,14,03,29,Septic Tanks/Soak Pits,Building Support Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140330,14,03,30,Parking Areas/Carports,Building Support Infrastructure,I,113,111,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140431,14,04,31,Rail Sidings/Tracks,Transport/Access Infrastructure,I,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140432,14,04,32,Helipads/Taxiways,Transport/Access Infrastructure,I,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140433,14,04,33,Railway Tracks,Transport/Access Infrastructure,I,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140434,14,04,34,Mass Transit Systems,Transport/Access Infrastructure,I,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+140435,14,04,35,Loading Bays/Access Ramps,Transport/Access Infrastructure,I,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+150101,15,01,01,Airplane,Air Craft,A,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+150102,15,01,02,Turbojet Aircraft,Air Craft,A,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+150103,15,01,03,High Altitude,Air Craft,A,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+150104,15,01,04,Tail wheel,Air Craft,A,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+150105,15,01,05,Single Engine Land,Air Craft,A,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+150106,15,01,06,Single Engine Sea,Air Craft,A,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+150107,15,01,07,Multi Engine Land,Air Craft,A,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+150108,15,01,08,Multi Engine Sea,Air Craft,A,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+150109,15,01,09,JET,Air Craft,A,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+150110,15,01,10,Single Main-Rotor Helicopter,Air Craft,A,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+150111,15,01,11,Tandem Rotor Helicopter,Air Craft,A,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+150112,15,01,12,Coaxial Helicopter,Air Craft,A,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+150113,15,01,13,Compound Helicopter,Air Craft,A,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+150114,15,01,14,Tilt Rotor Helicopter,Air Craft,A,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+150115,15,01,15,Intermeshing Rotor Helicopter,Air Craft,A,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+150116,15,01,16,Tandem Rotor Helicopter,Air Craft,A,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+150117,15,01,17,Troop Carrier Helicopter,Air Craft,A,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+150218,15,02,18,Inter City Train,Train,A,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+150219,15,02,19,Rapid Transit Train,Train,A,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+150220,15,02,20,Metro Rail,Train,A,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+150221,15,02,21,Cargo Train,Train,A,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+150222,15,02,22,Passenger Carrier Train,Train,A,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+160101,16,01,01,Aircraft Carrier Ship,Vessels,V,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+160102,16,01,02,Submarines,Vessels,V,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+160103,16,01,03,Frigates,Vessels,V,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+160104,16,01,04,Corvettes,Vessels,V,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+160105,16,01,05,Patrol Vessels,Vessels,V,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+160106,16,01,06,Container Ship,Vessels,V,114,112,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+160107,16,01,07,Bulk Carrier,Vessels,V,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+160108,16,01,08,Fishing Vessels,Vessels,V,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+160109,16,01,09,General Cargo Ship,Vessels,V,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+160110,16,01,10,Reefer Ship,Vessels,V,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+160111,16,01,11,Tanker Ship,Vessels,V,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+160112,16,01,12,Passenger Carrier Ship,Vessels,V,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+160113,16,01,13,Yachts,Vessels,V,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+160114,16,01,14,Ferry,Vessels,V,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+160115,16,01,15,Coastal Patrol Boats,Vessels,V,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+160116,16,01,16,"Jetties, Slipways",Vessels,V,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+160117,16,01,17,Dredgers,Vessels,V,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+160118,16,01,18,Fishing Vessels,Vessels,V,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+160119,16,01,19,Speed Boats,Vessels,V,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+160120,16,01,20,"Tugs, Vessels & Launches",Vessels,V,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170101,17,01,01,Dinner Plates,Crockeries,O,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170102,17,01,02,Soup Bowls,Crockeries,O,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170103,17,01,03,Rice Bowls,Crockeries,O,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170104,17,01,04,Tea Cups & Saucers,Crockeries,O,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170105,17,01,05,Mugs,Crockeries,O,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170106,17,01,06,Glasses,Crockeries,O,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170107,17,01,07,Jugs & Pitchers,Crockeries,O,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170108,17,01,08,Cutlery,Crockeries,O,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170109,17,01,09,Tray Sets,Crockeries,O,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170110,17,01,10,Napkin Holders,Crockeries,O,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170111,17,01,11,Side Plates,Crockeries,O,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170212,17,02,12,Fire Extinguishers,Fire & Safety Equipment Gas Line,O,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170213,17,02,13,Fire Hose Reels,Fire & Safety Equipment Gas Line,O,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170214,17,02,14,Fire Dampers,Fire & Safety Equipment Gas Line,O,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170215,17,02,15,Fire Water Storage Tanks,Fire & Safety Equipment Gas Line,O,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170216,17,02,16,Fire Buckets,Fire & Safety Equipment Gas Line,O,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170217,17,02,17,Fire Blankets,Fire & Safety Equipment Gas Line,O,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170218,17,02,18,Fire Water Storage Tanks,Fire & Safety Equipment Gas Line,O,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170219,17,02,19,Fire Hydrants,Fire & Safety Equipment Gas Line,O,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170220,17,02,20,Stethoscopes,Fire & Safety Equipment Gas Line,O,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170221,17,02,21,Sphygmomanometers,Fire & Safety Equipment Gas Line,O,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170222,17,02,22,Pulse Oximeters,Fire & Safety Equipment Gas Line,O,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170223,17,02,23,Glucometers,Fire & Safety Equipment Gas Line,O,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170224,17,02,24,Syringe Pumps,Fire & Safety Equipment Gas Line,O,115,113,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170325,17,03,25,Dressing Sets,Medical Accessories,O,116,114,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170326,17,03,26,Bandage & Cotton Dispensers,Medical Accessories,O,116,114,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170327,17,03,27,Autoclave containers,Medical Accessories,O,116,114,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170328,17,03,28,Centrifuge Tubes and Racks,Medical Accessories,O,116,114,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170329,17,03,29,First Aid Kits,Medical Accessories,O,116,114,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170330,17,03,30,Thermal Boxes,Medical Accessories,O,116,114,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170431,17,04,31,Diesel Forklift,Forklifts,O,116,114,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170432,17,04,32,Electric Forklift,Forklifts,O,116,114,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170433,17,04,33,LPG Forklift,Forklifts,O,116,114,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170434,17,04,34,Rough Terrain Forklift,Forklifts,O,116,114,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170435,17,04,35,Pallet Stackers,Forklifts,O,116,114,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170436,17,04,36,Counterbalance Forklift,Forklifts,O,116,114,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170537,17,05,37,Sundry assets,Sundry Assets,O,116,114,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+170638,17,06,38,Other assets,Other assets,O,116,114,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+180101,18,01,01,SOES AND ABS domain,SOES AND ABS domain,I,116,114,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+180202,18,02,02,DFS platform hardware,DFS platform hardware,I,116,114,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+180303,18,03,03,ORACLE database,ORACLE database,I,116,114,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+180404,18,04,04,Operating Software,Software,I,116,114,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+180405,18,04,05,Application Software,Software,I,116,114,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+180406,18,04,06,Internet Banking Software,Software,I,116,114,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89
+180407,18,04,07,Mobile Banking Software,Software,I,116,114,pending_authority_review,,83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89

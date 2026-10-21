@@ -58,6 +58,38 @@ class CapabilityRegistry
         ],
     ];
 
+    /**
+     * Product types a capability is enforced for by default, beneath every profile layer
+     * (['issue_govt_tags' => ['assetmodel']]). Profile rules can still DISABLE it at any layer.
+     */
+    protected static array $defaults = [];
+
+    /**
+     * Register a capability from a package provider. The registry stays the single list the
+     * engine, the Rules admin and the simulator read.
+     */
+    public static function extend(string $code, string $class, array $dictionary = [], array $defaultFor = []): void
+    {
+        if (! is_subclass_of($class, CapabilityInterface::class)) {
+            throw new Exception("Capability [{$class}] must implement CapabilityInterface.");
+        }
+        self::$registry[$code] = $class;
+        if ($dictionary) {
+            self::$dictionary[$code] = $dictionary;
+        }
+        if ($defaultFor) {
+            self::$defaults[$code] = array_values(array_unique(array_map('strtolower', $defaultFor)));
+        }
+    }
+
+    /** Default-enforced capability codes for a product type ('assetmodel', 'asset_model' or a class name). */
+    public static function defaultsFor(string $productType): array
+    {
+        $type = strtolower(str_replace('_', '', class_basename($productType)));
+
+        return array_keys(array_filter(self::$defaults, fn ($types) => in_array($type, $types, true)));
+    }
+
     public static function make(string $code): CapabilityInterface
     {
         if (!isset(self::$registry[$code])) {
@@ -84,8 +116,9 @@ class CapabilityRegistry
     {
         $dictionary = self::$dictionary;
         foreach ($dictionary as $code => &$entry) {
-            $entry['name'] = __('storeops::rules.'.$code.'_name');
-            $entry['desc'] = __('storeops::rules.'.$code.'_desc');
+            // Package capabilities carry their own translation keys.
+            $entry['name'] = __($entry['name_key'] ?? 'storeops::rules.'.$code.'_name');
+            $entry['desc'] = __($entry['desc_key'] ?? 'storeops::rules.'.$code.'_desc');
         }
         return $dictionary;
     }

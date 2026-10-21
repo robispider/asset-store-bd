@@ -1,0 +1,54 @@
+{
+  "as_of": "2026-10-15",
+  "status": "provisional_design_data_not_importable_production_bundle",
+  "generated_by": "prepare_design_data.py --write",
+  "input_sha256": {
+    "Policy and Procedure Manual for Property, Plant, Equipment and Other Assets finance division.pdf": "83d798aff269704393f275f7af8fcd162f8dd69d61145f0469261c0fceb36b89",
+    "FinanceDivData/asset_code_catalog.csv": "f0fcd4e41e293d17c10f82b5bfd55565c0ccbfd82df19c5e0410e9237834b37b",
+    "FinanceDivData/group_codes.csv": "bc6ba2d4f6894dde2076b136030aa1fd48caf4011039cca203945da4a8afe807",
+    "FinanceDivData/location_codes.csv": "dcc5a45bcccc68d247cc8f45cc1ca8a83976c6dcafc758d00d3cf7a52604e454",
+    "FinanceDivData/division_codes.csv": "742dfccfcacf8148c6f7186bc90ff5d299c94228a58c2ca6dee4778595698828",
+    "FinanceDivData/tagging_specification.json": "465229268ce978f5b03fd7c5e151d3bcc06c8bc5abae4ad3903cf7c12d075a1e",
+    "packages/gov-store/classification/src/Database/data/compiled_nodes.csv": "bb2aac5e760b9418727cc0ea5cd64dd56c2b7d0691edee09beaec223033f1224",
+    "packages/gov-store/asset-tagging/config/tagging-policy.proposed.json": "5cd3d5de9642cd597be95a2f9940c321f7501cec4dc92b89b3a7e8ffbd04f0b2",
+    "packages/gov-store/asset-tagging/contracts/receipt-unit.schema.json": "4e2b128f46eaa968a539d923b9d0bc2e0e5de1e504cb74619a307e2e852d97f3",
+    "packages/gov-store/asset-tagging/contracts/product-default.schema.json": "9cbce56ae25bfece012860e111226ff0d0ebb1f5e48c29176a886770d133bf33",
+    "packages/gov-store/asset-tagging/data-model.json": "a11b26076e5b84c20e2b3c3a81f58ee3169a04312bd072256eede519228b6785",
+    "FinanceDivData/tagging-design/prepare_design_data.py": "16ed75a2700ceabe96cc5c72e1771738261b1f5019bb7136bb2364454b0e4269"
+  },
+  "generated_file_sha256": {
+    "administrative_division_mapping.csv": "6b54e062f9851f9561968bc11337208a9a53d0637e68f60add51ba7c5635df05",
+    "field-requirements.csv": "c029f556669c3b59e70a887a1e7f598e0dd3a8df1a4906a3ac6f6fdf8aa71f4a",
+    "finance_groups.csv": "d48416c37ab9f27ee1af677caa53d73fd295f46905611b66414ffff16eff91f9",
+    "finance_items.csv": "bd05ed508f38cd5bfd82845124627742c7bbf49461c879ebced19487873841f5",
+    "finance_items.import-draft.csv": "72b9884f55b7e58c2c31bc7f003980a5ed2d101009a222f8631f188758895714",
+    "finance_subgroups.csv": "cce798b3b21d7601243ad6d0a868d261a2cd5b91718706a5a1ab18f07274ed5c",
+    "finance_unspsc_review.csv": "d76f55c4cf49560dbc7186e50b71296dcd5dd32c99867dd9f4cc45432f11bfb2",
+    "format-examples.json": "c1addaa5f4abe4fc1b0fab9ada4784342a00b977ed5802d6616535f9c1593e31",
+    "legacy_reconciliation.csv": "84ca5d1d0b5f7bf374c75a0ecc8cb7dad1d1c81abb8d0019cf2d35b21e789840",
+    "office_location_mapping.csv": "54de1fc53c0aa2dc78fa59aa8f896a742292f12bc9e93e77e00fcdbe7ead9bea",
+    "organization_onboarding.csv": "f735bff188f6f4a0f5c3de30b5900239ecfcd0f796b5c614fe97f3d57821ce68",
+    "policy-decisions.csv": "75e9b6ef930987dc718116415bcdcf51ad67950953f6d1c32d7f8b717f0605fe",
+    "product_type_finance_mapping.csv": "58f59d8a00f2ca15264cc129710195d4f2ffcdc5a1a0dca7ae4c923fcc5a0b9f",
+    "receipt-unit.example.json": "e936e91b087f061b1b623ab373b4cb8c9d7315550ee51c415bd8d90702a1219d",
+    "receipt_unit_intake.csv": "7320535c178292c68c0e831f1951d7751f370e2ce28d30116670911e6b109be2",
+    "source-issues.json": "0817a017ff8e184a85bf9f54587ff5c44046ed7f0fceca3e0489756c325515d5",
+    "unspsc_candidates.csv": "3c559cc309a446ba61705bd911387bab3208da699fad5fd0a837bb03c353afd2",
+    "validation-report.json": "229790dbfe4b40f078f43a3b17fe54b667bfa5c13f0d1669104efa48dd1baccc"
+  },
+  "csv_convention": "UTF-8, comma separated, all identifiers/codes are strings; import as text to preserve zeros",
+  "upstream_sources_checked": [
+    {
+      "url": "https://www.undp.org/unspsc",
+      "checked_date": "2026-10-15",
+      "use": "UNSPSC purpose and current download location only; not release verification of local bundle"
+    },
+    {
+      "url": "https://eprocurement.nc.gov/training/selecting-commodity-codes",
+      "checked_date": "2026-10-15",
+      "use": "four core two-digit hierarchy levels"
+    }
+  ],
+  "source_values_silently_corrected": false,
+  "production_issuance_enabled": false
+}

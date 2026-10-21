@@ -1,0 +1,84 @@
+{
+  "themes": [
+    {
+      "skin": "civic-ledger",
+      "mode": "light",
+      "views": 3
+    },
+    {
+      "skin": "civic-ledger",
+      "mode": "dark",
+      "views": 3
+    },
+    {
+      "skin": "default",
+      "mode": "light",
+      "views": 3
+    },
+    {
+      "skin": "default",
+      "mode": "dark",
+      "views": 3
+    },
+    {
+      "skin": "digital-blue",
+      "mode": "light",
+      "views": 3
+    },
+    {
+      "skin": "digital-blue",
+      "mode": "dark",
+      "views": 3
+    },
+    {
+      "skin": "executive-neutral",
+      "mode": "light",
+      "views": 3
+    },
+    {
+      "skin": "executive-neutral",
+      "mode": "dark",
+      "views": 3
+    },
+    {
+      "skin": "institutional-green",
+      "mode": "light",
+      "views": 3
+    },
+    {
+      "skin": "institutional-green",
+      "mode": "dark",
+      "views": 3
+    },
+    {
+      "skin": "lavender",
+      "mode": "light",
+      "views": 3
+    },
+    {
+      "skin": "lavender",
+      "mode": "dark",
+      "views": 3
+    }
+  ],
+  "phone": [
+    {
+      "path": "/gov-store/admin/tracking/initiatives/25",
+      "raw": false,
+      "viewport": 400,
+      "width": 385
+    },
+    {
+      "path": "/gov-store/admin/tracking/initiatives/25/tracking-codes/93",
+      "raw": false,
+      "viewport": 400,
+      "width": 385
+    },
+    {
+      "path": "/gov-store/admin/tracking/initiatives/25/offices/160",
+      "raw": false,
+      "viewport": 400,
+      "width": 385
+    }
+  ]
+}

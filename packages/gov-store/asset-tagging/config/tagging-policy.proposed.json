@@ -1,0 +1,123 @@
+{
+  "schema_version": "7.0",
+  "status": "design_only_not_executable_format_rules",
+  "issuance_enabled": false,
+  "approved_by": null,
+  "deployment": {
+    "factory": "GovStore\\AssetTagging\\Factories\\TagFormatFactory",
+    "format_allowlist": {
+      "fd18-v1": "GovStore\\AssetTagging\\Formats\\FinanceDivisionV1Format",
+      "native-v1": "GovStore\\AssetTagging\\Formats\\NativeSequenceV1Format"
+    },
+    "selected_format": "fd18-v1",
+    "format_change": "Reviewed source-controlled developer deployment; no runtime executable uploads",
+    "standard_format": "native-v1",
+    "enablement_gates": {
+      "G1": "native auto-increment on; prefix non-empty and not starting with a digit (re-checked at posting)",
+      "G2": "bridge preflight clean; unique keys present",
+      "G3": "legacy collision report reviewed, including soft-deleted assets",
+      "G4": "office facts complete and valid (re-checked at posting)",
+      "G5": "single authoritative allocator; clone/restore fencing",
+      "G6": "office not owned by an experiment"
+    },
+    "enablement_record": "gov_metadata_values office subject, namespace asset-tagging.enablement, written by EnablementController after gates"
+  },
+  "finance": {
+    "source_format": "GG SS II MMYY LL DD NNNN",
+    "length": 18,
+    "pattern": "^[0-9]{6}(0[1-9]|1[0-2])[0-9]{10}$",
+    "pattern_purpose": "Offline source validation only; runtime validation/composition lives in formatter class",
+    "calendar": "Gregorian",
+    "date_source": "Supplier Challan reference_date, else Purchase Order reference_date (D-09); Purchase receipts only until D-04",
+    "counter_namespace": "asset-tag:fd18",
+    "counter_scope_proposal": [
+      "exact_encoded_first_14_characters_across_installation"
+    ],
+    "counter_scope_authority_approved": false,
+    "counter_partition_by_format_version": false,
+    "sequence_min": 1,
+    "sequence_max": 9999,
+    "on_capacity_exhausted": "Fail; authorized revised formatter required",
+    "identifier_immutable": true,
+    "same_database_uniqueness_only": true,
+    "one_authoritative_allocator_required": true,
+    "item_capacity": {
+      "scope": "GG (group-wide running II)",
+      "warn_from": 90,
+      "refuse_at": 99,
+      "overflow_policy": "D-08: recommended Option A per-subgroup numbering for an exhausted group after Finance Division approval"
+    }
+  },
+  "classification": {
+    "master": "gov_finance_items",
+    "key": "gov_code",
+    "product_default": "Optional; one per product type; owner from category governance (national publisher or owning company)",
+    "unspsc_column": "gov_finance_items.unspsc_code",
+    "unspsc_required_for_issue": false,
+    "reverse_column_on_unspsc": false,
+    "new_items": "Existing catalog administration with atomic never-reused GGSSII extension; no separate request workflow",
+    "finance_required_to_create_product_type": false,
+    "finance_required_for_managed_unit_tagging": false,
+    "unspsc_codes_per_product_type": 1,
+    "unit_without_finance_code": "standard tag (native-v1)",
+    "line_choice_when_type_has_no_default": true,
+    "unspsc_link_type": "soft link, validated on save and read"
+  },
+  "metadata": {
+    "table": "gov_metadata_values",
+    "namespace": "asset-tagging",
+    "maintainer": {
+      "company_codelists": "Company admin",
+      "office": "Own office_admin selects from company lists",
+      "category_global": "National catalog publisher",
+      "category_company": "Owning company scoped product-type editor"
+    },
+    "max_payload_bytes": 16384,
+    "max_divisions": 99,
+    "format_rules_stored_in_metadata": false,
+    "default_grn_values_from_saved_facts": true,
+    "subjects": {
+      "company": "asset-tagging.codelists",
+      "office": "asset-tagging.office (selections) and asset-tagging.enablement (operator)",
+      "category": "asset-tagging.default with optional gov_code"
+    }
+  },
+  "label": {
+    "identifier": "Existing assets.asset_tag",
+    "qr": "Authorized native asset lookup",
+    "print": "Existing native label rendering after commit",
+    "reprint_allocates_identity": false,
+    "dedicated_label_tables_or_outbox": false
+  },
+  "scope": {
+    "initial": "GRN-created individual native asset units; non-GRN issuance deferred",
+    "cga_accounts_or_file_codes": false,
+    "historical_geo_import": false,
+    "existing_geo_service": "Unchanged current geography; no code substitution into LL/DD",
+    "native_schema_or_model_changes": false
+  },
+  "legacy": {
+    "automatic_retag": false,
+    "reconcile_including_deleted_rows": true,
+    "retain_reservations_after_deletion": true,
+    "managed_tag_bypass_guards": "Asset and Setting Eloquent saving listeners from the package provider; covers UI, API and importer; raw SQL, withoutEvents and mass updates not covered and kept closed",
+    "typed_tags_in_enabled_offices": "rejected",
+    "experiment_wiper": "refuses fd18-v1/native-v1 registrations"
+  },
+  "ui_labels": {
+    "fd18-v1": "Govt. Tag",
+    "fd18-v1_bn": "সরকারি ট্যাগ",
+    "native-v1": "Standard tag"
+  },
+  "grn": {
+    "existing_ui_changed": false,
+    "additions": [
+      "line tag panel via capability renderUI",
+      "checklist rows via ContributesChecklist",
+      "tag summary line in posting modal",
+      "issued tags panel after posting"
+    ],
+    "no_finance_code": "warning with fix (line Finance Code or keep standard tags); does not block",
+    "missing_acquisition_date": "needs attention; blocks until the challan/PO date is filled or the line keeps standard tags"
+  }
+}

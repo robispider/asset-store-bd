@@ -2,9 +2,9 @@
 
 namespace GovStore\TenantScope\Services;
 
+use GovStore\TenantScope\Contexts\TenantContext;
 use GovStore\TenantScope\Contracts\MembershipContextResolver;
 use GovStore\TenantScope\Contracts\OrganizationContextResolver;
-use GovStore\TenantScope\Contexts\TenantContext;
 use Illuminate\Support\Facades\DB;
 
 class GovAccess
@@ -48,6 +48,23 @@ class GovAccess
             return new AccessDecision(false, $ability, 'unknown_ability');
         }
         $roles = $resolvedRoles ?? $this->roles($user);
+        if (str_starts_with($ability, 'tracking.')) {
+            // Coarse entry eligibility only. TrackingAuthorizationService rechecks the exact initiative.
+            if (DB::getSchemaBuilder()->hasTable('gov_tracking_operation_units')) {
+                $designations = DB::table('gov_tracking_operation_units')->where('user_id', $user->id)->pluck('designation')->all();
+                if ($designations) {
+                    $roles[] = 'tracking_member';
+                }
+                foreach (['HEAD' => 'tracking_head', 'OFFICER' => 'tracking_officer', 'SUPPORT' => 'tracking_support'] as $designation => $role) {
+                    if (in_array($designation, $designations, true)) {
+                        $roles[] = $role;
+                    }
+                }
+            }
+            if (DB::table('gov_company_admins')->where('user_id', $user->id)->exists()) {
+                $roles[] = 'tracking_admin';
+            }
+        }
         if ($this->outsideInventoryBoundary($definition)) {
             return new AccessDecision(false, $ability, 'role_required', $roles);
         }

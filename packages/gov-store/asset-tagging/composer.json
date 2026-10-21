@@ -1,0 +1,31 @@
+{
+    "name": "gov-store/asset-tagging",
+    "description": "Govt. Tags (Finance Division fd18-v1) and standard tags for units received through a GRN",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "DoICT"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "gov-store/tenant-scope": "dev-master",
+        "gov-store/metadata": "dev-master",
+        "gov-store/classification": "dev-master",
+        "gov-store/store-operations": "dev-master",
+        "gov-store/theming": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "GovStore\\AssetTagging\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "GovStore\\AssetTagging\\Providers\\AssetTaggingServiceProvider"
+            ]
+        }
+    }
+}

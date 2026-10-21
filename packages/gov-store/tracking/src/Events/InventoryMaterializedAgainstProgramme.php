@@ -10,18 +10,32 @@ class InventoryMaterializedAgainstProgramme
     use Dispatchable, SerializesModels;
 
     public string $trackingCode;
+
     public int $categoryId;
+
     public int $modelId;             // New: Specific core models.id
+
     public int $manufacturerId;      // New: Specific core manufacturers.id
+
     public int $locationId;          // core locations.id (The receiving warehouse)
+
     public int $quantity;            // Total unit count received
+
     public float $totalCost;         // Cumulative line-item purchase cost
+
     public int $supplierId;          // core suppliers.id (Vendor)
+
     public int $actorId;             // core users.id (The Storekeeper)
+
     public string $grnReference;      // GRN Voucher serial number for audit trail
+
     public array $associatables;     // Optional polymorphic array of asset/ledger IDs
+
     public ?string $overrideReason;  // Justification string if target was exceeded
+
     public ?string $movementId;
+
+    public ?string $documentItemId;
 
     /**
      * Instantiate the multi-dimensional transaction contract payload.
@@ -39,7 +53,8 @@ class InventoryMaterializedAgainstProgramme
         string $grnReference,
         array $associatables = [],
         ?string $overrideReason = null,
-        ?string $movementId = null
+        ?string $movementId = null,
+        ?string $documentItemId = null
     ) {
         $this->trackingCode = $trackingCode;
         $this->categoryId = $categoryId;
@@ -54,5 +69,6 @@ class InventoryMaterializedAgainstProgramme
         $this->associatables = $associatables;
         $this->overrideReason = $overrideReason;
         $this->movementId = $movementId;
+        $this->documentItemId = $documentItemId;
     }
 }

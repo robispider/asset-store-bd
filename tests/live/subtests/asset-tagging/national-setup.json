@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "id": "asset-tagging.national-setup",
+  "title": "The super admin prepares the installation: turns on the native asset-tag sequence with a letter prefix (G1), activates the Desktop Computer and Scanner Finance items through the national change review, and sets Desktop Computer as the national Finance Code of the seeded desktop product type",
+  "features": ["asset-tagging.national-setup", "classification.finance"],
+  "tags": ["seeded", "write", "asset-tagging", "national"],
+  "execution": { "capability": "write-fixtures", "language": "en-US", "timeoutMs": 180000, "accessMode": "any" },
+  "fixtures": {
+    "office": { "requirements": { "operational": true, "ledgerOpen": true } },
+    "actors": {
+      "superuser": { "role": "superuser", "allowSuperuser": true, "activeMembership": false, "capabilities": { "allOf": ["asset-tags.scope.enable", "catalog.master.manage"] } }
+    },
+    "records": {
+      "desktop": { "kind": "assetModel", "categoryContains": "Desktop Computers" },
+      "desktopCode": { "kind": "financeItem", "itemName": "Desktop Computer" },
+      "scannerCode": { "kind": "financeItem", "itemName": "Scanner" }
+    }
+  },
+  "data": {
+    "nativePrefix": "GS-",
+    "authority": { "generate": "markedText", "prefix": "LIVE-FD-MEMO", "length": 4 },
+    "reviewReason": { "generate": "markedText", "prefix": "LIVE tagging rehearsal: activate Finance items", "length": 4 }
+  },
+  "steps": [
+    { "action": "observe", "check": "asset-tags.readiness", "args": { "officeId": "${fixtures.office.id}" }, "as": "before" },
+    { "action": "observe", "check": "asset-tags.finance", "args": { "code": "${fixtures.desktopCode.gov_code}" }, "as": "desktopBefore" },
+    { "action": "observe", "check": "asset-tags.finance", "args": { "code": "${fixtures.scannerCode.gov_code}" }, "as": "scannerBefore" },
+    { "action": "observe", "check": "asset-tags.default", "args": { "categoryId": "${fixtures.desktop.category_id}" }, "as": "defaultBefore" },
+    { "action": "compare", "actual": "${observed.defaultBefore.national}", "equals": true, "note": "The seeded desktop type is global, so its Finance Code is national" },
+
+    { "use": "auth.login", "with": { "actor": "superuser" } },
+
+    { "action": "goto", "route": "native.settings.asset-tags" },
+    { "action": "check", "target": "tagging.nativeAutoIncrement" },
+    { "action": "assert", "target": "tagging.nativePrefix", "test": "enabled", "note": "The prefix opens once auto-increment is on" },
+    { "action": "fill", "target": "tagging.nativePrefix", "value": "${data.nativePrefix}" },
+    { "action": "submitForm", "target": "tagging.nativeSave" },
+    { "action": "waitObserve", "check": "asset-tags.readiness", "args": { "officeId": "${fixtures.office.id}" }, "path": "gates.G1", "equals": true, "as": "afterNative" },
+    { "action": "compare", "actual": "${observed.afterNative.native.prefix}", "equals": "${data.nativePrefix}" },
+    { "action": "ledger", "kind": "native-setting", "id": "auto_increment_prefix=${data.nativePrefix}", "effect": "Snipe-IT asset tag auto-increment turned on with a letter prefix (gate G1)", "cleanup": "retained" },
+
+    { "action": "goto", "route": "catalog.finance", "query": { "status": "held", "q": "${fixtures.desktopCode.item_name}" }, "when": { "actual": "${observed.desktopBefore.status}", "equals": "held" } },
+    { "action": "check", "target": "tagging.financeCheckbox", "when": { "actual": "${observed.desktopBefore.status}", "equals": "held" } },
+    { "action": "fill", "target": "tagging.financeAuthority", "value": "${data.authority}", "when": { "actual": "${observed.desktopBefore.status}", "equals": "held" } },
+    { "action": "submitForm", "target": "tagging.financeActivate", "when": { "actual": "${observed.desktopBefore.status}", "equals": "held" } },
+    { "use": "review.confirm", "with": { "reason": "${data.reviewReason}" }, "when": { "actual": "${observed.desktopBefore.status}", "equals": "held" } },
+    { "action": "waitObserve", "check": "asset-tags.finance", "args": { "code": "${fixtures.desktopCode.gov_code}" }, "path": "status", "equals": "active", "as": "desktopAfter" },
+
+    { "action": "goto", "route": "catalog.finance", "query": { "status": "held", "q": "${fixtures.scannerCode.item_name}" }, "when": { "actual": "${observed.scannerBefore.status}", "equals": "held" } },
+    { "action": "check", "target": "tagging.financeCheckboxScanner", "when": { "actual": "${observed.scannerBefore.status}", "equals": "held" } },
+    { "action": "fill", "target": "tagging.financeAuthority", "value": "${data.authority}", "when": { "actual": "${observed.scannerBefore.status}", "equals": "held" } },
+    { "action": "submitForm", "target": "tagging.financeActivate", "when": { "actual": "${observed.scannerBefore.status}", "equals": "held" } },
+    { "use": "review.confirm", "with": { "reason": "${data.reviewReason}" }, "when": { "actual": "${observed.scannerBefore.status}", "equals": "held" } },
+    { "action": "waitObserve", "check": "asset-tags.finance", "args": { "code": "${fixtures.scannerCode.gov_code}" }, "path": "status", "equals": "active", "as": "scannerAfter" },
+    { "action": "ledger", "kind": "finance-activation", "id": "${fixtures.desktopCode.gov_code},${fixtures.scannerCode.gov_code}", "effect": "Finance items activated (national master data)", "cleanup": "retained" },
+
+    { "action": "goto", "route": "catalog.governance.show", "params": { "id": "${fixtures.desktop.category_id}" } },
+    { "action": "select2", "target": "tagging.productTypeFinance", "search": "${fixtures.desktopCode.gov_code}", "option": "${fixtures.desktopCode.gov_code}" },
+    { "action": "submitForm", "target": "tagging.productTypeFinanceSave" },
+    { "action": "waitObserve", "check": "asset-tags.default", "args": { "categoryId": "${fixtures.desktop.category_id}" }, "path": "gov_code", "equals": "${fixtures.desktopCode.gov_code}", "as": "defaultAfter" },
+    { "action": "assert", "target": "tagging.productTypeFinanceShown", "test": "text", "equals": "${fixtures.desktopCode.gov_code}" },
+    { "action": "ledger", "kind": "product-type-finance-default", "id": "category:${fixtures.desktop.category_id}=${fixtures.desktopCode.gov_code}", "effect": "National Finance Code of the seeded desktop product type", "cleanup": "retained" },
+
+    { "action": "goto", "route": "asset-tags.enablement" },
+    { "action": "observe", "check": "asset-tags.readiness", "args": { "officeId": "${fixtures.office.id}" }, "as": "after" },
+    { "action": "compare", "actual": "${observed.after.installationPassCount}", "equals": 4, "note": "G1, G2, G3 and G5 now pass for the installation" },
+    { "action": "assert", "target": "tagging.readinessDone", "test": "count", "equals": "${observed.after.installationPassCount}", "note": "The console lists the same installation gates as passed" }
+  ],
+  "cleanup": { "policy": "retained-with-report" }
+}

@@ -294,6 +294,8 @@ class DocumentWorkspaceController extends Controller
             'total_value' => number_format($document->items->sum(fn ($item) => $item->quantity * ($item->unit_cost ?? 0)), 2),
             'reference' => $document->references->map(fn ($r) => $r->reference_type.': '.$r->reference_number)->implode(' | '),
             'items' => $document->items->map(fn ($item) => ['name' => $item->product?->name ?? $item->product_id, 'quantity' => $item->quantity])->all(),
+            // Null unless asset tags are issued here: ['govt' => n, 'standard' => n, 'line' => '…'].
+            'tags' => $document->type === 'receipt' ? app(\GovStore\StoreOperations\Contracts\AssetTagIssuer::class)->summary($document) : null,
         ]);
     }
 

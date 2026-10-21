@@ -1,0 +1,231 @@
+{
+  "revision": 7,
+  "status": "design_only_not_migrations",
+  "new_table_count": 3,
+  "existing_table_alter_count": 2,
+  "finance_code_required": false,
+  "unspsc_codes_per_product_type": 1,
+  "create_tables": [
+    {
+      "name": "gov_finance_items",
+      "owner_package": "classification",
+      "action": "create",
+      "purpose": "Single flat Finance item master with optional soft link to the existing UNSPSC catalog",
+      "columns": {
+        "gov_code": "CHAR(6) CHARACTER SET ascii COLLATE ascii_bin NOT NULL",
+        "group_name": "VARCHAR(191) NOT NULL",
+        "subgroup_name": "VARCHAR(191) NOT NULL",
+        "item_name": "VARCHAR(255) NOT NULL",
+        "unspsc_code": "VARCHAR(50) NULL",
+        "status": "VARCHAR(16) NOT NULL DEFAULT 'held'",
+        "origin": "VARCHAR(30) NOT NULL DEFAULT 'manual_extract'",
+        "source_reference": "TEXT NULL",
+        "authority_reference": "TEXT NULL",
+        "updated_by": "INT UNSIGNED NULL",
+        "created_at": "TIMESTAMP NULL",
+        "updated_at": "TIMESTAMP NULL"
+      },
+      "constraints": [
+        "PRIMARY KEY (gov_code)",
+        "KEY finance_unspsc_status (unspsc_code, status)",
+        "KEY finance_status_code (status, gov_code)"
+      ],
+      "population": {
+        "source": "FinanceDivData/tagging-design/finance_items.csv: entry_key becomes gov_code; source components retained by deterministic slicing",
+        "entered_by": "controlled import / existing catalog publisher",
+        "activated_by": "existing national catalog publisher with exact reviewed Finance payload and authority evidence",
+        "initial_rows": 490,
+        "initial_status": "held",
+        "initial_unspsc": null
+      },
+      "invariants": [
+        "six digit string GGSSII; validate all components and hierarchy labels",
+        "unspsc_code is a soft link (no FK, matching catalog convention that survives truncates/re-imports); NULL or an existing level-4 commodity validated on save and on read",
+        "held/active/retired status only",
+        "no reverse gov_code column on UNSPSC",
+        "never delete or reuse assigned Finance codes",
+        "new meaning requires new code; description corrections audited",
+        "source conflicts stay held until resolved",
+        "approved labels consistent across shared group/subgroup keys",
+        "prohibit direct national writes outside existing catalog control"
+      ]
+    },
+    {
+      "name": "gov_metadata_values",
+      "owner_package": "metadata",
+      "action": "create",
+      "purpose": "Typed GovStore metadata: company code lists, office tag settings, office enablement and product-type Finance defaults; one row per subject+namespace; owner scope recorded",
+      "columns": {
+        "id": "BIGINT UNSIGNED NOT NULL AUTO_INCREMENT",
+        "subject_type": "VARCHAR(20) CHARACTER SET ascii COLLATE ascii_bin NOT NULL",
+        "subject_id": "INT UNSIGNED NOT NULL",
+        "namespace": "VARCHAR(50) CHARACTER SET ascii COLLATE ascii_bin NOT NULL",
+        "scope_type": "VARCHAR(16) CHARACTER SET ascii COLLATE ascii_bin NOT NULL",
+        "scope_id": "INT UNSIGNED NOT NULL DEFAULT 0",
+        "payload": "JSON NOT NULL",
+        "revision": "INT UNSIGNED NOT NULL DEFAULT 1",
+        "updated_by": "INT UNSIGNED NULL",
+        "created_at": "TIMESTAMP NULL",
+        "updated_at": "TIMESTAMP NULL"
+      },
+      "constraints": [
+        "PRIMARY KEY (id)",
+        "UNIQUE KEY metadata_subject (subject_type, subject_id, namespace)",
+        "KEY metadata_scope (scope_type, scope_id)"
+      ],
+      "population": {
+        "entered_by": "company code lists: company admin; office selections: own office_admin; enablement: deployment operator; global product-type default: national catalog publisher; company product-type default: owning company's scoped product-type editor",
+        "company_subject": "subject_type=company, subject_id=company ID, scope=company, namespace=asset-tagging.codelists; {locations:[{code,name}], divisions:[{code,name}]} by company admin",
+        "office_subject": "subject_type=office, subject_id=office location ID, scope=office, namespace=asset-tagging.office; {location_code, division_codes[], default_division_code} selected from the company lists; namespace=asset-tagging.enablement (scope national) written only by the operator after gates",
+        "product_subject": "subject_type=category, subject_id=product-type category ID, scope derived from gov_category_governance (global or missing -> national/0; company -> company/created_by_company_id), namespace=asset-tagging.default; payload.gov_code optional",
+        "activated_by": "no additional workflow; typed scoped validation plus deployment enablement",
+        "initial": "no invented native IDs or defaults"
+      },
+      "invariants": [
+        "allowlist office/category subject types and typed namespace schemas",
+        "uniqueness on subject, not scope: exactly one Finance default per product type and one fact set per office; no NULLs in unique keys",
+        "scope is re-derived from category governance on every read; a mismatch marks the value needs_review and GRN ignores it",
+        "offices never override a product-type default",
+        "subject_id is a soft reference; validate existence and visibility on save and use; stale subjects never produce a default",
+        "max payload 16 KiB; at most 99 entries per company list",
+        "two-digit text codes unique within each company list; an entry in use can be renamed, never removed or re-coded",
+        "office values must exist in the current company lists; a location code belongs to at most one office per company; default division is one of the office divisions; no authority reference",
+        "optional gov_code is NULL or an active Finance item whose unspsc_code is NULL or equals the product type's single UNSPSC code",
+        "revision check plus audit before/after",
+        "no formatter code, national codes, counters or deployment enablement in editable metadata",
+        "existing metadata compiler/mapping/convergence records remain unchanged"
+      ]
+    },
+    {
+      "name": "gov_asset_tag_sequences",
+      "owner_package": "asset-tagging",
+      "action": "create",
+      "purpose": "Atomic bounded FD18 prefix and new-Finance-code allocation",
+      "columns": {
+        "namespace": "VARCHAR(50) CHARACTER SET ascii COLLATE ascii_bin NOT NULL",
+        "scope_key": "VARCHAR(100) CHARACTER SET ascii COLLATE ascii_bin NOT NULL",
+        "last_value": "BIGINT UNSIGNED NOT NULL DEFAULT 0",
+        "created_at": "TIMESTAMP NULL",
+        "updated_at": "TIMESTAMP NULL"
+      },
+      "constraints": [
+        "PRIMARY KEY (namespace, scope_key)"
+      ],
+      "population": {
+        "source": "service reads retained tags / existing and retired Finance codes at controlled initialization",
+        "entered_by": "allocator only",
+        "activated_by": "no human editor; initialized after collision preflight"
+      },
+      "invariants": [
+        "race-safe first insert, then SELECT FOR UPDATE in sorted (namespace, scope_key) order for the whole posting before any asset is created",
+        "fixed server namespaces, never client-provided",
+        "asset-tag:fd18 scope is exact first14 characters, global within installation",
+        "finance-code:item scope GG (II is a running number across the whole group in all 490 source rows); after an approved D-08 Option A a full group switches to scope GGSS by reviewed config; finance-code:subgroup scope GG; finance-code:group scope root",
+        "capacity warning from 90 used item numbers in a group; refuse at 99 until D-08 is decided",
+        "do not partition physical counter by office, company or formatter version",
+        "bounds 9999 for physical suffix, 99 for Finance component; no wrap/reset/reuse",
+        "standard tags use the native settings sequence, not this table",
+        "single authoritative DB; clones disabled; restore fencing required"
+      ]
+    }
+  ],
+  "alter_tables": [
+    {
+      "name": "gov_asset_registrations",
+      "action": "alter",
+      "owner_package": "store-operations (GovStore-owned, not a Snipe-IT table)",
+      "purpose": "Retain receipt-unit identity and tag-generation evidence using the existing bridge",
+      "add_columns": {
+        "unit_index": "INT UNSIGNED NULL",
+        "format_version": "VARCHAR(50) NULL",
+        "gov_code": "CHAR(6) CHARACTER SET ascii COLLATE ascii_bin NULL",
+        "tag_snapshot": "JSON NULL"
+      },
+      "column_rationale": {
+        "unit_index": "Equals GRN row_index; quantity 3 means units 0,1,2; unique item/ordinal makes retries safe",
+        "format_version": "fd18-v1 (Finance tag), native-v1 (standard tag), entered-v1 (typed in an office that is not enabled); immutable",
+        "gov_code": "Finance classification frozen at issue; NULL is valid for standard and entered tags because the Finance Code is optional",
+        "tag_snapshot": "Encoded segments, acquisition date and evidence reference, office/company facts and metadata revisions, Finance source (product_type/line_choice/none), standard-tag reason, actor"
+      },
+      "constraints": [
+        "UNIQUE KEY registration_asset_tag (asset_tag)",
+        "UNIQUE KEY registration_source_unit (intake_item_id, unit_index)",
+        "UNIQUE KEY registration_asset (asset_id)",
+        "KEY registration_finance_code (gov_code)",
+        "FOREIGN KEY (gov_code) REFERENCES gov_finance_items(gov_code) ON DELETE RESTRICT"
+      ],
+      "foreign_key_change": "Keep intake_item_id NOT NULL; replace its existing gov_document_items ON DELETE CASCADE with RESTRICT using inspected actual constraint name",
+      "population": {
+        "existing_rows": "nullable new columns; preserve historical evidence; reconcile duplicates before indexes",
+        "entered_by": "GovStore GRN posting service in same transaction as ordinary native asset creation",
+        "new_rows": "unit_index, format_version and tag_snapshot required for every new registration (enabled or not); gov_code required only for fd18-v1"
+      },
+      "deferred_not_in_initial_migration": {
+        "source_kind_and_source_key": "Only needed for non-GRN issuance; initial origin already identified by intake_item_id",
+        "nullable_intake_item_id": "Unnecessary while issuance is GRN-based; retain mandatory receipt provenance",
+        "tag_key": "Would duplicate asset_tag; reconsider only if actual historical duplicate rows prevent safe all-time uniqueness",
+        "office_location_id_and_company_id": "Current scope comes from receipt/document relations; original facts are in snapshot"
+      },
+      "invariants": [
+        "append-only after committed registration; retain tag after native asset deletion/disposal",
+        "ExperimentWiper refuses to delete fd18-v1/native-v1 rows",
+        "existing asset_tag is the reserved issued string; no new duplicate tag field",
+        "document state lock is first retry defense, source-unit unique index second",
+        "legacy duplicate/source ambiguity stops affected rollout; never silently drop or merge evidence",
+        "document deletion cannot erase issuance history; draft cleanup unaffected",
+        "do not add native model relations, casts, fields or migrations"
+      ]
+    },
+    {
+      "name": "gov_catalog_snipe_mappings",
+      "action": "alter",
+      "owner_package": "classification (GovStore-owned, not a Snipe-IT table)",
+      "purpose": "Enforce exactly one UNSPSC code per product type",
+      "add_columns": {},
+      "constraints": [
+        "UNIQUE KEY catalog_mapping_category (category_id)"
+      ],
+      "drop_constraints": [
+        "existing non-unique category_id index (inspect actual name)"
+      ],
+      "population": {
+        "existing_rows": "preflight lists categories with more than one code; a catalog reviewer keeps one per category (decision D-06); nothing merged automatically",
+        "entered_by": "ProductTypeCommodity::assign() used by CatalogSearchController::saveMapping, CatalogCategoryCreator and OfficeStarterCatalog"
+      },
+      "invariants": [
+        "assigning a different code to a mapped category replaces the row (change of commodity), never adds one",
+        "change of commodity marks a conflicting Finance default needs_review; never remaps automatically",
+        "existing UNIQUE(code) unchanged"
+      ]
+    }
+  ],
+  "reuse_without_schema_change": {
+    "gov_document_item_meta": "saved per-unit input using existing row_index; no schema change",
+    "gov_documents / gov_document_items / posting tables": "same document transaction; one pre-posting hook after the document lock",
+    "assets / models / settings": "ordinary existing fields and APIs only; settings row locked for standard-tag allocation; no Snipe-IT migrations, model changes or core-file patches",
+    "gov_catalog_nodes / enrichments / synonyms": "UNSPSC unchanged, no reverse Finance column",
+    "gov_category_governance": "read to derive product-type default owner; unchanged",
+    "gov_metadata_field_mappings / gov_model_metadata_states / custom fields": "existing field compiler and model convergence unchanged",
+    "gov_location_profiles / locations / companies / geo_areas": "existing current office and geography IDs; no CGA/geocode supplementation tables",
+    "existing audit / catalog review / native labels": "reuse evidence and printing; explicitly extend supported Finance catalog payload"
+  },
+  "removed": [
+    "28-table revision-2 model",
+    "GSA second canonical identity",
+    "reverse UNSPSC gov_code",
+    "CGA numbering",
+    "historical geography supplementation",
+    "separate type, release, issuer, label and approval workflow tables",
+    "per-office product-type Finance defaults (revision 5)",
+    "hard FK from gov_finance_items.unspsc_code (revision 5)",
+    "typed office codes and office authority reference (revision 6)"
+  ],
+  "migration_preconditions": [
+    "inspect deployed schema types/collations/constraint names and duplicates",
+    "read local live testing guide before database verification",
+    "targeted Laravel migrations only; no reset or broad seed",
+    "normalize neither native historical labels nor codes without explicit reconciliation",
+    "reconcile categories with several UNSPSC codes before UNIQUE(category_id)",
+    "DDL below is reference only and has never been executed"
+  ]
+}

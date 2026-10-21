@@ -1,268 +1,33 @@
 @extends('layouts/default')
-@section('title', __('govtracking::general.report_title'))
-
+@section('title', __('govtracking::report.title'))
 @section('content')
-<div class="row">
-    <div class="col-md-10 col-md-offset-1">
-
-        <!-- Control Header Banner -->
-        <div class="row gs-tracking-print-toolbar">
-            <div class="col-md-12">
-                <div class="box box-solid box-default hidden-print" style="margin-bottom: 15px;">
-                    <div class="box-body text-right">
-                        <a href="{{ route('gov.tracking.initiatives.show', $initiative->id) }}" class="btn btn-default pull-left"><i class="fa fa-arrow-left"></i> {{ __('govtracking::general.task.back') }}</a>
-                        <button data-tracking-print class="btn btn-primary btn-lg"><i class="fa fa-print"></i> {{ __('govtracking::general.ui.print_executive_report') }}</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Dynamic Reporting Period Aggregator -->
-        @php
-            $activeFiscalYears = $trackingCodes->pluck('fiscal_year')->unique()->filter()->implode(', ');
-        @endphp
-
-        <x-gs::document :title="__('govtracking::general.report_title')" :date="now()->format('d M Y, H:i')">
+@php
+    $digits = fn ($value) => str_starts_with(app()->getLocale(), 'bn') ? strtr((string) $value, array_combine(range(0, 9), preg_split('//u', '০১২৩৪৫৬৭৮৯', -1, PREG_SPLIT_NO_EMPTY))) : (string) $value;
+    $n = fn ($value, $places = 4) => $value === null ? '—' : $digits($places ? rtrim(rtrim(number_format($value, $places), '0'), '.') : number_format($value));
+    $money = fn ($row) => $n($row['known_value'], 2).($row['value_complete'] ? '' : '*');
+    $percent = fn ($actual, $plan) => $plan !== null && $plan > 0 ? $n(100 * $actual / $plan, 1).'%' : '—';
+    $usePercent = fn ($row) => $row['unknown'] == 0 ? $percent($row['used'], $row['received']) : '—';
+@endphp
+<div class="gs-tracking-report" data-programme-report data-page-label="{{ __('govtracking::report.page', ['page' => '{page}', 'total' => '{total}']) }}" data-continued="{{ __('govtracking::report.continued') }}" data-pagination-failed="{{ __('govtracking::report.pagination_failed') }}" data-print-failed="{{ __('govtracking::report.print_failed') }}" data-preparing="{{ __('govtracking::report.print_preparing') }}" lang="{{ app()->getLocale() }}">
+    <div class="gs-tracking-report__toolbar hidden-print">
+        @include('govtracking::monitor.tabs')
+        <x-gs::button data-report-print>{{ __('govtracking::report.print') }}</x-gs::button>
+        <p data-report-message role="status"></p>
+    </div>
+    <div data-report-source>
+        <x-gs::document :title="__('govtracking::report.title')" :date="$digits($report['generated']->format('Y-m-d'))">
+            <x-slot:office><strong>{{ $report['owner'] ?: __('govtracking::report.unknown') }}</strong></x-slot:office>
             <x-slot:meta>
-                <x-gs::key-value :columns="2" :items="[
-                    ['label' => __('govtracking::general.programme_project'), 'value' => $initiative->title],
-                    ['label' => __('govtracking::general.current_status'), 'value' => strtoupper($initiative->status)],
-                    ['label' => __('govtracking::general.owning_org'), 'value' => $initiative->ownerCompany->name ?? __('govtracking::general.ui.extra_unknown')],
-                    ['label' => __('govtracking::general.reporting_period'), 'value' => !empty($activeFiscalYears) ? 'FY ' . $activeFiscalYears : __('govtracking::general.ui.extra_unbounded')],
-                ]" />
+                <span>{{ __('govtracking::report.reference') }}: {{ $report['reference'] }}</span>
+                <span>{{ __('govtracking::report.as_of') }}: {{ $digits($report['generated']->format('Y-m-d H:i:s T')) }}</span>
             </x-slot:meta>
-
-            <!-- Section 1: Physical Progress Summary -->
-            <div>
-                <h4 class="gs-tracking-report-section-title">{{ __('govtracking::general.section_physical_progress') }}</h4>
-
-                @php
-                    $categorySummaries = [];
-                    foreach ($trackingCodes as $code) {
-                        foreach ($code->targets as $target) {
-                            $catId = $target->category_id;
-                            $catName = $target->category->name ?? __('govtracking::general.ui.extra_unknown_category');
-
-                            $prog = $target->progress ?? [
-                                'percentage' => 0,
-                                'is_exceeded' => false,
-                                'received' => 0,
-                                'planned' => $target->planned_qty
-                            ];
-
-                            if (!isset($categorySummaries[$catId])) {
-                                $categorySummaries[$catId] = [
-                                    'name' => $catName,
-                                    'planned' => 0,
-                                    'received' => 0,
-                                ];
-                            }
-                            $categorySummaries[$catId]['planned'] += $prog['planned'] ?? $target->planned_qty;
-                            $categorySummaries[$catId]['received'] += $prog['received'] ?? 0;
-                        }
-                    }
-                @endphp
-
-                <x-gs::table>
-                    <thead>
-                        <tr>
-                            <th style="width: 25%;">{{ __('govtracking::general.col_item_category') }}</th>
-                            <th style="width: 15%;">{{ __('govtracking::general.col_planned_qty') }}</th>
-                            <th style="width: 15%;">{{ __('govtracking::general.col_received_qty') }}</th>
-                            <th style="width: 15%;">{{ __('govtracking::general.col_remaining_qty') }}</th>
-                            <th style="width: 30%;">{{ __('govtracking::general.col_progress') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($categorySummaries as $summary)
-                            @php
-                                $percent = $summary['planned'] > 0 ? round(($summary['received'] / $summary['planned']) * 100) : 0;
-                                $percent = $percent > 100 ? 100 : $percent;
-                                $outstanding = $summary['planned'] - $summary['received'];
-                                $outstanding = $outstanding < 0 ? 0 : $outstanding;
-
-                                // PURE TEXT-BASED ASCII PROGRESS BAR GENERATOR
-                                $filledCount = round($percent / 10);
-                                $emptyCount = 10 - $filledCount;
-                                $filledCount = $filledCount > 10 ? 10 : $filledCount;
-                                $emptyCount = $emptyCount < 0 ? 0 : $emptyCount;
-
-                                $asciiBar = '[' . str_repeat('█', $filledCount) . str_repeat('░', $emptyCount) . ']';
-                            @endphp
-                            <tr>
-                                <td><strong>{{ $summary['name'] }}</strong></td>
-                                <td>{{ number_format($summary['planned']) }}</td>
-                                <td>{{ number_format($summary['received']) }}</td>
-                                <td>{{ number_format($outstanding) }}</td>
-                                <td>
-                                    <code class="gs-tracking-ascii-bar">{{ $asciiBar }}</code>
-                                    <strong>{{ $percent }}%</strong> {{ $percent >= 100 ? __('govtracking::general.status_complete') : __('govtracking::general.status_on_track') }}
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="text-center text-muted">{{ __('govtracking::general.msg_no_targets') }}</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </x-gs::table>
-            </div>
-
-            <hr class="gs-tracking-divider">
-
-            <!-- Section 2: Funding & Budget Utilization -->
-            <div>
-                <h4 class="gs-tracking-report-section-title">{{ __('govtracking::general.section_budget_utilization') }}</h4>
-
-                <ul class="gs-tracking-list-tree">
-                    @forelse($trackingCodes as $code)
-                        <li style="margin-bottom: 20px;">
-                            <span class="bullet">•</span> <strong>{{ $code->fundingType->primary_type ?? 'N/A' }} {{ __('govtracking::general.funding_source') }}</strong> | {{ $code->fundingType->name ?? 'N/A' }} ({{ __('govtracking::general.label_funding_component') }})
-                            <div class="sub-node">
-                                ➔ {{ __('govtracking::general.label_allocation_code') }}: <code>{{ $code->tracking_code }}</code> ({{ $code->task_title }})<br>
-                                @foreach($code->targets as $target)
-                                    @php
-                                        $prog = $target->progress ?? ['received' => 0, 'planned' => $target->planned_qty, 'percentage' => 0];
-                                    @endphp
-                                    ↳ {{ __('govtracking::general.col_economic_code') }}: <strong>{{ $target->economic_code ?? 'N/A' }}</strong><br>
-                                    <span style="padding-left: 15px;">{{ __('govtracking::general.ui.extra_planned') }} {{ $prog['planned'] }} {{ $target->category->name ?? __('govtracking::general.ui.extra_unknown_category') }} | {{ __('govtracking::general.ui.extra_received') }} {{ $prog['received'] }} {{ $target->category->name ?? __('govtracking::general.ui.extra_unknown_category') }} ({{ $prog['percentage'] }}% {{ __('govtracking::general.ui.extra_complete') }})</span><br>
-                                @endforeach
-                            </div>
-                        </li>
-                    @empty
-                        <li class="text-center text-muted">{{ __('govtracking::general.msg_no_tasks') }}</li>
-                    @endforelse
-                </ul>
-            </div>
-
-            <hr class="gs-tracking-divider">
-
-            <!-- Section 3: Geographical Distribution of Receipts -->
-            <div>
-                <h4 class="gs-tracking-report-section-title">{{ __('govtracking::general.section_geographical_distribution') }}</h4>
-
-                @php
-                    $hasMatrix = $trackingCodes->contains('specificity_level', '3_MATRIX');
-                @endphp
-
-                @if($hasMatrix)
-                    <x-gs::table>
-                        <thead>
-                            <tr>
-                                <th style="width: 5%;">{{ __('govtracking::general.col_sl') }}</th>
-                                <th style="width: 15%;">{{ __('govtracking::general.col_admin_area') }}</th>
-                                <th style="width: 25%;">{{ __('govtracking::general.col_receiving_office') }}</th>
-                                <th style="width: 15%;">{{ __('govtracking::general.col_economic_code') }}</th>
-                                <th style="width: 15%;">{{ __('govtracking::general.col_item_category') }}</th>
-                                <th style="width: 10%;">{{ __('govtracking::general.col_received_qty') }}</th>
-                                <th style="width: 10%;">{{ __('govtracking::general.col_avg_unit_price') }}</th>
-                                <th style="width: 5%;">{{ __('govtracking::general.col_receipt_docs') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($trackingCodes->where('specificity_level', '3_MATRIX') as $code)
-                                @forelse($code->matrixProgress ?? [] as $locId => $data)
-                                    @foreach($data['items'] as $index => $item)
-                                        <tr>
-                                            <td>{{ $index + 1 }}</td>
-                                            @if($index === 0)
-                                                <td rowspan="{{ count($data['items']) }}" class="gs-tracking-report-rowspan-top">
-                                                    @php
-                                                        $geoName = 'N/A';
-                                                        $location = \App\Models\Location::find($locId);
-                                                        if ($location && $location->profile && class_exists('GovStore\GeoAreas\Models\GeoArea')) {
-                                                            $geoName = \GovStore\GeoAreas\Models\GeoArea::find($location->profile->geo_area_id)->en_name ?? 'N/A';
-                                                        }
-                                                    @endphp
-                                                    {{ $geoName }}
-                                                </td>
-                                                <td rowspan="{{ count($data['items']) }}" class="gs-tracking-report-rowspan-top">
-                                                    🏢 {{ $data['location_name'] }}
-                                                </td>
-                                            @endif
-
-                                            @php
-                                                $econCode = 'N/A';
-                                                $target = DB::table('gov_tracking_targets')
-                                                    ->where('tracking_code_id', $code->id)
-                                                    ->where('category_id', $code->targets->where('category_name', $item['category_name'])->first()?->category_id ?? 0)
-                                                    ->first();
-                                                if ($target) {
-                                                    $econCode = $target->economic_code ?? 'N/A';
-                                                }
-                                            @endphp
-
-                                            <td><code>{{ $econCode }}</code></td>
-                                            <td>{{ $item['category_name'] }}</td>
-                                            <td><strong>{{ $item['received'] }} {{ __('govtracking::general.ui.extra_units') }}</strong></td>
-                                            <td>Calculating...</td>
-                                            <td><strong>{{ $item['percentage'] >= 100 ? '🟢' : '🟡' }}</strong></td>
-                                        </tr>
-                                    @endforeach
-                                @empty
-                                    <!-- Skip empty lines -->
-                                @endforelse
-                            @endforeach
-                        </tbody>
-                    </x-gs::table>
-                @else
-                    <!-- Fallback: Renders actual transactional geographical distributions if Level 3 was unconfigured -->
-                    <x-gs::table>
-                        <thead>
-                            <tr>
-                                <th style="width: 5%;">{{ __('govtracking::general.col_sl') }}</th>
-                                <th style="width: 15%;">{{ __('govtracking::general.col_admin_area') }}</th>
-                                <th style="width: 25%;">{{ __('govtracking::general.col_receiving_office') }}</th>
-                                <th style="width: 15%;">{{ __('govtracking::general.col_economic_code') }}</th>
-                                <th style="width: 15%;">{{ __('govtracking::general.col_item_category') }}</th>
-                                <th style="width: 10%;">{{ __('govtracking::general.col_received_qty') }}</th>
-                                <th style="width: 10%;">{{ __('govtracking::general.col_avg_unit_price') }}</th>
-                                <th style="width: 5%;">{{ __('govtracking::general.col_receipt_docs') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($facts as $index => $fact)
-                                @php
-                                    $geoName = 'N/A';
-                                    if ($fact->location && $fact->location->profile && class_exists('GovStore\GeoAreas\Models\GeoArea')) {
-                                        $profile = $fact->location->profile;
-                                        $geoName = \GovStore\GeoAreas\Models\GeoArea::find($profile->geo_area_id)->en_name ?? 'N/A';
-                                    }
-
-                                    $econCode = 'N/A';
-                                    $target = DB::table('gov_tracking_targets')
-                                        ->where('tracking_code_id', $fact->tracking_code_id)
-                                        ->where('category_id', $fact->category_id)
-                                        ->first();
-                                    if ($target) {
-                                        $econCode = $target->economic_code ?? 'N/A';
-                                    }
-
-                                    $avgPrice = $fact->received_qty > 0 ? ($fact->total_cost / $fact->received_qty) : 0.00;
-                                @endphp
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td><strong>{{ $geoName }}</strong></td>
-                                    <td>{{ $fact->location->name ?? "Office #{$fact->location_id}" }}</td>
-                                    <td><code>{{ $econCode }}</code></td>
-                                    <td>{{ $fact->category->name ?? __('govtracking::general.ui.extra_unknown_category') }}</td>
-                                    <td><strong>{{ $fact->received_qty }} {{ __('govtracking::general.ui.extra_units') }}</strong></td>
-                                    <td>{{ $avgPrice > 0 ? number_format($avgPrice, 2) . ' BDT' : 'N/A' }}</td>
-                                    <td><strong>{{ $fact->transaction_count }}</strong></td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="8" class="text-center text-muted">{{ __('govtracking::general.msg_no_deliveries') }}</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </x-gs::table>
-                @endif
-            </div>
-
-            <!-- Note: Section 4 Timeline is completely removed as requested -->
-
+            @include('govtracking::initiatives.report.summary')
+            @include('govtracking::initiatives.report.codes-items')
+            @include('govtracking::initiatives.report.distribution')
+            @include('govtracking::initiatives.report.quality')
         </x-gs::document>
     </div>
+    <div data-report-pages tabindex="0" role="region" aria-label="{{ __('govtracking::report.title') }}"></div>
+    <template data-report-running><div class="gs-tracking-report__running"><strong>{{ $initiative->title }}</strong><span>{{ $report['reference'] }}</span></div></template>
 </div>
-@stop
+@endsection

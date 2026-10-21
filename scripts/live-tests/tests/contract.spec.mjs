@@ -170,6 +170,66 @@ async function runContractTests() {
       return;
     }
 
+    if (req.url === '/select2') {
+      // A select2-shaped widget: the real select is followed by a container whose dropdown lists AJAX-like results.
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(`<!DOCTYPE html><html><body>
+        <select id="item" name="item"><option value=""></option></select><span class="select2 select2-container"><span class="select2-selection">pick</span></span>
+        <script>
+          const data = { m1: 'Model 1 (Asset Model)', m10: 'Model 10 (Asset Model)', m11: 'Model 11 (Asset Model)' };
+          document.querySelector('.select2-selection').addEventListener('click', () => {
+            const box = document.createElement('span');
+            box.className = 'select2-container select2-container--open';
+            box.innerHTML = '<input class="select2-search__field"><ul></ul>';
+            document.body.append(box);
+            box.querySelector('input').addEventListener('input', e => setTimeout(() => {
+              const ul = box.querySelector('ul'); ul.innerHTML = '';
+              for (const [value, text] of Object.entries(data)) if (text.includes(e.target.value)) {
+                const li = document.createElement('li'); li.className = 'select2-results__option'; li.textContent = text;
+                li.addEventListener('click', () => { document.getElementById('item').append(new Option(text, value, true, true)); box.remove(); });
+                ul.append(li);
+              }
+            }, 50));
+          });
+        </script></body></html>`);
+      return;
+    }
+    if (req.url === '/download') {
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end('<!DOCTYPE html><html><body><a id="csv" href="/files/issued.csv">CSV</a></body></html>');
+      return;
+    }
+    if (req.url === '/files/issued.csv') {
+      res.writeHead(200, { 'Content-Type': 'text/csv', 'Content-Disposition': 'attachment; filename="issued.csv"' });
+      res.end('﻿tag,kind\n090708102641020001,govt\nGS-09694,standard\n');
+      return;
+    }
+    if (req.url === '/forms') {
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(`<!DOCTYPE html><html><body>
+        <form method="post" action="/accepted"><button id="good" type="submit">Go</button></form>
+        <form method="post" action="/post-only"><button id="bad" type="submit">Go</button></form>
+        <form method="post" action="/accepted"><input name="must" required><button id="blocked" type="submit">Go</button></form>
+        <p id="ref">Reference GR-2026-000042 posted</p></body></html>`);
+      return;
+    }
+    if (req.url === '/accepted' && req.method === 'POST') {
+      res.writeHead(303, { Location: '/form' });
+      res.end();
+      return;
+    }
+    if (req.url === '/post-only' && req.method === 'POST') {
+      // Mimics back() to a POST-only route: the browser lands on a 405 page.
+      res.writeHead(303, { Location: '/post-only' });
+      res.end();
+      return;
+    }
+    if (req.url === '/post-only') {
+      res.writeHead(405, { 'Content-Type': 'text/plain' });
+      res.end('Method Not Allowed');
+      return;
+    }
+
     res.writeHead(404);
     res.end('Not Found');
   });
@@ -369,6 +429,58 @@ async function runContractTests() {
   const redacted = JSON.stringify(redactObject({ actors: { a: { password: canary } }, text: 'password=' + canary }));
   assert(!redacted.includes(canary), 'Redaction must remove canary secrets');
   console.log('   [PASS] Secrets are redacted.');
+
+  // Test Case I: steps added for asset tagging — select2, download, submitForm landing status, when, matches,
+  // greaterThan, capture pattern and the date generator's format.
+  console.log('   Running select2 / download / submit-status / condition checks...');
+  const extraPage = await browser.newPage();
+  const extras = await multiInterpreter.executeJourney(extraPage, {
+    journeyId: 'contract.tagging-steps',
+    steps: [
+      { action: 'goto', url: '/select2' },
+      { action: 'select2', target: '#item', search: 'Model 1', option: 'Model 1' },
+      { action: 'assert', target: '#item', test: 'value', equals: 'm1' },
+      { action: 'goto', url: '/download' },
+      { action: 'download', target: '#csv', as: 'csv' },
+      { action: 'compare', actual: '${captured.csv.rowCount}', equals: 2 },
+      { action: 'compare', actual: '${captured.csv.text}', contains: 'GS-09694' },
+      { action: 'goto', url: '/forms' },
+      { action: 'capture', target: '#ref', pattern: '(GR-\\d{4}-\\d{6})', as: 'number' },
+      { action: 'compare', actual: '${captured.number}', matches: '^GR-2026-000042$' },
+      { action: 'compare', actual: 7, greaterThan: 3 },
+      { action: 'assert', target: '#missing-element', test: 'visible', when: { actual: '${captured.number}', equals: 'something else' } },
+      { action: 'submitForm', target: '#good', expectStatus: [200] },
+      { action: 'assert', test: 'url', contains: '/form' }
+    ]
+  }, new VariableContext(), testBaseUrl);
+  assert.equal(extras.status, 'passed', extras.error);
+  const ambiguousSelect = await multiInterpreter.executeJourney(extraPage, {
+    journeyId: 'contract.select2-ambiguous',
+    steps: [{ action: 'goto', url: '/select2' }, { action: 'select2', target: '#item', search: 'Model', option: 'Model' }]
+  }, new VariableContext(), testBaseUrl);
+  assert.equal(ambiguousSelect.status, 'failed', 'A select2 option that is neither exact nor unique must fail');
+  const landedOnError = await multiInterpreter.executeJourney(extraPage, {
+    journeyId: 'contract.submit-405',
+    steps: [{ action: 'goto', url: '/forms' }, { action: 'submitForm', target: '#bad', expectStatus: [200] }]
+  }, new VariableContext(), testBaseUrl);
+  assert.equal(landedOnError.status, 'failed');
+  assert.match(landedOnError.error, /status 405/);
+  const blockedSubmit = await multiInterpreter.executeJourney(extraPage, {
+    journeyId: 'contract.submit-blocked',
+    steps: [{ action: 'goto', url: '/forms' }, { action: 'submitForm', target: '#blocked', timeoutMs: 2000 }]
+  }, new VariableContext(), testBaseUrl);
+  assert.equal(blockedSubmit.status, 'failed', 'A submit stopped by browser validation must not pass as a navigation');
+  const wrongCompare = await multiInterpreter.executeJourney(extraPage, {
+    journeyId: 'contract.greater-than', steps: [{ action: 'compare', actual: 3, greaterThan: 3 }]
+  }, new VariableContext(), testBaseUrl);
+  assert.equal(wrongCompare.status, 'failed');
+  await extraPage.close();
+  const datedRng = new DeterministicRandom(1);
+  assert.match(datedRng.date(0, 'MMYY'), /^\d{4}$/);
+  assert.equal(datedRng.date(0, 'YYYY-MM-DD'), datedRng.date(0));
+  assert(validator.validateJourney({ schemaVersion: 1, id: 'x.when', execution: { capability: 'observe' }, steps: [{ action: 'reload', when: { actual: 'a' } }] })
+    .some(e => e.includes("'when' requires")));
+  console.log('   [PASS] select2, download, submit status, when, matches, greaterThan, capture pattern and date format work.');
 
   // Test Case H: validator rejects ledger in observe journeys and write journeys without cleanup
   const ledgerObs = validator.validateJourney({ schemaVersion: 1, id: 'x.obs', execution: { capability: 'observe' }, steps: [{ action: 'ledger', kind: 'a', id: '1' }] });

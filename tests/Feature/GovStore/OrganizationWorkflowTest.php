@@ -131,6 +131,29 @@ class OrganizationWorkflowTest extends TestCase
         $this->catalog();
     }
 
+    public function test_office_level_update_is_validated_scoped_and_preserved_by_other_hub_forms(): void
+    {
+        (require base_path('packages/gov-store/organization/src/database/migrations/2026_10_19_000001_add_office_level_to_location_profiles.php'))->up();
+        $controller = app(\GovStore\Organization\Http\Controllers\OfficeHubController::class);
+        $data = ['name' => 'Office A', 'company_id' => 20, 'parent_id' => null, 'geo_area_id' => 2, 'office_admin_id' => 2];
+        $controller->update(Request::create('/', 'POST', $data + ['office_level' => 'regional']), 10);
+        $this->assertSame('regional', DB::table('gov_location_profiles')->where('location_id', 10)->value('office_level'));
+        $controller->update(Request::create('/', 'POST', $data), 10);
+        $this->assertSame('regional', DB::table('gov_location_profiles')->where('location_id', 10)->value('office_level'));
+        try {
+            $controller->update(Request::create('/', 'POST', $data + ['office_level' => 'school']), 10);
+            $this->fail('Office type is not an administrative level.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $this->assertArrayHasKey('office_level', $e->errors());
+        }
+        $this->actor(4);
+        $this->denied(fn () => $controller->update(Request::create('/', 'POST', $data + ['office_level' => 'headquarters']), 10), 404);
+        $this->assertSame('regional', DB::table('gov_location_profiles')->where('location_id', 10)->value('office_level'));
+        $this->actor(1);
+        $controller->update(Request::create('/', 'POST', $data + ['office_level' => null]), 10);
+        $this->assertNull(DB::table('gov_location_profiles')->where('location_id', 10)->value('office_level'));
+    }
+
     private function actor(int $id): User
     {
         app(TenantContext::class)->reset();

@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:govstore:asset-tagging:product-type-finance-code:proposed:7",
+  "title": "Optional Finance Code for a product type",
+  "description": "GovStore metadata payload for one product type (adopted native category). One row per product type; the owner is derived from category governance. Products/models inherit through category_id. No native schema or model changes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "gov_code"
+  ],
+  "properties": {
+    "gov_code": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]{6}$",
+      "description": "Optional. NULL or no row means the product type has no Finance default. A supplied code must be an active Finance item whose unspsc_code is NULL or equals the product type's single UNSPSC code."
+    }
+  },
+  "x-storage": {
+    "table": "gov_metadata_values",
+    "subject_type": "category",
+    "subject_id": "Product-type category ID resolved from the authorized create/edit operation",
+    "namespace": "asset-tagging.default",
+    "unique": "(subject_type, subject_id, namespace): exactly one default per product type",
+    "scope": "global governance or no governance row -> national/0; company governance -> company/created_by_company_id; re-derived on every read"
+  },
+  "x-unspsc": "A product type has exactly one UNSPSC code (UNIQUE gov_catalog_snipe_mappings.category_id). Changing it marks a conflicting default needs_review; GRN ignores a needs_review default until the owner confirms or clears it.",
+  "x-concurrency": "Update requires the expected current row revision outside the stored payload.",
+  "x-authorization": {
+    "national": "catalog.master.manage",
+    "company": "Existing scoped product-type edit for the owning company",
+    "office": "Read-only; offices never override a product-type default"
+  },
+  "x-ui": {
+    "field": "Finance Code (optional)",
+    "placement": "Directly under the product type's UNSPSC commodity on create/edit",
+    "options": "Active items whose unspsc_code equals the type's code first (marked 'matches UNSPSC'), then active items without UNSPSC; items linked to another UNSPSC are not offered",
+    "empty": "Allowed; blank removes the row; never blocks saving",
+    "read_only_state": "Shows the value and names the owner when the viewer cannot edit",
+    "needs_review_state": "Warning with confirm/clear actions for the owner",
+    "effect_copy": "New receipts of this type get Govt. Tags."
+  },
+  "x-grn": "Resolve model -> category -> default. A valid default shows read-only in the GRN line tag panel. No default (or needs_review) shows a warning with a fix: choose a code for this line or keep standard tags. Units without a Finance Code get standard tags; never blocks."
+}

@@ -62,10 +62,7 @@ class CatalogCategoryCreator
             }
 
             // 2. Map UNSPSC Code to the verified Category ID
-            DB::table('gov_catalog_snipe_mappings')->updateOrInsert(
-                ['code' => $node->code],
-                ['category_id' => $category->id, 'updated_at' => now()]
-            );
+            app(ProductTypeCommodity::class)->assign((int) $category->id, $node->code);
 
             // 3. Write/Update Governance Metadata
             \GovStore\Classification\Models\CategoryGovernance::firstOrCreate(

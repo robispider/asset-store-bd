@@ -367,6 +367,170 @@
         "byStatus",
         "statuses"
       ]
+    },
+    "asset-tags.readiness": {
+      "description": "Asset-tagging gates G1-G6 restated from the business rules for one office (native sequence, bridge, legacy tags, office codes, single issuer, real-or-rehearsal office), the office facts, company code lists and enablement with revisions, other offices' location codes and the asset-tags access-event count",
+      "parameters": {
+        "officeId": "integer"
+      },
+      "outputFields": [
+        "office_id",
+        "company_id",
+        "office_name",
+        "native",
+        "gates",
+        "failing",
+        "allPass",
+        "passCount",
+        "officePassCount",
+        "installationPassCount",
+        "experimentOffice",
+        "facts",
+        "factsRevision",
+        "locationCode",
+        "defaultDivision",
+        "divisionCount",
+        "codeLists",
+        "codeListsRevision",
+        "locationListCount",
+        "divisionListCount",
+        "enabled",
+        "enablement",
+        "enablementRevision",
+        "takenLocations",
+        "accessEvents"
+      ]
+    },
+    "asset-tags.document": {
+      "description": "One store document by id: status, receiving source, challan / PO dates, lines and every tag issued for it (format, Finance Code, unit, finance source, standard reason, division and location codes, acquisition date, asset purchase date and office)",
+      "parameters": {
+        "id": "string",
+        "modelId": "integer (optional)"
+      },
+      "outputFields": [
+        "exists",
+        "id",
+        "number",
+        "type",
+        "status",
+        "purchase_type",
+        "location_id",
+        "company_id",
+        "posted_by",
+        "created_by",
+        "challanDate",
+        "poDate",
+        "lines",
+        "quantity",
+        "lineQuantities",
+        "tags",
+        "registrations",
+        "govt",
+        "standard",
+        "entered",
+        "govtByModel",
+        "standardByModel",
+        "govtTags",
+        "standardTags",
+        "allAssetTagsMatch",
+        "modelTags",
+        "modelFormats",
+        "modelFinanceSources",
+        "modelStandardReasons",
+        "modelPurchaseDates",
+        "modelOffices"
+      ]
+    },
+    "asset-tags.tag": {
+      "description": "Where one tag lives: registration, asset, office and company, and how many assets carry it",
+      "parameters": {
+        "tag": "string"
+      },
+      "outputFields": [
+        "tag",
+        "exists",
+        "asset_id",
+        "format",
+        "gov_code",
+        "location_id",
+        "company_id",
+        "assetsWithTag"
+      ]
+    },
+    "asset-tags.finance": {
+      "description": "One Finance item: status, UNSPSC link, last editor, and how many items are active",
+      "parameters": {
+        "code": "string"
+      },
+      "outputFields": [
+        "code",
+        "exists",
+        "status",
+        "item_name",
+        "unspsc_code",
+        "updated_by",
+        "activeCount"
+      ]
+    },
+    "asset-tags.default": {
+      "description": "A product type's stored Finance Code default, its revision, owner scope and whether the type is national",
+      "parameters": {
+        "categoryId": "integer"
+      },
+      "outputFields": [
+        "category_id",
+        "gov_code",
+        "revision",
+        "scope",
+        "national"
+      ]
+    },
+    "rules.effective": {
+      "description": "Who decides one capability (default issue_govt_tags) for one office and asset model, restated from published assignments layer by layer (GLOBAL, COMPANY, LOCATION, CATEGORY, MODEL; built-in DEFAULT underneath)",
+      "parameters": {
+        "officeId": "integer",
+        "modelId": "integer",
+        "code": "string"
+      },
+      "outputFields": [
+        "code",
+        "office_id",
+        "model_id",
+        "category_id",
+        "trail",
+        "decider",
+        "policy",
+        "on"
+      ]
+    },
+    "rules.policy": {
+      "description": "One product-rules policy by exact name: status, version, lineage, behaviors and active assignments",
+      "parameters": {
+        "name": "string"
+      },
+      "outputFields": [
+        "exists",
+        "id",
+        "status",
+        "version",
+        "lineage",
+        "capabilities",
+        "assignments",
+        "activeAssignments"
+      ]
+    },
+    "storeops.documents": {
+      "description": "Store documents of one type created by one user in one office, posted documents of that type in the office, and the total number of asset registrations",
+      "parameters": {
+        "officeId": "integer",
+        "userId": "integer",
+        "type": "string"
+      },
+      "outputFields": [
+        "count",
+        "posted",
+        "registrations"
+      ]
     }
   }
 }

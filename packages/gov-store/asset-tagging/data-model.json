@@ -1,0 +1,40 @@
+{
+  "revision": 7,
+  "status": "design_only",
+  "new_tables": [
+    "gov_finance_items",
+    "gov_metadata_values",
+    "gov_asset_tag_sequences"
+  ],
+  "alter_existing_tables": [
+    "gov_asset_registrations",
+    "gov_catalog_snipe_mappings"
+  ],
+  "authoritative_dictionary": "architecture/table-requirements.json",
+  "format_owner": "Developer-maintained PHP implementations selected by TagFormatFactory (fd18-v1, native-v1)",
+  "metadata_owner": "gov-store/metadata MetadataValueStore; company code lists, office selections, office enablement and product-type Finance defaults; no native model property",
+  "classification": {
+    "gov_code": "Optional six-digit GGSSII Finance key",
+    "unspsc_per_product_type": "exactly one; UNIQUE(gov_catalog_snipe_mappings.category_id)",
+    "unspsc_link": "gov_finance_items.unspsc_code is a soft link to gov_catalog_nodes.code; nullable; several Finance items may share it",
+    "reverse_gov_code_on_unspsc": false,
+    "product_default": "Optional; one row per product type in gov_metadata_values (subject category); owner = national for global types, company for company types"
+  },
+  "tag_kinds": {
+    "fd18-v1": "Govt. Tag (UI label); requires active Finance Code, acquisition date from Supplier Challan/PO date and a Purchase receipt",
+    "native-v1": "Standard tag from the native prefix/sequence",
+    "entered-v1": "Tag typed in an office that is not enabled (legacy behaviour, guarded)"
+  },
+  "physical_tag": "Existing assets.asset_tag; gov_asset_registrations.asset_tag retains the permanent reservation",
+  "finance_code_required": false,
+  "second_canonical_identifier": false,
+  "cga_required": false,
+  "historical_geography_import": false,
+  "native_schema_or_model_changes": false,
+  "ui_label_fd18": "Govt. Tag",
+  "integration": {
+    "capability": "issue_govt_tags (GovtTagCapability) registered with CapabilityRegistry::extend",
+    "issuer_contract": "store-operations Contracts/AssetTagIssuer; NullAssetTagIssuer default; AssetTagIssuerAdapter bound when asset-tagging is installed",
+    "checklist_contract": "store-operations Contracts/ContributesChecklist"
+  }
+}

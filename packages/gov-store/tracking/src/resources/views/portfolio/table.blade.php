@@ -1,0 +1,15 @@
+<x-gs::table class="gs-portfolio-table" data-monitor-sortable>
+    <thead><tr><th scope="col"><span class="gs-sr-only">{{ __('govtracking::portfolio.details') }}</span></th>@foreach(['title','health','delivered','value','offices','codes','team','last'] as $key)<th scope="col" @if($filters['sort']===$key) aria-sort="{{ $filters['direction']==='asc' ? 'ascending' : 'descending' }}" @endif><a href="{{ $url(['sort'=>$key,'direction'=>$filters['sort']===$key && $filters['direction']==='asc' ? 'desc' : 'asc','page'=>1]) }}">{{ __('govtracking::portfolio.sorts.'.$key) }} @if($filters['sort']===$key){{ $filters['direction']==='asc' ? '↑' : '↓' }}@else↕@endif</a></th>@endforeach</tr></thead>
+    <tbody>@foreach($programmes as $p)
+        <tr data-portfolio-programme="{{ $p['id'] }}">
+            <td><button type="button" class="gs-tracking-expand" data-monitor-toggle hidden aria-expanded="true" aria-controls="portfolio-details-{{ $p['id'] }}" aria-label="{{ __('govtracking::portfolio.collapse',['title'=>$p['title']]) }}" data-expand-label="{{ __('govtracking::portfolio.expand',['title'=>$p['title']]) }}" data-collapse-label="{{ __('govtracking::portfolio.collapse',['title'=>$p['title']]) }}"><span data-monitor-toggle-icon aria-hidden="true">−</span></button></td>
+            <td class="gs-portfolio-identity"><a class="gs-portfolio-programme-title" href="{{ route('gov.tracking.initiatives.show',$p['id']) }}" title="{{ $p['title'] }}">{{ $p['title'] }}</a><span class="gs-portfolio-meta"><span>{{ __('govtracking::portfolio.status.'.$p['status']) }}</span><span class="gs-portfolio-chip">{{ $p['funding'] }}</span>@if($p['mine'])<span class="gs-portfolio-chip">{{ __('govtracking::portfolio.your_team') }}</span>@endif</span><small class="gs-portfolio-owner" title="{{ $p['owner'] }}">{{ $p['owner'] }}</small><small class="gs-tracking-block gs-tracking-muted">{{ implode(' · ',$p['years']) }}</small></td>
+            <td>@include('govtracking::portfolio.health')<small class="gs-tracking-block gs-tracking-muted">{{ trans_choice('govtracking::portfolio.issue_count',count($p['attention'])) }}</small></td>
+            <td class="gs-portfolio-pace">@include('govtracking::portfolio.pace')</td>
+            <td class="gs-num">@include('govtracking::portfolio.value')</td><td class="gs-num">@include('govtracking::portfolio.offices')</td>
+            <td class="gs-num">{{ $p['active_count'] }} · {{ $p['draft_count'] }}<small class="gs-tracking-block gs-tracking-muted">{{ __('govtracking::general.monitor.active_draft') }}</small></td>
+            <td>@include('govtracking::portfolio.team')</td><td class="gs-portfolio-last">{{ $p['last'] ? \Carbon\CarbonImmutable::parse($p['last'])->toDateString() : '—' }}@if($p['last'])<small class="gs-tracking-block gs-tracking-muted">{{ \Carbon\CarbonImmutable::parse($p['last'])->diffForHumans() }}</small>@endif</td>
+        </tr>
+        <tr class="gs-portfolio-detail" data-monitor-detail id="portfolio-details-{{ $p['id'] }}"><td colspan="9">@include('govtracking::portfolio.details')</td></tr>
+    @endforeach</tbody>
+</x-gs::table>

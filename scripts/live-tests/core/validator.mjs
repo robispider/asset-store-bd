@@ -25,6 +25,7 @@ const ALLOWED_ACTIONS = new Set([
   'waitObserve',
   'probe',
   'submitForm',
+  'select2',
   'use' // flow invocation
 ]);
 
@@ -140,6 +141,9 @@ export class TestValidator {
         }
       }
 
+      if (step.when && (step.when.actual === undefined || (step.when.equals === undefined && step.when.notEquals === undefined))) {
+        errors.push(`${stepPath}: 'when' requires 'actual' and 'equals' or 'notEquals'`);
+      }
       if (step.modes && (!Array.isArray(step.modes) || step.modes.some(m => !['shadow', 'enforce'].includes(m)))) {
         errors.push(`${stepPath}: 'modes' must be an array of shadow/enforce`);
       }
@@ -157,9 +161,15 @@ export class TestValidator {
       }
 
       if (step.action === 'compare') {
-        if (step.actual === undefined || (step.equals === undefined && step.contains === undefined)) {
-          errors.push(`${stepPath}: Compare step requires 'actual' and 'equals'/'contains'`);
+        if (step.actual === undefined || (step.equals === undefined && step.contains === undefined && step.matches === undefined && step.greaterThan === undefined)) {
+          errors.push(`${stepPath}: Compare step requires 'actual' and 'equals'/'contains'/'matches'/'greaterThan'`);
         }
+      }
+      if (step.action === 'select2' && (!step.target || (step.search === undefined && step.option === undefined))) {
+        errors.push(`${stepPath}: select2 step requires 'target' and 'search' or 'option'`);
+      }
+      if (step.action === 'download' && (!step.target || !step.as)) {
+        errors.push(`${stepPath}: download step requires 'target' and 'as'`);
       }
 
       // Check variable syntax across step strings

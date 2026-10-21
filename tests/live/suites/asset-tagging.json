@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "asset-tagging",
+  "title": "Asset tagging full flow (GRN + Rules studio)",
+  "description": "End-to-end rehearsal of asset tagging on the seeded dataset, in order: role boundaries, national setup (G1 native sequence, Finance activation, product-type Finance Code), company code lists, office settings (with a taken-code refusal in a sibling office), enablement, GRN issuance (Govt. Tags from product type and line choice, an explicit standard tag, CSV, lookup, cross-office boundaries), needs-attention cases, the Rules studio turning the tag rule off and on for the office, and pause/resume. Needs --target local (super admin), --allow-writes, an office with an opened stock ledger and ASSET_TAGS_SINGLE_ISSUER=true + ASSET_TAGS_REHEARSAL=true (gates G5/G6). Issued tags and posted GRNs are permanent and listed as retained.",
+  "environment": { "target": "http://snipeit.local", "allowlist": ["http://snipeit.local"] },
+  "journeys": [
+    "asset-tagging.access-boundaries",
+    "asset-tagging.national-setup",
+    "asset-tagging.company-code-lists",
+    "asset-tagging.office-settings",
+    "asset-tagging.enablement",
+    "asset-tagging.grn-issuance",
+    "asset-tagging.grn-attention",
+    "asset-tagging.rules-studio",
+    "asset-tagging.pause-resume"
+  ],
+  "defaults": { "language": "en-US", "timeoutMs": 120000 }
+}

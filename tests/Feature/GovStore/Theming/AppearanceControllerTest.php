@@ -8,6 +8,7 @@ use GovStore\Theming\Models\ThemePreference;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
+use Tabuna\Breadcrumbs\BreadcrumbsMiddleware;
 
 class AppearanceControllerTest extends ThemingTestCase
 {
@@ -41,7 +42,7 @@ class AppearanceControllerTest extends ThemingTestCase
             if (in_array('GET', $route->methods(), true)) {
                 // Every UI route has a breadcrumb (tabuna registers it as route middleware + default).
                 $this->assertContains('breadcrumbs', $route->gatherMiddleware(), $name);
-                $this->assertArrayHasKey(\Tabuna\Breadcrumbs\BreadcrumbsMiddleware::class, $route->defaults, $name);
+                $this->assertArrayHasKey(BreadcrumbsMiddleware::class, $route->defaults, $name);
             }
         }
     }
@@ -53,7 +54,7 @@ class AppearanceControllerTest extends ThemingTestCase
         $view = $this->controller()->index($this->request('GET'));
         $data = $view->getData();
         $this->assertSame('gs-theme::appearance.index', $view->name());
-        $this->assertSame(['default', 'digital-blue', 'executive-neutral', 'institutional-green', 'lavender'], array_keys($data['themes']));
+        $this->assertSame(['civic-ledger', 'default', 'digital-blue', 'executive-neutral', 'institutional-green', 'lavender'], array_keys($data['themes']));
         $this->assertSame('digital-blue', $data['current']);
         $this->assertSame(['office'], $data['tags']['digital-blue']);
         $this->assertTrue($data['canChoose']);

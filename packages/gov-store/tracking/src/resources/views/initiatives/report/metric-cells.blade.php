@@ -1,0 +1,2 @@
+<td class="gs-num">{{ $n($row['received']) }}</td><td class="gs-num">{{ $money($row) }}</td><td class="gs-num">{{ $n($row['grns']) }}</td>
+<td class="gs-num">{{ $n($row['used']) }}</td><td class="gs-num">{{ $n($row['store']) }}</td><td class="gs-num">{{ $n($row['other']) }}</td><td class="gs-num">{{ $n($row['unknown']) }}</td><td class="gs-num">{{ $usePercent($row) }}</td><td class="gs-tracking-report__date">@if($row['last_estimated'])<abbr title="{{ __('govtracking::report.estimated_date') }}">≈</abbr> @endif{{ $digits(substr($row['last'] ?? '', 0, 10)) ?: '—' }}</td>

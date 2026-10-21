@@ -100,12 +100,19 @@ export class PhpBridge {
     return res.datasets || [];
   }
 
+  /** A configured superadmin (a target's bootstrap login) for journeys whose actor is a supplied superuser. */
+  setSuperadmin(account) {
+    this.superadmin = account?.password ? { username: account.username, userId: account.userId, password: account.password } : null;
+    registerSecret(this.superadmin?.password);
+  }
+
   async resolveContext(fixturesDef, datasetId = null, extra = {}) {
     const payload = {
       datasetId,
       office: fixturesDef?.office || {},
       actors: fixturesDef?.actors || {},
       records: fixturesDef?.records || {},
+      ...(this.superadmin ? { superadmin: this.superadmin } : {}),
       ...extra
     };
     return await this.runAction('resolveContext', payload);

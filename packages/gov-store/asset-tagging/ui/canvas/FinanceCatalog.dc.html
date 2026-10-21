@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Finance catalog</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/c32d13bc41445ccff8c8156f9d142efa">
+<link rel="stylesheet" href="/_blob/b0140cd2ad3846295c9f5b5830092d19">
+<link rel="stylesheet" href="/_blob/5ce2466269dec07fabc18d249b73b3f3">
+<link rel="stylesheet" href="/_blob/22b274ea2c677e88680fff95f1da730f">
+<link rel="stylesheet" href="/_blob/a22aa64277e2d4b6dd0f0188f59f608f">
+<link rel="stylesheet" href="/_blob/4a8ede88a8bfb06759d0786c392dcd21">
+<link rel="stylesheet" href="/_blob/ac4accb7e1cee1091aaa49053784ac91">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&amp;family=Noto+Sans+Bengali:wght@400;600&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="at-app" data-skin="{{theme}}" data-theme="{{mode}}" data-gs-status-style="tinted" style="width: 100%; min-height: 100%;">
+<header class="at-top">
+<span class="at-top__brand"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>National Asset Register</span>
+<span class="at-top__ctx"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21V10M19 21V10M9 21v-7M15 21v-7M2 10l10-6 10 6"></path></svg>National catalog publisher</span>
+</header>
+<div class="at-shell">
+<nav class="at-side" aria-label="Asset tagging screens">
+<div class="at-side__head">Asset tagging</div>
+<a href="Main.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>Overview</a>
+<a href="GrnTagging.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"></path><path d="M3 7l9 4 9-4M12 11v10"></path></svg>GRN workspace</a>
+<a href="PostReview.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 3 3 5-6"></path></svg>Post and print</a>
+<a href="TagLookup.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>Tag lookup</a>
+<div class="at-side__head">Administration</div>
+<a href="ProductType.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z"></path><path d="m3 13 9 5 9-5"></path></svg>Product type</a>
+<a href="OfficeSettings.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Office settings</a>
+<a href="FinanceCatalog.dc.html" aria-current="page"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z"></path><path d="M4 16a4 4 0 0 1 4-4h12"></path></svg>Finance catalog</a>
+<a href="Enablement.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"></path><path d="m9 12 2 2 4-4"></path></svg>Enablement</a>
+</nav>
+<main class="at-main">
+<div class="at-crumbs"><span>Catalog</span><span aria-hidden="true">›</span><span>Finance codes</span></div>
+<header class="gs-page-header">
+<div class="gs-page-header__text"><h1 class="gs-page-header__title">Finance codes <span class="gs-page-header__bn" lang="bn">অর্থ বিভাগ কোড</span></h1><p class="gs-page-header__subtitle">The national Finance item list. Imported rows stay held until reviewed; codes are never deleted or reused.</p></div>
+<div class="gs-page-header__actions"><button type="button" class="gs-btn gs-btn--primary" onClick="{{openNew}}">New Finance item</button></div>
+</header>
+
+<div class="gs-kpis" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+<div class="gs-kpi gs-kpi--warning"><span class="gs-kpi__main"><span class="gs-kpi__label">Held</span><span class="gs-kpi__value">{{held}}</span><span class="gs-kpi__caption">Awaiting review</span></span></div>
+<div class="gs-kpi gs-kpi--success"><span class="gs-kpi__main"><span class="gs-kpi__label">Active</span><span class="gs-kpi__value">{{active}}</span><span class="gs-kpi__caption">Usable in GRNs and product types</span></span></div>
+<div class="gs-kpi gs-kpi--muted"><span class="gs-kpi__main"><span class="gs-kpi__label">Retired</span><span class="gs-kpi__value">0</span><span class="gs-kpi__caption">Kept forever, never reused</span></span></div>
+<div class="gs-kpi gs-kpi--info"><span class="gs-kpi__main"><span class="gs-kpi__label">Linked to UNSPSC</span><span class="gs-kpi__value">0</span><span class="gs-kpi__caption">470 candidate leads to review</span></span></div>
+</div>
+
+<section class="gs-box">
+<header class="gs-box__header"><h2 class="gs-box__title">Item numbers used per group</h2><div class="gs-box__tools"><span class="at-small at-muted">Each group can hold 99 items. A warning appears from 90.</span></div></header>
+<div class="gs-box__body at-stack" style="gap: 10px;">
+<sc-for list="{{capacity}}" as="g" hint-placeholder-count="5">
+<div class="at-row" style="gap: 12px;">
+<span style="flex: 0 1 300px; min-width: 0;"><span class="at-mono"><strong>{{g.code}}</strong></span> {{g.name}}</span>
+<span class="gs-progress" style="flex: 1 1 200px;"><span class="gs-progress__track" style="display: block;"><span class="gs-progress__bar" style="display: block; width: {{g.pct}};"></span></span></span>
+<span class="at-mono at-small" style="min-width: 4.5em;">{{g.used}} / 99</span>
+<span class="gs-badge" data-tone="{{g.tone}}"><span class="gs-badge__label">{{g.state}}</span></span>
+</div>
+</sc-for>
+<sc-if value="{{fullDemo}}" hint-placeholder-val="{{ false }}">
+<div class="gs-alert gs-alert--danger" role="alert"><svg class="at-i gs-alert__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg><div class="gs-alert__body"><strong>Group 12 Tools is full (99 of 99).</strong> New items can't be added to it until the Finance Division approves the overflow rule (decision D-08; recommended: number items per subgroup for this group). Receiving is not affected: units of a new tool type get standard tags, or use an existing item that fits.</div></div>
+</sc-if>
+</div>
+</section>
+
+<sc-if value="{{published}}" hint-placeholder-val="{{ false }}">
+<div class="gs-alert gs-alert--success" role="status"><svg class="at-i gs-alert__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 3 3 5-6"></path></svg><div class="gs-alert__body"><strong>3 Finance items are active.</strong> They can now be chosen on product types and GRN lines. This review can't be run again.</div></div>
+</sc-if>
+
+<sc-if value="{{newOpen}}" hint-placeholder-val="{{ false }}">
+<section class="gs-box gs-box--primary">
+<header class="gs-box__header"><h2 class="gs-box__title">New Finance item</h2><div class="gs-box__tools"><button type="button" class="gs-btn gs-btn--light gs-btn--sm" aria-label="Close" onClick="{{closeNew}}"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg></button></div></header>
+<div class="gs-box__body at-stack">
+<ol class="gs-stepper" aria-label="New Finance item">
+<li class="gs-step gs-step--done"><span class="gs-step__marker" aria-hidden="true">1</span><span class="gs-step__label">Group and subgroup</span></li>
+<li class="gs-step gs-step--current" aria-current="step"><span class="gs-step__marker" aria-hidden="true">2</span><span class="gs-step__label">Item</span></li>
+<li class="gs-step"><span class="gs-step__marker" aria-hidden="true">3</span><span class="gs-step__label">Review and publish</span></li>
+</ol>
+<div class="at-cols">
+<div class="gs-form-row"><label class="gs-form-row__label" for="newgroup">Group › Subgroup</label><div class="gs-form-row__control"><select class="form-control" id="newgroup" value="{{newGroup}}" onChange="{{onNewGroup}}"><option value="09">09 Computer and Computer Equipment › 08 Laptop</option><option value="12">12 Tools › 01 Hand tools</option></select></div></div>
+<div class="gs-form-row"><label class="gs-form-row__label" for="newname">Item name</label><div class="gs-form-row__control"><input class="form-control" id="newname" type="text" value="Rugged Laptop" readonly><p class="gs-form-row__help">A new brand or model of an existing item does not need a new code.</p></div></div>
+<div class="gs-form-row"><label class="gs-form-row__label" for="newunspsc">UNSPSC commodity <span class="at-muted">(optional)</span></label><div class="gs-form-row__control"><input class="form-control" id="newunspsc" type="text" placeholder="Search level-4 commodities"></div></div>
+</div>
+<sc-if value="{{newBlocked}}" hint-placeholder-val="{{ false }}">
+<div class="gs-alert gs-alert--danger" role="alert"><svg class="at-i gs-alert__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg><div class="gs-alert__body"><strong>Group 12 is full (99 of 99).</strong> No item number is left in this group. Ask the Finance Division to approve the overflow rule (D-08), or use an existing item that genuinely fits. Codes are never wrapped or reused.</div></div>
+</sc-if>
+<sc-if value="{{newOk}}" hint-placeholder-val="{{ true }}">
+<div class="at-preview">
+<div class="at-preview__head"><strong>Code this item will get</strong><span class="at-small at-muted">{{newHint}}</span></div>
+<div class="gs-segs"><span class="gs-seg" data-tone="primary"><span class="gs-seg__v">{{newG}}</span><span class="gs-seg__l">Group</span></span><span class="gs-seg" data-tone="primary"><span class="gs-seg__v">{{newS}}</span><span class="gs-seg__l">Subgroup</span></span><span class="gs-seg gs-seg--pending"><span class="gs-seg__v">{{newI}}</span><span class="gs-seg__l">Next item</span></span></div>
+</div>
+</sc-if>
+<div class="at-row" style="justify-content: flex-end;"><button type="button" class="gs-btn gs-btn--secondary gs-btn--outline" onClick="{{closeNew}}">Back</button><button type="button" class="gs-btn gs-btn--primary" disabled="{{newBlocked}}">Continue to review</button></div>
+</div>
+</section>
+</sc-if>
+
+<section class="gs-box">
+<div class="gs-box__body at-stack">
+<nav class="gs-status-tabs" aria-label="Finance item status">
+<ul class="gs-tabs">
+<li class="gs-tabs__item"><a class="gs-tabs__link" href="#held" aria-current="page"><span>Held</span><span class="gs-tabs__count">{{held}}</span></a></li>
+<li class="gs-tabs__item"><a class="gs-tabs__link" href="#active"><span>Active</span><span class="gs-tabs__count">{{active}}</span></a></li>
+<li class="gs-tabs__item"><a class="gs-tabs__link" href="#retired"><span>Retired</span><span class="gs-tabs__count gs-tabs__count--zero">0</span></a></li>
+</ul>
+</nav>
+<div class="at-row">
+<label class="gs-sr-only" for="fsearch">Search Finance items</label><input class="form-control" id="fsearch" type="search" placeholder="Search code or name" style="flex: 1 1 260px; width: auto;">
+<label class="gs-sr-only" for="fgroup">Group</label><select class="form-control" id="fgroup" style="flex: 0 1 280px; width: auto;"><option>All groups</option><option>05 Furniture and Fixture</option><option>08 Electric Equipment</option><option>09 Computer and Computer Equipment</option></select>
+<label class="at-row" style="gap: 6px; font-weight: 400;"><input type="checkbox"> Has a source issue</label>
+</div>
+<sc-if value="{{hasSelection}}" hint-placeholder-val="{{ false }}">
+<div class="gs-bulk-bar" role="region" aria-label="Bulk actions" style="display: flex;"><span class="gs-bulk-bar__count">{{selCount}} selected</span><div class="gs-bulk-bar__actions"><button type="button" class="gs-btn gs-btn--primary gs-btn--sm" onClick="{{openReview}}">Review and activate</button><button type="button" class="gs-btn gs-btn--light gs-btn--sm" onClick="{{clearSel}}">Clear</button></div></div>
+</sc-if>
+<div class="gs-table-wrap at-scroll">
+<table class="gs-table">
+<thead><tr><th scope="col"><span class="gs-sr-only">Select</span></th><th scope="col">Code</th><th scope="col">Item</th><th scope="col">Group › Subgroup</th><th scope="col">UNSPSC</th><th scope="col">Status</th></tr></thead>
+<tbody>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+<tr>
+<td><input type="checkbox" aria-label="Select {{r.code}} {{r.name}}" checked="{{r.checked}}" disabled="{{r.locked}}" onChange="{{r.toggle}}"></td>
+<td class="at-mono"><strong>{{r.code}}</strong></td>
+<td>{{r.name}}</td>
+<td class="at-small">{{r.path}}</td>
+<td class="at-small">{{r.unspsc}}</td>
+<td><span class="gs-badge" data-tone="{{r.tone}}"><span class="gs-badge__label">{{r.status}}</span></span>
+<sc-if value="{{r.locked}}" hint-placeholder-val="{{ false }}"><span class="at-small at-muted" style="display: block;">Source issue D-02: Furniture group 03 vs 05</span></sc-if></td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+<p class="at-small at-muted">Showing 7 of 490. Rows with an unresolved source issue can't be selected.</p>
+</div>
+</section>
+
+<sc-if value="{{reviewOpen}}" hint-placeholder-val="{{ false }}">
+<div class="at-scrim">
+<div class="at-dialog" role="dialog" aria-modal="true" aria-labelledby="rev-title" style="max-width: 640px;">
+<div class="at-dialog__head"><h2 id="rev-title" style="font-size: 18px;">Activate {{selCount}} Finance items</h2><button type="button" class="gs-btn gs-btn--light gs-btn--sm" aria-label="Close" onClick="{{closeReview}}"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg></button></div>
+<div class="at-dialog__body at-stack">
+<p>This is the exact change that will be made. It runs once and expires in 30 minutes.</p>
+<div class="gs-table-wrap"><table class="gs-table"><thead><tr><th scope="col">Code</th><th scope="col">Item</th><th scope="col">Change</th></tr></thead><tbody>
+<sc-for list="{{selectedRows}}" as="s" hint-placeholder-count="3"><tr><td class="at-mono">{{s.code}}</td><td>{{s.name}}</td><td class="at-small">held → active · UNSPSC none</td></tr></sc-for>
+</tbody></table></div>
+<div class="gs-form-row"><label class="gs-form-row__label" for="authref">Authority reference</label><div class="gs-form-row__control"><input class="form-control" id="authref" type="text" value="Finance Division circular [REFERENCE]" readonly></div></div>
+<div class="gs-form-row"><label class="gs-form-row__label" for="reason">Reason</label><div class="gs-form-row__control"><textarea class="form-control" id="reason" rows="2">Computer items confirmed against the controlling list.</textarea></div></div>
+<div class="gs-form-row"><label class="gs-form-row__label" for="confirm">Type <span class="at-mono">ACTIVATE-{{selCount}}</span> to confirm</label><div class="gs-form-row__control"><input class="form-control form-control--code" id="confirm" type="text" autocomplete="off" value="{{typed}}" onChange="{{onTyped}}"></div></div>
+</div>
+<div class="at-dialog__foot"><button type="button" class="gs-btn gs-btn--secondary gs-btn--outline" onClick="{{closeReview}}">Cancel</button><button type="button" class="gs-btn gs-btn--primary" disabled="{{cantActivate}}" onClick="{{activate}}">Activate</button></div>
+</div>
+</div>
+</sc-if>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender"],"default":"civic-ledger","section":"Theme"},"mode":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"},"capacity":{"editor":"enum","options":["today (source data)","example: group 12 full"],"default":"today (source data)","section":"State"},"$preview":{"width":1280,"height":1900}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { sel: ['090809', '090708', '090101'], reviewOpen: false, typed: '', published: false, newOpen: false, newGroup: '09' };
+}
+renderVals() {
+const s = this.state;
+const base = [
+{ code: '090101', name: 'Printer', path: '09 Computer and Computer Equipment › 01 Printer', unspsc: '—' },
+{ code: '090102', name: 'Printer & Photocopy Machine', path: '09 Computer and Computer Equipment › 01 Printer', unspsc: '—' },
+{ code: '090708', name: 'Desktop Computer', path: '09 Computer and Computer Equipment › 07 Desktop Computer', unspsc: '2 leads' },
+{ code: '090809', name: 'Laptop', path: '09 Computer and Computer Equipment › 08 Laptop', unspsc: '1 lead' },
+{ code: '080812', name: 'Projector', path: '08 Electric Equipment › 08 Projector', unspsc: '1 lead' },
+{ code: '050310', name: 'Revolving Arm Chair', path: '05 Furniture and Fixture › 03 Chair', unspsc: '—', locked: true },
+{ code: '050308', name: 'Plastic Chair', path: '05 Furniture and Fixture › 03 Chair', unspsc: '—', locked: true }
+];
+const active = (c) => s.published && ['090809', '090708', '090101'].includes(c);
+const rows = base.map((r) => ({
+...r, locked: !!r.locked,
+checked: !s.published && s.sel.includes(r.code),
+status: active(r.code) ? 'Active' : 'Held', tone: active(r.code) ? 'success' : 'warning',
+toggle: () => this.setState({ sel: s.sel.includes(r.code) ? s.sel.filter((c) => c !== r.code) : s.sel.concat([r.code]) })
+}));
+const selCount = s.published ? 0 : s.sel.length;
+const full = (this.props.capacity ?? 'today (source data)') === 'example: group 12 full';
+const groups = [
+{ code: '12', name: 'Tools', used: full ? 99 : 87 },
+{ code: '04', name: 'Plant and Machinery', used: 62 },
+{ code: '05', name: 'Furniture and Fixture', used: 41 },
+{ code: '11', name: 'Network and IT Equipment', used: 41 },
+{ code: '09', name: 'Computer and Computer Equipment', used: 11 }
+];
+const capacity = groups.map((g) => ({ ...g, used: String(g.used), pct: g.used + '%',
+state: g.used >= 99 ? 'Full' : (g.used >= 90 ? 'Almost full' : (g.used >= 80 ? 'Watch' : 'OK')),
+tone: g.used >= 99 ? 'danger' : (g.used >= 90 ? 'warning' : (g.used >= 80 ? 'info' : 'success')) }));
+const g12 = full ? 99 : 87;
+const newBlocked = s.newGroup === '12' && g12 >= 99;
+const nextItem = s.newGroup === '12' ? String(g12 + 1) : '12';
+return {
+capacity, fullDemo: full,
+newGroup: s.newGroup, onNewGroup: (e) => this.setState({ newGroup: e.target.value }),
+newBlocked, newOk: !newBlocked,
+newG: s.newGroup, newS: s.newGroup === '12' ? '01' : '08', newI: nextItem,
+newHint: s.newGroup === '12' ? 'A preview: reserved only when published. Group 12 has used 01–' + g12 + '; ' + (98 - g12) + ' numbers left after this one.' : 'A preview: reserved only when published. Item numbers run across the whole group (group 09 has used 01–11).',
+theme: this.props.theme ?? 'civic-ledger', mode: this.props.mode ?? 'light',
+rows, selectedRows: base.filter((r) => s.sel.includes(r.code)), selCount: String(selCount), hasSelection: selCount > 0,
+held: String(s.published ? 487 : 490), active: String(s.published ? 3 : 0), published: s.published,
+clearSel: () => this.setState({ sel: [] }),
+reviewOpen: s.reviewOpen, openReview: () => this.setState({ reviewOpen: true, typed: '' }), closeReview: () => this.setState({ reviewOpen: false }),
+typed: s.typed, onTyped: (e) => this.setState({ typed: e.target.value }),
+cantActivate: s.typed.trim().toUpperCase() !== 'ACTIVATE-' + selCount,
+activate: () => this.setState({ published: true, reviewOpen: false }),
+newOpen: s.newOpen, openNew: () => this.setState({ newOpen: true }), closeNew: () => this.setState({ newOpen: false })
+};
+}
+}
+</script>
+</body>
+</html>

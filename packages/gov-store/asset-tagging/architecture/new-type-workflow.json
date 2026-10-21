@@ -1,0 +1,44 @@
+{
+  "revision": 7,
+  "status": "design_only",
+  "new_workflow_tables": 0,
+  "new_business_roles": 0,
+  "existing_channel": "Existing GRN draft and catalog administration; no request engine",
+  "steps": [
+    {
+      "step": 1,
+      "actor": "storekeeper",
+      "action": "Search active items; reuse same meaning for new brand/model. Otherwise post without a Finance Code (standard tag); nothing blocks the receipt."
+    },
+    {
+      "step": 2,
+      "actor": "existing national catalog publisher with Finance/Administration evidence where required",
+      "action": "Choose group/subgroup; review exact supported Finance change through existing national process."
+    },
+    {
+      "step": 3,
+      "actor": "service inside catalog transaction",
+      "action": "Lock finance-code:item scope GG; allocate the next unused item number in the whole group (01..99) checking held/active/retired rows; II runs across the group, not per subgroup. New hierarchy starts with its first item."
+    },
+    {
+      "step": 4,
+      "actor": "existing national catalog publisher",
+      "action": "Publish approved item/authority reference. Optional existing UNSPSC association. Preserve payload, expiry and durable one-use execution."
+    },
+    {
+      "step": 5,
+      "actor": "product-type owner (national publisher for global types, company editor for company types)",
+      "action": "Optionally set the new code as the product-type default. Future receipts inherit it; units already issued with standard tags keep them (D-05)."
+    }
+  ],
+  "rules": {
+    "gov_code": "GGSSII; never reuse",
+    "new_subgroup": "Same counter table with scope GG; first item created together",
+    "new_group": "Same counter table with root scope; first item created together",
+    "unspsc": "Optional existing code; must equal the product type's single UNSPSC when used as its default; do not invent official codes",
+    "exhaustion": "Warn from 90 used item numbers in a group; refuse at 99; receiving continues with standard tags; D-08 Option A (per-subgroup numbering for that group) recommended for authority approval; Option B new 3-digit-item format only if A is rejected",
+    "existing_tags": "Immutable",
+    "unclassified_grn": "Draft and posting allowed; unclassified units receive standard tags",
+    "exact_review_executor": "Explicitly extend current catalog review for Finance changes; current UNSPSC-only bundle is insufficient"
+  }
+}

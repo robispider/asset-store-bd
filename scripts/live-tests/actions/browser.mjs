@@ -1,6 +1,17 @@
 /**
  * GovStore Live Testing - Browser Action Engine
  */
+import Papa from 'papaparse';
+
+/** The HTTP redirect hops behind a navigation response, oldest first ("POST /path → 302"), for failure diagnosis. */
+export async function redirectChain(response) {
+  const hops = [];
+  for (let request = response.request().redirectedFrom(); request; request = request.redirectedFrom()) {
+    const status = (await request.response().catch(() => null))?.status();
+    hops.unshift(`${request.method()} ${new URL(request.url()).pathname} → ${status ?? '?'}`);
+  }
+  return hops;
+}
 
 export class BrowserActionEngine {
   constructor(assertionEngine, captureEngine, locatorResolver) {
@@ -103,9 +114,18 @@ export class BrowserActionEngine {
 
       case 'submitForm': {
         // Submit the form containing the target and wait for the resulting navigation.
+        // Register the navigation wait before clicking: waitForLoadState alone resolves at once on the current page.
         const locator = this.locators.resolve(page, step.target);
-        await Promise.all([page.waitForLoadState('load'), locator.click()]);
-        return { action: 'submitForm', target: step.target, url: page.url() };
+        const navigation = page.waitForNavigation({ waitUntil: 'load', timeout: step.timeoutMs || 30000 }).catch(() => null);
+        await locator.click();
+        const response = await navigation;
+        if (!response) throw new Error(`Assertion failed: submitting '${step.target}' did not load a new page (browser validation may have stopped it)`);
+        // Optional expectStatus: the page the submission finally lands on (after redirects) must have one of these statuses.
+        const expected = [].concat(step.expectStatus ?? []).map(Number);
+        if (expected.length && !expected.includes(response.status())) {
+          throw new Error(`Assertion failed: submitting '${step.target}' landed on ${page.url()} with status ${response.status()}, expected ${expected.join(',')}`);
+        }
+        return { action: 'submitForm', target: step.target, url: page.url(), status: response.status(), redirects: await redirectChain(response) };
       }
 
       case 'reload': {
@@ -123,6 +143,57 @@ export class BrowserActionEngine {
           await page.waitForLoadState('networkidle');
         }
         return { action: 'wait' };
+      }
+
+      case 'select2': {
+        // A select2-enhanced <select>: open its container, type the search, wait for the AJAX results and pick
+        // the one option whose text contains `option` (strict: zero or several matches fail).
+        const select = this.locators.resolve(page, step.target);
+        await select.waitFor({ state: 'attached', timeout: step.timeoutMs || 15000 });
+        const container = select.locator('xpath=following-sibling::span[contains(concat(" ", @class, " "), " select2-container ")][1]');
+        await container.locator('.select2-selection').click();
+        const search = String(varContext.interpolate(step.search ?? ''));
+        const field = page.locator('.select2-container--open input.select2-search__field');
+        if (search) await field.fill(search);
+        const wanted = String(varContext.interpolate(step.option ?? step.search ?? ''));
+        const results = page.locator('.select2-container--open .select2-results__option:not(.loading-results):not(.select2-results__message)');
+        const containing = results.filter({ hasText: wanted });
+        await containing.first().waitFor({ state: 'visible', timeout: step.timeoutMs || 15000 });
+        // Prefer the option that is exactly the wanted text (optionally followed by " (…)"); else a unique substring match.
+        const texts = (await containing.allInnerTexts()).map(t => t.trim());
+        const exact = texts.map((t, i) => (t === wanted || t.startsWith(`${wanted} (`)) ? i : -1).filter(i => i >= 0);
+        const index = exact.length === 1 ? exact[0] : (texts.length === 1 ? 0 : -1);
+        if (index < 0) throw new Error(`Assertion failed: select2 option "${wanted}" matched ${texts.length} results (${exact.length} exact; expected exactly 1)`);
+        await containing.nth(index).click();
+        const value = await select.inputValue();
+        return { action: 'select2', target: step.target, search, option: wanted, value };
+      }
+
+      case 'download': {
+        // Click a link or button that downloads a file; the text, line count and parsed CSV rows are captured.
+        const locator = this.locators.resolve(page, step.target);
+        const [download] = await Promise.all([
+          page.waitForEvent('download', { timeout: step.timeoutMs || 30000 }),
+          locator.click()
+        ]);
+        const stream = await download.createReadStream();
+        const chunks = [];
+        let size = 0;
+        for await (const chunk of stream) {
+          size += chunk.length;
+          if (size > 5_000_000) throw new Error('Assertion failed: downloaded file exceeds 5 MB');
+          chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+        }
+        const text = Buffer.concat(chunks).toString('utf8').replace(/^﻿/, '');
+        const captured = { filename: download.suggestedFilename(), text, lines: text.split(/\r?\n/).filter(l => l.trim()).length };
+        if (/\.csv$/i.test(captured.filename) || step.csv) {
+          const parsed = Papa.parse(text, { header: true, skipEmptyLines: 'greedy' });
+          captured.header = parsed.meta.fields || [];
+          captured.rows = parsed.data;
+          captured.rowCount = parsed.data.length;
+        }
+        if (step.as) varContext.setCaptured(step.as, captured);
+        return { action: 'download', target: step.target, filename: captured.filename, lines: captured.lines };
       }
 
       case 'upload': {
@@ -172,7 +243,23 @@ export class BrowserActionEngine {
       'committee.registry': '/gov-store/committees/registry',
       'committee.mine': '/gov-store/committees/mine',
       'committee.types': '/gov-store/committees/admin/types',
-      'committee.show': `/gov-store/committees/${params.id}`
+      'committee.show': `/gov-store/committees/${params.id}`,
+      // Store operations (GRN) and asset tagging
+      'storeops.hub': '/gov-store/operations/hub',
+      'storeops.workspace': `/gov-store/operations/documents/${params.type || 'receipt'}/${params.id}`,
+      'storeops.register': '/gov-store/operations/register',
+      'asset-tags.settings': '/gov-store/asset-tags/settings',
+      'asset-tags.codes': '/gov-store/asset-tags/codes',
+      'asset-tags.lookup': '/gov-store/asset-tags/lookup',
+      'asset-tags.enablement': '/gov-store/asset-tags/enablement',
+      'catalog.finance': '/admin/catalog/finance',
+      'catalog.governance.show': `/admin/catalog/governance/${params.id}`,
+      'native.settings.asset-tags': '/admin/asset_tags',
+      // Rules studio
+      'rules.studio': '/gov-store/operations/settings/product-rules',
+      'rules.simulator': '/gov-store/operations/settings/product-rules/simulator',
+      'rules.create': `/gov-store/operations/settings/product-rules/policies/create/${params.template || 'blank'}`,
+      'rules.edit': `/gov-store/operations/settings/product-rules/policies/${params.id}/edit`
     };
 
     const path = routeMap[routeName];

@@ -86,6 +86,7 @@ class OfficeHubController extends Controller
         $request->validate([
             'name' => 'required|string|max:255', 'company_id' => 'nullable|integer',
             'parent_id' => 'nullable|integer', 'geo_area_id' => 'required|integer', 'office_admin_id' => 'nullable|integer',
+            'office_level' => ['sometimes', 'nullable', \Illuminate\Validation\Rule::in(LocationProfile::OFFICE_LEVELS)],
         ]);
 
         return DB::transaction(function () use ($request, $id) {
@@ -103,8 +104,13 @@ class OfficeHubController extends Controller
             app(OfficeProvisioningService::class)->assignOfficeAdmin($id,
                 $request->office_admin_id ? (int) $request->office_admin_id : null, (int) auth()->id());
             abort_unless($location->update(['name' => $request->name, 'parent_id' => $request->parent_id ?: null]), 422);
+            // Other hub forms share this action; omission preserves the current level.
+            if ($request->has('office_level')) {
+                $profile->update(['office_level' => $request->input('office_level')]);
+            }
             OrganizationActivityLog::create(['location_id' => $id, 'performed_by' => auth()->id(),
-                'event_type' => 'profile_updated', 'details' => ['name' => $request->name, 'parent_id' => $request->parent_id ?: null]]);
+                'event_type' => 'profile_updated', 'details' => ['name' => $request->name, 'parent_id' => $request->parent_id ?: null,
+                    'office_level' => $profile->office_level]]);
 
             return redirect()->route('gov.org.hub.show', $id)->with('success', __('organization_labels::orglabel.lifecycle_saved'));
         });

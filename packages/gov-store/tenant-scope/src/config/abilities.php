@@ -27,6 +27,8 @@ return [
     'storeops.rules.view' => ['roles' => ['superuser'], 'national' => true],
     'storeops.rules.publish' => ['roles' => ['superuser'], 'national' => true],
     'catalog.master.manage' => ['roles' => ['superuser'], 'national' => true],
+    // A product type's optional Finance Code: the owning company's admin (national types are checked against catalog.master.manage).
+    'catalog.finance.default' => ['roles' => ['company_admin'], 'enforce' => true],
     'catalog.view' => ['roles' => ['authenticated']],
     'catalog.office.adopt' => ['roles' => ['office_admin', 'storekeeper', 'company_admin']],
     'requests.submit' => ['roles' => ['authenticated']],

@@ -395,6 +395,14 @@ return [
     // Sidebar / Menu Integration
     // ==========================================
     'office_type_label' => 'কার্যালয়ের ধরন',
+    'office_level_label' => 'কার্যালয়ের প্রশাসনিক স্তর',
+    'office_profile_edit' => 'কার্যালয়ের নাম ও প্রশাসনিক স্তর সম্পাদনা',
+    'office_level_inferred' => 'নির্ধারিত নয় — এলাকার স্তর ব্যবহার করুন',
+    'office_level_headquarters' => 'সদর দপ্তর',
+    'office_level_regional' => 'আঞ্চলিক',
+    'office_level_divisional' => 'বিভাগীয়',
+    'office_level_district' => 'জেলা',
+    'office_level_upazila' => 'উপজেলা',
     'office_type_default' => 'সাধারণ কার্যালয়',
     'office_type_hospital' => 'হাসপাতাল',
     'office_type_school' => 'বিদ্যালয়',

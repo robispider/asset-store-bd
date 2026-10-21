@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "id": "asset-tagging.company-code-lists",
+  "title": "The company admin keeps the company's location and division code lists: a non-digit code is refused in the browser, '00' and duplicate codes are refused by the server without saving anything, and two locations and two divisions are saved and shown back in code order",
+  "features": ["asset-tagging.company-codelists"],
+  "tags": ["seeded", "write", "asset-tagging", "validation"],
+  "execution": { "capability": "write-fixtures", "language": "en-US", "timeoutMs": 120000, "accessMode": "any" },
+  "fixtures": {
+    "office": { "requirements": { "operational": true, "ledgerOpen": true } },
+    "actors": {
+      "companyAdmin": { "role": "company_admin", "activeMembership": false, "capabilities": { "allOf": ["asset-tags.company.codelists"] } }
+    }
+  },
+  "data": {
+    "locationA": "41", "locationAName": "Regional office A (LIVE)",
+    "locationB": "42", "locationBName": "Regional office B (LIVE)",
+    "divisionA": "01", "divisionAName": "Administration (LIVE)",
+    "divisionB": "02", "divisionBName": "ICT cell (LIVE)"
+  },
+  "steps": [
+    { "action": "observe", "check": "asset-tags.readiness", "args": { "officeId": "${fixtures.office.id}" }, "as": "before" },
+    { "use": "auth.login", "with": { "actor": "companyAdmin" } },
+    { "action": "goto", "route": "asset-tags.codes" },
+    { "action": "assert", "target": "tagging.page", "test": "count", "equals": 1 },
+
+    { "action": "fill", "target": "css=form[action$='/asset-tags/codes'] tr:has(input[id^='locations-'][id$='-code'][value='']) >> nth=0 >> input[id$='-code']", "value": "4A" },
+    { "action": "assert", "target": "css=form[action$='/asset-tags/codes'] tr:has(input[id^='locations-'][id$='-code'][value='']) >> nth=0 >> input[id$='-code']", "test": "invalid", "note": "Two digits only (browser pattern)" },
+
+    { "action": "fill", "target": "css=form[action$='/asset-tags/codes'] tr:has(input[id^='locations-'][id$='-code'][value='']) >> nth=0 >> input[id$='-code']", "value": "00" },
+    { "action": "fill", "target": "css=form[action$='/asset-tags/codes'] tr:has(input[id^='locations-'][id$='-code'][value='']) >> nth=0 >> input[id$='-name']", "value": "Never saved (LIVE)" },
+    { "action": "submitForm", "target": "tagging.codesSave" },
+    { "action": "assert", "target": "tagging.dangerAlert", "test": "visible", "note": "00 is never a valid code" },
+    { "action": "observe", "check": "asset-tags.readiness", "args": { "officeId": "${fixtures.office.id}" }, "as": "afterZero" },
+    { "action": "compare", "actual": "${observed.afterZero.codeListsRevision}", "equals": "${observed.before.codeListsRevision}", "note": "Nothing was saved" },
+
+    { "action": "goto", "route": "asset-tags.codes" },
+    { "action": "fill", "target": "css=form[action$='/asset-tags/codes'] tr:has(input[id^='divisions-'][id$='-code'][value='']) >> nth=0 >> input[id$='-code']", "value": "77" },
+    { "action": "fill", "target": "css=form[action$='/asset-tags/codes'] tr:has(input[id^='divisions-'][id$='-code'][value='']) >> nth=0 >> input[id$='-name']", "value": "Duplicate one (LIVE)" },
+    { "action": "fill", "target": "css=form[action$='/asset-tags/codes'] tr:has(input[id^='divisions-'][id$='-code'][value='']) >> nth=1 >> input[id$='-code']", "value": "77" },
+    { "action": "fill", "target": "css=form[action$='/asset-tags/codes'] tr:has(input[id^='divisions-'][id$='-code'][value='']) >> nth=1 >> input[id$='-name']", "value": "Duplicate two (LIVE)" },
+    { "action": "submitForm", "target": "tagging.codesSave" },
+    { "action": "assert", "target": "tagging.dangerAlert", "test": "visible", "note": "A code appears once per list" },
+    { "action": "observe", "check": "asset-tags.readiness", "args": { "officeId": "${fixtures.office.id}" }, "as": "afterDuplicate" },
+    { "action": "compare", "actual": "${observed.afterDuplicate.codeListsRevision}", "equals": "${observed.before.codeListsRevision}", "note": "Nothing was saved" },
+
+    { "action": "goto", "route": "asset-tags.codes", "when": { "actual": "${observed.before.locationListCount}", "equals": 0 } },
+    { "action": "fill", "target": "tagging.codesLocation0Code", "value": "${data.locationA}", "when": { "actual": "${observed.before.locationListCount}", "equals": 0 } },
+    { "action": "fill", "target": "tagging.codesLocation0Name", "value": "${data.locationAName}", "when": { "actual": "${observed.before.locationListCount}", "equals": 0 } },
+    { "action": "fill", "target": "tagging.codesLocation1Code", "value": "${data.locationB}", "when": { "actual": "${observed.before.locationListCount}", "equals": 0 } },
+    { "action": "fill", "target": "tagging.codesLocation1Name", "value": "${data.locationBName}", "when": { "actual": "${observed.before.locationListCount}", "equals": 0 } },
+    { "action": "fill", "target": "tagging.codesDivision0Code", "value": "${data.divisionB}", "when": { "actual": "${observed.before.locationListCount}", "equals": 0 } },
+    { "action": "fill", "target": "tagging.codesDivision0Name", "value": "${data.divisionBName}", "when": { "actual": "${observed.before.locationListCount}", "equals": 0 } },
+    { "action": "fill", "target": "tagging.codesDivision1Code", "value": "${data.divisionA}", "when": { "actual": "${observed.before.locationListCount}", "equals": 0 } },
+    { "action": "fill", "target": "tagging.codesDivision1Name", "value": "${data.divisionAName}", "when": { "actual": "${observed.before.locationListCount}", "equals": 0 } },
+    { "action": "submitForm", "target": "tagging.codesSave", "when": { "actual": "${observed.before.locationListCount}", "equals": 0 } },
+    { "action": "assert", "target": "tagging.successAlert", "test": "visible", "when": { "actual": "${observed.before.locationListCount}", "equals": 0 } },
+    { "action": "ledger", "kind": "company-code-lists", "id": "company:${fixtures.office.company_id}", "effect": "Two location and two division codes saved for the company", "cleanup": "retained", "when": { "actual": "${observed.before.locationListCount}", "equals": 0 } },
+
+    { "action": "observe", "check": "asset-tags.readiness", "args": { "officeId": "${fixtures.office.id}" }, "as": "after" },
+    { "action": "compare", "actual": "${observed.after.locationListCount}", "equals": 2 },
+    { "action": "compare", "actual": "${observed.after.divisionListCount}", "equals": 2 },
+    { "action": "goto", "route": "asset-tags.codes" },
+    { "action": "assert", "target": "tagging.codesLocation0Code", "test": "value", "equals": "${data.locationA}", "note": "Codes are shown back in code order" },
+    { "action": "assert", "target": "tagging.codesLocation1Code", "test": "value", "equals": "${data.locationB}" },
+    { "action": "assert", "target": "tagging.codesDivision0Code", "test": "value", "equals": "${data.divisionA}", "note": "Entered as 02 then 01, stored and shown as 01, 02" },
+    { "action": "assert", "target": "tagging.codesDivision1Code", "test": "value", "equals": "${data.divisionB}" },
+    { "action": "assert", "target": "tagging.codesDivision0Name", "test": "value", "equals": "${data.divisionAName}" }
+  ],
+  "cleanup": { "policy": "retained-with-report" }
+}

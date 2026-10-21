@@ -15,6 +15,7 @@ $(function () {
     let saveQueue = Promise.resolve();
     let saveTimer;
     let trackingRequest;
+    let headerChanged = false;
 
     function error(xhr) {
         const response = xhr.responseJSON || {};
@@ -30,7 +31,9 @@ $(function () {
         valid = Boolean(result && result.is_valid);
         const list = $('#checklistRequirements').empty();
         (result?.checklist || []).forEach(item => {
-            $('<li>').append($('<i>').addClass('fa ' + (item.passed ? 'fa-check text-green' : 'fa-times text-red')))
+            // Warning rows (level "warning") never block posting; they carry an icon and text, not colour alone.
+            const icon = item.level === 'warning' ? 'fa-exclamation-triangle text-yellow' : (item.passed ? 'fa-check text-green' : 'fa-times text-red');
+            $('<li>').addClass(item.level === 'warning' ? 'storeops-check--warning' : '').append($('<i>').addClass('fa ' + icon).attr('aria-hidden', 'true'))
                 .append(document.createTextNode(' ' + item.label)).appendTo(list);
         });
         $('#validationProgress').css('width', (result?.progress || 0) + '%').attr('aria-valuenow', result?.progress || 0);
@@ -51,6 +54,23 @@ $(function () {
         row.find('.balance-after').text(Number.isFinite(value) ? value : '—').toggleClass('text-danger', value < 0);
         totals();
     }
+    // Capability panels may carry select2 pickers (data-storeops-select2 = list URL, data-category-id)
+    // and name a header input that needs attention (data-storeops-attention = input name).
+    function enhance(container) {
+        container.find('select[data-storeops-select2]').each(function () {
+            const select = $(this);
+            select.select2({ width: '100%', allowClear: true, placeholder: select.data('placeholder') || '', minimumInputLength: 0,
+                ajax: { url: select.data('storeops-select2'), dataType: 'json', delay: 250,
+                    data: params => ({ search: params.term, page: params.page || 1, category_id: select.data('category-id') }),
+                    processResults: result => ({ results: result.results, pagination: result.pagination }) } });
+        });
+        attention();
+    }
+    function attention() {
+        const names = new Set();
+        $('#gridBody [data-storeops-attention]').each(function () { names.add($(this).data('storeops-attention')); });
+        form.find('input, select').each(function () { $(this).toggleClass('storeops-attention', names.has(this.name)); });
+    }
     function metadata(row) {
         const index = row.data('index');
         const container = $(`tr[data-parent-index="${index}"] .meta-container`);
@@ -58,7 +78,9 @@ $(function () {
         if (!value) return;
         const separator = value.lastIndexOf('_');
         const previous = {};
-        container.find('input, select').each(function () { previous[this.name] = this.value; });
+        container.find('input, select').each(function () {
+            previous[this.name] = { value: this.value, text: this.tagName === 'SELECT' ? $(this).find('option:selected').text() : null };
+        });
         row.data('metadataRequest')?.abort();
         const request = $.get(config.urls.metadata, {
             product_type: value.substring(0, separator), product_id: value.substring(separator + 1),
@@ -67,9 +89,18 @@ $(function () {
             // Authorized server-rendered Blade is the only HTML inserted in this workspace.
             container.html(result.html).closest('tr').toggleClass('hidden', !result.has_requirements);
             container.find('input, select').each(function () {
-                if (Object.hasOwn(previous, this.name)) this.value = previous[this.name];
+                const kept = previous[this.name];
+                // Server-rendered values win after a refresh that the saved draft triggered.
+                if (kept && !row.data('refreshFromServer')) {
+                    if (this.tagName === 'SELECT' && kept.value && !$(this).find('option').filter((i, o) => o.value === kept.value).length) {
+                        this.append(new Option(kept.text || kept.value, kept.value, true, true));
+                    }
+                    this.value = kept.value;
+                }
                 this.disabled = !config.isDraft;
             });
+            row.data('refreshFromServer', false);
+            enhance(container);
             balance(row);
         }).fail(xhr => { if (xhr.statusText !== 'abort') error(xhr); });
         row.data('metadataRequest', request);
@@ -116,6 +147,16 @@ $(function () {
                 if (savingRevision === revision) {
                     savedRevision = savingRevision;
                     checklist(result.validation);
+                    // Panels that depend on saved values (header dates, a line's choices) re-render from the server.
+                    $('.item-row').each(function () {
+                        const row = $(this);
+                        const panel = $(`tr[data-parent-index="${row.data('index')}"] [data-storeops-refresh]`);
+                        if (panel.length && (headerChanged || row.data('panelChanged'))) {
+                            row.data('panelChanged', false).data('refreshFromServer', true);
+                            metadata(row);
+                        }
+                    });
+                    headerChanged = false;
                     $('#gov-access-inline').prop('hidden', true);
                     if (config.type === 'transfer') $('.item-row').each(function () {
                         if (!$(`tr[data-parent-index="${$(this).data('index')}"] select[name*="destination_stockable_id"]`).length) metadata($(this));
@@ -138,6 +179,9 @@ $(function () {
             $('#previewValue').text(result.total_value); $('#previewRef').text(result.reference);
             $('#previewItems').empty();
             (result.items || []).forEach(item => $('<li>').text(item.name + ': ' + item.quantity).appendTo('#previewItems'));
+            // One added line when asset tags are issued here (text only).
+            $('#previewTags').remove();
+            if (result.tags?.line) $('<div>').attr('id', 'previewTags').addClass('storeops-preview-tags').text(result.tags.line).insertAfter('#previewRef');
             $('#postingModal').modal('show');
         }).fail(error);
     }
@@ -172,6 +216,19 @@ $(function () {
             clearTimeout(metadataTimer); metadataTimer = setTimeout(() => metadata(row), 250);
         }).on('change', 'select[name*="adjustment_direction"]', function () { balance($(this).closest('tr').prev()); });
         form.on('input change', 'input, select, textarea', changed);
+        form.on('change', 'input[name$="[reference_date]"], select[name="purchase_type"]', () => { headerChanged = true; });
+        $('#gridBody').on('change', '[data-storeops-refresh] input, [data-storeops-refresh] select', function () {
+            // A refresh requested before this edit would render over it; the next save refreshes the panel instead.
+            const row = $(this).closest('tr.meta-row').prev('.item-row');
+            row.data('metadataRequest')?.abort();
+            row.data('panelChanged', true);
+        }).on('click', '[data-storeops-focus]', function () {
+            // Fix buttons: move focus to the existing field that resolves the flag.
+            form.find(`[name="${$(this).data('storeops-focus')}"]`).trigger('focus');
+        }).on('click', '[data-storeops-set]', function () {
+            const target = $(this).closest('[data-storeops-refresh]').find(`[name="${$(this).data('storeops-set')}"]`);
+            target.val($(this).data('value')).trigger('change');
+        });
         $('#saveDraftBtn').on('click', () => {
             if (form[0].reportValidity()) save().catch(() => {});
         });

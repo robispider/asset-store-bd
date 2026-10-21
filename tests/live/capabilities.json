@@ -73,6 +73,30 @@
     },
     "membership.override": {
       "ability": "membership.override"
+    },
+    "asset-tags.office.configure": {
+      "ability": "asset-tags.office.configure"
+    },
+    "asset-tags.company.codelists": {
+      "ability": "asset-tags.company.codelists"
+    },
+    "asset-tags.lookup": {
+      "ability": "asset-tags.lookup"
+    },
+    "asset-tags.scope.enable": {
+      "ability": "asset-tags.scope.enable"
+    },
+    "storeops.rules.view": {
+      "ability": "storeops.rules.view"
+    },
+    "storeops.rules.publish": {
+      "ability": "storeops.rules.publish"
+    },
+    "catalog.master.manage": {
+      "ability": "catalog.master.manage"
+    },
+    "catalog.finance.default": {
+      "ability": "catalog.finance.default"
     }
   }
 }

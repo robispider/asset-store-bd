@@ -3,11 +3,12 @@
 namespace GovStore\Tracking\Repositories;
 
 use App\Models\Asset;
+use GovStore\TenantScope\Contexts\TenantContext;
 use GovStore\Tracking\Models\Initiative;
+use GovStore\Tracking\Models\TrackingAssociation;
 use GovStore\Tracking\Models\TrackingCode;
 use GovStore\Tracking\Models\TrackingTarget;
-use GovStore\Tracking\Models\TrackingAssociation;
-use GovStore\Tracking\Models\TrackingFactDelivery;
+use GovStore\Tracking\Services\TrackingMonitorMetrics;
 use Illuminate\Support\Facades\DB;
 
 class EloquentTrackingProjectionRepository implements TrackingProjectionRepositoryInterface
@@ -15,16 +16,17 @@ class EloquentTrackingProjectionRepository implements TrackingProjectionReposito
     public function getLifecycleSummary(Initiative $initiative): array
     {
         $summary = [
-            'planned'    => 0,
-            'ordered'    => 0,
-            'received'   => 0,
-            'deployed'   => 0,
-            'disposed'   => 0,
+            'planned' => 0,
+            'ordered' => 0,
+            'received' => 0,
+            'deployed' => 0,
+            'disposed' => 0,
             'percentage' => 0,
         ];
 
         // Retrieve all Tracking Codes belonging to this Initiative
-        $trackingCodeIds = TrackingCode::where('initiative_id', $initiative->id)->pluck('id')->toArray();
+        $codes = TrackingCode::with('targets.allocations')->where('initiative_id', $initiative->id)->where('status', 'ACTIVE')->get();
+        $trackingCodeIds = $codes->pluck('id')->all();
 
         if (empty($trackingCodeIds)) {
             return $summary;
@@ -40,8 +42,24 @@ class EloquentTrackingProjectionRepository implements TrackingProjectionReposito
         $summary['received'] = $received;
 
         // 3. Overall Progress Percentage
-        $percentage = $planned > 0 ? round(($received / $planned) * 100) : 0;
-        $summary['percentage'] = $percentage > 100 ? 100 : $percentage;
+        $lines = [];
+        $quantities = TrackingAssociation::whereIn('tracking_code_id', $trackingCodeIds)->where('status', 'ACTIVE')->get();
+        $metrics = new TrackingMonitorMetrics;
+        foreach ($codes as $code) {
+            foreach ($code->targets as $target) {
+                $rows = $quantities->where('tracking_code_id', $code->id)->where('category_id', $target->category_id);
+                $cells = null;
+                if ($metrics->plan($code->specificity_level) === '3_MATRIX') {
+                    $cells = [];
+                    foreach ($target->allocations as $cell) {
+                        $cells[$cell->location_id] = [
+                            'allocated' => (float) $cell->allocated_qty, 'received' => (float) $rows->where('location_id', $cell->location_id)->sum('quantity')];
+                    }
+                }
+                $lines[] = $metrics->line((float) $target->planned_qty, (float) $rows->sum('quantity'), $cells)['fulfilment'];
+            }
+        }
+        $summary['percentage'] = round(100 * ($metrics->mean($lines) ?? 0), 2);
 
         // 4. DEPLOYED & DISPOSED (Status tracking evaluated securely using polymorphic links)
         $associatedAssetIds = TrackingAssociation::whereIn('tracking_code_id', $trackingCodeIds)
@@ -50,13 +68,19 @@ class EloquentTrackingProjectionRepository implements TrackingProjectionReposito
             ->pluck('associatable_id')
             ->toArray();
 
-        if (!empty($associatedAssetIds)) {
+        $context = app(TenantContext::class);
+        if (! empty($associatedAssetIds) && ($context->isGlobal || $context->allowedInventoryLocationIds !== null)) {
+            $assets = Asset::withoutGlobalScopes()->whereIn('id', $associatedAssetIds)->whereNull('deleted_at');
+            if (! $context->isGlobal) {
+                $assets->whereIn('location_id', $context->allowedInventoryLocationIds)
+                    ->whereIn('company_id', $context->allowedInventoryCompanyIds ?? []);
+            }
             // Retrieve core assets securely using our dynamic table resolver
-            $summary['deployed'] = (int) Asset::withoutGlobalScopes()->whereIn('id', $associatedAssetIds)
+            $summary['deployed'] = (int) (clone $assets)
                 ->whereNotNull('assigned_to')
                 ->count();
 
-            $summary['disposed'] = (int) Asset::withoutGlobalScopes()->whereIn('id', $associatedAssetIds)
+            $summary['disposed'] = (int) (clone $assets)
                 ->whereHas('status', function ($query) {
                     $query->where('archived', 1);
                 })
@@ -73,7 +97,7 @@ class EloquentTrackingProjectionRepository implements TrackingProjectionReposito
             ->where('category_id', $categoryId)
             ->first();
 
-        if (!$target) {
+        if (! $target) {
             return ['planned' => 0, 'received' => 0, 'percentage' => 0, 'is_exceeded' => false];
         }
 
@@ -87,10 +111,10 @@ class EloquentTrackingProjectionRepository implements TrackingProjectionReposito
         $percentage = $planned > 0 ? round(($received / $planned) * 100) : 0;
 
         return [
-            'planned'     => (int) $planned,
-            'received'    => (int) $received,
-            'percentage'  => $percentage,
-            'is_exceeded' => ($received > $planned)
+            'planned' => (int) $planned,
+            'received' => (int) $received,
+            'percentage' => $percentage,
+            'is_exceeded' => ($received > $planned),
         ];
     }
 
@@ -98,10 +122,10 @@ class EloquentTrackingProjectionRepository implements TrackingProjectionReposito
     {
         // Fetch pre-compiled geographic facts directly from our Delivery Cube
         $facts = TrackingAssociation::with([
-            'category',
-            'location' => function($query) {
+            'category' => fn ($query) => $query->withoutGlobalScopes(),
+            'location' => function ($query) {
                 $query->withoutGlobalScopes(); // Defensive bypass to prevent empty lists for non-contextual admins
-            }
+            },
         ])->where('tracking_code_id', $trackingCodeId)->where('status', 'ACTIVE')
             ->selectRaw('category_id, location_id, SUM(quantity) AS received_qty')->groupBy('category_id', 'location_id')->get();
 
@@ -127,10 +151,10 @@ class EloquentTrackingProjectionRepository implements TrackingProjectionReposito
             $progressMatrix[$locationId]['location_name'] = $locationName;
             $progressMatrix[$locationId]['items'][] = [
                 'category_name' => $fact->category->name,
-                'allocated'     => $allocatedQty,
-                'received'      => $received,
-                'percentage'    => $percentage,
-                'is_exceeded'   => ($received > $allocatedQty)
+                'allocated' => $allocatedQty,
+                'received' => $received,
+                'percentage' => $percentage,
+                'is_exceeded' => ($received > $allocatedQty),
             ];
         }
 

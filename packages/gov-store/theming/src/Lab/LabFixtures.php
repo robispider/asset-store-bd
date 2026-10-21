@@ -123,4 +123,17 @@ final class LabFixtures
     {
         return ['office_unconfigured', 'office_provisioned', 'office_configured', 'office_operational', 'office_suspended'];
     }
+
+    public function monitoring(): array
+    {
+        return [
+            'attention' => [['severity' => 'warning', 'title' => 'TRACK-2026-01',
+                'detail' => __('gs-theme::kit.no_target'), 'href' => '#monitoring']],
+            'tiles' => [['name' => 'Office A', 'bn' => 'কার্যালয় ক', 'x' => 1, 'y' => 1, 'share' => .75, 'href' => '#monitoring'],
+                ['name' => 'Office B', 'bn' => 'কার্যালয় খ', 'x' => 2, 'y' => 1, 'share' => 0, 'alert' => true, 'href' => '#monitoring'],
+                ['name' => 'Office C', 'bn' => 'কার্যালয় গ', 'x' => 3, 'y' => 1, 'share' => null, 'href' => '#monitoring']],
+            'prices' => ['min' => 250, 'max' => 350, 'average' => 300, 'spread' => 1 / 3, 'points' => [250, 300, 350]],
+            'steps' => [['label' => __('gs-theme::kit.delivered'), 'date' => '2026-10-18'], ['label' => __('gs-theme::kit.forecast'), 'date' => '2027-06-30']],
+        ];
+    }
 }

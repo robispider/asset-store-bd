@@ -91,8 +91,21 @@ return [
     'manage_in_appearance' => 'চেহারা পাতায় থিম পরিচালনা করুন',
     'unsupported_browser' => 'আপনার ব্রাউজার পুরোনো, তাই রং সঠিকভাবে দেখাবে না। অনুগ্রহ করে Chrome বা Edge 123+, Firefox 128+ অথবা Safari 18+ ব্যবহার করুন।',
 
-
     'status' => [
+        'warning' => 'সতর্কতা',
+        'info' => 'দ্রষ্টব্য',
+        'success' => 'সঠিক পথে',
+        'on_pace' => 'প্রত্যাশিত গতিতে',
+        'behind' => 'পিছিয়ে আছে',
+        'stalled' => 'অগ্রগতি বন্ধ',
+        'over_allocation' => 'বরাদ্দের অতিরিক্ত',
+        'complete' => 'সম্পূর্ণ',
+        'in_progress' => 'চলমান',
+        'waiting' => 'অপেক্ষমাণ',
+        'no_target' => 'লক্ষ্যমাত্রা বা অগ্রগতির তুলনা অনুপলব্ধ',
+        'critical' => 'অতি গুরুতর',
+        'serious' => 'গুরুতর',
+
         'draft' => 'খসড়া',
         'ready' => 'প্রস্তুত',
         'posted' => 'পোস্ট করা',
@@ -161,5 +174,6 @@ return [
         'readiness_todo' => 'বাকি',
         'needed' => 'প্রয়োজন',
         'optional' => 'ঐচ্ছিক',
+        'segment_pending' => 'পোস্ট করার সময় বরাদ্দ হবে',
     ],
 ];

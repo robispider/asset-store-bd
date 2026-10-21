@@ -10,6 +10,7 @@ use App\Models\Consumable;
 use GovStore\StoreOperations\Console\Commands\ProtectDocumentAttachments;
 use GovStore\StoreOperations\Console\Commands\OpenStoreLedger;
 use GovStore\StoreOperations\Console\Commands\RepairLedgerBalances;
+use GovStore\StoreOperations\Contracts\AssetTagIssuer;
 use GovStore\StoreOperations\Contracts\StockIssuingServiceInterface;
 use GovStore\StoreOperations\Contracts\TrackingCodeVerifier;
 use GovStore\StoreOperations\Events\InventoryMovementCreated;
@@ -18,6 +19,7 @@ use GovStore\StoreOperations\Listeners\WriteNativeAuditLogs;
 use GovStore\StoreOperations\Models\Document;
 use GovStore\StoreOperations\Observers\SnipeCategoryObserver;
 use GovStore\StoreOperations\Services\SystemGoodsIssueService;
+use GovStore\StoreOperations\Services\NullAssetTagIssuer;
 use GovStore\StoreOperations\Services\NullTrackingCodeVerifier;
 use GovStore\StoreOperations\UI\Tab;
 use GovStore\StoreOperations\UI\TabRegistry;
@@ -45,6 +47,11 @@ class StoreOperationsServiceProvider extends ServiceProvider
         if (class_exists(\GovStore\Tracking\Services\ScopeValidatorService::class)) {
             $this->app->singleton(TrackingCodeVerifier::class, \GovStore\StoreOperations\Integrations\Tracking\TrackingCodeVerifierAdapter::class);
         }
+        // Asset tags: today's behaviour unless the asset-tagging package is installed.
+        $this->app->singleton(AssetTagIssuer::class, NullAssetTagIssuer::class);
+        if (class_exists(\GovStore\AssetTagging\Services\TagIssuanceService::class)) {
+            $this->app->singleton(AssetTagIssuer::class, \GovStore\StoreOperations\Integrations\AssetTagging\AssetTagIssuerAdapter::class);
+        }
     }
 
     public function boot()
@@ -66,6 +73,7 @@ class StoreOperationsServiceProvider extends ServiceProvider
         // Register store-operations styles with the shared theme build when available.
         if ($this->app->bound('gs.theme')) {
             GsTheme::assets()->css('storeops', __DIR__.'/../resources/css/store-operations.css');
+            GsTheme::assets()->js('storeops', __DIR__.'/../resources/js/rules-studio.js');
         }
 
         // 6. Register CLI Commands

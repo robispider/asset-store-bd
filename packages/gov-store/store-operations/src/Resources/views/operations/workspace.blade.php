@@ -332,6 +332,8 @@
                 </div>
             </div>
 
+            {!! $isPosted ? app(\GovStore\StoreOperations\Contracts\AssetTagIssuer::class)->postedPanel($document) : '' !!}
+
             <p>{{ __('tenantops::access.drafted_by') }}: {{ $document->drafter?->present()->fullName ?? $document->creator?->present()->fullName ?? '—' }}</p>
             <p>{{ __('tenantops::access.posted_by') }}: {{ $document->poster?->present()->fullName ?? '—' }}</p>
             @if($isDraft && $document->managed_by !== auth()->id())

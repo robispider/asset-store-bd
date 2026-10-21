@@ -99,6 +99,35 @@ const handover = await bridge.observe('membership.handover', { officeId: member.
 assert.equal(handover.fromHolds, true, 'the storekeeper holds the storekeeper role');
 assert.equal((await bridge.observe('membership.code', { code: 'zz-live 0' })).offices, 0);
 assert((await bridge.observe('membership.overrides', {})).count >= 0);
+
+// Asset tagging and Rules studio: office records, actors bound to another office, asset-model and Finance records.
+const tagging = await bridge.resolveContext({
+  office: { requirements: { ledgerOpen: true } },
+  actors: {
+    storekeeper: { role: 'storekeeper' },
+    companyAdmin: { role: 'company_admin', activeMembership: false },
+    siblingAdmin: { role: 'office_admin', office: 'sibling' }
+  },
+  records: {
+    sibling: { kind: 'office', sameCompany: true },
+    desktop: { kind: 'assetModel', categoryContains: 'Desktop' },
+    code: { kind: 'financeItem', itemName: 'Desktop Computer' }
+  }
+});
+assert.notEqual(tagging.records.sibling.id, tagging.office.id, 'the office record is another office');
+assert.equal(tagging.records.sibling.company_id, tagging.office.company_id);
+assert.equal(tagging.actors.siblingAdmin.office_id, tagging.records.sibling.id, 'an actor can be bound to the office record');
+const readiness = await bridge.observe('asset-tags.readiness', { officeId: tagging.office.id });
+assert.deepEqual(Object.keys(readiness.gates), ['G1', 'G2', 'G3', 'G4', 'G5', 'G6']);
+assert.equal(readiness.passCount, Object.values(readiness.gates).filter(Boolean).length);
+assert.equal((await bridge.observe('asset-tags.document', { id: '00000000-0000-0000-0000-000000000000' })).exists, false);
+assert.equal((await bridge.observe('asset-tags.tag', { tag: 'LIVE-NO-SUCH-TAG' })).exists, false);
+assert.equal((await bridge.observe('asset-tags.finance', { code: tagging.records.code.gov_code })).item_name, 'Desktop Computer');
+assert.equal((await bridge.observe('asset-tags.default', { categoryId: tagging.records.desktop.category_id })).category_id, tagging.records.desktop.category_id);
+const effective = await bridge.observe('rules.effective', { officeId: tagging.office.id, modelId: tagging.records.desktop.id });
+assert.deepEqual(Object.keys(effective.trail), ['GLOBAL', 'COMPANY', 'LOCATION', 'CATEGORY', 'MODEL']);
+assert.equal((await bridge.observe('rules.policy', { name: 'LIVE-NO-SUCH-POLICY' })).exists, false);
+assert((await bridge.observe('storeops.documents', { officeId: tagging.office.id, userId: tagging.actors.storekeeper.id, type: 'receipt' })).count >= 0);
 await bridge.preflight();
 
 const after = await bridge.fingerprint();

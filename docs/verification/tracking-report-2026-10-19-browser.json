@@ -1,0 +1,50 @@
+[
+  {
+    "fixture": "4-en-US-institutional-green",
+    "offices": 4,
+    "overflow": 0,
+    "pages": 4,
+    "ready": "true",
+    "stranded": 0
+  },
+  {
+    "fixture": "4-bn-BD-default",
+    "offices": 4,
+    "overflow": 0,
+    "pages": 4,
+    "ready": "true",
+    "stranded": 0
+  },
+  {
+    "fixture": "1000-en-US-default",
+    "offices": 1000,
+    "overflow": 0,
+    "pages": 46,
+    "ready": "true",
+    "stranded": 0
+  },
+  {
+    "fixture": "1000-en-US-digital-blue",
+    "offices": 1000,
+    "overflow": 0,
+    "pages": 46,
+    "ready": "true",
+    "stranded": 0
+  },
+  {
+    "fixture": "1000-bn-BD-digital-blue",
+    "offices": 1000,
+    "overflow": 0,
+    "pages": 46,
+    "ready": "true",
+    "stranded": 0
+  },
+  {
+    "fixture": "1000-bn-BD-institutional-green",
+    "offices": 1000,
+    "overflow": 0,
+    "pages": 46,
+    "ready": "true",
+    "stranded": 0
+  }
+]

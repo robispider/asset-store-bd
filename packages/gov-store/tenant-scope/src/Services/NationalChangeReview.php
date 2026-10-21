@@ -8,6 +8,7 @@ use GovStore\StoreOperations\Models\Profile;
 use GovStore\StoreOperations\Models\ProfileAssignment;
 use GovStore\TenantScope\Models\TenantScopeConfig;
 use GovStore\TenantScope\Models\TenantScopeMapping;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -33,14 +34,22 @@ class NationalChangeReview
             $consumed = DB::table('gov_access_review_uses')->insertOrIgnore(['token_hash' => hash('sha256', $token), 'created_at' => now()]);
             abort_unless($consumed, 409);
             $request->session()->forget('gov_national_reviews.'.$token);
+            // The review page was the response to the original POST, so this confirmation's referer is the POST-only
+            // action URL; restore the page the change started from so the controller's back() lands there.
+            if (! empty($review['back'])) {
+                $request->headers->set('referer', $review['back']);
+            }
 
             return null;
         }
         $token = (string) Str::uuid();
         $input = $request->except(['_token', 'change_reason', 'confirmation', 'review_token']);
         $before = $this->currentConfiguration($request);
+        $origin = (string) $request->headers->get('referer');
+        $back = $origin !== '' && parse_url($origin, PHP_URL_HOST) === $request->getHost()
+            && trim((string) parse_url($origin, PHP_URL_PATH), '/') !== trim($request->path(), '/') ? $origin : null;
         $review = ['input' => $input, 'before' => $before, 'user' => $request->user()->id, 'target' => $request->path(), 'method' => $request->method(),
-            'expires' => time() + 1800, 'fingerprint' => $this->fingerprint($request)];
+            'expires' => time() + 1800, 'fingerprint' => $this->fingerprint($request), 'back' => $back];
         $reviews = $request->session()->get('gov_national_reviews', []);
         $reviews = array_filter($reviews, fn ($entry) => $entry['expires'] > time());
         $reviews[$token] = $review;
@@ -85,6 +94,20 @@ class NationalChangeReview
 
     private function currentConfiguration(Request $request): array
     {
+        if ($request->routeIs('gov.tracking.funding-types.*')) {
+            $target = $request->route('funding_type') ?? $request->route('fundingType');
+            $id = $target instanceof Model ? $target->getKey() : $target;
+            $query = DB::table('gov_funding_types');
+            if ($id) {
+                $query->where('id', $id);
+            } else {
+                $query->where('primary_type', $request->input('primary_type'));
+            }
+            $rows = $query->orderBy('id')->get()->map(fn ($row) => (array) $row)->all();
+
+            return ['funding_types' => $rows, 'linked_codes' => $id
+                ? DB::table('gov_tracking_codes')->where('funding_type_id', $id)->count() : 0];
+        }
         if ($request->routeIs('gov.membership.override')) {
             $id = $request->input('user_id');
 
@@ -148,6 +171,19 @@ class NationalChangeReview
         }
         if ($request->routeIs('gov.catalog.mapping.save')) {
             return (array) DB::table('gov_catalog_snipe_mappings')->where('code', $request->input('code'))->first();
+        }
+        if ($request->routeIs('gov.catalog.finance.*')) {
+            // Bind the review to the Finance rows it changes (or, for a new item, the whole group).
+            $query = DB::table('gov_finance_items');
+            $request->routeIs('gov.catalog.finance.store')
+                ? $query->where('gov_code', 'like', substr((string) $request->input('group_code'), 0, 2).'%')
+                : $query->whereIn('gov_code', array_filter((array) ($request->input('codes') ?? [$request->route('code')])));
+
+            return $query->orderBy('gov_code')->get()->map(fn ($row) => (array) $row)->all();
+        }
+        if ($request->routeIs('asset-tags.enablement.*')) {
+            return DB::table('gov_metadata_values')->where('subject_type', 'office')->where('subject_id', (int) $request->route('office'))
+                ->whereIn('namespace', ['asset-tagging.office', 'asset-tagging.enablement'])->orderBy('namespace')->get()->map(fn ($row) => (array) $row)->all();
         }
         if (str_contains($request->path(), '/collections/')) {
             $id = $request->route('id') ?? $request->input('collection_id');

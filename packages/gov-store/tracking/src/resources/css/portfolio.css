@@ -1,0 +1,72 @@
+/* Programme portfolio: shared controls and summary for table and card layouts. */
+.gs-portfolio-heading { display:flex; justify-content:space-between; align-items:start; flex-wrap:wrap; gap:16px; margin-bottom:18px; }
+.gs-portfolio-heading .btn { white-space:nowrap; }
+.gs-portfolio-subtitle { margin:0; color:var(--gs-color-text-muted); font-size:15px; max-width:85ch; }
+.gs-portfolio-nav { display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 22px; }
+.gs-portfolio-nav a { padding:8px 14px; border-radius:var(--gs-radius-md); color:var(--gs-color-text-muted); }
+.gs-portfolio-nav [aria-current] { background:var(--gs-color-primary-subtle); color:var(--gs-color-primary); font-weight:600; }
+.gs-portfolio-scope { margin:12px 0 22px; color:var(--gs-color-text-muted); font-size:12px; max-width:100ch; }
+.gs-portfolio-health-key { display:flex; flex-wrap:wrap; gap:6px 14px; margin-top:10px; font-size:12px; color:var(--gs-color-text-muted); }
+.gs-portfolio-tabs { display:flex; flex-wrap:wrap; gap:4px; border-bottom:1px solid var(--gs-color-border); }
+.gs-portfolio-tabs a { padding:12px 16px; color:var(--gs-color-text-muted); border-bottom:3px solid transparent; white-space:nowrap; }
+.gs-portfolio-tabs [aria-current] { border-color:var(--gs-color-primary); color:var(--gs-color-primary); font-weight:600; }
+.gs-portfolio-tabs a span { display:inline-block; padding:1px 7px; background:var(--gs-color-surface-sunken); border-radius:var(--gs-radius-sm); font-size:12px; margin-left:4px; }
+.gs-portfolio-results { margin-top:0; border-top-left-radius:0; border-top-right-radius:0; }
+.gs-portfolio-filters { gap:12px; padding-top:0; }
+.gs-portfolio-filters .gs-portfolio-mine { display:flex !important; align-items:center; min-height:36px; gap:8px; }
+.gs-portfolio-filters input[type=checkbox] { min-height:0; margin:0; }
+.gs-portfolio-toolbar { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px; padding:8px 0 18px; }
+.gs-portfolio-toolbar p { margin:0; font-size:13px; color:var(--gs-color-text-muted); }
+.gs-portfolio-view { display:inline-flex; border:1px solid var(--gs-color-border-strong); border-radius:var(--gs-radius-md); overflow:hidden; }
+.gs-portfolio-view a { padding:8px 14px; color:var(--gs-color-text-muted); }
+.gs-portfolio-view [aria-current] { color:var(--gs-color-on-primary); background:var(--gs-color-primary); }
+.gs-portfolio .gs-portfolio-table { min-width:1260px; table-layout:fixed; }
+.gs-portfolio-table th { white-space:normal; font-size:12px; }
+.gs-portfolio-table th a { display:block; color:inherit; }
+.gs-portfolio-table th:first-child { width:48px; }
+.gs-portfolio-table th:nth-child(2) { width:265px; }
+.gs-portfolio-table th:nth-child(3) { width:145px; }
+.gs-portfolio-table th:nth-child(4) { width:205px; }
+.gs-portfolio-table th:nth-child(5) { width:155px; }
+.gs-portfolio-table th:nth-child(6) { width:120px; }
+.gs-portfolio-table th:nth-child(7) { width:110px; }
+.gs-portfolio-table th:nth-child(8) { width:105px; }
+.gs-portfolio-table th:nth-child(9) { width:120px; }
+.gs-portfolio-table > tbody > tr > td { vertical-align:middle; padding:12px 10px; overflow-wrap:anywhere; }
+.gs-portfolio-table .gs-num { text-align:right; font-variant-numeric:tabular-nums; }
+.gs-portfolio-programme-title { display:block; font-weight:600; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.gs-portfolio-meta { display:flex; align-items:center; flex-wrap:wrap; gap:4px 8px; margin:5px 0; font-size:11px; color:var(--gs-color-text-muted); }
+.gs-portfolio-chip { display:inline-block; border:1px solid var(--gs-color-border); background:var(--gs-color-surface-sunken); padding:2px 6px; border-radius:var(--gs-radius-sm); font-size:11px; color:var(--gs-color-text-muted); }
+.gs-portfolio-owner { display:block; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; color:var(--gs-color-text-muted); }
+.gs-portfolio-incomplete { display:block; color:var(--gs-color-warning); font-size:12px; margin-top:4px; }
+.gs-portfolio-money { font-variant-numeric:tabular-nums; }
+.gs-portfolio-team { display:flex; flex-wrap:wrap; align-items:center; gap:4px; font-size:12px; }
+.gs-portfolio-avatar { display:inline-grid; place-items:center; width:26px; height:26px; border-radius:50%; border:1px solid var(--gs-color-primary); color:var(--gs-color-primary); background:var(--gs-color-primary-subtle); font-weight:600; }
+.gs-portfolio-detail[hidden] { display:none; }
+.gs-portfolio-table > tbody > .gs-portfolio-detail > td { padding:20px; background:var(--gs-color-surface-sunken); }
+.gs-portfolio-details { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,.8fr); gap:24px; align-items:start; }
+.gs-portfolio-details p { margin:10px 0; }
+.gs-portfolio-details .gs-attention__item { padding:10px; font-size:12px; }
+.gs-portfolio-details .gs-attention__item > div { min-width:0; }
+.gs-portfolio-actions { display:flex; flex-wrap:wrap; gap:6px; }
+.gs-portfolio-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,310px),1fr)); gap:18px; align-items:stretch; }
+.gs-portfolio-card { display:flex; flex-direction:column; gap:16px; padding:20px; border:1px solid var(--gs-color-border); border-radius:var(--gs-radius-lg); background:var(--gs-color-surface); min-width:0; }
+.gs-portfolio-card[data-state=Planning] { border-top:3px solid var(--gs-color-warning); }
+.gs-portfolio-card[data-state=Closed],.gs-portfolio-card[data-state=Archived] { background:var(--gs-color-surface-sunken); }
+.gs-portfolio-card-top { display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
+.gs-portfolio-card h2 { font-size:18px; margin:0 0 6px; overflow-wrap:anywhere; }
+.gs-portfolio-card p { margin:0; }
+.gs-portfolio-card-stats { display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:12px; margin:0; }
+.gs-portfolio-card-stats > div { min-width:0; }
+.gs-portfolio-card-stats dt,.gs-portfolio-label { font-size:11px; color:var(--gs-color-text-muted); font-weight:400; }
+.gs-portfolio-card-stats dd { margin:6px 0 0; font-size:14px; overflow-wrap:anywhere; }
+.gs-portfolio-card-stats small { font-size:11px; font-weight:400; }
+.gs-portfolio-card-issue { padding:12px; background:var(--gs-color-surface-sunken); border-radius:var(--gs-radius-md); font-size:12px; }
+.gs-portfolio-card-issue p { margin:4px 0; }
+.gs-portfolio-card-contact { display:grid; gap:5px; }
+.gs-portfolio-card-contact > small { color:var(--gs-color-text-muted); }
+.gs-portfolio-card footer { margin-top:auto; }
+.gs-portfolio-pagination { display:flex; justify-content:center; flex-wrap:wrap; align-items:center; gap:18px; padding:24px 0 4px; }
+.gs-portfolio a:focus-visible,.gs-portfolio button:focus-visible,.gs-portfolio input:focus-visible,.gs-portfolio select:focus-visible { outline:2px solid var(--gs-color-focus-ring); outline-offset:3px; }
+@media(max-width:700px) { .gs-portfolio-filters > label { flex:1 1 160px; } .gs-portfolio-tabs a { padding:10px; } .gs-portfolio-grid { grid-template-columns:minmax(0,1fr); } .gs-portfolio-card { padding:16px; } }
+@media print { .gs-portfolio-filters,.gs-portfolio-view,.gs-portfolio-pagination { display:none; } .gs-portfolio .gs-table-wrap { overflow:visible; } }

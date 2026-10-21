@@ -4,10 +4,13 @@ namespace GovStore\Tracking\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use GovStore\Organization\Models\CompanyAdmin;
 use GovStore\Tracking\Models\Initiative;
-use GovStore\Tracking\Repositories\TrackingProjectionRepositoryInterface;
-use GovStore\Tracking\Services\TrackingAuthorizationService; // Added
-use GovStore\Organization\Models\CompanyAdmin; // Added
+use GovStore\Tracking\Services\ProgrammeReportService;
+use GovStore\Tracking\Services\TrackingAuthorizationService;
+use GovStore\Tracking\Services\TrackingManageService;
+use GovStore\Tracking\Services\TrackingMonitorService;
+use GovStore\Tracking\Services\TrackingPortfolioService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -20,20 +23,25 @@ class InitiativeController extends Controller
         $this->authService = $authService;
     }
 
-  public function index()
+    public function index(Request $request, TrackingPortfolioService $portfolio)
     {
-        // Add high-performance subqueries to count relations without N+1 bottlenecks
-        $initiatives = Initiative::with('ownerCompany')
-            ->withCount('trackingCodes')
-            ->withCount('operationUnits')
-            ->orderBy('updated_at', 'desc') // Ensure most recently active projects sit at the top
-            ->get();
-            
-        return view('govtracking::initiatives.index', compact('initiatives'));
+        $filters = $request->validate([
+            'q' => 'nullable|string|max:150', 'status' => 'nullable|in:all,Active,Planning,Closed,Archived',
+            'funding' => 'nullable|in:all,ADP,REVENUE,OTHER', 'mine' => 'nullable|boolean',
+            'sort' => 'nullable|in:'.implode(',', TrackingPortfolioService::SORTS), 'direction' => 'nullable|in:asc,desc',
+            'view' => 'nullable|in:table,cards', 'page' => 'nullable|integer|min:1|max:1000000',
+        ]);
+        $preference = 'tracking.portfolio.view.'.auth()->id();
+        if (isset($filters['view'])) $request->session()->put($preference, $filters['view']);
+        $filters = array_replace(['status' => 'all', 'funding' => 'all', 'sort' => 'priority', 'direction' => 'asc',
+            'view' => $request->session()->get($preference, 'table')], array_filter($filters, fn ($v) => $v !== null));
+
+        return view('govtracking::initiatives.index', $portfolio->portfolio($filters));
     }
 
     public function create()
     {
+        abort_unless($this->authService->canCreate(), 403);
         $user = auth()->user();
 
         if ($user->isSuperUser()) {
@@ -46,137 +54,63 @@ class InitiativeController extends Controller
                 ->where('id', $companyId)
                 ->get();
         }
-            
+
         return view('govtracking::initiatives.create', compact('companies'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title'             => 'required|string|max:255',
-            'purpose'           => 'nullable|string',
-            'status'            => 'required|in:Planning,Active,Closed,Archived',
-            'primary_funding'   => 'required|in:ADP,REVENUE,OTHER',
+            'title' => 'required|string|max:255',
+            'purpose' => 'nullable|string',
+            'status' => 'required|in:Planning,Active,Closed,Archived',
+            'primary_funding' => 'required|in:ADP,REVENUE,OTHER',
             'require_documents' => 'boolean',
-            'allow_overshoot'   => 'boolean',
-            'owner_company_id'  => 'required|exists:companies,id',
+            'allow_overshoot' => 'boolean',
+            'owner_company_id' => 'required|exists:companies,id',
         ]);
 
         $this->authorizeCompany((int) $validated['owner_company_id']);
         abort_unless($validated['status'] === 'Planning', 422);
 
         $validated['require_documents'] = $request->has('require_documents');
-        $validated['allow_overshoot']   = $request->has('allow_overshoot');
+        $validated['allow_overshoot'] = $request->has('allow_overshoot');
 
         $initiative = Initiative::create($validated);
 
         return redirect()->route('gov.tracking.initiatives.show', $initiative->id)
-                         ->with('success', 'Initiative created successfully. Please assign an Operation Unit team.');
+            ->with('success', 'Initiative created successfully. Please assign an Operation Unit team.');
     }
 
-   public function show(Initiative $initiative)
+    public function manage(Initiative $initiative, Request $request, TrackingManageService $manage)
     {
-        $initiative->load(['ownerCompany', 'operationUnits.user']);
-        
-        // 1. Load the active Tracking Codes (Tasks) and their specific goals
-        $trackingCodes = \GovStore\Tracking\Models\TrackingCode::with([
-            'targets.category' => function($query) {
-                $query->withTrashed(); 
-            }, 
-            'scopes', 
-            'fundingType'
-        ])
-            ->where('initiative_id', $initiative->id)
-            ->orderBy('created_at', 'desc')
-            ->get();
-            
-        // 2. Load Recent Activity Timeline
-        $recentActivity = \GovStore\Tracking\Models\TrackingTimeline::with('actor')
-            ->where('initiative_id', $initiative->id)
-            ->orderBy('occurred_at', 'desc')
-            ->limit(20)
-            ->get();
-        
-        // 3. Compile Progress Percentages for the Active Tasks
-        $projectionRepo = app(TrackingProjectionRepositoryInterface::class);
-        $health = $projectionRepo->getLifecycleSummary($initiative);
-        
-        foreach ($trackingCodes as $code) {
-            if ($code->specificity_level === '3_MATRIX') {
-                $code->matrixProgress = $projectionRepo->getMatrixProgress($code->id);
-            } else {
-                foreach ($code->targets as $target) {
-                    $target->progress = $projectionRepo->getTargetProgress($code->id, $target->category_id);
-                }
-            }
-        }
+        $this->authService->authorize($initiative, ['HEAD', 'OFFICER', 'SUPPORT', 'MONITOR']);
+        $filters = $request->validate(['tab' => 'nullable|in:'.implode(',', TrackingManageService::TABS),
+            'q' => 'nullable|string|max:150', 'activity' => 'nullable|in:'.implode(',', TrackingManageService::ACTIVITY)]);
+        // Writes are refused (409) once a programme is closed or archived, so the page offers none.
+        $open = in_array($initiative->status, ['Planning', 'Active'], true);
+        $can = ['edit' => $open && $this->authService->allows($initiative, ['HEAD', 'OFFICER']),
+            'head' => $open && $this->authService->allows($initiative, ['HEAD']),
+            'retro' => $this->authService->allows($initiative, ['HEAD', 'OFFICER', 'SUPPORT']),
+            'settings' => $this->authService->allows($initiative, ['HEAD'])];
 
-        // =====================================================================
-        // 4. NEW: COMPILE THE PROGRAMME SNAPSHOT (The OLAP Cube Aggregator)
-        // =====================================================================
-        // Runs ultra-fast aggregate queries directly on our pre-compiled Fact Table
-        
-        $factQuery = \GovStore\Tracking\Models\TrackingFactDelivery::where('initiative_id', $initiative->id);
-
-        $snapshot = [
-            // Additive Financial & Physical Facts
-            'total_received_qty' => (int) $factQuery->sum('received_qty'),
-            'total_cost'         => (float) $factQuery->sum('total_cost'),
-            'total_shipments'    => (int) $factQuery->sum('transaction_count'),
-
-            // Distinct Operational Dimensions
-            'distinct_locations'     => (int) $factQuery->distinct('location_id')->count('location_id'),
-            'distinct_geo_areas'     => (int) $factQuery->distinct('geo_area_id')->count('geo_area_id'),
-            'distinct_categories'    => (int) $factQuery->distinct('category_id')->count('category_id'),
-            'distinct_manufacturers' => (int) $factQuery->distinct('manufacturer_id')->count('manufacturer_id'),
-            'distinct_suppliers'     => (int) $factQuery->distinct('supplier_id')->count('supplier_id'),
-        ];
-        
-        return view('govtracking::initiatives.workspace', compact(
-            'initiative', 'health', 'trackingCodes', 'recentActivity', 'snapshot'
-        ));
+        return view('govtracking::initiatives.workspace', $manage->workspace($initiative, array_filter($filters, fn ($v) => $v !== null), $can) + ['can' => $can]);
     }
 
-    public function report(Initiative $initiative, TrackingProjectionRepositoryInterface $projectionRepo)
+    public function show(Initiative $initiative, Request $request)
     {
-        $initiative->load(['ownerCompany', 'operationUnits.user']);
+        $filters = $request->validate(['status' => 'nullable|in:all,ACTIVE,DRAFT',
+            'plan' => 'nullable|in:all,1_BLANKET,2_CATEGORY,3_MATRIX', 'q' => 'nullable|string|max:150']);
+        $monitor = app(TrackingMonitorService::class)->programme($initiative, $filters);
 
-        $health = $projectionRepo->getLifecycleSummary($initiative);
+        return view('govtracking::initiatives.monitor', compact('initiative', 'monitor'));
+    }
 
-        $trackingCodes = \GovStore\Tracking\Models\TrackingCode::with([
-            'targets.category' => function($query) {
-                $query->withTrashed();
-            },
-            'scopes',
-            'fundingType'
-        ])
-            ->where('initiative_id', $initiative->id)
-            ->orderBy('created_at', 'desc')
-            ->get();
+    public function report(Initiative $initiative, ProgrammeReportService $reports)
+    {
+        $report = $reports->programme($initiative);
 
-        foreach ($trackingCodes as $code) {
-            if ($code->specificity_level === '3_MATRIX') {
-                $code->matrixProgress = $projectionRepo->getMatrixProgress($code->id);
-            } else {
-                foreach ($code->targets as $target) {
-                    $target->progress = $projectionRepo->getTargetProgress($code->id, $target->category_id);
-                }
-            }
-        }
-
-        $facts = \GovStore\Tracking\Models\TrackingFactDelivery::with([
-            'category' => function($query) {
-                $query->withTrashed();
-            },
-            'trackingCode',
-            'location' => function($query) {
-                $query->withoutGlobalScopes();
-            }
-        ])
-        ->where('initiative_id', $initiative->id)
-        ->get();
-
-        return view('govtracking::initiatives.report', compact('initiative', 'health', 'trackingCodes', 'facts'));
+        return view('govtracking::initiatives.report', compact('initiative', 'report'));
     }
 
     public function edit(Initiative $initiative)
@@ -206,15 +140,15 @@ class InitiativeController extends Controller
         $this->authService->authorize($initiative, ['HEAD']);
 
         $rules = [
-            'title'             => 'required|string|max:255',
-            'purpose'           => 'nullable|string',
-            'status'            => 'required|in:Planning,Active,Closed,Archived',
+            'title' => 'required|string|max:255',
+            'purpose' => 'nullable|string',
+            'status' => 'required|in:Planning,Active,Closed,Archived',
             'require_documents' => 'boolean',
-            'allow_overshoot'   => 'boolean',
+            'allow_overshoot' => 'boolean',
         ];
 
         if ($initiative->status === 'Planning') {
-            $rules['primary_funding']  = 'required|in:ADP,REVENUE,OTHER';
+            $rules['primary_funding'] = 'required|in:ADP,REVENUE,OTHER';
             $rules['owner_company_id'] = 'required|exists:companies,id';
         }
 
@@ -227,29 +161,29 @@ class InitiativeController extends Controller
             if ($request->filled('primary_funding') && $request->input('primary_funding') !== $initiative->primary_funding) {
                 throw ValidationException::withMessages(['primary_funding' => 'Immutable Error: Core Funding Segment cannot be changed once an initiative has been promoted past the Planning stage.']);
             }
-            if ($request->filled('owner_company_id') && (int)$request->input('owner_company_id') !== (int)$initiative->owner_company_id) {
+            if ($request->filled('owner_company_id') && (int) $request->input('owner_company_id') !== (int) $initiative->owner_company_id) {
                 throw ValidationException::withMessages(['owner_company_id' => 'Immutable Error: Owning Organization cannot be changed once an initiative has been promoted past the Planning stage.']);
             }
         }
 
-        if ($request->input('status') === 'Active' && !$initiative->isOperationallyReady()) {
+        if ($request->input('status') === 'Active' && ! $initiative->isOperationallyReady()) {
             throw ValidationException::withMessages([
-                'status' => 'Readiness Block: You cannot activate this initiative. You must first assign an Operation Head and at least one Operation Officer in the Operation Unit console.'
+                'status' => 'Readiness Block: You cannot activate this initiative. You must first assign an Operation Head and at least one Operation Officer in the Operation Unit console.',
             ]);
         }
 
         $initiative->update([
-            'title'             => $request->input('title'),
-            'purpose'           => $request->input('purpose'),
-            'status'            => $request->input('status'),
+            'title' => $request->input('title'),
+            'purpose' => $request->input('purpose'),
+            'status' => $request->input('status'),
             'require_documents' => $request->has('require_documents'),
-            'allow_overshoot'   => $request->has('allow_overshoot'),
-            'primary_funding'   => $initiative->status === 'Planning' ? $request->input('primary_funding') : $initiative->primary_funding,
-            'owner_company_id'  => $initiative->status === 'Planning' ? $request->input('owner_company_id') : $initiative->owner_company_id,
+            'allow_overshoot' => $request->has('allow_overshoot'),
+            'primary_funding' => $initiative->status === 'Planning' ? $request->input('primary_funding') : $initiative->primary_funding,
+            'owner_company_id' => $initiative->status === 'Planning' ? $request->input('owner_company_id') : $initiative->owner_company_id,
         ]);
 
         return redirect()->route('gov.tracking.initiatives.show', $initiative->id)
-                         ->with('success', 'Initiative properties updated successfully.');
+            ->with('success', 'Initiative properties updated successfully.');
     }
 
     public function destroy(Initiative $initiative)
@@ -266,7 +200,7 @@ class InitiativeController extends Controller
         $initiative->delete();
 
         return redirect()->route('gov.tracking.initiatives.index')
-                         ->with('success', 'Initiative has been deleted.');
+            ->with('success', 'Initiative has been deleted.');
     }
 
     private function authorizeCompany(int $companyId): void

@@ -1,0 +1,1 @@
+@foreach (['received', 'value', 'grns', 'used', 'store', 'other', 'unknown_usage', 'use_pct', 'last'] as $key)<th scope="col" @class(['gs-tracking-report__date' => $key === 'last'])>{{ __('govtracking::report.'.$key) }}</th>@endforeach

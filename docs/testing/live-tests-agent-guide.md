@@ -77,27 +77,40 @@ Actor fields:
 
 Actors in one journey are distinct users in the same office. Unmapped alias → `fixtures.unknown-capability`; no match → `fixtures.unsatisfied-requirements` with search counts. Add aliases to `tests/live/capabilities.json` (`{"ability": "requests.submit"}` or `{"native": "consumables.view"}`).
 
-Records: `kind: "consumable"` currently (name, id, quantity are exposed as `${fixtures.item.*}`). Seeded users already own seeded draft basket lines — never assume an empty basket.
+Records (all exposed as `${fixtures.<alias>.*}`):
+
+| `kind` | Fields | Exposes |
+| --- | --- | --- |
+| `consumable` | `minimumAvailable` | id, name, quantity, category_id, location_id, company_id |
+| `office` | `sameCompany` (true/false), `ledgerOpen` | another dataset office: id, name, company_id |
+| `assetModel` | `categoryContains` (product-type name substring) | id, name, model_number, category_id, category_name |
+| `financeItem` | `itemName` (exact English name; national master data, not dataset-owned) | gov_code, item_name, status, group_name |
+
+An actor with `"office": "<office record alias>"` is resolved in that other office (e.g. the sibling office's admin or storekeeper). `role: "company_admin"` with `activeMembership: false` picks the company's administrator, who has no home office. Office requirement `ledgerOpen: true` keeps only offices with a stock-ledger opening (GRN posting needs one).
+
+Seeded users already own seeded draft basket lines — never assume an empty basket.
 
 ## 5. Variables
 
 Namespaces: `run`, `actors` (`.employee.id`, `.username`), `fixtures` (`.office.id`, `.item.name`), `data`, `captured`, `observed`, `baseline`. Written `${observed.before.pending}`. A whole-string reference keeps its type; unknown paths are errors. Passwords are never printed (they are masked automatically).
 
-Generators in `data`: `markedText` (prefix, length), `integer` (min, max), `decimal`, `date` (offsetDays), `email`. Values are deterministic per `--seed`; `markedText` also gets a per-run unique suffix so reruns never collide.
+Generators in `data`: `markedText` (prefix, length), `integer` (min, max), `decimal`, `date` (offsetDays, optional `format` from the tokens YYYY, YY, MM, DD — e.g. `"MMYY"` for a Govt. Tag month), `email`. Values are deterministic per `--seed`; `markedText` also gets a per-run unique suffix so reruns never collide.
 
 ## 6. Steps
 
-Every step is `{"action": ...}` or `{"use": "<flow>", "with": {...}}`. Optional on any step: `"modes": ["enforce"]` (apply only in that access mode; otherwise recorded as skipped).
+Every step is `{"action": ...}` or `{"use": "<flow>", "with": {...}}`. Optional on any step: `"modes": ["enforce"]` (apply only in that access mode; otherwise recorded as skipped) and `"when": {"actual": "${observed.before.enabled}", "equals": false}` (or `notEquals`) — the step runs only when the condition holds, otherwise it is recorded as skipped. Use `when` to make setup journeys rerunnable (do the first-run change only when an observation says it is still needed). Both carry into the steps of a `use` flow.
 
 | Action | Fields |
 | --- | --- |
 | `goto` | `route` (name from the route map) or `url`; `query: {k: v}` |
 | `click` | `target`; `waitForResponse: "basket/add"` registers a non-GET response wait before clicking and fails on status ≥ 400 |
 | `fill`, `clear`, `select`, `check`, `uncheck` | `target`, `value` |
-| `submitForm` | `target` (the submit control; waits for navigation) |
+| `submitForm` | `target` (the submit control); waits for the navigation the click starts and fails if none happens (e.g. browser validation stopped it); optional `expectStatus: [200]` fails when the page it finally lands on has another status (catches a redirect to a POST-only URL) |
+| `select2` | `target` (the underlying `<select>`), `search` (typed), `option` (text to pick; an exact match, or exact followed by ` (…)`, wins; otherwise the option must be the only one containing it) |
+| `download` | `target` (link/button that downloads), `as` — captures `{filename, text, lines}` and, for CSV, `header`, `rows`, `rowCount` |
 | `keyboard`, `reload`, `wait` | `wait`: `timeMs`, or `target`+`state`. Prefer `waitObserve`/assertions over sleeping |
 | `upload` | `target`, `file` |
-| `capture` | `target` + `as`; `value: true` (input value), `attribute`, `count: true`; or `url: true` |
+| `capture` | `target` + `as`; `value: true` (input value), `attribute`, `count: true`; or `url: true`; optional `pattern` keeps regex group 1 (e.g. a document id from the URL) |
 | `assert` | see below |
 | `compare` | `actual`, `equals` or `contains` (no page needed) |
 | `observe` | `check` (registered name), `args`, `as` |
@@ -106,7 +119,7 @@ Every step is `{"action": ...}` or `{"use": "<flow>", "with": {...}}`. Optional 
 | `probe` | `path` (GET only; under `/gov-requests` or `/gov-store`), `expectStatus: [..]` or `expectStatusByMode: {shadow:[..], enforce:[..]}`, `as` — authenticated HTTP check without following redirects |
 | `ledger` | `kind`, `id`, `effect`, `cleanup: "removed"|"retained"` — records a created record (write journeys) |
 
-`assert` tests (`test`): `visible`, `hidden`, `text` (`equals`/`contains`), `number`, `value`, `checked`, `enabled`, `disabled`, `url` (`equals`/`contains`, no target), `valid` / `invalid` (HTML constraint validity), `count` (`equals`). Ambiguous locators **fail** (strict mode) — make the locator specific instead.
+`assert` tests (`test`): `visible`, `hidden`, `text` (`equals`/`contains`/`matches` regex), `number`, `value`, `checked`, `enabled`, `disabled`, `url` (`equals`/`contains`, no target), `valid` / `invalid` (HTML constraint validity), `count` (`equals`). Ambiguous locators **fail** (strict mode) — make the locator specific instead.
 
 `use: "auth.login"` with `{"actor": "employee"}` switches to that actor's session and logs in through the real login page. Do this once per actor. `context.select-and-verify` checks the signed-in header.
 
@@ -128,7 +141,7 @@ Use `target: "requests.basketPurpose"`. Locator kinds: `testId`, `role`+`name`, 
 ## 8. Observations, independence and mutation rules
 
 - **Expected values must be independent of the page.** Compare the UI with a database `observe`, a declared input (`${data.qty}`) or a business rule — never with a value captured from the same page you are testing.
-- Available observations: `inventory.consumable`, `office.context`, `actor.assignments`, `request.progress`, `request.queues` (inbox / queue badge counts), `request.state`, `basket.line`, `organization.registry` (area scope and status-tab counts), `organization.office` (readiness, next step, administrator), `organization.national`, `organization.location`, `membership.person` (My offices for one person), `membership.staff` (Staff tab counts), `membership.handover`, `membership.code`, `membership.overrides` (and the committee checks in `contracts.json`). Register new ones in `contracts.json` **and** implement them (read-only, parameterized) in `live-test-adapter.php`.
+- Available observations: `inventory.consumable`, `office.context`, `actor.assignments`, `request.progress`, `request.queues` (inbox / queue badge counts), `request.state`, `basket.line`, `organization.registry` (area scope and status-tab counts), `organization.office` (readiness, next step, administrator), `organization.national`, `organization.location`, `membership.person` (My offices for one person), `membership.staff` (Staff tab counts), `membership.handover`, `membership.code`, `membership.overrides`, `asset-tags.readiness` (gates G1–G6 restated, office facts, code lists, enablement), `asset-tags.document` (a store document's issued tags; `modelId` narrows to one line's product), `asset-tags.tag`, `asset-tags.finance`, `asset-tags.default`, `rules.effective` (who decides a capability for an office + model, restated layer by layer), `rules.policy`, `storeops.documents` (and the committee checks in `contracts.json`). `compare` also accepts `matches` (regex) and `greaterThan`. Register new ones in `contracts.json` **and** implement them (read-only, parameterized) in `live-test-adapter.php`.
 - Seeded observation journeys must not create anything. Write journeys:
   - need `"capability": "write-fixtures"` and a `cleanup` policy;
   - capture the created identity from the UI (e.g. request number via the generated purpose) and `ledger` it;
@@ -154,6 +167,8 @@ Use `target: "requests.basketPurpose"`. Locator kinds: `testId`, `role`+`name`, 
 Every code extension needs a contract test against the miniature app (`npm run test:live:contract`) and, for the PHP side, a no-write check in `tests/bridge-readonly.spec.mjs` (`npm run test:live:bridge`).
 
 ## 10. Worked examples to copy
+
+- Full multi-role write flow with national change reviews, conditional (rerunnable) setup, select2 lines, a posted document checked against the database, a CSV download, cross-office boundaries and UI cleanup steps that run after a failure: `asset-tagging.*` (suite `asset-tagging`; needs `--target local --allow-writes`). The national change review is the reusable flow `review.confirm`.
 
 - Read-only UI vs database: `requests.catalog-progress-observation`.
 - Authorization/negative, shadow vs enforce: `requests.authorization-boundaries`.

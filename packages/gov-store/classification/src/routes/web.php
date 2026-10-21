@@ -9,11 +9,15 @@ use GovStore\Classification\Http\Controllers\CategoryAdoptionController;
 use GovStore\Classification\Http\Controllers\CategoryGovernanceController;
 use GovStore\Classification\Http\Controllers\CollectionBuilderController;
 use GovStore\Classification\Http\Controllers\CollectionDiscoveryController;
+use GovStore\Classification\Http\Controllers\FinanceCatalogController;
+use GovStore\Classification\Http\Controllers\ProductTypeFinanceController;
+use GovStore\Classification\Http\Controllers\Api\FinanceItemsController;
 use GovStore\Classification\Http\Controllers\MyCatalogController;
 use GovStore\Classification\Http\Controllers\OfficeCopyController;
 use GovStore\Classification\Http\Middleware\ImportPerformanceGuard;
 use GovStore\TenantScope\Http\Middleware\InitializeTenantContext;
 use Illuminate\Support\Facades\Route;
+use Tabuna\Breadcrumbs\Trail;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,6 +65,17 @@ Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'admin/catalog'], fun
     // Global Governance Registry
     Route::get('/governance', [CategoryGovernanceController::class, 'index'])->middleware('gov.can:catalog.master.manage')->name('gov.catalog.governance.index');
     Route::get('/governance/{id}', [CategoryGovernanceController::class, 'show'])->middleware('gov.can:catalog.master.manage')->name('gov.catalog.governance.show');
+
+    // Finance Division item list (S6). POSTs pass tenant-scope's national change review.
+    Route::get('/finance', [FinanceCatalogController::class, 'index'])->middleware('gov.can:catalog.master.manage')->name('gov.catalog.finance.index')
+        ->breadcrumbs(fn (Trail $trail) => $trail->parent('home')->push(trans('classification::finance.title'), route('gov.catalog.finance.index')));
+    Route::post('/finance/activate', [FinanceCatalogController::class, 'activate'])->middleware('gov.can:catalog.master.manage')->name('gov.catalog.finance.activate');
+    Route::post('/finance/retire', [FinanceCatalogController::class, 'retire'])->middleware('gov.can:catalog.master.manage')->name('gov.catalog.finance.retire');
+    Route::post('/finance/items', [FinanceCatalogController::class, 'store'])->middleware('gov.can:catalog.master.manage')->name('gov.catalog.finance.store');
+    Route::post('/finance/items/{code}/unspsc', [FinanceCatalogController::class, 'link'])->where('code', '[0-9]{6}')->middleware('gov.can:catalog.master.manage')->name('gov.catalog.finance.link');
+    // Finance Code select list (select2) and the product type's optional Finance Code (S4; owner checked in the controller).
+    Route::get('/api/finance-items/selectlist', [FinanceItemsController::class, 'selectlist'])->middleware('gov.can:catalog.view')->name('gov.catalog.finance.selectlist');
+    Route::post('/product-types/{id}/finance-code', [ProductTypeFinanceController::class, 'update'])->whereNumber('id')->middleware('gov.can:catalog.finance.default')->name('gov.catalog.product-types.finance');
 
     // SuperAdmin Collection Library Builder
     Route::get('/collections', [CollectionBuilderController::class, 'index'])->middleware('gov.can:catalog.master.manage')->name('gov.catalog.collections.index');

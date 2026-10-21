@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Office tag settings</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/c32d13bc41445ccff8c8156f9d142efa">
+<link rel="stylesheet" href="/_blob/b0140cd2ad3846295c9f5b5830092d19">
+<link rel="stylesheet" href="/_blob/5ce2466269dec07fabc18d249b73b3f3">
+<link rel="stylesheet" href="/_blob/22b274ea2c677e88680fff95f1da730f">
+<link rel="stylesheet" href="/_blob/a22aa64277e2d4b6dd0f0188f59f608f">
+<link rel="stylesheet" href="/_blob/4a8ede88a8bfb06759d0786c392dcd21">
+<link rel="stylesheet" href="/_blob/ac4accb7e1cee1091aaa49053784ac91">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&amp;family=Noto+Sans+Bengali:wght@400;600&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="at-app" data-skin="{{theme}}" data-theme="{{mode}}" data-gs-status-style="tinted" style="width: 100%; min-height: 100%;">
+<header class="at-top">
+<span class="at-top__brand"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>National Asset Register</span>
+<span class="at-top__ctx"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21V10M19 21V10M9 21v-7M15 21v-7M2 10l10-6 10 6"></path></svg>{{ctx}}</span>
+</header>
+<div class="at-shell">
+<nav class="at-side" aria-label="Asset tagging screens">
+<div class="at-side__head">Asset tagging</div>
+<a href="Main.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>Overview</a>
+<a href="GrnTagging.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"></path><path d="M3 7l9 4 9-4M12 11v10"></path></svg>GRN workspace</a>
+<a href="PostReview.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 3 3 5-6"></path></svg>Post and print</a>
+<a href="TagLookup.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>Tag lookup</a>
+<div class="at-side__head">Administration</div>
+<a href="ProductType.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z"></path><path d="m3 13 9 5 9-5"></path></svg>Product type</a>
+<a href="OfficeSettings.dc.html" aria-current="page"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Office settings</a>
+<a href="FinanceCatalog.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z"></path><path d="M4 16a4 4 0 0 1 4-4h12"></path></svg>Finance catalog</a>
+<a href="Enablement.dc.html"><svg class="at-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"></path><path d="m9 12 2 2 4-4"></path></svg>Enablement</a>
+</nav>
+<main class="at-main">
+<div class="at-crumbs"><span>Administration</span><span aria-hidden="true">›</span><span>Rules and settings</span><span aria-hidden="true">›</span><span>Asset tags</span></div>
+<header class="gs-page-header">
+<div class="gs-page-header__text">
+<h1 class="gs-page-header__title">Asset tags <span class="gs-page-header__bn" lang="bn">ট্যাগ সেটিংস</span></h1>
+<p class="gs-page-header__subtitle">Choose the codes your office puts into Govt. Tags. Everything is picked from your company's lists. Changes apply to future tags only.</p>
+</div>
+</header>
+
+<div class="gs-tabset">
+<div class="gs-tabset__list" role="tablist" aria-label="Asset tag settings">
+<button type="button" class="gs-tabset__tab" role="tab" aria-selected="{{officeSel}}" tabindex="{{officeTab}}" onClick="{{showOffice}}">This office</button>
+<sc-if value="{{isCompanyAdmin}}" hint-placeholder-val="{{ false }}"><button type="button" class="gs-tabset__tab" role="tab" aria-selected="{{listsSel}}" tabindex="{{listsTab}}" onClick="{{showLists}}">Company code lists</button></sc-if>
+<button type="button" class="gs-tabset__tab" role="tab" aria-selected="{{readySel}}" tabindex="{{readyTab}}" onClick="{{showReady}}">Readiness</button>
+</div>
+
+<sc-if value="{{onOffice}}" hint-placeholder-val="{{ true }}">
+<div class="gs-tabset__panel at-stack" role="tabpanel" style="padding-top: 16px;">
+<sc-if value="{{conflict}}" hint-placeholder-val="{{ false }}">
+<div class="gs-alert gs-alert--warning" role="alert"><svg class="at-i gs-alert__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path><path d="M12 9v4M12 17h.01"></path></svg>
+<div class="gs-alert__body at-stack" style="gap: 8px;"><span><strong>Someone else saved these settings at 10:42.</strong> Your changes are not saved yet. Compare, then choose.</span>
+<div class="at-diff" role="table" aria-label="Differences">
+<div role="columnheader"><strong>Field</strong></div><div role="columnheader"><strong>Their version (rev 5)</strong></div><div role="columnheader"><strong>Your version</strong></div>
+<div role="cell">Default division</div><div role="cell" class="at-diff__changed">12 · Human Resources and Administration</div><div role="cell">{{defaultLabel}}</div>
+</div>
+<div class="at-row"><button type="button" class="gs-btn gs-btn--secondary gs-btn--sm" onClick="{{dismiss}}">Keep mine and save</button><button type="button" class="gs-btn gs-btn--light gs-btn--sm" onClick="{{dismiss}}">Use theirs</button></div></div></div>
+</sc-if>
+
+<section class="gs-box">
+<header class="gs-box__header"><h2 class="gs-box__title">Registration location</h2><div class="gs-box__tools"><span class="at-small at-muted">From your company's location list</span></div></header>
+<div class="gs-box__body">
+<div class="gs-form-row"><label class="gs-form-row__label" for="loc">Location <span class="gs-form-row__required" aria-hidden="true">*</span></label><div class="gs-form-row__control">
+<select class="form-control" id="loc" style="max-width: 460px;" value="{{loc}}" onChange="{{onLoc}}" aria-describedby="loc-help">
+<sc-for list="{{locations}}" as="o" hint-placeholder-count="6"><option value="{{o.code}}" disabled="{{o.taken}}">{{o.label}}</option></sc-for>
+</select>
+<p class="gs-form-row__help" id="loc-help">Locations already used by another office of your company can't be chosen; their option says which office uses them.</p></div></div>
+</div>
+</section>
+
+<section class="gs-box">
+<header class="gs-box__header"><h2 class="gs-box__title">Administrative divisions</h2><div class="gs-box__tools"><span class="at-small at-muted">Tick the divisions this office uses</span></div></header>
+<div class="gs-box__body at-stack">
+<fieldset style="border: 0; padding: 0; margin: 0;"><legend class="gs-sr-only">Divisions this office uses</legend>
+<div class="at-cols" style="gap: 8px;">
+<sc-for list="{{divisions}}" as="d" hint-placeholder-count="6">
+<label class="gs-choice" style="font-weight: 400;"><input class="gs-choice__input" type="checkbox" checked="{{d.checked}}" onChange="{{d.toggle}}"><span class="gs-choice__text"><span class="gs-choice__label"><span class="at-mono">{{d.code}}</span> · {{d.name}}</span></span></label>
+</sc-for>
+</div>
+</fieldset>
+<sc-if value="{{noDivision}}" hint-placeholder-val="{{ false }}"><p class="gs-form-row__error" role="alert">Tick at least one division.</p></sc-if>
+<div class="gs-form-row"><label class="gs-form-row__label" for="defdiv">Default division</label><div class="gs-form-row__control">
+<select class="form-control" id="defdiv" style="max-width: 460px;" value="{{def}}" onChange="{{onDef}}">
+<sc-for list="{{checkedDivs}}" as="c" hint-placeholder-count="2"><option value="{{c.code}}">{{c.code}} · {{c.name}}</option></sc-for>
+</select>
+<p class="gs-form-row__help">Used on GRN lines unless the storekeeper picks another of your divisions.</p></div></div>
+</div>
+</section>
+
+<div class="at-preview">
+<div class="at-preview__head"><strong>Your office's part of a Govt. Tag</strong><span class="at-small at-muted">Grey parts come from the item and the receipt.</span></div>
+<div class="gs-segs">
+<span class="gs-seg" data-tone="muted"><span class="gs-seg__v">GG</span><span class="gs-seg__l">Group</span></span>
+<span class="gs-seg" data-tone="muted"><span class="gs-seg__v">SS</span><span class="gs-seg__l">Subgroup</span></span>
+<span class="gs-seg" data-tone="muted"><span class="gs-seg__v">II</span><span class="gs-seg__l">Item</span></span>
+<span class="gs-seg" data-tone="muted"><span class="gs-seg__v">MMYY</span><span class="gs-seg__l">Month</span></span>
+<span class="gs-seg" data-tone="success"><span class="gs-seg__v">{{loc}}</span><span class="gs-seg__l">Location</span></span>
+<span class="gs-seg" data-tone="success"><span class="gs-seg__v">{{def}}</span><span class="gs-seg__l">Division</span></span>
+<span class="gs-seg" data-tone="muted"><span class="gs-seg__v">NNNN</span><span class="gs-seg__l">Sequence</span></span>
+</div>
+</div>
+
+<div class="at-footer">
+<span class="at-small at-muted">Revision 4 · last changed 3 Oct 2026 by you. Lists are maintained by your company administrator.</span>
+<div class="at-row"><button type="button" class="gs-btn gs-btn--secondary gs-btn--outline">Discard changes</button><button type="button" class="gs-btn gs-btn--primary" onClick="{{save}}">Save changes</button></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{onLists}}" hint-placeholder-val="{{ false }}">
+<div class="gs-tabset__panel at-stack" role="tabpanel" style="padding-top: 16px;">
+<p class="at-muted">Example Company keeps one list of location codes and one of division codes. Offices choose from these lists. A code that is in use can be renamed, but it can't be changed or removed.</p>
+<div class="at-cols">
+<section class="gs-box">
+<header class="gs-box__header"><h2 class="gs-box__title">Locations</h2><div class="gs-box__tools"><button type="button" class="gs-btn gs-btn--light gs-btn--sm">Add location</button></div></header>
+<div class="gs-box__body gs-table-wrap at-scroll"><table class="gs-table"><thead><tr><th scope="col">Code</th><th scope="col">Name</th><th scope="col">Used by</th></tr></thead><tbody>
+<sc-for list="{{locRows}}" as="r" hint-placeholder-count="6"><tr><td><input class="form-control form-control--code" style="width: 4.5em;" type="text" value="{{r.code}}" readonly="{{r.inUse}}" aria-label="Code"></td><td><input class="form-control" type="text" value="{{r.name}}" aria-label="Name" readonly></td><td class="at-small">{{r.usedBy}}</td></tr></sc-for>
+</tbody></table></div>
+</section>
+<section class="gs-box">
+<header class="gs-box__header"><h2 class="gs-box__title">Divisions</h2><div class="gs-box__tools"><button type="button" class="gs-btn gs-btn--light gs-btn--sm">Add division</button></div></header>
+<div class="gs-box__body gs-table-wrap at-scroll"><table class="gs-table"><thead><tr><th scope="col">Code</th><th scope="col">Name</th><th scope="col">Used by</th></tr></thead><tbody>
+<sc-for list="{{divRows}}" as="r" hint-placeholder-count="6"><tr><td><input class="form-control form-control--code" style="width: 4.5em;" type="text" value="{{r.code}}" readonly="{{r.inUse}}" aria-label="Code"></td><td><input class="form-control" type="text" value="{{r.name}}" aria-label="Name" readonly></td><td class="at-small">{{r.usedBy}}</td></tr></sc-for>
+</tbody></table></div>
+</section>
+</div>
+<div class="at-footer"><span class="at-small at-muted">Revision 2 · last changed 1 Oct 2026</span><button type="button" class="gs-btn gs-btn--primary">Save lists</button></div>
+</div>
+</sc-if>
+
+<sc-if value="{{onReady}}" hint-placeholder-val="{{ false }}">
+<div class="gs-tabset__panel at-stack" role="tabpanel" style="padding-top: 16px;">
+<section class="gs-readiness">
+<div class="gs-readiness__head"><div class="gs-readiness__text"><strong class="gs-readiness__title">Ready for tag issuance?</strong><p class="gs-readiness__caption">When everything is done, the system operator switches issuance on for your office.</p></div><span class="gs-readiness__count">5 of 6 done</span></div>
+<div class="gs-progress"><div class="gs-progress__track"><div class="gs-progress__bar" style="width: 83%;"></div></div></div>
+<ul class="gs-readiness__list">
+<li class="gs-readiness__item gs-readiness__item--done"><svg class="at-i gs-readiness__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 3 3 5-6"></path></svg><span class="gs-readiness__label">Office codes chosen: <strong>location {{loc}}, {{divCount}} divisions</strong></span></li>
+<li class="gs-readiness__item"><svg class="at-i gs-readiness__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle></svg><span class="gs-readiness__label">Old tags checked for clashes: <strong>3 to verify on the shelf</strong></span><button type="button" class="gs-btn gs-btn--primary gs-btn--sm">Review clashes</button></li>
+<li class="gs-readiness__item gs-readiness__item--done"><svg class="at-i gs-readiness__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 3 3 5-6"></path></svg><span class="gs-readiness__label">Standard tag prefix set by the operator: <strong>GS-</strong></span></li>
+<li class="gs-readiness__item gs-readiness__item--done"><svg class="at-i gs-readiness__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 3 3 5-6"></path></svg><span class="gs-readiness__label">Receipt-to-asset links checked: <strong>no duplicates</strong></span></li>
+<li class="gs-readiness__item gs-readiness__item--done"><svg class="at-i gs-readiness__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 3 3 5-6"></path></svg><span class="gs-readiness__label">This system is the single place tags are issued</span></li>
+<li class="gs-readiness__item gs-readiness__item--done"><svg class="at-i gs-readiness__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 3 3 5-6"></path></svg><span class="gs-readiness__label">Live office, not a training or experiment office</span></li>
+</ul>
+</section>
+</div>
+</sc-if>
+</div>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["civic-ledger","institutional-green","digital-blue","executive-neutral","lavender"],"default":"civic-ledger","section":"Theme"},"mode":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"},"viewer":{"editor":"enum","options":["office administrator","company administrator"],"default":"office administrator","section":"State"},"$preview":{"width":1280,"height":1500}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { tab: 'office', loc: '01', checked: ['09', '12'], def: '09', conflict: false };
+}
+renderVals() {
+const s = this.state;
+const companyAdmin = (this.props.viewer ?? 'office administrator') === 'company administrator';
+const tab = !companyAdmin && s.tab === 'lists' ? 'office' : s.tab;
+const locList = [
+{ code: '01', name: 'Head Office', usedBy: 'This office' },
+{ code: '02', name: 'Warehouse', usedBy: '' },
+{ code: '05', name: 'Regional Office – Chattogram', usedBy: 'Example Office, Chattogram' },
+{ code: '08', name: 'Regional Office – Sylhet', usedBy: 'Example Office, Sylhet' },
+{ code: '10', name: 'Regional Office – Khulna', usedBy: 'Example Office, Khulna' },
+{ code: '13', name: 'Sub Office – 1', usedBy: '' }
+];
+const divList = [
+{ code: '05', name: 'IT Infrastructure and Security' }, { code: '07', name: 'Strategy' },
+{ code: '09', name: 'Finance and Accounts' }, { code: '12', name: 'Human Resources and Administration' },
+{ code: '13', name: 'Marketing' }, { code: '17', name: 'MD Division' }
+];
+const locations = locList.map((l) => ({ code: l.code, taken: !!l.usedBy && l.usedBy !== 'This office' && l.code !== s.loc,
+label: l.code + ' · ' + l.name + (l.usedBy && l.usedBy !== 'This office' ? ' — used by ' + l.usedBy : '') }));
+const divisions = divList.map((d) => ({ ...d, checked: s.checked.includes(d.code),
+toggle: () => { const next = s.checked.includes(d.code) ? s.checked.filter((c) => c !== d.code) : s.checked.concat([d.code]); this.setState({ checked: next, def: next.includes(s.def) ? s.def : (next[0] || '') }); } }));
+const checkedDivs = divList.filter((d) => s.checked.includes(d.code));
+const defDiv = divList.find((d) => d.code === s.def);
+const divUse = { '09': 'This office, Example Office, Khulna', '12': 'This office', '05': 'Example Office, Sylhet' };
+return {
+theme: this.props.theme ?? 'civic-ledger', mode: this.props.mode ?? 'light',
+ctx: companyAdmin ? 'Example Company · Company administrator' : 'Working office: Example Office, Dhaka · Office administrator',
+isCompanyAdmin: companyAdmin,
+onOffice: tab === 'office', onLists: tab === 'lists', onReady: tab === 'ready',
+officeSel: String(tab === 'office'), listsSel: String(tab === 'lists'), readySel: String(tab === 'ready'),
+officeTab: tab === 'office' ? '0' : '-1', listsTab: tab === 'lists' ? '0' : '-1', readyTab: tab === 'ready' ? '0' : '-1',
+showOffice: () => this.setState({ tab: 'office' }), showLists: () => this.setState({ tab: 'lists' }), showReady: () => this.setState({ tab: 'ready' }),
+loc: s.loc, onLoc: (e) => this.setState({ loc: e.target.value }), locations,
+divisions, checkedDivs, noDivision: s.checked.length === 0, divCount: String(s.checked.length),
+def: s.def || '··', onDef: (e) => this.setState({ def: e.target.value }),
+defaultLabel: defDiv ? defDiv.code + ' · ' + defDiv.name : '—',
+conflict: s.conflict, save: () => this.setState({ conflict: true }), dismiss: () => this.setState({ conflict: false }),
+locRows: locList.map((l) => ({ ...l, inUse: !!l.usedBy, usedBy: l.usedBy || 'Not used' })),
+divRows: divList.map((d) => ({ ...d, inUse: !!divUse[d.code], usedBy: divUse[d.code] || 'Not used' }))
+};
+}
+}
+</script>
+</body>
+</html>

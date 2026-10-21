@@ -1,0 +1,32 @@
+<?php
+
+return [
+    'monitoring' => 'Monitoring kit',
+    'unavailable' => 'Unavailable',
+    'delivered' => 'Delivered',
+    'expected' => 'Expected',
+    'points' => ':points percentage points from pace',
+    'points_short' => ':points pp',
+    'open' => 'Open',
+    'no_attention' => 'Nothing needs attention.',
+    'next' => 'Next step',
+    'forecast' => 'Forecast',
+    'offices' => 'Offices',
+    'no_target' => 'No target',
+    'attention' => 'Needs attention',
+    'empty_offices' => 'No offices to show.',
+    'prices' => 'Unit prices paid',
+    'min' => 'Minimum',
+    'max' => 'Maximum',
+    'average' => 'Weighted average',
+    'spread' => 'Spread of average',
+    'table' => 'View data table',
+    'scope' => 'Why you can see this',
+    'level' => 'Show office at level',
+    'severity' => [
+        'critical' => 'Critical',
+        'serious' => 'Serious',
+        'warning' => 'Warning',
+        'info' => 'Note',
+    ],
+];

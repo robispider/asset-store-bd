@@ -53,6 +53,17 @@ class ClassificationServiceProvider extends ServiceProvider
         // Load routes
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
 
+        // The product type's optional Finance Code is typed metadata (gov_metadata_values).
+        $this->app->make(\GovStore\Metadata\Services\MetadataValueStore::class)
+            ->register(\GovStore\Classification\Services\ProductTypeFinanceDefault::NAMESPACE, \GovStore\Classification\Services\ProductTypeFinanceDefault::class);
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                \GovStore\Classification\Console\Commands\ImportFinanceItems::class,
+                \GovStore\Classification\Console\Commands\EnforceCommodityIndex::class,
+            ]);
+        }
+
         // Publish views for customization
         $this->publishes([
             __DIR__.'/../resources/views' => resource_path('views/vendor/gov-classification'),
@@ -86,6 +97,9 @@ class ClassificationServiceProvider extends ServiceProvider
                 $registry->register(['id' => $id, 'group' => 'gov-catalogue-master', 'order' => $order,
                     'label' => 'classification::texts.'.$label, 'icon' => $icon, 'route' => $route, 'match' => $match]);
             }
+            $registry->register(['id' => 'gov-catalog-finance', 'group' => 'gov-catalogue-master', 'order' => 40,
+                'label' => 'classification::finance.nav_finance', 'icon' => 'fas fa-coins',
+                'route' => 'gov.catalog.finance.index', 'match' => ['gov.catalog.finance.*']]);
         });
     }
 }

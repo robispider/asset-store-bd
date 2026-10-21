@@ -9,8 +9,16 @@ export class CaptureEngine {
       throw new Error(`Capture action missing required 'as' parameter`);
     }
 
+    // Optional `pattern`: keep only regex group 1 (or the whole match) of the captured text.
+    const extract = value => {
+      if (!step.pattern || value == null) return value;
+      const match = String(value).match(new RegExp(step.pattern));
+      if (!match) throw new Error(`Assertion failed: captured value "${value}" does not match pattern ${step.pattern}`);
+      return match[1] ?? match[0];
+    };
+
     if (step.url) {
-      const url = page.url();
+      const url = extract(page.url());
       varContext.setCaptured(asKey, url);
       return { as: asKey, value: url };
     }
@@ -32,6 +40,7 @@ export class CaptureEngine {
       } else {
         capturedValue = (await locator.innerText()).trim();
       }
+      capturedValue = extract(capturedValue);
 
       varContext.setCaptured(asKey, capturedValue);
       return { as: asKey, value: capturedValue };

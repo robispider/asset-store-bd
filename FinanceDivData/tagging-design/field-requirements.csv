@@ -1,0 +1,25 @@
+field,purpose,required_when,authoritative_source,current_coverage,proposed_target,validation_or_limit
+actor_and_scope,issue,yes_server,GovAccess/native policy and active TenantContext,existing,service context plus registration snapshot,authorize current office/company and all supplied IDs
+source_document_item_id,issue,yes_receipt,locked saved receipt line,existing UUID,gov_asset_registrations.intake_item_id,same document/type/state/office/company
+unit_index,issue,yes,saved row_index,existing EAV; new bridge field,registration source-unit key,"stable ordinal, integral quantity and unique source unit"
+model_id,issue,yes,saved receipt product_id,existing,assets.model_id,actual authorized individual asset model
+gov_code,issue,govt_tag_only (optional; absent means standard tag),active Finance row: product-type default or line-only choice,490 provisional keys,document meta; optional product-type Finance default in GovStore category metadata; registration gov_code (NULL for standard tags); snapshot,six digit GGSSII; not physical asset identity; never blocks posting
+finance_source,issue,yes,product_type / line_choice / none,new,document meta; registration snapshot,line_choice only when the product type has no valid default
+format_version,issue,yes_server,deployed allowlisted factory selection: fd18-v1 or native-v1,implementation needed,registration format_version,unknown fails; no executable office upload
+acquisition_date,issue,govt_tag_only,"existing GRN Supplier Challan reference_date, else Purchase Order reference_date (D-09)",existing reference fields; current capability does not copy to assets,assets.purchase_date; snapshot,encode MMYY only; Purchase receipts only until D-04; missing date = needs attention
+acquisition_reference,issue,govt_tag_only,the challan or PO reference the date came from,existing document references,registration snapshot,never invent a date; storekeeper may keep standard tags for the line instead
+tag_choice,issue,yes,line tag panel: auto or keep standard tags,new line meta,document meta; snapshot reason,standard choice recorded as chosen_by_storekeeper
+location_code,issue,yes_server,office selection from the company location list,14 source examples from one organization; real lists missing,gov_metadata_values office subject (asset-tagging.office); company list (asset-tagging.codelists); snapshot,two digit text chosen from a dropdown; one office per code per company; not BBS/CGA code
+division_code,issue,govt_tag_only,office divisions selected from the company list; office default,17 source examples; real mappings missing,document meta selection; snapshot DD,office-bound selection; not geographic division
+physical_asset_tag,issue,generated,PHP formatter plus atomic counter (Finance tag) or native sequence under settings lock (standard tag),new service,assets.asset_tag; existing bridge asset_tag with all-time uniqueness after preflight,18-digit text or native prefix+number; all-time unique reserved value; immutable; typed tags rejected in enabled offices
+sequence,issue,generated,global exact first14-prefix allocator,new counter table,gov_asset_tag_sequences,0001..9999; no reset by office/company/version/century
+manufacturer_serial,register,where applicable,physical manufacturer evidence,existing serial_number EAV,assets.serial,not mandatory for furniture; not identity uniqueness key
+warranty_months,register,where applicable,supplier warranty,existing EAV,assets.warranty_months,nonnegative actual fact
+supplier_and_cost,register,existing receipt requirements,actual receipt/source evidence,existing native fields,supplier_id and purchase_cost,preserve current receipt rules; not format segments
+specification_and_manufacturer,register,where applicable,actual product/physical unit,native model/custom fields,existing register/custom fields,use metadata mappings rather than guessed custom column names
+unspsc_code,classification,optional,reviewed existing commodity semantics,470 unapproved leads; 224 covered items,gov_finance_items.unspsc_code; snapshot,nullable; multiple Finance items may share it; no reverse column
+office_geo_area,context,existing profile rules,current GeoAreaService/profile,existing current reference,existing gov_location_profiles.geo_area_id,unchanged; no 2013 import and no LL/DD substitution
+label,label,after committed issue,saved native tag,existing native printing,existing label UI and audit,reprint same identity; no label workflow tables
+legacy_tag,migration,when enabling existing scope,native/bridge including deleted rows and physical checks,reconciliation needed,retained bridge reservation / collision deny-set,preserve history; no arbitrary duplicate merge or automatic retag
+current_custody,register,current inventory rules,native assignment/location,existing,existing native custody fields/history,does not change encoded registration facts
+accounting_and_CGA_codes,excluded_from_tagging,no,separate accounting/document modules if later required,not required here,none in tagging service,"depreciation, accounts and CGA file codes are not tag inputs"

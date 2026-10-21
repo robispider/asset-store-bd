@@ -41,6 +41,15 @@ export class StepInterpreter {
       return { action: step.action, skipped: true, reason: `applies only in access mode(s) ${step.modes.join(',')}; installation is ${this.options.accessMode}` };
     }
 
+    // Explicit data condition: { actual, equals | notEquals } decided at run time (e.g. a first-run-only setup step).
+    if (step.when) {
+      const actual = varContext.interpolate(step.when.actual);
+      const holds = step.when.equals !== undefined
+        ? String(actual) === String(varContext.interpolate(step.when.equals))
+        : String(actual) !== String(varContext.interpolate(step.when.notEquals));
+      if (!holds) return { action: step.action || step._flow, skipped: true, reason: `condition not met: ${JSON.stringify(step.when)} (actual ${JSON.stringify(actual)})` };
+    }
+
     switch (step.action) {
       case 'observe': {
         const args = varContext.interpolateDeep(step.args || {});

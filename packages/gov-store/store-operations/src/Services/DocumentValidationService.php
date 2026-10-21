@@ -3,6 +3,7 @@
 namespace GovStore\StoreOperations\Services;
 
 use Exception;
+use GovStore\StoreOperations\Contracts\ContributesChecklist;
 use GovStore\StoreOperations\Contracts\TrackingCodeVerifier;
 use GovStore\StoreOperations\DTOs\CompiledProfile;
 use GovStore\StoreOperations\Models\Document;
@@ -196,6 +197,22 @@ class DocumentValidationService
                 }
 
                 $capability = CapabilityRegistry::make($realCode);
+
+                // Capabilities may add their own rows: 'required' rows count, 'warning' rows never block.
+                if ($capability instanceof ContributesChecklist) {
+                    foreach ($capability->checklist($document, $item, $realConfig) as $row) {
+                        $level = $row['level'] ?? 'required';
+                        if ($level === 'warning') {
+                            $checklist[] = ['label' => $row['label'], 'passed' => true, 'level' => 'warning'];
+
+                            continue;
+                        }
+                        $totalRequirements++;
+                        $satisfiedRequirements += $row['passed'] ? 1 : 0;
+                        $checklist[] = ['label' => $row['label'], 'passed' => (bool) $row['passed'], 'level' => $level];
+                    }
+                }
+
                 $requirements = $capability->getRequirements($realConfig);
 
                 if (! is_array($requirements) || empty($requirements)) {
