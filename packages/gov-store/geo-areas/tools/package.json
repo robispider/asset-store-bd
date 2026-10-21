@@ -1,0 +1,11 @@
+{
+  "name": "gov-store-geo-areas-tools",
+  "private": true,
+  "description": "Offline build tools for the gov-store geo-areas boundary files (docs/plans/geo-boundary-data-plan.md)",
+  "scripts": {
+    "geo:boundaries": "python -I build_boundaries.py"
+  },
+  "devDependencies": {
+    "mapshaper": "0.6.121"
+  }
+}

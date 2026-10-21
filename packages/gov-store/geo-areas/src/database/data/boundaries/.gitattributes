@@ -1,0 +1,2 @@
+# Built boundary files are hashed in their manifest.json; keep their bytes exactly as built (no CRLF conversion).
+bd-boundaries-*/** -text

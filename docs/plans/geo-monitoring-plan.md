@@ -5,7 +5,8 @@
 > `packages/gov-store/geo-areas`; the map, metric contract and aggregation go in a new
 > `packages/gov-store/geo-monitoring`. Nothing here writes business data.
 > **Status:** proposal; nothing implemented · **Updated:** 2026-10-21
-> **Blocking owner decision:** boundary source, publisher and licence (§7, phase 0).
+> **Phase 0 (boundary data) done:** `docs/plans/geo-boundary-data-plan.md`; boundary set `bd-boundaries-2026-10-21.1`
+> in `geo-areas/src/database/data/boundaries/`.
 > **Reference model:** `docs/plans/tracking-monitor-redesign-plan.md` (scope keys, read-only monitor views),
 > `docs/plans/dynamic-theming-plan.md` (tokens, `<x-gs::*>` kit, compliance ratchet),
 > `packages/gov-store/geo-areas/DATASET.md` (dataset change procedure),
@@ -44,9 +45,10 @@ tokens. There is no React, no GIS server and no spatial database.
 
 ### 2.1 Dataset facts that shape the design
 
-- **Codes are not BBS codes.** For example, Dhaka division is `68` and Chattogram is `36`. Published boundary files
-  (BBS / OCHA COD-AB P-codes) are keyed by BBS codes, so a reviewed `GeoAreaId` ↔ BBS crosswalk is required.
-  Names must not be used to infer IDs (DATASET.md).
+- **`geo_code` is not a BBS code, but every row now has one.** For example, Dhaka division's `geo_code` is `68`.
+  Since dataset `bd-admin-areas-2026-10-21.1`, every row also carries `bbs_code` / `bbs_code_legacy`, and these map
+  to OCHA P-codes by rule. Names must still not be used to infer IDs (DATASET.md). See
+  `geo-boundary-data-plan.md` §4.
 - **`geo_code` is unique within each type.** No duplicates exist among districts, upazilas or unions.
 - **Urban units sit outside the `hid` tree.** Of the 9,111 rows, 3,990 have no `hid`: `city` (12), `city_thana` (95),
   `pourasabha` (325), `pouro_ward` (3,036), `thana_ward` (521) and `country` (1). All 309 distinct pourashava
@@ -81,7 +83,7 @@ tokens. There is no React, no GIS server and no spatial database.
 | `GeoAreaService::children(GeoArea $area)` | Next level by `hid` prefix and `GeoLevel + 1`; the country maps to divisions |
 | `GeoAreaService::rollupArea(int $id)` | Walks an urban unit up through `parent_geo_code` and type to the nearest area with an `hid`; returns `null` when unresolved |
 | `boundaries/<version>/manifest.json` | Version, source, licence, retrieval date, SHA-256 and coverage per level |
-| `boundaries/<version>/children/<GeoAreaId>.json` | `{viewBox, areas: [{id, path}]}`, with paths in projected integer/1-dp coordinates |
+| `boundaries/<version>/children/<GeoAreaId>.json` | `{version, id, viewBox, outline, areas: [{id, kind, path}]}`, integer paths in one national frame (contract: `geo-boundary-data-plan.md` §8) |
 | `GET gov-store/api/geo/areas/{area}/children` | Names (by locale), types, `hasChildren` and paths; `web` + `auth` middleware like `gov.geo.search`; cache headers keyed to the version |
 
 ### 4.2 New package `gov-store/geo-monitoring`
@@ -209,6 +211,9 @@ against the posted ledger applies here too.
 ## 7. Phases
 
 ### Phase 0 — Boundary data (blocking)
+
+Done under `docs/plans/geo-boundary-data-plan.md` (sources measured, decisions D1–D5, reviewed crosswalk, boundary
+set `bd-boundaries-2026-10-21.1` with all build gates passing). The outline below is kept for history.
 
 1. **Choose the source.** The owner picks a source with a known publisher and reuse licence, and confirms that
    union-level (adm4) coverage is available.

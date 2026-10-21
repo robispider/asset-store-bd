@@ -1,0 +1,35 @@
+{
+  "note": "Raw boundary sources are not committed. tools/fetch_boundary_sources.py downloads each file and refuses any whose SHA-256 differs.",
+  "sources": [
+    {
+      "id": "codab_v03",
+      "title": "Bangladesh - Subnational Administrative Boundaries (COD-AB), version v03",
+      "publisher": "Bangladesh Bureau of Statistics (BBS), via UN OCHA ROAP / FIS",
+      "page": "https://data.humdata.org/dataset/cod-ab-bgd",
+      "url": "https://data.humdata.org/dataset/401d3fae-4262-48c9-891f-461fd776d49b/resource/cec2abe3-d8b7-4025-9362-9f7e780f2a07/download/bgd_admin_boundaries.geojson.zip",
+      "file": "bgd_admin_boundaries.geojson.zip",
+      "bytes": 37759475,
+      "sha256": "ec54c97c2004bbee084afa3f662abb202d8ec038dbfd398af2ebb9b1bf3ec9e5",
+      "resource_modified": "2026-01-26",
+      "retrieved_on": "2026-10-21",
+      "licence": "CC BY 3.0 IGO",
+      "extract": ["bgd_admin3.geojson", "bgd_adminpoints.geojson"],
+      "used_for": "adminpoints level 4: the P-code of every 2015 union polygon; admin3: parent fallback and recode evidence"
+    },
+    {
+      "id": "gb_adm4_2015",
+      "title": "geoBoundaries BGD ADM4 (gbOpen), boundaryID BGD-ADM4-29066614",
+      "publisher": "Bangladesh Bureau of Statistics, OCHA ROAP (administrative boundaries of Bangladesh as of 2015); processed by geoBoundaries (William & Mary geoLab)",
+      "page": "https://www.geoboundaries.org/api/current/gbOpen/BGD/ADM4/",
+      "url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09592ced973a3448cf66b6100b741b64c0d/releaseData/gbOpen/BGD/ADM4/geoBoundaries-BGD-ADM4-all.zip",
+      "file": "geoBoundaries-BGD-ADM4-all.zip",
+      "bytes": 213829454,
+      "sha256": "c026dd92cc01136b8d503bf38db0925736daa10829314b6333ececb31faf558a",
+      "resource_modified": "2023-12-12",
+      "retrieved_on": "2026-10-21",
+      "licence": "CC BY 3.0 IGO (BBS/OCHA source); geoBoundaries processing CC BY 4.0",
+      "extract": ["geoBoundaries-BGD-ADM4.geojson", "geoBoundaries-BGD-ADM4_simplified.geojson"],
+      "used_for": "every polygon at every level (unions, dissolved upwards through the GovStore tree)"
+    }
+  ]
+}
