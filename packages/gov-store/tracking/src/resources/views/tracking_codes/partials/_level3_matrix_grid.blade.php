@@ -1,10 +1,7 @@
-<div id="panel-level3" class="box box-solid" style="display: none;">
-    <div class="box-header with-border">
-        <h3 class="box-title text-purple"><i class="fa fa-table"></i> {{ __('govtracking::general.matrix.title') }}</h3>
-    </div>
-    <div class="box-body">
+{{-- task-form.js shows the panel that matches the chosen strategy; the inline display is its initial state. --}}
+<x-gs::box id="panel-level3" icon="fas fa-table" :title="__('govtracking::general.matrix.title')" style="display: none;">
         <x-gs::alert tone="info" :title="__('govtracking::general.matrix.help_title')">
-            <ul style="margin-left: 15px; padding-left: 0; list-style-type: square;">
+            <ul class="gs-tracking-list">
                 <li>{{ __('govtracking::general.matrix.help_menu') }}</li>
                 <li>{{ __('govtracking::general.matrix.help_keys') }}</li>
                 <li>{{ __('govtracking::general.matrix.help_paste') }}</li>
@@ -13,9 +10,9 @@
         </x-gs::alert>
 
         <!-- Dynamic Spreadsheet Real-Time Status Bar -->
-        <div id="matrix-status-bar" class="margin-bottom-15 gs-matrix-status-bar">
+        <div id="matrix-status-bar" class="gs-matrix-status-bar">
             <span id="matrix-status-text" role="status" aria-live="polite">
-                <span class="text-green"><i class="fa fa-check-circle"></i> {{ __('govtracking::general.matrix.healthy') }}</span>
+                <span class="gs-tracking-text-success"><i class="fas fa-circle-check" aria-hidden="true"></i> {{ __('govtracking::general.matrix.healthy') }}</span>
             </span>
         </div>
 
@@ -45,8 +42,7 @@
                 </ul>
             </div>
         @endforeach
-    </div>
-</div>
+</x-gs::box>
 
 @php
     $matrixData = [

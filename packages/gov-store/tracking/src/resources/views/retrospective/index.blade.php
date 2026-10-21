@@ -1,135 +1,122 @@
 @extends('layouts/default')
-@section('title', __('govtracking::general.ui.extra_assign_legacy_assets') . $initiative->title)
+@section('title', __('govtracking::general.ui.extra_assign_legacy_assets', ['title' => $initiative->title]))
 
 @section('content')
-<div class="row">
-    <!-- Filter Bar Card -->
-    <div class="col-md-12">
-        <div class="callout callout-warning">
-            <h4><i class="fa fa-history"></i> {{ __('govtracking::general.ui.retrospective_tagging_console') }}</h4>
-            <p>{{ __('govtracking::general.ui.search_for_historical_assets_already_present_in_snipe_it_inventory_and_link_them_to_an_active_tracking_code_under_this_initiative') }}</p>
-        </div>
+@php
+    $u = 'govtracking::general.ui.';
+@endphp
+<div class="gs-tracking-form-page gs-tracking-form-page--wide">
+    <x-gs::page-header :title="__($u.'retrospective_tagging_console')" :subtitle="$initiative->title" />
 
-        <form method="GET" action="{{ route('gov.tracking.initiatives.retrospective.index', $initiative->id) }}">
-            <input type="hidden" name="search_trigger" value="1">
-            <div class="box box-default">
-                <div class="box-header with-border">
-                    <h3 class="box-title"><i class="fa fa-filter"></i> {{ __('govtracking::general.ui.search_legacy_inventory_parameters') }}</h3>
+    <x-gs::alert tone="warning">
+        <p>{{ __($u.'search_for_historical_assets_already_present_in_snipe_it_inventory_and_link_them_to_an_active_tracking_code_under_this_initiative') }}</p>
+    </x-gs::alert>
+
+    @include('govtracking::tracking_codes.partials._errors')
+
+    <form method="GET" action="{{ route('gov.tracking.initiatives.retrospective.index', $initiative->id) }}">
+        <input type="hidden" name="search_trigger" value="1">
+        <x-gs::box :title="__($u.'search_legacy_inventory_parameters')" icon="fas fa-filter">
+            <div class="row">
+                <div class="col-md-3 form-group">
+                    <label for="retro_category">{{ __($u.'category') }}</label>
+                    <select name="category_id" id="retro_category" class="form-control select2">
+                        <option value="">{{ __($u.'all_categories') }}</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}" @selected(request('category_id') == $category->id)>{{ $category->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
-                <div class="box-body">
-                    <div class="row">
-                        <div class="col-md-3 form-group">
-                            <label>{{ __('govtracking::general.ui.category') }}</label>
-                            <select name="category_id" class="form-control select2">
-                                <option value="">{{ __('govtracking::general.ui.all_categories') }}</option>
-                                @foreach($categories as $category)
-                                    <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-3 form-group">
-                            <label>{{ __('govtracking::general.ui.manufacturer') }}</label>
-                            <select name="manufacturer_id" class="form-control select2">
-                                <option value="">{{ __('govtracking::general.ui.all_manufacturers') }}</option>
-                                @foreach($manufacturers as $manufacturer)
-                                    <option value="{{ $manufacturer->id }}" {{ request('manufacturer_id') == $manufacturer->id ? 'selected' : '' }}>{{ $manufacturer->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-3 form-group">
-                            <label>{{ __('govtracking::general.ui.supplier') }}</label>
-                            <select name="supplier_id" class="form-control select2">
-                                <option value="">{{ __('govtracking::general.ui.all_suppliers') }}</option>
-                                @foreach($suppliers as $supplier)
-                                    <option value="{{ $supplier->id }}" {{ request('supplier_id') == $supplier->id ? 'selected' : '' }}>{{ $supplier->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-3 form-group">
-                            <label>{{ __('govtracking::general.ui.purchase_date_range') }}</label>
-                            <div class="input-group">
-                                <input type="date" name="purchase_start" class="form-control" value="{{ request('purchase_start') }}">
-                                <span class="input-group-addon">{{ __('govtracking::general.ui.extra_to') }}</span>
-                                <input type="date" name="purchase_end" class="form-control" value="{{ request('purchase_end') }}">
-                            </div>
-                        </div>
+                <div class="col-md-3 form-group">
+                    <label for="retro_manufacturer">{{ __($u.'manufacturer') }}</label>
+                    <select name="manufacturer_id" id="retro_manufacturer" class="form-control select2">
+                        <option value="">{{ __($u.'all_manufacturers') }}</option>
+                        @foreach($manufacturers as $manufacturer)
+                            <option value="{{ $manufacturer->id }}" @selected(request('manufacturer_id') == $manufacturer->id)>{{ $manufacturer->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3 form-group">
+                    <label for="retro_supplier">{{ __($u.'supplier') }}</label>
+                    <select name="supplier_id" id="retro_supplier" class="form-control select2">
+                        <option value="">{{ __($u.'all_suppliers') }}</option>
+                        @foreach($suppliers as $supplier)
+                            <option value="{{ $supplier->id }}" @selected(request('supplier_id') == $supplier->id)>{{ $supplier->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3 form-group">
+                    <label for="retro_purchase_start">{{ __($u.'purchase_date_range') }}</label>
+                    <div class="input-group">
+                        <input type="date" name="purchase_start" id="retro_purchase_start" class="form-control" value="{{ request('purchase_start') }}">
+                        <span class="input-group-addon">{{ __($u.'extra_to') }}</span>
+                        <input type="date" name="purchase_end" class="form-control" value="{{ request('purchase_end') }}" aria-label="{{ __($u.'purchase_date_range') }} — {{ __($u.'extra_to') }}">
                     </div>
                 </div>
-                <div class="box-footer text-right">
-                    <a href="{{ route('gov.tracking.initiatives.show', $initiative->id) }}" class="btn btn-default">{{ __('govtracking::general.task.back') }}</a>
-                    <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> {{ __('govtracking::general.ui.find_assets') }}</button>
-                </div>
             </div>
-        </form>
-    </div>
-</div>
+            <x-slot:footer>
+                <div class="gs-tracking-box-actions">
+                    <x-gs::button tone="secondary" outline :href="route('gov.tracking.initiatives.manage', $initiative->id)">{{ __('govtracking::general.task.back') }}</x-gs::button>
+                    <x-gs::button type="submit" icon="fa-magnifying-glass">{{ __($u.'find_assets') }}</x-gs::button>
+                </div>
+            </x-slot:footer>
+        </x-gs::box>
+    </form>
 
-@if($searched)
-<div class="row">
-    <div class="col-md-12">
+    @if($searched)
         <form action="{{ route('gov.tracking.initiatives.retrospective.associate', $initiative->id) }}" method="POST">
             @csrf
-            <div class="box box-success">
-                <div class="box-header with-border">
-                    <h3 class="box-title">{{ __('govtracking::general.ui.query_results_showing_up_to_500_items') }}</h3>
-
-                    @if($assets->count() > 0)
-                        <div class="pull-right form-inline">
-                            <select name="tracking_code_id" class="form-control input-sm" required style="width: 250px;">
-                                <option value="">{{ __('govtracking::general.ui.select_target_tracking_code') }}</option>
-                                @foreach($trackingCodes as $code)
-                                    <option value="{{ $code->id }}">{{ $code->tracking_code }} ({{ $code->task_title }})</option>
-                                @endforeach
-                            </select>
-                            <button type="submit" class="btn btn-success btn-sm" id="bulk-submit" disabled>
-                                <i class="fa fa-link"></i> {{ __('govtracking::general.ui.link_selected_assets') }}
-                            </button>
-                        </div>
-                    @endif
-                </div>
-                <div class="box-body table-responsive">
-                    <table class="table table-bordered table-striped table-hover">
-                        <thead>
+            <x-gs::box :title="__($u.'query_results_showing_up_to_500_items')">
+                @if($assets->count() > 0)
+                    <x-slot:tools>
+                        <label class="gs-sr-only" for="retro_tracking_code">{{ __($u.'select_target_tracking_code') }}</label>
+                        <select name="tracking_code_id" id="retro_tracking_code" class="form-control input-sm gs-tracking-tool-select" required>
+                            <option value="">{{ __($u.'select_target_tracking_code') }}</option>
+                            @foreach($trackingCodes as $code)
+                                <option value="{{ $code->id }}">{{ $code->tracking_code }} ({{ $code->task_title }})</option>
+                            @endforeach
+                        </select>
+                        <x-gs::button type="submit" tone="success" size="sm" icon="fa-link" id="bulk-submit" disabled>{{ __($u.'link_selected_assets') }}</x-gs::button>
+                    </x-slot:tools>
+                @endif
+                <x-gs::table>
+                    <thead>
+                        <tr>
+                            <th scope="col" class="gs-tracking-check-cell"><input type="checkbox" id="select-all-trigger" aria-label="{{ __($u.'select_all_assets') }}"></th>
+                            <th scope="col">{{ __($u.'asset_tag') }}</th>
+                            <th scope="col">{{ __($u.'name') }}</th>
+                            <th scope="col">{{ __($u.'category') }}</th>
+                            <th scope="col">{{ __($u.'manufacturer') }}</th>
+                            <th scope="col">{{ __($u.'purchase_date') }}</th>
+                            <th scope="col">{{ __($u.'tag_status') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($assets as $asset)
                             <tr>
-                                <th width="30" class="text-center"><input type="checkbox" id="select-all-trigger"></th>
-                                <th>{{ __('govtracking::general.ui.asset_tag') }}</th>
-                                <th>{{ __('govtracking::general.ui.name') }}</th>
-                                <th>{{ __('govtracking::general.ui.category') }}</th>
-                                <th>{{ __('govtracking::general.ui.manufacturer') }}</th>
-                                <th>{{ __('govtracking::general.ui.purchase_date') }}</th>
-                                <th>{{ __('govtracking::general.ui.tag_status') }}</th>
+                                <td class="gs-tracking-check-cell">
+                                    <input type="checkbox" name="asset_ids[]" value="{{ $asset->id }}" class="asset-checkbox" aria-label="{{ $asset->asset_tag }}" @disabled($asset->is_already_tagged)>
+                                </td>
+                                <td><code>{{ $asset->asset_tag }}</code></td>
+                                <td>{{ $asset->name }}</td>
+                                <td>{{ $asset->model->category->name ?? __($u.'not_recorded') }}</td>
+                                <td>{{ $asset->model->manufacturer->name ?? __($u.'not_recorded') }}</td>
+                                <td>{{ $asset->purchase_date }}</td>
+                                <td>
+                                    @if($asset->is_already_tagged)
+                                        <x-gs::badge tone="warning"><i class="fas fa-check" aria-hidden="true"></i> {{ __($u.'already_tagged') }}</x-gs::badge>
+                                    @else
+                                        <span class="gs-tracking-muted">{{ __($u.'available') }}</span>
+                                    @endif
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($assets as $asset)
-                                <tr>
-                                    <td class="text-center">
-                                        <input type="checkbox" name="asset_ids[]" value="{{ $asset->id }}" class="asset-checkbox" {{ $asset->is_already_tagged ? 'disabled' : '' }}>
-                                    </td>
-                                    <td><code>{{ $asset->asset_tag }}</code></td>
-                                    <td>{{ $asset->name }}</td>
-                                    <td>{{ $asset->model->category->name ?? 'N/A' }}</td>
-                                    <td>{{ $asset->model->manufacturer->name ?? 'N/A' }}</td>
-                                    <td>{{ $asset->purchase_date }}</td>
-                                    <td>
-                                        @if($asset->is_already_tagged)
-                                            <span class="label label-warning"><i class="fa fa-check"></i> {{ __('govtracking::general.ui.already_tagged') }}</span>
-                                        @else
-                                            <span class="text-muted">{{ __('govtracking::general.ui.available') }}</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr><td colspan="7" class="text-center text-muted">{{ __('govtracking::general.ui.no_assets_found_matching_specified_parameters') }}</td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                        @empty
+                            <tr><td colspan="7" class="gs-table__empty">{{ __($u.'no_assets_found_matching_specified_parameters') }}</td></tr>
+                        @endforelse
+                    </tbody>
+                </x-gs::table>
+            </x-gs::box>
         </form>
-    </div>
+    @endif
 </div>
-
-
-@endif
 @stop

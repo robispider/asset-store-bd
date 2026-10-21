@@ -3,6 +3,7 @@
 @section('content')
 @php
     $service=app(\GovStore\Tracking\Services\TrackingMonitorService::class);
+    $digits=fn($value)=>\GovStore\Tracking\Services\TrackingMonitorMetrics::digits($value);
     $activeSlices=array_values(array_filter($slices,fn($s)=>$s['code']['status']==='ACTIVE'));
     $receipts=array_merge([], ...array_column($activeSlices,'receipts'));
     $chart=app(\GovStore\Tracking\Services\TrackingMonitorCharts::class)->monthlyValue($receipts,\Carbon\CarbonImmutable::today());
@@ -15,17 +16,18 @@
     }
     usort($comparisons,fn($a,$b)=>($b['share'] ?? $b['received']) <=> ($a['share'] ?? $a['received']));
     $rank=collect($comparisons)->search(fn($o)=>$o['id']===$office->id);
+    // The office is named once, by its own name; the area follows the reader's language.
+    $area=$geo ? (str_starts_with(app()->getLocale(),'bn') ? ($geo->bn_name ?: $geo->en_name) : ($geo->en_name ?: $geo->bn_name)) : null;
 @endphp
 <div class="gs-tracking-monitor">
-    <nav class="gs-tracking-breadcrumb">@if(config('tracking.office_directory_enabled'))<a href="{{ route('gov.tracking.offices.index') }}">{{ __('govtracking::general.monitor.offices') }}</a>@endif @if($initiative)<span>/</span><a href="{{ route('gov.tracking.initiatives.show',$initiative->id) }}">{{ $initiative->title }}</a>@endif</nav>
-    <x-gs::page-header :title="$geo->en_name ?? $office->name" :subtitle="$office->name" />
-    <div class="gs-tracking-meta"><span>{{ $geo->en_name ?? __('govtracking::general.monitor.no_area') }}</span><span>{{ \Illuminate\Support\Facades\Lang::has('govtracking::general.monitor.office_level.'.($profile->office_type ?? 'default')) ? __('govtracking::general.monitor.office_level.'.($profile->office_type ?? 'default')) : __('govtracking::general.monitor.office_level.default') }}</span><x-gs::status-badge :status="($profile->geo_area_verified_at ?? null) ? 'success' : 'warning'" :label="($profile->geo_area_verified_at ?? null) ? __('govtracking::general.monitor.area_verified') : __('govtracking::general.monitor.area_unverified')" /></div>
+    <x-gs::page-header :title="$office->name" :subtitle="$area ?? __('govtracking::general.monitor.no_area')" />
+    <div class="gs-tracking-meta"><span>{{ \Illuminate\Support\Facades\Lang::has('govtracking::general.monitor.office_level.'.($profile->office_type ?? 'default')) ? __('govtracking::general.monitor.office_level.'.($profile->office_type ?? 'default')) : __('govtracking::general.monitor.office_level.default') }}</span><x-gs::status-badge :status="($profile->geo_area_verified_at ?? null) ? 'success' : 'warning'" :label="($profile->geo_area_verified_at ?? null) ? __('govtracking::general.monitor.area_verified') : __('govtracking::general.monitor.area_unverified')" /></div>
     <x-gs::level-switch :options="$options" />
     @if($initiative)<label class="gs-tracking-code-select">{{ __('govtracking::general.monitor.code') }}<select data-monitor-jump><option value="{{ route('gov.tracking.initiatives.offices.show',[$initiative->id,$office->id]) }}">{{ __('govtracking::general.monitor.all_codes') }}</option>@foreach($programmes[0]['codes'] as $c)@if($service->slice($c,$office->id)['touch'])<option value="{{ route('gov.tracking.initiatives.tracking-codes.offices.show',[$initiative->id,$c['id'],$office->id]) }}" @selected($trackingCode?->id===$c['id'])>{{ $c['code'] }} · {{ $c['title'] }}</option>@endif @endforeach</select></label>@endif
     <x-gs::scope-why :reasons="$reasons" :note="session('tracking_scope_note')" />
-    <div class="gs-tracking-kpis"><x-gs::kpi :label="$initiative ? __('govtracking::general.monitor.codes') : __('govtracking::general.monitor.programmes')" :value="$initiative ? count($activeSlices) : count($programmes)" />
+    <div class="gs-tracking-kpis"><x-gs::kpi :label="$initiative ? __('govtracking::general.monitor.codes') : __('govtracking::general.monitor.programmes')" :value="$digits($initiative ? count($activeSlices) : count($programmes))" />
         <div class="gs-tracking-kpi"><span>{{ __('govtracking::general.monitor.allocation_received') }}</span><x-gs::pace-bar :value="$summary['share']===null ? null : $summary['share']*100" /></div>
-        <x-gs::kpi :label="__('govtracking::general.monitor.received')" :value="$summary['received']" :caption="$summary['grn_count'].' '.__('govtracking::general.monitor.receipts')" />
+        <x-gs::kpi :label="__('govtracking::general.monitor.received')" :value="$digits($summary['received'])" :caption="$digits($summary['grn_count']).' '.__('govtracking::general.monitor.receipts')" />
         <x-gs::kpi :label="__('govtracking::general.monitor.value')" :value="\GovStore\Tracking\Services\TrackingMonitorMetrics::money($summary['value'])" />
     </div>
     @if(!$slices)<section class="gs-tracking-panel"><h2>{{ __('govtracking::general.monitor.no_visible_programmes') }}</h2><p>{{ __('govtracking::general.monitor.programme_required') }}</p></section>@endif

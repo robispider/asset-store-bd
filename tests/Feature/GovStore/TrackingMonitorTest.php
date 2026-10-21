@@ -359,6 +359,89 @@ class TrackingMonitorTest extends TrackingWorkflowTest
 
     }
 
+    public function test_pages_name_their_subject_once_and_show_the_area_in_the_reader_language(): void
+    {
+        (require base_path('packages/gov-store/organization/src/database/migrations/2026_10_19_000001_add_office_level_to_location_profiles.php'))->up();
+        $this->viewer();
+        [$i, $c] = $this->programmeFixture();
+        $this->receipt($c);
+        DB::table('locations')->where('id', 10)->update(['name' => 'উপজেলা স্বাস্থ্য কমপ্লেক্স']);
+        DB::table('gov_geo_areas')->insert(['GeoAreaId' => 77, 'hid' => '/77/', 'en_name' => 'Savar Upazila', 'bn_name' => 'সাভার উপজেলা']);
+        DB::table('gov_location_profiles')->updateOrInsert(['location_id' => 10], ['geo_area_id' => 77]);
+        $dom = function (string $html): \DOMXPath {
+            $document = new \DOMDocument;
+            @$document->loadHTML('<?xml encoding="utf-8" ?>'.$html);
+
+            return new \DOMXPath($document);
+        };
+        $text = fn (\DOMXPath $x, string $query) => array_map(fn ($n) => trim(preg_replace('/\s+/u', ' ', $n->textContent)), iterator_to_array($x->query($query)));
+
+        foreach (['en-US' => ['Savar Upazila', 'সাভার উপজেলা'], 'bn-BD' => ['সাভার উপজেলা', 'Savar Upazila']] as $locale => [$area, $otherArea]) {
+            app()->setLocale($locale);
+            $office = $dom(app(TrackingOfficeController::class)->programme($i, 10)->render());
+            // The office is named once (its own name); the area is the subtitle in the reader's language.
+            $this->assertSame(['উপজেলা স্বাস্থ্য কমপ্লেক্স'], $text($office, '//h1'));
+            $this->assertSame([$area], $text($office, "//*[contains(@class,'gs-page-header__subtitle')]"));
+            $this->assertStringNotContainsString($otherArea, $office->document->textContent);
+            $this->assertSame(0, $office->query("//*[contains(@class,'gs-tracking-breadcrumb')]")->length);
+        }
+
+        app()->setLocale('en-US');
+        $code = $dom(app(TrackingCodeController::class)->show($i, $c)->render());
+        $this->assertSame([$c->tracking_code], $text($code, '//h1'));
+        $this->assertSame([$c->task_title], $text($code, "//p[contains(@class,'gs-tracking-subtitle')]"));
+        $this->assertNotContains($c->task_title, $text($code, '//h2'));
+        $this->assertSame(0, $code->query("//*[contains(@class,'gs-tracking-breadcrumb')]")->length);
+
+        $monitor = app(TrackingMonitorService::class)->programme($i);
+        $this->assertSame(1, $dom(view('govtracking::initiatives.monitor', ['initiative' => $i, 'monitor' => $monitor])->render())->query('//h1')->length);
+
+        // On the report page its own tab is the current one.
+        $route = Route::getRoutes()->getByName('gov.tracking.initiatives.report');
+        $request = Request::create(route('gov.tracking.initiatives.report', $i));
+        $route->bind($request);
+        $request->setRouteResolver(fn () => $route);
+        $this->app->instance('request', $request);
+        $tabs = $dom(view('govtracking::monitor.tabs', ['initiative' => $i])->render());
+        $this->assertSame([__('govtracking::general.monitor.report')], $text($tabs, '//a[@aria-current="page"]'));
+    }
+
+    public function test_setup_pages_render_on_the_kit_in_both_languages_and_the_code_sheet_names_its_issuer(): void
+    {
+        $this->viewer('HEAD');
+        [$i, $c] = $this->programmeFixture('Visible programme', 20, 'HEAD');
+        DB::table('companies')->updateOrInsert(['id' => 20], ['name' => 'Directorate of Health']);
+        $c->update(['status' => 'DRAFT', 'specificity_level' => '2_CATEGORY']);
+        $companies = collect([(object) ['id' => 20, 'name' => 'Directorate of Health']]);
+        $member = (object) ['id' => 1, 'user_id' => 99, 'user' => null];
+        $categories = collect([(object) ['id' => 1, 'name' => 'Desktop']]);
+        foreach (['en-US', 'bn-BD'] as $locale) {
+            app()->setLocale($locale);
+            $pages = [
+                'create' => view('govtracking::initiatives.create', compact('companies')),
+                'edit' => view('govtracking::initiatives.edit', ['initiative' => $i, 'companies' => $companies]),
+                'funding' => view('govtracking::funding_types.index', ['fundingTypes' => collect([(object) ['id' => 1, 'name' => 'Fund', 'primary_type' => 'ADP', 'description' => null, 'tracking_codes_count' => 1]])]),
+                'team' => view('govtracking::operation_unit.index', ['initiative' => $i, 'head' => $member, 'officers' => collect(), 'support' => collect()]),
+                'legacy' => view('govtracking::retrospective.index', ['initiative' => $i, 'categories' => $categories, 'manufacturers' => collect(), 'suppliers' => collect(),
+                    'searched' => true, 'assets' => collect(), 'trackingCodes' => collect([$c])]),
+                'code create' => view('govtracking::tracking_codes.create', ['initiative' => $i, 'categories' => $categories, 'fundingTypes' => collect(), 'geoAreas' => collect()]),
+                'code edit' => app(TrackingCodeController::class)->edit($i, $c),
+                'code sheet' => app(TrackingCodeController::class)->viewTaskComponent($c),
+            ];
+            foreach ($pages as $name => $view) {
+                $html = $view->render();
+                $this->assertStringNotContainsString('<x-gs::', $html, $name);
+                $this->assertStringNotContainsString('govtracking::', $html, $name.' has a missing translation');
+                $this->assertDoesNotMatchRegularExpression('/class="[^"]*\b(box box-|btn btn-|callout callout-)/', $html, $name);
+                $this->assertStringContainsString('gs-', $html, $name);
+            }
+            $this->assertStringContainsString(e(__('govtracking::general.ui.unknown_user', ['id' => 99])), $pages['team']->render());
+        }
+        $sheet = app(TrackingCodeController::class)->viewTaskComponent($c)->render();
+        $this->assertStringContainsString('Directorate of Health', $sheet);
+        $this->assertStringNotContainsString('Department of ICT', $sheet);
+    }
+
     public function test_funding_settings_review_is_bound_to_the_funding_row_and_code_links(): void
     {
         $this->viewer('SUPER');

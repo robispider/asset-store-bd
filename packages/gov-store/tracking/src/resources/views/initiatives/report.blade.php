@@ -2,7 +2,7 @@
 @section('title', __('govtracking::report.title'))
 @section('content')
 @php
-    $digits = fn ($value) => str_starts_with(app()->getLocale(), 'bn') ? strtr((string) $value, array_combine(range(0, 9), preg_split('//u', '০১২৩৪৫৬৭৮৯', -1, PREG_SPLIT_NO_EMPTY))) : (string) $value;
+    $digits = fn ($value) => \GovStore\Tracking\Services\TrackingMonitorMetrics::digits($value);
     $n = fn ($value, $places = 4) => $value === null ? '—' : $digits($places ? rtrim(rtrim(number_format($value, $places), '0'), '.') : number_format($value));
     $money = fn ($row) => $n($row['known_value'], 2).($row['value_complete'] ? '' : '*');
     $percent = fn ($actual, $plan) => $plan !== null && $plan > 0 ? $n(100 * $actual / $plan, 1).'%' : '—';

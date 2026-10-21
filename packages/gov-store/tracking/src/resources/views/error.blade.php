@@ -1,6 +1,8 @@
 @extends('layouts/default')
 @section('title', __('govtracking::general.module_title'))
 @section('content')
-<div class="alert alert-danger" role="alert">{{ $message }}</div>
-<a href="{{ route('gov.tracking.initiatives.index') }}" class="btn btn-default">{{ __('govtracking::general.active_initiatives') }}</a>
+<div class="gs-tracking-form-page">
+    <x-gs::alert tone="danger">{{ $message }}</x-gs::alert>
+    <x-gs::button tone="secondary" outline :href="route('gov.tracking.initiatives.index')">{{ __('govtracking::general.active_initiatives') }}</x-gs::button>
+</div>
 @stop

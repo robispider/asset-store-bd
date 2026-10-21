@@ -1,19 +1,29 @@
 @extends('layouts/default')
-@section('title', __('govtracking::general.ui.extra_task_component') . $trackingCode->tracking_code)
+@section('title', __('govtracking::general.ui.extra_task_component', ['code' => $trackingCode->tracking_code]))
 
 @section('content')
-<!-- Print Control Row -->
-<div class="row hidden-print gs-tracking-print-toolbar" style="margin-bottom: 15px;">
-    <div class="col-md-12 text-right">
-        <button class="btn btn-primary btn-lg" data-tracking-print style="font-weight: bold; padding: 12px 30px;">
-            <i class="fa fa-print"></i> {{ __('govtracking::general.task.task_sheet') }}
-        </button>
-    </div>
+@php
+    $u = 'govtracking::general.ui.';
+    $t = 'govtracking::general.task.';
+    $digits = fn ($value) => \GovStore\Tracking\Services\TrackingMonitorMetrics::digits($value);
+    $date = fn ($value) => $value ? $digits(\Illuminate\Support\Carbon::parse($value)->locale(app()->getLocale())->translatedFormat('d F Y')) : null;
+    // The sheet is issued by the programme's owning organisation, never a fixed department name.
+    $issuer = $initiative->ownerCompany?->name ?? __($u.'extra_unknown');
+    $geoScope = $trackingCode->scopes->where('dimension', 'GEOGRAPHY')->first();
+    $partScope = $trackingCode->scopes->where('dimension', 'PARTICIPANTS')->first();
+    $geoArea = $geoScope && $geoScope->target_type === 'GeoArea' && class_exists('GovStore\GeoAreas\Models\GeoArea')
+        ? \GovStore\GeoAreas\Models\GeoArea::find($geoScope->target_id) : null;
+    $areaName = $geoArea ? ((str_starts_with(app()->getLocale(), 'bn') ? ($geoArea->bn_name ?? null) : null) ?: $geoArea->en_name) : null;
+    $contacts = [['label' => __($t.'responsible'), 'unit' => $operationHead, 'missing' => __($t.'head_missing')],
+        ['label' => __($u.'officer_list'), 'unit' => $operationOfficer, 'missing' => __($t.'officer_missing')]];
+@endphp
+<div class="gs-tracking-print-toolbar hidden-print">
+    <x-gs::button size="lg" icon="fa-print" data-tracking-print>{{ __($t.'task_sheet') }}</x-gs::button>
 </div>
 
-<x-gs::document :title="$trackingCode->task_title" :doc-no="$trackingCode->tracking_code" :date="$trackingCode->created_at->format('d F Y')">
+<x-gs::document :title="$trackingCode->task_title" :doc-no="$trackingCode->tracking_code" :date="$date($trackingCode->created_at)">
     <x-slot:office>
-        <div class="gs-tracking-doc-ministry">তথ্য ও যোগাযোগ প্রযুক্তি অধিদপ্তর / Department of ICT, তথ্য ও যোগাযোগ প্রযুক্তি বিভাগ</div>
+        <div class="gs-tracking-doc-ministry">{{ $issuer }}</div>
         <div class="gs-tracking-doc-initiative">[ {{ $initiative->title }} ]</div>
     </x-slot:office>
 
@@ -22,110 +32,89 @@
         <div class="col-md-8">
 
             <!-- Task / Component Information -->
-            <x-gs::box :title="__('govtracking::general.ui.extra_task_component_information')" icon="fa fa-info-circle">
-                <!-- Full-Width Task Title Row -->
+            <x-gs::box :title="__($u.'extra_task_component_information')" icon="fas fa-circle-info">
                 <div class="gs-tracking-doc-field gs-tracking-doc-field--bordered">
-                    <span class="gs-tracking-doc-label">{{ __('govtracking::general.task.task_title') }}</span>
+                    <span class="gs-tracking-doc-label">{{ __($t.'task_title') }}</span>
                     <span class="gs-tracking-doc-value--lg">{{ $trackingCode->task_title }}</span>
                 </div>
 
-                <!-- Dual Sub-Columns Grid -->
                 <div class="row">
                     <!-- Left Sub-Column (Basic Identifiers) -->
                     <div class="col-sm-6">
                         <div class="gs-tracking-doc-field">
-                            <span class="gs-tracking-doc-label">{{ __('govtracking::general.task.official_code') }}</span>
-                            <b class="gs-tracking-doc-value">{{ $trackingCode->tracking_code }}</b>
+                            <span class="gs-tracking-doc-label">{{ __($t.'official_code') }}</span>
+                            <b class="gs-tracking-doc-value gs-tracking-code">{{ $trackingCode->tracking_code }}</b>
                         </div>
                         <div class="gs-tracking-doc-field">
-                            <span class="gs-tracking-doc-label">{{ __('govtracking::general.ui.current_status') }}</span>
-                            @if($trackingCode->status === 'ACTIVE')
-                                <span class="text-success" style="font-weight: bold; font-size: 14px;"><i class="fa fa-circle"></i> ACTIVE</span>
-                            @else
-                                <span class="text-muted" style="font-weight: bold; font-size: 14px;"><i class="fa fa-circle-o"></i> {{ $trackingCode->status }}</span>
-                            @endif
+                            <span class="gs-tracking-doc-label">{{ __($u.'current_status') }}</span>
+                            <x-gs::badge :tone="$trackingCode->status === 'ACTIVE' ? 'success' : 'secondary'">{{ \Illuminate\Support\Facades\Lang::has('govtracking::general.manage.status.'.$trackingCode->status) ? __('govtracking::general.manage.status.'.$trackingCode->status) : $trackingCode->status }}</x-gs::badge>
                         </div>
                         <div>
-                            <span class="gs-tracking-doc-label">{{ __('govtracking::general.ui.created_date') }}</span>
-                            <span class="gs-tracking-doc-value">{{ $trackingCode->created_at->format('d F Y') }}</span>
+                            <span class="gs-tracking-doc-label">{{ __($u.'created_date') }}</span>
+                            <span class="gs-tracking-doc-value">{{ $date($trackingCode->created_at) }}</span>
                         </div>
                     </div>
 
                     <!-- Right Sub-Column (Accounting & Budget Parameters) -->
                     <div class="col-sm-6 gs-tracking-doc-col-divider">
                         <div class="gs-tracking-doc-field">
-                            <span class="gs-tracking-doc-label">{{ __('govtracking::general.task.fiscal_period') }}</span>
-                            <b class="gs-tracking-doc-value">FY {{ $trackingCode->fiscal_year }}</b>
+                            <span class="gs-tracking-doc-label">{{ __($t.'fiscal_period') }}</span>
+                            <b class="gs-tracking-doc-value">{{ $digits(__('govtracking::general.manage.fy', ['year' => $trackingCode->fiscal_year])) }}</b>
                         </div>
                         <div class="gs-tracking-doc-field">
-                            <span class="gs-tracking-doc-label">{{ __('govtracking::general.task.budget_sector') }}</span>
-                            <span class="gs-tracking-doc-value">{{ $initiative->primary_funding }} {{ __('govtracking::general.ui.extra_sector_budget') }}</span>
+                            <span class="gs-tracking-doc-label">{{ __($t.'budget_sector') }}</span>
+                            <span class="gs-tracking-doc-value">{{ $initiative->primary_funding }} {{ __($u.'extra_sector_budget') }}</span>
                         </div>
                         <div>
-                            <span class="gs-tracking-doc-label">{{ __('govtracking::general.ui.funding_classification_segment') }}</span>
-                            <b class="gs-tracking-doc-value">{{ $trackingCode->fundingType->name ?? 'N/A' }}</b>
+                            <span class="gs-tracking-doc-label">{{ __($u.'funding_classification_segment') }}</span>
+                            <b class="gs-tracking-doc-value">{{ $trackingCode->fundingType->name ?? __($u.'not_recorded') }}</b>
                         </div>
                     </div>
                 </div>
             </x-gs::box>
 
             <!-- Authorized Scope (Two-Sub-Column Layout) -->
-            <x-gs::box :title="__('govtracking::general.ui.extra_authorized_scope')" icon="fa fa-map-marker">
+            <x-gs::box :title="__($u.'extra_authorized_scope')" icon="fas fa-location-dot">
                 <div class="row">
-                    <!-- Left Sub-Column: Geographical Coverage -->
-                    @php
-                        $geoScope = $trackingCode->scopes->where('dimension', 'GEOGRAPHY')->first();
-                        $partScope = $trackingCode->scopes->where('dimension', 'PARTICIPANTS')->first();
-                    @endphp
                     <div class="col-sm-6">
-                        <span class="gs-tracking-doc-label">{{ __('govtracking::general.task.geography') }}</span>
-                        @if($geoScope && $geoScope->target_type === 'GeoArea' && class_exists('GovStore\GeoAreas\Models\GeoArea'))
-                            @php
-                                $geoArea = \GovStore\GeoAreas\Models\GeoArea::find($geoScope->target_id);
-                            @endphp
-                            <b class="gs-tracking-doc-value">{{ $geoArea->en_name ?? 'Specific District' }}</b>
-                            <span class="label label-warning" style="font-size: 10px; margin-left: 5px;">{{ $geoArea->geo_type ?? 'Region' }}</span>
+                        <span class="gs-tracking-doc-label">{{ __($t.'geography') }}</span>
+                        @if($geoScope && $geoScope->target_type === 'GeoArea')
+                            <b class="gs-tracking-doc-value">{{ $areaName ?? __('govtracking::general.monitor.no_area') }}</b>
+                            @if($geoArea?->geo_type)<x-gs::badge tone="warning">{{ $geoArea->geo_type }}</x-gs::badge>@endif
                         @else
-                            <b class="gs-tracking-doc-value">{{ __('govtracking::general.task.nationwide') }}</b>
-                            <span class="label label-default" style="font-size: 10px; margin-left: 5px;">{{ __('govtracking::general.task.bangladesh') }}</span>
+                            <b class="gs-tracking-doc-value">{{ __($t.'nationwide') }}</b>
+                            <x-gs::badge tone="secondary">{{ __($t.'bangladesh') }}</x-gs::badge>
                         @endif
                     </div>
 
-                    <!-- Right Sub-Column: Participating Organizations -->
                     <div class="col-sm-6 gs-tracking-doc-col-divider">
-                        <span class="gs-tracking-doc-label">{{ __('govtracking::general.task.participating_orgs') }}</span>
+                        <span class="gs-tracking-doc-label">{{ __($t.'participating_orgs') }}</span>
                         @if($partScope && $partScope->target_type === 'CrossTenant')
-                            <b class="gs-tracking-doc-value">{{ __('govtracking::general.task.scope_cross') }}</b>
-                            <p class="help-block" style="font-size: 11px; margin-top: 5px; margin-bottom: 0; line-height: 1.4;">
-                                {{ __('govtracking::general.task.any_office') }}
-                            </p>
+                            <b class="gs-tracking-doc-value">{{ __($t.'scope_cross') }}</b>
+                            <p class="gs-tracking-doc-note">{{ __($t.'any_office') }}</p>
                         @else
-                            <b class="gs-tracking-doc-value">{{ __('govtracking::general.task.scope_internal') }}</b>
-                            <p class="help-block" style="font-size: 11px; margin-top: 5px; margin-bottom: 0; line-height: 1.4;">
-                                {{ __('govtracking::general.task.restricted_office') }}
-                            </p>
+                            <b class="gs-tracking-doc-value">{{ __($t.'scope_internal') }}</b>
+                            <p class="gs-tracking-doc-note">{{ __($t.'restricted_office') }}</p>
                         @endif
                     </div>
                 </div>
             </x-gs::box>
 
             <!-- Approved Allocation Schedule -->
-            <x-gs::box :title="__('govtracking::general.ui.extra_approved_allocation_schedule')" icon="fa fa-table">
+            <x-gs::box :title="__($u.'extra_approved_allocation_schedule')" icon="fas fa-table">
                 @if($trackingCode->specificity_level === '1_BLANKET')
                     <div class="gs-tracking-doc-empty">
-                        <i class="fa fa-globe" style="font-size: 40px; margin-bottom: 15px;"></i>
-                        <h4 class="gs-tracking-doc-value--lg" style="margin-top: 0;">{{ __('govtracking::general.task.open_mode') }}</h4>
-                        <p style="font-size: 13px; max-width: 500px; margin: 0 auto; line-height: 1.6;">
-                            {{ __('govtracking::general.ui.this_program_operates_in_blanket_mode_no_category_level_allocations_are_enforced_storekeepers_at_permitted_office_locations_can_receive_any_categories_under_this_task') }}
-                        </p>
+                        <i class="fas fa-globe gs-tracking-doc-empty__icon" aria-hidden="true"></i>
+                        <h3 class="gs-tracking-doc-value--lg">{{ __($t.'open_mode') }}</h3>
+                        <p>{{ __($u.'this_program_operates_in_blanket_mode_no_category_level_allocations_are_enforced_storekeepers_at_permitted_office_locations_can_receive_any_categories_under_this_task') }}</p>
                     </div>
                 @else
                     <x-gs::table>
                         <thead>
                             <tr class="gs-tracking-doc-table-head">
-                                <th style="width: 10%; text-align: center;">Sl.</th>
-                                <th>{{ __('govtracking::general.task.item_category') }}</th>
-                                <th style="width: 25%; text-align: right;">{{ __('govtracking::general.task.approved') }}</th>
+                                <th scope="col" class="gs-tracking-doc-serial">{{ __($u.'serial') }}</th>
+                                <th scope="col">{{ __($t.'item_category') }}</th>
+                                <th scope="col" class="gs-num">{{ __($t.'approved') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -134,25 +123,17 @@
                                     $allocated = $trackingCode->specificity_level === '3_MATRIX' ? $target->allocated_qty : $target->planned_qty;
                                 @endphp
                                 <tr>
-                                    <td style="text-align: center;">{{ $index + 1 }}</td>
+                                    <td class="gs-tracking-doc-serial">{{ $digits($index + 1) }}</td>
                                     <td>
-                                        <b class="gs-tracking-doc-value">{{ $target->category->name ?? __('govtracking::general.ui.extra_unknown_category') }}</b>
+                                        <b class="gs-tracking-doc-value">{{ $target->category->name ?? __($u.'extra_unknown_category') }}</b>
                                         @if($target->economic_code)
-                                            <div class="gs-tracking-doc-label" style="margin-top: 2px;">
-                                                {{ __('govtracking::general.task.economic') }} <code>{{ $target->economic_code }}</code>
-                                            </div>
+                                            <div class="gs-tracking-doc-label">{{ __($t.'economic') }} <code>{{ $target->economic_code }}</code></div>
                                         @endif
                                     </td>
-                                    <td style="text-align: right; font-weight: bold;">
-                                        {{ number_format($allocated) }} {{ __('govtracking::general.ui.extra_units') }}
-                                    </td>
+                                    <td class="gs-num"><strong>{{ $digits(number_format($allocated)) }} {{ __($u.'extra_units') }}</strong></td>
                                 </tr>
                             @empty
-                                <tr>
-                                    <td colspan="3" class="text-center gs-tracking-doc-label">
-                                        {{ __('govtracking::general.task.no_targets') }}
-                                    </td>
-                                </tr>
+                                <tr><td colspan="3" class="gs-table__empty">{{ __($t.'no_targets') }}</td></tr>
                             @endforelse
                         </tbody>
                     </x-gs::table>
@@ -160,9 +141,7 @@
 
                 @if($trackingCode->specificity_level === '3_MATRIX')
                     <x-slot:footer>
-                        <span class="gs-tracking-doc-label" style="font-size: 12px;">
-                            <i class="fa fa-building-o"></i> {{ __('govtracking::general.task.office_allocation') }} <b>{{ $locationName }}</b> (ID: {{ $locationId }}).
-                        </span>
+                        <span class="gs-tracking-doc-note"><i class="fas fa-building" aria-hidden="true"></i> {{ __($t.'office_allocation') }} <b>{{ $locationName }}</b></span>
                     </x-slot:footer>
                 @endif
             </x-gs::box>
@@ -170,63 +149,27 @@
 
         <!-- RIGHT COLUMN: Supporting Files & Side Directory -->
         <div class="col-md-4">
-
-            <!-- Attached Order -->
-            <x-gs::box :title="__('govtracking::general.ui.extra_attached_order')" icon="fa fa-paperclip">
-                <div class="text-center">
-                    @if($trackingCode->order_pdf_path)
-                        <a href="{{ route('gov.tracking.tracking-codes.download', $trackingCode->id) }}" class="btn btn-theme btn-block" style="font-weight: bold; padding: 10px;">
-                            <i class="fa fa-download"></i> {{ __('govtracking::general.task.signed_memo') }}
-                        </a>
-                    @else
-                        <span class="text-muted" style="font-size: 13px;"><i class="fa fa-info-circle"></i> {{ __('govtracking::general.task.no_order') }}</span>
-                    @endif
-                </div>
+            <x-gs::box :title="__($u.'extra_attached_order')" icon="fas fa-paperclip">
+                @if($trackingCode->order_pdf_path)
+                    <x-gs::button icon="fa-download" class="gs-tracking-block-btn" :href="route('gov.tracking.tracking-codes.download', $trackingCode->id)">{{ __($t.'signed_memo') }}</x-gs::button>
+                @else
+                    <p class="gs-tracking-doc-note"><i class="fas fa-circle-info" aria-hidden="true"></i> {{ __($t.'no_order') }}</p>
+                @endif
             </x-gs::box>
 
-            <!-- Responsible Operation Unit -->
-            <x-gs::box :title="__('govtracking::general.ui.extra_responsible_operation_unit')" icon="fa fa-users">
-                @if($operationHead)
-                    <div class="gs-tracking-doc-field gs-tracking-doc-field--bordered">
-                        <span class="gs-tracking-doc-label">{{ __('govtracking::general.task.responsible') }}</span>
-                        <b class="gs-tracking-doc-value">{{ $operationHead->user->first_name ?? '' }} {{ $operationHead->user->last_name ?? '' }}</b>
-                        @if($operationHead->user->phone)
-                            <div class="gs-tracking-doc-value" style="font-size: 12px; margin-top: 4px;">
-                                <i class="fa fa-phone"></i> {{ $operationHead->user->phone }}
-                            </div>
-                        @endif
-                        @if($operationHead->user->email)
-                            <div class="gs-tracking-doc-value" style="font-size: 12px; margin-top: 2px;">
-                                <i class="fa fa-envelope-o"></i> {{ $operationHead->user->email }}
-                            </div>
+            <x-gs::box :title="__($u.'extra_responsible_operation_unit')" icon="fas fa-users">
+                @foreach($contacts as $contact)
+                    <div @class(['gs-tracking-doc-field', 'gs-tracking-doc-field--bordered' => $loop->first])>
+                        <span class="gs-tracking-doc-label">{{ $contact['label'] }}</span>
+                        @if($contact['unit'])
+                            <b class="gs-tracking-doc-value">{{ trim(($contact['unit']->user->first_name ?? '').' '.($contact['unit']->user->last_name ?? '')) }}</b>
+                            @if($contact['unit']->user?->phone)<div class="gs-tracking-doc-contact"><i class="fas fa-phone" aria-hidden="true"></i> {{ $contact['unit']->user->phone }}</div>@endif
+                            @if($contact['unit']->user?->email)<div class="gs-tracking-doc-contact"><i class="fas fa-envelope" aria-hidden="true"></i> {{ $contact['unit']->user->email }}</div>@endif
+                        @else
+                            <p class="gs-tracking-doc-note"><i class="fas fa-circle-exclamation" aria-hidden="true"></i> {{ $contact['missing'] }}</p>
                         @endif
                     </div>
-                @else
-                    <div class="gs-tracking-doc-field gs-tracking-doc-field--bordered gs-tracking-doc-label" style="font-size: 12px;">
-                        <i class="fa fa-exclamation-circle"></i> {{ __('govtracking::general.task.head_missing') }}
-                    </div>
-                @endif
-
-                @if($operationOfficer)
-                    <div style="margin-bottom: 5px;">
-                        <span class="gs-tracking-doc-label">{{ __('govtracking::general.ui.officer_list') }}</span>
-                        <b class="gs-tracking-doc-value">{{ $operationOfficer->user->first_name ?? '' }} {{ $operationOfficer->user->last_name ?? '' }}</b>
-                        @if($operationOfficer->user->phone)
-                            <div class="gs-tracking-doc-value" style="font-size: 12px; margin-top: 4px;">
-                                <i class="fa fa-phone"></i> {{ $operationOfficer->user->phone }}
-                            </div>
-                        @endif
-                        @if($operationOfficer->user->email)
-                            <div class="gs-tracking-doc-value" style="font-size: 12px; margin-top: 2px;">
-                                <i class="fa fa-envelope-o"></i> {{ $operationOfficer->user->email }}
-                            </div>
-                        @endif
-                    </div>
-                @else
-                    <div class="gs-tracking-doc-label" style="font-size: 12px; margin-bottom: 5px;">
-                        <i class="fa fa-exclamation-circle"></i> {{ __('govtracking::general.task.officer_missing') }}
-                    </div>
-                @endif
+                @endforeach
             </x-gs::box>
         </div>
     </div>

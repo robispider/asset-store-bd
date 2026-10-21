@@ -40,7 +40,7 @@ final class TrackingMonitorCharts
                         }
                     }
                 }
-                $rows[] = ['label' => $date->translatedFormat('M Y'), 'date' => $date->toDateString(),
+                $rows[] = ['label' => TrackingMonitorMetrics::digits($date->translatedFormat('M Y')), 'date' => $date->toDateString(),
                     'actual' => $date->startOfMonth()->gt($monitor['today']) || $monitor['unknown_count'] > 0 ? null : (($this->metrics->mean($actual) ?? 0) * 100),
                     'expected' => in_array(null, $expected, true) ? null : ($this->metrics->mean($expected) ?? 0) * 100];
             }
@@ -58,7 +58,7 @@ final class TrackingMonitorCharts
             $start = $end->subDay();
         }
         $receipts = collect($code['receipts'])->where('category_id', $target['category_id'])->filter(fn ($r) => $r['date'])->sortBy('date');
-        $rows = [['label' => $start->toDateString(), 'date' => $start->toDateString(), 'actual' => 0, 'expected' => 0]];
+        $rows = [['label' => TrackingMonitorMetrics::digits($start->toDateString()), 'date' => $start->toDateString(), 'actual' => 0, 'expected' => 0]];
         $total = 0;
         foreach ($receipts as $receipt) {
             $date = CarbonImmutable::parse($receipt['date'])->startOfDay();
@@ -66,9 +66,9 @@ final class TrackingMonitorCharts
             $rows[] = ['label' => $receipt['grn'].' · '.$receipt['office'].' · '.TrackingMonitorMetrics::money($receipt['value']),
                 'date' => $date->toDateString(), 'actual' => $total, 'expected' => $target['planned'] * ($this->metrics->expected($code['activated'], $code['fy'], $date) ?? 0)];
         }
-        $rows[] = ['label' => $today->toDateString(), 'date' => $today->toDateString(), 'actual' => $total,
+        $rows[] = ['label' => TrackingMonitorMetrics::digits($today->toDateString()), 'date' => $today->toDateString(), 'actual' => $total,
             'expected' => $target['planned'] * ($this->metrics->expected($code['activated'], $code['fy'], $today) ?? 0)];
-        $rows[] = ['label' => $end->toDateString(), 'date' => $end->toDateString(), 'actual' => null, 'expected' => $target['planned']];
+        $rows[] = ['label' => TrackingMonitorMetrics::digits($end->toDateString()), 'date' => $end->toDateString(), 'actual' => null, 'expected' => $target['planned']];
         if ($this->metrics->expected($code['activated'], $code['fy'], $today) === null) {
             foreach ($rows as &$row) {
                 $row['expected'] = null;
@@ -94,7 +94,7 @@ final class TrackingMonitorCharts
         for ($i = 0; $i < 12; $i++) {
             $date = $start->addMonths($i);
             $group = collect($receipts)->filter(fn ($r) => $r['date'] && CarbonImmutable::parse($r['date'])->format('Y-m') === $date->format('Y-m'));
-            $rows[] = ['label' => $date->translatedFormat('M Y').' · '.__('govtracking::general.monitor.receipt_count', ['count' => $group->pluck('grn')->filter()->unique()->count()]),
+            $rows[] = ['label' => TrackingMonitorMetrics::digits($date->translatedFormat('M Y')).' · '.__('govtracking::general.monitor.receipt_count', ['count' => TrackingMonitorMetrics::digits($group->pluck('grn')->filter()->unique()->count())]),
                 'date' => $date->toDateString(), 'actual' => $group->sum('value'), 'expected' => null];
         }
         if (collect($receipts)->contains(fn ($r) => $r['value'] === null || ! $r['date'])) {

@@ -1,86 +1,59 @@
 @extends('layouts/default')
-@section('title', __('govtracking::general.ui.extra_modify_task') . $trackingCode->tracking_code)
+@section('title', __('govtracking::general.ui.extra_modify_task', ['code' => $trackingCode->tracking_code]))
 
 @section('content')
-<div class="row">
-    <div class="col-md-10 col-md-offset-1">
+@php
+    $strategy = [
+        '1_BLANKET' => ['tone' => 'secondary', 'label' => 'open_allocation'],
+        '2_CATEGORY' => ['tone' => 'success', 'label' => 'category_targets'],
+        '3_MATRIX' => ['tone' => 'primary', 'label' => 'office_schedule'],
+    ][$trackingCode->specificity_level] ?? null;
+@endphp
+<div class="gs-tracking-form-page">
+    <x-gs::page-header :title="$trackingCode->tracking_code" :subtitle="$trackingCode->task_title" />
 
-        <!-- Programme Context Path Indicator -->
-        <div class="gs-tracking-breadcrumb-path">
-            <ol class="breadcrumb">
-                <li><a href="{{ route('gov.tracking.initiatives.index') }}" class="text-muted"><i class="fa fa-briefcase"></i> {{ __('govtracking::general.task.programmes') }}</a></li>
-                <li><a href="{{ route('gov.tracking.initiatives.show', $initiative->id) }}" class="text-blue"><strong>{{ $initiative->title }}</strong></a></li>
-                <li><a href="{{ route('gov.tracking.initiatives.show', $initiative->id) }}" class="text-muted">{{ __('govtracking::general.task.tasks') }}</a></li>
-                <li class="active text-muted">{{ __('govtracking::general.ui.extra_modify_parameters') }} ({{ $trackingCode->tracking_code }})</li>
-            </ol>
+    @include('govtracking::tracking_codes.partials._errors')
+
+    <form action="{{ route('gov.tracking.initiatives.tracking-codes.update', [$initiative->id, $trackingCode->id]) }}" method="POST" enctype="multipart/form-data" id="task-modification-form">
+        @csrf
+        @method('PUT')
+
+        <!-- 1. What are you creating? -->
+        @include('govtracking::tracking_codes.partials._task_identity')
+
+        <!-- 2. Where can this task operate? -->
+        @include('govtracking::tracking_codes.partials._execution_scopes')
+
+        <!-- 3. Which budget funds this task? -->
+        @include('govtracking::tracking_codes.partials._fiscal_profile')
+
+        <!-- 4. Immutable Specificity / Strategy Indicator -->
+        <x-gs::box class="gs-tracking-strategy-box">
+            <p class="gs-tracking-strategy-text">
+                <i class="fas fa-lock gs-muted" aria-hidden="true"></i> <strong>{{ __('govtracking::general.task.strategy') }}</strong>
+                @if($strategy)<x-gs::badge :tone="$strategy['tone']">{{ __('govtracking::general.task.'.$strategy['label']) }}</x-gs::badge>@endif
+            </p>
+            <p class="gs-tracking-help">{{ __('govtracking::general.task.strategy_locked') }}</p>
+            <input type="hidden" name="specificity_level" value="{{ $trackingCode->specificity_level }}">
+        </x-gs::box>
+
+        <!-- Include Only the Active Target Allocation Panel -->
+        <div id="allocation-worksheets-container">
+            @if($trackingCode->specificity_level === '1_BLANKET')
+                @include('govtracking::tracking_codes.partials._level1_blanket')
+            @elseif($trackingCode->specificity_level === '2_CATEGORY')
+                @include('govtracking::tracking_codes.partials._level2_category_list')
+            @elseif($trackingCode->specificity_level === '3_MATRIX')
+                @include('govtracking::tracking_codes.partials._level3_matrix_grid')
+            @endif
         </div>
 
-        @if ($errors->any())
-            <div class="alert alert-danger gs-tracking-task-errors">
-                <strong>{{ __('govtracking::general.task.check_parameters') }}</strong>
-                <ul style="margin-left: 15px; padding-left: 0; margin-top: 5px;">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <form action="{{ route('gov.tracking.initiatives.tracking-codes.update', [$initiative->id, $trackingCode->id]) }}" method="POST" enctype="multipart/form-data" id="task-modification-form">
-            @csrf
-            @method('PUT')
-
-            <!-- 1. What are you creating? -->
-            @include('govtracking::tracking_codes.partials._task_identity')
-
-            <!-- 2. Where can this task operate? -->
-            @include('govtracking::tracking_codes.partials._execution_scopes')
-
-            <!-- 3. Which budget funds this task? -->
-            @include('govtracking::tracking_codes.partials._fiscal_profile')
-
-            <!-- 4. Immutable Specificity / Strategy Indicator -->
-            <div class="box box-solid bg-gray-light gs-tracking-strategy-box">
-                <div class="box-body gs-tracking-strategy-box__body">
-                    <span class="gs-tracking-strategy-text">
-                        <i class="fa fa-lock text-muted" style="margin-right: 5px;"></i> <strong>{{ __('govtracking::general.task.strategy') }}</strong>
-                        @if($trackingCode->specificity_level === '1_BLANKET')
-                            <span class="label label-default" style="font-size: 11px; margin-left: 5px;">{{ __('govtracking::general.task.open_allocation') }}</span>
-                        @elseif($trackingCode->specificity_level === '2_CATEGORY')
-                            <span class="label label-success" style="font-size: 11px; margin-left: 5px;">{{ __('govtracking::general.task.category_targets') }}</span>
-                        @elseif($trackingCode->specificity_level === '3_MATRIX')
-                            <span class="label label-primary" style="font-size: 11px; margin-left: 5px;">{{ __('govtracking::general.task.office_schedule') }}</span>
-                        @endif
-                    </span>
-                    <span class="help-block text-muted" style="margin-top: 5px; margin-bottom: 0; font-size: 11px; line-height: 1.4;">
-                        {{ __('govtracking::general.task.strategy_locked') }}
-                    </span>
-                    <input type="hidden" name="specificity_level" value="{{ $trackingCode->specificity_level }}">
-                </div>
-            </div>
-
-            <!-- Include Only the Active Target Allocation Panel -->
-            <div id="allocation-worksheets-container">
-                @if($trackingCode->specificity_level === '1_BLANKET')
-                    @include('govtracking::tracking_codes.partials._level1_blanket')
-                @elseif($trackingCode->specificity_level === '2_CATEGORY')
-                    @include('govtracking::tracking_codes.partials._level2_category_list')
-                @elseif($trackingCode->specificity_level === '3_MATRIX')
-                    @include('govtracking::tracking_codes.partials._level3_matrix_grid')
-                @endif
-            </div>
-
-            <!-- Submit Footer -->
-            <div class="box box-solid gs-tracking-submit-box">
-                <div class="box-footer text-right gs-tracking-submit-footer">
-                    <a href="{{ route('gov.tracking.initiatives.show', $initiative->id) }}" class="btn btn-default btn-lg" style="margin-right: 10px;">{{ __('govtracking::general.task.cancel') }}</a>
-                    <button type="submit" class="btn btn-warning btn-lg" style="font-weight: bold;"><i class="fa fa-check-circle"></i> {{ __('govtracking::general.task.save') }}</button>
-                </div>
-            </div>
-
-        </form>
-        @include('govtracking::tracking_codes.partials._documents')
-    </div>
+        <div class="gs-tracking-form-actions">
+            <x-gs::button tone="secondary" outline :href="route('gov.tracking.initiatives.tracking-codes.show', [$initiative->id, $trackingCode->id])">{{ __('govtracking::general.task.cancel') }}</x-gs::button>
+            <x-gs::button type="submit" tone="primary" icon="fa-circle-check">{{ __('govtracking::general.task.save') }}</x-gs::button>
+        </div>
+    </form>
+    @include('govtracking::tracking_codes.partials._documents')
 </div>
 
 @include('govtracking::tracking_codes.partials._task_data')

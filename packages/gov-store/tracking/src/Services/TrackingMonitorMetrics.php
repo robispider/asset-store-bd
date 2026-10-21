@@ -139,16 +139,29 @@ final class TrackingMonitorMetrics
             return __('govtracking::general.monitor.unavailable');
         }
         if (abs($value) >= 10000000) {
-            return '৳'.number_format($value / 10000000, 2).' '.__('govtracking::general.monitor.crore');
+            return self::digits('৳'.number_format($value / 10000000, 2)).' '.__('govtracking::general.monitor.crore');
         }
         if (abs($value) >= 100000) {
-            return '৳'.number_format($value / 100000, 2).' '.__('govtracking::general.monitor.lakh');
+            return self::digits('৳'.number_format($value / 100000, 2)).' '.__('govtracking::general.monitor.lakh');
         }
         $parts = explode('.', number_format(abs($value), 2, '.', ''));
         $tail = substr($parts[0], -3);
         $head = substr($parts[0], 0, -3);
         $head = preg_replace('/\B(?=(\d{2})+(?!\d))/', ',', $head);
 
-        return '৳'.($value < 0 ? '-' : '').($head ? $head.',' : '').$tail.($parts[1] === '00' ? '' : '.'.$parts[1]);
+        return self::digits('৳'.($value < 0 ? '-' : '').($head ? $head.',' : '').$tail.($parts[1] === '00' ? '' : '.'.$parts[1]));
+    }
+
+    /**
+     * Displayed figures in the reader's numerals: Bengali digits under a bn locale, unchanged otherwise.
+     * Only for text people read; sort keys, data attributes and chart data keep ASCII digits.
+     */
+    public static function digits(string|int|float|null $value): string
+    {
+        $value = (string) $value;
+
+        return str_starts_with(app()->getLocale(), 'bn')
+            ? strtr($value, ['0' => '০', '1' => '১', '2' => '২', '3' => '৩', '4' => '৪', '5' => '৫', '6' => '৬', '7' => '৭', '8' => '৮', '9' => '৯'])
+            : $value;
     }
 }
