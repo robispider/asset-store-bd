@@ -82,7 +82,7 @@ class TrackingCodeController extends Controller
             }
         }
 
-        $locationName = Location::withoutGlobalScopes()->where('id', $locationId)->value('name') ?? 'Your Assigned Office';
+        $locationName = Location::withoutGlobalScopes()->where('id', $locationId)->value('name') ?? __('govtracking::general.ui.assigned_office');
 
         return view('govtracking::tracking_codes.view_task_component', compact(
             'initiative', 'trackingCode', 'locationId', 'locationName', 'operationHead', 'operationOfficer'

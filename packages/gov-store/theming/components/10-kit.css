@@ -69,7 +69,8 @@
     .gs-box--muted { background: var(--gs-color-surface-sunken); }
     [data-gs-surfaces="flat"] .gs-box { background: transparent; border: 0; border-top: var(--gs-border-width) solid var(--gs-color-border); border-radius: 0; box-shadow: none; }
     [data-gs-surfaces="flat"] .gs-box--primary { border-top: 2px solid var(--gs-color-primary); }
-    .gs-box__header { display: flex; align-items: center; gap: var(--gs-space-2); padding: var(--gs-box-pad, 10px) calc(var(--gs-box-pad, 10px) + 4px); border-bottom: var(--gs-border-width) solid var(--gs-color-border); }
+    /* !important: normalize's unlayered header { display: block } otherwise wins and drops the icon onto its own line. */
+    .gs-box__header { display: flex !important; align-items: center; gap: var(--gs-space-2); padding: var(--gs-box-pad, 10px) calc(var(--gs-box-pad, 10px) + 4px); border-bottom: var(--gs-border-width) solid var(--gs-color-border); }
     [data-gs-surfaces="flat"] .gs-box__header { padding-left: 0; padding-right: 0; }
     .gs-box__title { margin: 0 !important; flex: 1; font-size: 1.1em !important; font-family: var(--gs-font-display) !important; font-weight: var(--gs-font-heading-weight) !important; color: var(--gs-color-text) !important; }
     .gs-box__tools { display: flex; gap: var(--gs-space-2); }

@@ -3,71 +3,72 @@
 @section('title', __('govtracking::general.ui.extra_system_configuration_funding_sources'))
 
 @section('content')
-<div class="row">
-    <div class="col-md-4">
+@php
+    $u = 'govtracking::general.ui.';
+    $segmentTone = ['ADP' => 'success', 'REVENUE' => 'primary'];
+@endphp
+<div class="gs-tracking-form-page gs-tracking-form-page--wide">
+    <x-gs::page-header :title="__($u.'extra_system_configuration_funding_sources')" :subtitle="__($u.'funding_types_intro')" />
+
+    @include('govtracking::tracking_codes.partials._errors')
+
+    <div class="gs-tracking-settings-grid">
         <form action="{{ route('gov.tracking.funding-types.store') }}" method="POST">
             @csrf
-            <div class="box box-default">
-                <div class="box-header with-border"><h3 class="box-title">{{ __('govtracking::general.ui.add_new_funding_source') }}</h3></div>
-                <div class="box-body">
-                    <div class="form-group">
-                        <label>{{ __('govtracking::general.ui.primary_segment_type') }}</label>
-                        <select name="primary_type" class="form-control" required>
-                            <option value="ADP">{{ __('govtracking::general.ui.adp_development_budget') }}</option>
-                            <option value="REVENUE">{{ __('govtracking::general.ui.revenue_budget_non_development') }}</option>
-                            <option value="OTHER">{{ __('govtracking::general.ui.other_sources_autonomous') }}</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>{{ __('govtracking::general.ui.sub_source_name') }}</label>
-                        <input type="text" name="name" class="form-control" placeholder="{{ __('govtracking::general.ui.extra_e_g_project_aid_pa_gob_taka') }}" required>
-                    </div>
-                    <div class="form-group">
-                        <label>{{ __('govtracking::general.ui.description_optional') }}</label>
-                        <textarea name="description" class="form-control" rows="3"></textarea>
-                    </div>
+            <x-gs::box :title="__($u.'add_new_funding_source')">
+                <div class="form-group">
+                    <label for="funding_primary_type">{{ __($u.'primary_segment_type') }}</label>
+                    <select name="primary_type" id="funding_primary_type" class="form-control" required>
+                        <option value="ADP">{{ __($u.'adp_development_budget') }}</option>
+                        <option value="REVENUE">{{ __($u.'revenue_budget_non_development') }}</option>
+                        <option value="OTHER">{{ __($u.'other_sources_autonomous') }}</option>
+                    </select>
                 </div>
-                <div class="box-footer text-right">
-                    <button type="submit" class="btn btn-primary">{{ __('govtracking::general.ui.save_funding_source') }}</button>
+                <div class="form-group">
+                    <label for="funding_name">{{ __($u.'sub_source_name') }}</label>
+                    <input type="text" name="name" id="funding_name" class="form-control" value="{{ old('name') }}" placeholder="{{ __($u.'extra_e_g_project_aid_pa_gob_taka') }}" required>
                 </div>
-            </div>
+                <div class="form-group">
+                    <label for="funding_description">{{ __($u.'description_optional') }}</label>
+                    <textarea name="description" id="funding_description" class="form-control" rows="3">{{ old('description') }}</textarea>
+                </div>
+                <x-slot:footer>
+                    <x-gs::button type="submit">{{ __($u.'save_funding_source') }}</x-gs::button>
+                </x-slot:footer>
+            </x-gs::box>
         </form>
-    </div>
-    <div class="col-md-8">
-        <div class="box box-default">
-            <div class="box-header with-border"><h3 class="box-title">{{ __('govtracking::general.ui.active_funding_sources_dictionary') }}</h3></div>
-            <div class="box-body">
-                <table class="table table-bordered table-striped">
-                    <thead>
+
+        <x-gs::box :title="__($u.'active_funding_sources_dictionary')">
+            <x-gs::table>
+                <thead>
+                    <tr>
+                        <th scope="col">{{ __($u.'primary_segment') }}</th>
+                        <th scope="col">{{ __($u.'sub_source_name') }}</th>
+                        <th scope="col">{{ __($u.'description') }}</th>
+                        <th scope="col" class="gs-num">{{ __($u.'active_task_count') }}</th>
+                        <th scope="col" class="gs-num">{{ __($u.'action') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($fundingTypes as $type)
                         <tr>
-                            <th>{{ __('govtracking::general.ui.primary_segment') }}</th>
-                            <th>{{ __('govtracking::general.ui.sub_source_name') }}</th>
-                            <th>{{ __('govtracking::general.ui.description') }}</th>
-                            <th>{{ __('govtracking::general.ui.active_task_count') }}</th>
-                            <th class="text-right">{{ __('govtracking::general.ui.action') }}</th>
+                            <td><x-gs::badge :tone="$segmentTone[$type->primary_type] ?? 'secondary'">{{ $type->primary_type }}</x-gs::badge></td>
+                            <td><strong>{{ $type->name }}</strong></td>
+                            <td>{{ $type->description }}</td>
+                            <td class="gs-num">{{ $type->tracking_codes_count }}</td>
+                            <td class="gs-num">
+                                <form action="{{ route('gov.tracking.funding-types.destroy', $type->id) }}" method="POST">
+                                    @csrf @method('DELETE')
+                                    <x-gs::button type="submit" tone="danger" outline size="sm" icon="fa-trash" :disabled="$type->tracking_codes_count > 0" :aria-label="__('govtracking::general.delete').' '.$type->name" data-tracking-confirm="{{ __($u.'confirm_funding') }}"></x-gs::button>
+                                </form>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($fundingTypes as $type)
-                            <tr>
-                                <td><span class="label label-{{ $type->primary_type == 'ADP' ? 'success' : ($type->primary_type == 'REVENUE' ? 'primary' : 'default') }}">{{ $type->primary_type }}</span></td>
-                                <td><strong>{{ $type->name }}</strong></td>
-                                <td>{{ $type->description }}</td>
-                                <td>{{ $type->tracking_codes_count }}</td>
-                                <td class="text-right">
-                                    <form action="{{ route('gov.tracking.funding-types.destroy', $type->id) }}" method="POST">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="btn btn-xs btn-danger" {{ $type->tracking_codes_count > 0 ? 'disabled' : '' }} data-tracking-confirm="{{ __('govtracking::general.ui.confirm_funding') }}"><i class="fa fa-trash"></i></button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="5" class="text-center text-muted">{{ __('govtracking::general.ui.no_funding_sources_configured_yet') }}</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                    @empty
+                        <tr><td colspan="5" class="gs-table__empty">{{ __($u.'no_funding_sources_configured_yet') }}</td></tr>
+                    @endforelse
+                </tbody>
+            </x-gs::table>
+        </x-gs::box>
     </div>
 </div>
 @stop

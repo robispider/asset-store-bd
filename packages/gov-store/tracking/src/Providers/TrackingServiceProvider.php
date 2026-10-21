@@ -22,7 +22,9 @@ use GovStore\Tracking\Observers\ProjectionSourceObserver;
 use GovStore\Tracking\Observers\TrackingAssociationObserver;
 use GovStore\Tracking\Repositories\CachedTrackingProjectionRepository;
 use GovStore\Tracking\Repositories\TrackingProjectionRepositoryInterface;
+use GovStore\Tracking\Services\TrackingTrail;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class TrackingServiceProvider extends ServiceProvider
@@ -35,6 +37,7 @@ class TrackingServiceProvider extends ServiceProvider
             TrackingProjectionRepositoryInterface::class,
             CachedTrackingProjectionRepository::class
         );
+        $this->app->scoped(TrackingTrail::class);
     }
 
     public function boot(): void
@@ -48,6 +51,9 @@ class TrackingServiceProvider extends ServiceProvider
         // 3. FIXED: Load Translations Namespace: 'govtracking'
         // This resolves 'govtracking::general.key' beautifully across both English and Bengali!
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'govtracking');
+
+        // Breadcrumb names come from the tracking view that rendered (see TrackingTrail).
+        View::composer('govtracking::*', fn ($view) => $this->app->make(TrackingTrail::class)->remember($view->getData()));
 
         $this->registerRoutes();
         $this->registerMiddleware();

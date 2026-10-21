@@ -57,7 +57,10 @@ class TrackingCorrectnessTest extends TrackingWorkflowTest
         $this->assertEquals(25, $p['average']);
         $this->assertEquals(.8, $p['spread']);
         $this->assertNull($m->prices([['quantity' => 3, 'value' => 0]])['spread']);
+        app()->setLocale('en-US');
         $this->assertSame('৳12,345.50', $m::money(12345.5));
+        app()->setLocale('bn-BD');
+        $this->assertSame('৳১২,৩৪৫.৫০', $m::money(12345.5));
     }
 
     public function test_draft_and_archived_plans_do_not_inflate_lifecycle_and_cache_is_not_trusted(): void

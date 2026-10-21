@@ -3,6 +3,7 @@
 @section('content')
 @php
     $authz=app(\GovStore\Tracking\Services\TrackingAuthorizationService::class);
+    $digits=fn($value)=>\GovStore\Tracking\Services\TrackingMonitorMetrics::digits($value);
     $siblings=collect($monitor['codes'])->sortBy('code')->values();
     $position=$siblings->search(fn($c)=>$c['id']===$code['id']);
     $previous=$position>0 ? $siblings[$position-1] : null; $next=$siblings[$position+1] ?? null;
@@ -13,25 +14,24 @@
     $steps=[['label'=>__('govtracking::general.monitor.created'),'date'=>$code['created']],['label'=>__('govtracking::general.monitor.activated'),'date'=>$code['activated']],['label'=>__('govtracking::general.monitor.first_receipt'),'date'=>collect($code['receipts'])->pluck('date')->filter()->sort()->first()],['label'=>__('govtracking::general.monitor.last_receipt'),'date'=>$code['last']],['label'=>__('govtracking::general.monitor.today'),'date'=>$monitor['today']->toDateString()],['label'=>__('govtracking::general.monitor.year_end'),'date'=>$code['fy_end']?->toDateString(),'detail'=>$code['fy_end'] ? __('govtracking::general.monitor.days_left',['days'=>max(0,(int)$monitor['today']->diffInDays($code['fy_end'],false))]) : null]];
 @endphp
 <div class="gs-tracking-monitor">
-    <nav class="gs-tracking-breadcrumb"><a href="{{ route('gov.tracking.initiatives.show',$initiative->id) }}">{{ $initiative->title }}</a><span>/</span>{{ __('govtracking::general.monitor.codes') }}<span>/</span><span class="gs-tracking-code">{{ $code['code'] }}</span></nav>
-    <div class="gs-tracking-title-row"><div><h1 class="gs-tracking-code">{{ $code['code'] }}</h1><button type="button" class="btn btn-default btn-sm" data-monitor-copy="{{ $code['code'] }}" data-copy-success="{{ __('govtracking::general.monitor.copied') }}" data-copy-failure="{{ __('govtracking::general.monitor.copy_failed') }}">{{ __('govtracking::general.monitor.copy') }}</button><span class="gs-sr-only" role="status" data-copy-result></span><h2>{{ $code['title'] }}</h2></div>
+    <div class="gs-tracking-title-row"><div><div class="gs-tracking-code-heading"><h1 class="gs-tracking-code">{{ $code['code'] }}</h1><button type="button" class="gs-btn gs-btn--secondary gs-btn--outline gs-btn--sm" data-monitor-copy="{{ $code['code'] }}" data-copy-success="{{ __('govtracking::general.monitor.copied') }}" data-copy-failure="{{ __('govtracking::general.monitor.copy_failed') }}">{{ __('govtracking::general.monitor.copy') }}</button><span class="gs-sr-only" role="status" data-copy-result></span></div><p class="gs-tracking-subtitle">{{ $code['title'] }}</p></div>
     <div class="gs-tracking-actions">@if($previous)<a href="{{ route('gov.tracking.initiatives.tracking-codes.show',[$initiative->id,$previous['id']]) }}">← {{ $previous['code'] }}</a>@endif
         <label class="gs-sr-only" for="tracking-code-jump">{{ __('govtracking::general.monitor.jump') }}</label><select id="tracking-code-jump" data-monitor-jump>@foreach($siblings as $sibling)<option value="{{ route('gov.tracking.initiatives.tracking-codes.show',[$initiative->id,$sibling['id']]) }}" @selected($sibling['id']===$code['id'])>{{ $sibling['code'] }} · {{ __('govtracking::general.monitor.health.'.$sibling['health']) }}</option>@endforeach</select>
         @if($next)<a href="{{ route('gov.tracking.initiatives.tracking-codes.show',[$initiative->id,$next['id']]) }}">{{ $next['code'] }} →</a>@endif
     </div></div>
     <div class="gs-tracking-meta"><x-gs::status-badge :status="$code['health']" /><span>{{ __('govtracking::general.monitor.plans.'.$code['plan']) }}</span><span>{{ $code['fy'] }} · {{ $code['funding'] }}</span><span>{{ count($code['targets']) }} {{ __('govtracking::general.monitor.item_lines') }}</span></div>
-    <div class="gs-tracking-actions"><a class="btn btn-default" href="{{ route('gov.tracking.tracking-codes.view-task',$code['id']) }}">{{ __('govtracking::general.monitor.code_sheet') }}</a>
-    @if($code['order_pdf'])<a class="btn btn-default" href="{{ route('gov.tracking.tracking-codes.download',$code['id']) }}">{{ __('govtracking::general.monitor.order_pdf') }}</a>@endif
-    @if($code['status']==='DRAFT' && $authz->allows($initiative,['HEAD','OFFICER']))<a class="btn btn-default" href="{{ route('gov.tracking.initiatives.tracking-codes.edit',[$initiative->id,$code['id']]) }}">{{ __('govtracking::general.monitor.edit') }}</a>@endif
-    @if($code['status']==='DRAFT' && $authz->allows($initiative,['HEAD']))<form method="POST" action="{{ route('gov.tracking.initiatives.tracking-codes.activate',[$initiative->id,$code['id']]) }}">@csrf<button class="btn btn-primary" data-tracking-confirm="{{ __('govtracking::general.ui.confirm_activate') }}">{{ __('govtracking::general.monitor.activate') }}</button></form>@endif
+    <div class="gs-tracking-actions"><a class="gs-btn gs-btn--secondary gs-btn--outline" href="{{ route('gov.tracking.tracking-codes.view-task',$code['id']) }}">{{ __('govtracking::general.monitor.code_sheet') }}</a>
+    @if($code['order_pdf'])<a class="gs-btn gs-btn--secondary gs-btn--outline" href="{{ route('gov.tracking.tracking-codes.download',$code['id']) }}">{{ __('govtracking::general.monitor.order_pdf') }}</a>@endif
+    @if($code['status']==='DRAFT' && $authz->allows($initiative,['HEAD','OFFICER']))<a class="gs-btn gs-btn--secondary gs-btn--outline" href="{{ route('gov.tracking.initiatives.tracking-codes.edit',[$initiative->id,$code['id']]) }}">{{ __('govtracking::general.monitor.edit') }}</a>@endif
+    @if($code['status']==='DRAFT' && $authz->allows($initiative,['HEAD']))<form method="POST" action="{{ route('gov.tracking.initiatives.tracking-codes.activate',[$initiative->id,$code['id']]) }}">@csrf<button class="gs-btn gs-btn--primary" data-tracking-confirm="{{ __('govtracking::general.ui.confirm_activate') }}">{{ __('govtracking::general.monitor.activate') }}</button></form>@endif
     </div>
     <x-gs::status-callout :status="$code['health']" :verdict="__('govtracking::general.monitor.rule.'.$code['health'])" :next="__('govtracking::general.monitor.contact_next',['person'=>$person])" :forecast="$forecast" />
     @if($code['approximate'])<p class="gs-tracking-notice">{{ __('govtracking::general.monitor.approximate_activation') }}</p>@endif
     <div class="gs-tracking-kpis">
         <div class="gs-tracking-kpi"><span>{{ __('govtracking::general.monitor.delivered') }}</span><x-gs::pace-bar :value="$code['status']==='ACTIVE' && $code['delivered']!==null ? $code['delivered']*100 : null" :expected="$code['status']==='ACTIVE' && $code['expected']!==null ? $code['expected']*100 : null" /></div>
-        <x-gs::kpi :label="__('govtracking::general.monitor.received')" :value="$code['received']" :caption="$code['grn_count'].' '.__('govtracking::general.monitor.receipts')" />
+        <x-gs::kpi :label="__('govtracking::general.monitor.received')" :value="$digits($code['received'])" :caption="$digits($code['grn_count']).' '.__('govtracking::general.monitor.receipts')" />
         <x-gs::kpi :label="__('govtracking::general.monitor.value')" :value="\GovStore\Tracking\Services\TrackingMonitorMetrics::money($code['value'])" :caption="__('govtracking::general.monitor.prices_per_item')" />
-        <x-gs::kpi :label="__('govtracking::general.monitor.offices_started')" :value="collect($codeOffices)->where('received','>',0)->count().' / '.count($codeOffices)" />
+        <x-gs::kpi :label="__('govtracking::general.monitor.offices_started')" :value="$digits(collect($codeOffices)->where('received','>',0)->count().' / '.count($codeOffices))" />
     </div>
     @if($code['unknown_count'])<p class="gs-tracking-notice">{{ __('govtracking::general.monitor.incomplete_receipts') }}</p>@endif
     <section class="gs-tracking-panel"><h2>{{ __('govtracking::general.monitor.receipts_over_time') }}</h2>

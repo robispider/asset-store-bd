@@ -3,6 +3,7 @@
 @section('content')
 @php
     $authz=app(\GovStore\Tracking\Services\TrackingAuthorizationService::class);
+    $digits=fn($value)=>\GovStore\Tracking\Services\TrackingMonitorMetrics::digits($value);
     $charts=app(\GovStore\Tracking\Services\TrackingMonitorCharts::class)->programme($monitor);
     $tiles=app(\GovStore\Tracking\Services\TrackingTileMap::class)->tiles($monitor['offices'],$initiative->id);
     $healthCounts=collect($monitor['codes'])->where('status','ACTIVE')->countBy('health');
@@ -26,14 +27,14 @@
         <label>{{ __('govtracking::general.monitor.show') }}<select name="status">@foreach(['all','ACTIVE','DRAFT'] as $status)<option value="{{ $status }}" @selected(($monitor['filters']['status'] ?? 'all')===$status)>{{ __('govtracking::general.monitor.filter_status.'.$status) }}</option>@endforeach</select></label>
         <label>{{ __('govtracking::general.monitor.plan') }}<select name="plan">@foreach(['all','3_MATRIX','2_CATEGORY','1_BLANKET'] as $plan)<option value="{{ $plan }}" @selected(($monitor['filters']['plan'] ?? 'all')===$plan)>{{ __('govtracking::general.monitor.plans.'.$plan) }}</option>@endforeach</select></label>
         <label class="gs-tracking-filters__search">{{ __('govtracking::general.monitor.search') }}<input type="search" name="q" value="{{ $monitor['filters']['q'] ?? '' }}" maxlength="150" placeholder="{{ __('govtracking::general.monitor.search_hint') }}"></label>
-        <button class="btn btn-primary" type="submit">{{ __('govtracking::general.monitor.apply') }}</button>
+        <button class="gs-btn gs-btn--primary" type="submit">{{ __('govtracking::general.monitor.apply') }}</button>
         <a href="{{ route('gov.tracking.initiatives.show',$initiative->id) }}">{{ __('govtracking::general.monitor.reset') }}</a>
     </form>
     <div class="gs-tracking-kpis">
         <div class="gs-tracking-kpi"><span>{{ __('govtracking::general.monitor.delivered') }}</span><x-gs::pace-bar :value="$monitor['delivered']===null ? null : $monitor['delivered']*100" :expected="$monitor['expected']===null ? null : $monitor['expected']*100" /></div>
-        <x-gs::kpi :spark="$valueSpark" :label="__('govtracking::general.monitor.value')" :value="\GovStore\Tracking\Services\TrackingMonitorMetrics::money($monitor['value'])" :caption="$monitor['grn_count'].' '.__('govtracking::general.monitor.receipts').' · '.$monitor['supplier_count'].' '.__('govtracking::general.monitor.suppliers')" />
-        <x-gs::kpi :label="__('govtracking::general.monitor.offices_reached')" :value="$monitor['allocated_offices']>0 ? $monitor['reached'].' / '.$monitor['allocated_offices'] : $monitor['reached']" :caption="__('govtracking::general.monitor.waiting_count',['count'=>$monitor['waiting_offices']])" />
-        <x-gs::kpi :label="__('govtracking::general.monitor.codes')" :value="$monitor['active_count'].' · '.$monitor['draft_count']" :caption="__('govtracking::general.monitor.active_draft')" />
+        <x-gs::kpi :spark="$valueSpark" :label="__('govtracking::general.monitor.value')" :value="\GovStore\Tracking\Services\TrackingMonitorMetrics::money($monitor['value'])" :caption="$digits($monitor['grn_count']).' '.__('govtracking::general.monitor.receipts').' · '.$digits($monitor['supplier_count']).' '.__('govtracking::general.monitor.suppliers')" />
+        <x-gs::kpi :label="__('govtracking::general.monitor.offices_reached')" :value="$digits($monitor['allocated_offices']>0 ? $monitor['reached'].' / '.$monitor['allocated_offices'] : $monitor['reached'])" :caption="__('govtracking::general.monitor.waiting_count',['count'=>$digits($monitor['waiting_offices'])])" />
+        <x-gs::kpi :label="__('govtracking::general.monitor.codes')" :value="$digits($monitor['active_count'].' · '.$monitor['draft_count'])" :caption="__('govtracking::general.monitor.active_draft')" />
     </div>
     @if(!$monitor['value_complete'])<p class="gs-tracking-notice">{{ __('govtracking::general.monitor.incomplete_receipts') }} {{ __('govtracking::general.monitor.known_value') }}: {{ \GovStore\Tracking\Services\TrackingMonitorMetrics::money($monitor['known_value']) }}</p>@endif
     <div class="gs-tracking-health-mix">@foreach($healthCounts as $health=>$count)<span><x-gs::status-badge :status="$health" /> {{ $count }}</span>@endforeach</div>

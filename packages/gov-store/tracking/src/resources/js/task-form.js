@@ -33,7 +33,7 @@
                 $row.append($('<td>').append($category));
                 $row.append($('<td>').append($('<input>', {type:'number', name:'targets[' + nextIndex + '][planned_qty]', class:'form-control target-qty-input', min:1, required:true})));
                 $row.append($('<td>').append($('<input>', {type:'text', name:'targets[' + nextIndex + '][economic_code]', class:'form-control', maxlength:50})));
-                $row.append($('<td>').append($('<button>', {type:'button', class:'btn btn-danger btn-sm remove-row', 'aria-label':t('remove')}).text(t('remove'))));
+                $row.append($('<td>').append($('<button>', {type:'button', class:'gs-btn gs-btn--danger gs-btn--outline gs-btn--sm remove-row', 'aria-label':t('remove')}).append($('<i>', {class:'fas fa-trash', 'aria-hidden':'true'}))));
                 $('#targets-body').append($row); $category.select2(); nextIndex++; toggleTrash();
             });
             $form.on('click', '#targets-body .remove-row', function () { $(this).closest('tr').remove(); toggleTrash(); });

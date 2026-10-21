@@ -1,6 +1,6 @@
 /* Programme portfolio: shared controls and summary for table and card layouts. */
 .gs-portfolio-heading { display:flex; justify-content:space-between; align-items:start; flex-wrap:wrap; gap:16px; margin-bottom:18px; }
-.gs-portfolio-heading .btn { white-space:nowrap; }
+.gs-portfolio-heading .gs-btn { white-space:nowrap; }
 .gs-portfolio-subtitle { margin:0; color:var(--gs-color-text-muted); font-size:15px; max-width:85ch; }
 .gs-portfolio-nav { display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 22px; }
 .gs-portfolio-nav a { padding:8px 14px; border-radius:var(--gs-radius-md); color:var(--gs-color-text-muted); }

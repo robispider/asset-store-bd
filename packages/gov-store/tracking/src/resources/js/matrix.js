@@ -315,7 +315,7 @@
                     bodyHtml += `
                         <td class="row-total-cell text-center text-bold" data-row-uuid="${row.uuid}" style="line-height: 36px;">0</td>
                         <td class="text-right cell-actions gs-matrix-head-cell" style="padding: 5px 12px; line-height: 26px;">
-                            <button type="button" aria-label="${escapeHtml(t('remove_office'))}" class="btn btn-xs btn-danger remove-matrix-row-action" data-row-uuid="${row.uuid}"><i class="fa fa-trash"></i></button>
+                            <button type="button" aria-label="${escapeHtml(t('remove_office'))}" class="gs-btn gs-btn--danger gs-btn--outline gs-btn--sm remove-matrix-row-action" data-row-uuid="${row.uuid}"><i class="fas fa-trash" aria-hidden="true"></i></button>
                         </td>
                     `;
                     bodyHtml += '</tr>';
@@ -395,15 +395,15 @@
 
                 var html = '';
                 if (state.validation.errors.length > 0) {
-                    html = `<span class="text-red"><i class="fa fa-times-circle"></i> <strong>${escapeHtml(t('error'))}</strong> ${state.validation.errors.join(' ')} ${escapeHtml(t('blocked'))}</span>`;
+                    html = `<span class="gs-tracking-text-danger"><i class="fas fa-circle-xmark" aria-hidden="true"></i> <strong>${escapeHtml(t('error'))}</strong> ${escapeHtml(state.validation.errors.join(' '))} ${escapeHtml(t('blocked'))}</span>`;
                     $table.removeClass('gs-matrix--warning gs-matrix--ok').addClass('gs-matrix--error');
                     $('#matrix-grid-table').closest('form').find('button[type="submit"]').prop('disabled', true);
                 } else if (state.validation.warnings.length > 0) {
-                    html = `<span class="text-yellow"><i class="fa fa-warning"></i> <strong>${escapeHtml(t('warning'))}</strong> ${state.validation.warnings.join(' ')} ${escapeHtml(t('draft_allowed'))}</span>`;
+                    html = `<span class="gs-tracking-text-warning"><i class="fas fa-triangle-exclamation" aria-hidden="true"></i> <strong>${escapeHtml(t('warning'))}</strong> ${escapeHtml(state.validation.warnings.join(' '))} ${escapeHtml(t('draft_allowed'))}</span>`;
                     $table.removeClass('gs-matrix--error gs-matrix--ok').addClass('gs-matrix--warning');
                     $('#matrix-grid-table').closest('form').find('button[type="submit"]').prop('disabled', false);
                 } else {
-                    html = `<span class="text-green"><i class="fa fa-check-circle"></i> <strong>${escapeHtml(t('status'))}</strong> ${escapeHtml(t('healthy'))}</span>`;
+                    html = `<span class="gs-tracking-text-success"><i class="fas fa-circle-check" aria-hidden="true"></i> <strong>${escapeHtml(t('status'))}</strong> ${escapeHtml(t('healthy'))}</span>`;
                     $table.removeClass('gs-matrix--error gs-matrix--warning').addClass('gs-matrix--ok');
                     $('#matrix-grid-table').closest('form').find('button[type="submit"]').prop('disabled', false);
                 }

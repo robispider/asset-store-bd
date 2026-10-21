@@ -2,10 +2,9 @@
     $activeSpec = old('specificity_level', $trackingCode?->specificity_level ?? '2_CATEGORY');
 @endphp
 
-<div class="box box-solid">
-    <div class="box-header with-border"><h3 class="box-title text-blue">{{ __('govtracking::general.task.strategy_question') }}</h3></div>
-    <div class="box-body">
-        <label>{{ __('govtracking::general.task.select_strategy') }}</label>
+<x-gs::box :title="__('govtracking::general.task.strategy_question')">
+    <fieldset class="gs-tracking-fieldset">
+        <legend class="gs-tracking-legend">{{ __('govtracking::general.task.select_strategy') }}</legend>
 
         <div class="radio">
             <label>
@@ -27,5 +26,5 @@
                 <strong>{{ __('govtracking::general.task.office_mode') }}</strong> {{ __('govtracking::general.task.office_help') }}
             </label>
         </div>
-    </div>
-</div>
+    </fieldset>
+</x-gs::box>
