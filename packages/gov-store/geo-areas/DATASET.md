@@ -71,6 +71,44 @@ by jurisdiction checks; they are never rewritten.
    the service/API. Do not rewrite stored types until all SQL consumers and
    existing identifiers have been reviewed.
 
+## Boundaries
+
+- Boundary set: `bd-boundaries-2026-10-21.1`, built for dataset `bd-admin-areas-2026-10-21.1`. Plan and decisions:
+  [geo-boundary-data-plan.md](../../../docs/plans/geo-boundary-data-plan.md).
+- Files, under `src/database/data/boundaries/`:
+
+| File | Role |
+| --- | --- |
+| `sources.json` | The two source archives: URL, bytes, SHA-256, licence, retrieval date. The archives themselves are not committed |
+| `crosswalk.csv` | **Generated.** One row per source polygon → `GeoAreaId` and the upazila/city it is drawn under |
+| `upazila_recode.csv`, `review/boundary_decisions.csv` | Reviewed: old → new upazila codes, and a decision for every polygon no code rule resolves |
+| `review/CROSSWALK_REPORT.md` | **Generated.** Counts, name QA list, held polygons, areas without a polygon |
+| `<version>/children/<GeoAreaId>.json` | **Generated.** Render-ready SVG paths of an area's children: `{version, id, viewBox, outline, areas:[{id, kind, path}]}` |
+| `<version>/level-1.json` … `level-4.json` | **Generated.** WGS84 TopoJSON per level, feature id = `GeoAreaId` |
+| `<version>/manifest.json`, `BUILD_REPORT.md` | Sources, attribution, projection frame, tolerances, coverage, SHA-256 of every file |
+
+- Sources: unions from the BBS/OCHA 2015 boundaries via geoBoundaries ADM4 (zip SHA-256
+  `c026dd92cc01136b8d503bf38db0925736daa10829314b6333ececb31faf558a`, CC BY 3.0 IGO, geoBoundaries processing
+  CC BY 4.0); P-codes from OCHA COD-AB v03 `adminpoints` (zip SHA-256
+  `ec54c97c2004bbee084afa3f662abb202d8ec038dbfd398af2ebb9b1bf3ec9e5`, CC BY 3.0 IGO). Divisions, districts and
+  upazilas are dissolved from the unions along the GovStore tree, so they carry 2015 borders.
+- Attribution, required wherever the map is shown: the `attribution` string in `manifest.json`.
+- Coverage: divisions 8/8, districts 64/64, upazilas and city corporations 502/506, unions and paurashavas
+  4,817/4,916. Areas without a shape are listed in `BUILD_REPORT.md`.
+
+### Rebuilding the boundaries
+
+Run after a dataset version changes the tree, or when a source is reissued:
+
+1. `python tools/fetch_boundary_sources.py` (add `--seed gb_adm4_2015=<path to the zip>` to use a local copy).
+   It stops if a download's SHA-256 differs from `sources.json`; review the new file before updating the hash.
+2. `python tools/build_boundary_crosswalk.py`, then confirm every new row in `review/boundary_decisions.csv` and
+   `upazila_recode.csv` (`decision`/`confirmed`, `note`, `reviewed_by`, `reviewed_on`). Reruns keep confirmed rows.
+   Never link a polygon by its name alone.
+3. `npm install` in `tools/` once, then `python tools/build_boundaries.py`. It refuses to write unless all six gates
+   pass (ids, source hashes, no collapsed shapes, nesting, size budget, two byte-identical builds). Bump `VERSION`
+   in the script whenever the output changes, and keep the old version folder until no code reads it.
+
 The search endpoint uses English and Bangla prefix matching. Dedicated name
 indexes support typeahead. Substring search is intentionally not used because it
 cannot use these indexes.
