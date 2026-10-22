@@ -830,4 +830,16 @@ return [
     // Navigation (tenant-scope MenuRegistry)
     'nav_initiatives' => 'Programmes',
     'nav_tracking_settings' => 'Tracking settings',
+    // Geo view programme map (geo-view plan phase E).
+    'geo' => [
+        'source' => 'Programme delivery by office',
+        'delivered_share' => 'Delivered against office targets',
+        'received_qty' => 'Items received',
+        'items' => 'items',
+        'value' => 'Value received',
+        'waiting_offices' => 'Offices waiting',
+        'no_office_targets' => 'No office targets in this programme; showing received quantity',
+        'note' => 'Offices are placed by their location profile. Open an area to see its offices.',
+        'map_label' => 'Programme map',
+    ],
 ];

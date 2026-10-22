@@ -107,6 +107,45 @@ class GeoAreaService
     }
 
     /**
+     * Direct children of an area in the viewer's locale, for the map and drill-down lists.
+     *
+     * @return array<int, array{id:int, type:string, type_label:string, level:int, name:string, short:string, en_name:string, bn_name:string, urban:bool, has_children:bool, has_shape:bool}>
+     */
+    public function children(int $id, ?string $locale = null): array
+    {
+        $tree = app(GeoTree::class);
+        $boundaries = app(BoundarySet::class);
+        $out = [];
+        foreach ($tree->childIds($id) as $child) {
+            $node = $tree->node($child);
+            $out[] = [
+                'id' => $child,
+                'type' => $node['type'],
+                'type_label' => __('geo_areas::types.'.$node['type'], [], $locale),
+                'level' => $node['level'],
+                'name' => $tree->name($child, $locale),
+                'short' => $tree->name($child, $locale, true),
+                'en_name' => $node['en'],
+                'bn_name' => $node['bn'],
+                'urban' => $tree->isUrban($child),
+                'has_children' => $tree->childIds($child) !== [],
+                'has_shape' => $boundaries->hasShape($child),
+            ];
+        }
+
+        return $out;
+    }
+
+    /**
+     * The map area an office placed on $id is counted in: urban units (city corporations, paurashavas,
+     * wards) go up to the nearest ordinary area. Null for an unknown id.
+     */
+    public function rollupArea(int $id): ?int
+    {
+        return app(GeoTree::class)->rollup($id);
+    }
+
+    /**
      * Checks if a target location lies within an administrator's boundary.
      */
     public function isWithinBoundary(int $officerGeoId, int $targetOfficeGeoId): bool

@@ -18,6 +18,7 @@ class OrganizationServiceProvider extends ServiceProvider
 {
     public function boot()
     {
+        $this->registerGeoView();
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'organization_labels');
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
@@ -63,5 +64,16 @@ class OrganizationServiceProvider extends ServiceProvider
     {
         $this->app->bind(\GovStore\TenantScope\Contracts\OrganizationContextResolver::class,
             \GovStore\Organization\Services\TenantOrganizationResolver::class);
+    }
+
+    /** Office network source for the national geo monitor, only when geo-view is installed. */
+    protected function registerGeoView(): void
+    {
+        if ($this->app->bound(\GovStore\GeoView\Registry\GeoSourceRegistry::class)) {
+            $this->app->make(\GovStore\GeoView\Registry\GeoSourceRegistry::class)
+                ->register(\GovStore\Organization\Geo\OrganizationOfficesGeoSource::class, 'organization.offices');
+            $this->app->make(\GovStore\GeoView\Registry\GeoPresetRegistry::class)
+                ->merge(require __DIR__.'/../config/geo-view-presets.php');
+        }
     }
 }

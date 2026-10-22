@@ -34,6 +34,13 @@ final class Manifest
         return $value ? $this->url($value) : null;
     }
 
+    public function lazy(string $bundle): ?string
+    {
+        $value = $this->data()['lazy'][$bundle] ?? null;
+
+        return $value ? $this->url($value) : null;
+    }
+
     public function themes(): array
     {
         return $this->data()['themes'] ?? [];

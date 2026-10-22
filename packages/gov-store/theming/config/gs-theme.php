@@ -27,6 +27,9 @@ return [
         'office_operations' => ['theming.assign.office'],
     ],
 
+    // Minify lazy bundles (the geo engine) with node_modules/terser during gs-theme:build.
+    'minify_lazy' => (bool) env('GS_THEME_MINIFY_LAZY', true),
+
     // Number of Snipe-IT fallback chart colours exported to the Chart.js plugin for re-mapping.
     'chart_fallback_count' => 40,
 

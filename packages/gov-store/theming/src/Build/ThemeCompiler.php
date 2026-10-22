@@ -83,6 +83,24 @@ final class ThemeCompiler
         return $js;
     }
 
+    /** One on-demand bundle (geo-view plan D2); null for an unknown bundle. */
+    public function lazyJs(string $bundle): ?string
+    {
+        $files = $this->assets->lazyBundles()[$bundle] ?? null;
+        if (! $files) {
+            return null;
+        }
+        $js = "/* gs-theme lazy bundle {$bundle} — generated, do not edit */
+";
+        foreach ($files as $file) {
+            $js .= '/* '.basename($file)." */
+".file_get_contents($file)."
+";
+        }
+
+        return $js;
+    }
+
     /** Source files whose changes invalidate compiled assets (dev mode). */
     public function sourceFingerprint(): string
     {
@@ -111,7 +129,7 @@ final class ThemeCompiler
         if (! is_dir($output) && ! mkdir($output, 0775, true) && ! is_dir($output)) {
             throw new RuntimeException("Cannot create [{$output}]");
         }
-        foreach (['themes', 'fonts'] as $dir) {
+        foreach (['themes', 'fonts', 'lazy'] as $dir) {
             if (! is_dir($output.'/'.$dir)) {
                 mkdir($output.'/'.$dir, 0775, true);
             }
@@ -122,6 +140,10 @@ final class ThemeCompiler
         $manifest['kit'] = $this->writeHashed($output, 'kit', 'css', $this->kitCss());
         $manifest['packages'] = $this->writeHashed($output, 'packages', 'css', $this->packagesCss());
         $manifest['js'] = $this->writeHashed($output, 'gs-theme', 'js', $this->js());
+        $manifest['lazy'] = [];
+        foreach (array_keys($this->assets->lazyBundles()) as $bundle) {
+            $manifest['lazy'][$bundle] = $this->writeHashed($output, 'lazy/'.$bundle, 'js', $this->minify($this->lazyJs($bundle)));
+        }
         $skipped = [];
         $fontKeys = [];
         foreach ($this->themes->all() as $key => $theme) {
@@ -154,6 +176,28 @@ final class ThemeCompiler
         return ['manifest' => $manifest, 'skipped' => $skipped];
     }
 
+    /**
+     * Minify a lazy bundle with the project's terser (geo-view plan §7.5 budget). Without node or terser the
+     * bundle ships unminified and the build says so; dev mode always serves the readable sources.
+     */
+    public function minify(string $js): string
+    {
+        $terser = base_path('node_modules/terser/bin/terser');
+        if (! config('gs-theme.minify_lazy', true) || ! is_file($terser)) {
+            return $js;
+        }
+        $process = new \Symfony\Component\Process\Process(['node', $terser, '--compress', 'passes=3,unsafe_arrows=true,unsafe_methods=true', '--mangle', '--ecma', '2019', '--comments', 'false']);
+        $process->setInput($js);
+        $process->setTimeout(60);
+        try {
+            $process->run();
+        } catch (\Throwable) {
+            return $js;
+        }
+
+        return $process->isSuccessful() && trim($process->getOutput()) !== '' ? $process->getOutput() : $js;
+    }
+
     private function writeHashed(string $output, string $name, string $extension, string $contents): string
     {
         $relative = $name.'.'.substr(sha1($contents), 0, 10).'.'.$extension;
@@ -164,8 +208,8 @@ final class ThemeCompiler
 
     private function removeStale(string $output, array $previous, array $current): void
     {
-        $keep = array_merge([$current['kit'], $current['packages'], $current['js']], array_values($current['themes']));
-        $old = array_merge(array_filter([$previous['kit'] ?? null, $previous['packages'] ?? null, $previous['js'] ?? null]), array_values($previous['themes'] ?? []));
+        $keep = array_merge([$current['kit'], $current['packages'], $current['js']], array_values($current['themes']), array_values($current['lazy'] ?? []));
+        $old = array_merge(array_filter([$previous['kit'] ?? null, $previous['packages'] ?? null, $previous['js'] ?? null]), array_values($previous['themes'] ?? []), array_values($previous['lazy'] ?? []));
         foreach (array_diff($old, $keep) as $stale) {
             if (is_file($output.'/'.$stale)) {
                 @unlink($output.'/'.$stale);

@@ -47,6 +47,7 @@ class DevAssetController extends Controller
                 $file === 'kit.css' => $compiler->kitCss(),
                 $file === 'packages.css' => $compiler->packagesCss(),
                 $file === 'gs-theme.js' => $compiler->js(),
+                (bool) preg_match('/^lazy-([a-z][a-z0-9-]*)\.js$/', $file, $m) => $compiler->lazyJs($m[1]),
                 (bool) preg_match('/^theme-([a-z0-9-]+)\.css$/', $file, $m) && $manager->repository()->find($m[1]) !== null
                     => $compiler->themeCss($manager->repository()->find($m[1]), fn (string $font) => $manager->fontUrl($font)),
                 default => null,

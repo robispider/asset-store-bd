@@ -117,6 +117,8 @@ final class GeoAreaDatasetSync
 
         if (! $dryRun) {
             $this->recordVersion($manifest);
+            // Name fixes keep the row count, so the tree cache key alone would not notice them.
+            app(GeoTree::class)->forget();
         }
         $missing = DB::table('gov_geo_areas')->where(fn ($q) => $q->whereNull('bbs_code')->orWhereNull('code_status'));
         $report['rows_without_code'] = $dryRun ? 0 : (clone $missing)->count();

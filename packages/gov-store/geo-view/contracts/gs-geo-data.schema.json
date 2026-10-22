@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://govstore.local/contracts/gs-geo-data/1",
+  "title": "gs-geo-data/1",
+  "description": "One Geo View data payload: the children of one area for one layer, already authorized, scoped and aggregated by the server (plan §6.4). The engine bins values with the config scale; the server sends stats only. Names are in the viewer's locale and are rendered with textContent only.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract", "source", "area", "level", "boundary", "layer", "layers", "stats", "areas", "here", "unplaced", "attribution"],
+  "properties": {
+    "contract": { "const": "gs-geo-data/1" },
+    "source": { "type": "string" },
+    "area": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "level", "name", "trail"],
+      "properties": {
+        "id": { "type": "integer" },
+        "level": { "type": "integer", "minimum": 0, "maximum": 4 },
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "parent": { "type": ["integer", "null"] },
+        "trail": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "name"],
+            "properties": { "id": { "type": "integer" }, "name": { "type": "string" }, "short": { "type": "string" } }
+          }
+        }
+      }
+    },
+    "level": { "type": "integer", "minimum": 1, "maximum": 4 },
+    "flat": { "type": ["integer", "null"], "minimum": 2, "maximum": 3 },
+    "boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "children"],
+      "properties": {
+        "version": { "type": "string" },
+        "children": { "type": ["string", "null"] }
+      }
+    },
+    "layer": { "$ref": "#/$defs/layer" },
+    "layers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["key", "label", "applicable"],
+        "properties": {
+          "key": { "type": "string" },
+          "label": { "type": "string" },
+          "applicable": { "type": "boolean" }
+        }
+      }
+    },
+    "stats": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min", "max"],
+      "properties": {
+        "min": { "type": ["number", "null"] },
+        "max": { "type": ["number", "null"] },
+        "national": { "type": ["number", "null"] },
+        "total": { "type": ["number", "null"] },
+        "values": { "type": "array", "items": { "type": "number" } }
+      }
+    },
+    "areas": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[0-9]+$" },
+      "additionalProperties": { "$ref": "#/$defs/area" }
+    },
+    "here": { "$ref": "#/$defs/bucket" },
+    "unplaced": { "$ref": "#/$defs/bucket" },
+    "coverage": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "offices": { "type": "integer", "minimum": 0 },
+        "placed": { "type": "integer", "minimum": 0 },
+        "verified": { "type": "integer", "minimum": 0 },
+        "rolled_up": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "filters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["key", "label", "options"],
+        "properties": {
+          "key": { "type": "string" },
+          "label": { "type": "string" },
+          "value": { "type": ["string", "integer", "null"] },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["value", "label"],
+              "properties": { "value": { "type": ["string", "integer"] }, "label": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "enum": ["all", "offices", "tenant"] },
+        "partial": { "type": "boolean" }
+      }
+    },
+    "synthetic": { "type": "boolean" },
+    "attribution": { "type": "string" },
+    "links": {
+      "type": "object",
+      "additionalProperties": { "type": ["string", "null"] }
+    }
+  },
+  "$defs": {
+    "layer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "label", "format", "aggregation"],
+      "properties": {
+        "key": { "type": "string" },
+        "label": { "type": "string" },
+        "unit": { "type": ["string", "null"] },
+        "format": { "enum": ["integer", "decimal", "percent", "money"] },
+        "aggregation": { "enum": ["sum", "count", "ratio", "max", "min", "area"] },
+        "fallback_from": { "type": "string" },
+        "fallback_reason": { "type": "string" },
+        "fallback_note": { "type": "string" }
+      }
+    },
+    "area": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "name", "drillable"],
+      "properties": {
+        "state": { "enum": ["ok", "no_data", "no_access", "no_boundary", "not_applicable", "partial", "suppressed"] },
+        "name": { "type": "string" },
+        "short": { "type": "string" },
+        "type": { "type": "string" },
+        "value": { "type": ["number", "null"] },
+        "display": { "type": ["string", "null"] },
+        "num": { "type": ["number", "null"] },
+        "den": { "type": ["number", "null"] },
+        "offices": { "type": "integer", "minimum": 0 },
+        "drillable": { "type": "boolean" },
+        "shape": { "type": "boolean" },
+        "partial": { "type": "boolean" }
+      }
+    },
+    "bucket": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["offices"],
+      "properties": {
+        "offices": { "type": "integer", "minimum": 0 },
+        "value": { "type": ["number", "null"] }
+      }
+    }
+  }
+}

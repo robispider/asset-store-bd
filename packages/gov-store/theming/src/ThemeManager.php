@@ -165,6 +165,19 @@ class ThemeManager
         return $this->manifest->entry($name);
     }
 
+    /** URLs of the on-demand bundles, keyed by bundle name, for the loader in gs-theme.js. */
+    public function lazyAssets(): array
+    {
+        $out = [];
+        foreach (array_keys(app(\GovStore\Theming\Assets\AssetRegistry::class)->lazyBundles()) as $bundle) {
+            $out[$bundle] = $this->devMode()
+                ? route('gs-theme.dev', ['file' => 'lazy-'.$bundle.'.js', 'v' => $this->devVersion()])
+                : $this->manifest->lazy($bundle);
+        }
+
+        return array_filter($out);
+    }
+
     public function themeAsset(?string $key = null): ?string
     {
         $key ??= $this->key();

@@ -37,6 +37,31 @@
     window.GS = window.GS || {};
     window.GS.theme = theme;
 
+    // ---- on-demand bundles: <… data-gs-lazy="geo"> loads lazy/geo.*.js once (geo-view plan D2) ----
+    var lazyLoads = {};
+    var selfNonce = (document.currentScript && document.currentScript.nonce) || '';
+    window.GS.lazy = function (name) {
+        var url = (config.lazy || {})[name];
+        if (!url) { return Promise.reject(new Error('gs-theme: no lazy bundle ' + name)); }
+        if (!lazyLoads[name]) {
+            lazyLoads[name] = new Promise(function (resolve, reject) {
+                var s = document.createElement('script');
+                s.src = url; s.async = true; if (selfNonce) { s.nonce = selfNonce; }
+                s.onload = function () { resolve(name); };
+                s.onerror = function () { delete lazyLoads[name]; reject(new Error('gs-theme: failed to load ' + name)); };
+                document.head.appendChild(s);
+            });
+        }
+        return lazyLoads[name];
+    };
+    function scanLazy(root) {
+        (root || document).querySelectorAll('[data-gs-lazy]').forEach(function (el) {
+            el.getAttribute('data-gs-lazy').split(/\s+/).forEach(function (n) { if (n) { window.GS.lazy(n).catch(function (e) { window.console && console.error(e); }); } });
+        });
+    }
+    window.GS.scanLazy = scanLazy;
+    if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', function () { scanLazy(); }); } else { scanLazy(); }
+
     // ---- change events: data-skin / data-theme mutations ----
     var last = { key: theme.key, mode: theme.mode };
     new MutationObserver(function () {

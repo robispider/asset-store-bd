@@ -14,7 +14,10 @@ Inputs:
 
 Outputs, under src/database/data/boundaries/<VERSION>/:
   level-1.json … level-4.json   WGS84 TopoJSON, one object per level, feature id = GeoAreaId
-  children/<GeoAreaId>.json     {version, id, viewBox, outline, areas:[{id, kind, path}]} in the national frame
+  children/<GeoAreaId>.json     {version, id, viewBox, outline, areas:[{id, kind, path, bbox, label}]} in the national frame
+  index.json                    {version, root, shapes:{level:[ids]}, parents:[ids with a children file]}
+  flat/level-2.json, level-3.json  every district / upazila nationally, re-simplified for the country view
+                                   (geo-view plan §4.1 flat mode): {version, level, viewBox, outline, areas:[… + parent]}
   manifest.json, BUILD_REPORT.md
 
 Nothing is written unless every gate passes. The whole build runs twice and the two results must be
@@ -41,7 +44,7 @@ DATA = TOOLS.parent / 'src/database/data'
 OUT = DATA / 'boundaries'
 DEFAULT_CACHE = Path(tempfile.gettempdir()) / 'gov-store-boundaries'
 MAPSHAPER = TOOLS / 'node_modules/mapshaper/bin/mapshaper'
-VERSION = 'bd-boundaries-2026-10-21.1'
+VERSION = 'bd-boundaries-2026-10-22.1'
 BASE_FIELDS = ['GeoAreaId', 'hid', 'geo_type', 'parent_geo_code', 'geo_code', 'bn_name', 'domain', 'en_name', 'GeoLevel']
 
 # Visvalingam interval (metres) per level, chosen for the view that draws that level:
@@ -51,6 +54,9 @@ LEVEL_TYPES = {1: ('division',), 2: ('district',), 3: ('upazilla', 'city'), 4: (
 URBAN = {'city', 'pourasabha'}  # drawn, not drillable in v1 (plan D3)
 # Size budget per children file, by the parent's level (plan §7 gate 5).
 BUDGET = {0: 60_000, 1: 150_000, 2: 150_000, 3: 80_000}
+# Flat national level files (geo-view plan §7.5): Douglas-Peucker tolerance in frame units and raw size budget.
+FLAT_TOLERANCE = {2: 40, 3: 30}
+FLAT_BUDGET = {2: 150_000, 3: 400_000}
 
 # Transverse Mercator on WGS84, central meridian 90°E (the Bangladesh TM parameters of EPSG:3106 without
 # its datum shift, which does not matter at map scale). Coordinates are rounded to UNIT metres in a fixed
@@ -250,6 +256,104 @@ def path_of(shape):
     return ''.join(out)
 
 
+def simplify_ring(ring, tol):
+    """Douglas-Peucker on a closed integer ring; keeps at least four points."""
+    if len(ring) <= 4:
+        return ring
+    pts = ring + [ring[0]]
+    keep = [False] * len(pts)
+    keep[0] = keep[-1] = True
+    far = max(range(1, len(pts) - 1), key=lambda i: (pts[i][0] - pts[0][0]) ** 2 + (pts[i][1] - pts[0][1]) ** 2)
+    keep[far] = True
+    stack = [(0, far), (far, len(pts) - 1)]
+    while stack:
+        a, b = stack.pop()
+        (ax, ay), (bx, by) = pts[a], pts[b]
+        dx, dy = bx - ax, by - ay
+        norm = math.hypot(dx, dy) or 1
+        best, idx = -1, None
+        for i in range(a + 1, b):
+            d = abs(dy * (pts[i][0] - ax) - dx * (pts[i][1] - ay)) / norm
+            if d > best:
+                best, idx = d, i
+        if idx is not None and best > tol:
+            keep[idx] = True
+            stack += [(a, idx), (idx, b)]
+    out = [p for p, k in zip(pts[:-1], keep[:-1]) if k]
+    return out if len(out) >= 4 else ring
+
+
+def simplify(shape, tol):
+    out = []
+    for poly in shape:
+        if abs(ring_area(poly[0])) <= tol * tol:
+            continue
+        rings = [simplify_ring(poly[0], tol)] + [simplify_ring(r, tol) for r in poly[1:] if abs(ring_area(r)) > tol * tol]
+        out.append(rings)
+    return out or shape
+
+
+def point_in_rings(x, y, rings):
+    inside = False
+    for ring in rings:
+        for (x0, y0), (x1, y1) in zip(ring, ring[1:] + ring[:1]):
+            if (y0 > y) != (y1 > y) and x < (x1 - x0) * (y - y0) / (y1 - y0) + x0:
+                inside = not inside
+    return inside
+
+
+def ring_distance(x, y, rings):
+    best = math.inf
+    for ring in rings:
+        for (x0, y0), (x1, y1) in zip(ring, ring[1:] + ring[:1]):
+            dx, dy = x1 - x0, y1 - y0
+            t = 0 if dx == dy == 0 else max(0, min(1, ((x - x0) * dx + (y - y0) * dy) / (dx * dx + dy * dy)))
+            best = min(best, math.hypot(x - (x0 + t * dx), y - (y0 + t * dy)))
+    return best
+
+
+def label_point(shape):
+    """Pole of inaccessibility of the largest part (polylabel, Mapbox 2016), so labels sit inside the area."""
+    rings = max(shape, key=lambda p: abs(ring_area(p[0])) - sum(abs(ring_area(h)) for h in p[1:]))
+    xs = [x for x, _ in rings[0]]
+    ys = [y for _, y in rings[0]]
+    x0, y0, x1, y1 = min(xs), min(ys), max(xs), max(ys)
+    size = min(x1 - x0, y1 - y0)
+    if size == 0:
+        return [x0, y0]
+    precision = max(1.0, max(x1 - x0, y1 - y0) / 100)
+
+    def cell(cx, cy, h):
+        d = ring_distance(cx, cy, rings) * (1 if point_in_rings(cx, cy, rings) else -1)
+        return (d + h * math.sqrt(2), d, cx, cy, h)
+
+    h = size / 2
+    queue = []
+    cx = x0
+    while cx < x1:
+        cy = y0
+        while cy < y1:
+            queue.append(cell(cx + h, cy + h, h))
+            cy += size
+        cx += size
+    best = cell(sum(xs) / len(xs), sum(ys) / len(ys), 0)
+    while queue:
+        queue.sort(reverse=True)
+        c = queue.pop(0)
+        if c[1] > best[1]:
+            best = c
+        if c[0] - best[1] <= precision:
+            continue
+        nh = c[4] / 2
+        queue += [cell(c[2] + dx * nh, c[3] + dy * nh, nh) for dx in (-1, 1) for dy in (-1, 1)]
+    return [round(best[2]), round(best[3])]
+
+
+def area_meta(shape):
+    x0, y0, x1, y1 = bbox([shape])
+    return dict(bbox=[x0, y0, x1 - x0, y1 - y0], label=label_point(shape))
+
+
 def bbox(shapes):
     xs = [x for s in shapes for p in s for r in p for x, _ in r]
     ys = [y for s in shapes for p in s for r in p for _, y in r]
@@ -313,12 +417,31 @@ def build_once(cache, areas):
                            viewBox=f'{bx0 - pad} {by0 - pad} {bx1 - bx0 + 2 * pad} {by1 - by0 + 2 * pad}',
                            outline=path_of(outline),
                            areas=[dict(id=int(k), kind='urban' if areas[k]['type'] in URBAN else 'area',
-                                       path=path_of(children[k])) for k in sorted(kids, key=int)])
+                                       path=path_of(children[k]), **area_meta(children[k])) for k in sorted(kids, key=int)])
                 data = dump(doc)
                 files[f'children/{pid}.json'] = data
                 gate['sizes'].append((len(data), lvl - 1, pid))
                 gate['cover'].append((lvl, pid, ka / pa))
             files[f'level-{lvl}.json'] = (work / f'level-{lvl}.json').read_bytes()
+        national = shape_of(country[0], frame)
+        nx0, ny0, nx1, ny1 = bbox([national])
+        npad = max(20, round(max(nx1 - nx0, ny1 - ny0) * 0.01))
+        for lvl, tol in FLAT_TOLERANCE.items():
+            kids = shapes_per_level[lvl]
+            doc = dict(version=VERSION, level=lvl, id=int(country_id),
+                       viewBox=f'{nx0 - npad} {ny0 - npad} {nx1 - nx0 + 2 * npad} {ny1 - ny0 + 2 * npad}',
+                       outline=path_of(simplify(national, tol)),
+                       areas=[dict(id=int(k), kind='urban' if areas[k]['type'] in URBAN else 'area',
+                                   parent=int(areas[k]['parent']), path=path_of(simplify(kids[k], tol)),
+                                   **area_meta(kids[k])) for k in sorted(kids, key=int)])
+            data = dump(doc)
+            files[f'flat/level-{lvl}.json'] = data
+            gate['flat'].append((len(data), lvl))
+        # Which areas have a shape, by level, and which areas have a children file: lets the server answer
+        # "has a shape / drillable" without reading the children files (geo-view plan §6.4).
+        files['index.json'] = dump(dict(version=VERSION, root=int(country_id),
+                                        shapes={str(lvl): sorted(int(k) for k in shapes_per_level[lvl]) for lvl in (1, 2, 3, 4)},
+                                        parents=sorted(int(k.split('/')[1][:-5]) for k in files if k.startswith('children/'))))
         return files, shapes_per_level, frame, gate
     finally:
         shutil.rmtree(work, ignore_errors=True)
@@ -353,6 +476,8 @@ def report(areas, shapes_per_level, crosswalk, gate, manifest):
                          f'{areas[sizes[0][2]]["en"]}) | {BUDGET[lvl] / 1000:.0f} KB |')
     lines += ['', '| Level file | Size |', '| --- | ---: |']
     lines += [f"| level-{lvl}.json | {manifest['files'][f'level-{lvl}.json']['bytes'] / 1e6:.2f} MB |" for lvl in (1, 2, 3, 4)]
+    lines += [f"| flat/level-{lvl}.json | {manifest['files'][f'flat/level-{lvl}.json']['bytes'] / 1e3:.0f} KB "
+              f"(budget {FLAT_BUDGET[lvl] / 1e3:.0f} KB) |" for lvl in FLAT_TOLERANCE]
 
     partial = sorted((c for c in gate['cover'] if c[2] < 0.98), key=lambda c: c[2])
     lines += ['', f'## Parents whose children cover less than 98% of their shape ({len(partial)})', '',
@@ -389,6 +514,10 @@ def main():
             diff = [k for k in files if files[k] != again.get(k)] + [k for k in again if k not in files]
             if diff:
                 raise GateError(f'gate 6: two builds differ in {len(diff)} files, e.g. {diff[:3]}')
+        flat_over = [(size, lvl) for size, lvl in gate['flat'] if size > FLAT_BUDGET[lvl]]
+        if flat_over:
+            raise GateError('gate 5: flat level files exceed their budget: '
+                            + ', '.join(f'level-{lvl} {size / 1000:.0f} KB' for size, lvl in flat_over))
         over = [(size, pid) for size, lvl, pid in gate['sizes'] if size > BUDGET[lvl]]
         if over:
             raise GateError(f'gate 5: {len(over)} children files exceed their budget, e.g. '
@@ -408,6 +537,9 @@ def main():
                    axes='x = (easting - origin_easting) / unit_m, y = (origin_northing - northing) / unit_m',
                    fill_rule='evenodd'),
         kinds=dict(area='drillable administrative area', urban='city corporation or paurashava; not drillable in v1'),
+        area_fields=dict(bbox='[x, y, width, height] of the area in the frame',
+                         label='[x, y] pole of inaccessibility of the largest part, for labels and markers'),
+        flat={str(lvl): dict(file=f'flat/level-{lvl}.json', tolerance_frame_units=tol) for lvl, tol in FLAT_TOLERANCE.items()},
         coverage=coverage(areas, shapes, crosswalk),
         files={k: dict(bytes=len(v), sha256=sha256_bytes(v)) for k, v in sorted(files.items())})
     if args.check:
@@ -418,6 +550,7 @@ def main():
     if target.exists():
         shutil.rmtree(target)
     (target / 'children').mkdir(parents=True)
+    (target / 'flat').mkdir()
     for name, data in files.items():
         (target / name).write_bytes(data)
     (target / 'manifest.json').write_bytes(json.dumps(manifest, ensure_ascii=False, indent=2).encode('utf-8') + b'\n')

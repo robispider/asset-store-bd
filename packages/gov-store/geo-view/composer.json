@@ -1,0 +1,24 @@
+{
+    "name": "gov-store/geo-view",
+    "description": "Gov-Store geo view: pluggable geographic data view wiring (data sources, presets, scope, aggregation, data API)",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "DoICT"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "GovStore\\GeoView\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "GovStore\\GeoView\\Providers\\GeoViewServiceProvider"
+            ]
+        }
+    }
+}

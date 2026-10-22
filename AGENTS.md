@@ -62,6 +62,10 @@ php -d memory_limit=1G vendor/bin/phpunit tests/Feature/GovStore
 
 Single test files run fine at the default limit with `php artisan test <file>`.
 
+Geo view (maps): engine tests run with `node --test "tests/js/geo/*.test.mjs"` (quote the glob; a bare folder
+fails on Windows), `php artisan geo-view:doctor` checks sources and presets, and a new map data source must use
+the `GeoDataSourceContract` test trait. See `packages/gov-store/geo-view/README.md`.
+
 This suite uses isolated SQLite in memory. Add meaningful coverage for the changed
 invariant and update route coverage when a new protected surface is introduced.
 Also verify compiled Blade syntax and relevant live behavior when changing the UI.
