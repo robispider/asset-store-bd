@@ -3,6 +3,13 @@
 Applies to any native Snipe-IT or GovStore package/feature in this repository.
 Recorded 4 October 2026, Asia/Dhaka. Recheck the environment, code and data before use.
 
+Functional acceptance scope clarified 24 October 2026: test all GovStore packages'
+user-facing functions and complete user stories, with Snipe-IT checks at the
+integration points those stories require. Follow
+[GovStore functional live acceptance](govstore-functional-live-acceptance.md).
+Page-entry, seeded-state and permission checks are useful evidence but cannot
+substitute for completing actions across pages and roles on the selected server.
+
 ## 1. Read before working
 
 1. Read [AGENTS.md](../../AGENTS.md), deeper directory instructions, [CLAUDE.md](../../CLAUDE.md), and the affected package's current code/docs.

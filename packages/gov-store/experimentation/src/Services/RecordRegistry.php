@@ -35,6 +35,10 @@ class RecordRegistry
         'gov_tracking_operation_units', 'gov_tracking_codes', 'gov_tracking_targets', 'gov_tracking_allocations',
         'gov_tracking_scopes', 'gov_tracking_associations', 'gov_tracking_timeline', 'gov_tracking_fact_deliveries',
         'gov_tracking_projection_caches', 'gov_tracking_documents', 'gov_tracking_deliveries',
+        'gov_metadata_values', 'gov_document_notices', 'gs_theme_preferences', 'gs_theme_assignments',
+        'gov_committees', 'gov_committee_types', 'gov_committee_purpose_bindings', 'gov_committee_orders',
+        'gov_committee_scopes', 'gov_committee_external_members', 'gov_committee_seats', 'gov_committee_tenures',
+        'gov_committee_active_slots', 'gov_committee_health', 'gov_committee_order_intakes', 'gov_committee_reminder_dismissals',
     ];
 
     public ?ExperimentRun $current = null;
@@ -44,6 +48,10 @@ class RecordRegistry
     public function created(Model $model): void
     {
         if ($this->current && in_array($model->getTable(), self::TABLES, true)) {
+            if (in_array($model->getTable(), ['gov_committee_types', 'gov_committee_purpose_bindings'], true)
+                && ! $model->owner_company_id) {
+                return;
+            }
             // Metadata health can inspect other models. Capture only our models' derived state
             // during dependency closure, after their INSERT observer has completed.
             if ($model->getTable() === 'gov_model_metadata_states') {

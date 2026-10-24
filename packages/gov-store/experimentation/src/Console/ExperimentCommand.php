@@ -6,13 +6,15 @@ use App\Models\User;
 use GovStore\Experimentation\Models\ExperimentRun;
 use GovStore\Experimentation\Services\ExperimentAccess;
 use GovStore\Experimentation\Services\ExperimentManager;
+use GovStore\Experimentation\Services\ExperimentTagRehearsal;
+use GovStore\Experimentation\Services\ExperimentVerifier;
 use GovStore\Experimentation\Services\ExperimentWiper;
 use Illuminate\Console\Command;
 use Illuminate\Database\QueryException;
 
 class ExperimentCommand extends Command
 {
-    protected $signature = 'govstore:experiment {action : populate, resume, recover, accounts, preview, wipe, cleanup or status} {--actor= : Super administrator user ID} {--profile=government} {--seed=2026} {--run=} {--scope=dataset} {--confirm=} {--fingerprint=}';
+    protected $signature = 'govstore:experiment {action : populate, audit, rehearse-tags, resume, recover, accounts, preview, wipe, cleanup or status} {--actor= : Super administrator user ID} {--profile=government} {--seed=2026} {--run=} {--scope=dataset} {--confirm=} {--fingerprint=}';
 
     protected $description = 'Manage isolated Bangladesh government experimentation data';
 
@@ -30,6 +32,15 @@ class ExperimentCommand extends Command
             }
             $run = ExperimentRun::findOrFail($this->option('run'));
             switch ($this->argument('action')) {
+                case 'rehearse-tags':
+                    $this->line(json_encode(app(ExperimentTagRehearsal::class)->run($run, $actor), JSON_PRETTY_PRINT));
+
+                    return self::SUCCESS;
+                case 'audit':
+                    $result = app(ExperimentVerifier::class)->verify($run, $actor, false);
+                    $this->line(json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+                    return $result['passed'] && ! $result['stale'] ? self::SUCCESS : self::FAILURE;
                 case 'accounts': $this->info('Updated fictional accounts: '.$manager->updateAccounts($run, $actor));
                     break;
                 case 'recover': $manager->recover($run, $actor);

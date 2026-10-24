@@ -8,6 +8,15 @@ It opens a real browser, logs in as seeded fictional users, clicks through the a
 
 A **pass** means the checks listed in that journey passed on this code revision, this server and this seeded data. It does not mean the whole feature is proven.
 
+The acceptance goal is **complete GovStore workflows across all user functions
+and stories**, including Snipe-IT where the workflow depends on it. The existing
+`user-stories-seeded-readonly` suite contains page-entry checks; passing all 31
+does not establish completion of those stories. See the
+[functional acceptance requirements](govstore-functional-live-acceptance.md) and
+[24 October coverage review](../verification/live-test-coverage-review-2026-10-24.md).
+Selecting **All journeys** runs all existing definitions, not every application
+function. Missing journeys and blocked prerequisites remain coverage gaps.
+
 ## Before you start
 
 1. The selected local or staging application is running (local default `http://snipeit.local`).

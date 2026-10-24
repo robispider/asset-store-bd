@@ -4,6 +4,18 @@ For agents (and developers) who add tests. Operators: see the [user guide](live-
 
 You normally write **JSON only**. The runner (`scripts/live-tests/`) executes it with a real browser and no language-model calls. Code changes are needed only for a brand-new action, widget adapter or observation (section 9).
 
+## Functional acceptance scope
+
+Follow [GovStore functional live acceptance](govstore-functional-live-acceptance.md).
+Cover all user-facing GovStore functions and full stories, then native Snipe-IT
+only where those workflows require it. Inventory actions from current routes,
+controllers and screens as well as `user_stories.md`; one JSON per story is not
+a coverage measure. A page-entry pass, an expected denial, or inspecting a seeded
+terminal state cannot establish successful completion of the story's actions.
+Keep the same created object through role handoffs, check each actor's queues
+and visible outcome, and independently verify persisted effects. Declare every
+supported alternative, blocked prerequisite and unimplemented business branch.
+
 ## 1. Workflow
 
 1. Read the feature's current code (routes, controller, view, policy). Do not rely on old reports. Decide what is **expected** from the business rule, not from what the page currently shows.

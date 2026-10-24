@@ -10,6 +10,7 @@ use GovStore\Experimentation\Services\ExperimentManager;
 use GovStore\Experimentation\Services\ExperimentVerifier;
 use GovStore\Experimentation\Services\ExperimentWiper;
 use GovStore\Experimentation\Services\InstallationLock;
+use GovStore\TenantScope\Contracts\GlobalTenantMaintenance;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeEncrypted;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -18,7 +19,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use RuntimeException;
 
-class ExperimentJob implements ShouldBeEncrypted, ShouldQueue, \GovStore\TenantScope\Contracts\GlobalTenantMaintenance
+class ExperimentJob implements GlobalTenantMaintenance, ShouldBeEncrypted, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 
@@ -60,7 +61,7 @@ class ExperimentJob implements ShouldBeEncrypted, ShouldQueue, \GovStore\TenantS
                 if ($this->operation === 'wipe') {
                     $wiper->wipe($run, $this->scope, $actor, $this->fingerprint ?? '');
                 } else {
-                    $verifier->preflight();
+                    $verifier->preflight($run);
                     $scenario->populate($run, $actor, $run->password);
                     $verification = $verifier->verify($run, $actor);
                     $report = $run->refresh()->report;

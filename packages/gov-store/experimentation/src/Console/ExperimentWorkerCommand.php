@@ -14,7 +14,8 @@ class ExperimentWorkerCommand extends Command
 
     public function handle(): int
     {
-        ini_set('memory_limit', '512M');
+        $memory = max(512, min(4096, (int) config('govstore-experiments.worker_memory', 2048)));
+        ini_set('memory_limit', $memory.'M');
         config(['queue.failed.driver' => 'database-uuids', 'queue.failed.table' => 'gov_experiment_failed_jobs']);
         config(['logging.channels.govstore-experiments' => ['driver' => 'daily', 'path' => storage_path('logs/govstore-experiments.log'), 'days' => 14]]);
         Log::setDefaultDriver('govstore-experiments');
@@ -23,6 +24,6 @@ class ExperimentWorkerCommand extends Command
         Cache::setDefaultDriver('array');
 
         return $this->call('queue:work', ['connection' => config('govstore-experiments.connection'), '--queue' => config('govstore-experiments.queue'),
-            '--timeout' => 3600, '--tries' => 1, '--memory' => 512, '--sleep' => 2, '--once' => $this->option('once'), '--stop-when-empty' => $this->option('stop-when-empty')]);
+            '--timeout' => 3600, '--tries' => 1, '--memory' => $memory, '--sleep' => 2, '--once' => $this->option('once'), '--stop-when-empty' => $this->option('stop-when-empty')]);
     }
 }

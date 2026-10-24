@@ -77,3 +77,7 @@ storage/ldap_client_tls.key
 
 /.phpunit.cache
 /storage/app/private/live-tests
+
+# Private GovStore programme uploads and generated sample evidence.
+/storage/tracking-documents/
+/storage/tracking-orders/
