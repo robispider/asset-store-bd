@@ -42,6 +42,14 @@ Route::middleware(['web', 'auth'])->prefix('gov')->group(function () {
     Route::get('theme-lab/geo-fixture/search', [ThemeLabController::class, 'geoSearch'])->name('gs-theme.lab.geo.search');
     Route::get('theme-lab/geo-fixture/data', [ThemeLabController::class, 'geoData'])->name('gs-theme.lab.geo.data');
     Route::get('theme-lab/geo-fixture/details', [ThemeLabController::class, 'geoDetails'])->name('gs-theme.lab.geo.details');
+    Route::get('theme-lab/compare', [ThemeLabController::class, 'compare'])
+        ->name('gs-theme.lab.compare')
+        ->breadcrumbs(fn (Trail $trail) => $trail->parent('gs-theme.lab')
+            ->push(trans('gs-theme::appearance.lab.compare'), route('gs-theme.lab.compare')));
+    Route::get('theme-lab/health', [ThemeLabController::class, 'health'])
+        ->name('gs-theme.lab.health')
+        ->breadcrumbs(fn (Trail $trail) => $trail->parent('gs-theme.lab')
+            ->push(trans('gs-theme::appearance.lab.health_report'), route('gs-theme.lab.health')));
     Route::get('theme-lab/{theme}', [ThemeLabController::class, 'focus'])
         ->where('theme', '[a-z0-9-]+')
         ->name('gs-theme.lab.focus')

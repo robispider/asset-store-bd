@@ -24,18 +24,29 @@ class CollectionDiscoveryController extends Controller
 
     public function show($id, TenantContext $context)
     {
-        $collection = CatalogCollection::with(['nodes.catalogNode.snipeMapping'])->findOrFail($id);
-
-        $scopeType = $context->companyId > 0 ? 'company' : 'location';
-        $scopeId = $context->companyId > 0 ? $context->companyId : $context->locationId;
+        $collection = CatalogCollection::where('is_active', true)->with(['nodes.catalogNode.snipeMapping.category', 'nodes.catalogNode.enrichment'])->findOrFail($id);
 
         $adoptedCategoryIds = DB::table('gov_tenant_scope_mappings')
             ->where('reference_type', 'category')
-            ->where('scope_type', $scopeType)
-            ->where('scope_id', $scopeId)
+            ->where(function ($query) use ($context) {
+                if ($context->companyId > 0) {
+                    $query->where(fn ($scope) => $scope->where('scope_type', 'company')->where('scope_id', $context->companyId));
+                }
+                if (! $context->isCompanyAdmin && $context->locationId > 0) {
+                    $query->orWhere(fn ($scope) => $scope->where('scope_type', 'location')->where('scope_id', $context->locationId));
+                }
+                if (! $context->companyId && (! $context->locationId || $context->isCompanyAdmin)) {
+                    $query->whereRaw('1 = 0');
+                }
+            })
             ->where('is_active', true)
             ->pluck('reference_id')
             ->toArray();
+        $globalCategoryIds = DB::table('gov_category_governance')->where('governance_type', 'global')->pluck('category_id')->all();
+        $adoptedCategoryIds = array_merge($adoptedCategoryIds, $globalCategoryIds);
+        $mappedTypes = DB::table('gov_catalog_snipe_mappings as mapping')->join('categories as category', 'category.id', '=', 'mapping.category_id')
+            ->whereIn('mapping.code', $collection->nodes->pluck('code'))->whereNull('category.deleted_at')
+            ->pluck('category.category_type', 'mapping.code');
 
         $adoptedCount = 0;
         $unadoptedCodes = [];
@@ -43,8 +54,9 @@ class CollectionDiscoveryController extends Controller
         foreach ($collection->nodes as $pivot) {
             $node = $pivot->catalogNode;
             $pivot->is_adopted = false;
+            $pivot->inventory_type = $mappedTypes[$pivot->code] ?? $pivot->category_type;
 
-            if ($node && $node->snipeMapping) {
+            if ($node && $node->snipeMapping && $node->snipeMapping->category) {
                 if (in_array($node->snipeMapping->category_id, $adoptedCategoryIds)) {
                     $pivot->is_adopted = true;
                     $adoptedCount++;

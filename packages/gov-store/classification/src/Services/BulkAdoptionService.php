@@ -3,6 +3,7 @@
 namespace GovStore\Classification\Services;
 
 use GovStore\Classification\Models\CatalogNode;
+use GovStore\Classification\Models\CatalogCollectionNode;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
@@ -41,10 +42,15 @@ class BulkAdoptionService
     /**
      * Preview mapping with pre-existing category types populated.
      */
-    public function preview(array $codes, string $scopeType, ?int $scopeId, ?int $companyId = null, ?int $locationId = null): array
+    public function preview(array $codes, string $scopeType, ?int $scopeId, ?int $companyId = null, ?int $locationId = null, ?int $collectionId = null): array
     {
         $flatCodes = $this->expandFolders($codes);
-        $nodes = CatalogNode::whereIn('code', $flatCodes)->with(['snipeMapping.category'])->get();
+        $nodes = CatalogNode::whereIn('code', $flatCodes)->with(['snipeMapping.category', 'enrichment'])->get();
+        $defaults = $collectionId === null ? collect() : CatalogCollectionNode::where('collection_id', $collectionId)
+            ->whereIn('code', $flatCodes)->pluck('category_type', 'code');
+        // Master commodity classification only: do not expose another office's category details or stock.
+        $mappedTypes = DB::table('gov_catalog_snipe_mappings as mapping')->join('categories as category', 'category.id', '=', 'mapping.category_id')
+            ->whereIn('mapping.code', $flatCodes)->whereNull('category.deleted_at')->pluck('category.category_type', 'mapping.code');
         
         $summary = [
             'new'      => [], 
@@ -55,8 +61,8 @@ class BulkAdoptionService
         foreach ($nodes as $node) {
             $item = [
                 'code'          => $node->code,
-                'title'         => $node->title_en,
-                'category_type' => 'consumable', // Default type for new categories
+                'title'         => app()->getLocale() === 'bn-BD' ? ($node->enrichment?->title_bn ?: $node->title_en) : $node->title_en,
+                'category_type' => $defaults[$node->code] ?? 'consumable',
             ];
 
             if (!$node->snipeMapping) {
@@ -67,8 +73,8 @@ class BulkAdoptionService
             $categoryId = $node->snipeMapping->category_id;
             
             // Populate the pre-existing category type so the UI dropdown can display it accurately
-            if ($node->snipeMapping->category) {
-                $item['category_type'] = $node->snipeMapping->category->category_type;
+            if (isset($mappedTypes[$node->code])) {
+                $item['category_type'] = $mappedTypes[$node->code];
             }
 
             // Tier 1 Check
@@ -99,7 +105,7 @@ class BulkAdoptionService
             }
 
             // Tier 3 Check
-            if ($locationId > 0) {
+            if ($scopeType === 'location' && $locationId > 0) {
                 $isLocationAdopted = DB::table('gov_tenant_scope_mappings')
                     ->where('reference_type', 'category')
                     ->where('reference_id', $categoryId)

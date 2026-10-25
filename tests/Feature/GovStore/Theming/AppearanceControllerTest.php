@@ -34,7 +34,8 @@ class AppearanceControllerTest extends ThemingTestCase
     {
         foreach (['gs-theme.appearance' => 'gov/appearance', 'gs-theme.appearance.update' => 'gov/appearance', 'gs-theme.appearance.mode' => 'gov/appearance/mode',
             'gs-theme.assignments' => 'gov/appearance/assignments', 'gs-theme.assignments.update' => 'gov/appearance/assignments/{scope}/{id?}',
-            'gs-theme.lab' => 'gov/theme-lab', 'gs-theme.lab.focus' => 'gov/theme-lab/{theme}'] as $name => $uri) {
+            'gs-theme.lab' => 'gov/theme-lab', 'gs-theme.lab.focus' => 'gov/theme-lab/{theme}',
+            'gs-theme.lab.compare' => 'gov/theme-lab/compare', 'gs-theme.lab.health' => 'gov/theme-lab/health'] as $name => $uri) {
             $route = Route::getRoutes()->getByName($name);
             $this->assertNotNull($route, $name);
             $this->assertSame($uri, $route->uri());

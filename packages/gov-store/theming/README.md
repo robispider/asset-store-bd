@@ -51,7 +51,7 @@ logs a warning and falls back to stock styling. Override with `GS_THEME_DEV_ASSE
 |---|---|---|---|
 | Appearance | `/gov/appearance` | user menu | every user (theme unless enforced; Light / Dark / System always) |
 | Theme defaults | `/gov/appearance/assignments` | Administration → Rules & settings | office admin → working office, company admin → own company, super admin → organisation and any scope |
-| Theme Lab | `/gov/theme-lab`, `/gov/theme-lab/{theme}` | Administration → System tools | super admin (`theming.lab.view`, no permission path) |
+| Theme Lab | `/gov/theme-lab[/{theme}]` (Workspace), `/gov/theme-lab/compare`, `/gov/theme-lab/health` | Administration → System tools | super admin (`theming.lab.view`, no permission path) |
 
 Abilities `theming.*` are merged into tenant-scope's `govstore-abilities`; `theming.assign.office` /
 `theming.assign.company` are also granted through the `office_operations` / `company_operations`
@@ -66,8 +66,11 @@ office → company → organisation → `GS_THEME_DEFAULT` → `default`.
    tokens (catalogue in `src/Build/Contract.php`) only where the derivation isn't right.
 4. Design dark mode in `tokens.dark.json`. Dark mode starts from the merged light tree (dimensions, fonts,
    references) with every dark file in the chain applied on top. Remove `"gs.scaffold": true` when done.
-5. Review in `/gov/theme-lab/civic-teal` (matrix shows light and dark side by side; the toolbar's variant
-   overrides print the JSON to paste into `theme.json`).
+5. Review in the Theme Lab. The Workspace (`/gov/theme-lab/civic-teal`) previews light, dark or both side by
+   side; "Try variants" restyles the preview instantly and prints the JSON to paste into `theme.json`, and
+   "Open in the real app shell" opens a real page in the theme (`gs_preview`). Compare puts themes next to each
+   other; the Health report shows every contract contrast pair per theme × mode, with the nearest passing
+   shade for any failure, plus the validator's other findings.
 6. `php artisan gs-theme:previews civic-teal` and `php artisan gs-theme:validate civic-teal` (contrast is
    checked in **both** modes; a published theme with a scaffold dark mode fails the build).
 7. Keep `"status": "draft"` to review in production's Lab; switch to `"published"` in a later release.
