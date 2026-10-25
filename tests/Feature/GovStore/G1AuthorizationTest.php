@@ -407,6 +407,7 @@ class G1AuthorizationTest extends TestCase
             $table->integer('performed_by');
             $table->string('event_type');
             $table->text('details');
+            $table->timestamp('created_at')->useCurrent();
         });
         DB::table('users')->insert(['id' => 1, 'location_id' => 10]);
         $employee = $this->actor();

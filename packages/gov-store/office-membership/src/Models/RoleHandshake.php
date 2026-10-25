@@ -16,6 +16,7 @@ class RoleHandshake extends Model
         'outgoing_user_id',
         'incoming_user_id',
         'status',
+        'note',
     ];
 
     // =========================================================================

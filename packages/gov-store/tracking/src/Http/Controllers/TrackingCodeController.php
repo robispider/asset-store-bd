@@ -113,7 +113,7 @@ class TrackingCodeController extends Controller
         $this->authService->authorize($initiative, ['HEAD', 'OFFICER']);
         $categories = Category::all();
         $fundingTypes = FundingType::where('primary_type', $initiative->primary_funding)->get();
-        $geoAreas = class_exists(GeoArea::class) ? GeoArea::all() : collect();
+        $geoAreas = $this->selectedGeoAreas(old('geo_area_id'));
 
         return view('govtracking::tracking_codes.create', compact('initiative', 'categories', 'fundingTypes', 'geoAreas'));
     }
@@ -126,9 +126,9 @@ class TrackingCodeController extends Controller
 
         $categories = Category::all();
         $fundingTypes = FundingType::where('primary_type', $initiative->primary_funding)->get();
-        $geoAreas = class_exists(GeoArea::class) ? GeoArea::all() : collect();
 
         $activeGeo = $trackingCode->scopes->where('dimension', 'GEOGRAPHY')->first();
+        $geoAreas = $this->selectedGeoAreas(old('geo_area_id', $activeGeo?->target_id));
         $activePart = $trackingCode->scopes->where('dimension', 'PARTICIPANTS')->first();
 
         $trackingCode->load([
@@ -522,6 +522,19 @@ class TrackingCodeController extends Controller
             ->where('company_id', $initiative->owner_company_id)
             ->orderBy('name')
             ->get();
+    }
+
+    /**
+     * Only the area already chosen. The region picker searches gov.geo.search, because the
+     * full area table (~178k rows with mauzas) does not fit in a request's memory.
+     */
+    private function selectedGeoAreas(mixed $geoAreaId)
+    {
+        if (! class_exists(GeoArea::class) || ! is_numeric($geoAreaId)) {
+            return collect();
+        }
+
+        return GeoArea::whereKey((int) $geoAreaId)->get(['GeoAreaId', 'geo_type', 'en_name', 'bn_name']);
     }
 
     private function assertTask(Initiative $initiative, TrackingCode $task, bool $lock = false): TrackingCode

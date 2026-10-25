@@ -255,6 +255,7 @@ return [
     'handover_waiting' => ':name গ্রহণ না করা পর্যন্ত আপনার · অনুরোধ :time',
     'handover_cancel' => 'অনুরোধ বাতিল করুন',
     'handover_incoming' => ':name :office-এর :role দায়িত্ব আপনাকে হস্তান্তর করতে চান।',
+    'handover_their_note' => ':name-এর নোট:',
     'handover_if_accept' => 'গ্রহণ করলে আপনি:',
     'handover_if_named' => ':office-এর পাতায় ও অনুরোধের রসিদে এই দায়িত্বে আপনার নাম থাকবে।',
     'handover_if_again' => 'সেই অফিস ছাড়ার আগে আবার এটি হস্তান্তর করতে হবে।',

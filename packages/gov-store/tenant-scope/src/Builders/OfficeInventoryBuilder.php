@@ -24,6 +24,30 @@ class OfficeInventoryBuilder extends Builder
         }
     }
 
+    /**
+     * True unless every row the caller's own predicates match already holds these plain values (expressions always
+     * count as a change). Global scopes are not applied, so rows hidden by the office view are still counted.
+     */
+    private function wouldChangeAnyRow(array $values): bool
+    {
+        if ($values === [] || collect($values)->contains(fn ($value) => ! is_scalar($value) && $value !== null)) {
+            return true;
+        }
+        $query = clone $this->getQuery();
+        if (method_exists($this->model, 'getQualifiedDeletedAtColumn')) {
+            $query->whereNull($this->model->getQualifiedDeletedAtColumn());
+        }
+
+        return $query->where(function ($query) use ($values) {
+            foreach ($values as $column => $value) {
+                $column = $this->model->qualifyColumn(last(explode('.', $column)));
+                $value === null
+                    ? $query->orWhereNotNull($column)
+                    : $query->orWhere(fn ($q) => $q->where($column, '!=', $value)->orWhereNull($column));
+            }
+        })->exists();
+    }
+
     private function constrainMutation(array $values = []): void
     {
         $context = app(TenantContext::class);
@@ -70,6 +94,12 @@ class OfficeInventoryBuilder extends Builder
 
     public function update(array $values)
     {
+        // An update that would change no row at all mutates nothing, so it cannot cross a boundary. Snipe-IT's
+        // user editor always re-homes the user's checked-out assets, even when there are none or they are
+        // already at that location. Rows outside the actor's view still count, so real writes keep failing loudly.
+        if (app(TenantContext::class)->isActive && ! $this->wouldChangeAnyRow($values)) {
+            return 0;
+        }
         $this->constrainMutation($values);
 
         return parent::update($values);

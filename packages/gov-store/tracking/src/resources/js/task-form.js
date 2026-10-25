@@ -9,6 +9,23 @@
         window.jQuery(function ($) {
             const $form = $('#task-creation-form, #task-modification-form');
             $form.find('.select2').select2();
+            $form.find('select[data-geo-search]').each(function () {
+                const $geo = $(this);
+                $geo.select2({
+                    width: '100%', // the group starts hidden, so select2 cannot measure it; .gs-tracking-half caps it
+                    allowClear: true,
+                    placeholder: $geo.find('option[value=""]').text(),
+                    minimumInputLength: 2,
+                    ajax: {
+                        url: $geo.data('geo-search'),
+                        dataType: 'json',
+                        delay: 250,
+                        data: params => ({q: params.term}),
+                        processResults: areas => ({results: areas.map(area => ({id: area.id, text: area.text + ' (' + area.geo_type_label + ')'}))}),
+                    },
+                });
+                $geo.next('.select2-container').addClass('gs-tracking-half');
+            });
             function togglePanels() {
                 const level = $form.find('input[name="specificity_level"]:checked').val() || config.specificity;
                 ['1_BLANKET', '2_CATEGORY', '3_MATRIX'].forEach(function (value, index) {

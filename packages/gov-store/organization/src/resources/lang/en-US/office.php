@@ -188,6 +188,7 @@ return [
     'starter_pending' => 'Starter items are being prepared. They usually appear within a few minutes.',
     'starter_completed' => 'Starter items are in the catalog.',
     'starter_failed' => 'Starter items couldn\'t be added. Reference: :reference',
+    'starter_not_configured' => 'No starter collection is set up for this kind of office yet. Once the national catalog team builds it, choose Try again.',
     'starter_retry' => 'Try again',
     'locked_paused' => 'This office is paused. Resume it in Settings to change roles or details.',
 

@@ -8,8 +8,8 @@ class DocumentTimeline extends Model
 {
     protected $table = 'gov_document_timelines';
     
-    // Disable Laravel's automated updated_at and created_at management
-    public $timestamps = false; 
+    // Immutable created_at, stamped by PHP so it shares the app's zone (the column's DB default may not).
+    const UPDATED_AT = null;
 
     protected $fillable = [
         'document_type', 'document_id', 'state', 'user_id', 'notes'

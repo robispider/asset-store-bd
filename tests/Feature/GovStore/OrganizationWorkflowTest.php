@@ -235,13 +235,14 @@ class OrganizationWorkflowTest extends TestCase
         $this->assertSame('completed', DB::table('gov_office_starter_runs')->value('status'));
     }
 
-    public function test_missing_collection_has_visible_failure_and_can_be_repaired_and_retried(): void
+    public function test_missing_collection_is_reported_as_not_set_up_and_can_be_built_and_retried(): void
     {
         DB::table('gov_catalog_collections')->where('id', 2)->update(['is_active' => false]);
         app(OfficeStarterCatalog::class)->schedule($this->event());
         $run = DB::table('gov_office_starter_runs')->first();
-        $this->assertSame('failed', $run->status);
-        $this->assertNotNull($run->failure_reference);
+        // A collection the national library has not built yet is a setup gap, not a failure with a reference.
+        $this->assertSame('not_configured', $run->status);
+        $this->assertNull($run->failure_reference);
         $this->assertNull($run->snapshot);
         $this->assertSame(0, DB::table('categories')->count());
         DB::table('gov_catalog_collections')->where('id', 2)->update(['is_active' => true]);

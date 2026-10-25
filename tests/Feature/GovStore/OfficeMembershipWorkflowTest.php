@@ -245,6 +245,7 @@ class OfficeMembershipWorkflowTest extends TestCase
             $t->string('status');
             $t->timestamps();
         });
+        (require base_path('packages/gov-store/office-membership/src/database/migrations/2026_10_26_000001_add_note_to_gov_role_handshakes.php'))->up();
         (require base_path('packages/gov-store/office-membership/src/database/migrations/2026_10_08_000002_create_membership_notices.php'))->up();
         Schema::create('assets', function (Blueprint $t) {
             $t->increments('id');
@@ -556,6 +557,10 @@ class OfficeMembershipWorkflowTest extends TestCase
         $this->assertArrayHasKey('reference_id', $response->getData(true));
         $response = app(Handler::class)->render($request, new HttpException(409));
         $this->assertSame(409, $response->getStatusCode());
+        // A deliberate refusal message (for example a paused office) is shown instead of the generic reference text.
+        $response = app(Handler::class)->render($request, new HttpException(409, 'Requests are paused for this office.'));
+        $this->assertSame(409, $response->getStatusCode());
+        $this->assertSame('Requests are paused for this office.', $response->getData(true)['error']);
     }
 
     public function test_historical_membership_migration_preserves_installed_data_on_rerun(): void

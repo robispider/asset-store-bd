@@ -10,7 +10,8 @@ class OrganizationActivityLog extends Model
 {
     protected $table = 'gov_organization_activity_logs';
 
-    public $timestamps = false;
+    // Immutable created_at, stamped by PHP so it shares the app's zone (the column's DB default may not).
+    const UPDATED_AT = null;
 
     protected $fillable = [
         'location_id',

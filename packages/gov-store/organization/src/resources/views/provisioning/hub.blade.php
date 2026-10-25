@@ -127,7 +127,7 @@
                 @if ($starterStatus === 'failed')
                     <x-gs::alert tone="danger">{{ __('organization_labels::office.starter_failed', ['reference' => $starter->failure_reference ?? '—']) }}</x-gs::alert>
                 @else
-                    <p class="govorg-flush">{{ __('organization_labels::office.starter_'.(in_array($starterStatus, ['waiting', 'pending', 'completed'], true) ? $starterStatus : 'waiting')) }}</p>
+                    <p class="govorg-flush">{{ __('organization_labels::office.starter_'.(in_array($starterStatus, ['waiting', 'pending', 'completed', 'not_configured'], true) ? $starterStatus : 'waiting')) }}</p>
                 @endif
                 @if ($profile->office_admin_id && $active && (! $starter || $starter->status !== 'completed'))
                     <form method="POST" action="{{ route('gov.org.hub.retry-starter', $location->id) }}" class="govorg-toolbar">

@@ -38,6 +38,9 @@
                                 {{ __($m.'handover_incoming', ['name' => $from, 'role' => __($m.'role_'.$request->role_type), 'office' => $officeName]) }}
                             </p>
                             <p class="govmem-meta govmem-flush">{{ __($m.'sent_ago', ['time' => $request->created_at?->diffForHumans()]) }}</p>
+                            @if (filled($request->note))
+                                <p class="govmem-flush"><strong>{{ __($m.'handover_their_note', ['name' => $from]) }}</strong> <q class="govmem-quote">{{ $request->note }}</q></p>
+                            @endif
                             <div>
                                 <strong>{{ __($m.'handover_if_accept') }}</strong>
                                 <ul class="govmem-effects">

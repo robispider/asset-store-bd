@@ -69,9 +69,11 @@ class RoleTransfer
                 MembershipRefused::when($type::where('location_id', $office)->where('role_type', $role)->where('status', 'pending')->exists(), 409, 'handshake_pending_exists');
             }
             [$sender, $recipient] = $this->columns($model);
-            $proposal = $model::create(['location_id' => $office, 'role_type' => $role, $sender => $from, $recipient => $to, 'status' => 'pending']);
-            app(MembershipNotices::class)->record('transfer_proposed', $office, [$from, $to],
-                array_filter(['role' => $role, 'note' => $note !== null && trim($note) !== '' ? mb_substr(trim($note), 0, 500) : null]));
+            $note = $note !== null && trim($note) !== '' ? mb_substr(trim($note), 0, 500) : null;
+            $proposal = $model::create(['location_id' => $office, 'role_type' => $role, $sender => $from, $recipient => $to, 'status' => 'pending']
+                // Handshakes keep the note so the recipient's card can show it.
+                + ($model === RoleHandshake::class ? ['note' => $note] : []));
+            app(MembershipNotices::class)->record('transfer_proposed', $office, [$from, $to], array_filter(['role' => $role, 'note' => $note]));
 
             return $proposal;
         });
