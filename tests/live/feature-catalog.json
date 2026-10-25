@@ -826,6 +826,440 @@
         "create new item",
         "UNSPSC link"
       ]
+    },
+    {
+      "id": "user-story.us-01",
+      "title": "US-01 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-01",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-02",
+      "title": "US-02 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-02",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-03",
+      "title": "US-03 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-03",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-04",
+      "title": "US-04 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-04",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-05",
+      "title": "US-05 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-05",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-06",
+      "title": "US-06 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-06",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-07",
+      "title": "US-07 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-07",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-08",
+      "title": "US-08 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-08",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-09",
+      "title": "US-09 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-09",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-10",
+      "title": "US-10 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-10",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-11",
+      "title": "US-11 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-11",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-12",
+      "title": "US-12 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-12",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-13",
+      "title": "US-13 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-13",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-14",
+      "title": "US-14 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-14",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-15",
+      "title": "US-15 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-15",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-16",
+      "title": "US-16 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-16",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-17",
+      "title": "US-17 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-17",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-18",
+      "title": "US-18 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-18",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-19",
+      "title": "US-19 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-19",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-20",
+      "title": "US-20 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-20",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-21",
+      "title": "US-21 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-21",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-22",
+      "title": "US-22 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-22",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-23",
+      "title": "US-23 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-23",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-24",
+      "title": "US-24 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-24",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-25",
+      "title": "US-25 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-25",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-26",
+      "title": "US-26 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-26",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-27",
+      "title": "US-27 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-27",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-28",
+      "title": "US-28 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-28",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-29",
+      "title": "US-29 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-29",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-30",
+      "title": "US-30 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-30",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
+    },
+    {
+      "id": "user-story.us-31",
+      "title": "US-31 entry evidence (full function acceptance tracked separately)",
+      "journeys": [
+        {
+          "id": "user-stories.us-31",
+          "kind": "entry",
+          "status": "defined"
+        }
+      ],
+      "missing": [
+        "Complete positive business actions and supported branches; see functional-coverage.json"
+      ]
     }
   ]
 }

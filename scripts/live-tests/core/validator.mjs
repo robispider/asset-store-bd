@@ -3,7 +3,14 @@
  * Verifies journeys, flows, suites, and contracts before any browser or execution is triggered.
  */
 
+import Ajv from 'ajv';
+import { ExecutionPlanner } from './planner.mjs';
+import { INTERFACE_CHECKS } from '../bridge/interface-inspections.mjs';
+
 const ALLOWED_ACTIONS = new Set([
+  'switchOffice',
+  'openPopup',
+  'inspect', 'waitInspect',
   'goto',
   'click',
   'fill',
@@ -42,6 +49,15 @@ const ALLOWED_NAMESPACES = new Set([
 export class TestValidator {
   constructor(loader) {
     this.loader = loader;
+    this.ajv = new Ajv({ allErrors: true });
+    this.schemas = new Map();
+  }
+
+  validateSchema(name, value) {
+    if (!this.loader.loadSchema) return []; // Small semantic-test doubles provide no filesystem schemas.
+    if (!this.schemas.has(name)) this.schemas.set(name, this.ajv.compile(this.loader.loadSchema(name)));
+    const validate = this.schemas.get(name);
+    return validate(value) ? [] : validate.errors.map(e => `Schema ${name}${e.dataPath || ''}: ${e.message}${e.params?.additionalProperty ? ` (${e.params.additionalProperty})` : ''}`);
   }
 
   validateJourney(journey, callingChain = []) {
@@ -50,6 +66,9 @@ export class TestValidator {
     if (!journey || typeof journey !== 'object') {
       return ['Journey must be an object'];
     }
+
+    // Internal expanded fragments are checked semantically below, not against the authored document schema.
+    if (!journey._fragment) errors.push(...this.validateSchema('journey', journey));
 
     if (!journey.schemaVersion || typeof journey.schemaVersion !== 'number') {
       errors.push('Missing or invalid schemaVersion (must be integer)');
@@ -64,6 +83,14 @@ export class TestValidator {
       return errors;
     }
 
+    if (!journey._fragment) {
+      try {
+        const expanded = new ExecutionPlanner(this.loader).expandJourneySteps(journey);
+        errors.push(...this.validateJourney({ _fragment: true, schemaVersion: 1, id: `${journey.id}.expanded`,
+          execution: journey.execution, cleanup: journey.cleanup ? {} : undefined, steps: expanded }, callingChain));
+      } catch (error) { errors.push(`Expanded journey: ${error.message}`); }
+    }
+
     const cap = journey.execution?.capability;
     if (cap && !['observe', 'write-fixtures'].includes(cap)) {
       errors.push(`Unknown execution.capability '${cap}'`);
@@ -72,7 +99,11 @@ export class TestValidator {
       errors.push("write-fixtures journeys must declare a 'cleanup' policy (steps and/or retained records)");
     }
     if (cap === 'observe') {
-      const mutating = journey.steps.filter(s => s.action === 'ledger');
+      let expanded = journey.steps;
+      try { expanded = new ExecutionPlanner(this.loader).expandSteps([
+        ...(journey.preconditions || []), ...journey.steps, ...(journey.postconditions || [])
+      ]); } catch (e) { errors.push(e.message); }
+      const mutating = expanded.filter(s => s.action === 'ledger');
       if (mutating.length) errors.push("observe journeys must not record ownership-ledger entries");
     }
 
@@ -114,7 +145,17 @@ export class TestValidator {
       }
 
       // Action-specific validations
+      if (step.action === 'switchOffice' && !step.officeName) errors.push(`${stepPath}: switchOffice requires officeName`);
+      if (step.action === 'openPopup' && !step.target) errors.push(`${stepPath}: openPopup requires target`);
+      if (['inspect', 'waitInspect'].includes(step.action)) {
+        if (!INTERFACE_CHECKS.includes(step.check)) errors.push(`${stepPath}: Unknown interface inspection '${step.check}'`);
+        if (step.action === 'inspect' && !step.as) errors.push(`${stepPath}: inspect requires 'as'`);
+        if (step.action === 'waitInspect' && (!step.path || step.equals === undefined)) errors.push(`${stepPath}: waitInspect requires path and equals`);
+      }
       if (step.action === 'assert') {
+        if (step.test && !['valid', 'invalid', 'count', 'visible', 'hidden', 'text', 'number', 'value', 'checked', 'enabled', 'disabled', 'url'].includes(step.test)) {
+          errors.push(`${stepPath}: Unknown assertion predicate '${step.test}'`);
+        }
         if (!step.test) {
           errors.push(`${stepPath}: Assertion step missing 'test' predicate`);
         }
@@ -123,7 +164,7 @@ export class TestValidator {
         }
       }
 
-      if (step.action === 'observe') {
+      if (step.action === 'observe' || step.action === 'waitObserve') {
         if (!step.check) {
           errors.push(`${stepPath}: Observation missing 'check' name`);
         } else {
@@ -131,12 +172,14 @@ export class TestValidator {
             const obsContracts = this.loader.loadObservationContracts();
             if (!obsContracts.contracts || !obsContracts.contracts[step.check]) {
               errors.push(`${stepPath}: Observation check '${step.check}' is not registered in contracts.json`);
+            } else if (obsContracts.contracts[step.check].implemented === false) {
+              errors.push(`${stepPath}: Observation '${step.check}' has no implemented adapter`);
             }
           } catch (e) {
             errors.push(`${stepPath}: Unable to verify observation contracts: ${e.message}`);
           }
         }
-        if (!step.as) {
+        if (step.action === 'observe' && !step.as) {
           errors.push(`${stepPath}: Observation missing 'as' alias for storing results`);
         }
       }
@@ -168,24 +211,34 @@ export class TestValidator {
       if (step.action === 'select2' && (!step.target || (step.search === undefined && step.option === undefined))) {
         errors.push(`${stepPath}: select2 step requires 'target' and 'search' or 'option'`);
       }
+      if (step.action === 'select2' && step.selection && !['first', 'text'].includes(step.selection)) {
+        errors.push(`${stepPath}: Unknown select2 selection '${step.selection}'`);
+      }
       if (step.action === 'download' && (!step.target || !step.as)) {
         errors.push(`${stepPath}: download step requires 'target' and 'as'`);
       }
+      if (step.action === 'upload' && (!step.target || (!step.file && !(step.filename && Array.isArray(step.inlineCsv) && step.inlineCsv.length)))) {
+        errors.push(`${stepPath}: upload requires a target and file, or a named nonempty inline CSV`);
+      }
+      if (step.action === 'upload' && step.file && step.inlineCsv) errors.push(`${stepPath}: upload must select exactly one file source`);
 
       // Check variable syntax across step strings
       this.checkVariableReferences(step, stepPath, errors);
     }
 
-    if (journey.cleanup?.steps?.length) {
-      const sub = this.validateJourney({ schemaVersion: 1, id: `${journey.id}.cleanup`, execution: { capability: 'write-fixtures' }, cleanup: {}, steps: journey.cleanup.steps }, callingChain);
-      errors.push(...sub);
+    for (const section of ['preconditions', 'postconditions', 'cleanup']) {
+      const steps = section === 'cleanup' ? journey.cleanup?.steps : journey[section];
+      if (steps?.length) {
+        errors.push(...this.validateJourney({ _fragment: true, schemaVersion: 1, id: `${journey.id}.${section}`,
+          execution: { capability: section === 'cleanup' ? cap : 'observe' }, cleanup: {}, steps }, callingChain));
+      }
     }
 
     return errors;
   }
 
   validateFlow(flow, callingChain = [], params = {}) {
-    const errors = [];
+    const errors = this.validateSchema('flow', flow);
     if (!flow.schemaVersion) errors.push(`Flow missing schemaVersion`);
     if (!flow.id) errors.push(`Flow missing id`);
     if (!flow.steps || !Array.isArray(flow.steps)) {
@@ -226,7 +279,7 @@ export class TestValidator {
   }
 
   validateSuite(suite) {
-    const errors = [];
+    const errors = this.validateSchema('suite', suite);
     if (!suite.id) errors.push('Suite missing id');
     if (!suite.journeys || !Array.isArray(suite.journeys) || suite.journeys.length === 0) {
       errors.push('Suite must contain a non-empty journeys array');

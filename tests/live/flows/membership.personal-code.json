@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "membership.personal-code",
+  "title": "Person generates their one-use verification code through the UI",
+  "params": {
+    "actor": {
+      "type": "string",
+      "required": true
+    },
+    "as": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "${params.actor}"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/my-memberships"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=#personal-code form button[type=\"submit\"]"
+    },
+    {
+      "action": "capture",
+      "target": "css=#personal-code .govmem-code span",
+      "as": "${params.as}",
+      "sensitive": true
+    }
+  ]
+}

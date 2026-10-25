@@ -1,8 +1,14 @@
 # GovStore functional live acceptance
 
 Scope clarified by the product owner on 24 October 2026, Asia/Dhaka.
+On 25 October the owner explicitly required live testing entirely through the
+application interface, without a database connection. This supersedes earlier
+database-observation prerequisites for this acceptance exercise.
 This is the acceptance contract, not a record of completed tests. Current gaps
 and inspected evidence are in the [coverage review](../verification/live-test-coverage-review-2026-10-24.md).
+
+Implementation milestones, deliverables and all-story traceability are in the
+[25 October implementation plan](../plans/govstore-full-functional-live-testing-plan-2026-10-25.md).
 
 ## Scope and unit of acceptance
 
@@ -113,7 +119,7 @@ function and alternative-branch coverage.
 - At every handoff, locate the captured object in the next actor's queue and
   open it through that UI. Check its identity, quantities and allowed action.
   Reopen/reload the originating actor's view to verify the returned outcome.
-- Independently compare saved state, actual decision/poster identities, native
+- Reopen the relevant screens under the appropriate actors and compare saved state, decision/poster identities, native
   balances/custody, ledger movements, reservations, notices and audit/history
   appropriate to the case. Expected values come from declared inputs and the
   business rule, not another value copied from the same screen.
@@ -129,10 +135,19 @@ function and alternative-branch coverage.
 
 ## Environment, fixtures and result reporting
 
-Use the configured target's accounts and observations. The local database cannot
-verify a staging mutation. When independent staging observations are unavailable,
-report UI outcomes separately and mark the persistence assertions blocked; do
-not substitute local observations or remove them to turn the case green.
+Use the configured target's login, protected account download, My access,
+catalogue, queues, detail screens, registers and history. Do not connect to a
+live database, use SQL fixture discovery, or add a server-side observation
+endpoint for this exercise. Verify persistence by reopening the relevant screen
+and cross-checking it with another actor's view/register. Explicit `inspect` and
+`waitInspect` actions record rendered-interface evidence; legacy database
+`observe` checks remain distinct and cannot silently become UI checks.
+
+Database atomicity and invisible internal state are outside interface evidence.
+If an intended user-visible fact cannot be inspected in the application, record
+that specific evidence gap. Missing database access is not a staging prerequisite.
+An unknown deployed revision is a provenance limitation, not a reason to avoid
+running authorized interface journeys.
 
 Use existing authorized fictional data or create minimal identifiable fixtures
 through supported UI/setup workflows within task authorization. Full functional

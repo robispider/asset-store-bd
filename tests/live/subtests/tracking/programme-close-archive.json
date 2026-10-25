@@ -1,0 +1,361 @@
+{
+  "schemaVersion": 1,
+  "id": "tracking.programme-close-archive",
+  "title": "Programme head revises and closes an active programme, then archives it; company administrator verifies its immutable settings",
+  "evidenceLevel": "connected",
+  "features": [
+    "tracking"
+  ],
+  "tags": [
+    "functional",
+    "connected",
+    "multi-actor",
+    "write"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "language": "en-US",
+    "timeoutMs": 420000
+  },
+  "fixtures": {
+    "office": {
+      "requirements": {
+        "operational": true,
+        "ledgerOpen": true
+      }
+    },
+    "actors": {
+      "companyAdmin": {
+        "role": "company_admin",
+        "activeMembership": false
+      },
+      "head": {
+        "capabilities": {
+          "allOf": [
+            "requests.submit"
+          ],
+          "noneOf": [
+            "requests.approve"
+          ]
+        }
+      },
+      "officer": {
+        "capabilities": {
+          "allOf": [
+            "requests.submit"
+          ],
+          "noneOf": [
+            "requests.approve"
+          ]
+        }
+      },
+      "storekeeper": {
+        "role": "storekeeper",
+        "capabilities": {
+          "allOf": [
+            "storeops.documents.draft",
+            "storeops.documents.post"
+          ]
+        }
+      }
+    },
+    "records": {
+      "item": {
+        "kind": "consumable",
+        "minimumAvailable": 10
+      }
+    }
+  },
+  "data": {
+    "purpose": {
+      "generate": "markedText",
+      "prefix": "LIVE-PROG",
+      "length": 6
+    },
+    "trackingCode": {
+      "generate": "markedText",
+      "prefix": "LIVE-TASK",
+      "length": 6
+    },
+    "receiptDate": {
+      "generate": "date",
+      "offsetDays": 0
+    },
+    "receiptQty": 6
+  },
+  "preconditions": [],
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "companyAdmin"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives"
+    },
+    {
+      "action": "click",
+      "target": "css=a[href$=\"/tracking/initiatives/create\"]"
+    },
+    {
+      "action": "fill",
+      "target": "css=#initiative_title",
+      "value": "${data.purpose}"
+    },
+    {
+      "action": "fill",
+      "target": "css=#initiative_purpose",
+      "value": "Fictional programme for a complete live delivery journey"
+    },
+    {
+      "action": "select",
+      "target": "css=#owner_company_id",
+      "value": "${fixtures.office.company_id}"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form[action$=\"/tracking/initiatives\"] button[type=\"submit\"]"
+    },
+    {
+      "action": "capture",
+      "url": true,
+      "pattern": "/initiatives/([0-9]+)",
+      "as": "initiativeId"
+    },
+    {
+      "action": "ledger",
+      "kind": "tracking_programme",
+      "id": "${captured.initiativeId}",
+      "effect": "Marked programme and its team retained; lifecycle is exercised separately from task creation and delivery",
+      "cleanup": "retained"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives/${captured.initiativeId}/operation-unit"
+    },
+    {
+      "action": "select2",
+      "target": "css=#staff-head",
+      "search": "${actors.head.username}",
+      "option": "${actors.head.username}"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form:has(#staff-head) button[type=\"submit\"]"
+    },
+    {
+      "action": "select2",
+      "target": "css=#staff-officer",
+      "search": "${actors.officer.username}",
+      "option": "${actors.officer.username}"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form:has(#staff-officer) button[type=\"submit\"]"
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "assert",
+      "target": "css=.content",
+      "test": "text",
+      "contains": "${actors.head.username}"
+    },
+    {
+      "action": "assert",
+      "target": "css=.content",
+      "test": "text",
+      "contains": "${actors.officer.username}"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives/${captured.initiativeId}/edit"
+    },
+    {
+      "action": "select",
+      "target": "css=select[name=\"status\"]",
+      "value": "Active"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form[action$=\"/initiatives/${captured.initiativeId}\"] button[type=\"submit\"]"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "head"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives?q=${data.purpose}"
+    },
+    {
+      "action": "assert",
+      "target": "css=.content",
+      "test": "text",
+      "contains": "${data.purpose}"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives/${captured.initiativeId}/manage"
+    },
+    {
+      "action": "assert",
+      "target": "css=a[href$=\"/tracking-codes/create\"] >> nth=0",
+      "test": "visible"
+    },
+    {
+      "action": "actor",
+      "name": "companyAdmin"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives/${captured.initiativeId}/operation-unit"
+    },
+    {
+      "action": "assert",
+      "target": "css=.content",
+      "test": "text",
+      "contains": "${actors.head.username}"
+    },
+    {
+      "action": "assert",
+      "target": "css=.content",
+      "test": "text",
+      "contains": "${actors.officer.username}"
+    },
+    {
+      "action": "actor",
+      "name": "head"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives/${captured.initiativeId}/edit"
+    },
+    {
+      "action": "capture",
+      "target": "css=input[type=hidden][name=primary_funding]",
+      "value": true,
+      "as": "originalFunding"
+    },
+    {
+      "action": "fill",
+      "target": "css=#initiative_title",
+      "value": "${data.purpose} - revised by appointed head"
+    },
+    {
+      "action": "select",
+      "target": "css=#initiative_status",
+      "value": "Closed"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form[action$=\"/initiatives/${captured.initiativeId}\"] button[type=submit]",
+      "rejectFlashErrors": true
+    },
+    {
+      "action": "actor",
+      "name": "companyAdmin"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives/${captured.initiativeId}/edit"
+    },
+    {
+      "action": "assert",
+      "target": "css=#initiative_title",
+      "test": "value",
+      "equals": "${data.purpose} - revised by appointed head"
+    },
+    {
+      "action": "assert",
+      "target": "css=#initiative_status",
+      "test": "value",
+      "equals": "Closed"
+    },
+    {
+      "action": "assert",
+      "target": "css=#initiative_funding",
+      "test": "disabled"
+    },
+    {
+      "action": "assert",
+      "target": "css=#owner_company_id",
+      "test": "disabled"
+    },
+    {
+      "action": "assert",
+      "target": "css=input[type=hidden][name=primary_funding]",
+      "test": "value",
+      "equals": "${captured.originalFunding}"
+    },
+    {
+      "action": "actor",
+      "name": "head"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives/${captured.initiativeId}/edit"
+    },
+    {
+      "action": "select",
+      "target": "css=#initiative_status",
+      "value": "Archived"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form[action$=\"/initiatives/${captured.initiativeId}\"] button[type=submit]",
+      "rejectFlashErrors": true
+    },
+    {
+      "action": "actor",
+      "name": "companyAdmin"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives/${captured.initiativeId}/edit"
+    },
+    {
+      "action": "assert",
+      "target": "css=#initiative_status",
+      "test": "value",
+      "equals": "Archived"
+    },
+    {
+      "action": "assert",
+      "target": "css=#initiative_title",
+      "test": "disabled"
+    },
+    {
+      "action": "assert",
+      "target": "css=#initiative_status",
+      "test": "disabled"
+    },
+    {
+      "action": "assert",
+      "target": "css=#initiative_funding",
+      "test": "disabled"
+    },
+    {
+      "action": "assert",
+      "target": "css=#owner_company_id",
+      "test": "disabled"
+    },
+    {
+      "action": "assert",
+      "target": "css=form[action$=\"/initiatives/${captured.initiativeId}\"] button[type=submit]",
+      "test": "count",
+      "equals": 0
+    }
+  ],
+  "cleanup": {
+    "policy": "retained-with-report",
+    "description": "New marked archived programme, team and audit retained. No pre-existing programme or native office duty is modified.",
+    "steps": []
+  },
+  "description": "Self-contained programme and team setup followed by actual head/company-admin handoffs. Funding and owner remain fixed, and archived edit controls are locked. Does not claim tracking task delivery."
+}

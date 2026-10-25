@@ -1,0 +1,309 @@
+{
+  "schemaVersion": 1,
+  "id": "membership.accept-handover-and-return",
+  "title": "Approver hands over; colleague accepts; both verify changed access; colleague hands back and original approver accepts",
+  "description": "Genuine reversible role transfer through the two users. The authorized office administrator restores the original assignment through the regular office form if a step fails.",
+  "evidenceLevel": "connected",
+  "features": [
+    "membership.handover",
+    "user-story.us-15"
+  ],
+  "tags": [
+    "functional",
+    "write",
+    "multi-actor",
+    "interface-only"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "timeoutMs": 240000,
+    "accessMode": "any"
+  },
+  "fixtures": {
+    "actors": {
+      "officeAdmin": {
+        "capabilities": {
+          "allOf": [
+            "membership.manage",
+            "organization.office.manage"
+          ]
+        }
+      },
+      "approver": {
+        "role": "primary_approver",
+        "capabilities": {
+          "allOf": [
+            "requests.approve.primary"
+          ],
+          "noneOf": [
+            "membership.manage"
+          ]
+        }
+      },
+      "colleague": {
+        "capabilities": {
+          "allOf": [
+            "membership.self"
+          ],
+          "noneOf": [
+            "membership.manage",
+            "requests.approve",
+            "requests.fulfill"
+          ]
+        }
+      }
+    }
+  },
+  "steps": [
+    {
+      "action": "capture",
+      "value": "",
+      "as": "forwardId"
+    },
+    {
+      "action": "capture",
+      "value": "",
+      "as": "returnId"
+    },
+    {
+      "use": "membership.propose-primary",
+      "with": {
+        "from": "approver",
+        "to": "colleague",
+        "as": "forwardId"
+      }
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "colleague"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/my-memberships"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=#waiting-for-you form[action$=\"/handshake/${captured.forwardId}/accept\"] button[type=\"submit\"]"
+    },
+    {
+      "action": "actor",
+      "name": "colleague"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/access"
+    },
+    {
+      "action": "capture",
+      "target": "css=.tenant-scope-theme",
+      "attribute": "data-access-office",
+      "as": "checkedOffice"
+    },
+    {
+      "action": "compare",
+      "actual": "${captured.checkedOffice}",
+      "equals": "${fixtures.office.id}"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-access-ability=\"requests.approve.primary\"]",
+      "test": "count",
+      "equals": 1
+    },
+    {
+      "action": "actor",
+      "name": "approver"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/access"
+    },
+    {
+      "action": "capture",
+      "target": "css=.tenant-scope-theme",
+      "attribute": "data-access-office",
+      "as": "checkedOffice"
+    },
+    {
+      "action": "compare",
+      "actual": "${captured.checkedOffice}",
+      "equals": "${fixtures.office.id}"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-access-ability=\"requests.approve.primary\"]",
+      "test": "count",
+      "equals": 0
+    },
+    {
+      "use": "membership.propose-primary",
+      "with": {
+        "from": "colleague",
+        "to": "approver",
+        "as": "returnId"
+      }
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "approver"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/my-memberships"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=#waiting-for-you form[action$=\"/handshake/${captured.returnId}/accept\"] button[type=\"submit\"]"
+    },
+    {
+      "action": "actor",
+      "name": "approver"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/access"
+    },
+    {
+      "action": "capture",
+      "target": "css=.tenant-scope-theme",
+      "attribute": "data-access-office",
+      "as": "checkedOffice"
+    },
+    {
+      "action": "compare",
+      "actual": "${captured.checkedOffice}",
+      "equals": "${fixtures.office.id}"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-access-ability=\"requests.approve.primary\"]",
+      "test": "count",
+      "equals": 1
+    },
+    {
+      "action": "actor",
+      "name": "colleague"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/access"
+    },
+    {
+      "action": "capture",
+      "target": "css=.tenant-scope-theme",
+      "attribute": "data-access-office",
+      "as": "checkedOffice"
+    },
+    {
+      "action": "compare",
+      "actual": "${captured.checkedOffice}",
+      "equals": "${fixtures.office.id}"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-access-ability=\"requests.approve.primary\"]",
+      "test": "count",
+      "equals": 0
+    }
+  ],
+  "cleanup": {
+    "policy": "supported-actions",
+    "description": "Restore only the original primary approver using the authorized office administrator normal role form. Preserve all handover history and other duties.",
+    "steps": [
+      {
+        "use": "auth.login",
+        "with": {
+          "actor": "approver"
+        }
+      },
+      {
+        "action": "goto",
+        "url": "/gov-store/my-memberships"
+      },
+      {
+        "action": "capture",
+        "target": "css=#your-roles form[action$=\"/handshake/${captured.forwardId}/cancel\"] button[type=\"submit\"]",
+        "count": true,
+        "as": "pendingforwardId"
+      },
+      {
+        "action": "submitForm",
+        "target": "css=#your-roles form[action$=\"/handshake/${captured.forwardId}/cancel\"] button[type=\"submit\"]",
+        "when": {
+          "actual": "${captured.pendingforwardId}",
+          "notEquals": 0
+        }
+      },
+      {
+        "use": "auth.login",
+        "with": {
+          "actor": "colleague"
+        }
+      },
+      {
+        "action": "goto",
+        "url": "/gov-store/my-memberships"
+      },
+      {
+        "action": "capture",
+        "target": "css=#your-roles form[action$=\"/handshake/${captured.returnId}/cancel\"] button[type=\"submit\"]",
+        "count": true,
+        "as": "pendingreturnId"
+      },
+      {
+        "action": "submitForm",
+        "target": "css=#your-roles form[action$=\"/handshake/${captured.returnId}/cancel\"] button[type=\"submit\"]",
+        "when": {
+          "actual": "${captured.pendingreturnId}",
+          "notEquals": 0
+        }
+      },
+      {
+        "use": "auth.login",
+        "with": {
+          "actor": "officeAdmin"
+        }
+      },
+      {
+        "action": "goto",
+        "url": "/gov-store/office"
+      },
+      {
+        "action": "capture",
+        "target": "css=#primary_approver_id",
+        "value": true,
+        "as": "currentApprover"
+      },
+      {
+        "action": "select",
+        "target": "css=#primary_approver_id",
+        "value": "${actors.approver.id}",
+        "when": {
+          "actual": "${captured.currentApprover}",
+          "notEquals": "${actors.approver.id}"
+        }
+      },
+      {
+        "action": "submitForm",
+        "target": "css=form:has(#primary_approver_id) button[type=\"submit\"]",
+        "when": {
+          "actual": "${captured.currentApprover}",
+          "notEquals": "${actors.approver.id}"
+        }
+      },
+      {
+        "action": "reload"
+      },
+      {
+        "action": "assert",
+        "target": "css=#primary_approver_id",
+        "test": "value",
+        "equals": "${actors.approver.id}"
+      }
+    ]
+  }
+}

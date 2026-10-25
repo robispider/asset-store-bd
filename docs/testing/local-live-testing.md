@@ -10,6 +10,13 @@ integration points those stories require. Follow
 Page-entry, seeded-state and permission checks are useful evidence but cannot
 substitute for completing actions across pages and roles on the selected server.
 
+For the 25 October 2026 full live acceptance task, the owner explicitly requires
+**interface-only testing with no database connection**, including fixture and
+actor discovery. The database inspection examples below remain optional guidance
+for separately authorized development work; they are not prerequisites for this
+live acceptance task. Use target-bound browser account discovery and reopened
+screens/registers/history for its evidence.
+
 ## 1. Read before working
 
 1. Read [AGENTS.md](../../AGENTS.md), deeper directory instructions, [CLAUDE.md](../../CLAUDE.md), and the affected package's current code/docs.

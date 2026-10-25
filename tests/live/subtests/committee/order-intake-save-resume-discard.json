@@ -1,0 +1,268 @@
+{
+  "schemaVersion": 1,
+  "id": "committee.order-intake-save-resume-discard",
+  "title": "Committee registrar saves fictional order intake, resumes its fields and private attachment, revises it and discards it",
+  "description": "Tests the real intake workspace before committee constitution. A clearly fictional PDF is used; this does not establish activation or member declaration.",
+  "evidenceLevel": "function",
+  "features": [
+    "user-story.us-29"
+  ],
+  "tags": [
+    "functional",
+    "write",
+    "interface-only"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "accessMode": "any",
+    "timeoutMs": 240000
+  },
+  "fixtures": {
+    "actors": {
+      "registrar": {
+        "role": "office_admin",
+        "capabilities": {
+          "allOf": [
+            "committee.manage"
+          ]
+        }
+      }
+    }
+  },
+  "data": {
+    "memo": {
+      "generate": "markedText",
+      "prefix": "LIVE-INTAKE",
+      "length": 7
+    }
+  },
+  "preconditions": [
+    {
+      "action": "capture",
+      "value": false,
+      "as": "ownsIntake"
+    },
+    {
+      "action": "capture",
+      "value": 0,
+      "as": "intakeRemains"
+    }
+  ],
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "registrar"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/committees/new"
+    },
+    {
+      "action": "assert",
+      "target": "css=.cm-intake [name=intake_revision]",
+      "test": "value",
+      "equals": 0
+    },
+    {
+      "action": "capture",
+      "value": true,
+      "as": "ownsIntake"
+    },
+    {
+      "action": "fill",
+      "target": "css=.cm-intake [name=memo_no]",
+      "value": "${data.memo}"
+    },
+    {
+      "action": "fill",
+      "target": "css=.cm-intake [name=issuing_authority_name]",
+      "value": "Fictional staging test authority"
+    },
+    {
+      "action": "fill",
+      "target": "css=.cm-intake [name=issuing_authority_designation_en]",
+      "value": "Test only - no official authority"
+    },
+    {
+      "action": "upload",
+      "target": "css=.cm-intake [name=file]",
+      "file": "tests/live/fixtures/fictional-order.pdf"
+    },
+    {
+      "action": "click",
+      "target": "css=.cm-keep-intake",
+      "waitForResponse": "/order-intake"
+    },
+    {
+      "action": "wait",
+      "target": "css=#cm-attention-title"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/committees/new"
+    },
+    {
+      "action": "assert",
+      "target": "css=.cm-intake [name=memo_no]",
+      "test": "value",
+      "equals": "${data.memo}"
+    },
+    {
+      "action": "assert",
+      "target": "css=.cm-intake [name=issuing_authority_name]",
+      "test": "value",
+      "equals": "Fictional staging test authority"
+    },
+    {
+      "action": "assert",
+      "target": "css=.cm-intake input[name=file] + p.cm-muted",
+      "test": "visible"
+    },
+    {
+      "action": "assert",
+      "target": "css=.cm-discard-intake",
+      "test": "visible"
+    },
+    {
+      "action": "fill",
+      "target": "css=.cm-intake [name=memo_no]",
+      "value": "${data.memo}-UPDATED"
+    },
+    {
+      "action": "click",
+      "target": "css=.cm-keep-intake",
+      "waitForResponse": "/order-intake"
+    },
+    {
+      "action": "wait",
+      "target": "css=#cm-attention-title"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/committees/new"
+    },
+    {
+      "action": "assert",
+      "target": "css=.cm-intake [name=memo_no]",
+      "test": "value",
+      "equals": "${data.memo}-UPDATED"
+    },
+    {
+      "action": "click",
+      "target": "css=.cm-discard-intake button[type=submit]"
+    },
+    {
+      "action": "wait",
+      "target": "css=#cm-confirm.in"
+    },
+    {
+      "action": "assert",
+      "target": "css=#cm-confirm .cm-confirm-summary",
+      "test": "text",
+      "contains": "${data.memo}-UPDATED"
+    },
+    {
+      "action": "click",
+      "target": "css=.cm-confirm-send",
+      "waitForResponse": "/order-intake"
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "assert",
+      "target": "css=.cm-intake [name=intake_revision]",
+      "test": "value",
+      "equals": 0
+    },
+    {
+      "action": "assert",
+      "target": "css=.cm-intake [name=memo_no]",
+      "test": "value",
+      "equals": ""
+    },
+    {
+      "action": "assert",
+      "target": "css=.cm-intake input[name=file] + p.cm-muted",
+      "test": "count",
+      "equals": 0
+    },
+    {
+      "action": "ledger",
+      "kind": "committee_order_intake",
+      "id": "${actors.registrar.id}:${fixtures.office.id}",
+      "effect": "Run-owned fictional order intake and attachment discarded through confirmation UI",
+      "cleanup": "removed"
+    }
+  ],
+  "cleanup": {
+    "policy": "supported-ui-removal",
+    "description": "Only the intake whose empty initial revision was verified is discarded if still present.",
+    "steps": [
+      {
+        "use": "auth.login",
+        "with": {
+          "actor": "registrar"
+        },
+        "when": {
+          "actual": "${captured.ownsIntake}",
+          "equals": true
+        }
+      },
+      {
+        "action": "goto",
+        "url": "/gov-store/committees/new",
+        "when": {
+          "actual": "${captured.ownsIntake}",
+          "equals": true
+        }
+      },
+      {
+        "action": "capture",
+        "target": "css=.cm-discard-intake",
+        "count": true,
+        "as": "intakeRemains",
+        "when": {
+          "actual": "${captured.ownsIntake}",
+          "equals": true
+        }
+      },
+      {
+        "action": "click",
+        "target": "css=.cm-discard-intake button[type=submit]",
+        "when": {
+          "actual": "${captured.intakeRemains}",
+          "equals": 1
+        }
+      },
+      {
+        "action": "click",
+        "target": "css=.cm-confirm-send",
+        "waitForResponse": "/order-intake",
+        "when": {
+          "actual": "${captured.intakeRemains}",
+          "equals": 1
+        }
+      },
+      {
+        "action": "reload",
+        "when": {
+          "actual": "${captured.ownsIntake}",
+          "equals": true
+        }
+      },
+      {
+        "action": "assert",
+        "target": "css=.cm-intake [name=intake_revision]",
+        "test": "value",
+        "equals": 0,
+        "when": {
+          "actual": "${captured.ownsIntake}",
+          "equals": true
+        }
+      }
+    ]
+  }
+}

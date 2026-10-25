@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "interface-functions",
+  "title": "GovStore interface membership, configuration, intake, maps and personal appearance functions",
+  "journeys": [
+    "membership.interface-handover-decline",
+    "theming.personal-preference-persistence",
+    "membership.interface-handover-decline-without-note",
+    "membership.office-code-join-approve-end",
+    "classification.adopt-archive-restore",
+    "committee.order-intake-save-resume-discard",
+    "geo-view.office-monitor-interactions",
+    "native-integration.asset-maintenance-completion",
+    "native-integration.import-consumable-to-catalogue",
+    "access.request-decline-and-notice",
+    "committee.ministry-type-to-appointed-draft",
+    "native-integration.maintenance-create-complete",
+    "storeops.draft-private-attachment-and-void",
+    "organization.office-suspend-resume",
+    "organization.delegate-company-admin-and-revoke",
+    "onboarding.system-orphan-to-first-office"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "core-workflows",
+  "title": "Complete GovStore workflows across roles",
+  "description": "Browser-only receipt-to-acknowledgement journeys across genuine roles; cross-check reopened screens, registers and history. Posted audit records retained.",
+  "journeys": [
+    "requests.stock-to-acknowledgement-bulk",
+    "requests.stock-to-acknowledgement-asset"
+  ]
+}

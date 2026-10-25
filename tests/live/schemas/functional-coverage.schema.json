@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "packages", "stories", "functions"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "description": { "type": "string" },
+    "packages": { "type": "array", "uniqueItems": true, "minItems": 1, "items": { "type": "string" } },
+    "stories": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^US-[0-9]{2}$" } },
+    "functions": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "title", "package", "stories", "sources", "actors", "preconditions", "outcomes", "effects", "branches"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9_.-]+$" },
+          "title": { "type": "string", "minLength": 3 },
+          "package": { "type": "string" },
+          "stories": { "type": "array", "items": { "type": "string", "pattern": "^US-[0-9]{2}$" } },
+          "applicationStatus": { "enum": ["implemented", "unimplemented"] },
+          "sources": { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["method", "uri", "handler"], "properties": {
+            "method": { "type": "string" }, "uri": { "type": "string" }, "handler": { "type": "string" }, "name": { "type": ["string", "null"] }, "ability": { "type": ["string", "null"] }
+          }, "additionalProperties": false } },
+          "actors": { "type": "array", "items": { "type": "string" } },
+          "preconditions": { "type": "array", "items": { "type": "string" } },
+          "outcomes": { "type": "array", "items": { "type": "string" } },
+          "effects": { "type": "string" },
+          "branches": { "type": "array", "minItems": 1, "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["id", "title", "requiredEvidence", "journeys"],
+            "properties": {
+              "id": { "type": "string" }, "title": { "type": "string" },
+              "requiredEvidence": { "enum": ["entry", "observation", "function", "connected"] },
+              "journeys": { "type": "array", "items": { "type": "object", "required": ["id"], "additionalProperties": false, "properties": { "id": { "type": "string" }, "caseId": { "type": "string" } } } }
+            }
+          } }
+        }
+      }
+    }
+  }
+}

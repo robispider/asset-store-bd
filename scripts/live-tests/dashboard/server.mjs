@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { TestLoader } from '../core/loader.mjs';
 import { redactObject } from '../reporters/redaction.mjs';
 import { loadTargets, publicTargets } from '../core/targets.mjs';
+import { buildCoverage } from '../core/coverage.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const LOCAL_HOST = /^(localhost|127\.0\.0\.1|\[::1\]|[a-z0-9-]+\.(local|localhost|test))$/i;
@@ -72,7 +73,7 @@ export async function startDashboard({ baseDir, port = 4780, quiet = false }) {
         throw Object.assign(new Error('The server URL must match the selected target configuration.'), { status: 400 });
       }
       if (!target && !LOCAL_HOST.test(u.hostname) && !extra.includes(u.hostname.toLowerCase())) {
-        throw Object.assign(new Error(`Host '${u.hostname}' is not allowed. Local hosts are allowed; for another server set LIVE_TEST_ALLOWED_HOSTS before starting the dashboard (the server must use the same database the PHP bridge reads).`), { status: 400 });
+        throw Object.assign(new Error(`Host '${u.hostname}' is not allowed. Select a configured nonproduction target with its browser login; live testing uses the application interface.`), { status: 400 });
       }
       args.push('--baseUrl', u.origin);
     }
@@ -121,6 +122,13 @@ export async function startDashboard({ baseDir, port = 4780, quiet = false }) {
           defaultBaseUrl: 'http://snipeit.local',
           targets: publicTargets(loadTargets(baseDir))
         });
+      }
+      if (url.pathname === '/api/coverage' && req.method === 'GET') {
+        const targetId = url.searchParams.get('targetId') || 'local';
+        const target = loadTargets(baseDir).find(t => t.id === targetId);
+        if (!target) return json(res, 400, { error: 'Unknown configured target' });
+        return json(res, 200, buildCoverage({ loader, runsDir, targetId, baseUrl: target.baseUrl,
+          deploymentRevision: target.deploymentRevision, verificationChannel: 'browser-interface' }));
       }
       if (url.pathname === '/api/run' && req.method === 'POST') {
         const runId = launch(await readBody(req));

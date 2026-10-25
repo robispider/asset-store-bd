@@ -155,7 +155,14 @@ export class AssertionEngine {
    * Run a direct value comparison.
    */
   compare(step, varContext) {
-    const actual = varContext.interpolate(step.actual);
+    let actual = varContext.interpolate(step.actual);
+    if (step.deltaFrom !== undefined) {
+      const baseline = varContext.interpolate(step.deltaFrom);
+      if (![actual, baseline].every(v => v !== null && v !== '' && Number.isFinite(Number(v)))) {
+        throw new Error('Comparison failed: deltaFrom requires finite numeric observations');
+      }
+      actual = Number(actual) - Number(baseline);
+    }
     const expected = step.equals !== undefined ? varContext.interpolate(step.equals) : undefined;
     const contains = step.contains !== undefined ? varContext.interpolate(step.contains) : undefined;
 

@@ -30,9 +30,27 @@ export class BrowserActionEngine {
       // Native confirm() dialogs from application pages are accepted and recorded, never silently ignored.
       page.__liveDialogs = [];
       page.on('dialog', d => { page.__liveDialogs.push({ type: d.type(), message: d.message() }); d.accept().catch(() => {}); });
+      page.on('response', response => {
+        if (response.request().isNavigationRequest() && response.frame() === page.mainFrame()) {
+          page.__liveNavigation = { path: new URL(response.url()).pathname, status: response.status() };
+        }
+      });
     }
 
     switch (action) {
+      case 'switchOffice': {
+        const name = String(varContext.interpolate(step.officeName));
+        await page.locator('#gov-office-chip > a.dropdown-toggle').click();
+        const search = page.locator('#gs-office-search');
+        const searches = await search.count() > 0 && await search.isVisible();
+        if (searches) await search.fill(name);
+        const choices = page.locator(searches ? '#gs-office-search-results button' : '#gov-office-chip .gs-office-picker-results button').filter({ hasText: name });
+        await choices.first().waitFor({ state: 'visible', timeout: step.timeoutMs || 15000 });
+        if (await choices.count() !== 1) throw new Error('Assertion failed: office picker did not expose exactly one matching office');
+        const [response] = await Promise.all([page.waitForNavigation({ waitUntil: 'load' }), choices.click()]);
+        if (!response?.ok()) throw new Error(`Assertion failed: office switch returned ${response?.status()}`);
+        return { action: 'switchOffice', officeName: name, channel: 'browser-interface' };
+      }
       case 'goto': {
         let targetUrl = '';
         if (step.url) {
@@ -52,12 +70,30 @@ export class BrowserActionEngine {
           for (const [k, v] of Object.entries(varContext.interpolateDeep(step.query))) u.searchParams.set(k, String(v));
           targetUrl = u.toString();
         }
-        await page.goto(targetUrl, { waitUntil: 'load' });
-        return { action: 'goto', url: targetUrl };
+        if (new URL(targetUrl).origin !== new URL(baseUrl).origin) {
+          throw new Error('Unsupported: journey navigation must stay on the selected target origin');
+        }
+        const response = await page.goto(targetUrl, { waitUntil: 'load' });
+        const expected = [].concat(step.expectStatus ?? []).map(Number);
+        if (new URL(targetUrl).pathname !== '/login' && new URL(page.url()).pathname === '/login') {
+          throw new Error('Assertion failed: intended application screen redirected to login');
+        }
+        if (expected.length ? !expected.includes(response?.status()) : response?.status() >= 400) {
+          throw new Error(`Assertion failed: application navigation returned ${response?.status()} at ${new URL(page.url()).pathname}`);
+        }
+        return { action: 'goto', url: targetUrl, status: response?.status() };
       }
 
       case 'click': {
         const locator = this.locators.resolve(page, step.target);
+        if (step.waitForNavigation) {
+          const [response] = await Promise.all([
+            page.waitForNavigation({ waitUntil: 'load', timeout: step.timeoutMs || 30000 }),
+            locator.click()
+          ]);
+          if (!response || response.status() >= 400) throw new Error(`Assertion failed: clicked navigation returned ${response?.status()}`);
+          return { action: 'click', target: step.target, status: response.status(), url: page.url() };
+        }
         if (step.waitForResponse) {
           // Register the network wait before the action; the request must be a non-GET to this path and succeed.
           const needle = String(varContext.interpolate(step.waitForResponse));
@@ -122,8 +158,19 @@ export class BrowserActionEngine {
         if (!response) throw new Error(`Assertion failed: submitting '${step.target}' did not load a new page (browser validation may have stopped it)`);
         // Optional expectStatus: the page the submission finally lands on (after redirects) must have one of these statuses.
         const expected = [].concat(step.expectStatus ?? []).map(Number);
-        if (expected.length && !expected.includes(response.status())) {
+        if (expected.length ? !expected.includes(response.status()) : response.status() >= 400) {
           throw new Error(`Assertion failed: submitting '${step.target}' landed on ${page.url()} with status ${response.status()}, expected ${expected.join(',')}`);
+        }
+        if (step.rejectFlashErrors) {
+          // Inline job/status cards can describe an earlier independent failure.
+          // Submission failures appear in the layout flash or the workspace's
+          // immediate error summary, rather than inside an unrelated boxed panel.
+          const errors = page.locator('.alert-danger:visible, .alert-error:visible, .cr > .gs-alert--danger:visible, .govmem > .gs-alert--danger:visible, .govorg > .gs-alert--danger:visible, .storeops-theme > .gs-alert--danger:visible');
+          if (await errors.count()) {
+            const text = await errors.allTextContents();
+            const reference = text.join(' ').match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i)?.[0];
+            throw new Error(`Assertion failed: application refused the submitted action${reference ? ` (reference ${reference})` : '; see private interface evidence'}`);
+          }
         }
         return { action: 'submitForm', target: step.target, url: page.url(), status: response.status(), redirects: await redirectChain(response) };
       }
@@ -138,7 +185,7 @@ export class BrowserActionEngine {
           await page.waitForTimeout(step.timeMs);
         } else if (step.target) {
           const locator = this.locators.resolve(page, step.target);
-          await locator.waitFor({ state: step.state || 'visible' });
+          await locator.waitFor({ state: step.state || 'visible', timeout: step.timeoutMs || 30000 });
         } else {
           await page.waitForLoadState('networkidle');
         }
@@ -151,12 +198,22 @@ export class BrowserActionEngine {
         const select = this.locators.resolve(page, step.target);
         await select.waitFor({ state: 'attached', timeout: step.timeoutMs || 15000 });
         const container = select.locator('xpath=following-sibling::span[contains(concat(" ", @class, " "), " select2-container ")][1]');
-        await container.locator('.select2-selection').click();
+        if (!step.alreadyOpen) await container.locator('.select2-selection').click();
         const search = String(varContext.interpolate(step.search ?? ''));
         const field = page.locator('.select2-container--open input.select2-search__field');
         if (search) await field.fill(search);
         const wanted = String(varContext.interpolate(step.option ?? step.search ?? ''));
         const results = page.locator('.select2-container--open .select2-results__option:not(.loading-results):not(.select2-results__message)');
+        if (step.selection === 'first') {
+          const choice = results.first();
+          await choice.waitFor({ state: 'visible', timeout: step.timeoutMs || 15000 });
+          const label = (await choice.innerText()).trim();
+          await choice.click();
+          const value = await select.inputValue();
+          if (!value) throw new Error('Assertion failed: the visible select2 choice did not set a value');
+          if (step.as) varContext.setCaptured(step.as, { label, value });
+          return { action: 'select2', target: step.target, selection: 'first', label, value };
+        }
         const containing = results.filter({ hasText: wanted });
         await containing.first().waitFor({ state: 'visible', timeout: step.timeoutMs || 15000 });
         // Prefer the option that is exactly the wanted text (optionally followed by " (…)"); else a unique substring match.
@@ -198,6 +255,13 @@ export class BrowserActionEngine {
 
       case 'upload': {
         const locator = this.locators.resolve(page, step.target);
+        if (step.inlineCsv) {
+          const filename = String(varContext.interpolate(step.filename));
+          if (!/^[a-z0-9._-]+\.csv$/i.test(filename)) throw new Error('Unsupported: inline CSV needs a plain CSV filename');
+          const rows = varContext.interpolateDeep(step.inlineCsv);
+          await locator.setInputFiles({ name: filename, mimeType: 'text/csv', buffer: Buffer.from('\uFEFF' + Papa.unparse(rows), 'utf8') });
+          return { action: 'upload', target: step.target, file: filename, rows: rows.length };
+        }
         const filePath = varContext.interpolate(step.file);
         await locator.setInputFiles(filePath);
         return { action: 'upload', target: step.target, file: filePath };

@@ -134,6 +134,10 @@
               "emptyBasket": {
                 "type": "boolean",
                 "default": false
+              },
+              "userId": {
+                "type": "integer",
+                "minimum": 1
               }
             }
           }
@@ -182,6 +186,17 @@
               },
               "itemName": {
                 "type": "string"
+              },
+              "policy": {
+                "enum": [
+                  "PRIMARY_ONLY",
+                  "PRIMARY_AND_FINAL",
+                  "AUTO_APPROVE"
+                ]
+              },
+              "requestQuantity": {
+                "type": "integer",
+                "minimum": 1
               }
             }
           }
@@ -229,22 +244,33 @@
           "enum": [
             "no-business-records-created",
             "supported-actions",
-            "retained-with-report"
+            "retained-with-report",
+            "handover-history-retained",
+            "supported-ui-removal",
+            "submitted-request-retained"
           ]
-        },
-        "actions": {
-          "type": "array",
-          "items": {
-            "type": "object"
-          }
         },
         "steps": {
           "type": "array",
           "items": {
             "type": "object"
           }
+        },
+        "description": {
+          "type": "string"
         }
       }
+    },
+    "description": {
+      "type": "string"
+    },
+    "evidenceLevel": {
+      "enum": [
+        "entry",
+        "observation",
+        "function",
+        "connected"
+      ]
     }
   }
 }

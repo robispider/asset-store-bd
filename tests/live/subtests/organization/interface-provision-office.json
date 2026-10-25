@@ -1,0 +1,174 @@
+{
+  "schemaVersion": 1,
+  "id": "organization.interface-provision-office",
+  "title": "ICT officer searches, creates a marked office in the permitted geography, and reopens its registry and readiness",
+  "evidenceLevel": "function",
+  "features": [
+    "organization.add-office",
+    "user-story.us-02"
+  ],
+  "tags": [
+    "functional",
+    "write",
+    "interface-only"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "accessMode": "any",
+    "timeoutMs": 180000
+  },
+  "fixtures": {
+    "actors": {
+      "ictOfficer": {
+        "role": "ict_officer",
+        "activeMembership": false,
+        "capabilities": {
+          "allOf": [
+            "organization.office.manage"
+          ],
+          "noneOf": [
+            "organization.national.manage"
+          ]
+        }
+      }
+    }
+  },
+  "data": {
+    "officeName": {
+      "generate": "markedText",
+      "prefix": "LIVE-OFFICE",
+      "length": 7
+    }
+  },
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "ictOfficer"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/organization/create"
+    },
+    {
+      "action": "fill",
+      "target": "organization.findInput",
+      "value": "${data.officeName}"
+    },
+    {
+      "action": "submitForm",
+      "target": "organization.findSubmit"
+    },
+    {
+      "action": "assert",
+      "target": "css=.govorg-result",
+      "test": "count",
+      "equals": 0
+    },
+    {
+      "action": "capture",
+      "target": "css=#govorg-step-location .govorg-step__hint",
+      "pattern": "(?:নির্ধারিত এলাকা |areas inside )(.+?)(?:-এর|,)",
+      "as": "jurisdiction"
+    },
+    {
+      "action": "select2",
+      "target": "css=#geo_area_id",
+      "search": "${captured.jurisdiction}",
+      "selection": "first",
+      "as": "geoChoice"
+    },
+    {
+      "action": "capture",
+      "target": "css=#geo_area_id option:checked",
+      "as": "geoLabel"
+    },
+    {
+      "action": "select",
+      "target": "css=#company_id",
+      "value": "${fixtures.office.company_id}"
+    },
+    {
+      "action": "capture",
+      "target": "css=#company_id option:checked",
+      "as": "companyLabel"
+    },
+    {
+      "action": "submitForm",
+      "target": "organization.createSubmit"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/organization",
+      "query": {
+        "search": "${data.officeName}"
+      }
+    },
+    {
+      "action": "assert",
+      "target": "css=a.govorg-office:has-text(\"${data.officeName}\")",
+      "test": "count",
+      "equals": 1
+    },
+    {
+      "action": "capture",
+      "target": "css=a.govorg-office:has-text(\"${data.officeName}\")",
+      "attribute": "href",
+      "pattern": "/organization/(\\d+)/hub",
+      "as": "officeId"
+    },
+    {
+      "action": "ledger",
+      "kind": "provisioned_office",
+      "id": "${captured.officeId}",
+      "effect": "Marked fictional office created through the ICT jurisdiction UI; profile and audit retained",
+      "cleanup": "retained"
+    },
+    {
+      "action": "click",
+      "target": "css=a.govorg-office:has-text(\"${data.officeName}\")"
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "assert",
+      "target": "organization.pageTitle",
+      "test": "text",
+      "equals": "${data.officeName}"
+    },
+    {
+      "action": "assert",
+      "target": "css=.govorg",
+      "test": "text",
+      "contains": "${captured.geoLabel}"
+    },
+    {
+      "action": "assert",
+      "target": "css=.govorg",
+      "test": "text",
+      "contains": "${captured.companyLabel}"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-status=\"office_provisioned\"]",
+      "test": "visible"
+    },
+    {
+      "action": "assert",
+      "target": "css=#govorg-staff",
+      "test": "visible"
+    },
+    {
+      "action": "assert",
+      "target": "css=.gs-readiness",
+      "test": "visible"
+    }
+  ],
+  "cleanup": {
+    "policy": "retained-with-report",
+    "description": "Created fictional office, geography/ministry profile and audit retained. No national directory or existing office changed.",
+    "steps": []
+  }
+}

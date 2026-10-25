@@ -1,0 +1,189 @@
+{
+  "schemaVersion": 1,
+  "id": "geo-view.office-monitor-interactions",
+  "title": "Office administrator drills scoped geography, returns to root, changes layer, searches, exports and reopens the map",
+  "description": "Exercises the installed organization source with actual UI controls. Aggregate values are recorded as visible UI evidence; database totals are not inferred.",
+  "evidenceLevel": "function",
+  "features": [
+    "user-story.us-17",
+    "user-story.us-18"
+  ],
+  "tags": [
+    "functional",
+    "interface-only",
+    "read-only"
+  ],
+  "execution": {
+    "capability": "observe",
+    "accessMode": "any",
+    "timeoutMs": 180000
+  },
+  "fixtures": {
+    "actors": {
+      "viewer": {
+        "role": "office_admin",
+        "capabilities": {
+          "allOf": [
+            "geo.monitor.view"
+          ]
+        }
+      }
+    }
+  },
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "viewer"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/geo-monitor",
+      "query": {
+        "map": "organization.offices"
+      }
+    },
+    {
+      "action": "wait",
+      "target": "css=#geo-monitor.is-mounted .gs-geo__crumb"
+    },
+    {
+      "action": "click",
+      "target": "css=#geo-monitor .gs-geo__crumb >> nth=0"
+    },
+    {
+      "action": "click",
+      "target": "css=#geo-monitor .gs-geo__tools button:text-is(\"সারণি\"), #geo-monitor .gs-geo__tools button:text-is(\"Table\")"
+    },
+    {
+      "action": "wait",
+      "target": "css=#geo-monitor .gs-geo__table-wrap:not([hidden]) tbody .gs-geo__link >> nth=0"
+    },
+    {
+      "action": "capture",
+      "target": "css=#geo-monitor .gs-geo__table-wrap tbody .gs-geo__link >> nth=0",
+      "as": "areaName"
+    },
+    {
+      "action": "capture",
+      "target": "css=#geo-monitor .gs-geo__table-wrap tbody tr",
+      "count": true,
+      "as": "rootRows"
+    },
+    {
+      "action": "click",
+      "target": "css=#geo-monitor .gs-geo__table-wrap tbody .gs-geo__link >> nth=0"
+    },
+    {
+      "action": "wait",
+      "target": "css=#geo-monitor .gs-geo__crumb:nth-of-type(2)"
+    },
+    {
+      "action": "capture",
+      "url": true,
+      "as": "drilledUrl"
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "wait",
+      "target": "css=#geo-monitor.is-mounted .gs-geo__crumb:nth-of-type(2)"
+    },
+    {
+      "action": "assert",
+      "test": "url",
+      "equals": "${captured.drilledUrl}"
+    },
+    {
+      "action": "click",
+      "target": "css=#geo-monitor .gs-geo__crumb >> nth=0"
+    },
+    {
+      "action": "wait",
+      "target": "css=#geo-monitor .gs-geo__crumb[aria-current]:first-child"
+    },
+    {
+      "action": "capture",
+      "target": "css=#geo-monitor .gs-geo__table-wrap tbody tr",
+      "count": true,
+      "as": "returnedRows"
+    },
+    {
+      "action": "compare",
+      "actual": "${captured.returnedRows}",
+      "equals": "${captured.rootRows}"
+    },
+    {
+      "action": "capture",
+      "target": "css=#geo-monitor .gs-geo__tools > select option[value=verified_share]",
+      "as": "alternateLayer"
+    },
+    {
+      "action": "select",
+      "target": "css=#geo-monitor .gs-geo__tools > select",
+      "value": "verified_share"
+    },
+    {
+      "action": "wait",
+      "target": "css=#geo-monitor .gs-geo__table-wrap th:has-text(\"${captured.alternateLayer}\")"
+    },
+    {
+      "action": "fill",
+      "target": "css=#geo-monitor .gs-geo__search input",
+      "value": "${captured.areaName}"
+    },
+    {
+      "action": "wait",
+      "target": "css=#geo-monitor .gs-geo__results button >> nth=0"
+    },
+    {
+      "action": "click",
+      "target": "css=#geo-monitor .gs-geo__results button >> nth=0"
+    },
+    {
+      "action": "wait",
+      "target": "css=#geo-monitor .gs-geo__table-wrap tr.is-selected"
+    },
+    {
+      "action": "capture",
+      "target": "css=#geo-monitor .gs-geo__table-wrap tr.is-selected",
+      "as": "selectedRow"
+    },
+    {
+      "action": "compare",
+      "actual": "${captured.selectedRow}",
+      "contains": "${captured.areaName}"
+    },
+    {
+      "action": "download",
+      "target": "css=#geo-monitor button[aria-label*=\"CSV\"]",
+      "csv": true,
+      "as": "export"
+    },
+    {
+      "action": "compare",
+      "actual": "${captured.export.rowCount}",
+      "greaterThan": 0
+    },
+    {
+      "action": "click",
+      "target": "css=#geo-monitor .gs-geo__tools button[aria-controls=\"geo-monitor-help\"]"
+    },
+    {
+      "action": "assert",
+      "target": "css=#geo-monitor .gs-geo__help",
+      "test": "visible"
+    },
+    {
+      "action": "click",
+      "target": "css=#geo-monitor .gs-geo__tools button[aria-controls=\"geo-monitor-help\"]"
+    },
+    {
+      "action": "assert",
+      "target": "css=#geo-monitor .gs-geo__help",
+      "test": "hidden"
+    }
+  ]
+}

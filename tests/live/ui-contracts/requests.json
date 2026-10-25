@@ -35,7 +35,7 @@
       "description": "My requests card for the captured request"
     },
     "approverRowOpen": {
-      "css": "[data-request-number=\"${captured.requestNumber}\"] a[href*='/gov-requests/admin/']",
+      "css": "[data-request-number=\"${captured.requestNumber}\"] a.gs-btn[href*=\"/gov-requests/admin/\"]",
       "description": "Decide link on the approver card for the captured request"
     },
     "approverRowByNumber": {
@@ -111,7 +111,7 @@
       "description": "First request number on the open My requests tab"
     },
     "basketToDetails": {
-      "css": "[data-cr-next='2']",
+      "css": "[data-cr-panel=\"1\"] [data-cr-next=\"2\"]",
       "description": "Continue to details (checkout step 1 → 2)"
     },
     "basketDeclare": {
@@ -125,6 +125,46 @@
     "sentNumberFirst": {
       "css": "[data-cr-sent] [data-request-number] .cr-sent__number a",
       "description": "First request number on the Sent page"
+    },
+    "fulfillmentRowOpen": {
+      "css": "[data-request-number=\"${captured.requestNumber}\"] a[href*=\"/gov-requests/fulfillment/\"]",
+      "description": "fulfillmentRowOpen"
+    },
+    "issueQuantity": {
+      "css": "[data-cr-bulk]",
+      "description": "issueQuantity"
+    },
+    "issueSubmit": {
+      "css": "[data-cr-issue-submit]",
+      "description": "issueSubmit"
+    },
+    "issueAsset": {
+      "css": "input[type=\"checkbox\"][name^=\"issue[\"][value=\"${observed.receipt.assets.0.id}\"]",
+      "description": "issueAsset"
+    },
+    "acknowledge": {
+      "css": "form[action$=\"/receive\"] button[type=\"submit\"]",
+      "description": "acknowledge"
+    },
+    "requestShow": {
+      "css": "[data-request-number=\"${captured.requestNumber}\"] a.cr-request__number",
+      "description": "requestShow"
+    },
+    "requestRoot": {
+      "css": "[data-cr-request][data-request-number=\"${captured.requestNumber}\"]",
+      "description": "requestRoot"
+    },
+    "requestLineRequested": {
+      "css": "tr[data-line-id] td:nth-child(2)",
+      "description": "requestLineRequested"
+    },
+    "requestLineApproved": {
+      "css": "tr[data-line-id] td:nth-child(3)",
+      "description": "requestLineApproved"
+    },
+    "requestLineIssued": {
+      "css": "tr[data-line-id] td:nth-child(4)",
+      "description": "requestLineIssued"
     }
   },
   "labels": {

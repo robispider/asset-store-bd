@@ -11,7 +11,8 @@
   "steps": [
     {
       "action": "actor",
-      "name": "${params.actor}"
+      "name": "${params.actor}",
+      "fresh": true
     },
     {
       "action": "goto",
@@ -28,7 +29,7 @@
       "value": "${actors.${params.actor}.password}"
     },
     {
-      "action": "click",
+      "action": "submitForm",
       "target": "auth.submit"
     },
     {

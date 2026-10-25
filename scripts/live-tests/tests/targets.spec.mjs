@@ -95,6 +95,11 @@ try {
   assert.equal(resolved.actors.officeAdmin.username, 'officeadmin');
   assert.equal(resolved.actors.employee.username, 'employee', 'Ordinary journey must choose the least privileged actual actor');
   assert.equal(resolved.actors.employee.id, 4);
+  const profileAdministrator = await bridge.resolveContext({ actors: {
+    officeAdmin: { role: 'office_admin', capabilities: { allOf: ['organization.office.manage'] } }
+  } });
+  assert.equal(profileAdministrator.actors.officeAdmin.username, 'officeadmin',
+    'Profile-assigned office administrator must be verified even when the export has no responsibility slug');
   assert(!JSON.stringify(redactObject(resolved)).includes(users.employee));
   await assert.rejects(bridge.resolveContext({ actors: { invalid: { capabilities: { allOf: ['catalog.master.manage'] } } } }), err => err.code === 'fixtures.unsatisfied-requirements');
   const privileged = await bridge.resolveContext({ actors: { admin: { role: 'superuser', allowSuperuser: true, capabilities: { allOf: ['catalog.master.manage'] } } } });
@@ -124,7 +129,7 @@ try {
   const deadline = Date.now() + 20000;
   do {
     result = await (await api(`/api/events?runId=${dashboardRun}`)).json();
-    if (result.results?.summary && result.exitCode !== undefined) break;
+    if (result.results?.summary && result.exitCode !== undefined && result.exitCode !== null) break;
     await new Promise(resolve => setTimeout(resolve, 100));
   } while (Date.now() < deadline);
   assert.equal(result.results?.summary.passed, 2, 'Configured target UI journeys should pass');
@@ -132,6 +137,7 @@ try {
   assert.equal(result.provenance.targetId, profile.id);
   assert.equal(result.provenance.fixtureSource, 'target-browser');
   const reportDir = path.join(root, dashboardRun);
+  assert(fs.existsSync(path.join(reportDir, 'report.html')), fs.readFileSync(path.join(reportDir, 'console.log'), 'utf8'));
   for (const file of ['provenance.json', 'results.json', 'events.jsonl', 'console.log', 'report.html']) {
     const output = fs.readFileSync(path.join(reportDir, file), 'utf8');
     for (const secret of Object.values(users)) assert(!output.includes(secret), 'Target credentials leaked to a report');

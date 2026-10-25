@@ -15,7 +15,7 @@ export class ExecutionPlanner {
       for (let i = 0; i < journey.matrix.length; i++) {
         const matrixCase = journey.matrix[i];
         const caseId = `${journey.id}[case_${i}]`;
-        const expandedSteps = this.expandSteps(journey.steps, matrixCase);
+        const expandedSteps = this.expandJourneySteps(journey, { ...(journey.data || {}), ...matrixCase });
         cases.push({
           caseId,
           journeyId: journey.id,
@@ -29,7 +29,7 @@ export class ExecutionPlanner {
         });
       }
     } else {
-      const expandedSteps = this.expandSteps(journey.steps, journey.data || {});
+      const expandedSteps = this.expandJourneySteps(journey, journey.data || {});
       cases.push({
         caseId: journey.id,
         journeyId: journey.id,
@@ -58,6 +58,11 @@ export class ExecutionPlanner {
     return { ...cleanup, steps: this.expandSteps(cleanup.steps || [], params) };
   }
 
+  expandJourneySteps(journey, params) {
+    return ['preconditions', 'steps', 'postconditions'].flatMap(section =>
+      this.expandSteps(journey[section] || [], params).map(step => ({ ...step, _phase: section })));
+  }
+
   expandSteps(steps, contextParams = {}, depth = 0) {
     if (depth > 15) {
       throw new Error('Maximum flow expansion depth exceeded (possible cycle)');
@@ -79,14 +84,17 @@ export class ExecutionPlanner {
         }
 
         // Recursively expand flow steps with combined params
-        const flowParams = { ...(flow.params || {}), ...flowWith };
+        const defaults = Object.fromEntries(Object.entries(flow.params || {})
+          .filter(([, def]) => def.default !== undefined).map(([name, def]) => [name, def.default]));
+        const flowParams = { ...defaults, ...flowWith };
         const innerSteps = this.expandSteps(flow.steps, flowParams, depth + 1);
         for (const inner of innerSteps) {
           expanded.push({
             ...inner,
             ...(step.when && !inner.when ? { when: step.when } : {}),
             ...(step.modes && !inner.modes ? { modes: step.modes } : {}),
-            _flow: step.use
+            _flow: inner._flow || step.use,
+            _sensitive: Boolean(inner._sensitive || step.use === 'auth.login')
           });
         }
       } else {

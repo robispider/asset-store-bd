@@ -6,9 +6,9 @@ import path from 'node:path';
  * Enforces boundary containment and loads suites, journeys, flows, and UI contracts.
  */
 export class TestLoader {
-  constructor(baseDir = process.cwd()) {
+  constructor(baseDir = process.cwd(), liveRoot = null) {
     this.baseDir = path.resolve(baseDir);
-    this.liveRoot = path.join(this.baseDir, 'tests', 'live');
+    this.liveRoot = liveRoot ? path.resolve(liveRoot) : path.join(this.baseDir, 'tests', 'live');
     this.schemasDir = path.join(this.liveRoot, 'schemas');
     this.suitesDir = path.join(this.liveRoot, 'suites');
     this.subtestsDir = path.join(this.liveRoot, 'subtests');
@@ -19,7 +19,8 @@ export class TestLoader {
 
   assertSafePath(targetPath, rootDir = this.liveRoot) {
     const resolved = path.resolve(targetPath);
-    if (!resolved.startsWith(rootDir)) {
+    const relative = path.relative(path.resolve(rootDir), resolved);
+    if (relative === '..' || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) {
       throw new Error(`Path traversal violation: '${targetPath}' escapes root '${rootDir}'`);
     }
     return resolved;

@@ -49,7 +49,11 @@
     },
     {
       "action": "goto",
-      "url": "/gov-store/admin/organization/create"
+      "url": "/gov-store/admin/organization/create",
+      "expectStatus": [
+        403,
+        404
+      ]
     },
     {
       "target": "css=body",

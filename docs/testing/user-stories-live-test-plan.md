@@ -12,6 +12,10 @@ current definition gaps and historical staging evidence. The 31 entry checks
 must not be reported as 31 completed business stories. Read-only inspection is
 not the default substitute for an authorized functional journey on test fixtures.
 
+The [full implementation plan](../plans/govstore-full-functional-live-testing-plan-2026-10-25.md)
+defines the work sequence, concrete deliverables and action coverage for all 31
+stories plus the functions outside this index.
+
 **Purpose:** exercise each of the 31 user stories through the real local UI,
 using the current fictional seeded dataset and role-appropriate accounts. This
 plan is for the existing nonproduction installation only. It does not certify

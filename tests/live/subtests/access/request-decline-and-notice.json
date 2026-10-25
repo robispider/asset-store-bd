@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 1,
+  "id": "access.request-decline-and-notice",
+  "title": "Employee requests committee access; office administrator declines with a reason; employee sees the decision with no added ability",
+  "description": "Uses the same access request across independent requester/reviewer sessions. No grant is created; decision and in-app notice remain as audit evidence.",
+  "evidenceLevel": "connected",
+  "features": [
+    "user-story.us-05",
+    "user-story.us-25"
+  ],
+  "tags": [
+    "functional",
+    "write",
+    "interface-only"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "accessMode": "any",
+    "timeoutMs": 180000
+  },
+  "fixtures": {
+    "actors": {
+      "reviewer": {
+        "role": "office_admin",
+        "capabilities": {
+          "allOf": [
+            "access.manage"
+          ]
+        }
+      },
+      "employee": {
+        "capabilities": {
+          "allOf": [
+            "access.view"
+          ],
+          "noneOf": [
+            "access.manage",
+            "committee.manage"
+          ]
+        }
+      }
+    }
+  },
+  "data": {
+    "reason": {
+      "generate": "markedText",
+      "prefix": "LIVE-ACCESS",
+      "length": 7
+    }
+  },
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "employee"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/access"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-access-ability=\"committee.manage\"]",
+      "test": "count",
+      "equals": 0
+    },
+    {
+      "action": "select",
+      "target": "css=#accessAbility",
+      "value": "committee.manage"
+    },
+    {
+      "action": "fill",
+      "target": "css=#accessReason",
+      "value": "${data.reason}"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form[action$=\"/access/requests\"] button[type=submit]",
+      "rejectFlashErrors": true
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "reviewer"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/access/requests"
+    },
+    {
+      "action": "assert",
+      "target": "css=.box-default:has(p:text-is(\"${data.reason}\"))",
+      "test": "visible"
+    },
+    {
+      "action": "capture",
+      "target": "css=.box-default:has(p:text-is(\"${data.reason}\")) form",
+      "attribute": "action",
+      "pattern": "/access/requests/(\\d+)",
+      "as": "accessRequestId"
+    },
+    {
+      "action": "ledger",
+      "kind": "office_access_request",
+      "id": "${captured.accessRequestId}",
+      "effect": "Fictional access request declined by its actual office administrator; no grant created",
+      "cleanup": "retained"
+    },
+    {
+      "action": "fill",
+      "target": "css=.box-default:has(p:text-is(\"${data.reason}\")) textarea[name=review_note]",
+      "value": "${data.reason} - declined for the fictional staging exercise"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=.box-default:has(p:text-is(\"${data.reason}\")) button[value=declined]",
+      "rejectFlashErrors": true
+    },
+    {
+      "action": "assert",
+      "target": "css=.box-default:has(p:text-is(\"${data.reason}\")) form",
+      "test": "count",
+      "equals": 0
+    },
+    {
+      "action": "assert",
+      "target": "css=.box-default:has(p:text-is(\"${data.reason}\"))",
+      "test": "text",
+      "contains": "${data.reason} - declined for the fictional staging exercise"
+    },
+    {
+      "action": "actor",
+      "name": "employee"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/access"
+    },
+    {
+      "action": "assert",
+      "target": "css=.tenant-scope-theme",
+      "test": "text",
+      "contains": "${data.reason} - declined for the fictional staging exercise"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-access-ability=\"committee.manage\"]",
+      "test": "count",
+      "equals": 0
+    },
+    {
+      "action": "capture",
+      "target": "css=.tenant-scope-theme",
+      "attribute": "data-access-office",
+      "as": "officeAfter"
+    },
+    {
+      "action": "compare",
+      "actual": "${captured.officeAfter}",
+      "equals": "${fixtures.office.id}"
+    }
+  ],
+  "cleanup": {
+    "policy": "retained-with-report",
+    "description": "Declined access request, review reason and in-app notice retained. No office duty or temporary access grant is assigned.",
+    "steps": []
+  }
+}

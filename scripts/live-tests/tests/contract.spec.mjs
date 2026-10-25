@@ -123,7 +123,7 @@ async function runContractTests() {
 
     if (req.url === '/dashboard') {
       res.writeHead(200, { 'Content-Type': 'text/html' });
-      res.end(`
+      res.write(`
         <!DOCTYPE html>
         <html>
           <body>
@@ -132,9 +132,9 @@ async function runContractTests() {
               <li id="user-menu" class="dropdown user user-menu"><a href="#" class="dropdown-toggle">Profile</a></li>
             </ul></div></header>
             <h1>Dashboard</h1>
-          </body>
-        </html>
       `);
+      // The menu can render before the document finishes and its controls initialize.
+      setTimeout(() => res.end('<div id="dashboard-ready">Controls ready</div></body></html>'), 500);
       return;
     }
 
@@ -164,9 +164,15 @@ async function runContractTests() {
       return;
     }
 
+    if (req.url === '/popup') {
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end('<a id="open-form" target="_blank" href="/form">Open form</a>');
+      return;
+    }
+
     if (req.url === '/form') {
       res.writeHead(200, { 'Content-Type': 'text/html' });
-      res.end('<!DOCTYPE html><html><body><input id="note" name="note" required /></body></html>');
+      res.end('<!DOCTYPE html><html><body><input id="note" name="note" required /><input type="file" id="csv-upload"><a id="ready-link" href="/dashboard">Open dashboard</a></body></html>');
       return;
     }
 
@@ -209,8 +215,19 @@ async function runContractTests() {
       res.end(`<!DOCTYPE html><html><body>
         <form method="post" action="/accepted"><button id="good" type="submit">Go</button></form>
         <form method="post" action="/post-only"><button id="bad" type="submit">Go</button></form>
+        <form method="get" action="/flash-error"><button id="flash" type="submit">Go</button></form>
         <form method="post" action="/accepted"><input name="must" required><button id="blocked" type="submit">Go</button></form>
         <p id="ref">Reference GR-2026-000042 posted</p></body></html>`);
+      return;
+    }
+    if (req.url.split('?')[0] === '/flash-error') {
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end('<div class="alert-danger">INTERNAL-CANARY reference 11111111-aaaa-4bbb-8ccc-222222222222</div>');
+      return;
+    }
+    if (req.url.split('?')[0] === '/persistent-status') {
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end('<div class="govorg"><section class="gs-box"><div class="gs-alert--danger">An earlier independent starter job failed</div></section><p id="saved">Office change saved</p><form action="/persistent-status"><button id="save-status" type="submit">Save</button></form></div>');
       return;
     }
     if (req.url === '/accepted' && req.method === 'POST') {
@@ -271,9 +288,10 @@ async function runContractTests() {
       { action: 'goto', url: '/login' },
       { action: 'fill', target: 'auth.username', value: 'alice' },
       { action: 'fill', target: 'auth.password', value: 'secret123' },
-      { action: 'click', target: 'auth.submit' },
+      { action: 'submitForm', target: 'auth.submit' },
       { action: 'wait', target: 'auth.userDropdown', state: 'visible' },
       { action: 'assert', target: 'auth.userDropdown', test: 'visible' },
+      { action: 'assert', target: '#dashboard-ready', test: 'visible' },
       { action: 'goto', url: '/consumables/1234' },
       { action: 'assert', target: 'consumable.name', test: 'text', contains: 'EXP-1234 A4 Paper' },
       { action: 'capture', target: 'consumable.name', as: 'savedName' }
@@ -459,12 +477,58 @@ async function runContractTests() {
     steps: [{ action: 'goto', url: '/select2' }, { action: 'select2', target: '#item', search: 'Model', option: 'Model' }]
   }, new VariableContext(), testBaseUrl);
   assert.equal(ambiguousSelect.status, 'failed', 'A select2 option that is neither exact nor unique must fail');
+  const firstVisibleChoice = await multiInterpreter.executeJourney(extraPage, {
+    journeyId: 'contract.select2-first',
+    steps: [{ action: 'goto', url: '/select2' }, { action: 'select2', target: '#item', search: 'Model', selection: 'first', as: 'choice' },
+      { action: 'compare', actual: '${captured.choice.value}', equals: 'm1' }]
+  }, new VariableContext(), testBaseUrl);
+  assert.equal(firstVisibleChoice.status, 'passed', firstVisibleChoice.error);
+  const popupResult = await multiInterpreter.executeJourney(extraPage, {
+    journeyId: 'contract.popup',
+    steps: [{ action: 'goto', url: '/popup' }, { action: 'openPopup', target: '#open-form' },
+      { action: 'fill', target: '#note', value: 'same actor' }, { action: 'assert', target: '#note', test: 'value', equals: 'same actor' },
+      { action: 'actor', name: 'default' }, { action: 'assert', test: 'url', contains: '/popup' }]
+  }, new VariableContext(), testBaseUrl);
+  assert.equal(popupResult.status, 'passed', popupResult.error);
+  const loadedLink = await multiInterpreter.executeJourney(extraPage, {
+    journeyId: 'contract.link-load',
+    steps: [{ action: 'goto', url: '/form' }, { action: 'click', target: '#ready-link', waitForNavigation: true },
+      { action: 'assert', target: '#dashboard-ready', test: 'visible' }]
+  }, new VariableContext(), testBaseUrl);
+  assert.equal(loadedLink.status, 'passed', loadedLink.error);
+  await extraPage.goto(testBaseUrl + '/form');
+  await actions.executeStep(extraPage, { action: 'upload', target: '#csv-upload', filename: 'fixture.csv',
+    inlineCsv: [{ Name: '${data.item}', Quantity: 3 }] }, new VariableContext({ data: { item: 'Fixture, One' } }), testBaseUrl);
+  const uploaded = await extraPage.locator('#csv-upload').evaluate(async el => ({ name: el.files[0].name, text: await el.files[0].text() }));
+  assert.equal(uploaded.name, 'fixture.csv');
+  assert(uploaded.text.includes('"Fixture, One",3'), 'Generated CSV upload must escape values and interpolate fixture inputs');
+  const deadlineResult = await multiInterpreter.executeJourney(extraPage, {
+    journeyId: 'contract.deadline', execution: { timeoutMs: 5 },
+    steps: [{ action: 'wait', timeMs: 30 }],
+    cleanup: { steps: [{ action: 'capture', value: true, as: 'cleanupRan' }] }
+  }, new VariableContext(), testBaseUrl);
+  assert.equal(deadlineResult.status, 'failed');
+  assert.match(deadlineResult.error, /execution deadline/);
+  assert.equal(deadlineResult.variables.captured.cleanupRan, true, 'Supported cleanup still runs after the execution deadline');
   const landedOnError = await multiInterpreter.executeJourney(extraPage, {
     journeyId: 'contract.submit-405',
     steps: [{ action: 'goto', url: '/forms' }, { action: 'submitForm', target: '#bad', expectStatus: [200] }]
   }, new VariableContext(), testBaseUrl);
   assert.equal(landedOnError.status, 'failed');
   assert.match(landedOnError.error, /status 405/);
+  const refusedAction = await multiInterpreter.executeJourney(extraPage, {
+    journeyId: 'contract.refused-flash',
+    steps: [{ action: 'goto', url: '/forms' }, { action: 'submitForm', target: '#flash', rejectFlashErrors: true }]
+  }, new VariableContext(), testBaseUrl);
+  assert.equal(refusedAction.status, 'failed');
+  assert.match(refusedAction.error, /11111111-aaaa-4bbb-8ccc-222222222222/);
+  assert(!refusedAction.error.includes('INTERNAL-CANARY'), 'Only the reference, never internal error text, belongs in the runner failure');
+  const independentStatus = await multiInterpreter.executeJourney(extraPage, {
+    journeyId: 'contract.independent-job-status',
+    steps: [{ action: 'goto', url: '/persistent-status' }, { action: 'submitForm', target: '#save-status', rejectFlashErrors: true },
+      { action: 'assert', target: '#saved', test: 'visible' }]
+  }, new VariableContext(), testBaseUrl);
+  assert.equal(independentStatus.status, 'passed', independentStatus.error);
   const blockedSubmit = await multiInterpreter.executeJourney(extraPage, {
     journeyId: 'contract.submit-blocked',
     steps: [{ action: 'goto', url: '/forms' }, { action: 'submitForm', target: '#blocked', timeoutMs: 2000 }]

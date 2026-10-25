@@ -1,6 +1,7 @@
 import Papa from 'papaparse';
 import { assertMatchingTarget } from '../core/target.mjs';
 import { registerSecret } from '../reporters/redaction.mjs';
+import { interfaceNumber } from '../core/interface-values.mjs';
 
 const ROOT = '/gov-store/admin/experiments';
 const MATRIX = '/gov-store/access/matrix';
@@ -35,9 +36,9 @@ export function parsePrivateCsv(text, required) {
 export function browserJourneyBlock(journey, plan, accessMode, hasDatabase = false) {
   const steps = plan.cases.flatMap(c => [...c.steps, ...(c.cleanup?.steps || [])]);
   if (!hasDatabase && steps.some(s => ['observe', 'waitObserve'].includes(s.action))) {
-    return ['fixtures.database-observation-required', 'This journey requires independent database observations. Browser account mode cannot supply them; use the matching database bridge.'];
+    return ['fixtures.database-observation-required', 'This legacy journey still contains database observations. Convert it to explicit interface assertions before running it in interface-only acceptance.'];
   }
-  if (!hasDatabase && Object.keys(journey.fixtures?.records || {}).length) {
+  if (!hasDatabase && Object.values(journey.fixtures?.records || {}).some(record => !['consumable', 'accessory', 'assetModel'].includes(record.kind))) {
     return ['fixtures.record-discovery-required', 'This journey needs a record discovery adapter that is not available in browser account mode.'];
   }
   if (accessMode === 'unknown' && steps.some(s => s.modes || s.expectStatusByMode)) {
@@ -227,7 +228,7 @@ export class BrowserBridge {
       }
       const rows = parsePrivateCsv(await this.download(page, "a[href$='/accounts']"), ['username', 'password', 'home_office_id', 'office_roles', 'oversight_role']);
       // Company administrators have no home office; they are kept (officeId null) for company-scoped actors.
-      this.accounts = rows.filter(row => row.username && row.password && (/^\d+$/.test(row.home_office_id) || row.oversight_role === 'company_admin')).map(row => ({
+      this.accounts = rows.filter(row => row.username && row.password && (/^\d+$/.test(row.home_office_id) || ['company_admin', 'ict_officer'].includes(row.oversight_role))).map(row => ({
         username: row.username, password: row.password, display_name: row.name,
         officeId: /^\d+$/.test(row.home_office_id) ? Number(row.home_office_id) : null, companyId: Number(row.company_id),
         roles: ['authenticated', ...row.office_roles.split(',').map(r => r.trim()).filter(Boolean), ...(row.oversight_role ? [row.oversight_role] : [])]
@@ -258,14 +259,15 @@ export class BrowserBridge {
       if (abilities.some(a => !a)) fail('fixtures.access-label-mismatch', 'My access contains a capability that cannot be matched to the target permission matrix.');
       const rolesText = await page.locator('.tenant-scope-theme').getAttribute('data-access-roles');
       const actorId = Number(await page.locator('.tenant-scope-theme').getAttribute('data-access-actor')) || null;
-      const result = { account, abilities, id: actorId, roles: rolesText ? JSON.parse(rolesText) : account.roles };
+      const name = page.locator('li.user.user-menu .hidden-xs');
+      const renderedName = await name.count() ? (await name.innerText()).trim() : account.display_name;
+      const result = { account, abilities, id: actorId, renderedName, roles: rolesText ? JSON.parse(rolesText) : account.roles };
       this.verified.set(account.username, result);
       return result;
     } finally { await context.close(); }
   }
 
   async resolveContext(fixtures, datasetId) {
-    if (!this.databaseBridge && Object.keys(fixtures?.records || {}).length) fail('fixtures.record-discovery-required', 'Browser record discovery is not available for this journey.');
     const dataset = this.datasets.find(run => !datasetId || run.id === datasetId);
     if (!dataset) fail('fixtures.unsatisfied-requirements', 'The requested ready dataset does not exist on the target.');
     await this.loadAccounts(dataset);
@@ -311,15 +313,21 @@ export class BrowserBridge {
       return resolved;
     }
     const search = { offices: 0, users: 0, rejected: {} };
-    for (const officeId of [...new Set(this.accounts.map(account => account.officeId))]) {
+    for (const officeId of [...new Set(this.accounts.map(account => account.officeId).filter(Boolean))]) {
       if (fixtures?.office?.id && Number(fixtures.office.id) !== officeId) continue;
       search.offices++;
+      this.eventLogger?.log('fixture_office_search', { officeId, channel: 'browser-interface' });
       const actors = {}, used = new Set();
       for (const [alias, definition] of Object.entries(fixtures?.actors || {})) {
-        if (definition.emptyBasket) fail('fixtures.basket-discovery-required', 'This journey requires independent empty-basket fixture selection, which browser discovery does not yet support.');
+        if (definition.office && definition.office !== 'office') fail('fixtures.office-binding-required', 'This actor needs a separately discovered office binding; the interface adapter cannot guess its scope.');
         const required = (definition.capabilities?.allOf || []).map(name => this.ability(name));
         const denied = (definition.capabilities?.noneOf || []).map(name => this.ability(name));
-        const candidates = this.accounts.filter(account => account.officeId === officeId && !used.has(account.username))
+        const companyId = this.accounts.find(account => account.officeId === officeId)?.companyId;
+        const candidates = this.accounts.filter(account => (definition.activeMembership === false
+          ? (definition.role === 'ict_officer' ? account.roles.includes('ict_officer') : account.companyId === companyId) : account.officeId === officeId) && !used.has(account.username)
+          // The export lists responsibilities, whereas office administration is
+          // assigned on the office profile. Confirm that role in My access below.
+          && (!definition.role || definition.role === 'office_admin' || account.roles.includes(definition.role)))
           .sort((a, b) => a.roles.length - b.roles.length || a.username.localeCompare(b.username));
         if (definition.allowSuperuser && !definition.activeMembership && !definition.office) {
           candidates.push({ ...this.profile.bootstrap, display_name: 'Supplied superadmin', roles: ['superuser'], officeId: null });
@@ -331,8 +339,13 @@ export class BrowserBridge {
             const verified = await this.verify(account);
             if (verified.roles.includes('superuser') && !definition.allowSuperuser) continue;
             if (definition.role && !verified.roles.includes(definition.role)) continue;
+            if (definition.userId && verified.id !== definition.userId) continue;
             if (!required.every(ability => verified.abilities.includes(ability)) || denied.some(ability => verified.abilities.includes(ability))) continue;
-            matches.push({ account, abilities: verified.abilities, id: verified.id });
+            if (definition.emptyBasket && !await this.hasEmptyBasket(account)) continue;
+            matches.push({ account, abilities: verified.abilities, id: verified.id, renderedName: verified.renderedName });
+            // Candidates are ordered by declared responsibility count. Verify the first
+            // suitable ordinary identity instead of logging in every user in an office.
+            break;
           } catch (error) {
             if (!error.code) throw error;
             search.rejected[error.code] = (search.rejected[error.code] || 0) + 1;
@@ -341,21 +354,82 @@ export class BrowserBridge {
         matches.sort((a, b) => a.abilities.length - b.abilities.length || a.account.username.localeCompare(b.account.username));
         const selected = matches[0]?.account;
         if (selected) {
-          actors[alias] = { username: selected.username, password: selected.password, display_name: selected.display_name,
+          actors[alias] = { username: selected.username, password: selected.password, display_name: matches[0].renderedName || selected.display_name,
             id: matches[0].id, identitySource: 'target-account-export-and-My-access' };
           used.add(selected.username);
+          this.eventLogger?.log('fixture_actor_selected', { alias, officeId, role: definition.role || 'verified-capabilities', channel: 'browser-interface' });
         }
         if (!actors[alias]) break;
       }
       if (Object.keys(actors).length === Object.keys(fixtures?.actors || {}).length) {
         const first = this.accounts.find(account => account.officeId === officeId);
-        return { run: { id: dataset.id, label: dataset.label }, office: { id: officeId, company_id: first.companyId,
-          name: `Target office ${officeId}` }, actors, records: {}, search };
+        try {
+          const discovery = await this.discoverRecords(fixtures.records || {}, actors);
+          return { run: { id: dataset.id, label: dataset.label }, office: { id: officeId, company_id: first.companyId,
+            name: discovery.officeName || `Target office ${officeId}`, company_name: discovery.companyName || null }, actors, records: discovery.records, search };
+        } catch (error) {
+          if (!error.code) throw error;
+          search.rejected[error.code] = (search.rejected[error.code] || 0) + 1;
+        }
       }
     }
     throw Object.assign(new Error('No target office and verified users satisfy this journey. Missing roles are not granted automatically.'), {
       code: 'fixtures.unsatisfied-requirements', search
     });
+  }
+
+  async hasEmptyBasket(account) {
+    const context = await this.newContext();
+    try {
+      const page = await this.login(context, account);
+      const response = await page.goto(new URL('/gov-requests/basket', this.baseUrl).href);
+      if (!response?.ok() || !await page.locator('.cr').count()) return false;
+      return await page.locator('[data-cr-line]').count() === 0;
+    } finally { await context.close(); }
+  }
+
+  async discoverRecords(definitions, actors) {
+    const records = {};
+    if (!Object.keys(definitions).length) return { records };
+    const account = actors.employee || actors.storekeeper || actors.head;
+    if (!account) fail('fixtures.record-discovery-required', 'Catalogue record discovery needs a requesting actor.');
+    const context = await this.newContext();
+    try {
+      const page = await this.login(context, account);
+      let officeName;
+      for (const [alias, definition] of Object.entries(definitions)) {
+        const type = { consumable: 'consumable', accessory: 'accessory', assetModel: 'asset_model' }[definition.kind];
+        if (!type) fail('fixtures.record-discovery-required', `No interface discovery adapter for ${definition.kind}`);
+        let next = new URL(`/gov-requests/catalog?type=${type}&free=1`, this.baseUrl).href;
+        let selected;
+        for (let count = 0; next && count < 50 && !selected; count++) {
+          const response = await page.goto(next, { waitUntil: 'load' });
+          if (!response?.ok()) fail('fixtures.catalogue-unavailable', 'The candidate cannot open Request items.');
+          officeName ||= (await page.locator('.cr-context strong').first().innerText()).trim();
+          const items = await page.locator('[data-cr-item]').evaluateAll(nodes => nodes.map(node => {
+            const [type, id] = node.dataset.crItem.split(':');
+            const freeText = node.querySelector('.cr-pill--ok, .cr-pill--few')?.textContent || '';
+            return { type, id: Number(id), name: node.querySelector('.cr-good__name')?.textContent.trim(),
+              category_name: node.querySelector('.cr-good__title .cr-meta')?.textContent.split(' · ')[0].trim(),
+              freeText, policy: node.querySelector('[data-cr-rule]')?.dataset.crRule };
+          }));
+          for (const item of items) item.available = item.freeText.trim() ? interfaceNumber(item.freeText) : 0;
+          selected = items.find(item => item.type === type && item.available >= (definition.minimumAvailable || 1)
+            && (!definition.policy || item.policy === definition.policy)
+            && (!definition.categoryContains || item.category_name?.includes(definition.categoryContains)));
+          const nextLink = page.locator('a[rel="next"]');
+          next = await nextLink.count() ? await nextLink.getAttribute('href') : null;
+          if (next && new URL(next, this.baseUrl).origin !== this.baseUrl) fail('fixtures.target-changed', 'Catalogue pagination left the selected target.');
+        }
+        if (!selected) fail('fixtures.catalogue-item-unavailable', 'No visible catalogue item meets the journey stock, category and approval requirements.');
+        records[alias] = selected;
+      }
+      await page.goto(new URL('/gov-store/my-memberships', this.baseUrl).href, { waitUntil: 'load' });
+      const membership = page.locator('.govmem-office').filter({ has: page.locator('.govmem-office__name', { hasText: officeName }) });
+      const companyName = await membership.count() === 1
+        ? (await membership.locator('.govmem-office__head .govmem-meta').first().innerText()).trim() : null;
+      return { records, officeName, companyName };
+    } finally { await context.close(); }
   }
 
   async observe(check, args) {

@@ -14,7 +14,6 @@
 import path from 'node:path';
 import fs from 'node:fs';
 import os from 'node:os';
-import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { chromium } from 'playwright';
 
@@ -37,6 +36,9 @@ import { assertMatchingTarget } from './core/target.mjs';
 import { loadTargets } from './core/targets.mjs';
 import { BrowserBridge, browserJourneyBlock } from './bridge/browser-bridge.mjs';
 import { redactString } from './reporters/redaction.mjs';
+import { buildCoverage, hashDefinitions, evidenceLevel } from './core/coverage.mjs';
+import { checkInventory, reconcileInventory } from './inventory.mjs';
+import { lockWritingTarget } from './core/target-lock.mjs';
 
 const LOCAL_HOST_PATTERN = /^(localhost|127\.0\.0\.1|\[::1\]|[a-z0-9-]+\.(local|localhost|test))$/i;
 
@@ -60,18 +62,7 @@ function gitInfo() {
 }
 
 function hashTree(dir) {
-  const hash = crypto.createHash('sha256');
-  const walk = (d) => {
-    if (!fs.existsSync(d)) return;
-    const entries = fs.readdirSync(d, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name));
-    for (const e of entries) {
-      const p = path.join(d, e.name);
-      if (e.isDirectory()) walk(p);
-      else hash.update(e.name).update(fs.readFileSync(p));
-    }
-  };
-  walk(dir);
-  return hash.digest('hex').slice(0, 16);
+  return hashDefinitions(dir);
 }
 
 function readJson(file, fallback) {
@@ -87,6 +78,7 @@ function writeHtml(runDir) {
     results: readJson(path.join(runDir, 'results.json'), { summary: {}, results: [] }),
     provenance: readJson(path.join(runDir, 'provenance.json'), {}),
     cleanup: readJson(path.join(runDir, 'cleanup.json'), {}),
+    coverage: readJson(path.join(runDir, 'coverage.json'), null),
     ownership: readJson(path.join(runDir, 'ownership.json'), [])
   });
   fs.writeFileSync(path.join(runDir, 'report.html'), html, 'utf8');
@@ -113,12 +105,21 @@ function parseArgs(args) {
 async function main() {
   const { command, options } = parseArgs(process.argv.slice(2));
   const baseDir = process.cwd();
-  const loader = new TestLoader(baseDir);
-  const validator = new TestValidator(loader);
-  const planner = new ExecutionPlanner(loader);
+  let loader = new TestLoader(baseDir);
+  let validator = new TestValidator(loader);
+  let planner = new ExecutionPlanner(loader);
   const phpBridge = new PhpBridge();
 
   switch (command) {
+    case 'inventory': {
+      if (!options.routes) throw new Error('inventory requires --routes <private route:list JSON file>');
+      const registryFile = path.join(loader.liveRoot, 'functional-coverage.json');
+      const routes = JSON.parse(fs.readFileSync(String(options.routes), 'utf8').replace(/^\uFEFF/, ''));
+      const registry = reconcileInventory(routes, readJson(registryFile, {}));
+      if (options.write) fs.writeFileSync(registryFile, JSON.stringify(registry, null, 2) + '\n');
+      console.log(JSON.stringify({ functions: registry.functions.length, packages: registry.packages.length, written: Boolean(options.write) }));
+      break;
+    }
     case 'validate': {
       console.log('Validating Live Testing JSON contracts and journeys...');
       let totalChecked = 0;
@@ -162,6 +163,13 @@ async function main() {
         }
       }
 
+      const registry = loader.loadJson(path.join(loader.liveRoot, 'functional-coverage.json'));
+      const inventoryErrors = [...validator.validateSchema('functional-coverage', registry), ...checkInventory(loader, registry)];
+      totalChecked++;
+      totalErrors += inventoryErrors.length;
+      for (const e of inventoryErrors) console.error(`[FAIL] Functional coverage: ${e}`);
+      if (!inventoryErrors.length) console.log(`[OK] Functional inventory: ${registry.functions.length} functions`);
+
       console.log(`\nValidation complete. Checked ${totalChecked} definitions. Errors: ${totalErrors}`);
       process.exit(totalErrors > 0 ? 1 : 0);
       break;
@@ -186,18 +194,24 @@ async function main() {
     }
 
     case 'discover': {
-      console.log('Discovering available seeded datasets and fixture status...');
+      console.log('Discovering ready datasets through the application interface...');
+      const targets = loadTargets(baseDir, options['targets-file']);
+      const target = targets.find(t => t.id === (options.target || 'local'));
+      if (!target) throw new Error('Select a configured nonproduction target with --target.');
+      const browser = await chromium.launch({ headless: true });
+      const bridge = new BrowserBridge({ browser, profile: target, baseUrl: target.baseUrl });
       try {
-        const datasets = await phpBridge.getDatasets();
+        await bridge.preflight();
+        const datasets = bridge.datasets;
         console.log(`Found ${datasets.length} ready experiment dataset(s):`);
         for (const ds of datasets) {
           console.log(`  - ID: ${ds.id}`);
-          console.log(`    Label: "${ds.label}" | Profile: ${ds.profile} | Phase: ${ds.phase} | Created: ${ds.created_at}`);
+          console.log(`    Label: "${ds.label}" | Status: ${ds.status} | Source: application interface`);
         }
       } catch (err) {
         console.error(`Discovery error: ${err.message}`);
-        process.exit(1);
-      }
+        process.exitCode = 1;
+      } finally { await bridge.close(); await browser.close(); }
       break;
     }
 
@@ -225,8 +239,10 @@ async function main() {
       const testId = options.test;
       const datasetOverride = options.dataset;
       const targets = loadTargets(baseDir, options['targets-file']);
-      const selectedTarget = options.target ? targets.find(target => target.id === options.target) : null;
+      const selectedTarget = options.target ? targets.find(target => target.id === options.target)
+        : targets.find(target => new URL(target.baseUrl).origin === new URL(options.baseUrl || 'http://snipeit.local').origin);
       if (options.target && !selectedTarget) throw new Error('The selected target is not defined in the private target file.');
+      if (!selectedTarget) throw new Error('Interface-only live runs require a configured nonproduction target and browser login. No database fallback is used.');
       const seed = options.seed ? parseInt(options.seed, 10) : 20261006;
       const baseUrl = options.baseUrl || selectedTarget?.baseUrl || 'http://snipeit.local';
       const headless = !options.headed;
@@ -246,6 +262,11 @@ async function main() {
         : `run_${Date.now()}_${new DeterministicRandom(seed).uniqueMarkedText('R', 4)}`;
       const runDir = path.join(baseDir, 'storage', 'app', 'private', 'live-tests', runId);
       fs.mkdirSync(runDir, { recursive: true });
+      const definitionSnapshot = path.join(runDir, 'definitions');
+      fs.cpSync(loader.liveRoot, definitionSnapshot, { recursive: true, errorOnExist: true });
+      loader = new TestLoader(baseDir, definitionSnapshot);
+      validator = new TestValidator(loader);
+      planner = new ExecutionPlanner(loader);
 
       // Uniqueness is separate from the deterministic seed: replays reuse seeded inputs but never collide with earlier runs.
       const uniqueSuffix = Date.now().toString(36).slice(-5).toUpperCase();
@@ -279,12 +300,18 @@ async function main() {
         tests: options.tests ? String(options.tests).split(',') : null,
         datasetOverride: datasetOverride || null,
         application: gitInfo(),
-        definitionsHash: hashTree(path.join(baseDir, 'tests', 'live')),
+        definitionsHash: hashTree(loader.liveRoot),
+        definitionsSource: 'private-run-snapshot',
         runtime: { node: process.version, platform: process.platform, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, os: os.release() },
         selectedContexts: []
       };
+      provenance.kind = 'business';
+      provenance.runner = provenance.application;
+      provenance.deployment = selectedTarget?.environment === 'local' || !selectedTarget
+        ? { revision: provenance.runner.revision, source: 'authorized-local-workspace', dirtyFiles: provenance.runner.dirtyFiles }
+        : { revision: selectedTarget.deploymentRevision || null, source: selectedTarget.deploymentRevision ? 'operator-target-profile' : 'unknown' };
       provenance.targetId = selectedTarget?.id || null;
-      provenance.fixtureSource = selectedTarget ? 'target-browser' : 'local-database';
+      provenance.fixtureSource = 'target-browser';
       // Local-database mode: a configured local target for this same server supplies the superadmin that
       // "supplied superuser" actors need (dataset users are never superadmins), as --target does.
       if (!selectedTarget) {
@@ -339,12 +366,16 @@ async function main() {
       };
       let preflight;
       try {
+        if (options['allow-writes']) {
+          const unlock = lockWritingTarget(path.dirname(runDir), baseUrl, runId);
+          process.once('exit', unlock);
+        }
         if (selectedTarget) {
           browser = await chromium.launch({ headless, slowMo });
-          const aliases = JSON.parse(fs.readFileSync(path.join(baseDir, 'tests/live/capabilities.json'), 'utf8')).capabilities;
+          const aliases = loader.loadJson(path.join(loader.liveRoot, 'capabilities.json')).capabilities;
           fixtureBridge = new BrowserBridge({ browser, baseUrl, profile: selectedTarget, aliases,
-            allowWrites: Boolean(options['allow-writes']), ownership, eventLogger,
-            databaseBridge: selectedTarget.database ? new PhpBridge({ target: selectedTarget }) : null });
+            allowWrites: Boolean(options['allow-writes']), ownership, eventLogger });
+          provenance.verificationChannel = 'browser-interface';
         }
         preflight = await fixtureBridge.preflight();
       } catch (err) {
@@ -388,7 +419,7 @@ async function main() {
             continue;
           }
           if (selectedTarget) {
-            const missing = browserJourneyBlock(journey, planner.planJourney(journey), preflight.accessMode, Boolean(selectedTarget.database));
+            const missing = browserJourneyBlock(journey, planner.planJourney(journey), preflight.accessMode, false);
             if (missing) { block(...missing); continue; }
           }
 
@@ -444,7 +475,7 @@ async function main() {
           const plan = planner.planJourney(journey);
           if (selectedTarget && Object.entries(resolved.actors).some(([alias, actor]) => !actor.id
             && JSON.stringify(plan).includes('${actors.' + alias + '.id}'))) {
-            block('fixtures.user-id-required', 'This journey requires a numeric user ID that the target My access page did not identify. Deploy the current My access view or configure the matching database.');
+            block('fixtures.user-id-required', 'This journey requires an actor identity that the target My access page did not expose. Its interface identity adapter must be completed; database access is not a prerequisite.');
             continue;
           }
           const activeLanguage = journey.execution?.language || 'en-US';
@@ -487,6 +518,7 @@ async function main() {
                 ledger: ownership,
                 accessMode: preflight.accessMode,
                 artifactsDir,
+                interfaceOnly: true,
                 newPage: async () => {
                   const c = selectedTarget ? await fixtureBridge.newContext() : await browser.newContext();
                   caseContexts.push(c);
@@ -508,6 +540,7 @@ async function main() {
             }
 
             result.pinned = pinned;
+            result.evidenceLevel = evidenceLevel(journey);
             result.generatedData = generated;
             result.attempts = attemptLog.length;
             if (attemptLog.length > 1) {
@@ -536,6 +569,9 @@ async function main() {
       writePrivate('provenance.json', provenance);
       writePrivate('ownership.json', ownership);
       writePrivate('cleanup.json', cleanup);
+      writePrivate('coverage.json', buildCoverage({ loader, runsDir: path.dirname(runDir),
+        targetId: provenance.targetId || 'local', baseUrl, deploymentRevision: provenance.deployment?.revision,
+        verificationChannel: 'browser-interface' }));
       writeHtml(runDir);
       resultsReporter.printSummary();
 
@@ -607,27 +643,14 @@ async function main() {
     }
 
     case 'coverage': {
-      // Distinct counts from definitions, the feature catalog and the most recent result of each journey.
-      const catalog = readJson(path.join(baseDir, 'tests', 'live', 'feature-catalog.json'), { features: [] });
-      const defined = loader.listJourneys().map(j => j.id);
-      const runsDir = path.join(baseDir, 'storage', 'app', 'private', 'live-tests');
-      const latest = {};
-      if (fs.existsSync(runsDir)) {
-        for (const d of fs.readdirSync(runsDir).filter(n => n.startsWith('run_')).sort()) {
-          for (const r of readJson(path.join(runsDir, d, 'results.json'), { results: [] }).results) {
-            latest[baseJourneyId(r.journeyId)] = { status: r.status, run: d };
-          }
-        }
-      }
-      console.log(JSON.stringify({
-        implementedDefinitions: defined.length,
-        executedAtLeastOnce: defined.filter(id => latest[id] && ['passed', 'failed'].includes(latest[id].status)).length,
-        lastRunPassed: defined.filter(id => latest[id]?.status === 'passed').length,
-        lastRunBlocked: defined.filter(id => latest[id]?.status === 'blocked').length,
-        neverRun: defined.filter(id => !latest[id]),
-        featuresWithoutJourneys: catalog.features.filter(f => !f.journeys?.length).map(f => f.id),
-        perJourney: Object.fromEntries(defined.map(id => [id, latest[id] || 'never-run']))
-      }, null, 2));
+      const targetId = options.target || 'local';
+      const target = loadTargets(baseDir, options['targets-file']).find(t => t.id === targetId);
+      if (options.target && !target) throw new Error('Unknown configured target');
+      const coverage = buildCoverage({ loader, runsDir: path.join(baseDir, 'storage', 'app', 'private', 'live-tests'),
+        targetId, baseUrl: target?.baseUrl || 'http://snipeit.local',
+        verificationChannel: 'browser-interface',
+        deploymentRevision: options.revision || target?.deploymentRevision || (targetId === 'local' ? gitInfo().revision : undefined) });
+      console.log(JSON.stringify(options.summary ? { targetId, summary: coverage.summary, packages: coverage.packages, stories: coverage.stories } : coverage, null, 2));
       break;
     }
 
@@ -638,14 +661,15 @@ GovStore Live Journey Testing CLI
 Commands:
   validate                          Validate all schemas, journeys, flows, and contracts
   list [--feature <name>]           List all available journeys and suites
-  discover                          Discover seeded datasets via read-only PHP bridge
+  discover [--target id]            Discover ready datasets through the application interface
   plan --suite <id> | --test <id>   View expanded execution plan without browser mutations
   run [--suite <id>] [--test <id>] [--tests a,b,c] [--baseUrl <url>] [--headed] [--slow-mo ms]  Run live browser journeys
-      [--target <id>] [--targets-file <private-file>]  Use a configured server, bootstrap account and optional database
+      [--target <id>] [--targets-file <private-file>]  Use a configured nonproduction server and private browser login
   dashboard [--port 4780]           Local dashboard: start runs, watch progress, pick server URL
   report --run <runId> [--html]    View results, or write report.html
   replay --run <runId> [--failed-only] [--allow-writes]  Re-run journeys with fresh fixtures
-  coverage                          Defined / executed / passed / blocked / missing counts
+  inventory --routes <file> [--write]  Reconcile effective route inventory (read-only unless --write)
+  coverage [--target id] [--revision ref] [--summary]  Target-specific function/branch acceptance
 `);
       break;
   }

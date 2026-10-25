@@ -1,0 +1,208 @@
+{
+  "schemaVersion": 1,
+  "id": "tracking.funding-dictionary-create-remove",
+  "title": "Super administrator reviews and creates an unused fictional funding source, reopens it and reviews its removal",
+  "description": "Uses the exact national proposal review, reason and typed CHANGE for each mutation. Only a newly marked unused dictionary entry is removed.",
+  "evidenceLevel": "function",
+  "features": [
+    "tracking",
+    "user-story.us-21"
+  ],
+  "tags": [
+    "functional",
+    "write",
+    "interface-only",
+    "national-review"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "accessMode": "any",
+    "timeoutMs": 180000
+  },
+  "fixtures": {
+    "actors": {
+      "admin": {
+        "role": "superuser",
+        "activeMembership": false,
+        "allowSuperuser": true,
+        "capabilities": {
+          "allOf": [
+            "tracking.settings.manage"
+          ]
+        }
+      }
+    }
+  },
+  "data": {
+    "name": {
+      "generate": "markedText",
+      "prefix": "LIVE-FUND",
+      "length": 7
+    }
+  },
+  "preconditions": [
+    {
+      "action": "capture",
+      "value": 0,
+      "as": "fundingId"
+    },
+    {
+      "action": "capture",
+      "value": 0,
+      "as": "fundingRemains"
+    }
+  ],
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "admin"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/funding-types"
+    },
+    {
+      "action": "select",
+      "target": "css=#funding_primary_type",
+      "value": "OTHER"
+    },
+    {
+      "action": "fill",
+      "target": "css=#funding_name",
+      "value": "${data.name}"
+    },
+    {
+      "action": "fill",
+      "target": "css=#funding_description",
+      "value": "Fictional unused staging acceptance source - remove after verification"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form[action$=\"/funding-types\"] button[type=submit]"
+    },
+    {
+      "action": "assert",
+      "target": "css=.tenant-scope-theme pre >> nth=1",
+      "test": "text",
+      "contains": "${data.name}"
+    },
+    {
+      "use": "review.confirm",
+      "with": {
+        "reason": "${data.name} - create one fictional unused funding source"
+      }
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "assert",
+      "target": "css=table tbody tr:has-text(\"${data.name}\")",
+      "test": "count",
+      "equals": 1
+    },
+    {
+      "action": "assert",
+      "target": "css=table tbody tr:has-text(\"${data.name}\") td:nth-child(4)",
+      "test": "number",
+      "equals": 0
+    },
+    {
+      "action": "capture",
+      "target": "css=table tbody tr:has-text(\"${data.name}\") form",
+      "attribute": "action",
+      "pattern": "/funding-types/(\\d+)",
+      "as": "fundingId"
+    },
+    {
+      "action": "ledger",
+      "kind": "funding_dictionary",
+      "id": "${captured.fundingId}",
+      "effect": "New marked unused funding source created and reread with zero tasks; supported removal is still required",
+      "cleanup": "retained"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=table tbody tr:has-text(\"${data.name}\") button[type=submit]"
+    },
+    {
+      "action": "assert",
+      "target": "css=form[action$=\"/funding-types/${captured.fundingId}\"]",
+      "test": "visible"
+    },
+    {
+      "use": "review.confirm",
+      "with": {
+        "reason": "${data.name} - remove exactly this unused fictional funding source"
+      }
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "assert",
+      "target": "css=table tbody tr:has-text(\"${data.name}\")",
+      "test": "count",
+      "equals": 0
+    },
+    {
+      "action": "ledger",
+      "kind": "funding_dictionary",
+      "id": "${captured.fundingId}",
+      "effect": "Only the newly marked unused funding source removed; review/audit retained",
+      "cleanup": "removed"
+    }
+  ],
+  "cleanup": {
+    "policy": "supported-ui-removal",
+    "description": "If the exact marked unused entry remains, remove it using its ordinary national review; preserve all existing funding sources.",
+    "steps": [
+      {
+        "use": "auth.login",
+        "with": {
+          "actor": "admin"
+        }
+      },
+      {
+        "action": "goto",
+        "url": "/gov-store/admin/tracking/funding-types"
+      },
+      {
+        "action": "capture",
+        "target": "css=table tbody tr:has-text(\"${data.name}\")",
+        "count": true,
+        "as": "fundingRemains"
+      },
+      {
+        "action": "submitForm",
+        "target": "css=table tbody tr:has-text(\"${data.name}\") button[type=submit]",
+        "when": {
+          "actual": "${captured.fundingRemains}",
+          "equals": 1
+        }
+      },
+      {
+        "use": "review.confirm",
+        "with": {
+          "reason": "${data.name} - supported cleanup of the exact unused fixture"
+        },
+        "when": {
+          "actual": "${captured.fundingRemains}",
+          "equals": 1
+        }
+      },
+      {
+        "action": "goto",
+        "url": "/gov-store/admin/tracking/funding-types"
+      },
+      {
+        "action": "assert",
+        "target": "css=table tbody tr:has-text(\"${data.name}\")",
+        "test": "count",
+        "equals": 0
+      }
+    ]
+  }
+}
