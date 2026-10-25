@@ -10,19 +10,22 @@ class CommonOfficeCollectionV1
 {
     public const KEY = 'bd-common-office';
     public const MANIFEST_SHA256 = 'd840ca2fc4cef21ad66d30046fe2655bf3d9d2b31169467d7dd17c99bcad3692';
+    protected const VERSION = 1;
+    protected const SECTIONS = ['furniture', 'stationery', 'ict', 'printing', 'electrical', 'cleaning', 'general'];
+    protected const UNITS = ['piece', 'sheet', 'roll'];
 
     public function install(?string $directory = null): void
     {
-        $directory ??= __DIR__.'/../../database/data/office-defaults/v1';
+        $directory ??= __DIR__.'/../../database/data/office-defaults/v'.static::VERSION;
         $manifestPath = $directory.'/manifest.json';
-        if (! is_readable($manifestPath) || ! hash_equals(self::MANIFEST_SHA256, hash_file('sha256', $manifestPath))) {
-            throw new RuntimeException('The common office v1 manifest is missing or has changed. Restore the released bundle.');
+        if (! is_readable($manifestPath) || ! hash_equals(static::MANIFEST_SHA256, hash_file('sha256', $manifestPath))) {
+            throw new RuntimeException('The common office v'.static::VERSION.' manifest is missing or has changed. Restore the released bundle.');
         }
         $manifest = json_decode(file_get_contents($manifestPath), true, 512, JSON_THROW_ON_ERROR);
         foreach ($manifest['files'] as $file => $hash) {
             $path = $directory.'/'.$file;
             if (! is_readable($path) || ! hash_equals($hash, hash_file('sha256', $path))) {
-                throw new RuntimeException('The common office v1 CSV bundle is missing or has changed: '.$file);
+                throw new RuntimeException('The common office v'.static::VERSION.' CSV bundle is missing or has changed: '.$file);
             }
         }
         $collections = $this->csv($directory.'/collections.csv', ['key', 'name', 'name_bn', 'description', 'description_bn', 'icon']);
@@ -40,7 +43,7 @@ class CommonOfficeCollectionV1
                     if ($existing->scheme !== 'UNSPSC' || (int) $existing->level !== (int) $node['level']
                         || (string) $existing->parent_code !== $node['parent_code'] || $existing->hid !== $node['hid']
                         || (bool) $existing->is_selectable !== (bool) $node['is_selectable']) {
-                        throw new RuntimeException('An installed catalog node conflicts with common office v1: '.$node['code']);
+                        throw new RuntimeException('An installed catalog node conflicts with common office v'.static::VERSION.': '.$node['code']);
                     }
                     continue;
                 }
@@ -50,7 +53,6 @@ class CommonOfficeCollectionV1
                 ]));
                 $changed = true;
             }
-
             $collection = $collections[0];
             $id = DB::table('gov_catalog_collections')->where('key', self::KEY)->value('id');
             if (! $id) {
@@ -59,6 +61,7 @@ class CommonOfficeCollectionV1
                 ]);
                 $changed = true;
             }
+            $changed = $this->refreshCollectionDescription((int) $id, $collection) || $changed;
 
             foreach ($items as $item) {
                 if (! DB::table('gov_catalog_collection_nodes')->where('collection_id', $id)->where('code', $item['code'])->exists()) {
@@ -86,7 +89,7 @@ class CommonOfficeCollectionV1
             }
             if ($changed) {
                 DB::table('gov_catalog_import_history')->insert([
-                    'scheme' => 'UNSPSC', 'version' => 'bd-common-office-v1', 'filename' => 'office-defaults/v1/manifest.json',
+                    'scheme' => 'UNSPSC', 'version' => 'bd-common-office-v'.static::VERSION, 'filename' => 'office-defaults/v'.static::VERSION.'/manifest.json',
                     'rows_processed' => count($items), 'warnings' => 0, 'duration_seconds' => 0,
                     'user_id' => null, 'imported_at' => $now,
                 ]);
@@ -94,7 +97,12 @@ class CommonOfficeCollectionV1
         });
     }
 
-    private function csv(string $path, array $columns): array
+    protected function refreshCollectionDescription(int $id, array $collection): bool
+    {
+        return false;
+    }
+
+    protected function csv(string $path, array $columns): array
     {
         $handle = fopen($path, 'rb');
         try {
@@ -117,7 +125,8 @@ class CommonOfficeCollectionV1
 
     private function validate(array $collections, array $nodes, array $items, array $manifest): void
     {
-        if (count($collections) !== 1 || $collections[0]['key'] !== self::KEY
+        if ($manifest['dataset'] !== self::KEY || $manifest['version'] !== static::VERSION
+            || count($collections) !== 1 || $collections[0]['key'] !== self::KEY
             || count($nodes) !== $manifest['node_count'] || count($items) !== $manifest['item_count']) {
             throw new RuntimeException('Invalid common office collection identity or row counts.');
         }
@@ -140,8 +149,8 @@ class CommonOfficeCollectionV1
             if (! $node || $node['level'] !== '4' || isset($seen[$item['code']])
                 || $item['collection_key'] !== self::KEY || $item['title_en'] !== $node['title_en'] || $item['title_bn'] === ''
                 || ! in_array($item['category_type'], ['asset', 'consumable', 'accessory', 'component'], true)
-                || ! in_array($item['section'], ['furniture', 'stationery', 'ict', 'printing', 'electrical', 'cleaning', 'general'], true)
-                || ! in_array($item['unit'], ['piece', 'sheet', 'roll'], true)) {
+                || ! in_array($item['section'], static::SECTIONS, true)
+                || ! in_array($item['unit'], static::UNITS, true)) {
                 throw new RuntimeException('Invalid common office item: '.$item['code']);
             }
             $seen[$item['code']] = true;

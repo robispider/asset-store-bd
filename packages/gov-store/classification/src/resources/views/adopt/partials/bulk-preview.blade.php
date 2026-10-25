@@ -234,7 +234,7 @@
                 const selectedType = jQuery(`.row-category-type[data-code="${code}"]`).val();
                 
                 itemsToExecute.push({
-                    code: code,
+                    code: String(code),
                     category_type: selectedType
                 });
             });
@@ -250,10 +250,12 @@
             jQuery.ajax({
                 url: '{{ route("gov.catalog.bulk.execute") }}',
                 type: 'POST',
-                data: { 
-                    _token: '{{ csrf_token() }}', 
-                    items: itemsToExecute // Passes array of objects (code + category_type)
-                },
+                // Large collections exceed PHP's form-field limit; JSON preserves the complete selection.
+                contentType: 'application/json; charset=UTF-8',
+                data: JSON.stringify({
+                    _token: '{{ csrf_token() }}',
+                    items: itemsToExecute
+                }),
                 success: function(res) {
                     alert(bulkLabels.success.replace(':count', res.processed_count));
                     jQuery('#bulkAdoptionModal').modal('hide');

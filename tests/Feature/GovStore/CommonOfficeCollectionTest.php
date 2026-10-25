@@ -9,6 +9,7 @@ use GovStore\Classification\Models\CatalogCollection;
 use GovStore\Classification\Services\BulkAdoptionService;
 use GovStore\Classification\Services\CatalogSearchService;
 use GovStore\Classification\Services\Defaults\CommonOfficeCollectionV1;
+use GovStore\Classification\Services\Defaults\CommonOfficeCollectionV2;
 use GovStore\TenantScope\Contexts\TenantContext;
 use GovStore\TenantScope\Services\GovAccess;
 use Illuminate\Contracts\Console\Kernel;
@@ -129,19 +130,19 @@ class CommonOfficeCollectionTest extends TestCase
     {
         $this->migrate();
         $this->assertSame(1, DB::table('gov_catalog_collections')->count());
-        $this->assertSame(114, DB::table('gov_catalog_collection_nodes')->count());
-        $this->assertSame(193, DB::table('gov_catalog_nodes')->count());
-        $this->assertSame(114, DB::table('gov_catalog_enrichments')->count());
+        $this->assertSame(621, DB::table('gov_catalog_collection_nodes')->count());
+        $this->assertSame(899, DB::table('gov_catalog_nodes')->count());
+        $this->assertSame(621, DB::table('gov_catalog_enrichments')->count());
         $this->assertSame(0, DB::table('gov_finance_items')->count());
-        $this->assertSame(1, DB::table('gov_catalog_import_history')->count());
+        $this->assertSame(2, DB::table('gov_catalog_import_history')->count());
         $this->assertNull(DB::table('gov_catalog_import_history')->value('user_id'));
         foreach (['categories', 'assets', 'consumables', 'accessories', 'components', 'models', 'gov_tenant_scope_mappings', 'gov_office_starter_runs'] as $table) {
             $this->assertSame(0, DB::table($table)->count(), $table);
         }
         $this->assertNotContains('Bangladesh Government Common Office', config('starter_templates.office_types.default'));
         $this->migrate();
-        $this->assertSame(1, DB::table('gov_catalog_import_history')->count());
-        $this->assertSame(114, DB::table('gov_catalog_collection_nodes')->count());
+        $this->assertSame(2, DB::table('gov_catalog_import_history')->count());
+        $this->assertSame(621, DB::table('gov_catalog_collection_nodes')->count());
     }
 
     public function test_bundle_matches_the_bundled_unspsc_source_and_has_complete_ancestor_paths(): void
@@ -161,7 +162,150 @@ class CommonOfficeCollectionTest extends TestCase
             }
         }
         fclose($source);
-        $this->assertSame(193, $matched);
+        $this->assertSame(899, $matched);
+    }
+
+    public function test_v2_upgrade_keeps_v1_adoptions_stock_and_local_edits_and_refreshes_only_shipped_descriptions(): void
+    {
+        foreach (['2024_01_06_000000_create_gov_category_governance_table', '2024_04_01_000000_create_gov_catalog_tables', '2026__08_04_create_gov_catalog_collections_table',
+            '2026__10_26_000001_add_collection_item_defaults', '2026__10_26_000002_install_common_office_collection_v1'] as $name) {
+            (require base_path('packages/gov-store/classification/src/database/migrations/'.$name.'.php'))->up();
+        }
+        $this->assertSame(114, DB::table('gov_catalog_collection_nodes')->count());
+        $id = $this->collectionId();
+        $this->actor();
+        app(BulkAdoptionService::class)->execute([['code' => '43211507', 'category_type' => 'asset']], 'location', 10, 1);
+        DB::table('assets')->insert(['id' => 123]);
+        DB::table('gov_catalog_collections')->where('id', $id)->update(['name' => 'Our office library',
+            'description_bn' => 'নিজস্ব বিবরণ', 'is_active' => false]);
+        DB::table('gov_catalog_enrichments')->where('code', '43211507')->update(['title_bn' => 'নিজস্ব কম্পিউটার', 'local_notes' => 'Local note']);
+        DB::table('gov_catalog_nodes')->where('code', '43211507')->update(['title_en' => 'Local desktop', 'version' => 'local']);
+        DB::table('gov_catalog_collection_nodes')->where('collection_id', $id)->where('code', '43211507')
+            ->update(['category_type' => 'accessory', 'section' => 'general', 'unit' => 'piece']);
+        $before = [];
+        foreach (['categories', 'gov_tenant_scope_mappings', 'gov_catalog_snipe_mappings', 'assets'] as $table) {
+            $before[$table] = DB::table($table)->get()->toJson();
+        }
+        (new CommonOfficeCollectionV2)->install();
+        $this->assertSame($id, $this->collectionId());
+        $this->assertSame(1, DB::table('gov_catalog_collections')->count());
+        $this->assertSame(621, DB::table('gov_catalog_collection_nodes')->count());
+        $this->assertSame(2, DB::table('gov_catalog_import_history')->count());
+        $collection = DB::table('gov_catalog_collections')->where('id', $id)->first();
+        $this->assertSame('Our office library', $collection->name);
+        $this->assertSame('নিজস্ব বিবরণ', $collection->description_bn);
+        $this->assertStringContainsString('networking', $collection->description);
+        $this->assertFalse((bool) $collection->is_active);
+        $this->assertSame('নিজস্ব কম্পিউটার', DB::table('gov_catalog_enrichments')->where('code', '43211507')->value('title_bn'));
+        $this->assertSame('Local note', DB::table('gov_catalog_enrichments')->where('code', '43211507')->value('local_notes'));
+        $this->assertSame('Local desktop', DB::table('gov_catalog_nodes')->where('code', '43211507')->value('title_en'));
+        $this->assertSame('local', DB::table('gov_catalog_nodes')->where('code', '43211507')->value('version'));
+        $this->assertSame('accessory', DB::table('gov_catalog_collection_nodes')->where('code', '43211507')->value('category_type'));
+        $this->assertSame('general', DB::table('gov_catalog_collection_nodes')->where('code', '43211507')->value('section'));
+        foreach ($before as $table => $rows) {
+            $this->assertSame($rows, DB::table($table)->get()->toJson(), $table);
+        }
+        (new CommonOfficeCollectionV2)->install();
+        $this->assertSame(2, DB::table('gov_catalog_import_history')->count());
+        $original = 'Common furniture, stationery, computing, printing, electrical, cleaning and meeting item types. Offices choose which types to adopt; no stock is created.';
+        DB::table('gov_catalog_collections')->where('id', $id)->update(['description' => strtoupper($original)]);
+        (new CommonOfficeCollectionV2)->install();
+        $this->assertSame(strtoupper($original), DB::table('gov_catalog_collections')->where('id', $id)->value('description'));
+        $this->assertSame(2, DB::table('gov_catalog_import_history')->count());
+    }
+
+    public function test_v2_covers_practical_office_groups_with_bilingual_labels_and_preserves_all_v1_rows(): void
+    {
+        $read = function (string $version): array {
+            $handle = fopen(base_path('packages/gov-store/classification/src/database/data/office-defaults/'.$version.'/items.csv'), 'rb');
+            try {
+                $header = fgetcsv($handle, 0, ',', '"', '');
+                $rows = [];
+                while (($row = fgetcsv($handle, 0, ',', '"', '')) !== false) {
+                    $item = array_combine($header, $row);
+                    $rows[$item['code']] = $item;
+                }
+                return $rows;
+            } finally {
+                fclose($handle);
+            }
+        };
+        $items = $read('v2');
+        foreach ($read('v1') as $code => $item) {
+            $this->assertSame($item, $items[$code], $code);
+        }
+        $en = require base_path('packages/gov-store/classification/src/resources/lang/en-US/collections.php');
+        $bn = require base_path('packages/gov-store/classification/src/resources/lang/bn-BD/collections.php');
+        $this->assertCount(22, array_unique(array_column($items, 'section')));
+        foreach ($items as $item) {
+            $this->assertMatchesRegularExpression('/[\x{0980}-\x{09ff}]/u', $item['title_bn'], $item['code']);
+            $this->assertArrayHasKey($item['section'], $en['sections']);
+            $this->assertArrayHasKey($item['section'], $bn['sections']);
+        }
+        // Common needs omitted by v1, with an explicit expected inventory classification.
+        foreach (['43222609' => 'asset', '45121520' => 'accessory', '43191504' => 'asset',
+            '46191601' => 'asset', '42172001' => 'accessory', '52152102' => 'accessory',
+            '31201610' => 'consumable', '47131619' => 'consumable', '43201402' => 'component',
+            '43202222' => 'accessory', '27112703' => 'asset', '24102004' => 'asset',
+            '56101516' => 'asset', '46171506' => 'asset', '42311546' => 'consumable',
+            '55101524' => 'accessory', '55101506' => 'consumable', '52131501' => 'asset',
+            '56101528' => 'asset', '10161661' => 'accessory', '25101503' => 'asset',
+            '25174810' => 'accessory', '44101603' => 'asset', '52141553' => 'asset',
+            '52152016' => 'accessory', '56101543' => 'asset'] as $code => $type) {
+            $this->assertSame($type, $items[$code]['category_type'], $code);
+        }
+        $this->migrate();
+        $this->actor();
+        $preview = $this->preview(array_map('strval', array_keys($items)));
+        $this->assertTrue($preview['success']);
+        $this->assertCount(621, $preview['summary']['new']);
+        $this->assertCount(0, $preview['summary']['link']);
+        $this->assertCount(0, $preview['summary']['skipped']);
+        $types = array_column($preview['summary']['new'], 'category_type', 'code');
+        foreach ($items as $code => $item) {
+            $this->assertSame($item['category_type'], $types[$code], (string) $code);
+        }
+        foreach (['ওয়েবক্যাম' => '45121520', 'Router' => '43222609', 'HDMI cable' => '43202222',
+            'পাপোশ' => '52101508', 'ফার্স্ট এইড বক্স' => '42172001',
+            'Aluminium trunk' => '56101516', 'Steel trunk' => '56101516', 'Iron trunk' => '56101516',
+            'লোহার সিন্দুক' => '46171506', 'প্লাস্টার' => '42311546', 'Microbus' => '25101505',
+            'Magazine' => '55101506', 'মানি প্ল্যান্ট' => '10161661', 'Rice cooker' => '52141553'] as $term => $code) {
+            $this->assertContains($code, app(CatalogSearchService::class)->search($term)->pluck('code')->all());
+        }
+        $payload = array_values(array_map(fn ($item) => ['code' => $item['code'], 'category_type' => $item['category_type']], $items));
+        $request = Request::create('/', 'POST', [], [], [], ['CONTENT_TYPE' => 'application/json'], json_encode(['items' => $payload]));
+        $result = app(BulkAdoptionController::class)->execute($request, app(TenantContext::class))->getData(true);
+        $this->assertTrue($result['success'], json_encode($result));
+        $this->assertSame(621, $result['processed_count']);
+        $this->assertSame(621, DB::table('categories')->count());
+        $this->assertSame(621, DB::table('gov_tenant_scope_mappings')->where('scope_type', 'location')->where('scope_id', 10)->count());
+        foreach (['assets', 'consumables', 'accessories', 'components', 'models'] as $table) {
+            $this->assertSame(0, DB::table($table)->count(), $table);
+        }
+    }
+
+    public function test_v2_conflict_rolls_back_additions_and_leaves_the_v1_collection_intact(): void
+    {
+        foreach (['2024_04_01_000000_create_gov_catalog_tables', '2026__08_04_create_gov_catalog_collections_table',
+            '2026__10_26_000001_add_collection_item_defaults', '2026__10_26_000002_install_common_office_collection_v1'] as $name) {
+            (require base_path('packages/gov-store/classification/src/database/migrations/'.$name.'.php'))->up();
+        }
+        DB::table('gov_catalog_nodes')->insert(['scheme' => 'OTHER', 'version' => 'existing', 'code' => '43222609',
+            'level' => 4, 'title_en' => 'Existing conflict', 'hid' => '/43222609/']);
+        $before = [];
+        foreach (['gov_catalog_nodes', 'gov_catalog_collections', 'gov_catalog_collection_nodes',
+            'gov_catalog_enrichments', 'gov_catalog_synonyms', 'gov_catalog_import_history'] as $table) {
+            $before[$table] = DB::table($table)->get()->toJson();
+        }
+        try {
+            (new CommonOfficeCollectionV2)->install();
+            $this->fail('Conflicting upgrade was accepted.');
+        } catch (RuntimeException $e) {
+            $this->assertStringContainsString('conflicts', $e->getMessage());
+        }
+        foreach ($before as $table => $rows) {
+            $this->assertSame($rows, DB::table($table)->get()->toJson(), $table);
+        }
     }
 
     public function test_reinstall_preserves_local_edits_mappings_and_collection_identity_without_duplicates(): void
@@ -173,6 +317,7 @@ class CommonOfficeCollectionTest extends TestCase
         DB::table('gov_catalog_collection_nodes')->where('code', '43211507')->update(['category_type' => 'accessory']);
         $synonyms = DB::table('gov_catalog_synonyms')->count();
         (new CommonOfficeCollectionV1)->install();
+        (new CommonOfficeCollectionV2)->install();
         $this->assertSame(1, DB::table('gov_catalog_collections')->count());
         $this->assertSame('Our collection', DB::table('gov_catalog_collections')->value('name'));
         $this->assertSame(0, (int) DB::table('gov_catalog_collections')->value('is_active'));
@@ -181,13 +326,13 @@ class CommonOfficeCollectionTest extends TestCase
         $this->assertSame('Preserve this note', DB::table('gov_catalog_enrichments')->where('code', '43211507')->value('local_notes'));
         $this->assertSame('accessory', DB::table('gov_catalog_collection_nodes')->where('code', '43211507')->value('category_type'));
         $this->assertSame($synonyms, DB::table('gov_catalog_synonyms')->count());
-        $this->assertSame(1, DB::table('gov_catalog_import_history')->count());
+        $this->assertSame(2, DB::table('gov_catalog_import_history')->count());
     }
 
     public function test_changed_csv_is_rejected_before_any_writes(): void
     {
         $this->migrate();
-        $source = base_path('packages/gov-store/classification/src/database/data/office-defaults/v1');
+        $source = base_path('packages/gov-store/classification/src/database/data/office-defaults/v2');
         $directory = sys_get_temp_dir().'/govstore-common-office-'.bin2hex(random_bytes(6));
         mkdir($directory);
         try {
@@ -196,12 +341,12 @@ class CommonOfficeCollectionTest extends TestCase
             }
             file_put_contents($directory.'/items.csv', "\n", FILE_APPEND);
             try {
-                (new CommonOfficeCollectionV1)->install($directory);
+                (new CommonOfficeCollectionV2)->install($directory);
                 $this->fail('Changed CSV was accepted.');
             } catch (RuntimeException $e) {
                 $this->assertStringContainsString('CSV bundle', $e->getMessage());
             }
-            $this->assertSame(1, DB::table('gov_catalog_import_history')->count());
+            $this->assertSame(2, DB::table('gov_catalog_import_history')->count());
         } finally {
             foreach (['manifest.json', 'collections.csv', 'items.csv', 'nodes.csv'] as $file) {
                 unlink($directory.'/'.$file);
