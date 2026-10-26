@@ -76,6 +76,10 @@ class AssignmentController extends Controller
             'theme' => ['nullable', 'string', Rule::in(array_keys($this->manager->repository()->published()))],
             'enforced' => ['nullable', 'boolean'],
         ]);
+        if ($scope === 'organization' && ! $request->attributes->get('gov_national_reviewed')) {
+            return app(\GovStore\TenantScope\Http\Middleware\RequireGovAbility::class)->handle($request,
+                fn ($reviewed) => $this->update($reviewed, $scope, $id), 'theming.assign.organization');
+        }
         $query = ThemeAssignment::query()->where('scope_type', $scope);
         $id === null ? $query->whereNull('scope_id') : $query->where('scope_id', $id);
         $existing = $query->first();

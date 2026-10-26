@@ -86,7 +86,7 @@ class OfficeProvisioningService
             $location->currency   = 'BDT'; // Default currency required by Snipe-IT
 
             // Attempt to save the core Snipe-IT Location
-            if (!$location->save()) {
+            if (!app(\GovStore\TenantScope\Services\ReferenceCreation::class)->run(Location::class, fn () => $location->save())) {
                 // Extract Snipe-IT's internal Watson Validation errors
                 $errors = $location->getErrors() ? $location->getErrors()->first() : 'Unknown Snipe-IT validation error.';
                 throw new Exception("Failed to save core Snipe-IT Location: " . $errors);

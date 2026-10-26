@@ -30,7 +30,7 @@ class CatalogExplorerController extends Controller
 
         // Include Tier-1 Global Standards implicitly
         $globalCategoryIds = DB::table('gov_category_governance')
-            ->where('governance_type', 'global')
+            ->whereIn('governance_type', ['global', 'national'])
             ->pluck('category_id')
             ->toArray();
 

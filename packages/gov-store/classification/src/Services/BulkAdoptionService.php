@@ -80,7 +80,7 @@ class BulkAdoptionService
             // Tier 1 Check
             $isGlobal = DB::table('gov_category_governance')
                 ->where('category_id', $categoryId)
-                ->where('governance_type', 'global')
+                ->whereIn('governance_type', ['global', 'national'])
                 ->exists();
 
             if ($isGlobal) {
@@ -158,6 +158,11 @@ class BulkAdoptionService
                     );
                     $executed++;
                 } else {
+                    app(CatalogSourceEligibility::class)->category((int) $node->snipeMapping->category_id);
+                    if (in_array($scopeType, ['global', 'national'], true)) {
+                        $skipped++;
+                        continue;
+                    }
                     // Link standard adoption (Use existing category_id)
                     $this->adoption->useCategory($node->snipeMapping->category_id, $scopeType, $scopeId);
                     $executed++;

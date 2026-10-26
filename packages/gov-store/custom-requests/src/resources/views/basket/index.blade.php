@@ -23,6 +23,9 @@
 @endphp
 
 @section('content')
+@if(collect($draft['groups'] ?? [])->contains(fn ($group) => array_key_exists('approval_available', $group) && ! $group['approval_available']))
+<div class="alert alert-warning" role="status">{{ __('requestlabels::requests.request_refused_approval_path') }}</div>
+@endif
 <div class="cr cr-checkout" data-cr-checkout data-cr-start-step="{{ $startStep }}">
     <x-gs::page-header :title="__($r.'draft_title')" :subtitle="__($r.'checkout_subtitle', ['date' => $presenter->date($draft['basket']?->expires_at)])">
         <x-slot:actions>

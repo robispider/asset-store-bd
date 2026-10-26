@@ -10,8 +10,7 @@ use Illuminate\Validation\ValidationException;
 
 /**
  * The optional Finance Code of a product type (category), stored as typed metadata. Ownership follows
- * category governance: global (or ungoverned) types are national, company types belong to their company.
- * Offices never override it.
+ * explicit national/company/office ownership. Adoption never creates an override.
  */
 class ProductTypeFinanceDefault implements MetadataValueSchema
 {
@@ -26,10 +25,11 @@ class ProductTypeFinanceDefault implements MetadataValueSchema
 
     public function scope(string $subjectType, int $subjectId): array
     {
-        $governance = DB::table('gov_category_governance')->where('category_id', $subjectId)->first();
+        $category = new \App\Models\Category;
+        $category->id = $subjectId;
+        [$type, $id] = app(\GovStore\TenantScope\Services\ReferenceOwnershipService::class)->owner($category);
 
-        return $governance && $governance->governance_type === 'company' && $governance->created_by_company_id
-            ? ['company', (int) $governance->created_by_company_id] : ['national', 0];
+        return [$type, $id ?? 0];
     }
 
     public function normalize(string $subjectType, int $subjectId, array $payload, ?array $current): array
@@ -81,15 +81,24 @@ class ProductTypeFinanceDefault implements MetadataValueSchema
         return ['status' => $stale ? 'needs_review' : 'ok'] + $base;
     }
 
-    /** Can this user edit the default? National publisher for national types; the owning company admin otherwise. */
+    /** The definition's owning scope sets its default; national edits require national review. */
     public function canEdit($user, int $categoryId): bool
     {
+        if (! $user) {
+            return false;
+        }
         [$scopeType, $scopeId] = $this->scope('category', $categoryId);
         $access = app(\GovStore\TenantScope\Services\GovAccess::class);
         if ($scopeType === 'national') {
             return $access->decide($user, 'catalog.master.manage')->allowed;
         }
         $context = app(\GovStore\TenantScope\Contexts\TenantContext::class);
+        if ($scopeType === 'unresolved') {
+            return false;
+        }
+        if ($scopeType === 'office') {
+            return $context->locationId === $scopeId && $access->decide($user, 'catalog.office.adopt')->allowed;
+        }
 
         return $user->isSuperUser() || ((int) $context->companyId === $scopeId && in_array('company_admin', $access->roles($user), true));
     }

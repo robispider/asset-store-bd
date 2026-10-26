@@ -7,8 +7,17 @@ class CapabilityProfileResolver
     /**
      * Resolves and compiles the permissions array into an EffectivePermissionSet.
      */
-    public function resolveSchema(?string $roleSlug): EffectivePermissionSet
+    public function resolveSchema(string|array|null $roleSlug): EffectivePermissionSet
     {
+        if (is_array($roleSlug)) {
+            $roles = array_values(array_unique($roleSlug));
+            $set = $this->resolveSchema($roles[0] ?? null);
+            foreach (array_slice($roles, 1) as $role) {
+                $set->merge($this->resolveSchema($role));
+            }
+
+            return $set;
+        }
         $config = config('govstore-permissions');
 
         // Fallback default permissions for any basic logged-in employee

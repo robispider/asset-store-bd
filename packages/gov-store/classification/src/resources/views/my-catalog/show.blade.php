@@ -33,10 +33,10 @@
                 </h2>
                 <p class="text-muted classify-inline-3c10e803">
                     <strong>Source:</strong> 
-                    @if($governance && $governance->governance_type === 'global')
+                    @if($governance && in_array($governance->governance_type, ['global', 'national'], true))
                         <span class="text-green"><i class="fas fa-globe"></i> Global Standard</span>
-                    @elseif($governance && ($governance->governance_type === 'company' || $governance->governance_type === 'location'))
-                        <span class="text-orange"><i class="fas fa-building"></i> {{ ucfirst($governance->governance_type) }} Standard</span>
+                    @elseif($governance && in_array($governance->governance_type, ['company', 'office', 'location', 'unresolved'], true))
+                        <span class="text-orange"><i class="fas fa-building"></i> {{ __('tenantops::access.scopes.'.($governance->governance_type === 'location' ? 'office' : $governance->governance_type)) }}</span>
                     @else
                         <span class="text-muted"><i class="fas fa-server"></i> Native Snipe-IT Category</span>
                     @endif

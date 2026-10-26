@@ -64,6 +64,8 @@ class BulkAdoptionController extends Controller
                 'summary' => $summary,
                 'target_scope' => __('classification::collections.scopes.'.$scope['type']),
             ]);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface|\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            throw $e;
         } catch (Exception $e) {
             return response()->json(['success' => false, 'message' => app(ActionFailure::class)->message($e)], 403);
         }
@@ -88,6 +90,8 @@ class BulkAdoptionController extends Controller
             );
 
             return response()->json($result);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface|\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            throw $e;
         } catch (Exception $e) {
             return response()->json(['success' => false, 'message' => app(ActionFailure::class)->message($e)], 500);
         }

@@ -389,7 +389,11 @@ class BangladeshScenario
                     'category_type' => $types[$i % 5], 'created_by' => $this->actor->id, 'require_acceptance' => false, 'use_default_eula' => false], 'category-'.$i);
                 $global = $i < 10 || $i % 5 === 0 || $i % 3 === 0;
                 $owner = $global ? null : $this->companies[($i % 3) * 2 + 1]->id;
-                $this->create(CategoryGovernance::class, ['category_id' => $category->id, 'governance_type' => $global ? 'global' : 'local', 'created_by_company_id' => $owner, 'created_by_user_id' => $this->actor->id], 'governance-'.$i);
+                $this->create(CategoryGovernance::class, ['category_id' => $category->id, 'governance_type' => $global ? 'national' : 'company', 'created_by_company_id' => $owner, 'created_by_user_id' => $this->actor->id], 'governance-'.$i);
+                app(\GovStore\TenantScope\Services\ReferenceOwnershipService::class)->assign($category, $global ? 'national' : 'company', $owner,
+                    (int) $this->actor->id, 'Experiment category ownership.');
+                $this->records->record($this->run, 'gov_reference_owners', DB::table('gov_reference_owners')
+                    ->where('reference_type', 'category')->where('reference_id', $category->id)->first());
                 foreach ($this->offices as $office) {
                     if (! $global && $owner !== $office->company_id) {
                         continue;
@@ -466,7 +470,7 @@ class BangladeshScenario
                 $this->bulk[$kind][$i] = $class::withoutGlobalScopes()->findOrFail($id);
             }
         }
-        $licenseCategories = array_values(array_filter($this->categories, fn ($c) => $c->category_type === 'license' && DB::table('gov_category_governance')->where('category_id', $c->id)->where('governance_type', 'global')->exists()));
+        $licenseCategories = array_values(array_filter($this->categories, fn ($c) => $c->category_type === 'license' && DB::table('gov_category_governance')->where('category_id', $c->id)->whereIn('governance_type', ['global', 'national'])->exists()));
         foreach (range(0, $this->size['licenses'] - 1) as $i) {
             $this->unit('license-'.$i, function () use ($i, $licenseCategories, $supplierIds) {
                 $license = $this->create(License::class, ['name' => $this->prefix.' Office Software '.($i + 1), 'category_id' => $licenseCategories[$i % count($licenseCategories)]->id,
@@ -805,7 +809,7 @@ class BangladeshScenario
     {
         // Current create_assets capability fills GRN but does not fill mandatory laptop CPU metadata.
         // Materialize desktop templates; laptop templates still exercise the metadata package separately.
-        $models = array_values(array_filter($this->models, fn ($model) => ! str_contains(strtolower($model->category->name), 'laptop') && DB::table('gov_category_governance')->where('category_id', $model->category_id)->where('governance_type', 'global')->exists()));
+        $models = array_values(array_filter($this->models, fn ($model) => ! str_contains(strtolower($model->category->name), 'laptop') && DB::table('gov_category_governance')->where('category_id', $model->category_id)->whereIn('governance_type', ['global', 'national'])->exists()));
         $unique = [];
         foreach ($models as $model) {
             if (! isset($unique[$model->category_id])) {

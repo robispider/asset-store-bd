@@ -21,6 +21,9 @@
 @endphp
 
 @section('content')
+@if(app(\GovStore\CustomRequests\Services\ApprovalRouting::class)->blocked($serviceRequest))
+<div class="alert alert-warning" role="status">{{ __('requestlabels::requests.request_refused_approval_path') }} <a href="{{ route('gov.access.index', ['ability' => 'requests.approve.final']) }}">{{ __('tenantops::access.request') }}</a></div>
+@endif
 <div class="cr" data-cr-decide data-request-number="{{ $req->request_number }}" data-status-key="{{ $req->statusKey() }}">
     <x-gs::page-header :title="__($r.'decide_title', ['number' => $req->request_number])">
         <x-slot:meta>

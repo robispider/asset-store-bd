@@ -31,8 +31,8 @@ class AssetTaggingAuthorizationTest extends TestCase
         $abilities = ['asset-tags.office.configure', 'asset-tags.company.codelists', 'asset-tags.lookup', 'asset-tags.scope.enable', 'catalog.finance.default'];
         $allowed = [
             'employee' => ['asset-tags.lookup'],
-            'storekeeper' => ['asset-tags.lookup'],
-            'office_admin' => ['asset-tags.office.configure', 'asset-tags.lookup'],
+            'storekeeper' => ['asset-tags.lookup', 'catalog.finance.default'],
+            'office_admin' => ['asset-tags.office.configure', 'asset-tags.lookup', 'catalog.finance.default'],
             'company_admin' => ['asset-tags.company.codelists', 'asset-tags.lookup', 'catalog.finance.default'],
             'superuser' => $abilities,
         ];

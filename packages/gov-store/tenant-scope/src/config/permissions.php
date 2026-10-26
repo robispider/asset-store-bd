@@ -18,6 +18,8 @@ return [
         'office_admin'     => 'office_operations',
         'ict_officer'      => 'ict_operations',
         'company_admin'    => 'company_operations', 
+        'catalog_maintainer' => 'catalog_maintenance',
+        'document_reader' => 'document_reading',
     ],
 
     /*
@@ -80,18 +82,14 @@ return [
             
             // --- NATIVE SNIPE-IT REFERENCE CATALOGS ---
             'models.view',
-            'models.create',
             'models.edit',
             'models.files',
             'categories.view',
-            'categories.create',
             'categories.edit',
             'suppliers.view',
-            'suppliers.create',
             'suppliers.edit',
             'suppliers.files',
             'manufacturers.view',
-            'manufacturers.create',
             'manufacturers.edit',
             'statuslabels.view',
             'customfields.view',
@@ -99,9 +97,6 @@ return [
         ],
          // NEW: Organizational Overseer Capability Profile
         'company_operations' => [
-            'office.provision',
-            'office.onboard',
-            'jurisdictions.manage',
             // Custom Business Policy Keys
             'office.view',
             'reports.advanced',
@@ -112,7 +107,6 @@ return [
             'users.edit',
             'users.files',
             'locations.view',
-            'locations.create',
             'locations.edit',
             'locations.files',
             'departments.view',
@@ -162,7 +156,6 @@ return [
             'users.edit',
             'users.files',
             'locations.view',
-            'locations.create',
             'locations.edit',
             'locations.files',
             'departments.view',
@@ -196,7 +189,6 @@ return [
             'users.create',
             'users.edit',
             'locations.view',
-            'locations.create',
             'locations.edit',
             'departments.view',
             'departments.create',
@@ -212,6 +204,9 @@ return [
             'customfields.view',
         ],
         
+        'catalog_maintenance' => ['models.view', 'models.edit', 'categories.view', 'categories.edit',
+            'suppliers.view', 'suppliers.edit', 'manufacturers.view', 'manufacturers.edit'],
+        'document_reading' => [],
         'employee' => [
             // Custom Business Policy Keys
             'catalog.request',
@@ -222,7 +217,6 @@ return [
             // Requestable / Requested assets pages. SnipePermissionAdapter replaces native group
             // grants with these profiles, so re-adding it here is the only way to restore it.
             'self.checkout_assets',
-            'self.edit_location',
             'self.two_factor',
             // 'self.api' is deliberately absent: personal API keys are for ICT staff, not every
             // employee (it showed "Manage API keys" in everyone's user menu).

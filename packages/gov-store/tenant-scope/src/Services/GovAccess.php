@@ -20,22 +20,8 @@ class GovAccess
         if ($user->isSuperUser()) {
             $roles[] = 'superuser';
         }
-        $organization = app(OrganizationContextResolver::class);
-        if ($this->context->companyId && $organization->isCompanyAdministrator((int) $user->id, $this->context->companyId)) {
-            $roles[] = 'company_admin';
-        }
-        if ($organization->hasJurisdiction((int) $user->id)) {
-            $roles[] = 'ict_officer';
-        }
-        if ($this->context->locationId) {
-            if ($organization->isOfficeAdministrator((int) $user->id, $this->context->locationId)) {
-                $roles[] = 'office_admin';
-            }
-            $roles = array_merge($roles, app(MembershipContextResolver::class)->responsibilityRoles((int) $user->id, $this->context->locationId));
-            $roles = array_merge($roles, DB::table('gov_access_grants')
-                ->where('location_id', $this->context->locationId)->where('user_id', $user->id)
-                ->where('expires_at', '>', now())->pluck('role_slug')->all());
-        }
+        $roles = array_merge($roles, array_diff(app(AssignmentResolver::class)->resolveRoles(
+            (int) $user->id, $this->context->locationId, $this->context->companyId), ['employee']));
 
         return array_values(array_unique($roles));
     }

@@ -17,6 +17,8 @@ Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'gov-store/admin/scop
     Route::post('/save-strategy', [TenantScopeController::class, 'saveStrategy'])->middleware('gov.can:tenant.scope.manage')->name('gov.scope.save-strategy');
 
     // Workspace 3: Boundary Explorer Grid
+    Route::get('/ownership', [\GovStore\TenantScope\Http\Controllers\ReferenceOwnershipController::class, 'index'])->middleware('gov.can:tenant.scope.view')->name('gov.scope.ownership');
+    Route::post('/ownership', [\GovStore\TenantScope\Http\Controllers\ReferenceOwnershipController::class, 'update'])->middleware('gov.can:tenant.scope.manage')->name('gov.scope.ownership.update');
     Route::get('/mappings', [TenantScopeController::class, 'explorer'])->middleware('gov.can:tenant.scope.view')->name('gov.scope.mappings');
     Route::post('/mappings/store', [TenantScopeController::class, 'storeMapping'])->middleware('gov.can:tenant.scope.manage')->name('gov.scope.mappings.store');
     Route::post('/mappings/delete/{id}', [TenantScopeController::class, 'destroyMapping'])->middleware('gov.can:tenant.scope.manage')->name('gov.scope.mappings.destroy');

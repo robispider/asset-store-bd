@@ -15,29 +15,33 @@ class AccessController extends Controller
     public const REQUESTABLE = [
         'committee.manage' => 'committee_registrar',
         'committee.activate' => 'committee_registrar',
-        'storeops.documents.view' => 'primary_approver',
+        'storeops.documents.view' => 'document_reader',
         'storeops.documents.draft' => 'storekeeper',
         'storeops.documents.post' => 'storekeeper',
-        'catalog.office.adopt' => 'storekeeper',
+        'catalog.office.adopt' => 'catalog_maintainer',
         'requests.approve' => 'primary_approver',
+        'requests.approve.primary' => 'primary_approver',
+        'requests.approve.final' => 'final_approver',
         'requests.fulfill' => 'storekeeper',
     ];
 
     public function index(Request $request, GovAccess $access, TenantContext $context)
     {
         $roles = $access->roles($request->user());
-        $abilities = array_filter(config('govstore-abilities'), fn ($ability) => $access->decide($request->user(), $ability)->allowed, ARRAY_FILTER_USE_KEY);
+        $abilities = array_filter(config('govstore-abilities'), fn ($ability) => $access->permitsRequest($request->user(), $ability), ARRAY_FILTER_USE_KEY);
         $requests = DB::table('gov_access_requests')->where('user_id', $request->user()->id)->orderByDesc('id')->paginate(20);
         $selected = isset(self::REQUESTABLE[$request->query('ability', '')]) ? $request->query('ability') : '';
         $requestable = ! $request->filled('ability') || isset(self::REQUESTABLE[$request->query('ability')]);
 
-        return view('govscope::access.index', compact('roles', 'abilities', 'requests', 'selected', 'context', 'requestable'));
+        $bundles = self::bundles();
+        return view('govscope::access.index', compact('roles', 'abilities', 'requests', 'selected', 'context', 'requestable', 'bundles'));
     }
 
     public function store(Request $request, TenantContext $context)
     {
         $data = $request->validate(['ability' => 'required|in:'.implode(',', array_keys(self::REQUESTABLE)),
             'reason' => 'required|string|min:5|max:1000', 'expires_at' => 'nullable|date|after:today']);
+        $data['expires_at'] = $data['expires_at'] ?? now()->addDays(30)->toDateTimeString();
         abort_unless($context->locationId, 422);
         abort_unless($this->belongsToOffice($request->user()->id, $context->locationId), 403);
         DB::transaction(function () use ($data, $request, $context) {
@@ -63,12 +67,14 @@ class AccessController extends Controller
         abort_unless($context->locationId, 422);
         $requests = DB::table('gov_access_requests')->where('location_id', $context->locationId)->orderByDesc('id')->paginate(30);
 
-        return view('govscope::access.inbox', compact('requests'));
+        $bundles = self::bundles();
+        return view('govscope::access.inbox', compact('requests', 'bundles'));
     }
 
     public function review(Request $request, int $id, TenantContext $context, RoleAssignmentService $service)
     {
         $data = $request->validate(['decision' => 'required|in:approved,declined', 'review_note' => 'required_if:decision,declined|nullable|string|max:1000']);
+        abort_unless(app(GovAccess::class)->decide($request->user(), 'access.manage')->allowed, 403);
         DB::transaction(function () use ($id, $context, $data, $request, $service) {
             $entry = DB::table('gov_access_requests')->where('location_id', $context->locationId)->where('id', $id)->lockForUpdate()->first();
             abort_unless($entry, 404);
@@ -77,8 +83,10 @@ class AccessController extends Controller
             abort_unless(isset(self::REQUESTABLE[$entry->ability]) && $this->belongsToOffice($entry->user_id, $entry->location_id), 422);
             if ($data['decision'] === 'approved') {
                 abort_if($entry->expires_at && now()->gte($entry->expires_at), 422);
+                $expiry = $entry->expires_at ?? now()->addDays(30)->toDateTimeString();
                 $service->grantOfficeAccess($entry->location_id, self::REQUESTABLE[$entry->ability], $entry->user_id,
-                    $request->user()->id, $entry->expires_at, $entry->id);
+                    $request->user()->id, $expiry, $entry->id);
+                DB::table('gov_access_requests')->where('id', $id)->update(['expires_at' => $expiry]);
             }
             DB::table('gov_access_requests')->where('id', $id)->update(['status' => $data['decision'],
                 'review_note' => $data['review_note'] ?? null, 'reviewed_by' => $request->user()->id, 'reviewed_at' => now(), 'updated_at' => now()]);
@@ -90,12 +98,21 @@ class AccessController extends Controller
 
     private function belongsToOffice(int $userId, int $locationId): bool
     {
-        return DB::table('users')->where('id', $userId)->whereNull('deleted_at')->where(function ($q) use ($locationId, $userId) {
-            $q->where('location_id', $locationId)->orWhereExists(function ($sub) use ($locationId, $userId) {
-                $sub->selectRaw('1')->from('gov_office_memberships')->where('user_id', $userId)
-                    ->where('location_id', $locationId)->where('status', 'active');
-            });
-        })->exists();
+        $company = DB::table('locations')->where('id', $locationId)->whereNull('deleted_at')->value('company_id');
+        return $company && DB::table('users')->where('id', $userId)->whereNull('deleted_at')->where('activated', true)->where('company_id', $company)->exists()
+            && app(\GovStore\TenantScope\Contracts\MembershipContextResolver::class)->hasActiveMembershipAt($userId, $locationId);
+    }
+
+    public static function bundles(): array
+    {
+        $result = [];
+        foreach (self::REQUESTABLE as $ability => $role) {
+            $result[$ability] = ['role' => $role, 'abilities' => array_keys(array_filter(config('govstore-abilities'),
+                fn ($definition) => in_array($role, $definition['roles'], true))),
+                'permissions' => app(\GovStore\TenantScope\Services\CapabilityProfileResolver::class)->resolveSchema($role)->getPermissions()];
+        }
+
+        return $result;
     }
 
     private function notify(int $userId, string $message, int $requestId): void

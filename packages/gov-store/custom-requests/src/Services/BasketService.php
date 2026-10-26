@@ -180,6 +180,11 @@ class BasketService
             $groups[$reason['policy']]['reasons'][$item->id] = $reason;
         }
         uksort($groups, fn ($a, $b) => array_search($a, RequestWorkflow::POLICIES) <=> array_search($b, RequestWorkflow::POLICIES));
+        $office = (int) ($basket->office_id ?: app(TenantContext::class)->locationId);
+        foreach ($groups as $policy => &$group) {
+            $group['approval_available'] = app(ApprovalRouting::class)->feasible($office, $policy, [(int) $basket->user_id]);
+        }
+        unset($group);
 
         return $groups;
     }

@@ -87,6 +87,10 @@ class ClassificationServiceProvider extends ServiceProvider
             $registry->register(['id' => 'storeops-my-catalog', 'group' => 'gov-store-ops', 'order' => 40,
                 'label' => 'classification::texts.nav_office_catalogue', 'icon' => 'fas fa-book',
                 'route' => 'gov.catalog.my_catalog.index', 'match' => ['gov.catalog.my_catalog.*', 'gov.catalog.adopt.*']]);
+            $registry->register(['id' => 'catalog-reference-create', 'group' => 'gov-store-ops', 'order' => 41,
+                'label' => 'tenantops::access.reference_create', 'icon' => 'fas fa-plus', 'route' => 'gov.catalog.references.create']);
+            $registry->register(['id' => 'catalog-ownership-review', 'group' => 'gov-catalogue-master', 'order' => 40,
+                'label' => 'tenantops::access.ownership_review', 'icon' => 'fas fa-shield-alt', 'route' => 'gov.scope.ownership']);
 
             // Catalogue master data: national administration.
             foreach ([

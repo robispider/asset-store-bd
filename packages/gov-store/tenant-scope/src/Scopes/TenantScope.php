@@ -65,6 +65,37 @@ class TenantScope implements Scope
         // --- REFERENCE CATALOG SCOPING (Categories, Models, Suppliers, etc.) ---
         $referenceSingular = Str::singular($this->referenceType);
 
+        // An unadopted reference is shared only within its actual ownership boundary.
+        // Absence of an adoption must never publish an explicitly private definition.
+        if (\Illuminate\Support\Facades\Schema::hasTable('gov_reference_owners')) {
+            $builder->where(function ($visibility) use ($context, $referenceSingular, $keyName) {
+                $visibility->whereNotExists(function ($owner) use ($referenceSingular, $keyName) {
+                    $owner->selectRaw('1')->from('gov_reference_owners as owner')->where('owner.reference_type', $referenceSingular)
+                        ->whereColumn('owner.reference_id', $keyName);
+                })->orWhereExists(function ($owner) use ($context, $referenceSingular, $keyName) {
+                    $owner->selectRaw('1')->from('gov_reference_owners as owner')->where('owner.reference_type', $referenceSingular)
+                        ->whereColumn('owner.reference_id', $keyName)->where(function ($scope) use ($context) {
+                            $scope->where('owner.owner_type', 'national')
+                                ->orWhere(fn ($company) => $company->where('owner.owner_type', 'company')->whereNotNull('owner.owner_id')->where('owner.owner_id', $context->companyId))
+                                ->orWhere(function ($office) use ($context) {
+                                    $office->where('owner.owner_type', 'office')->whereExists(function ($location) use ($context) {
+                                        $location->selectRaw('1')->from('locations as owner_office')->whereColumn('owner_office.id', 'owner.owner_id')
+                                            ->whereNotNull('owner_office.company_id')->where('owner_office.company_id', $context->companyId)->whereNull('owner_office.deleted_at');
+                                    });
+                                })->orWhere(function ($unknown) use ($context) {
+                                    $unknown->where('owner.owner_type', 'unresolved')->whereExists(function ($adoption) use ($context) {
+                                        $adoption->selectRaw('1')->from('gov_tenant_scope_mappings as visibility_adoption')
+                                            ->whereColumn('visibility_adoption.reference_id', 'owner.reference_id')
+                                            ->whereColumn('visibility_adoption.reference_type', 'owner.reference_type')->where('visibility_adoption.is_active', true)
+                                            ->where(fn ($q) => $q->where(fn ($q) => $q->where('visibility_adoption.scope_type', 'company')->where('visibility_adoption.scope_id', $context->companyId))
+                                                ->orWhere(fn ($q) => $q->where('visibility_adoption.scope_type', 'location')->where('visibility_adoption.scope_id', $context->locationId)));
+                                    });
+                                });
+                        });
+                });
+            });
+        }
+
         $builder->where(function ($query) use ($context, $referenceSingular, $keyName) {
             
             // CONDITION A: Item explicitly adopted by active context

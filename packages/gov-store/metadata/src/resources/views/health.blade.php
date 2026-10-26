@@ -3,6 +3,10 @@
 @section('title', 'Metadata Platform Health')
 
 @section('content')
+<div class="box box-default"><div class="box-header"><h2 class="box-title">{{ __('govmeta::metadata.reviewed_operations') }}</h2></div><div class="box-body">
+<table class="table"><thead><tr><th>{{ __('govmeta::metadata.operation_status') }}</th><th>{{ __('govmeta::metadata.processed') }}</th><th>{{ __('govmeta::metadata.failed') }}</th><th>{{ __('tenantops::access.reference') }}</th></tr></thead><tbody>
+@foreach($operations as $operation)<tr><td>{{ __('govmeta::metadata.operation_states.'.$operation->status) }}</td><td>{{ $operation->processed }}</td><td>{{ $operation->failed }}</td><td>{{ $operation->reference_id }}</td></tr>@endforeach
+</tbody></table></div></div>
 <div class="row">
     <div class="col-md-12">
         <!-- Display Success Redirect Messages from Controller -->

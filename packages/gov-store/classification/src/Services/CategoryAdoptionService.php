@@ -17,6 +17,8 @@ class CategoryAdoptionService
      */
     public function useCategory(int $categoryId, string $scopeType, int $scopeId): void
     {
+        app(CatalogSourceEligibility::class)->target($scopeType, $scopeId);
+        app(CatalogSourceEligibility::class)->category($categoryId);
         if (!in_array($scopeType, ['company', 'location'])) {
             throw new Exception("Invalid adoption scope type.");
         }
@@ -34,6 +36,8 @@ class CategoryAdoptionService
 
     public function stopUsingCategory(int $categoryId, string $scopeType, int $scopeId): void
     {
+        app(CatalogSourceEligibility::class)->target($scopeType, $scopeId);
+        app(CatalogSourceEligibility::class)->category($categoryId);
         if ($this->hasActiveReferences($categoryId, $scopeType, $scopeId)) {
             throw new Exception("Governance Violation: Cannot abandon this category. Your office/organization currently owns active items mapped to it.");
         }
@@ -48,6 +52,8 @@ class CategoryAdoptionService
 
     public function archiveCategory(int $categoryId, string $scopeType, int $scopeId): void
     {
+        app(CatalogSourceEligibility::class)->target($scopeType, $scopeId);
+        app(CatalogSourceEligibility::class)->category($categoryId);
         DB::table('gov_tenant_scope_mappings')
             ->where('reference_type', 'category')
             ->where('reference_id', $categoryId)
@@ -58,6 +64,8 @@ class CategoryAdoptionService
 
     public function restoreCategory(int $categoryId, string $scopeType, int $scopeId): void
     {
+        app(CatalogSourceEligibility::class)->target($scopeType, $scopeId);
+        app(CatalogSourceEligibility::class)->category($categoryId);
         DB::table('gov_tenant_scope_mappings')
             ->where('reference_type', 'category')
             ->where('reference_id', $categoryId)

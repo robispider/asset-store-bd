@@ -33,8 +33,9 @@ class MyCatalogController extends Controller
 
     private function checkAccess(TenantContext $tenantContext): string
     {
-        return app(GovAccess::class)
-            ->permitsRequest(auth()->user(), 'catalog.office.adopt') ? 'admin' : 'employee';
+        abort_unless(app(GovAccess::class)->decide(auth()->user(), 'catalog.office.adopt')->allowed, 403);
+
+        return 'admin';
     }
 
     public function index(Request $request, TenantContext $tenantContext)
@@ -110,6 +111,8 @@ class MyCatalogController extends Controller
             $adoptionService->archiveCategory($request->category_id, $scope['type'], $scope['id']);
 
             return response()->json(['success' => true]);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface|\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            throw $e;
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => app(ActionFailure::class)->message($e)], 500);
         }
@@ -129,6 +132,8 @@ class MyCatalogController extends Controller
             $adoptionService->restoreCategory($request->category_id, $scope['type'], $scope['id']);
 
             return response()->json(['success' => true]);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface|\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            throw $e;
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => app(ActionFailure::class)->message($e)], 500);
         }

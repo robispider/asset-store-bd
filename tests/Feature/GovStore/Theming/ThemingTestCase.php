@@ -72,6 +72,9 @@ abstract class ThemingTestCase extends TestCase
             $table->timestamp('deleted_at')->nullable();
         });
         (require base_path('packages/gov-store/tenant-scope/src/database/migrations/2026_10_04_000001_create_gov_access_tables.php'))->up();
+        foreach (['categories', 'models'] as $table) {
+            Schema::create($table, function (Blueprint $t) { $t->increments('id'); $t->timestamp('deleted_at')->nullable(); });
+        }
         (require base_path('packages/gov-store/theming/database/migrations/2026_10_07_000001_create_gs_theme_preferences_table.php'))->up();
         (require base_path('packages/gov-store/theming/database/migrations/2026_10_07_000002_create_gs_theme_assignments_table.php'))->up();
 

@@ -177,6 +177,7 @@ class OfficeMembershipWorkflowTest extends TestCase
         (require base_path('packages/gov-store/classification/src/database/migrations/2024_04_01_000000_create_gov_catalog_tables.php'))->up();
         (require base_path('packages/gov-store/classification/src/database/migrations/2026__08_04_create_gov_catalog_collections_table.php'))->up();
         (require base_path('packages/gov-store/classification/src/database/migrations/2024_01_06_000000_create_gov_category_governance_table.php'))->up();
+        (require base_path('packages/gov-store/tenant-scope/src/database/migrations/2026_10_26_000001_create_gov_reference_owners.php'))->up();
         (require base_path('packages/gov-store/classification/src/database/migrations/2026_10_08_000001_create_office_starter_runs.php'))->up();
         DB::table('companies')->insert([['id' => 20, 'name' => 'Ministry A'], ['id' => 40, 'name' => 'Ministry B']]);
         DB::table('users')->insert([

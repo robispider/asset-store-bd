@@ -58,7 +58,7 @@ Route::group(['middleware' => 'auth'], function () {
     */
     Route::resource('categories', CategoriesController::class, [
         'parameters' => ['category' => 'category_id'],
-    ]);
+    ])->middlewareFor(['update', 'destroy'], 'gov.can:catalog.reference.manage');
 
     Route::post('categories/bulk/delete', [BulkCategoriesController::class, 'destroy'])->name('categories.bulk.delete');
 
@@ -85,14 +85,14 @@ Route::group(['middleware' => 'auth'], function () {
 
     });
 
-    Route::resource('manufacturers', ManufacturersController::class);
+    Route::resource('manufacturers', ManufacturersController::class)->middlewareFor(['update', 'destroy'], 'gov.can:catalog.reference.manage');
 
     Route::post('manufacturers/bulk/delete', [BulkManufacturersController::class, 'destroy'])->name('manufacturers.bulk.delete');
 
     /*
     * Suppliers
     */
-    Route::resource('suppliers', SuppliersController::class);
+    Route::resource('suppliers', SuppliersController::class)->middlewareFor(['update', 'destroy'], 'gov.can:catalog.reference.manage');
 
     Route::post('suppliers/bulk/delete', [BulkSuppliersController::class, 'destroy'])->name('suppliers.bulk.delete');
 

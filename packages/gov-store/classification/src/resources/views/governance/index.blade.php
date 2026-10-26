@@ -1,4 +1,4 @@
-﻿@extends('layouts/default')
+@extends('layouts/default')
 
 @section('title', __('classification::texts.governance_title'))
 
@@ -33,7 +33,7 @@
                                 </td>
                                 <td><code>{{ $cat->unspsc_code ?? 'Unmapped' }}</code></td>
                                 <td>
-                                    @if($cat->governance_type === 'global')
+                                    @if(in_array($cat->governance_type, ['global', 'national'], true))
                                         <span class="text-green"><i class="fas fa-globe"></i> {{ __('classification::texts.governance_gov_standard') }}</span>
                                     @elseif($cat->governance_type === 'company')
                                         <span class="text-orange"><i class="fas fa-building"></i> {{ __('classification::texts.governance_org_managed') }}</span>

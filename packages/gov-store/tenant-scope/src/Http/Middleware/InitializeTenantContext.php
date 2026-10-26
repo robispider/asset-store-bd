@@ -70,13 +70,6 @@ class InitializeTenantContext
             $context->locationId = $membership['location_id'];
             $context->companyId = $adminCompany ?? $membership['company_id'];
             $context->isHomeOffice = $membership['is_home_office'];
-        } elseif ($selection === null && ! $memberships->hasMemberships((int) $user->id)) {
-            // Native fallback is only for actors who have never had memberships.
-            $office = $user->location_id ? Location::withoutGlobalScopes()->whereNull('deleted_at')->find($user->location_id) : null;
-            if ($office && (! $adminCompany || (int) $office->company_id === $adminCompany)) {
-                $context->locationId = (int) $office->id;
-                $context->companyId = $adminCompany ?? ($office->company_id ? (int) $office->company_id : null);
-            }
         }
 
         $hasJurisdiction = false;
@@ -92,11 +85,8 @@ class InitializeTenantContext
             $context->allowedCompanyIds = $context->companyId ? [$context->companyId] : [];
         }
 
-        $role = $this->assignmentResolver->resolveActiveRole((int) $user->id, $context->locationId);
-        $context->effectivePermissions = $this->capabilityResolver->resolveSchema($role);
-        if ($hasJurisdiction && $role !== 'ict_officer') {
-            $context->effectivePermissions->merge($this->capabilityResolver->resolveSchema('ict_officer'));
-        }
+        $roles = $this->assignmentResolver->resolveRoles((int) $user->id, $context->locationId, $context->companyId);
+        $context->effectivePermissions = $this->capabilityResolver->resolveSchema($roles);
         if ($context->isCompanyAdmin) {
             $context->companyAdminPermissions = $this->capabilityResolver->resolveSchema('company_admin');
             $context->effectivePermissions->merge($context->companyAdminPermissions);

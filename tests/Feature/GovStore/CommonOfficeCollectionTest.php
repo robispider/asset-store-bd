@@ -52,6 +52,12 @@ class CommonOfficeCollectionTest extends TestCase
         foreach (['companies', 'users'] as $name) {
             Schema::create($name, fn (Blueprint $table) => $table->increments('id'));
         }
+        Schema::table('companies', fn (Blueprint $t) => $t->timestamp('deleted_at')->nullable());
+        Schema::create('locations', function (Blueprint $t) {
+            $t->increments('id'); $t->integer('company_id'); $t->timestamp('deleted_at')->nullable();
+        });
+        DB::table('locations')->insert([['id' => 10, 'company_id' => 20], ['id' => 11, 'company_id' => 20], ['id' => 30, 'company_id' => 20]]);
+        (require base_path('packages/gov-store/tenant-scope/src/database/migrations/2026_10_26_000001_create_gov_reference_owners.php'))->up();
         Schema::create('categories', function (Blueprint $table) {
             $table->increments('id'); $table->string('name'); $table->string('category_type');
             $table->boolean('checkin_email')->default(false); $table->boolean('require_acceptance')->default(false);

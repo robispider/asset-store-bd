@@ -2,6 +2,7 @@
 @section('title', __('tenantops::access.my_access'))
 @section('content')
 <div class="tenant-scope-theme" data-access-actor="{{ auth()->id() }}" data-access-office="{{ $context->locationId }}" data-access-roles='@json($roles)'>
+<p role="status">{{ __('tenantops::access.'.(config('govstore-access.mode') === 'shadow' ? 'shadow_active' : 'enforcement_active')) }}</p>
 <div class="box box-primary"><div class="box-header with-border"><h1 class="box-title">{{ __('tenantops::access.my_access') }}</h1></div><div class="box-body">
 <p>{{ __('tenantops::access.office') }}: {{ $context->locationId ?? '—' }}</p>
 <p>{{ __('tenantops::access.roles') }}: {{ implode(', ', array_map(fn ($role) => __('tenantops::access.role_names.'.$role), $roles)) }}</p>
@@ -11,6 +12,12 @@
 <ul>@foreach(\Illuminate\Support\Facades\DB::table('gov_access_notices')->where('user_id', auth()->id())->orderByDesc('id')->limit(10)->get() as $notice)<li>{{ __('tenantops::access.'.$notice->message_key) }} ({{ $notice->created_at }})</li>@endforeach</ul>
 @if(!$requestable)<p class="alert alert-info">{{ __('tenantops::access.not_requestable') }}</p>@endif
 @if($context->locationId && $requestable)
+<p>{{ __('tenantops::access.grant_expiry') }} {{ __('tenantops::access.separation_notice') }}</p>
+@foreach($bundles ?? [] as $ability => $bundle)
+<details><summary>{{ __('tenantops::access.abilities.'.str_replace('.', '_', $ability)) }} — {{ __('tenantops::access.role_names.'.$bundle['role']) }}</summary>
+<ul>@foreach($bundle['abilities'] as $granted)<li>{{ __('tenantops::access.abilities.'.str_replace('.', '_', $granted)) }}</li>@endforeach</ul>
+</details>
+@endforeach
 <form method="post" action="{{ route('gov.access.requests.store') }}">@csrf
     <div class="form-group"><label for="accessAbility">{{ __('tenantops::access.request') }}</label><select id="accessAbility" name="ability" class="form-control" required>
     @foreach(\GovStore\TenantScope\Http\Controllers\AccessController::REQUESTABLE as $ability => $role)<option value="{{ $ability }}" @selected($selected === $ability)>{{ __('tenantops::access.abilities.'.str_replace('.', '_', $ability)) }}</option>@endforeach

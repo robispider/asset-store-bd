@@ -45,6 +45,7 @@ class ScenarioManifest
             'custom_service_requests' => ['office_id', 'received_at', 'return_document_id', 'submission_batch', 'resolved_reason'],
             'draft_baskets' => ['office_id'],
             'gov_approval_policies' => ['threshold_qty', 'threshold_value'],
+            'gov_reference_owners' => ['reference_type', 'reference_id', 'owner_type', 'owner_id'],
             'gov_documents' => ['drafted_by', 'posted_by', 'supplier_id', 'destination_location_id', 'adjustment_reason'],
             'gov_document_notices' => ['document_id'],
             'gov_tracking_codes' => ['activated_at', 'activation_is_approximate'],

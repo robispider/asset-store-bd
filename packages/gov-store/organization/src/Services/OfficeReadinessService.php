@@ -24,15 +24,11 @@ class OfficeReadinessService
                 })->pluck('id')->filter(fn ($id) => $memberships->hasActiveMembershipAt((int) $id, $locationId));
         
             // STRICT PIVOT LOOKUP: Read from the multi-office matrix
-            $hasPrimary = OfficeResponsibility::where('location_id', $locationId)
-                ->whereIn('user_id', $eligible)
-                ->where('role_slug', 'primary_approver')
-                ->exists();
-
-            $hasStorekeeper = OfficeResponsibility::where('location_id', $locationId)
-                ->whereIn('user_id', $eligible)
-                ->where('role_slug', 'storekeeper')
-                ->exists();
+            $routing = app(\GovStore\CustomRequests\Services\ApprovalRouting::class);
+            $hasPrimary = (bool) $routing->candidates($locationId, 'primary_approver');
+            $hasStorekeeper = (bool) $routing->candidates($locationId, 'storekeeper');
+            $requiresFinal = $this->requiresFinal($locationId);
+            $hasApprovalPath = ! $requiresFinal || $routing->feasible($locationId, 'PRIMARY_AND_FINAL');
         
             $usersCount = $eligible->count();
 
@@ -41,6 +37,7 @@ class OfficeReadinessService
                 'has_primary_approver' => $hasPrimary,
                 'has_storekeeper'      => $hasStorekeeper,
                 'has_users'            => $usersCount > 0,
+                'has_approval_path'    => $hasApprovalPath,
             ];
 
             $isOperational = !in_array(false, $checklist, true);
@@ -71,5 +68,37 @@ class OfficeReadinessService
                 'users_count' => $usersCount
             ];
         });
+    }
+
+    private function requiresFinal(int $office): bool
+    {
+        $schema = DB::getSchemaBuilder();
+        if (! $schema->hasTable('gov_approval_policies')) {
+            return false;
+        }
+        $targets = [];
+        $categories = [];
+        foreach (['consumable' => 'consumables', 'accessory' => 'accessories', 'component' => 'components', 'license' => 'licenses'] as $type => $table) {
+            if ($schema->hasColumn($table, 'location_id') && $schema->hasColumn($table, 'category_id')) {
+                $rows = DB::table($table)->where('location_id', $office)->whereNull('deleted_at')->get(['id', 'category_id']);
+                $targets[$type] = $rows->pluck('id')->all();
+                $categories = array_merge($categories, $rows->pluck('category_id')->filter()->all());
+            }
+        }
+        if ($schema->hasColumn('assets', 'model_id') && $schema->hasColumn('models', 'category_id')) {
+            $rows = DB::table('assets as a')->join('models as m', 'm.id', '=', 'a.model_id')->where('a.location_id', $office)
+                ->whereNull('a.deleted_at')->whereNull('m.deleted_at')->get(['a.id', 'm.id as model_id', 'm.category_id']);
+            $targets['asset'] = $rows->pluck('id')->all();
+            $targets['assetmodel'] = $targets['asset_model'] = $rows->pluck('model_id')->all();
+            $categories = array_merge($categories, $rows->pluck('category_id')->filter()->all());
+        }
+        $targets['category'] = array_unique($categories);
+        return DB::table('gov_approval_policies')->where(fn ($q) => $q->where('policy_name', 'PRIMARY_AND_FINAL')
+            ->orWhereNotNull('threshold_qty')->orWhereNotNull('threshold_value'))->where(function ($q) use ($targets) {
+                $q->whereRaw('1 = 0');
+                foreach ($targets as $type => $ids) {
+                    $q->orWhere(fn ($part) => $part->where('target_type', $type)->whereIn('target_id', $ids));
+                }
+            })->exists();
     }
 }

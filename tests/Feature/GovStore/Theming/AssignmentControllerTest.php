@@ -16,9 +16,22 @@ class AssignmentControllerTest extends ThemingTestCase
         $request->headers->set('Accept', 'application/json');
         $request->setLaravelSession(app('session')->driver('array'));
         $request->setUserResolver(fn () => auth()->user());
+        $route = app('router')->getRoutes()->getByName('gs-theme.assignments.update');
+        $route->bind($request);
+        $request->setRouteResolver(fn () => $route);
         app()->instance('request', $request);
 
-        return app(AssignmentController::class)->update($request, $scope, $id);
+        $response = app(AssignmentController::class)->update($request, $scope, $id);
+        if ($scope === 'organization' && $response->getStatusCode() === 409) {
+            $this->assertSame('national_review', $response->getData(true)['reason_key']);
+            $token = basename($response->getData(true)['review_url']);
+            $request->replace(['review_token' => $token, 'confirmation' => 'CHANGE', 'change_reason' => 'Reviewed test theme assignment']);
+            // The controller validates before creating a review; retain fields on confirmation.
+            $request->merge($data);
+            return app(AssignmentController::class)->update($request, $scope, $id);
+        }
+
+        return $response;
     }
 
     private function index(array $query = [])

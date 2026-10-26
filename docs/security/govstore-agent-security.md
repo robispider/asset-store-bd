@@ -45,6 +45,13 @@ the next request without requiring logout. Keep menus, queues and controller gua
 consistent with temporary cover. Access approval must enforce the reviewer role,
 office, pending state, requester membership and no self-approval; replay must fail.
 
+The native user `location_id` is not approved membership and must not initialize
+an ordinary working office or create/revive memberships. Combine all current
+responsibilities and unexpired cover when deriving native permissions; do not
+reduce them to one priority role. Request-based grants disclose their complete
+bundle, expire (30 days by default), and never create permanent responsibilities.
+Catalog maintenance and document reading use narrow dedicated roles.
+
 ### 3. Check every object ID, including mutations
 
 Verify working-office/company boundaries on document views, prints, metadata,
@@ -125,6 +132,13 @@ it can expose queries and exceptions even when the visible message is sanitized.
 
 ### 8. Treat shadow mode as a controlled rollout
 
+Development decision, 26 October 2026: the owner requires enforcement by default
+so permission defects appear during development. `GOVSTORE_ACCESS_MODE` defaults
+to `enforce`; `shadow` requires an explicit override. Keep the authorized local
+development installation enforcing after tests, except while a test explicitly
+exercises shadow behavior. This supersedes the earlier shadow-default development
+setting, and does not establish completion of operational rollout acceptance.
+
 Office role restrictions log rather than block in shadow mode. National/admin
 controls, unknown abilities and object/type/state boundaries still enforce.
 Unknown configuration mode values fail closed. Menus reflect actual ability
@@ -134,6 +148,28 @@ Before office enforcement, complete real observation, role-gap resolution,
 usability/accessibility checks and the announcement of an enforcement date/help
 contact. Temporarily exercising enforcement locally is not completing rollout.
 When changing cached configuration, verify the effective mode in the application.
+
+### 9. Keep reference ownership separate from adoption
+
+Use `gov_reference_owners` and canonical `national` / `company` / `office` scopes.
+Adoption never establishes or transfers ownership. National category governance
+takes precedence over adoption; unresolved owners cannot mutate shared definitions.
+Use the canonical `model` reference key for asset models. Validate source visibility
+and the exact target office/company for adoption, archive and restore, even in
+shadow mode. Reusing a commodity code must not remap its shared category.
+
+Company reference mutations require the actual company administrator. Office
+catalog managers mutate only references owned by their working office. National
+reference edits and native update/delete routes require the exact reviewed
+`catalog.master.manage` decision as well as native policies. Finance defaults follow
+the same ownership boundaries. Native reference/office creation needs the internal
+scoped provisioning permit; native create permissions cannot bypass GovStore.
+
+National metadata maintenance uses a durable reviewed operation tied to the exact
+plan and actor. Workers recheck the actor, consumed review and fingerprint, process
+only reviewed objects, and refuse replay. Preserve operation history during sample
+data cleanup. A development owner's one-time data normalization is not a general
+migration policy for other installations.
 
 ## Failures encountered and what they taught us
 

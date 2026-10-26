@@ -1,6 +1,9 @@
 <?php
 
 return [
+    'reviewed_operations' => 'Reviewed maintenance operations',
+    'operation_status' => 'Status', 'processed' => 'Processed models', 'failed' => 'Failed models',
+    'operation_states' => ['queued' => 'Queued', 'running' => 'Running', 'completed' => 'Completed', 'failed' => 'Needs attention'],
     // Navigation (tenant-scope MenuRegistry)
     'nav_health' => 'Metadata health',
 

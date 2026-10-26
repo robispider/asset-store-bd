@@ -5,6 +5,7 @@
  * docs/plans/custom-requests-ux-redesign-plan.md. Keys must match bn-BD/requests.php exactly.
  */
 return [
+    'request_refused_approval_path' => 'No eligible approval path is available. Your draft is kept. Ask the office administrator to assign an independent approver or reviewed temporary cover.',
     // ---------------------------------------------------------------- navigation
     'nav_request_items' => 'Request items',
     'nav_my_requests' => 'My requests',

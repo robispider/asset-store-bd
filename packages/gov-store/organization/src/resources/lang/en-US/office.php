@@ -3,6 +3,7 @@
 // Strings for the redesigned Organization screens (docs/plans/organization-ux-redesign-plan.md).
 // Plain language first: say what happens and what to do next. Keep key parity with bn-BD/office.php.
 return [
+    'item_approval_path' => 'Assign different eligible primary and final approvers',
     // ---------- shared ----------
     'section_nav' => 'Organization sections',
     'section_offices' => 'Offices',

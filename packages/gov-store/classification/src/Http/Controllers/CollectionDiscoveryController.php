@@ -153,7 +153,7 @@ class CollectionDiscoveryController extends Controller
             ->where('is_active', true)
             ->pluck('reference_id')
             ->toArray();
-        $global = DB::table('gov_category_governance')->where('governance_type', 'global')->pluck('category_id')->all();
+        $global = DB::table('gov_category_governance')->whereIn('governance_type', ['global', 'national'])->pluck('category_id')->all();
 
         return array_merge($adopted, $global);
     }

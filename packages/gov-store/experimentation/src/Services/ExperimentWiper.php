@@ -21,7 +21,7 @@ class ExperimentWiper
         'custom_request_sequences', // Global counters must survive fixture cleanup to prevent number reuse.
         'gov_store_document_sequences', // Ledger document numbers must not be reused after cleanup.
         'gov_finance_items', 'gov_asset_tag_sequences', 'gov_catalog_import_history', 'gov_tenant_scopes',
-        'gov_access_events', 'gov_access_review_uses', 'gov_access_requests', 'gov_access_grants', 'gov_access_notices',
+        'gov_access_events', 'gov_access_review_uses', 'gov_access_requests', 'gov_access_grants', 'gov_access_notices', 'gov_reviewed_operations',
         'gov_committee_ledger', 'gov_committee_reviews', 'gov_committee_sequences', 'gov_committee_catalog_mutexes',
         'gov_committee_seat_roles',
         'gov_location_roles', // Deprecated registry: retained for review, never a source of new roles.
@@ -79,6 +79,12 @@ class ExperimentWiper
 
     // Supplement physical foreign keys with known legacy/polymorphic relationships.
     private const RELATIONS = [
+        ['gov_reference_owners', 'reference_id', 'categories', 'id', 'reference_type', 'category'],
+        ['gov_reference_owners', 'reference_id', 'models', 'id', 'reference_type', 'model'],
+        ['gov_reference_owners', 'reference_id', 'suppliers', 'id', 'reference_type', 'supplier'],
+        ['gov_reference_owners', 'reference_id', 'manufacturers', 'id', 'reference_type', 'manufacturer'],
+        ['gov_reference_owners', 'owner_id', 'companies', 'id', 'owner_type', 'company'],
+        ['gov_reference_owners', 'owner_id', 'locations', 'id', 'owner_type', 'office'],
         ['models', 'fieldset_id', 'custom_fieldsets', 'id'],
         ['assets', 'model_id', 'models', 'id'], ['assets', 'assigned_to', 'users', 'id', 'assigned_type', User::class],
         ['action_logs', 'item_id', 'assets', 'id', 'item_type', 'App\\Models\\Asset'],

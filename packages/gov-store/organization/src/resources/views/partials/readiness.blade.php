@@ -22,6 +22,9 @@
         ['label' => __('organization_labels::office.item_storekeeper'), 'done' => (bool) ($checklist['has_storekeeper'] ?? false),
             'value' => $people[$roles->storekeeper_id ?? 0] ?? null, 'action' => $choose],
     ];
+    if (array_key_exists('has_approval_path', $checklist) && ! $checklist['has_approval_path']) {
+        $items[] = ['label' => __('organization_labels::office.item_approval_path'), 'done' => false, 'action' => $choose];
+    }
     $left = collect($items)->where('done', false)->count();
     $status = $profile->lifecycle_status ?? 'unconfigured';
     [$title, $caption] = match (true) {

@@ -42,12 +42,14 @@ trait CustomRequestsFixtures
             $t->string('last_name')->nullable();
             $t->integer('location_id')->nullable();
             $t->integer('company_id')->nullable();
+            $t->boolean('activated')->default(true);
             $t->text('permissions')->nullable();
             $t->timestamp('deleted_at')->nullable();
         });
         Schema::create('locations', function (Blueprint $t) {
             $t->increments('id');
             $t->string('name');
+            $t->integer('company_id')->default(20);
             $t->timestamp('deleted_at')->nullable();
         });
         Schema::create('permission_groups', function (Blueprint $t) {
@@ -245,7 +247,7 @@ trait CustomRequestsFixtures
         $context->allowedLocationIds = [10];
         app()->instance(TenantContext::class, $context);
         DB::table('locations')->insert([['id' => 10, 'name' => 'Working office'], ['id' => 11, 'name' => 'Other office']]);
-        DB::table('users')->insert(['id' => 1, 'first_name' => 'Requester', 'location_id' => 11]);
+        DB::table('users')->insert(['id' => 1, 'first_name' => 'Requester', 'location_id' => 11, 'company_id' => 20]);
         DB::table('gov_office_memberships')->insert(['user_id' => 1, 'location_id' => 10, 'status' => 'active']);
         DB::table('gov_store_ledger_openings')->insert([
             'location_id' => 10, 'document_id' => (string) Str::uuid(), 'opened_at' => now(), 'opened_by' => 1,
@@ -258,7 +260,8 @@ trait CustomRequestsFixtures
 
     protected function actor(string $role, int $id = 2): User
     {
-        DB::table('users')->insertOrIgnore(['id' => $id, 'first_name' => 'Actor '.$id, 'location_id' => 10]);
+        DB::table('users')->insertOrIgnore(['id' => $id, 'first_name' => 'Actor '.$id, 'location_id' => 10, 'company_id' => 20]);
+        DB::table('gov_office_memberships')->updateOrInsert(['user_id' => $id, 'location_id' => 10], ['status' => 'active']);
         $user = Mockery::mock(User::class)->makePartial();
         $user->id = $id;
         $user->location_id = 10;

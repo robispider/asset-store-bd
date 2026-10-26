@@ -325,6 +325,7 @@ class TenantScopeTest extends TestCase
 
     public function test_native_admin_does_not_gain_company_scope_and_company_role_union_is_injected_once(): void
     {
+        DB::table('gov_office_memberships')->insert(['user_id' => 1, 'location_id' => 10, 'status' => 'active']);
         $actor = $this->actor(false, true);
         $this->initialize();
         $this->assertFalse(app(TenantContext::class)->isGlobal);
@@ -351,6 +352,7 @@ class TenantScopeTest extends TestCase
 
     private function assignIctJurisdiction(): void
     {
+        DB::table('gov_office_memberships')->updateOrInsert(['user_id' => 1, 'location_id' => 10], ['status' => 'active']);
         DB::table('gov_geo_areas')->insert([['GeoAreaId' => 1, 'hid' => '01.'], ['GeoAreaId' => 2, 'hid' => '01.02.'], ['GeoAreaId' => 3, 'hid' => '09.']]);
         DB::table('gov_location_profiles')->insert([['location_id' => 10, 'geo_area_id' => 1], ['location_id' => 30, 'geo_area_id' => 2], ['location_id' => 31, 'geo_area_id' => 3]]);
         DB::table('gov_ict_jurisdictions')->insert(['user_id' => 1, 'geo_area_id' => 1]);
@@ -492,6 +494,7 @@ class TenantScopeTest extends TestCase
 
     public function test_schema_introspection_is_cached_but_context_and_grants_are_fresh(): void
     {
+        DB::table('gov_office_memberships')->insert(['user_id' => 1, 'location_id' => 10, 'status' => 'active']);
         DB::enableQueryLog();
         $this->stock()->count();
         $cold = count(DB::getQueryLog());

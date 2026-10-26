@@ -22,7 +22,7 @@ class RecordRegistry
         'gov_organization_activity_logs', 'gov_office_memberships', 'gov_office_responsibilities',
         'gov_role_handshakes', 'gov_role_assignments', 'gov_override_audit_logs', 'gov_employee_verification_tokens',
         'gov_membership_notices', 'gov_onboarding_events', 'gov_onboarding_notices', 'gov_office_starter_runs',
-        'gov_user_onboardings', 'gov_tenant_scope_mappings', 'gov_category_governance', 'gov_catalog_collections',
+        'gov_user_onboardings', 'gov_tenant_scope_mappings', 'gov_category_governance', 'gov_reference_owners', 'gov_catalog_collections',
         'gov_catalog_collection_nodes', 'gov_catalog_snipe_mappings', 'gov_catalog_enrichments', 'gov_catalog_synonyms',
         'gov_model_metadata_states', 'gov_profiles', 'gov_profile_capabilities', 'gov_profile_assignments',
         'gov_documents', 'gov_document_items', 'gov_document_item_meta', 'gov_document_references',
