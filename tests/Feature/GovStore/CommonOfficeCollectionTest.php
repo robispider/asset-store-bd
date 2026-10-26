@@ -411,6 +411,25 @@ class CommonOfficeCollectionTest extends TestCase
         }
     }
 
+    public function test_collection_detail_groups_members_by_section_and_falls_back_to_their_catalog_class(): void
+    {
+        $this->migrate();
+        $this->actor();
+        DB::table('gov_catalog_collection_nodes')->where('collection_id', $this->collectionId())->whereIn('code', ['43211507', '43211503'])->update(['section' => null]);
+
+        $data = app(CollectionDiscoveryController::class)->show($this->collectionId(), app(TenantContext::class))->getData();
+        $groups = $data['groups'];
+
+        $this->assertSame($data['collection']->nodes->count(), $groups->sum('total'));
+        $this->assertSame('Computers', $groups['class-43211500']['label']);
+        $this->assertSame('43 21 15', $groups['class-43211500']['code']);
+        $this->assertSame(['43211503', '43211507'], $groups['class-43211500']['members']->pluck('code')->sort()->values()->all());
+        $this->assertSame(__('classification::collections.sections.furniture'), $groups['furniture']['label']);
+        $this->assertNull($groups['furniture']['code']);
+        $this->assertSame('fa-chair', $groups['furniture']['icon']);
+        $this->assertSame($groups->pluck('total')->sortDesc()->values()->all(), $groups->pluck('total')->values()->all());
+    }
+
     public function test_collection_preview_rejects_unknown_ids_inactive_collections_and_nonmembers(): void
     {
         $this->migrate();

@@ -5,6 +5,13 @@
     $visibleOthers = 6;
     $topSections = $sections->take(7);
     $largestSection = max(1, (int) ($sections->first() ?? 1));
+    $featuredState = $featured ? $adoption[$featured->id] : ['adopted' => 0, 'remaining' => []];
+    $remainingByCollection = array_map(function ($state) {
+        return $state['remaining'];
+    }, $adoption);
+    $anyRemaining = collect($adoption)->contains(function ($state) {
+        return count($state['remaining']) > 0;
+    });
 @endphp
 <div class="classification-theme gs-discover">
     @include('gov-classification::discover.partials.nav', ['active' => 'collections'])
@@ -55,21 +62,22 @@
                 <dl class="gs-discover-stats">
                     <div class="gs-discover-stat"><dt>{{ __('classification::discover.collections.item_types') }}</dt><dd>{{ number_format($featured->nodes_count) }}</dd></div>
                     <div class="gs-discover-stat"><dt>{{ __('classification::discover.collections.groups') }}</dt><dd>{{ $sections->count() }}</dd></div>
-                    <div class="gs-discover-stat"><dt>{{ __('classification::discover.collections.in_catalog') }}</dt><dd>{{ number_format($adoptedCount) }}</dd></div>
+                    <div class="gs-discover-stat"><dt>{{ __('classification::discover.collections.in_catalog') }}</dt><dd>{{ number_format($featuredState['adopted']) }}</dd></div>
                 </dl>
-                <x-gs::progress :value="$adoptedCount" :max="$featured->nodes_count" tone="success"
+                <x-gs::progress :value="$featuredState['adopted']" :max="$featured->nodes_count" tone="success"
                     :label="__('classification::collections.progress')"
-                    :caption="__('classification::collections.adopted_count', ['adopted' => $adoptedCount, 'total' => $featured->nodes_count])" />
+                    :caption="__('classification::collections.adopted_count', ['adopted' => $featuredState['adopted'], 'total' => $featured->nodes_count])" />
                 <div class="gs-discover-actions">
-                    <x-gs::button :href="route('gov.catalog.discover.collections.show', $featured->id)" icon="fa-arrow-right">
-                        @if ($adoptedCount < $featured->nodes_count)
-                            {{ __('classification::collections.adopt_remaining', ['count' => $featured->nodes_count - $adoptedCount]) }}
-                        @else
-                            {{ __('classification::collections.complete') }}
-                        @endif
-                    </x-gs::button>
+                    @if (count($featuredState['remaining']) === 0)
+                        <x-gs::button tone="secondary" outline icon="fa-check-circle" disabled>{{ __('classification::collections.complete') }}</x-gs::button>
+                    @elseif ($canAdopt)
+                        <x-gs::button icon="fa-check-double" data-adopt-collection="{{ $featured->id }}">{{ __('classification::discover.collections.adopt_all', ['count' => count($featuredState['remaining'])]) }}</x-gs::button>
+                    @endif
                     <x-gs::button tone="secondary" outline :href="route('gov.catalog.discover.collections.show', $featured->id)">{{ __('classification::discover.collections.preview_all') }}</x-gs::button>
                 </div>
+                @if (count($featuredState['remaining']) > 0)
+                    <p class="gs-discover-muted">{{ $canAdopt ? __('classification::discover.collections.adopt_all_hint') : __('classification::discover.detail.no_permission') }}</p>
+                @endif
             </div>
             @if ($topSections->isNotEmpty())
                 <aside class="gs-discover-featured__inside" aria-labelledby="inside-title">
@@ -97,13 +105,13 @@
             </div>
             <ul class="gs-discover-cards">
                 @foreach ($others->take($visibleOthers) as $collection)
-                    @include('gov-classification::discover.partials.collection-card', ['collection' => $collection])
+                    @include('gov-classification::discover.partials.collection-card', ['collection' => $collection, 'state' => $adoption[$collection->id]])
                 @endforeach
             </ul>
             @if ($others->count() > $visibleOthers)
                 <ul class="gs-discover-cards" id="discover-more-collections" hidden>
                     @foreach ($others->slice($visibleOthers) as $collection)
-                        @include('gov-classification::discover.partials.collection-card', ['collection' => $collection])
+                        @include('gov-classification::discover.partials.collection-card', ['collection' => $collection, 'state' => $adoption[$collection->id]])
                     @endforeach
                 </ul>
                 <button type="button" class="gs-btn gs-btn--secondary gs-btn--outline gs-discover-more" aria-expanded="false" aria-controls="discover-more-collections"
@@ -146,6 +154,10 @@
         </div>
         <x-gs::button tone="secondary" outline :href="route('gov.catalog.discover.explorer')" icon="fa-compass">{{ __('classification::discover.collections.master_cta') }}</x-gs::button>
     </section>
+
+    @if ($canAdopt && $anyRemaining)
+        @include('gov-classification::adopt.partials.bulk-preview')
+    @endif
 </div>
 @endsection
 
@@ -153,6 +165,16 @@
 @parent
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    @if ($canAdopt && $anyRemaining)
+    var remainingByCollection = @json($remainingByCollection);
+    document.querySelectorAll('[data-adopt-collection]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            var id = button.dataset.adoptCollection;
+            if ((remainingByCollection[id] || []).length > 0) triggerBulkAdoption(remainingByCollection[id], Number(id));
+        });
+    });
+    @endif
+
     document.querySelectorAll('.gs-discover-more').forEach(function (button) {
         button.addEventListener('click', function () {
             var panel = document.getElementById(button.getAttribute('aria-controls'));

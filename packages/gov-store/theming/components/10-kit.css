@@ -37,7 +37,7 @@
 
     /* ---------- page header ---------- */
     .gs-page-header {
-        display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--gs-space-3);
+        display: flex !important; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--gs-space-3);
         padding: var(--gs-space-4) 0 var(--gs-space-3);
         margin-bottom: var(--gs-space-4);
         border-bottom: var(--gs-border-width) solid var(--gs-color-border);
