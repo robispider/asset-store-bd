@@ -51,22 +51,22 @@
     },
     {
       "action": "click",
-      "target": "css=table tbody tr:has(.fa-folder) td:nth-child(4) a >> nth=0",
+      "target": "css=table tbody tr[data-status=\"folder\"] a.gs-discover-item__title >> nth=0",
       "waitForNavigation": true
     },
     {
       "action": "click",
-      "target": "css=table tbody tr:has(.fa-folder) td:nth-child(4) a >> nth=0",
+      "target": "css=table tbody tr[data-status=\"folder\"] a.gs-discover-item__title >> nth=0",
       "waitForNavigation": true
     },
     {
       "action": "click",
-      "target": "css=table tbody tr:has(.fa-folder) td:nth-child(4) a >> nth=0",
+      "target": "css=table tbody tr[data-status=\"folder\"] a.gs-discover-item__title >> nth=0",
       "waitForNavigation": true
     },
     {
       "action": "capture",
-      "target": "css=table tbody tr:has(.label:text-is(\"Not Adopted\")) .node-checkbox >> nth=0",
+      "target": "css=table tbody tr[data-status=\"not-adopted\"] .node-checkbox >> nth=0",
       "attribute": "value",
       "as": "catalogCode"
     },
@@ -111,7 +111,7 @@
       "action": "assert",
       "target": "css=table tbody tr:has(.node-checkbox[value=\"${captured.catalogCode}\"])",
       "test": "text",
-      "contains": "Local Adopted"
+      "contains": "Adopted"
     },
     {
       "action": "goto",
@@ -126,7 +126,7 @@
     },
     {
       "action": "click",
-      "target": "css=table tbody tr:has(.node-checkbox[value=\"${captured.catalogCode}\"]) a:has-text(\"Manage Local Category\")",
+      "target": "css=table tbody tr:has(.node-checkbox[value=\"${captured.catalogCode}\"]) a:has-text(\"Manage local category\")",
       "waitForNavigation": true
     },
     {

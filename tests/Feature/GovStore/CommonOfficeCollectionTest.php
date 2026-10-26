@@ -479,7 +479,7 @@ class CommonOfficeCollectionTest extends TestCase
 
     public function test_collection_blade_templates_compile_to_valid_php_and_the_dialog_renders_in_both_languages(): void
     {
-        foreach (['discover/collections/index', 'discover/collections/show', 'adopt/partials/bulk-preview'] as $name) {
+        foreach (['discover/collections/index', 'discover/collections/show', 'discover/explorer/index', 'discover/partials/collection-modal', 'discover/partials/collection-card', 'discover/partials/nav', 'adopt/partials/bulk-preview'] as $name) {
             $path = base_path('packages/gov-store/classification/src/resources/views/'.$name.'.blade.php');
             $temporary = tempnam(sys_get_temp_dir(), 'gs-collection-blade-');
             try {
@@ -498,6 +498,25 @@ class CommonOfficeCollectionTest extends TestCase
             $this->assertStringContainsString(e(__('classification::collections.bulk.title')), $html);
             $this->assertStringNotContainsString('<x-gs::', $html);
             $this->assertStringNotContainsString('classification::collections.', $html);
+
+            $modal = view('gov-classification::discover.partials.collection-modal')->render();
+            $this->assertStringContainsString(e(__('classification::discover.modal.title')), $modal);
+            $this->assertStringNotContainsString('classification::discover.', $modal);
         }
+    }
+
+    public function test_discover_translations_have_matching_keys_in_both_languages(): void
+    {
+        $flatten = function (array $values, string $prefix = '') use (&$flatten): array {
+            $keys = [];
+            foreach ($values as $key => $value) {
+                $keys = array_merge($keys, is_array($value) ? $flatten($value, $prefix.$key.'.') : [$prefix.$key]);
+            }
+
+            return $keys;
+        };
+        $base = base_path('packages/gov-store/classification/src/resources/lang/');
+
+        $this->assertSame($flatten(require $base.'en-US/discover.php'), $flatten(require $base.'bn-BD/discover.php'));
     }
 }

@@ -3,6 +3,7 @@
 namespace GovStore\Classification\Http\Controllers;
 
 use GovStore\Classification\Models\CatalogCollection;
+use GovStore\Classification\Models\CatalogNode;
 use GovStore\Classification\Services\CollectionMembershipService;
 use GovStore\TenantScope\Contexts\TenantContext;
 use GovStore\TenantScope\Services\ActionFailure;
@@ -12,38 +13,49 @@ use Illuminate\Support\Facades\DB;
 
 class CollectionDiscoveryController extends Controller
 {
-    public function index()
+    public function index(TenantContext $context)
     {
         $collections = CatalogCollection::where('is_active', true)
             ->withCount('nodes')
-            ->orderBy('name')
-            ->get();
+            ->get()
+            ->sortBy([['nodes_count', 'desc'], ['name', 'asc']])
+            ->values();
 
-        return view('gov-classification::discover.collections.index', compact('collections'));
+        $featured = $collections->first(fn ($collection) => $collection->nodes_count > 0);
+        $others = $collections->reject(fn ($collection) => $featured && $collection->is($featured))->values();
+        $sections = collect();
+        $adoptedCount = 0;
+
+        if ($featured) {
+            $sections = DB::table('gov_catalog_collection_nodes')
+                ->where('collection_id', $featured->id)
+                ->whereNotNull('section')
+                ->selectRaw('section, count(*) as total')
+                ->groupBy('section')
+                ->orderByDesc('total')
+                ->orderBy('section')
+                ->pluck('total', 'section');
+
+            $adoptedCount = DB::table('gov_catalog_collection_nodes as member')
+                ->join('gov_catalog_snipe_mappings as mapping', 'mapping.code', '=', 'member.code')
+                ->join('categories as category', 'category.id', '=', 'mapping.category_id')
+                ->whereNull('category.deleted_at')
+                ->where('member.collection_id', $featured->id)
+                ->whereIn('mapping.category_id', $this->adoptedCategoryIds($context))
+                ->distinct()
+                ->count('member.code');
+        }
+
+        $masterCount = CatalogNode::count();
+
+        return view('gov-classification::discover.collections.index', compact('collections', 'featured', 'others', 'sections', 'adoptedCount', 'masterCount'));
     }
 
     public function show($id, TenantContext $context)
     {
         $collection = CatalogCollection::where('is_active', true)->with(['nodes.catalogNode.snipeMapping.category', 'nodes.catalogNode.enrichment'])->findOrFail($id);
 
-        $adoptedCategoryIds = DB::table('gov_tenant_scope_mappings')
-            ->where('reference_type', 'category')
-            ->where(function ($query) use ($context) {
-                if ($context->companyId > 0) {
-                    $query->where(fn ($scope) => $scope->where('scope_type', 'company')->where('scope_id', $context->companyId));
-                }
-                if (! $context->isCompanyAdmin && $context->locationId > 0) {
-                    $query->orWhere(fn ($scope) => $scope->where('scope_type', 'location')->where('scope_id', $context->locationId));
-                }
-                if (! $context->companyId && (! $context->locationId || $context->isCompanyAdmin)) {
-                    $query->whereRaw('1 = 0');
-                }
-            })
-            ->where('is_active', true)
-            ->pluck('reference_id')
-            ->toArray();
-        $globalCategoryIds = DB::table('gov_category_governance')->where('governance_type', 'global')->pluck('category_id')->all();
-        $adoptedCategoryIds = array_merge($adoptedCategoryIds, $globalCategoryIds);
+        $adoptedCategoryIds = $this->adoptedCategoryIds($context);
         $mappedTypes = DB::table('gov_catalog_snipe_mappings as mapping')->join('categories as category', 'category.id', '=', 'mapping.category_id')
             ->whereIn('mapping.code', $collection->nodes->pluck('code'))->whereNull('category.deleted_at')
             ->pluck('category.category_type', 'mapping.code');
@@ -76,13 +88,46 @@ class CollectionDiscoveryController extends Controller
     }
 
     /**
+     * Category ids available to the working office or company, including global standards.
+     */
+    private function adoptedCategoryIds(TenantContext $context): array
+    {
+        $adopted = DB::table('gov_tenant_scope_mappings')
+            ->where('reference_type', 'category')
+            ->where(function ($query) use ($context) {
+                if ($context->companyId > 0) {
+                    $query->where(fn ($scope) => $scope->where('scope_type', 'company')->where('scope_id', $context->companyId));
+                }
+                if (! $context->isCompanyAdmin && $context->locationId > 0) {
+                    $query->orWhere(fn ($scope) => $scope->where('scope_type', 'location')->where('scope_id', $context->locationId));
+                }
+                if (! $context->companyId && (! $context->locationId || $context->isCompanyAdmin)) {
+                    $query->whereRaw('1 = 0');
+                }
+            })
+            ->where('is_active', true)
+            ->pluck('reference_id')
+            ->toArray();
+        $global = DB::table('gov_category_governance')->where('governance_type', 'global')->pluck('category_id')->all();
+
+        return array_merge($adopted, $global);
+    }
+
+    /**
      * API: List active collections for dropdown components.
      */
     public function listActive()
     {
         $collections = CatalogCollection::where('is_active', true)
+            ->withCount('nodes')
             ->orderBy('name')
-            ->get(['id', 'name', 'icon']);
+            ->get()
+            ->map(fn ($collection) => [
+                'id' => $collection->id,
+                'name' => $collection->display_name,
+                'icon' => $collection->icon,
+                'count' => $collection->nodes_count,
+            ]);
 
         return response()->json([
             'success' => true,
