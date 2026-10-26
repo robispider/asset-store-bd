@@ -800,6 +800,60 @@ class CustomRequestsUxTest extends TestCase
         $this->assertStatus(404, fn () => $this->page(BasketController::class, 'sent', ['batch' => $batch]));
     }
 
+    public function test_authority_auto_approval_preview_and_history_render_in_both_languages(): void
+    {
+        $this->actor('primary_approver', 1);
+        $service = app(BasketService::class);
+        $basket = $service->addItem(1, 'consumable', 1, 2);
+        $draft = app(\GovStore\CustomRequests\Support\DraftView::class)->make($basket);
+        $this->assertFalse($draft['needsReason']);
+        $this->assertNull($draft['reader']);
+        $this->assertSame($service->snapshot($basket), $draft['snapshot']);
+        foreach (['en-US', 'bn-BD'] as $locale) {
+            app()->setLocale($locale);
+            $html = $this->page(BasketController::class, 'index');
+            $this->assertStringContainsString(e(__('requestlabels::requests.group_authority_auto')), $html);
+            $this->assertStringNotContainsString(e(__('requestlabels::requests.request_refused_approval_path')), $html);
+        }
+        $this->send(['justification' => '']);
+        $request = ServiceRequest::sole();
+        $this->assertSame('approved', $request->approval_status);
+        $this->assertSame('PRIMARY_ONLY', $request->resolved_policy);
+        foreach (['en-US', 'bn-BD'] as $locale) {
+            app()->setLocale($locale);
+            $html = $this->page(GovRequestController::class, 'show', ['id' => $request->id]);
+            $this->assertStringContainsString(e(__('requestlabels::requests.reason_authority_auto')), $html);
+            $this->assertStringContainsString(e(__('requestlabels::requests.history_authority_auto')), $html);
+        }
+    }
+
+    public function test_primary_requester_preview_names_final_approver_and_keeps_reason_required(): void
+    {
+        $this->actor('final_approver', 2);
+        $this->actor('primary_approver', 1);
+        ApprovalPolicy::create(['target_type' => 'consumable', 'target_id' => 1, 'policy_name' => 'PRIMARY_AND_FINAL']);
+        $basket = app(BasketService::class)->addItem(1, 'consumable', 1, 2);
+        $draft = app(\GovStore\CustomRequests\Support\DraftView::class)->make($basket);
+        $this->assertTrue($draft['needsReason']);
+        $this->assertSame('Actor 2', $draft['reader']);
+        foreach (['en-US', 'bn-BD'] as $locale) {
+            app()->setLocale($locale);
+            $html = $this->page(BasketController::class, 'index');
+            $this->assertStringContainsString(e(__('requestlabels::requests.group_authority_final', ['name' => 'Actor 2'])), $html);
+            $this->assertStringNotContainsString(e(__('requestlabels::requests.request_refused_approval_path')), $html);
+        }
+        $this->send(['justification' => '']);
+        $this->assertSame(0, ServiceRequest::count());
+        $this->send();
+        $request = ServiceRequest::sole();
+        $this->assertSame('pending_final', $request->approval_status);
+        foreach (['en-US', 'bn-BD'] as $locale) {
+            app()->setLocale($locale);
+            $this->assertStringContainsString(e(__('requestlabels::requests.reason_authority_final')),
+                $this->page(GovRequestController::class, 'show', ['id' => $request->id]));
+        }
+    }
+
     public function test_draft_changes_and_sending_are_rate_limited(): void
     {
         $routes = app('router')->getRoutes();

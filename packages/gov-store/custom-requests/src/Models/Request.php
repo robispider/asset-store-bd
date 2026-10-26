@@ -51,6 +51,17 @@ class Request extends Model
         'resolved_reason' => 'array',
     ];
 
+    /** Server-written submission evidence, distinct from a human approval decision. */
+    public function primarySatisfiedOnSubmission(): bool
+    {
+        $submission = $this->resolved_reason['submission'] ?? [];
+
+        return $this->resolved_policy === 'PRIMARY_AND_FINAL'
+            && ($submission['rule'] ?? null) === 'requester_authority_v1'
+            && ($submission['status'] ?? null) === 'pending_final'
+            && ($submission['authority'] ?? null) === 'primary_approver';
+    }
+
     /**
      * One status for the whole request, derived from the approval and fulfilment columns, receipt and
      * return (plan P0, board 2). Every combination maps to exactly one theming status-map key, including

@@ -28,7 +28,8 @@ class ApprovalService
             app(RequestAccess::class)->check($request, $admin, $primary ? 'requests.approve.primary' : 'requests.approve.final');
             abort_if((int) $request->requested_by === (int) $admin->id, 403);
             abort_if(! $primary && (int) $request->primary_decided_by === (int) $admin->id, 403);
-            abort_if(! $primary && $request->resolved_policy === 'PRIMARY_AND_FINAL' && ! $request->primary_decided_by, 409);
+            abort_if(! $primary && $request->resolved_policy === 'PRIMARY_AND_FINAL' && ! $request->primary_decided_by
+                && ! $request->primarySatisfiedOnSubmission(), 409);
             Validator::make(['items' => $itemDecisions], [
                 'items' => 'required|array', 'items.*' => 'required|array',
                 'items.*.status' => 'required|in:approved,rejected',

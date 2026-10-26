@@ -287,10 +287,11 @@ class CustomRequestsWorkflowTest extends TestCase
         $this->assertSame('PRIMARY_AND_FINAL', $service->resolvePolicy('consumable', 1));
     }
 
-    public function test_approver_requester_routes_to_independent_final_and_cover_expiry_is_respected(): void
+    public function test_primary_requester_two_stage_request_routes_to_independent_final_and_cover_expiry_is_respected(): void
     {
         $self = $this->actor('primary_approver', 1);
         $final = $this->actor('final_approver', 2);
+        ApprovalPolicy::create(['target_type' => 'consumable', 'target_id' => 1, 'policy_name' => 'PRIMARY_AND_FINAL']);
         $service = app(BasketService::class);
         $service->addItem(1, 'consumable', 1);
         $request = $service->submitBasket(1, ['request_type' => 'other', 'purpose' => 'Work', 'justification' => 'Supplies'])[0];

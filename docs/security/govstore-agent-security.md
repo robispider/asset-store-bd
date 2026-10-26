@@ -52,6 +52,19 @@ reduce them to one priority role. Request-based grants disclose their complete
 bundle, expire (30 days by default), and never create permanent responsibilities.
 Catalog maintenance and document reading use narrow dedicated roles.
 
+Custom product requests: the owner's 26 October 2026 policy change permits
+automatic processing at submission when the requester's current office approval
+authority covers the product's effective rule. Primary authority covers a one-stage
+rule; final authority covers either rule. For a primary requester's two-stage rule,
+record primary authority and require an independent final decision. Resolve item,
+category and threshold requirements before applying this exception. Require an
+activated same-company account, active membership and a current responsibility or
+unexpired cover grant; admin/superuser flags alone are insufficient. Preserve the
+product rule, versioned authority evidence and transactional stock reservation.
+Recheck authority at submission and require renewed review if it changed since the
+draft review. Manual self-approval remains forbidden. This exception does not apply
+to access requests, membership review, national changes or document posting.
+
 ### 3. Check every object ID, including mutations
 
 Verify working-office/company boundaries on document views, prints, metadata,

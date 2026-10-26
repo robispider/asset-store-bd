@@ -3,10 +3,44 @@
 namespace GovStore\CustomRequests\Services;
 
 use GovStore\CustomRequests\Models\Request;
+use GovStore\CustomRequests\Support\RequestWorkflow;
 use Illuminate\Support\Facades\DB;
 
 class ApprovalRouting
 {
+    /**
+     * Product rules name the highest required authority. A current office approver
+     * satisfies their own level on submission; an independent person decides any
+     * higher level. Superuser/native-admin flags alone do not establish this role.
+     *
+     * @return array{rule:string,status:string,authority:?string}
+     */
+    public function submission(int $office, string $policy, int $requester): array
+    {
+        abort_unless(in_array($policy, RequestWorkflow::POLICIES, true), 409);
+        $plan = ['rule' => 'requester_authority_v1', 'status' => 'pending_primary', 'authority' => null];
+        if ($policy === 'AUTO_APPROVE') {
+            $plan['status'] = 'approved';
+        } elseif (in_array($requester, $this->candidates($office, 'final_approver'))) {
+            $plan['status'] = 'approved';
+            $plan['authority'] = 'final_approver';
+        } elseif (in_array($requester, $this->candidates($office, 'primary_approver'))) {
+            $plan['status'] = $policy === 'PRIMARY_ONLY' ? 'approved' : 'pending_final';
+            $plan['authority'] = 'primary_approver';
+        }
+
+        return $plan;
+    }
+
+    public function submissionFeasible(int $office, string $policy, int $requester): bool
+    {
+        $plan = $this->submission($office, $policy, $requester);
+
+        return $plan['status'] === 'approved' || ($plan['status'] === 'pending_final'
+            ? (bool) $this->candidates($office, 'final_approver', [$requester])
+            : $this->feasible($office, $policy, [$requester]));
+    }
+
     /** Responsibilities and unexpired cover grants share the authoritative GovAccess role sources. */
     public function candidates(int $office, string $role, array $exclude = []): array
     {
