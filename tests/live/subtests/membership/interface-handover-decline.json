@@ -1,0 +1,245 @@
+{
+  "schemaVersion": 1,
+  "id": "membership.interface-handover-decline",
+  "title": "Approver proposes a duty handover; colleague declines; both reopen the reason and unchanged permissions",
+  "features": [
+    "membership.handover"
+  ],
+  "tags": [
+    "journey",
+    "mutation",
+    "membership"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "language": "en-US",
+    "timeoutMs": 120000,
+    "accessMode": "any"
+  },
+  "fixtures": {
+    "office": {
+      "requirements": {
+        "operational": true
+      }
+    },
+    "actors": {
+      "approver": {
+        "role": "primary_approver",
+        "capabilities": {
+          "allOf": [
+            "membership.self"
+          ],
+          "noneOf": [
+            "membership.manage"
+          ]
+        },
+        "office": "office",
+        "activeMembership": true
+      },
+      "colleague": {
+        "capabilities": {
+          "allOf": [
+            "membership.self"
+          ],
+          "noneOf": [
+            "membership.manage",
+            "requests.approve"
+          ]
+        },
+        "office": "office",
+        "activeMembership": true
+      }
+    }
+  },
+  "data": {
+    "note": {
+      "generate": "markedText",
+      "prefix": "LIVE-NOTE",
+      "length": 6
+    },
+    "reason": {
+      "generate": "markedText",
+      "prefix": "LIVE-DECLINE",
+      "length": 6
+    }
+  },
+  "steps": [
+    {
+      "action": "capture",
+      "value": "",
+      "as": "handshakeId"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "approver"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/my-memberships"
+    },
+    {
+      "action": "click",
+      "target": "css=#your-roles button[data-govmem-handover][data-office=\"${fixtures.office.id}\"][data-role=\"primary_approver\"]"
+    },
+    {
+      "action": "wait",
+      "target": "css=#govmem-handover fieldset[data-govmem-office=\"${fixtures.office.id}\"]:not([disabled]) input[name=\"assigned_user_id\"][value=\"${actors.colleague.id}\"]",
+      "state": "visible"
+    },
+    {
+      "action": "assert",
+      "target": "css=#govmem-handover .govmem-effects li",
+      "test": "count",
+      "equals": 3,
+      "note": "What happens next"
+    },
+    {
+      "action": "click",
+      "target": "css=#govmem-handover fieldset[data-govmem-office=\"${fixtures.office.id}\"]:not([disabled]) input[name=\"assigned_user_id\"][value=\"${actors.colleague.id}\"]"
+    },
+    {
+      "action": "fill",
+      "target": "css=#handover-note",
+      "value": "${data.note}"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=#govmem-handover .modal-footer button[type=\"submit\"]"
+    },
+    {
+      "action": "capture",
+      "as": "handshakeId",
+      "target": "css=#your-roles form[action*=\"/handshake/\"][action$=\"/cancel\"]",
+      "attribute": "action",
+      "pattern": "/handshake/(\\d+)/cancel"
+    },
+    {
+      "action": "ledger",
+      "kind": "role_handshake",
+      "id": "${captured.handshakeId}",
+      "effect": "Proposed duty handover, declined through UI; audit retained",
+      "cleanup": "retained"
+    },
+    {
+      "action": "assert",
+      "target": "css=#your-roles form[action$=\"/handshake/${captured.handshakeId}/cancel\"] button[type=\"submit\"]",
+      "test": "visible",
+      "note": "A labelled Cancel request replaces Hand over"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "colleague"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/my-memberships"
+    },
+    {
+      "action": "assert",
+      "target": "css=#waiting-for-you .govmem-request:has(form[action$=\"/handshake/${captured.handshakeId}/reject\"])",
+      "test": "visible"
+    },
+    {
+      "action": "assert",
+      "target": "css=#waiting-for-you .govmem-request:has(form[action$=\"/handshake/${captured.handshakeId}/reject\"])",
+      "test": "text",
+      "contains": "${data.note}"
+    },
+    {
+      "action": "click",
+      "target": "css=#waiting-for-you .govmem-request:has(form[action$=\"/handshake/${captured.handshakeId}/reject\"]) details.govmem-decline > summary"
+    },
+    {
+      "action": "fill",
+      "target": "css=#reason-${captured.handshakeId}",
+      "value": "${data.reason}"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=#waiting-for-you form[action$=\"/handshake/${captured.handshakeId}/reject\"] button[type=\"submit\"]"
+    },
+    {
+      "action": "actor",
+      "name": "approver"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/my-memberships"
+    },
+    {
+      "action": "assert",
+      "target": "css=#what-changed .govmem-feed q.govmem-quote:text-is(\"${data.reason}\")",
+      "test": "visible",
+      "note": "The approver reads the reason under What changed"
+    },
+    {
+      "action": "assert",
+      "target": "css=#your-roles button[data-govmem-handover][data-office=\"${fixtures.office.id}\"][data-role=\"primary_approver\"]",
+      "test": "visible",
+      "note": "The role can be handed over again"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/access"
+    },
+    {
+      "action": "capture",
+      "target": "css=.tenant-scope-theme",
+      "attribute": "data-access-roles",
+      "as": "approverRoles"
+    },
+    {
+      "action": "compare",
+      "actual": "${captured.approverRoles}",
+      "contains": "primary_approver"
+    },
+    {
+      "action": "actor",
+      "name": "colleague"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/access"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-access-ability=\"requests.approve.primary\"]",
+      "test": "count",
+      "equals": 0
+    }
+  ],
+  "cleanup": {
+    "policy": "handover-history-retained",
+    "description": "Declined handover and notices retained. Any still-pending run-owned proposal is cancelled using the approver UI.",
+    "steps": [
+      {
+        "action": "actor",
+        "name": "approver"
+      },
+      {
+        "action": "goto",
+        "url": "/gov-store/my-memberships"
+      },
+      {
+        "action": "capture",
+        "target": "css=#your-roles form[action$=\"/handshake/${captured.handshakeId}/cancel\"] button[type=\"submit\"]",
+        "count": true,
+        "as": "pendingOwnProposal"
+      },
+      {
+        "action": "submitForm",
+        "target": "css=#your-roles form[action$=\"/handshake/${captured.handshakeId}/cancel\"] button[type=\"submit\"]",
+        "when": {
+          "actual": "${captured.pendingOwnProposal}",
+          "notEquals": 0
+        }
+      }
+    ]
+  },
+  "evidenceLevel": "connected",
+  "description": "Role handoff and denial verified entirely through the interface, preserving duty and audit history."
+}

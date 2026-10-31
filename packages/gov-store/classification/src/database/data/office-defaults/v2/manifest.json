@@ -1,0 +1,13 @@
+{
+  "dataset": "bd-common-office",
+  "version": 2,
+  "source_nodes_sha256": "bb2aac5e760b9418727cc0ea5cd64dd56c2b7d0691edee09beaec223033f1224",
+  "reference_version": "bundled-office-defaults-v2",
+  "item_count": 621,
+  "node_count": 899,
+  "files": {
+    "collections.csv": "bdd68818a3f3af5525cae85e75a9b2e9d53af98f02ff06e25abac3134b17dd1c",
+    "items.csv": "7d11602c60c4e20d2ab14746ca0537b008e3104c73823573d554a8721d90d5b0",
+    "nodes.csv": "10fafa96fa17228da958fe586658cfdba9e05dd8c7e4f8983ea670f2a9da6e4e"
+  }
+}

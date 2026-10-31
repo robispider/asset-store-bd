@@ -1,4 +1,4 @@
-﻿@extends('layouts/default')
+@extends('layouts/default')
 
 @section('title', __('classification::texts.governance_show_title_prefix') . ' ' . $category->name)
 
@@ -71,7 +71,7 @@
                     <tr>
                         <th class="classify-inline-ec060bac">{{ __('classification::texts.governance_show_gov_scope') }}</th>
                         <td>
-                            @if($governance && $governance->governance_type === 'global')
+                            @if($governance && in_array($governance->governance_type, ['global', 'national'], true))
                                 <span class="text-green"><i class="fas fa-globe"></i> {{ __('classification::texts.governance_show_shared_gov_standard') }}</span>
                             @elseif($governance && $governance->governance_type === 'company')
                                 <span class="text-orange"><i class="fas fa-building"></i> {{ __('classification::texts.governance_show_org_managed') }}</span>

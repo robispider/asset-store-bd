@@ -1,141 +1,192 @@
 <!-- Reusable Add to Collection Modal -->
-<div class="modal fade" id="collectionMembershipModal" tabindex="-1" role="dialog" aria-labelledby="collectionModalLabel" aria-hidden="true" data-backdrop="static">
+<div class="modal fade gs-discover-modal" id="collectionMembershipModal" tabindex="-1" role="dialog" aria-labelledby="collectionModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header bg-purple">
-                <button class="close classify-inline-f949b42b" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title" id="collectionModalLabel">
-                    <i class="fas fa-boxes"></i> Add Items to Collection
-                </h4>
-            </div>
-            
-            <div class="modal-body">
-                <!-- Dropdown Selector -->
-                <div id="collection-modal-content">
-                    <p class="lead classify-inline-67ff41fd">
-                        You have selected <strong id="collection-modal-count" class="text-purple">0</strong> items. Select the catalog collection you want to attach them to:
-                    </p>
-                    
-                    <div class="form-group">
-                        <label for="collection-select">Target Collection:</label>
-                        <select class="form-control classify-inline-69d66e5b" id="collection-select">
-                            <option value="">-- Loading Collections... --</option>
-                        </select>
+            <div id="collection-modal-form">
+                <div class="gs-discover-modal__head">
+                    <div>
+                        <h2 class="gs-discover-modal__title" id="collectionModalLabel">{{ __('classification::discover.modal.title') }}</h2>
+                        <p class="gs-discover-muted">{{ __('classification::discover.modal.lead') }}</p>
                     </div>
+                    <button class="gs-discover-iconbtn gs-discover-iconbtn--plain" type="button" data-dismiss="modal" aria-label="{{ __('classification::discover.modal.close') }}"><i class="fas fa-times" aria-hidden="true"></i></button>
                 </div>
-
-                <!-- API Loader -->
-                <div class="text-center classify-inline-4209a890" id="collection-modal-loader">
-                    <i class="fas fa-spinner fa-spin fa-2x text-purple"></i>
-                    <p class="text-muted classify-inline-54d32d80">Attaching items to collection...</p>
+                <div class="gs-discover-modal__body">
+                    <p class="gs-discover-modal__selected">{{ __('classification::discover.modal.selected') }}: <strong id="collection-modal-count">0</strong></p>
+                    <fieldset class="gs-discover-modal__fieldset">
+                        <legend>{{ __('classification::discover.modal.choose') }}</legend>
+                        <div class="gs-discover-input">
+                            <i class="fas fa-search" aria-hidden="true"></i>
+                            <label for="collection-modal-search" class="gs-sr-only">{{ __('classification::discover.modal.search') }}</label>
+                            <input id="collection-modal-search" type="search" autocomplete="off" placeholder="{{ __('classification::discover.modal.search') }}">
+                        </div>
+                        <div class="gs-discover-modal__options" id="collection-options" aria-live="polite">
+                            <p class="gs-discover-muted">{{ __('classification::discover.modal.loading') }}</p>
+                        </div>
+                    </fieldset>
+                    <p class="gs-discover-note"><i class="fas fa-info-circle" aria-hidden="true"></i> <span>{{ __('classification::discover.modal.note') }}</span></p>
+                    <div class="gs-discover-modal__error" id="collection-modal-error" role="alert" hidden></div>
                 </div>
-
-                <!-- API Error Container -->
-                <div class="alert alert-danger classify-inline-09cf2cfe" id="collection-modal-error"></div>
+                <div class="gs-discover-modal__foot">
+                    <button type="button" class="gs-btn gs-btn--secondary gs-btn--outline" data-dismiss="modal" id="btn-collection-cancel">{{ __('classification::discover.modal.cancel') }}</button>
+                    <button type="button" class="gs-btn gs-btn--primary" id="btn-collection-save" disabled>{{ __('classification::discover.modal.save') }}</button>
+                </div>
             </div>
-
-            <div class="modal-footer classify-inline-0e5be659">
-                <button type="button" class="btn btn-default" data-dismiss="modal" id="btn-collection-cancel">Cancel</button>
-                <button type="button" class="btn btn-purple" id="btn-collection-save" disabled>
-                    <i class="fas fa-save"></i> Save to Collection
-                </button>
+            <div class="gs-discover-modal__done" id="collection-modal-done" role="status" hidden>
+                <span class="gs-discover-modal__done-icon" aria-hidden="true"><i class="fas fa-check"></i></span>
+                <h2 class="gs-discover-modal__title">{{ __('classification::discover.modal.success_title') }}</h2>
+                <p class="gs-discover-muted" id="collection-modal-done-body"></p>
+                <button type="button" class="gs-btn gs-btn--primary" id="btn-collection-done">{{ __('classification::discover.modal.done') }}</button>
             </div>
         </div>
     </div>
 </div>
 
+@php
+    $collectionModalText = [
+        'none' => __('classification::discover.modal.none'),
+        'loadError' => __('classification::discover.modal.load_error'),
+        'noMatch' => __('classification::discover.modal.no_match'),
+        'save' => __('classification::discover.modal.save'),
+        'saving' => __('classification::discover.modal.saving'),
+        'error' => __('classification::discover.modal.error'),
+        'empty' => __('classification::discover.modal.empty'),
+        'count' => __('classification::collections.count', ['count' => ':count']),
+        'success' => __('classification::discover.modal.success_body', ['added' => ':added', 'total' => ':total']),
+    ];
+@endphp
 <script>
     let collectionCodesQueue = [];
+    const collectionModalText = @json($collectionModalText);
+
+    function renderCollectionOptions(collections) {
+        const box = document.getElementById('collection-options');
+        box.innerHTML = '';
+        if (!collections.length) {
+            const empty = document.createElement('p');
+            empty.className = 'gs-discover-muted';
+            empty.textContent = collectionModalText.none;
+            box.appendChild(empty);
+            return;
+        }
+        collections.forEach(function (col) {
+            const option = document.createElement('label');
+            option.className = 'gs-discover-option';
+            option.dataset.filterText = String(col.name).toLowerCase();
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = 'collection_id';
+            radio.value = col.id;
+            const text = document.createElement('span');
+            text.className = 'gs-discover-option__text';
+            const name = document.createElement('span');
+            name.className = 'gs-discover-option__name';
+            name.textContent = col.name;
+            const meta = document.createElement('span');
+            meta.className = 'gs-discover-option__meta';
+            meta.textContent = collectionModalText.count.replace(':count', col.count ?? 0);
+            text.append(name, meta);
+            option.append(radio, text);
+            box.appendChild(option);
+        });
+        const noMatch = document.createElement('p');
+        noMatch.className = 'gs-discover-muted';
+        noMatch.id = 'collection-options-no-match';
+        noMatch.textContent = collectionModalText.noMatch;
+        noMatch.hidden = true;
+        box.appendChild(noMatch);
+    }
 
     function triggerAddToCollection(codes) {
         collectionCodesQueue = Array.isArray(codes) ? codes : [codes];
 
         if (collectionCodesQueue.length === 0) {
-            alert("No categories selected.");
+            alert(collectionModalText.empty);
             return;
         }
 
-        // Reset UI States
-        jQuery('#collection-modal-error').hide();
-        jQuery('#collection-modal-loader').hide();
-        jQuery('#collection-modal-content').show();
-        jQuery('#btn-collection-save').prop('disabled', true);
-        jQuery('#collection-modal-count').text(collectionCodesQueue.length);
-        
-        // Open Modal
+        document.getElementById('collection-modal-error').hidden = true;
+        document.getElementById('collection-modal-form').hidden = false;
+        document.getElementById('collection-modal-done').hidden = true;
+        document.getElementById('collection-modal-search').value = '';
+        const save = document.getElementById('btn-collection-save');
+        save.disabled = true;
+        save.textContent = collectionModalText.save;
+        document.getElementById('btn-collection-cancel').disabled = false;
+        document.getElementById('collection-modal-count').textContent = collectionCodesQueue.length;
+
         jQuery('#collectionMembershipModal').modal('show');
 
-        // Dynamically load active collections
         jQuery.ajax({
             url: '{{ route("gov.catalog.discover.collections.api.list") }}',
             type: 'GET',
-            success: function(res) {
-                if (res.success && res.collections.length > 0) {
-                    let options = '<option value="">-- Select a Collection --</option>';
-                    res.collections.forEach(col => {
-                        options += `<option value="${col.id}">${col.name}</option>`;
-                    });
-                    jQuery('#collection-select').html(options);
-                    
-                    if (window.jQuery && jQuery.fn.select2) {
-                        jQuery('#collection-select').select2({
-                            dropdownParent: jQuery('#collectionMembershipModal')
-                        });
-                    }
-                } else {
-                    jQuery('#collection-select').html('<option value="">No collections available. Contact admin.</option>');
-                }
+            success: function (res) {
+                renderCollectionOptions(res.success ? res.collections : []);
             },
-            error: function() {
-                jQuery('#collection-select').html('<option value="">Error loading collections.</option>');
+            error: function () {
+                const box = document.getElementById('collection-options');
+                box.innerHTML = '';
+                const failed = document.createElement('p');
+                failed.className = 'gs-discover-muted';
+                failed.textContent = collectionModalText.loadError;
+                box.appendChild(failed);
             }
         });
     }
 
-    // Delay interactive events until jQuery is ready
-    document.addEventListener("DOMContentLoaded", function() {
-        jQuery(document).on('change', '#collection-select', function() {
-            if (jQuery(this).val()) {
-                jQuery('#btn-collection-save').prop('disabled', false);
-            } else {
-                jQuery('#btn-collection-save').prop('disabled', true);
-            }
+    document.addEventListener('DOMContentLoaded', function () {
+        const options = document.getElementById('collection-options');
+        const save = document.getElementById('btn-collection-save');
+
+        options.addEventListener('change', function () {
+            save.disabled = !options.querySelector('input[name="collection_id"]:checked');
         });
 
-        jQuery('#btn-collection-save').on('click', function() {
-            const targetCollectionId = jQuery('#collection-select').val();
-            if (!targetCollectionId) return;
+        document.getElementById('collection-modal-search').addEventListener('input', function (event) {
+            const text = event.target.value.trim().toLowerCase();
+            let shown = 0;
+            options.querySelectorAll('.gs-discover-option').forEach(function (option) {
+                option.hidden = text && option.dataset.filterText.indexOf(text) === -1;
+                if (!option.hidden) shown++;
+            });
+            const noMatch = document.getElementById('collection-options-no-match');
+            if (noMatch) noMatch.hidden = shown > 0;
+        });
 
-            const btn = jQuery(this);
-            btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Saving...');
-            jQuery('#btn-collection-cancel').prop('disabled', true);
-            jQuery('#collection-modal-content').hide();
-            jQuery('#collection-modal-loader').show();
+        document.getElementById('btn-collection-done').addEventListener('click', function () {
+            window.location.reload();
+        });
+
+        save.addEventListener('click', function () {
+            const checked = options.querySelector('input[name="collection_id"]:checked');
+            if (!checked) return;
+
+            save.disabled = true;
+            save.textContent = collectionModalText.saving;
+            document.getElementById('btn-collection-cancel').disabled = true;
+            document.getElementById('collection-modal-error').hidden = true;
 
             jQuery.ajax({
                 url: '{{ route("gov.catalog.discover.collections.api.add-nodes") }}',
                 type: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}',
-                    collection_id: targetCollectionId,
+                    collection_id: checked.value,
                     codes: collectionCodesQueue
                 },
-                success: function(res) {
-                    alert(`Successfully added ${res.added_count} items to the collection (Expanded into ${res.total_expanded} commodities).`);
-                    jQuery('#collectionMembershipModal').modal('hide');
-                    window.location.reload();
+                success: function (res) {
+                    document.getElementById('collection-modal-done-body').textContent = collectionModalText.success
+                        .replace(':added', res.added_count ?? 0)
+                        .replace(':total', res.total_expanded ?? 0);
+                    document.getElementById('collection-modal-form').hidden = true;
+                    document.getElementById('collection-modal-done').hidden = false;
                 },
-                error: function(xhr) {
-                    jQuery('#collection-modal-loader').hide();
-                    jQuery('#collection-modal-content').show();
-                    btn.prop('disabled', false).html('<i class="fas fa-save"></i> Save to Collection');
-                    jQuery('#btn-collection-cancel').prop('disabled', false);
-                    
-                    jQuery('#collection-modal-error')
-                        .text('Error: ' + (xhr.responseJSON?.message || 'Failed to attach nodes.'))
-                        .show();
+                error: function (xhr) {
+                    save.disabled = false;
+                    save.textContent = collectionModalText.save;
+                    document.getElementById('btn-collection-cancel').disabled = false;
+                    const error = document.getElementById('collection-modal-error');
+                    error.textContent = (xhr.responseJSON && xhr.responseJSON.message) || collectionModalText.error;
+                    error.hidden = false;
                 }
             });
         });

@@ -84,7 +84,7 @@ class RequestInventory
             $remaining = $line->approved_qty - $line->issued_qty;
             $available = $this->available($line->requested_type, $model, $request->office_id, $line->id);
             // Approvers see it under the line's quantity; an automatic approval sends the requester back to the draft.
-            RequestRefused::when($remaining > $available, 409, $request->resolved_policy === 'AUTO_APPROVE' && ! $request->decided_by
+            RequestRefused::when($remaining > $available, 409, ! $request->decided_by
                 ? 'request_refused_reserve_auto' : 'request_refused_reserve', 'items.'.$line->id.'.qty', ['available' => $available, 'item' => $model->name]);
             $line->update(['reserved_qty' => $remaining]);
         }

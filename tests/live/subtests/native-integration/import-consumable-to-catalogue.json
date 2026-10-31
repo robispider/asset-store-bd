@@ -1,0 +1,245 @@
+{
+  "schemaVersion": 1,
+  "id": "native-integration.import-consumable-to-catalogue",
+  "title": "Native import administrator uploads and maps a new consumable; an office employee finds its three available units",
+  "description": "Uploads a freshly generated fictional CSV through the native importer and explicitly maps name, company, location, category and quantity. Existing records are not updated; the next ordinary actor checks catalogue availability.",
+  "evidenceLevel": "connected",
+  "features": [
+    "user-story.us-20",
+    "user-story.us-07"
+  ],
+  "tags": [
+    "functional",
+    "write",
+    "interface-only"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "accessMode": "any",
+    "timeoutMs": 300000
+  },
+  "fixtures": {
+    "actors": {
+      "admin": {
+        "role": "superuser",
+        "allowSuperuser": true,
+        "activeMembership": false
+      },
+      "employee": {
+        "capabilities": {
+          "allOf": [
+            "requests.submit"
+          ],
+          "noneOf": [
+            "requests.approve",
+            "requests.fulfill"
+          ]
+        }
+      }
+    },
+    "records": {
+      "item": {
+        "kind": "consumable",
+        "minimumAvailable": 3,
+        "policy": "PRIMARY_ONLY"
+      }
+    }
+  },
+  "data": {
+    "itemName": {
+      "generate": "markedText",
+      "prefix": "LIVE-IMPORT",
+      "length": 7
+    }
+  },
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "admin"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/import"
+    },
+    {
+      "action": "upload",
+      "target": "css=#fileupload",
+      "filename": "${data.itemName}.csv",
+      "inlineCsv": [
+        {
+          "item_name": "${data.itemName}",
+          "company": "${fixtures.office.company_name}",
+          "location": "${fixtures.office.name}",
+          "category": "${fixtures.item.category_name}",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "action": "wait",
+      "target": "css=#upload-table tr:has-text(\"${data.itemName}.csv\") button.btn-info"
+    },
+    {
+      "action": "capture",
+      "target": "css=#upload-table tr:has-text(\"${data.itemName}.csv\") input[type=checkbox]",
+      "attribute": "value",
+      "as": "importId"
+    },
+    {
+      "action": "ledger",
+      "kind": "native_inventory_import",
+      "id": "${captured.importId}",
+      "effect": "Fictional CSV upload for a new consumable only, retaining import and audit evidence",
+      "cleanup": "retained"
+    },
+    {
+      "action": "click",
+      "target": "css=#upload-table tr:has-text(\"${data.itemName}.csv\") button.btn-info"
+    },
+    {
+      "action": "wait",
+      "target": "css=#import_type",
+      "state": "attached"
+    },
+    {
+      "action": "capture",
+      "target": "css=#import_type option[value=\"consumable\"]",
+      "as": "importChoice8"
+    },
+    {
+      "action": "select2",
+      "target": "css=#import_type",
+      "search": "",
+      "option": "${captured.importChoice8}"
+    },
+    {
+      "action": "wait",
+      "target": "css=select[name=\"field_map.0\"]",
+      "state": "attached"
+    },
+    {
+      "action": "capture",
+      "target": "css=select[name=\"field_map.0\"] option[value=\"item_name\"]",
+      "as": "importChoice10"
+    },
+    {
+      "action": "select2",
+      "target": "css=select[name=\"field_map.0\"]",
+      "search": "",
+      "option": "${captured.importChoice10}"
+    },
+    {
+      "action": "capture",
+      "target": "css=select[name=\"field_map.1\"] option[value=\"company\"]",
+      "as": "importChoice11"
+    },
+    {
+      "action": "select2",
+      "target": "css=select[name=\"field_map.1\"]",
+      "search": "",
+      "option": "${captured.importChoice11}"
+    },
+    {
+      "action": "capture",
+      "target": "css=select[name=\"field_map.2\"] option[value=\"location\"]",
+      "as": "importChoice12"
+    },
+    {
+      "action": "select2",
+      "target": "css=select[name=\"field_map.2\"]",
+      "search": "",
+      "option": "${captured.importChoice12}"
+    },
+    {
+      "action": "capture",
+      "target": "css=select[name=\"field_map.3\"] option[value=\"category\"]",
+      "as": "importChoice13"
+    },
+    {
+      "action": "select2",
+      "target": "css=select[name=\"field_map.3\"]",
+      "search": "",
+      "option": "${captured.importChoice13}"
+    },
+    {
+      "action": "capture",
+      "target": "css=select[name=\"field_map.4\"] option[value=\"qty\"]",
+      "as": "importChoice14"
+    },
+    {
+      "action": "select2",
+      "target": "css=select[name=\"field_map.4\"]",
+      "search": "",
+      "option": "${captured.importChoice14}"
+    },
+    {
+      "action": "assert",
+      "target": "css=input[name=update]",
+      "test": "checked",
+      "equals": false
+    },
+    {
+      "action": "uncheck",
+      "target": "css=input[name=run_backup]"
+    },
+    {
+      "action": "click",
+      "target": "css=#import",
+      "waitForResponse": "/api/v1/imports/process/"
+    },
+    {
+      "action": "wait",
+      "target": "css=.content .fixed-table-container"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "employee"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-requests/catalog",
+      "query": {
+        "q": "${data.itemName}",
+        "type": "consumable"
+      }
+    },
+    {
+      "action": "wait",
+      "target": "css=[data-cr-item]:has-text(\"${data.itemName}\")"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-cr-item]:has-text(\"${data.itemName}\")",
+      "test": "count",
+      "equals": 1
+    },
+    {
+      "action": "assert",
+      "target": "css=.cr-context",
+      "test": "text",
+      "contains": "${fixtures.office.name}"
+    },
+    {
+      "action": "capture",
+      "target": "css=[data-cr-item]:has-text(\"${data.itemName}\")",
+      "attribute": "data-cr-item",
+      "pattern": "consumable:(\\d+)",
+      "as": "importedItemId"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-cr-item]:has-text(\"${data.itemName}\") .cr-pill--ok, [data-cr-item]:has-text(\"${data.itemName}\") .cr-pill--few",
+      "test": "text",
+      "matches": "3|৩"
+    }
+  ],
+  "cleanup": {
+    "policy": "retained-with-report",
+    "description": "New fictional consumable, its three native-imported units, import upload and audit are retained. No existing inventory is updated.",
+    "steps": []
+  }
+}

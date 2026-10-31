@@ -43,8 +43,13 @@ use GovStore\StoreOperations\Models\Document;
 use GovStore\StoreOperations\Models\Profile;
 use GovStore\StoreOperations\Models\ProfileAssignment;
 use GovStore\StoreOperations\Models\ProfileCapability;
+use GovStore\StoreOperations\Services\CustomFieldProvisioner;
+use GovStore\StoreOperations\Services\DocumentValidationService;
 use GovStore\StoreOperations\Services\GoodsReceiptService;
 use GovStore\StoreOperations\Services\PostingPipelineManager;
+use GovStore\Tracking\Http\Controllers\InitiativeController;
+use GovStore\Tracking\Http\Controllers\TrackingCodeController;
+use GovStore\Tracking\Http\Controllers\TrackingDocumentController;
 use GovStore\Tracking\Models\FundingType;
 use GovStore\Tracking\Models\Initiative;
 use GovStore\Tracking\Models\OperationUnit;
@@ -56,8 +61,10 @@ use GovStore\Tracking\Services\ScopeValidatorService;
 use GovStore\UserOnboarding\Models\UserOnboarding;
 use GovStore\UserOnboarding\Services\UserOnboardingService;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 
@@ -107,13 +114,19 @@ class BangladeshScenario
         $this->actor = $actor;
         $this->password = $password;
         $this->size = $run->report['profile_counts'] ?? config('govstore-experiments.profiles.'.$run->profile);
-        $this->prefix = $run->report['record_prefix'] ?? 'EXP-'.substr($run->id, 0, 8);
+        $this->prefix = ScenarioManifest::current($run) ? $run->report['display_id'] : ($run->report['record_prefix'] ?? 'EXP-'.substr($run->id, 0, 8));
         $this->records->current = $run;
         try {
             $this->contexts->run($actor, null, function () {
                 foreach (['organization', 'people', 'classification', 'products', 'tracking', 'stock', 'requests', 'examples'] as $phase) {
                     $this->run->update(['phase' => $phase]);
                     $this->{$phase}();
+                    if ($phase === 'stock' && ScenarioManifest::current($this->run)) {
+                        $this->run->update(['phase' => 'workflows']);
+                        app(ExperimentWorkflowScenarios::class)->populate($this->run, $this->actor, $this->offices, $this->people,
+                            fn ($key, $callback) => $this->unit('v2-'.$key, $callback),
+                            fn ($document, $keeper) => $this->postValidated($document, $keeper));
+                    }
                 }
             });
         } finally {
@@ -142,6 +155,9 @@ class BangladeshScenario
 
     private function create(string $class, array $attributes, string $key): Model
     {
+        if (ScenarioManifest::current($this->run) && isset($attributes['name'])) {
+            $attributes['name'] = app(ScenarioManifest::class)->name($attributes['name'], $this->prefix);
+        }
         $record = DB::table('gov_experiment_records')->where('run_id', $this->run->id)->where('logical_key', $key)->first();
         if ($record) {
             $identity = json_decode($record->record_key, true);
@@ -213,9 +229,15 @@ class BangladeshScenario
                 $upazilas = GeoArea::whereIn('geo_type', ['upazilla', 'upazila'])->where('hid', 'like', rtrim($district->hid, '/').'/%')->orderBy('GeoAreaId')->get();
                 $area = $i < 8 ? $division : ($i < 24 || $upazilas->isEmpty() ? $district : $upazilas[$i % $upazilas->count()]);
                 $company = $this->companies[($i % 3) * 2 + 1];
-                $name = ($i < 8 ? 'আঞ্চলিক কার্যালয়' : ($i < 24 ? 'জেলা কার্যালয়' : 'উপজেলা কার্যালয়')).' / '.$area->en_name.' '.$this->prefix.'-'.($i + 1);
+                $name = ($i < 8 ? 'আঞ্চলিক কার্যালয়' : ($i < 24 ? 'জেলা কার্যালয়' : 'উপজেলা কার্যালয়')).' / '.$area->en_name
+                    .' · '.$this->prefix.'-'.str_pad((string) ($i + 1), 2, '0', STR_PAD_LEFT);
                 $office = app(OfficeProvisioningService::class)->provisionOffice(['name' => $name, 'company_id' => $company->id,
-                    'geo_area_id' => $area->GeoAreaId, 'city' => $area->en_name, 'state' => $district->en_name], $this->actor->id);
+                    'geo_area_id' => $area->GeoAreaId, 'city' => $area->en_name, 'state' => $district->en_name,
+                    'parent_id' => ScenarioManifest::current($this->run) && $i >= 3 ? $this->offices[$i % 3]->id : null,
+                    'office_type' => ScenarioManifest::current($this->run) ? ['default', 'ict_office', 'school', 'hospital'][$i % 4] : 'default'], $this->actor->id);
+                if (ScenarioManifest::current($this->run)) {
+                    $office->profile->update(['office_level' => $i === 0 ? 'headquarters' : ($i < 8 ? 'divisional' : ($i < 24 ? 'district' : 'upazila'))]);
+                }
                 $office->update(['created_by' => $this->actor->id, 'notes' => 'পরীক্ষামূলক সরকারি কার্যালয় / Experiment office']);
                 $this->records->record($this->run, 'locations', $office->getAttributes(), 'office-'.$i);
 
@@ -288,7 +310,7 @@ class BangladeshScenario
             $queueIds = (clone $oversightQueue)->pluck('id')->all();
             // Retain ownership of durable history even when its fictional queue entry is removed.
             foreach (['gov_onboarding_events', 'gov_onboarding_notices'] as $table) {
-                if (\Illuminate\Support\Facades\Schema::hasTable($table)) {
+                if (Schema::hasTable($table)) {
                     foreach (DB::table($table)->whereIn('onboarding_id', $queueIds)->get() as $row) {
                         $this->records->record($this->run, $table, $row);
                     }
@@ -367,7 +389,11 @@ class BangladeshScenario
                     'category_type' => $types[$i % 5], 'created_by' => $this->actor->id, 'require_acceptance' => false, 'use_default_eula' => false], 'category-'.$i);
                 $global = $i < 10 || $i % 5 === 0 || $i % 3 === 0;
                 $owner = $global ? null : $this->companies[($i % 3) * 2 + 1]->id;
-                $this->create(CategoryGovernance::class, ['category_id' => $category->id, 'governance_type' => $global ? 'global' : 'local', 'created_by_company_id' => $owner, 'created_by_user_id' => $this->actor->id], 'governance-'.$i);
+                $this->create(CategoryGovernance::class, ['category_id' => $category->id, 'governance_type' => $global ? 'national' : 'company', 'created_by_company_id' => $owner, 'created_by_user_id' => $this->actor->id], 'governance-'.$i);
+                app(\GovStore\TenantScope\Services\ReferenceOwnershipService::class)->assign($category, $global ? 'national' : 'company', $owner,
+                    (int) $this->actor->id, 'Experiment category ownership.');
+                $this->records->record($this->run, 'gov_reference_owners', DB::table('gov_reference_owners')
+                    ->where('reference_type', 'category')->where('reference_id', $category->id)->first());
                 foreach ($this->offices as $office) {
                     if (! $global && $owner !== $office->company_id) {
                         continue;
@@ -438,12 +464,13 @@ class BangladeshScenario
                     $name = $names[intdiv($i, $this->operationalCount()) % count($names)];
 
                     return $this->create($class, ['name' => $this->prefix.' '.$name.' '.($i + 1), 'category_id' => $visible[$i % count($visible)]->id,
-                        'company_id' => $office->company_id, 'location_id' => $office->id, 'qty' => $class === Component::class ? 1 : 0, 'min_amt' => 5, 'created_by' => $this->actor->id], $kind.'-'.$i)->id;
+                        'company_id' => $office->company_id, 'location_id' => $office->id, 'qty' => $class === Component::class ? 1 : (ScenarioManifest::current($this->run) ? 10 : 0),
+                        'purchase_cost' => 250, 'min_amt' => 5, 'created_by' => $this->actor->id], $kind.'-'.$i)->id;
                 });
                 $this->bulk[$kind][$i] = $class::withoutGlobalScopes()->findOrFail($id);
             }
         }
-        $licenseCategories = array_values(array_filter($this->categories, fn ($c) => $c->category_type === 'license' && DB::table('gov_category_governance')->where('category_id', $c->id)->where('governance_type', 'global')->exists()));
+        $licenseCategories = array_values(array_filter($this->categories, fn ($c) => $c->category_type === 'license' && DB::table('gov_category_governance')->where('category_id', $c->id)->whereIn('governance_type', ['global', 'national'])->exists()));
         foreach (range(0, $this->size['licenses'] - 1) as $i) {
             $this->unit('license-'.$i, function () use ($i, $licenseCategories, $supplierIds) {
                 $license = $this->create(License::class, ['name' => $this->prefix.' Office Software '.($i + 1), 'category_id' => $licenseCategories[$i % count($licenseCategories)]->id,
@@ -475,7 +502,13 @@ class BangladeshScenario
                 if (! $initiative->isOperationallyReady()) {
                     throw new RuntimeException('Initiative team is incomplete.');
                 }
-                $initiative->update(['status' => 'Active']);
+                if (ScenarioManifest::current($this->run)) {
+                    $request = Request::create('/', 'POST', ['title' => $initiative->title, 'purpose' => $initiative->purpose,
+                        'status' => 'Active', 'primary_funding' => 'ADP', 'owner_company_id' => $initiative->owner_company_id]);
+                    app(InitiativeController::class)->update($request, $initiative);
+                } else {
+                    $initiative->update(['status' => 'Active']);
+                }
 
                 return $initiative->id;
             });
@@ -486,7 +519,7 @@ class BangladeshScenario
                 $initiative = $initiatives[$i % count($initiatives)];
                 $fiscalStart = $this->run->anchor_date->month >= 7 ? $this->run->anchor_date->year : $this->run->anchor_date->year - 1;
                 $code = $this->create(TrackingCode::class, ['initiative_id' => $initiative->id, 'funding_type_id' => $fundId, 'tracking_code' => $this->prefix.'-ADP-'.($i + 1),
-                    'task_title' => 'অফিস সরঞ্জাম বরাদ্দ / Office Equipment Allocation '.($i + 1), 'specificity_level' => '2_CATEGORY', 'fiscal_year' => $fiscalStart.'-'.($fiscalStart + 1), 'status' => 'ACTIVE'], 'code-'.$i);
+                    'task_title' => 'অফিস সরঞ্জাম বরাদ্দ / Office Equipment Allocation '.($i + 1), 'specificity_level' => '2_CATEGORY', 'fiscal_year' => $fiscalStart.'-'.($fiscalStart + 1), 'status' => ScenarioManifest::current($this->run) ? 'DRAFT' : 'ACTIVE'], 'code-'.$i);
                 $office = $this->offices[$i % $this->operationalCount()];
                 $profile = DB::table('gov_location_profiles')->where('location_id', $office->id)->first();
                 $this->create(TrackingScope::class, ['tracking_code_id' => $code->id, 'dimension' => 'GEOGRAPHY', 'target_type' => 'GeoArea', 'target_id' => $profile->geo_area_id], 'code-'.$i.'-geo');
@@ -494,6 +527,19 @@ class BangladeshScenario
                 foreach ($this->officeAssetModels($i) as $model) {
                     $target = $this->create(TrackingTarget::class, ['tracking_code_id' => $code->id, 'category_id' => $model->category_id, 'planned_qty' => 200, 'economic_code' => 'SAMPLE-OFFICE'], 'code-'.$i.'-target-'.$model->category_id);
                     $this->create(TrackingAllocation::class, ['target_id' => $target->id, 'location_id' => $office->id, 'allocated_qty' => 200], 'code-'.$i.'-allocation-'.$model->category_id);
+                }
+                if (ScenarioManifest::current($this->run)) {
+                    app(ExperimentEvidence::class)->withPdf($this->prefix.' programme order '.$code->id, function ($file) use ($initiative, $code) {
+                        $request = Request::create('/', 'POST');
+                        $request->files->set('document', $file);
+                        app(TrackingDocumentController::class)->store($request, $initiative, $code);
+                        $files = app(ExperimentFiles::class);
+                        $files->track($this->run, 'local', $code->documents()->latest('id')->firstOrFail()->file_path);
+                        $orderRequest = Request::create('/', 'POST', [], [], ['order_pdf' => $file]);
+                        app(TrackingCodeController::class)->attachOrder($orderRequest, $initiative, $code);
+                        $files->track($this->run, 'local', $code->fresh()->order_pdf_path);
+                    });
+                    app(TrackingCodeController::class)->activate($initiative, $code);
                 }
 
                 return $code->id;
@@ -508,6 +554,22 @@ class BangladeshScenario
             if (! $this->operational($i)) {
                 continue;
             }
+            if (ScenarioManifest::current($this->run)) {
+                $this->unit('preexisting-asset-'.$i, function () use ($i, $office) {
+                    $model = $this->receiptModel($i);
+                    $column = app(CustomFieldProvisioner::class)
+                        ->getDbColumn(CustomFieldProvisioner::IDENTIFIER_GRN);
+                    $attributes = ['name' => 'Existing Desktop '.($i + 1), 'asset_tag' => $this->prefix.'-OB-'.($i + 1),
+                        'serial' => $this->prefix.'-OB-'.($i + 1), 'model_id' => $model->id,
+                        'status_id' => $this->run->report['units']['status-ready'], 'company_id' => $office->company_id,
+                        'location_id' => $office->id, 'rtd_location_id' => $office->id, 'requestable' => 1, 'created_by' => $this->actor->id];
+                    if ($column) {
+                        $attributes[$column] = 'Fictional pre-existing stock';
+                    }
+
+                    return $this->create(Asset::class, $attributes, 'preexisting-asset-'.$i)->id;
+                });
+            }
             $this->unit('opening-ledger-'.$i, function () use ($i, $office) {
                 $keeper = $this->officePeople($i)[1];
                 $document = app(ExperimentLedgerOpening::class)->open($this->run, $office, $keeper);
@@ -517,6 +579,9 @@ class BangladeshScenario
             });
             $this->unit('receipt-assets-'.$i, function () use ($i, $office) {
                 $qty = intdiv($this->size['assets'], $this->operationalCount()) + ($i < $this->size['assets'] % $this->operationalCount() ? 1 : 0);
+                if (ScenarioManifest::current($this->run)) {
+                    $qty--;
+                }
                 $models = $this->officeAssetModels($i);
                 $lines = [];
                 foreach ($models as $index => $model) {
@@ -562,13 +627,11 @@ class BangladeshScenario
     {
         $keeper = $this->officePeople($officeIndex)[1];
 
-        return $this->contexts->run($keeper, $office, function () use ($office, $lines, $type, $state, $code, $keeper) {
-            $header = ['reference_no' => $this->prefix.'-স্মারক-'.($this->run->report['units'] ? count($this->run->report['units']) : 1), 'reference_date' => $this->run->anchor_date->format('Y-m-d'), 'purchase_type' => 'Government Purchase'];
-            $document = app(GoodsReceiptService::class)->saveDraft($header, $lines, $keeper->id);
+        return $this->contexts->run($keeper, $office, function () use ($office, $officeIndex, $lines, $type, $state, $code, $keeper) {
+            $header = ['reference_no' => $this->prefix.'-স্মারক-'.($this->run->report['units'] ? count($this->run->report['units']) : 1), 'reference_date' => $this->run->anchor_date->format('Y-m-d'), 'purchase_type' => 'Purchase',
+                'supplier_id' => $this->records->ids($this->run, 'suppliers')[0], 'issued_to_user_id' => $this->officePeople($officeIndex)[4]->id];
+            $document = app(GoodsReceiptService::class)->saveDraft($header, $lines, $keeper->id, null, $type);
             $this->attachExample($document, $keeper->id);
-            if ($type !== 'receipt') {
-                $document->update(['type' => $type]);
-            }
             $document->references()->create(['reference_type' => 'Supplier Challan', 'reference_number' => $this->prefix.'-CHALLAN-'.$document->document_number, 'reference_date' => $this->run->anchor_date->format('Y-m-d')]);
             foreach ($document->items as $item) {
                 if ($item->product_type === 'assetmodel') {
@@ -587,7 +650,7 @@ class BangladeshScenario
                 $document->references()->create(['reference_type' => 'Special Allocation', 'reference_number' => $code->tracking_code, 'reference_date' => $this->run->anchor_date->format('Y-m-d')]);
             }
             if ($state === 'POSTED') {
-                app(PostingPipelineManager::class)->materialize($document->fresh(), $keeper->id);
+                $this->postValidated($document, $keeper);
                 foreach ($document->items as $item) {
                     if ($item->product_type === 'assetmodel') {
                         $ids = DB::table('gov_asset_registrations')->where('intake_item_id', $item->id)->pluck('asset_id');
@@ -601,6 +664,16 @@ class BangladeshScenario
 
             return $document;
         }, 'storekeeper');
+    }
+
+    private function postValidated(Document $document, User $keeper): void
+    {
+        $validator = app(DocumentValidationService::class);
+        $document = $document->fresh();
+        if ($validator->validateDocument($document, []) || ! $validator->evaluateDocument($document)['is_valid']) {
+            throw new RuntimeException('Fictional document does not meet the current posting checklist.');
+        }
+        app(PostingPipelineManager::class)->materialize($document, $keeper->id);
     }
 
     private function requests(): void
@@ -736,7 +809,7 @@ class BangladeshScenario
     {
         // Current create_assets capability fills GRN but does not fill mandatory laptop CPU metadata.
         // Materialize desktop templates; laptop templates still exercise the metadata package separately.
-        $models = array_values(array_filter($this->models, fn ($model) => ! str_contains(strtolower($model->category->name), 'laptop') && DB::table('gov_category_governance')->where('category_id', $model->category_id)->where('governance_type', 'global')->exists()));
+        $models = array_values(array_filter($this->models, fn ($model) => ! str_contains(strtolower($model->category->name), 'laptop') && DB::table('gov_category_governance')->where('category_id', $model->category_id)->whereIn('governance_type', ['global', 'national'])->exists()));
         $unique = [];
         foreach ($models as $model) {
             if (! isset($unique[$model->category_id])) {

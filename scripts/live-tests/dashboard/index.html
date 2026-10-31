@@ -86,6 +86,11 @@
     </div>
   </section>
   <section>
+    <div class="card">
+      <h2>Full GovStore coverage</h2>
+      <div id="functionalCoverage" class="hint">Choose a target to inspect required workflow coverage.</div>
+      <button type="button" id="refreshCoverage">Refresh coverage</button>
+    </div>
     <div class="card" id="detail">
       <h2 id="detailTitle">No run selected</h2>
       <div class="stats" id="stats"></div>
@@ -194,11 +199,21 @@ async function refresh() {
 }
 
 $('headed').onchange = () => { $('slowWrap').style.display = $('headed').checked ? 'block' : 'none'; };
+async function refreshCoverage() {
+  if (!$('target').value) { $('functionalCoverage').textContent = 'Select a configured target. Local and staging results are kept separate.'; return; }
+  try {
+    const c = await api('/api/coverage?targetId=' + encodeURIComponent($('target').value));
+    const s = c.summary;
+    $('functionalCoverage').textContent = `${s.complete ? 'Complete' : 'Incomplete'}: ${s.completeFunctions}/${s.functions} functions; ${s.passedBranches}/${s.branches} required branches passed; ${s.missingBranches} branches need tests. Deployment: ${c.deploymentRevision || 'unknown'}. Page checks do not complete workflows.`;
+  } catch (e) { $('functionalCoverage').textContent = e.message; }
+}
+$('refreshCoverage').onclick = refreshCoverage;
 $('target').onchange = () => {
   const target = state.targets.find(target => target.id === $('target').value);
   $('baseUrl').value = target?.baseUrl || state.defaultBaseUrl;
   $('baseUrl').readOnly = Boolean(target);
   $('targetHint').textContent = target ? `${target.environment}: ${target.hasDatabase ? 'target browser and configured database' : 'target browser; database checks will be blocked'}` : 'Add server accounts and database connections in the private target configuration file.';
+  refreshCoverage();
 };
 $('start').onclick = async () => {
   $('formErr').textContent = '';

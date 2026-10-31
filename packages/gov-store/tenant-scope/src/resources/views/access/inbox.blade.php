@@ -6,6 +6,13 @@
 <div class="box box-default"><div class="box-header with-border"><h2 class="box-title">{{ __('tenantops::access.abilities.'.str_replace('.', '_', $entry->ability)) }} — {{ __('tenantops::access.'.$entry->status) }}</h2></div><div class="box-body">
 <p>{{ __('tenantops::access.actor') }}: {{ \App\Models\User::withoutGlobalScopes()->find($entry->user_id)?->getFullNameAttribute() ?? $entry->user_id }}</p>
 <p>{{ $entry->reason }}</p><p>{{ __('tenantops::access.end_date') }}: {{ $entry->expires_at ?? '—' }}</p>
+@if(isset($bundles[$entry->ability]))
+<p>{{ __('tenantops::access.grant_bundle') }}: {{ __('tenantops::access.role_names.'.$bundles[$entry->ability]['role']) }}</p>
+<p>{{ __('tenantops::access.office') }}: {{ $entry->location_id }} · {{ __('tenantops::access.grant_expiry') }}</p>
+<ul>@foreach($bundles[$entry->ability]['abilities'] as $ability)<li>{{ __('tenantops::access.abilities.'.str_replace('.', '_', $ability)) }}</li>@endforeach</ul>
+<details><summary>{{ __('tenantops::access.native_permissions') }}</summary><ul>@foreach($bundles[$entry->ability]['permissions'] as $permission)<li>{{ $permission }}</li>@endforeach</ul></details>
+<p>{{ __('tenantops::access.separation_notice') }}</p>
+@endif
 @if($entry->status === 'pending')
 <form method="post" action="{{ route('gov.access.requests.review', $entry->id) }}">@csrf
 <label for="note-{{ $entry->id }}">{{ __('tenantops::access.review_note') }}</label><textarea id="note-{{ $entry->id }}" name="review_note" class="form-control" maxlength="1000"></textarea>

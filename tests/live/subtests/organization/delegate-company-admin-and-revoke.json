@@ -1,0 +1,340 @@
+{
+  "schemaVersion": 1,
+  "id": "organization.delegate-company-admin-and-revoke",
+  "title": "Super administrator delegates a fictional colleague, the colleague creates a programme, then revocation removes that ability",
+  "description": "Exact national reviews for both grant and removal. Proves next-request effectiveness through actual programme creation and later denial. Supported cleanup removes only the new assignment; home office and ordinary abilities are preserved.",
+  "evidenceLevel": "connected",
+  "features": [
+    "user-story.us-27",
+    "user-story.us-05"
+  ],
+  "tags": [
+    "functional",
+    "write",
+    "interface-only",
+    "national-review"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "accessMode": "any",
+    "timeoutMs": 300000
+  },
+  "fixtures": {
+    "actors": {
+      "admin": {
+        "role": "superuser",
+        "activeMembership": false,
+        "allowSuperuser": true,
+        "capabilities": {
+          "allOf": [
+            "organization.national.manage"
+          ]
+        }
+      },
+      "colleague": {
+        "capabilities": {
+          "allOf": [
+            "requests.submit"
+          ],
+          "noneOf": [
+            "committee.types.manage",
+            "tracking.programmes.create"
+          ]
+        }
+      }
+    }
+  },
+  "data": {
+    "marker": {
+      "generate": "markedText",
+      "prefix": "LIVE-DELEGATE",
+      "length": 6
+    }
+  },
+  "preconditions": [
+    {
+      "action": "capture",
+      "value": false,
+      "as": "ownsGrant"
+    },
+    {
+      "action": "capture",
+      "value": 0,
+      "as": "grantRemains"
+    },
+    {
+      "action": "capture",
+      "value": 0,
+      "as": "grantId"
+    }
+  ],
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "admin"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/office/company-admins"
+    },
+    {
+      "action": "assert",
+      "target": "css=table tbody tr:has(.govorg-mono:text-is(\"${actors.colleague.username}\"))",
+      "test": "count",
+      "equals": 0
+    },
+    {
+      "action": "capture",
+      "value": true,
+      "as": "ownsGrant"
+    },
+    {
+      "action": "select",
+      "target": "css=#user_id",
+      "value": "${actors.colleague.id}"
+    },
+    {
+      "action": "select",
+      "target": "css=#company_id",
+      "value": "${fixtures.office.company_id}"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form[action$=\"/company-admins/store\"] button[type=submit]"
+    },
+    {
+      "action": "capture",
+      "target": "css=.tenant-scope-theme pre >> nth=1",
+      "pattern": "\"user_id\":\\s*\"?(\\d+)",
+      "as": "reviewedUserId"
+    },
+    {
+      "action": "capture",
+      "target": "css=.tenant-scope-theme pre >> nth=1",
+      "pattern": "\"company_id\":\\s*\"?(\\d+)",
+      "as": "reviewedCompanyId"
+    },
+    {
+      "action": "compare",
+      "actual": "${captured.reviewedUserId}",
+      "equals": "${actors.colleague.id}"
+    },
+    {
+      "action": "compare",
+      "actual": "${captured.reviewedCompanyId}",
+      "equals": "${fixtures.office.company_id}"
+    },
+    {
+      "use": "review.confirm",
+      "with": {
+        "reason": "${data.marker} - delegate only this fictional colleague in their own ministry"
+      }
+    },
+    {
+      "action": "capture",
+      "target": "css=table tbody tr:has(.govorg-mono:text-is(\"${actors.colleague.username}\")) form",
+      "attribute": "action",
+      "pattern": "/company-admins/delete/(\\d+)",
+      "as": "grantId"
+    },
+    {
+      "action": "ledger",
+      "kind": "company_admin_delegation",
+      "id": "${captured.grantId}",
+      "effect": "New reviewed fixture delegation; supported UI removal is required",
+      "cleanup": "retained"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "colleague"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/access"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-access-ability=\"tracking.programmes.create\"]",
+      "test": "visible"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives/create"
+    },
+    {
+      "action": "fill",
+      "target": "css=#initiative_title",
+      "value": "${data.marker}"
+    },
+    {
+      "action": "fill",
+      "target": "css=#initiative_purpose",
+      "value": "Fictional planning programme created using newly delegated ministry access"
+    },
+    {
+      "action": "select",
+      "target": "css=#owner_company_id",
+      "value": "${fixtures.office.company_id}"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form[action$=\"/tracking/initiatives\"] button[type=submit]",
+      "rejectFlashErrors": true
+    },
+    {
+      "action": "capture",
+      "url": true,
+      "pattern": "/initiatives/(\\d+)",
+      "as": "programmeId"
+    },
+    {
+      "action": "ledger",
+      "kind": "delegated_programme",
+      "id": "${captured.programmeId}",
+      "effect": "New fictional planning programme created by the newly delegated ordinary colleague; no task/delivery claimed",
+      "cleanup": "retained"
+    },
+    {
+      "action": "actor",
+      "name": "admin"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/office/company-admins"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=table tbody tr:has(.govorg-mono:text-is(\"${actors.colleague.username}\")) button[type=submit]"
+    },
+    {
+      "action": "assert",
+      "target": "css=form[action$=\"/company-admins/delete/${captured.grantId}\"]",
+      "test": "visible"
+    },
+    {
+      "use": "review.confirm",
+      "with": {
+        "reason": "${data.marker} - remove exactly the temporary fixture delegation"
+      }
+    },
+    {
+      "action": "assert",
+      "target": "css=table tbody tr:has(.govorg-mono:text-is(\"${actors.colleague.username}\"))",
+      "test": "count",
+      "equals": 0
+    },
+    {
+      "action": "ledger",
+      "kind": "company_admin_delegation",
+      "id": "${captured.grantId}",
+      "effect": "Temporary fixture delegation removed through exact national review",
+      "cleanup": "removed"
+    },
+    {
+      "action": "actor",
+      "name": "colleague"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/access"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-access-ability=\"tracking.programmes.create\"]",
+      "test": "count",
+      "equals": 0
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-access-ability=\"requests.submit\"]",
+      "test": "visible"
+    },
+    {
+      "action": "capture",
+      "target": "css=.tenant-scope-theme",
+      "attribute": "data-access-office",
+      "as": "officeAfter"
+    },
+    {
+      "action": "compare",
+      "actual": "${captured.officeAfter}",
+      "equals": "${fixtures.office.id}"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives/create",
+      "expectStatus": [
+        403
+      ]
+    }
+  ],
+  "cleanup": {
+    "policy": "supported-actions",
+    "description": "Remove only this new fictional colleague delegation through normal national review; preserve any original assignment by requiring none before the exercise.",
+    "steps": [
+      {
+        "use": "auth.login",
+        "with": {
+          "actor": "admin"
+        }
+      },
+      {
+        "action": "goto",
+        "url": "/gov-store/office/company-admins"
+      },
+      {
+        "action": "capture",
+        "target": "css=table tbody tr:has(.govorg-mono:text-is(\"${actors.colleague.username}\"))",
+        "count": true,
+        "as": "grantRemains",
+        "when": {
+          "actual": "${captured.ownsGrant}",
+          "equals": true
+        }
+      },
+      {
+        "action": "submitForm",
+        "target": "css=table tbody tr:has(.govorg-mono:text-is(\"${actors.colleague.username}\")) button[type=submit]",
+        "when": {
+          "actual": "${captured.grantRemains}",
+          "equals": 1
+        }
+      },
+      {
+        "use": "review.confirm",
+        "with": {
+          "reason": "${data.marker} - supported cleanup removes the exact temporary delegation"
+        },
+        "when": {
+          "actual": "${captured.grantRemains}",
+          "equals": 1
+        }
+      },
+      {
+        "action": "assert",
+        "target": "css=table tbody tr:has(.govorg-mono:text-is(\"${actors.colleague.username}\"))",
+        "test": "count",
+        "equals": 0,
+        "when": {
+          "actual": "${captured.ownsGrant}",
+          "equals": true
+        }
+      },
+      {
+        "action": "ledger",
+        "kind": "company_admin_delegation",
+        "id": "${captured.grantId}",
+        "effect": "Supported cleanup verified absence of exactly this newly created company-admin assignment",
+        "cleanup": "removed",
+        "when": {
+          "actual": "${captured.grantId}",
+          "notEquals": 0
+        }
+      }
+    ]
+  }
+}

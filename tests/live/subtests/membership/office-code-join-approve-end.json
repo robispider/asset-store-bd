@@ -1,0 +1,687 @@
+{
+  "schemaVersion": 1,
+  "id": "membership.office-code-join-approve-end",
+  "title": "Office administrator issues an invitation; colleague checks and requests; administrator approves; colleague switches; administrator ends additional access",
+  "evidenceLevel": "connected",
+  "features": [
+    "user-story.us-03",
+    "user-story.us-05",
+    "user-story.us-12",
+    "membership.staff"
+  ],
+  "tags": [
+    "functional",
+    "write",
+    "interface-only"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "accessMode": "any",
+    "timeoutMs": 600000
+  },
+  "fixtures": {
+    "actors": {
+      "ictOfficer": {
+        "role": "ict_officer",
+        "activeMembership": false,
+        "capabilities": {
+          "allOf": [
+            "organization.office.manage"
+          ],
+          "noneOf": [
+            "organization.national.manage"
+          ]
+        }
+      },
+      "newAdmin": {
+        "capabilities": {
+          "allOf": [
+            "requests.submit"
+          ],
+          "noneOf": [
+            "membership.manage",
+            "requests.approve",
+            "requests.fulfill"
+          ]
+        }
+      },
+      "storekeeper": {
+        "role": "storekeeper",
+        "capabilities": {
+          "allOf": [
+            "storeops.documents.draft"
+          ]
+        }
+      },
+      "approver": {
+        "role": "primary_approver",
+        "capabilities": {
+          "allOf": [
+            "requests.approve.primary"
+          ]
+        }
+      },
+      "employee": {
+        "capabilities": {
+          "allOf": [
+            "requests.submit"
+          ],
+          "noneOf": [
+            "membership.manage",
+            "requests.approve",
+            "requests.fulfill"
+          ]
+        }
+      },
+      "bootstrap": {
+        "role": "superuser",
+        "allowSuperuser": true,
+        "activeMembership": false
+      },
+      "joiner": {
+        "capabilities": {
+          "allOf": [
+            "membership.self",
+            "requests.submit"
+          ],
+          "noneOf": [
+            "membership.manage",
+            "requests.approve",
+            "requests.fulfill"
+          ]
+        }
+      }
+    }
+  },
+  "data": {
+    "officeName": {
+      "generate": "markedText",
+      "prefix": "LIVE-OFFICE",
+      "length": 7
+    }
+  },
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "ictOfficer"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/organization/create"
+    },
+    {
+      "action": "fill",
+      "target": "organization.findInput",
+      "value": "${data.officeName}"
+    },
+    {
+      "action": "submitForm",
+      "target": "organization.findSubmit"
+    },
+    {
+      "action": "assert",
+      "target": "css=.govorg-result",
+      "test": "count",
+      "equals": 0
+    },
+    {
+      "action": "capture",
+      "target": "css=#govorg-step-location .govorg-step__hint",
+      "pattern": "(?:নির্ধারিত এলাকা |areas inside )(.+?)(?:-এর|,)",
+      "as": "jurisdiction"
+    },
+    {
+      "action": "select2",
+      "target": "css=#geo_area_id",
+      "search": "${captured.jurisdiction}",
+      "selection": "first",
+      "as": "geoChoice"
+    },
+    {
+      "action": "capture",
+      "target": "css=#geo_area_id option:checked",
+      "as": "geoLabel"
+    },
+    {
+      "action": "select",
+      "target": "css=#company_id",
+      "value": "${fixtures.office.company_id}"
+    },
+    {
+      "action": "capture",
+      "target": "css=#company_id option:checked",
+      "as": "companyLabel"
+    },
+    {
+      "action": "submitForm",
+      "target": "organization.createSubmit"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/organization",
+      "query": {
+        "search": "${data.officeName}"
+      }
+    },
+    {
+      "action": "assert",
+      "target": "css=a.govorg-office:has-text(\"${data.officeName}\")",
+      "test": "count",
+      "equals": 1
+    },
+    {
+      "action": "capture",
+      "target": "css=a.govorg-office:has-text(\"${data.officeName}\")",
+      "attribute": "href",
+      "pattern": "/organization/(\\d+)/hub",
+      "as": "officeId"
+    },
+    {
+      "action": "ledger",
+      "kind": "provisioned_office",
+      "id": "${captured.officeId}",
+      "effect": "Marked fictional office created through the ICT jurisdiction UI; profile and audit retained",
+      "cleanup": "retained"
+    },
+    {
+      "action": "click",
+      "target": "css=a.govorg-office:has-text(\"${data.officeName}\")"
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "assert",
+      "target": "organization.pageTitle",
+      "test": "text",
+      "equals": "${data.officeName}"
+    },
+    {
+      "action": "assert",
+      "target": "css=.govorg",
+      "test": "text",
+      "contains": "${captured.geoLabel}"
+    },
+    {
+      "action": "assert",
+      "target": "css=.govorg",
+      "test": "text",
+      "contains": "${captured.companyLabel}"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-status=\"office_provisioned\"]",
+      "test": "visible"
+    },
+    {
+      "action": "assert",
+      "target": "css=#govorg-staff",
+      "test": "visible"
+    },
+    {
+      "action": "assert",
+      "target": "css=.gs-readiness",
+      "test": "visible"
+    },
+    {
+      "use": "membership.personal-code",
+      "with": {
+        "actor": "newAdmin",
+        "as": "firstAdminCode"
+      }
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "bootstrap"
+      }
+    },
+    {
+      "action": "switchOffice",
+      "officeName": "${data.officeName}"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/access"
+    },
+    {
+      "action": "capture",
+      "target": "css=.tenant-scope-theme",
+      "attribute": "data-access-office",
+      "as": "workingOffice"
+    },
+    {
+      "action": "compare",
+      "actual": "${captured.workingOffice}",
+      "equals": "${captured.officeId}"
+    },
+    {
+      "use": "membership.add-personal-code",
+      "with": {
+        "admin": "bootstrap",
+        "person": "newAdmin",
+        "code": "firstAdminCode"
+      }
+    },
+    {
+      "action": "actor",
+      "name": "ictOfficer"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/organization/${captured.officeId}/hub"
+    },
+    {
+      "action": "select",
+      "target": "css=#office_admin_id",
+      "value": "${actors.newAdmin.id}"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form:has(#office_admin_id) button[type=\"submit\"]"
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "assert",
+      "target": "css=#office_admin_id",
+      "test": "value",
+      "equals": "${actors.newAdmin.id}"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "newAdmin"
+      }
+    },
+    {
+      "action": "switchOffice",
+      "officeName": "${data.officeName}"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/access"
+    },
+    {
+      "action": "capture",
+      "target": "css=.tenant-scope-theme",
+      "attribute": "data-access-office",
+      "as": "workingOffice"
+    },
+    {
+      "action": "compare",
+      "actual": "${captured.workingOffice}",
+      "equals": "${captured.officeId}"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-access-ability=\"membership.manage\"]",
+      "test": "count",
+      "equals": 1
+    },
+    {
+      "use": "membership.personal-code",
+      "with": {
+        "actor": "storekeeper",
+        "as": "keeperCode"
+      }
+    },
+    {
+      "use": "membership.add-personal-code",
+      "with": {
+        "admin": "newAdmin",
+        "person": "storekeeper",
+        "code": "keeperCode"
+      }
+    },
+    {
+      "use": "membership.personal-code",
+      "with": {
+        "actor": "approver",
+        "as": "approverCode"
+      }
+    },
+    {
+      "use": "membership.add-personal-code",
+      "with": {
+        "admin": "newAdmin",
+        "person": "approver",
+        "code": "approverCode"
+      }
+    },
+    {
+      "use": "membership.personal-code",
+      "with": {
+        "actor": "employee",
+        "as": "employeeCode"
+      }
+    },
+    {
+      "use": "membership.add-personal-code",
+      "with": {
+        "admin": "newAdmin",
+        "person": "employee",
+        "code": "employeeCode"
+      }
+    },
+    {
+      "action": "actor",
+      "name": "newAdmin"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/office"
+    },
+    {
+      "action": "select",
+      "target": "css=#primary_approver_id",
+      "value": "${actors.approver.id}"
+    },
+    {
+      "action": "select",
+      "target": "css=#storekeeper_id",
+      "value": "${actors.storekeeper.id}"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form:has(#primary_approver_id) button[type=\"submit\"]"
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-status=\"office_operational\"]",
+      "test": "visible"
+    },
+    {
+      "action": "assert",
+      "target": "css=#primary_approver_id",
+      "test": "value",
+      "equals": "${actors.approver.id}"
+    },
+    {
+      "action": "assert",
+      "target": "css=#storekeeper_id",
+      "test": "value",
+      "equals": "${actors.storekeeper.id}"
+    },
+    {
+      "action": "actor",
+      "name": "employee"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/my-memberships"
+    },
+    {
+      "action": "assert",
+      "target": "css=.govmem-office:has-text(\"${data.officeName}\")",
+      "test": "visible"
+    },
+    {
+      "action": "switchOffice",
+      "officeName": "${data.officeName}"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/access"
+    },
+    {
+      "action": "capture",
+      "target": "css=.tenant-scope-theme",
+      "attribute": "data-access-office",
+      "as": "workingOffice"
+    },
+    {
+      "action": "compare",
+      "actual": "${captured.workingOffice}",
+      "equals": "${captured.officeId}"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-requests/catalog"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-cr-catalog]",
+      "test": "visible"
+    },
+    {
+      "action": "assert",
+      "target": "css=.cr-context",
+      "test": "text",
+      "contains": "${data.officeName}"
+    },
+    {
+      "action": "ledger",
+      "kind": "operational_office",
+      "id": "${captured.officeId}",
+      "effect": "Same marked office admitted four fictional people, appointed admin/approver/storekeeper and became usable for ordinary requester",
+      "cleanup": "retained"
+    },
+    {
+      "action": "actor",
+      "name": "newAdmin"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/office/staff"
+    },
+    {
+      "action": "click",
+      "target": "css=button[data-target=\"#govmem-code\"]:not([data-dismiss]):enabled"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=#govmem-code form button[type=\"submit\"]"
+    },
+    {
+      "action": "wait",
+      "target": "css=#govmem-code.in",
+      "state": "visible"
+    },
+    {
+      "action": "capture",
+      "target": "css=#govmem-code .govmem-code span",
+      "as": "officeInviteCode",
+      "sensitive": true
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "joiner"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/my-memberships/join",
+      "query": {
+        "way": "office"
+      }
+    },
+    {
+      "action": "fill",
+      "target": "css=#code",
+      "value": "${captured.officeInviteCode}",
+      "sensitive": true
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form[method=\"GET\"]:has(#code) button[type=\"submit\"]",
+      "sensitive": true
+    },
+    {
+      "action": "assert",
+      "target": "css=.govmem-office__name",
+      "test": "text",
+      "equals": "${data.officeName}"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form[action$=\"/my-memberships/join\"][method=\"POST\"] button[type=\"submit\"]",
+      "sensitive": true
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/my-memberships"
+    },
+    {
+      "action": "assert",
+      "target": "css=.govmem-office:has-text(\"${data.officeName}\") [data-status=\"membership_pending\"]",
+      "test": "visible"
+    },
+    {
+      "action": "capture",
+      "target": "css=.govmem-office:has-text(\"${data.officeName}\") form[action$=\"/cancel-join\"]",
+      "attribute": "action",
+      "pattern": "/my-memberships/(\\d+)/cancel-join",
+      "as": "joiningMembershipId"
+    },
+    {
+      "action": "ledger",
+      "kind": "additional_membership",
+      "id": "${captured.joiningMembershipId}",
+      "effect": "Invitation join request, office approval, and later supported access end; audit retained",
+      "cleanup": "retained"
+    },
+    {
+      "action": "actor",
+      "name": "newAdmin"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/office/staff",
+      "query": {
+        "tab": "waiting",
+        "q": "${actors.joiner.username}"
+      }
+    },
+    {
+      "action": "assert",
+      "target": "css=.govmem table tbody",
+      "test": "text",
+      "contains": "${actors.joiner.username}"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form[action$=\"/staff/approve/${captured.joiningMembershipId}\"] button[type=\"submit\"]"
+    },
+    {
+      "action": "actor",
+      "name": "joiner"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/my-memberships"
+    },
+    {
+      "action": "assert",
+      "target": "css=.govmem-office:has-text(\"${data.officeName}\") [data-status=\"membership_active\"]",
+      "test": "visible"
+    },
+    {
+      "action": "switchOffice",
+      "officeName": "${data.officeName}"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/access"
+    },
+    {
+      "action": "capture",
+      "target": "css=.tenant-scope-theme",
+      "attribute": "data-access-office",
+      "as": "joinedOffice"
+    },
+    {
+      "action": "compare",
+      "actual": "${captured.joinedOffice}",
+      "equals": "${captured.officeId}"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-requests/catalog"
+    },
+    {
+      "action": "assert",
+      "target": "css=.cr-context",
+      "test": "text",
+      "contains": "${data.officeName}"
+    },
+    {
+      "action": "actor",
+      "name": "newAdmin"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/office/staff",
+      "query": {
+        "tab": "staff",
+        "q": "${actors.joiner.username}"
+      }
+    },
+    {
+      "action": "click",
+      "target": "css=button[data-govmem-dialog=\"#govmem-end\"][data-action$=\"/staff/end/${captured.joiningMembershipId}\"]"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=#govmem-end button[type=\"submit\"]"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/office/staff",
+      "query": {
+        "tab": "past",
+        "q": "${actors.joiner.username}"
+      }
+    },
+    {
+      "action": "assert",
+      "target": "css=.govmem table tbody",
+      "test": "text",
+      "contains": "${actors.joiner.username}"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "joiner"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/access"
+    },
+    {
+      "action": "capture",
+      "target": "css=.tenant-scope-theme",
+      "attribute": "data-access-office",
+      "as": "restoredHome"
+    },
+    {
+      "action": "compare",
+      "actual": "${captured.restoredHome}",
+      "equals": "${fixtures.office.id}"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/my-memberships"
+    },
+    {
+      "action": "assert",
+      "target": "css=.govmem-office:has-text(\"${data.officeName}\")",
+      "test": "count",
+      "equals": 0
+    }
+  ],
+  "cleanup": {
+    "policy": "retained-with-report",
+    "description": "New marked office, normal enrolled staff and duty assignments retained. The tested joiner additional access is ended through the administrator UI; their original home membership is preserved. Invitation remains subject to its normal application expiry and is never recorded in plaintext.",
+    "steps": []
+  },
+  "description": "Self-contained newly provisioned office, with a real join request, admin review, requester access, and additional-access end. Original home memberships are preserved."
+}

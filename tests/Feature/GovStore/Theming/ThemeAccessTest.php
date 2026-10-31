@@ -32,7 +32,9 @@ class ThemeAccessTest extends ThemingTestCase
         $profiles = config('govstore-permissions.profiles');
         $this->assertContains('theming.assign.office', $profiles['office_operations']);
         $this->assertContains('theming.assign.company', $profiles['company_operations']);
-        $this->assertContains('office.provision', $profiles['company_operations']); // existing entries kept
+        $this->assertNotContains('office.provision', $profiles['company_operations']);
+        $this->assertNotContains('office.onboard', $profiles['company_operations']);
+        $this->assertNotContains('jurisdictions.manage', $profiles['company_operations']);
         $this->assertContains('theming.assign.office', app(CapabilityProfileResolver::class)->resolveSchema('office_admin')->getPermissions());
         foreach ($profiles as $permissions) {
             $this->assertNotContains('theming.lab.view', $permissions);

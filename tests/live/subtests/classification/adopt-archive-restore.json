@@ -1,0 +1,255 @@
+{
+  "schemaVersion": 1,
+  "id": "classification.adopt-archive-restore",
+  "title": "Office storekeeper browses master hierarchy, adopts a new category, archives and restores it for colleagues",
+  "evidenceLevel": "connected",
+  "features": [
+    "user-story.us-13"
+  ],
+  "tags": [
+    "functional",
+    "write",
+    "interface-only"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "accessMode": "any",
+    "timeoutMs": 300000
+  },
+  "fixtures": {
+    "actors": {
+      "storekeeper": {
+        "role": "storekeeper",
+        "capabilities": {
+          "allOf": [
+            "catalog.office.adopt"
+          ]
+        }
+      },
+      "employee": {
+        "capabilities": {
+          "allOf": [
+            "catalog.view"
+          ],
+          "noneOf": [
+            "catalog.office.adopt"
+          ]
+        }
+      }
+    }
+  },
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "storekeeper"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/operations/catalog/discover/explorer"
+    },
+    {
+      "action": "click",
+      "target": "css=table tbody tr[data-status=\"folder\"] a.gs-discover-item__title >> nth=0",
+      "waitForNavigation": true
+    },
+    {
+      "action": "click",
+      "target": "css=table tbody tr[data-status=\"folder\"] a.gs-discover-item__title >> nth=0",
+      "waitForNavigation": true
+    },
+    {
+      "action": "click",
+      "target": "css=table tbody tr[data-status=\"folder\"] a.gs-discover-item__title >> nth=0",
+      "waitForNavigation": true
+    },
+    {
+      "action": "capture",
+      "target": "css=table tbody tr[data-status=\"not-adopted\"] .node-checkbox >> nth=0",
+      "attribute": "value",
+      "as": "catalogCode"
+    },
+    {
+      "action": "capture",
+      "url": true,
+      "as": "leafExplorerUrl"
+    },
+    {
+      "action": "check",
+      "target": "css=.node-checkbox[value=\"${captured.catalogCode}\"]"
+    },
+    {
+      "action": "click",
+      "target": "css=#bulk-action-bar button[onclick=\"executeExplorerBulkAdoption()\"]"
+    },
+    {
+      "action": "wait",
+      "target": "css=#bulk-details-list tr[data-code=\"${captured.catalogCode}\"]"
+    },
+    {
+      "action": "assert",
+      "target": "css=#bulk-details-list tr",
+      "test": "count",
+      "equals": 1
+    },
+    {
+      "action": "assert",
+      "target": "css=#bulk-target-scope",
+      "test": "text",
+      "matches": "[Oo]ffice|location"
+    },
+    {
+      "action": "click",
+      "target": "css=#btn-bulk-execute",
+      "waitForResponse": "/bulk/execute"
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "assert",
+      "target": "css=table tbody tr:has(.node-checkbox[value=\"${captured.catalogCode}\"])",
+      "test": "text",
+      "contains": "Adopted"
+    },
+    {
+      "action": "goto",
+      "url": "${captured.leafExplorerUrl}",
+      "query": {
+        "mode": "local"
+      }
+    },
+    {
+      "action": "click",
+      "target": "css=table tbody tr:has(.node-checkbox[value=\"${captured.catalogCode}\"]) .dropdown-toggle"
+    },
+    {
+      "action": "click",
+      "target": "css=table tbody tr:has(.node-checkbox[value=\"${captured.catalogCode}\"]) a:has-text(\"Manage local category\")",
+      "waitForNavigation": true
+    },
+    {
+      "action": "capture",
+      "url": true,
+      "as": "categoryDetailUrl"
+    },
+    {
+      "action": "capture",
+      "target": "css=.btn-archive",
+      "attribute": "data-id",
+      "as": "categoryId"
+    },
+    {
+      "action": "ledger",
+      "kind": "office_category_adoption",
+      "id": "${captured.categoryId}",
+      "effect": "New unused adoption archived then restored; existing categories are untouched",
+      "cleanup": "retained"
+    },
+    {
+      "action": "click",
+      "target": "css=a[href=\"#tab_lifecycle\"]"
+    },
+    {
+      "action": "assert",
+      "target": "css=#tab_lifecycle",
+      "test": "text",
+      "contains": "Safe to Drop"
+    },
+    {
+      "action": "click",
+      "target": "css=.btn-archive",
+      "waitForResponse": "/catalog/archive"
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "click",
+      "target": "css=a[href=\"#tab_lifecycle\"]"
+    },
+    {
+      "action": "assert",
+      "target": "css=#tab_lifecycle",
+      "test": "text",
+      "contains": "Category is Archived"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "employee"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/operations/catalog",
+      "query": {
+        "tab": "archived"
+      }
+    },
+    {
+      "action": "assert",
+      "target": "css=table tbody",
+      "test": "text",
+      "contains": "${captured.catalogCode}"
+    },
+    {
+      "action": "assert",
+      "target": "css=table tbody .btn-archive, table tbody .btn-restore, table tbody a.btn",
+      "test": "count",
+      "equals": 0
+    },
+    {
+      "action": "actor",
+      "name": "storekeeper"
+    },
+    {
+      "action": "goto",
+      "url": "${captured.categoryDetailUrl}"
+    },
+    {
+      "action": "click",
+      "target": "css=a[href=\"#tab_lifecycle\"]"
+    },
+    {
+      "action": "click",
+      "target": "css=.btn-restore",
+      "waitForResponse": "/catalog/restore"
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "click",
+      "target": "css=a[href=\"#tab_lifecycle\"]"
+    },
+    {
+      "action": "assert",
+      "target": "css=#tab_lifecycle .btn-archive",
+      "test": "visible"
+    },
+    {
+      "action": "actor",
+      "name": "employee"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/operations/catalog",
+      "query": {
+        "tab": "active"
+      }
+    },
+    {
+      "action": "assert",
+      "target": "css=table tbody",
+      "test": "text",
+      "contains": "${captured.catalogCode}"
+    }
+  ],
+  "cleanup": {
+    "policy": "retained-with-report",
+    "description": "New category adoption remains as marked run-owned test configuration. If a lifecycle step fails its observed state is reported; original adoptions are never changed.",
+    "steps": []
+  }
+}

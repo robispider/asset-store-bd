@@ -12,7 +12,7 @@ use RuntimeException;
 
 class ExperimentWiper
 {
-    private const PRESERVED = [
+    public const PRESERVED = [
         'migrations', 'settings', 'permission_groups', 'permissions', 'custom_fields', 'gov_metadata_field_mappings',
         'gov_geo_areas', 'gov_catalog_nodes', 'gov_catalog_definitions', 'gov_capabilities', 'gov_requirement_definitions',
         'cache', 'cache_locks', 'sessions', 'jobs', 'job_batches', 'failed_jobs', 'password_resets', 'password_reset_tokens',
@@ -20,6 +20,12 @@ class ExperimentWiper
         'gov_experiment_runs', 'gov_experiment_records', 'gov_experiment_actions', 'gov_experiment_jobs', 'gov_experiment_failed_jobs',
         'custom_request_sequences', // Global counters must survive fixture cleanup to prevent number reuse.
         'gov_store_document_sequences', // Ledger document numbers must not be reused after cleanup.
+        'gov_finance_items', 'gov_asset_tag_sequences', 'gov_catalog_import_history', 'gov_tenant_scopes',
+        'gov_access_events', 'gov_access_review_uses', 'gov_access_requests', 'gov_access_grants', 'gov_access_notices', 'gov_reviewed_operations',
+        'gov_committee_ledger', 'gov_committee_reviews', 'gov_committee_sequences', 'gov_committee_catalog_mutexes',
+        'gov_committee_seat_roles',
+        'gov_location_roles', // Deprecated registry: retained for review, never a source of new roles.
+        'gov_classification_nodes', 'gov_classification_metadata', 'gov_classification_synonyms', 'gov_classification_external_mappings',
     ];
 
     private const COLUMNS = [
@@ -28,11 +34,13 @@ class ExperimentWiper
         'user_id' => 'users', 'created_by' => 'users', 'created_by_user_id' => 'users', 'performed_by' => 'users',
         'office_admin_id' => 'users', 'requested_by' => 'users', 'approved_by' => 'users', 'assigned_by' => 'users',
         'approved_by_user_id' => 'users', 'outgoing_user_id' => 'users', 'incoming_user_id' => 'users', 'creator_user_id' => 'users',
+        'assigned_by_user_id' => 'users', 'assigned_user_id' => 'users',
         'uploaded_by' => 'users', 'actor_id' => 'users', 'geo_area_verified_by' => 'users',
         'manager_id' => 'users', 'department_id' => 'departments', 'category_id' => 'categories', 'model_id' => 'models',
         'manufacturer_id' => 'manufacturers', 'supplier_id' => 'suppliers', 'status_id' => 'status_labels',
         'asset_id' => 'assets', 'license_id' => 'licenses', 'accessory_id' => 'accessories', 'consumable_id' => 'consumables',
         'component_id' => 'components', 'profile_id' => 'gov_profiles', 'initiative_id' => 'gov_initiatives',
+        'owner_location_id' => 'locations', 'committee_id' => 'gov_committees', 'committee_type_id' => 'gov_committee_types',
         'tracking_code_id' => 'gov_tracking_codes', 'funding_type_id' => 'gov_funding_types',
     ];
 
@@ -61,10 +69,22 @@ class ExperimentWiper
         'gov_employee_verification_tokens' => ['user_id'], 'gov_user_onboardings' => ['user_id'],
         'accessories_checkout' => ['accessory_id'], 'consumables_users' => ['consumable_id'],
         'components_assets' => ['component_id'],
+        'gov_document_notices' => ['document_id'], 'gs_theme_preferences' => ['user_id'],
+        'gov_metadata_values' => ['subject_id'], 'gs_theme_assignments' => ['scope_id'],
+        'gov_committee_orders' => ['committee_id'], 'gov_committee_scopes' => ['committee_id'],
+        'gov_committee_seats' => ['committee_id'], 'gov_committee_tenures' => ['committee_id'],
+        'gov_committee_active_slots' => ['committee_id'], 'gov_committee_health' => ['committee_id'],
+        'gov_committee_reminder_dismissals' => ['committee_id'],
     ];
 
     // Supplement physical foreign keys with known legacy/polymorphic relationships.
     private const RELATIONS = [
+        ['gov_reference_owners', 'reference_id', 'categories', 'id', 'reference_type', 'category'],
+        ['gov_reference_owners', 'reference_id', 'models', 'id', 'reference_type', 'model'],
+        ['gov_reference_owners', 'reference_id', 'suppliers', 'id', 'reference_type', 'supplier'],
+        ['gov_reference_owners', 'reference_id', 'manufacturers', 'id', 'reference_type', 'manufacturer'],
+        ['gov_reference_owners', 'owner_id', 'companies', 'id', 'owner_type', 'company'],
+        ['gov_reference_owners', 'owner_id', 'locations', 'id', 'owner_type', 'office'],
         ['models', 'fieldset_id', 'custom_fieldsets', 'id'],
         ['assets', 'model_id', 'models', 'id'], ['assets', 'assigned_to', 'users', 'id', 'assigned_type', User::class],
         ['action_logs', 'item_id', 'assets', 'id', 'item_type', 'App\\Models\\Asset'],
@@ -91,6 +111,7 @@ class ExperimentWiper
         ['custom_service_request_items', 'request_id', 'custom_service_requests', 'id'],
         ['custom_service_request_events', 'request_id', 'custom_service_requests', 'id'],
         ['gov_documents', 'location_id', 'locations', 'id'],
+        ['gov_document_notices', 'document_id', 'gov_documents', 'id'],
         ['gov_store_ledger_openings', 'document_id', 'gov_documents', 'id'],
         ['gov_store_ledger_openings', 'opened_by', 'users', 'id'],
         ['gov_onboarding_events', 'onboarding_id', 'gov_user_onboardings', 'id'],
@@ -257,7 +278,7 @@ class ExperimentWiper
                 continue;
             }
             // System policy definitions and shared master references survive reset.
-            if (in_array($table, ['gov_profiles', 'gov_profile_capabilities', 'gov_profile_assignments', 'custom_fieldsets', 'custom_field_custom_fieldset', 'gov_ministries_directory', 'gov_catalog_enrichments', 'gov_catalog_synonyms'], true)) {
+            if (in_array($table, ['gov_profiles', 'gov_profile_capabilities', 'gov_profile_assignments', 'custom_fieldsets', 'custom_field_custom_fieldset', 'gov_ministries_directory', 'gov_catalog_enrichments', 'gov_catalog_synonyms', 'gov_committee_types', 'gov_committee_purpose_bindings'], true)) {
                 continue;
             }
             $query = DB::table($table);
@@ -344,6 +365,16 @@ class ExperimentWiper
             }
         }
 
+        foreach (['gov_metadata_values' => ['subject', ['company' => 'companies', 'office' => 'locations', 'category' => 'categories']],
+            'gs_theme_assignments' => ['scope', ['company' => 'companies', 'office' => 'locations']]] as $child => [$prefix, $types]) {
+            if (! in_array($child, $tables, true)) {
+                continue;
+            }
+            foreach ($types as $type => $parent) {
+                $relations[] = [$child, $prefix.'_id', $parent, 'id', $prefix.'_type', $type];
+            }
+        }
+
         return array_unique($relations, SORT_REGULAR);
     }
 
@@ -363,6 +394,8 @@ class ExperimentWiper
             foreach (Storage::disk('local')->allFiles('gov-experiments/'.$runId.'/documents') as $path) {
                 $files[] = ['disk' => 'local', 'path' => $path];
             }
+            $fileRun = ExperimentRun::findOrFail($runId);
+            $files = [...$files, ...app(ExperimentFiles::class)->owned($fileRun)];
         }
         $files = array_values(array_unique($files, SORT_REGULAR));
         DB::transaction(function () use ($run, $scope, $actor, $preview, $files) {
@@ -420,11 +453,14 @@ class ExperimentWiper
         $action = DB::table('gov_experiment_actions')->where('run_id', $run->id)->where('action', 'wipe')->latest('id')->first();
         $failed = [];
         foreach (json_decode($action?->details ?? '{}', true)['attachment_cleanup'] ?? [] as $file) {
-            if ($file['disk'] !== 'local' || ! str_starts_with($file['path'], 'gov-experiments/') || str_contains($file['path'], '..')) {
+            $allowed = $file['disk'] === 'local' && str_starts_with($file['path'], 'gov-experiments/');
+            $allowed = $allowed || ($file['disk'] === 'committee_private' && preg_match('~^orders/[0-9a-f-]{36}\\.(pdf|png|jpg)$~D', $file['path']));
+            $allowed = $allowed || ($file['disk'] === 'local' && preg_match('~^tracking-(orders|documents)/[0-9]+/[A-Za-z0-9._-]+$~D', $file['path']));
+            if (! $allowed || str_contains($file['path'], '..')) {
                 throw new RuntimeException('Unexpected fixture file path.');
             }
             try {
-                if (Storage::disk('local')->exists($file['path']) && ! Storage::disk('local')->delete($file['path'])) {
+                if (Storage::disk($file['disk'])->exists($file['path']) && ! Storage::disk($file['disk'])->delete($file['path'])) {
                     $failed[] = $file['path'];
                 }
             } catch (\Throwable $e) {
@@ -494,14 +530,38 @@ class ExperimentWiper
     private function ownedFiles(array $records): array
     {
         $files = [];
-        foreach (['gov_document_attachments' => ['file_path', 'local'], 'gov_tracking_codes' => ['order_pdf_path', 'local']] as $table => [$column, $disk]) {
+        foreach (['gov_document_attachments' => ['file_path', 'local'], 'gov_tracking_codes' => ['order_pdf_path', 'local'],
+            'gov_tracking_documents' => ['file_path', 'local']] as $table => [$column, $disk]) {
             foreach (array_keys($records[$table] ?? []) as $key) {
                 $row = $this->registry->queryKey($table, $key)->first();
                 $path = $row->{$column} ?? null;
                 // Seed attachments are always in their dedicated owned storage tree.
-                if ($path && str_starts_with($path, 'gov-experiments/') && ! str_contains($path, '..')) {
+                $tracking = $row && (($table === 'gov_tracking_codes' && preg_match('~^tracking-orders/'.(int) $row->initiative_id.'/[A-Za-z0-9._-]+$~D', $path ?? ''))
+                    || ($table === 'gov_tracking_documents' && preg_match('~^tracking-documents/'.(int) $row->tracking_code_id.'/[A-Za-z0-9._-]+$~D', $path ?? '')));
+                if ($path && (str_starts_with($path, 'gov-experiments/') || $tracking) && ! str_contains($path, '..')) {
                     $files[] = ['disk' => $disk, 'path' => $path];
                 }
+            }
+        }
+        foreach (array_keys($records['gov_committee_orders'] ?? []) as $key) {
+            $row = $this->registry->queryKey('gov_committee_orders', $key)->first();
+            if ($row && $row->attachment_disk === 'committee_private'
+                && preg_match('~^orders/[0-9a-f-]{36}\\.(pdf|png|jpg)$~D', $row->attachment_path)) {
+                $files[] = ['disk' => 'committee_private', 'path' => $row->attachment_path];
+            }
+        }
+        foreach (array_keys($records['gov_committee_tenures'] ?? []) as $key) {
+            $row = $this->registry->queryKey('gov_committee_tenures', $key)->first();
+            if ($row && preg_match('~^orders/[0-9a-f-]{36}\\.(pdf|png|jpg)$~D', $row->declaration_attachment_path ?? '')) {
+                $files[] = ['disk' => 'committee_private', 'path' => $row->declaration_attachment_path];
+            }
+        }
+        foreach (array_keys($records['gov_committee_order_intakes'] ?? []) as $key) {
+            $row = $this->registry->queryKey('gov_committee_order_intakes', $key)->first();
+            $attachment = json_decode($row?->attachment ?? 'null', true);
+            if (($attachment['attachment_disk'] ?? '') === 'committee_private'
+                && preg_match('~^orders/[0-9a-f-]{36}\\.(pdf|png|jpg)$~D', $attachment['attachment_path'] ?? '')) {
+                $files[] = ['disk' => 'committee_private', 'path' => $attachment['attachment_path']];
             }
         }
 

@@ -45,6 +45,15 @@ It covers the authorized local host, runtime tools, current fixture discovery,
 role and geography checks, read-only database inspection, isolated tests and cleanup.
 Recheck live state; its dated examples are not permanent accounts or totals.
 
+Live functional acceptance primarily covers **all GovStore packages, user-facing
+functions and user stories**. Check native Snipe-IT where a GovStore workflow
+depends on it (such as inventory materialization, checkout/check-in and history).
+Exercise complete sequences through the real UI and hand the same records between
+the actual roles; page-entry checks alone do not establish story completion.
+Use [GovStore functional live acceptance](docs/testing/govstore-functional-live-acceptance.md)
+for scope, branch coverage and evidence requirements. Report page checks and full
+workflow results separately, and never count blocked or unimplemented flows as passed.
+
 For changes to these protections, run the focused suite using installed PHP:
 
 ```text

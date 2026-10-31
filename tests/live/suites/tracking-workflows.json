@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "tracking-workflows",
+  "title": "Complete programme and tracking delivery workflow",
+  "journeys": [
+    "tracking.programme-to-delivery",
+    "tracking.programme-team-setup",
+    "tracking.programme-close-archive",
+    "tracking.funding-dictionary-create-remove"
+  ]
+}

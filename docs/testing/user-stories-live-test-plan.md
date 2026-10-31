@@ -1,5 +1,21 @@
 # Live testing plan for `user_stories.md`
 
+## Acceptance scope correction — 24 October 2026
+
+The required scope is all user-facing GovStore functions and complete user
+stories, including necessary Snipe-IT integration. The read-only runs and matrix
+below describe an initial inspection phase, not the acceptance boundary.
+Use [GovStore functional live acceptance](govstore-functional-live-acceptance.md)
+for full workflow requirements and the
+[coverage review](../verification/live-test-coverage-review-2026-10-24.md) for the
+current definition gaps and historical staging evidence. The 31 entry checks
+must not be reported as 31 completed business stories. Read-only inspection is
+not the default substitute for an authorized functional journey on test fixtures.
+
+The [full implementation plan](../plans/govstore-full-functional-live-testing-plan-2026-10-25.md)
+defines the work sequence, concrete deliverables and action coverage for all 31
+stories plus the functions outside this index.
+
 **Purpose:** exercise each of the 31 user stories through the real local UI,
 using the current fictional seeded dataset and role-appropriate accounts. This
 plan is for the existing nonproduction installation only. It does not certify

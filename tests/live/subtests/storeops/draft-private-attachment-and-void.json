@@ -1,0 +1,267 @@
+{
+  "schemaVersion": 1,
+  "id": "storeops.draft-private-attachment-and-void",
+  "title": "Storekeeper attaches private evidence to a draft; an approver downloads it; storekeeper removes the evidence and voids the draft",
+  "description": "Keeps the same draft across actual roles, verifies its draft print, and confirms no stock change. Only the run-owned attachment is removed; the cancelled document and audit are retained.",
+  "evidenceLevel": "connected",
+  "features": [
+    "storeops.grn",
+    "user-story.us-06"
+  ],
+  "tags": [
+    "functional",
+    "write",
+    "interface-only"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "accessMode": "any",
+    "timeoutMs": 240000
+  },
+  "fixtures": {
+    "actors": {
+      "storekeeper": {
+        "role": "storekeeper",
+        "capabilities": {
+          "allOf": [
+            "storeops.documents.draft"
+          ]
+        }
+      },
+      "approver": {
+        "role": "primary_approver",
+        "capabilities": {
+          "allOf": [
+            "storeops.documents.view"
+          ],
+          "noneOf": [
+            "storeops.documents.draft"
+          ]
+        }
+      }
+    },
+    "records": {
+      "item": {
+        "kind": "consumable",
+        "minimumAvailable": 1
+      }
+    }
+  },
+  "data": {
+    "reason": {
+      "generate": "markedText",
+      "prefix": "LIVE-VOID",
+      "length": 7
+    }
+  },
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "storekeeper"
+      }
+    },
+    {
+      "action": "inspect",
+      "check": "ui.stockCard",
+      "args": {
+        "type": "consumable",
+        "id": "${fixtures.item.id}"
+      },
+      "as": "startStock"
+    },
+    {
+      "action": "goto",
+      "route": "storeops.hub",
+      "query": {
+        "start": "receipt"
+      }
+    },
+    {
+      "action": "wait",
+      "target": "storeops.hubStartDialog"
+    },
+    {
+      "action": "check",
+      "target": "storeops.hubStartReceipt"
+    },
+    {
+      "action": "submitForm",
+      "target": "storeops.hubStartSubmit"
+    },
+    {
+      "action": "capture",
+      "url": true,
+      "pattern": "/documents/receipt/([0-9a-f-]{36})",
+      "as": "docId"
+    },
+    {
+      "action": "capture",
+      "target": "storeops.documentNumber",
+      "as": "documentNumber"
+    },
+    {
+      "action": "ledger",
+      "kind": "draft_void_exercise",
+      "id": "${captured.docId}",
+      "effect": "New empty draft and private attachment; later cancelled without posting",
+      "cleanup": "retained"
+    },
+    {
+      "action": "select",
+      "target": "css=#attachmentCategory",
+      "value": "Other"
+    },
+    {
+      "action": "upload",
+      "target": "css=#attachmentFile",
+      "file": "tests/live/fixtures/fictional-order.pdf"
+    },
+    {
+      "action": "click",
+      "target": "css=#uploadFileBtn",
+      "waitForResponse": "/attachments"
+    },
+    {
+      "action": "wait",
+      "target": "css=#attachmentsList .attachment-item"
+    },
+    {
+      "action": "capture",
+      "target": "css=#attachmentsList .attachment-item",
+      "attribute": "data-id",
+      "as": "attachmentId"
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "assert",
+      "target": "css=#attachmentsList .attachment-item",
+      "test": "count",
+      "equals": 1
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "approver"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/operations/documents/receipt/${captured.docId}"
+    },
+    {
+      "action": "assert",
+      "target": "css=#attachmentsList .attachment-item[data-id=\"${captured.attachmentId}\"]",
+      "test": "visible"
+    },
+    {
+      "action": "download",
+      "target": "css=#attachmentsList .attachment-item[data-id=\"${captured.attachmentId}\"] a",
+      "as": "evidence"
+    },
+    {
+      "action": "compare",
+      "actual": "${captured.evidence.filename}",
+      "equals": "[OTHER] fictional-order.pdf"
+    },
+    {
+      "action": "compare",
+      "actual": "${captured.evidence.text}",
+      "contains": "%PDF-"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/operations/documents/receipt/${captured.docId}/print"
+    },
+    {
+      "action": "assert",
+      "target": "css=.header",
+      "test": "text",
+      "matches": "DRAFT|খসড়া"
+    },
+    {
+      "action": "assert",
+      "target": "css=.doc-meta",
+      "test": "text",
+      "contains": "${captured.documentNumber}"
+    },
+    {
+      "action": "actor",
+      "name": "storekeeper"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/operations/documents/receipt/${captured.docId}"
+    },
+    {
+      "action": "click",
+      "target": "css=.delete-attachment[data-id=\"${captured.attachmentId}\"]",
+      "waitForResponse": "/attachments/${captured.attachmentId}"
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "assert",
+      "target": "css=#attachmentsList .attachment-item",
+      "test": "count",
+      "equals": 0
+    },
+    {
+      "action": "click",
+      "target": "storeops.voidOpen"
+    },
+    {
+      "action": "fill",
+      "target": "storeops.voidReason",
+      "value": "${data.reason} - cancel fictional draft with no stock posted"
+    },
+    {
+      "action": "submitForm",
+      "target": "storeops.voidSubmit",
+      "rejectFlashErrors": true
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/operations/documents/receipt/${captured.docId}"
+    },
+    {
+      "action": "assert",
+      "target": "storeops.voidOpen",
+      "test": "count",
+      "equals": 0
+    },
+    {
+      "action": "assert",
+      "target": "storeops.post",
+      "test": "disabled"
+    },
+    {
+      "action": "assert",
+      "target": "css=.storeops-theme",
+      "test": "text",
+      "contains": "${data.reason}"
+    },
+    {
+      "action": "inspect",
+      "check": "ui.stockCard",
+      "args": {
+        "type": "consumable",
+        "id": "${fixtures.item.id}"
+      },
+      "as": "afterVoid"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.afterVoid.closing}",
+      "equals": "${observed.startStock.closing}"
+    }
+  ],
+  "cleanup": {
+    "policy": "retained-with-report",
+    "description": "Run-owned attachment removed and empty draft cancelled by supported UI; cancelled document and audit remain. On failure, the exact observed draft/attachment state is retained and reported.",
+    "steps": []
+  }
+}

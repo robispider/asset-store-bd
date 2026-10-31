@@ -255,6 +255,7 @@ return [
     'handover_waiting' => 'Yours until :name accepts · asked :time',
     'handover_cancel' => 'Cancel request',
     'handover_incoming' => ':name wants to hand over the :role role at :office to you.',
+    'handover_their_note' => 'Note from :name:',
     'handover_if_accept' => 'If you accept, you will:',
     'handover_if_named' => 'Be named in this role on the :office page and on request slips.',
     'handover_if_again' => 'Need to hand it over again before you can leave that office.',

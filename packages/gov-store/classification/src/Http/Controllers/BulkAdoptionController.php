@@ -8,6 +8,7 @@ use GovStore\TenantScope\Contexts\TenantContext;
 use GovStore\TenantScope\Services\ActionFailure;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Validation\Rule;
 
 class BulkAdoptionController extends Controller
 {
@@ -37,7 +38,15 @@ class BulkAdoptionController extends Controller
 
     public function preview(Request $request, TenantContext $tenantContext)
     {
-        $request->validate(['codes' => 'required|array|min:1']);
+        $request->validate([
+            'codes' => 'required|array|min:1',
+            'codes.*' => ['required', 'string', 'distinct', 'exists:gov_catalog_nodes,code'],
+            'collection_id' => ['nullable', 'integer', Rule::exists('gov_catalog_collections', 'id')->where('is_active', true)],
+        ]);
+        if ($request->filled('collection_id')) {
+            $request->validate(['codes.*' => [Rule::exists('gov_catalog_collection_nodes', 'code')
+                ->where('collection_id', $request->integer('collection_id'))]]);
+        }
 
         try {
             $scope = $this->resolveScope($tenantContext);
@@ -46,14 +55,17 @@ class BulkAdoptionController extends Controller
                 $scope['type'],
                 $scope['id'],
                 $tenantContext->companyId,
-                $tenantContext->locationId
+                $tenantContext->locationId,
+                $request->filled('collection_id') ? $request->integer('collection_id') : null
             );
 
             return response()->json([
                 'success' => true,
                 'summary' => $summary,
-                'target_scope' => ucfirst($scope['type']),
+                'target_scope' => __('classification::collections.scopes.'.$scope['type']),
             ]);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface|\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            throw $e;
         } catch (Exception $e) {
             return response()->json(['success' => false, 'message' => app(ActionFailure::class)->message($e)], 403);
         }
@@ -64,7 +76,7 @@ class BulkAdoptionController extends Controller
         // Validate structured item inputs (code + category type)
         $request->validate([
             'items' => 'required|array|min:1',
-            'items.*.code' => 'required|string',
+            'items.*.code' => 'required|string|distinct|exists:gov_catalog_nodes,code',
             'items.*.category_type' => 'required|string|in:asset,consumable,accessory,component,license',
         ]);
 
@@ -78,6 +90,8 @@ class BulkAdoptionController extends Controller
             );
 
             return response()->json($result);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface|\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            throw $e;
         } catch (Exception $e) {
             return response()->json(['success' => false, 'message' => app(ActionFailure::class)->message($e)], 500);
         }

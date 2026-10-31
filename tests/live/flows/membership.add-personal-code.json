@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "id": "membership.add-personal-code",
+  "title": "Office administrator adds a person using their one-use code",
+  "params": {
+    "admin": {
+      "type": "string",
+      "required": true
+    },
+    "person": {
+      "type": "string",
+      "required": true
+    },
+    "code": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "steps": [
+    {
+      "action": "actor",
+      "name": "${params.admin}"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/office/staff"
+    },
+    {
+      "action": "assert",
+      "target": "css=.govmem .gs-page-header__subtitle",
+      "test": "text",
+      "contains": "${data.officeName}"
+    },
+    {
+      "action": "click",
+      "target": "css=button[data-target=\"#govmem-add\"]"
+    },
+    {
+      "action": "click",
+      "target": "css=label:has(#add-way-personal)"
+    },
+    {
+      "action": "fill",
+      "target": "css=#govmem-add #username",
+      "value": "${actors.${params.person}.username}"
+    },
+    {
+      "action": "fill",
+      "target": "css=#verification_code",
+      "value": "${captured.${params.code}}",
+      "sensitive": true
+    },
+    {
+      "action": "submitForm",
+      "target": "css=#govmem-add button[type=\"submit\"]",
+      "sensitive": true
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/office/staff",
+      "query": {
+        "tab": "staff",
+        "q": "${actors.${params.person}.username}"
+      }
+    },
+    {
+      "action": "assert",
+      "target": "css=.govmem table tbody",
+      "test": "text",
+      "contains": "${actors.${params.person}.username}"
+    }
+  ]
+}

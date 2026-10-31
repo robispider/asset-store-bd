@@ -94,7 +94,9 @@ class Handler extends ExceptionHandler
                 ? response()->json(['error' => $message, 'reference_id' => $reference], $e->getStatusCode())
                 : response()->view('govscope::access.failure', compact('message', 'reference'), $e->getStatusCode());
         }
-        if ($request->is('gov-store/admin/tracking*', 'gov-store/api/tracking*')
+        // The safe page extends layouts.default, which needs a matched route; a 404/405 raised before
+        // routing falls through to Snipe-IT's own error pages instead of crashing into a 500.
+        if ($request->is('gov-store/admin/tracking*', 'gov-store/api/tracking*') && ($request->route() || $request->expectsJson())
             && ! $e instanceof AuthenticationException && ! $e instanceof TokenMismatchException) {
             if (app()->bound('debugbar')) app('debugbar')->disable();
             if ($e instanceof ValidationException) {
@@ -138,12 +140,19 @@ class Handler extends ExceptionHandler
                 return $request->ajax() || $request->expectsJson() ? response()->json($payload, 403) : response()->view('govscope::access.denied', compact('payload'), 403);
             }
             if (! $e instanceof AuthenticationException && ! $e instanceof TokenMismatchException) {
+                if (app()->bound('debugbar')) {
+                    app('debugbar')->disable();
+                }
                 $reference = (string) Str::uuid();
                 $status = $e instanceof HttpExceptionInterface ? $e->getStatusCode() : 500;
                 if ($status >= 500) {
                     Log::error('GovStore request failed', ['reference_id' => $reference, 'exception' => $e]);
                 }
-                $message = __('tenantops::access.failed', ['reference' => $reference]);
+                // A conflict or refusal raised with abort(409|422|423, __('…')) already explains itself
+                // (for example "intake is paused"); keep the generic reference text for everything else.
+                $message = in_array($status, [409, 422, 423], true) && $e->getMessage() !== ''
+                    ? $e->getMessage()
+                    : __('tenantops::access.failed', ['reference' => $reference]);
 
                 return $request->ajax() || $request->expectsJson()
                     ? response()->json(['error' => $message, 'reference_id' => $reference], $status)

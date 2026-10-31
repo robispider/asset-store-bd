@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 1,
+  "id": "storeops.receive-tracked-bulk",
+  "title": "Participating office receives inventory linked to the captured active programme task",
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "storekeeper"
+      }
+    },
+    {
+      "action": "goto",
+      "route": "storeops.hub",
+      "query": {
+        "start": "receipt"
+      }
+    },
+    {
+      "action": "wait",
+      "target": "storeops.hubStartDialog",
+      "state": "visible"
+    },
+    {
+      "action": "check",
+      "target": "storeops.hubStartReceipt"
+    },
+    {
+      "action": "submitForm",
+      "target": "storeops.hubStartSubmit"
+    },
+    {
+      "action": "capture",
+      "url": true,
+      "pattern": "/documents/receipt/([0-9a-f-]{36})",
+      "as": "docId"
+    },
+    {
+      "action": "ledger",
+      "kind": "gov_document",
+      "id": "${captured.docId}",
+      "effect": "Receipt for a complete stock-to-requester live journey; posted records and audit are retained",
+      "cleanup": "retained"
+    },
+    {
+      "action": "select",
+      "target": "storeops.purchaseType",
+      "value": "Purchase"
+    },
+    {
+      "action": "capture",
+      "target": "css=#supplier_id option:not([value='']) >> nth=0",
+      "attribute": "value",
+      "as": "supplierId"
+    },
+    {
+      "action": "select",
+      "target": "css=#supplier_id",
+      "value": "${captured.supplierId}"
+    },
+    {
+      "action": "fill",
+      "target": "storeops.challanNumber",
+      "value": "${data.purpose}"
+    },
+    {
+      "action": "fill",
+      "target": "storeops.challanDate",
+      "value": "${data.receiptDate}"
+    },
+    {
+      "action": "fill",
+      "target": "css=#tracking_code_input",
+      "value": "${data.trackingCode}"
+    },
+    {
+      "action": "select2",
+      "target": "storeops.row0Item",
+      "search": "${fixtures.item.name}",
+      "option": "${fixtures.item.name}"
+    },
+    {
+      "action": "fill",
+      "target": "storeops.row0Qty",
+      "value": "${data.receiptQty}"
+    },
+    {
+      "action": "fill",
+      "target": "storeops.row0Cost",
+      "value": "100"
+    },
+    {
+      "action": "click",
+      "target": "storeops.saveDraft",
+      "waitForResponse": "/draft"
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "wait",
+      "target": "storeops.row0Qty",
+      "state": "visible"
+    },
+    {
+      "action": "assert",
+      "target": "storeops.row0Qty",
+      "test": "value",
+      "equals": "${data.receiptQty}"
+    },
+    {
+      "action": "click",
+      "target": "storeops.saveDraft",
+      "waitForResponse": "/draft",
+      "note": "Recalculate the persisted draft checklist after reload, as required by the current workspace"
+    },
+    {
+      "action": "wait",
+      "target": "css=#triggerPostBtn:not([disabled])",
+      "state": "attached"
+    },
+    {
+      "action": "click",
+      "target": "storeops.post"
+    },
+    {
+      "action": "wait",
+      "target": "storeops.postingModal",
+      "state": "visible"
+    },
+    {
+      "action": "assert",
+      "target": "storeops.previewQty",
+      "test": "number",
+      "equals": "${data.receiptQty}"
+    },
+    {
+      "action": "submitForm",
+      "target": "storeops.confirmPost",
+      "rejectFlashErrors": true
+    },
+    {
+      "action": "wait",
+      "target": "storeops.postedBox",
+      "state": "visible"
+    },
+    {
+      "action": "inspect",
+      "check": "ui.document",
+      "args": {
+        "id": "${captured.docId}"
+      },
+      "as": "receipt"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.receipt.posted}",
+      "equals": true
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.receipt.quantity}",
+      "equals": "${data.receiptQty}"
+    }
+  ]
+}

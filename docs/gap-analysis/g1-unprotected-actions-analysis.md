@@ -6,6 +6,18 @@ Related: [gov-store Gap Assessment](gov-store-gap-assessment.md) (gap G1) · [Pa
 
 Future agents: read the [security rules and lessons](../security/govstore-agent-security.md), also required by the repository's [AGENTS.md](../../AGENTS.md), before changing these protections.
 
+## Development default decision — 26 October 2026
+
+The owner requires enforcement by default during development so permission
+problems are visible. `config/govstore-access.php` and `.env.example` now default
+to `enforce`; shadow requires an explicit environment override. This supersedes
+the shadow-default development guidance below. The 4 October execution results
+remain historical evidence; changing the default does not complete outstanding
+operational rollout, observation or user acceptance work. See the
+[accepted permission decisions](govstore-permission-investigation-2026-10-26.md#accepted-development-decisions--26-october-2026).
+The subsequent F01–F15 fixes, development ownership normalization and final checks
+are in the [26 October remediation record](../verification/govstore-permission-remediation-2026-10-26.md).
+
 ## Execution review — 4 October 2026
 
 The original document is a design proposal, not a record of completed protection. Review of the current routes, controllers, services and role assignment code confirmed that the central authorization service, middleware, document policy and access UI had not been implemented.

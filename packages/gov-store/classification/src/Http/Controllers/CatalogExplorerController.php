@@ -30,7 +30,7 @@ class CatalogExplorerController extends Controller
 
         // Include Tier-1 Global Standards implicitly
         $globalCategoryIds = DB::table('gov_category_governance')
-            ->where('governance_type', 'global')
+            ->whereIn('governance_type', ['global', 'national'])
             ->pluck('category_id')
             ->toArray();
 
@@ -95,6 +95,9 @@ class CatalogExplorerController extends Controller
             return $node;
         });
 
+        // Segments for the navigation rail
+        $segments = CatalogNode::where('level', 1)->orderBy('code')->get(['code', 'title_en']);
+
         // Determine if current user can modify collections
         $canManageCollections = auth()->user() && (auth()->user()->isSuperUser() || auth()->user()->hasAccess('admin'));
 
@@ -102,8 +105,9 @@ class CatalogExplorerController extends Controller
             'nodes', 
             'breadcrumbs', 
             'parentCode', 
-            'mode', 
-            'canManageCollections'
+            'mode',
+            'canManageCollections',
+            'segments'
         ));
     }
 }

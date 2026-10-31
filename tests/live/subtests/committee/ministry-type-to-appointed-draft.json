@@ -1,0 +1,367 @@
+{
+  "schemaVersion": 1,
+  "id": "committee.ministry-type-to-appointed-draft",
+  "title": "Company administrator defines a fictional ministry type; office administrator creates its committee draft and appoints a member",
+  "description": "Ministry-only type configuration, order intake consumption, draft identity, named appointment, saved roster and printable draft. Activation and member declarations remain separate unverified branches.",
+  "evidenceLevel": "connected",
+  "features": [
+    "user-story.us-29"
+  ],
+  "tags": [
+    "functional",
+    "write",
+    "interface-only"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "accessMode": "any",
+    "timeoutMs": 420000
+  },
+  "fixtures": {
+    "actors": {
+      "companyAdmin": {
+        "role": "company_admin",
+        "activeMembership": false,
+        "capabilities": {
+          "allOf": [
+            "committee.types.manage"
+          ]
+        }
+      },
+      "registrar": {
+        "role": "office_admin",
+        "capabilities": {
+          "allOf": [
+            "committee.manage",
+            "committee.activate"
+          ]
+        }
+      },
+      "member": {
+        "capabilities": {
+          "allOf": [
+            "committee.self"
+          ],
+          "noneOf": [
+            "committee.manage"
+          ]
+        }
+      }
+    }
+  },
+  "data": {
+    "marker": {
+      "generate": "markedText",
+      "prefix": "LIVE-CM",
+      "length": 7
+    },
+    "endDate": {
+      "generate": "date",
+      "offsetDays": 60
+    }
+  },
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "companyAdmin"
+      }
+    },
+    {
+      "action": "capture",
+      "value": "${data.marker}",
+      "pattern": "([A-Z0-9]{5})$",
+      "as": "typeSuffix"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/committees/admin/types",
+      "query": {
+        "type": "new"
+      }
+    },
+    {
+      "action": "assert",
+      "target": "css=.cm-type-rules [name=scope]",
+      "test": "value",
+      "equals": "ministry"
+    },
+    {
+      "action": "fill",
+      "target": "css=.cm-type-rules [name=\"code\"]",
+      "value": "LIVE_${captured.typeSuffix}"
+    },
+    {
+      "action": "fill",
+      "target": "css=.cm-type-rules [name=\"name_en\"]",
+      "value": "${data.marker} fictional staging committee"
+    },
+    {
+      "action": "fill",
+      "target": "css=.cm-type-rules [name=\"name_bn\"]",
+      "value": "পরীক্ষামূলক কমিটি ${data.marker}"
+    },
+    {
+      "action": "fill",
+      "target": "css=.cm-type-rules [name=\"composition_policy[strength][min]\"]",
+      "value": "1"
+    },
+    {
+      "action": "fill",
+      "target": "css=.cm-type-rules [name=\"composition_policy[strength][max]\"]",
+      "value": "1"
+    },
+    {
+      "action": "fill",
+      "target": "css=.cm-type-rules [name=\"change_reason\"]",
+      "value": "${data.marker} - fictional ministry-only fixture; no purpose bindings"
+    },
+    {
+      "action": "select",
+      "target": "css=.cm-type-rules [name=\"category\"]",
+      "value": "other"
+    },
+    {
+      "action": "select",
+      "target": "css=.cm-type-rules [name=\"default_term_basis\"]",
+      "value": "FIXED"
+    },
+    {
+      "action": "click",
+      "target": "css=.cm-type-rules details:has(input[name=\"composition_policy[quorum][min_present]\"]) > summary"
+    },
+    {
+      "action": "fill",
+      "target": "css=.cm-type-rules [name=\"composition_policy[quorum][min_present]\"]",
+      "value": "1"
+    },
+    {
+      "action": "check",
+      "target": "css=.cm-type-rules input[type=checkbox][name=\"composition_policy[declaration_required]\"]"
+    },
+    {
+      "action": "check",
+      "target": "css=.cm-type-rules input[type=checkbox][name=is_active]"
+    },
+    {
+      "action": "click",
+      "target": "css=.cm-type-rules button[type=submit]",
+      "waitForResponse": "/admin/types"
+    },
+    {
+      "action": "wait",
+      "target": "css=.cm-actions a[href*=\"/admin/types?type=\"]:has-text(\"${data.marker}\")"
+    },
+    {
+      "action": "capture",
+      "target": "css=.cm-actions a[href*=\"/admin/types?type=\"]:has-text(\"${data.marker}\")",
+      "attribute": "href",
+      "pattern": "type=(\\d+)",
+      "as": "typeId"
+    },
+    {
+      "action": "ledger",
+      "kind": "committee_ministry_type",
+      "id": "${captured.typeId}",
+      "effect": "New ministry-only fictional fixture type, no purpose bindings",
+      "cleanup": "retained"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "registrar"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/committees/new"
+    },
+    {
+      "action": "assert",
+      "target": "css=.cm-intake [name=intake_revision]",
+      "test": "value",
+      "equals": 0
+    },
+    {
+      "action": "fill",
+      "target": "css=.cm-intake [name=\"memo_no\"]",
+      "value": "${data.marker}"
+    },
+    {
+      "action": "fill",
+      "target": "css=.cm-intake [name=\"issuing_authority_name\"]",
+      "value": "Fictional staging test authority"
+    },
+    {
+      "action": "fill",
+      "target": "css=.cm-intake [name=\"issuing_authority_designation_en\"]",
+      "value": "Test only - no official authority"
+    },
+    {
+      "action": "upload",
+      "target": "css=.cm-intake [name=file]",
+      "file": "tests/live/fixtures/fictional-order.pdf"
+    },
+    {
+      "action": "click",
+      "target": "css=.cm-order-next"
+    },
+    {
+      "action": "wait",
+      "target": "css=.cm-order-second:not(.cm-hidden)"
+    },
+    {
+      "action": "select",
+      "target": "css=.cm-intake [name=\"committee_type_id\"]",
+      "value": "${captured.typeId}"
+    },
+    {
+      "action": "fill",
+      "target": "css=.cm-intake [name=\"name_en\"]",
+      "value": "${data.marker} fictional staging committee"
+    },
+    {
+      "action": "fill",
+      "target": "css=.cm-intake [name=\"name_bn\"]",
+      "value": "পরীক্ষামূলক কমিটি ${data.marker}"
+    },
+    {
+      "action": "select",
+      "target": "css=.cm-intake [name=\"term_basis\"]",
+      "value": "FIXED"
+    },
+    {
+      "action": "fill",
+      "target": "css=.cm-intake [name=\"effective_to\"]",
+      "value": "${data.endDate}"
+    },
+    {
+      "action": "fill",
+      "target": "css=.cm-intake [name=\"terms_of_reference\"]",
+      "value": "${data.marker} - fictional fixture only; no official mandate or operational purpose binding"
+    },
+    {
+      "action": "click",
+      "target": "css=.cm-order-second button[type=submit]",
+      "waitForResponse": "/drafts"
+    },
+    {
+      "action": "wait",
+      "target": "css=#cm-members"
+    },
+    {
+      "action": "capture",
+      "target": "css=.committee-workspace",
+      "attribute": "data-committee",
+      "as": "committeeId"
+    },
+    {
+      "action": "ledger",
+      "kind": "committee_draft",
+      "id": "${captured.committeeId}",
+      "effect": "Marked draft and fictional evidence retained; later appointment is an attempted step, see its actual result",
+      "cleanup": "retained"
+    },
+    {
+      "action": "click",
+      "target": "css=.cm-open-person[data-command=new]"
+    },
+    {
+      "action": "wait",
+      "target": "css=#cm-person-drawer.in"
+    },
+    {
+      "action": "select",
+      "target": "css=#cm-person-office [name=\"user_id\"]",
+      "value": "${actors.member.id}"
+    },
+    {
+      "action": "select",
+      "target": "css=#cm-person-drawer [name=\"seat_role_code\"]",
+      "value": "chairperson"
+    },
+    {
+      "action": "fill",
+      "target": "css=#cm-person-drawer [name=\"seat_no\"]",
+      "value": "1"
+    },
+    {
+      "action": "click",
+      "target": "css=#cm-person-drawer form button[type=submit]",
+      "waitForResponse": "/seats"
+    },
+    {
+      "action": "wait",
+      "target": "css=.cm-person-row:has-text(\"${actors.member.display_name}\")"
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "assert",
+      "target": "css=.cm-person-row",
+      "test": "count",
+      "equals": 1
+    },
+    {
+      "action": "assert",
+      "target": "css=.cm-person-row",
+      "test": "text",
+      "contains": "${actors.member.display_name}"
+    },
+    {
+      "action": "click",
+      "target": "css=#cm-members a[href$=\"step=4\"]",
+      "waitForNavigation": true
+    },
+    {
+      "action": "assert",
+      "target": "css=.cm-paper",
+      "test": "text",
+      "contains": "${data.marker}"
+    },
+    {
+      "action": "assert",
+      "target": "css=.cm-paper",
+      "test": "text",
+      "contains": "${actors.member.display_name}"
+    },
+    {
+      "action": "assert",
+      "target": "css=form[action$=\"/activate\"] input[name=matches_paper]",
+      "test": "checked",
+      "equals": false
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/committees/${captured.committeeId}/history"
+    },
+    {
+      "action": "assert",
+      "target": "css=.committee-workspace",
+      "test": "text",
+      "contains": "${data.marker}"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/committees/${captured.committeeId}/print"
+    },
+    {
+      "action": "assert",
+      "target": "css=body",
+      "test": "text",
+      "contains": "${actors.member.display_name}"
+    },
+    {
+      "action": "assert",
+      "target": "css=body",
+      "test": "text",
+      "matches": "DRAFT|খসড়া"
+    }
+  ],
+  "cleanup": {
+    "policy": "retained-with-report",
+    "description": "Marked ministry fixture type, draft committee, private fictional PDF, named appointment and history retained. No activation, purpose binding or national change.",
+    "steps": []
+  }
+}

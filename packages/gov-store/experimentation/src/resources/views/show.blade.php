@@ -4,6 +4,9 @@
 <div class="box box-primary"><div class="box-header with-border"><h2 class="box-title">{{ $run->label }}</h2></div><div class="box-body">
     @foreach ($errors->all() as $error)<div class="alert alert-danger">{{ $error }}</div>@endforeach
     <p>{{ __('experiments::ui.status') }}: <strong id="experiment-status">{{ $run->status }}</strong> — {{ __('experiments::ui.phase') }}: <span id="experiment-phase">{{ $run->phase }}</span></p>
+    @if (!$run->wiped_at && !\GovStore\Experimentation\Services\ScenarioManifest::current($run))
+        <div class="alert alert-warning">{{ __('experiments::ui.stale_dataset') }}</div>
+    @endif
     @if ($run->error)<div class="alert alert-danger">{{ $run->error }}</div>@endif
     @if (!$run->wiped_at)<a class="btn btn-default" href="{{ route('gov.experiments.accounts', $run) }}">{{ __('experiments::ui.accounts') }}</a><p class="help-block">{{ __('experiments::ui.accounts_help') }}</p>@endif
     @if (!$run->wiped_at)<p class="help-block">{{ __('experiments::ui.office_inventory_help') }}</p>@endif

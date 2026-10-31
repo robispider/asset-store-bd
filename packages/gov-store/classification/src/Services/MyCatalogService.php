@@ -8,13 +8,94 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class MyCatalogService
 {
+    public const TYPES = ['asset', 'component', 'accessory', 'consumable', 'license'];
+
     /**
-     * Retrieve the grid of operational categories adopted by the active context (company or location).
-     */
-  /**
      * Retrieve the grid of operational categories scoped by intent-driven tabs.
+     * $filters: q (name or code contains) and type (category_type).
      */
-    public function getLocalGrid(int $companyId, int $locationId, string $tab = 'active', int $perPage = 50): LengthAwarePaginator
+    public function getLocalGrid(int $companyId, int $locationId, string $tab = 'active', int $perPage = 50, array $filters = []): LengthAwarePaginator
+    {
+        $query = $this->localGridQuery($companyId, $locationId, $tab);
+
+        if (($filters['q'] ?? '') !== '') {
+            $query->where('categories.name', 'like', '%'.addcslashes($filters['q'], '%_\\').'%');
+        }
+        if (in_array($filters['type'] ?? null, self::TYPES, true)) {
+            $query->where('categories.category_type', $filters['type']);
+        }
+
+        return $query->orderBy('categories.name', 'asc')->paginate($perPage);
+    }
+
+    /**
+     * Everything the catalog summary needs in one pass: the active and archived rows (light columns),
+     * their health counts, item totals and the most used category.
+     */
+    public function getLocalOverview(int $companyId, int $locationId): array
+    {
+        $active = $this->localGridQuery($companyId, $locationId, 'active')->get();
+        $archived = $this->localGridQuery($companyId, $locationId, 'archived')->get();
+        $top = $active->sortByDesc('total_usage_count')->first();
+
+        return [
+            'active' => $active,
+            'archived' => $archived,
+            'total_active' => $active->count(),
+            'needs_cleanup' => $active->where('total_usage_count', 0)->count(),
+            'in_use' => $active->where('total_usage_count', '>', 0)->count(),
+            'archived_count' => $archived->count(),
+            'items' => (int) $active->sum('total_usage_count'),
+            'families' => $active->map(fn ($c) => self::label($c->name)['family'])->unique()->count(),
+            'unmapped' => $active->whereNull('unspsc_code')->count(),
+            'top' => ($top && $top->total_usage_count > 0) ? ['name' => self::label($top->name)['en'], 'count' => (int) $top->total_usage_count] : null,
+        ];
+    }
+
+    /**
+     * Category names read "English / বাংলা · CODE". Split them so the grid can show each part on its own
+     * and group the codes that share one title.
+     */
+    public static function label(string $name): array
+    {
+        $code = null;
+        $title = $name;
+        if (preg_match('/^(.*?)\s+·\s+(\S+)$/u', $name, $m)) {
+            [$title, $code] = [$m[1], $m[2]];
+        }
+        [$en, $bn] = array_pad(array_map('trim', explode(' / ', $title, 2)), 2, null);
+
+        return ['en' => $en, 'bn' => $bn, 'code' => $code, 'family' => $title];
+    }
+
+    /**
+     * Group a grid page into families: consecutive rows (the grid is name-ordered) sharing one title.
+     */
+    public static function families(iterable $categories): array
+    {
+        $families = [];
+        foreach ($categories as $category) {
+            $label = self::label($category->name);
+            $key = $label['family'].'|'.$category->category_type;
+            if (! isset($families[$key])) {
+                $families[$key] = ['en' => $label['en'], 'bn' => $label['bn'], 'type' => $category->category_type, 'rows' => []];
+            }
+            $category->catalog_label = $label;
+            $families[$key]['rows'][] = $category;
+        }
+
+        return array_values(array_map(function (array $family) {
+            $rows = collect($family['rows']);
+
+            return $family + [
+                'items' => (int) $rows->sum('total_usage_count'),
+                'unused' => $rows->where('total_usage_count', 0)->count(),
+                'codes' => $rows->map(fn ($r) => $r->catalog_label['code'] ?? $r->name)->all(),
+            ];
+        }, $families));
+    }
+
+    private function localGridQuery(int $companyId, int $locationId, string $tab)
     {
         $query = Category::withoutGlobalScopes()
             ->select('categories.id', 'categories.name', 'categories.category_type')
@@ -65,7 +146,7 @@ class MyCatalogService
             $query->where('usage.is_active', true);
         }
 
-        return $query->orderBy('categories.name', 'asc')->paginate($perPage);
+        return $query;
     }
     /**
      * Get detailed analytics for a single category scoped specifically to the active context.

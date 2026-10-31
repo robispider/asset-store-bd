@@ -1,0 +1,383 @@
+{
+  "schemaVersion": 1,
+  "id": "storeops.define-and-receive-consumable",
+  "title": "Storekeeper defines a new consumable from receipt intake, posts its stock, and an employee finds it",
+  "description": "Uses the actual new-item popup and keeps the same new item through native definition, zero-stock check, receipt posting and requester catalogue discovery.",
+  "evidenceLevel": "connected",
+  "features": [
+    "storeops.grn",
+    "user-story.us-06",
+    "user-story.us-07"
+  ],
+  "tags": [
+    "functional",
+    "write",
+    "interface-only",
+    "new-inventory"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "accessMode": "any",
+    "timeoutMs": 300000
+  },
+  "fixtures": {
+    "office": {
+      "requirements": {
+        "operational": true,
+        "ledgerOpen": true
+      }
+    },
+    "actors": {
+      "storekeeper": {
+        "role": "storekeeper",
+        "capabilities": {
+          "allOf": [
+            "storeops.documents.draft",
+            "storeops.documents.post",
+            "requests.fulfill"
+          ]
+        }
+      },
+      "employee": {
+        "capabilities": {
+          "allOf": [
+            "requests.submit"
+          ],
+          "noneOf": [
+            "requests.approve"
+          ]
+        }
+      }
+    },
+    "records": {
+      "item": {
+        "kind": "consumable",
+        "minimumAvailable": 10,
+        "policy": "PRIMARY_ONLY",
+        "requestQuantity": 2
+      }
+    }
+  },
+  "data": {
+    "qty": 2,
+    "receiptQty": 6,
+    "purpose": {
+      "generate": "markedText",
+      "prefix": "LIVE-E2E",
+      "length": 6
+    },
+    "serial": {
+      "generate": "markedText",
+      "prefix": "LIVE-SN",
+      "length": 8
+    },
+    "receiptDate": {
+      "generate": "date",
+      "offsetDays": 0
+    },
+    "stockName": {
+      "generate": "markedText",
+      "prefix": "LIVE-ITEM",
+      "length": 7
+    }
+  },
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "storekeeper"
+      }
+    },
+    {
+      "action": "goto",
+      "route": "storeops.hub",
+      "query": {
+        "start": "receipt"
+      }
+    },
+    {
+      "action": "wait",
+      "target": "storeops.hubStartDialog",
+      "state": "visible"
+    },
+    {
+      "action": "check",
+      "target": "storeops.hubStartReceipt"
+    },
+    {
+      "action": "submitForm",
+      "target": "storeops.hubStartSubmit"
+    },
+    {
+      "action": "capture",
+      "url": true,
+      "pattern": "/documents/receipt/([0-9a-f-]{36})",
+      "as": "docId"
+    },
+    {
+      "action": "ledger",
+      "kind": "gov_document",
+      "id": "${captured.docId}",
+      "effect": "Receipt for a complete stock-to-requester live journey; posted records and audit are retained",
+      "cleanup": "retained"
+    },
+    {
+      "action": "select",
+      "target": "storeops.purchaseType",
+      "value": "Purchase"
+    },
+    {
+      "action": "capture",
+      "target": "css=#supplier_id option:not([value='']) >> nth=0",
+      "attribute": "value",
+      "as": "supplierId"
+    },
+    {
+      "action": "select",
+      "target": "css=#supplier_id",
+      "value": "${captured.supplierId}"
+    },
+    {
+      "action": "fill",
+      "target": "storeops.challanNumber",
+      "value": "${data.purpose}"
+    },
+    {
+      "action": "fill",
+      "target": "storeops.challanDate",
+      "value": "${data.receiptDate}"
+    },
+    {
+      "action": "click",
+      "target": "css=.storeops-add-stock-item > a.dropdown-toggle"
+    },
+    {
+      "action": "openPopup",
+      "target": "css=.storeops-add-stock-item a[href$=\"/consumables/create\"]"
+    },
+    {
+      "action": "fill",
+      "target": "css=input[name=\"name\"]",
+      "value": "${data.stockName}"
+    },
+    {
+      "action": "select2",
+      "target": "css=select[name=\"company_id\"]",
+      "search": "${fixtures.office.company_name}",
+      "option": "${fixtures.office.company_name}"
+    },
+    {
+      "action": "assert",
+      "target": "css=select[name=\"company_id\"]",
+      "test": "value",
+      "equals": "${fixtures.office.company_id}"
+    },
+    {
+      "action": "select2",
+      "target": "css=select[name=\"category_id\"]",
+      "search": "${fixtures.item.category_name}",
+      "option": "${fixtures.item.category_name}"
+    },
+    {
+      "action": "fill",
+      "target": "css=input[name=\"qty\"]",
+      "value": "0"
+    },
+    {
+      "action": "assert",
+      "target": "css=input[name=\"qty\"]",
+      "test": "value",
+      "equals": 0
+    },
+    {
+      "action": "select2",
+      "target": "css=select[name=\"location_id\"]",
+      "search": "${fixtures.office.name}",
+      "option": "${fixtures.office.name}"
+    },
+    {
+      "action": "fill",
+      "target": "css=input[name=\"purchase_cost\"]",
+      "value": "100"
+    },
+    {
+      "action": "select",
+      "target": "css=select[name=\"redirect_option\"]",
+      "value": "item"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=#submit_button"
+    },
+    {
+      "action": "capture",
+      "url": true,
+      "pattern": "/consumables/(\\d+)",
+      "as": "stockId"
+    },
+    {
+      "action": "ledger",
+      "kind": "new_consumable",
+      "id": "${captured.stockId}",
+      "effect": "New zero-stock consumable defined through the native intake popup, prior to the receipt",
+      "cleanup": "retained"
+    },
+    {
+      "action": "inspect",
+      "check": "ui.stockCard",
+      "args": {
+        "type": "consumable",
+        "id": "${captured.stockId}"
+      },
+      "as": "startStock"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.startStock.closing}",
+      "equals": 0
+    },
+    {
+      "action": "actor",
+      "name": "storekeeper"
+    },
+    {
+      "action": "select2",
+      "target": "storeops.row0Item",
+      "search": "${data.stockName}",
+      "option": "${data.stockName}"
+    },
+    {
+      "action": "fill",
+      "target": "storeops.row0Qty",
+      "value": "${data.receiptQty}"
+    },
+    {
+      "action": "fill",
+      "target": "storeops.row0Cost",
+      "value": "100"
+    },
+    {
+      "action": "click",
+      "target": "storeops.saveDraft",
+      "waitForResponse": "/draft"
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "wait",
+      "target": "storeops.row0Qty",
+      "state": "visible"
+    },
+    {
+      "action": "assert",
+      "target": "storeops.row0Qty",
+      "test": "value",
+      "equals": "${data.receiptQty}"
+    },
+    {
+      "action": "click",
+      "target": "storeops.saveDraft",
+      "waitForResponse": "/draft",
+      "note": "Recalculate the persisted draft checklist after reload, as required by the current workspace"
+    },
+    {
+      "action": "wait",
+      "target": "css=#triggerPostBtn:not([disabled])",
+      "state": "attached"
+    },
+    {
+      "action": "click",
+      "target": "storeops.post"
+    },
+    {
+      "action": "wait",
+      "target": "storeops.postingModal",
+      "state": "visible"
+    },
+    {
+      "action": "assert",
+      "target": "storeops.previewQty",
+      "test": "number",
+      "equals": "${data.receiptQty}"
+    },
+    {
+      "action": "submitForm",
+      "target": "storeops.confirmPost",
+      "rejectFlashErrors": true
+    },
+    {
+      "action": "wait",
+      "target": "storeops.postedBox",
+      "state": "visible"
+    },
+    {
+      "action": "inspect",
+      "check": "ui.document",
+      "args": {
+        "id": "${captured.docId}"
+      },
+      "as": "receipt"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.receipt.posted}",
+      "equals": true
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.receipt.quantity}",
+      "equals": "${data.receiptQty}"
+    },
+    {
+      "action": "inspect",
+      "check": "ui.stockCard",
+      "args": {
+        "type": "consumable",
+        "id": "${captured.stockId}"
+      },
+      "as": "afterReceipt"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.afterReceipt.closing}",
+      "equals": "${data.receiptQty}",
+      "deltaFrom": "${observed.startStock.closing}"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "employee"
+      }
+    },
+    {
+      "action": "goto",
+      "route": "gov.requests.catalog",
+      "query": {
+        "q": "${data.stockName}"
+      }
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-cr-item=\"consumable:${captured.stockId}\"] .cr-good__name",
+      "test": "text",
+      "equals": "${data.stockName}"
+    },
+    {
+      "action": "capture",
+      "target": "css=[data-cr-item=\"consumable:${captured.stockId}\"] .cr-pill--ok",
+      "pattern": "(\\d+)",
+      "as": "availableQty"
+    },
+    {
+      "action": "compare",
+      "actual": "${captured.availableQty}",
+      "equals": "${data.receiptQty}"
+    }
+  ],
+  "cleanup": {
+    "policy": "retained-with-report",
+    "description": "New consumable definition, posted receipt, stock movements and audit retained. No basket, request or existing inventory record changed.",
+    "steps": []
+  }
+}

@@ -97,14 +97,14 @@ class BasketService
      * to them instead of being sent unseen. Free counts that move without crossing the asked quantity
      * do not count as a change.
      *
-     * @return array<int, array{item:string, qty:int, policy:string, short:bool}>
+     * @return array<int, array{item:string, qty:int, policy:string, short:bool, submission:?array}>
      */
     public function snapshot(DraftBasket $basket): array
     {
         $office = app(TenantContext::class)->locationId;
         $inventory = app(RequestInventory::class);
 
-        return $basket->items()->orderBy('requested_type')->orderBy('requested_id')->get()->map(function ($item) use ($inventory, $office) {
+        return $basket->items()->orderBy('requested_type')->orderBy('requested_id')->get()->map(function ($item) use ($inventory, $office, $basket) {
             try {
                 $model = $inventory->validateItem($item->requested_type, (int) $item->requested_id);
                 $free = $inventory->available($item->requested_type, $model, $office);
@@ -114,7 +114,8 @@ class BasketService
             }
 
             return ['item' => $item->requested_type.':'.$item->requested_id, 'qty' => (int) $item->requested_qty,
-                'policy' => $policy, 'short' => (int) $item->requested_qty > $free];
+                'policy' => $policy, 'short' => (int) $item->requested_qty > $free,
+                'submission' => $policy === 'UNAVAILABLE' ? null : app(ApprovalRouting::class)->submission($office, $policy, (int) $basket->user_id)];
         })->values()->all();
     }
 
@@ -136,6 +137,8 @@ class BasketService
                 $changes[] = ['item' => $key, 'change' => 'qty', 'qty' => $line['qty'], 'before' => $old['qty'], 'policy' => $line['policy']];
             } elseif ($old['policy'] !== $line['policy']) {
                 $changes[] = ['item' => $key, 'change' => $line['policy'] === 'UNAVAILABLE' ? 'gone' : 'rule', 'qty' => $line['qty'], 'before' => null, 'policy' => $line['policy']];
+            } elseif ($old['submission'] !== ($line['submission'] ?? null)) {
+                $changes[] = ['item' => $key, 'change' => 'authority', 'qty' => $line['qty'], 'before' => null, 'policy' => $line['policy']];
             } elseif ($line['short'] && ! $old['short']) {
                 $changes[] = ['item' => $key, 'change' => 'short', 'qty' => $line['qty'], 'before' => null, 'policy' => $line['policy']];
             }
@@ -151,7 +154,8 @@ class BasketService
     private function normalise(array $lines): array
     {
         return collect($lines)->filter(fn ($line) => is_array($line) && is_string($line['item'] ?? null) && is_numeric($line['qty'] ?? null))
-            ->map(fn ($line) => ['item' => $line['item'], 'qty' => (int) $line['qty'], 'policy' => (string) ($line['policy'] ?? ''), 'short' => (bool) ($line['short'] ?? false)])
+            ->map(fn ($line) => ['item' => $line['item'], 'qty' => (int) $line['qty'], 'policy' => (string) ($line['policy'] ?? ''), 'short' => (bool) ($line['short'] ?? false),
+                'submission' => $line['submission'] ?? null])
             ->values()->all();
     }
 
@@ -180,6 +184,12 @@ class BasketService
             $groups[$reason['policy']]['reasons'][$item->id] = $reason;
         }
         uksort($groups, fn ($a, $b) => array_search($a, RequestWorkflow::POLICIES) <=> array_search($b, RequestWorkflow::POLICIES));
+        $office = (int) ($basket->office_id ?: app(TenantContext::class)->locationId);
+        foreach ($groups as $policy => &$group) {
+            $group['submission'] = app(ApprovalRouting::class)->submission($office, $policy, (int) $basket->user_id);
+            $group['approval_available'] = app(ApprovalRouting::class)->submissionFeasible($office, $policy, (int) $basket->user_id);
+        }
+        unset($group);
 
         return $groups;
     }
@@ -224,15 +234,17 @@ class BasketService
             }
             $groups = [];
             $reasons = [];
+            $plans = [];
             foreach ($items as $item) {
                 $this->validateQuantity($item->requested_qty);
                 app(RequestInventory::class)->validateItem($item->requested_type, $item->requested_id);
                 $reason = app(PolicyService::class)->explain($item->requested_type, $item->requested_id, $item->requested_qty);
                 $groups[$reason['policy']][] = $item;
                 $reasons[$reason['policy']][] = $reason;
+                $plans[$reason['policy']] = app(ApprovalRouting::class)->submission($context->locationId, $reason['policy'], (int) $requester->id);
             }
             // The reason is for the approver: asked for whenever someone has to approve, optional otherwise.
-            RequestRefused::when(blank($metadata['justification'] ?? null) && array_diff(array_keys($groups), ['AUTO_APPROVE']) !== [],
+            RequestRefused::when(blank($metadata['justification'] ?? null) && collect($plans)->contains(fn ($plan) => $plan['status'] !== 'approved'),
                 422, 'request_refused_reason_needed', 'justification');
             $metadata['justification'] = (string) ($metadata['justification'] ?? '');
             // D2: requests sent together share a batch, so each request page can name the others and the
@@ -240,17 +252,19 @@ class BasketService
             $batch = (string) Str::uuid();
             $submitted = [];
             foreach ($groups as $policy => $lines) {
-                $automatic = $policy === 'AUTO_APPROVE';
+                $plan = $plans[$policy];
+                $automatic = $plan['status'] === 'approved';
+                $primarySatisfied = $plan['status'] === 'pending_final' && $plan['authority'] === 'primary_approver';
                 $request = ServiceRequest::create($metadata + [
                     'office_id' => $context->locationId, 'requested_by' => $requester->id,
-                    'resolved_policy' => $policy, 'approval_status' => $automatic ? 'approved' : 'pending_primary',
+                    'resolved_policy' => $policy, 'approval_status' => $plan['status'],
                     'fulfillment_status' => 'unstarted', 'submitted_at' => now(), 'approved_at' => $automatic ? now() : null,
-                    'submission_batch' => $batch, 'resolved_reason' => ['lines' => $reasons[$policy]],
+                    'submission_batch' => $batch, 'resolved_reason' => ['lines' => $reasons[$policy], 'submission' => $plan],
                 ]);
                 foreach ($lines as $line) {
                     $request->items()->create([
                         'requested_type' => $line->requested_type, 'requested_id' => $line->requested_id,
-                        'requested_qty' => $line->requested_qty, 'approved_qty' => $automatic ? $line->requested_qty : 0,
+                        'requested_qty' => $line->requested_qty, 'approved_qty' => ($automatic || $primarySatisfied) ? $line->requested_qty : 0,
                         'line_approval_status' => $automatic ? 'approved' : 'pending',
                         'line_fulfillment_status' => $automatic ? 'waiting' : 'unstarted',
                     ]);
@@ -262,7 +276,9 @@ class BasketService
                 }
                 RequestEvent::create(['request_id' => $request->id, 'user_id' => $requester->id,
                     'event_type' => $automatic ? 'auto_approved' : 'submitted', 'details' => ['policy' => $policy, 'office_id' => $context->locationId,
-                        'stage' => $request->approval_status, 'routing_reason' => $request->assigned_approver_id ? 'independent_approver' : 'office_admin_cover_required']
+                        'stage' => $request->approval_status, 'submission' => $plan,
+                        'routing_reason' => $automatic ? ($plan['authority'] ? 'requester_authority' : 'product_auto_approve')
+                            : ($request->assigned_approver_id ? 'independent_approver' : 'office_admin_cover_required')]
                     + ($declared ? ['declared_at' => now()->toIso8601String(), 'declaration' => 'official_use_v1'] : [])]);
                 $submitted[] = $request;
             }

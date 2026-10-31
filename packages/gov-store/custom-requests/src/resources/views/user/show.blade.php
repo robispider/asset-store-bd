@@ -20,6 +20,9 @@
 @endphp
 
 @section('content')
+@if(app(\GovStore\CustomRequests\Services\ApprovalRouting::class)->blocked($serviceRequest))
+<div class="alert alert-warning" role="status">{{ __('requestlabels::requests.request_refused_approval_path') }}</div>
+@endif
 <div class="cr" data-cr-request data-request-number="{{ $req->request_number }}" data-status-key="{{ $status }}">
     <x-gs::page-header :title="__($r.'show_title', ['number' => $req->request_number, 'purpose' => $req->purpose])">
         <x-slot:meta>

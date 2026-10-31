@@ -84,4 +84,4 @@ Route::group(['prefix' => 'models', 'middleware' => ['auth']], function () {
 
 Route::resource('models', AssetModelsController::class, [
     'middleware' => ['auth'],
-])->withTrashed();
+])->withTrashed()->middlewareFor(['update', 'destroy'], 'gov.can:catalog.reference.manage');

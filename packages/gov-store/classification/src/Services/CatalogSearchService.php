@@ -83,16 +83,18 @@ class CatalogSearchService
         $queryLike = '%' . $queryStr . '%';
 
         // 1. Search Collections
-        $collections = CatalogCollection::where('name', 'LIKE', $queryLike)
-            ->orWhere('description', 'LIKE', $queryLike)
+        $collections = CatalogCollection::where(function ($query) use ($queryLike) {
+                $query->where('name', 'LIKE', $queryLike)->orWhere('description', 'LIKE', $queryLike)
+                    ->orWhere('name_bn', 'LIKE', $queryLike)->orWhere('description_bn', 'LIKE', $queryLike);
+            })
             ->where('is_active', true)
             ->limit(5)
-            ->get(['id', 'name', 'icon'])
+            ->get(['id', 'name', 'name_bn', 'icon'])
             ->map(function ($c) {
                 return [
                     'type' => 'collection', 
                     'id' => $c->id, 
-                    'text' => $c->name, 
+                    'text' => $c->display_name,
                     'icon' => $c->icon
                 ];
             });

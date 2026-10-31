@@ -1,0 +1,437 @@
+{
+  "schemaVersion": 1,
+  "id": "tracking.programme-to-delivery",
+  "title": "Company admin creates a programme and team; head creates and activates an allocated task; office storekeeper posts a linked receipt; officer and head inspect evidence and progress",
+  "evidenceLevel": "connected",
+  "features": [
+    "tracking"
+  ],
+  "tags": [
+    "functional",
+    "connected",
+    "multi-actor",
+    "write"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "language": "en-US",
+    "timeoutMs": 300000
+  },
+  "fixtures": {
+    "office": {
+      "requirements": {
+        "operational": true,
+        "ledgerOpen": true
+      }
+    },
+    "actors": {
+      "companyAdmin": {
+        "role": "company_admin",
+        "activeMembership": false
+      },
+      "head": {
+        "capabilities": {
+          "allOf": [
+            "requests.submit"
+          ],
+          "noneOf": [
+            "requests.approve"
+          ]
+        }
+      },
+      "officer": {
+        "capabilities": {
+          "allOf": [
+            "requests.submit"
+          ],
+          "noneOf": [
+            "requests.approve"
+          ]
+        }
+      },
+      "storekeeper": {
+        "role": "storekeeper",
+        "capabilities": {
+          "allOf": [
+            "storeops.documents.draft",
+            "storeops.documents.post"
+          ]
+        }
+      }
+    },
+    "records": {
+      "item": {
+        "kind": "consumable",
+        "minimumAvailable": 10
+      }
+    }
+  },
+  "data": {
+    "purpose": {
+      "generate": "markedText",
+      "prefix": "LIVE-PROG",
+      "length": 6
+    },
+    "trackingCode": {
+      "generate": "markedText",
+      "prefix": "LIVE-TASK",
+      "length": 6
+    },
+    "receiptDate": {
+      "generate": "date",
+      "offsetDays": 0
+    },
+    "receiptQty": 6
+  },
+  "preconditions": [],
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "companyAdmin"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives"
+    },
+    {
+      "action": "click",
+      "target": "css=a[href$=\"/tracking/initiatives/create\"]"
+    },
+    {
+      "action": "fill",
+      "target": "css=#initiative_title",
+      "value": "${data.purpose}"
+    },
+    {
+      "action": "fill",
+      "target": "css=#initiative_purpose",
+      "value": "Fictional programme for a complete live delivery journey"
+    },
+    {
+      "action": "select",
+      "target": "css=#owner_company_id",
+      "value": "${fixtures.office.company_id}"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form[action$=\"/tracking/initiatives\"] button[type=\"submit\"]"
+    },
+    {
+      "action": "capture",
+      "url": true,
+      "pattern": "/initiatives/([0-9]+)",
+      "as": "initiativeId"
+    },
+    {
+      "action": "ledger",
+      "kind": "tracking_programme",
+      "id": "${captured.initiativeId}",
+      "effect": "Programme and task retained with receipt delivery evidence",
+      "cleanup": "retained"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives/${captured.initiativeId}/operation-unit"
+    },
+    {
+      "action": "select2",
+      "target": "css=#staff-head",
+      "search": "${actors.head.username}",
+      "option": "${actors.head.username}"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form:has(#staff-head) button[type=\"submit\"]"
+    },
+    {
+      "action": "select2",
+      "target": "css=#staff-officer",
+      "search": "${actors.officer.username}",
+      "option": "${actors.officer.username}"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form:has(#staff-officer) button[type=\"submit\"]"
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "assert",
+      "target": "css=.content",
+      "test": "text",
+      "contains": "${actors.head.username}"
+    },
+    {
+      "action": "assert",
+      "target": "css=.content",
+      "test": "text",
+      "contains": "${actors.officer.username}"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives/${captured.initiativeId}/edit"
+    },
+    {
+      "action": "select",
+      "target": "css=select[name=\"status\"]",
+      "value": "Active"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form[action$=\"/initiatives/${captured.initiativeId}\"] button[type=\"submit\"]"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "head"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives?q=${data.purpose}"
+    },
+    {
+      "action": "assert",
+      "target": "css=.content",
+      "test": "text",
+      "contains": "${data.purpose}"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives/${captured.initiativeId}/manage"
+    },
+    {
+      "action": "click",
+      "target": "css=a[href$=\"/tracking-codes/create\"] >> nth=0"
+    },
+    {
+      "action": "fill",
+      "target": "css=#tracking_code_input",
+      "value": "${data.trackingCode}"
+    },
+    {
+      "action": "fill",
+      "target": "css=#task_title_input",
+      "value": "${data.purpose}"
+    },
+    {
+      "action": "upload",
+      "target": "css=#order_pdf_input",
+      "file": "tests/live/fixtures/fictional-order.pdf"
+    },
+    {
+      "action": "select",
+      "target": "css=#fiscal_year_input",
+      "value": "2026-2027"
+    },
+    {
+      "action": "capture",
+      "target": "css=#funding_type_input option:not([value='']) >> nth=0",
+      "attribute": "value",
+      "as": "fundingId"
+    },
+    {
+      "action": "select",
+      "target": "css=#funding_type_input",
+      "value": "${captured.fundingId}"
+    },
+    {
+      "action": "check",
+      "target": "css=input[name=\"specificity_level\"][value=\"3_MATRIX\"]"
+    },
+    {
+      "action": "click",
+      "target": "css=#btn-spawn-column"
+    },
+    {
+      "action": "select2",
+      "target": "css=#inline-category-select",
+      "search": "${fixtures.item.category_name}",
+      "option": "${fixtures.item.category_name}",
+      "alreadyOpen": true
+    },
+    {
+      "action": "click",
+      "target": "css=#btn-spawn-row"
+    },
+    {
+      "action": "select2",
+      "target": "css=#inline-location-select",
+      "search": "${fixtures.office.name}",
+      "option": "${fixtures.office.name}",
+      "alreadyOpen": true
+    },
+    {
+      "action": "fill",
+      "target": "css=.matrix-cell[data-row=\"0\"][data-col=\"0\"]",
+      "value": "20"
+    },
+    {
+      "action": "keyboard",
+      "key": "Tab"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=#task-creation-form button[type=\"submit\"]"
+    },
+    {
+      "action": "inspect",
+      "check": "ui.tracking",
+      "args": {
+        "initiativeId": "${captured.initiativeId}",
+        "code": "${data.trackingCode}"
+      },
+      "as": "code"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.code.planned}",
+      "equals": 20
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.code.hasOrder}",
+      "equals": true
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.code.status}",
+      "equals": "DRAFT"
+    },
+    {
+      "action": "ledger",
+      "kind": "tracking_code",
+      "id": "${observed.code.id}",
+      "effect": "Marked tracking task, private fictional order and delivery retained",
+      "cleanup": "retained"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives/${captured.initiativeId}/tracking-codes/${observed.code.id}"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form[action$=\"/tracking-codes/${observed.code.id}/activate\"] button"
+    },
+    {
+      "action": "inspect",
+      "check": "ui.tracking",
+      "args": {
+        "initiativeId": "${captured.initiativeId}",
+        "code": "${data.trackingCode}"
+      },
+      "as": "active"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.active.status}",
+      "equals": "ACTIVE"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "officer"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives/${captured.initiativeId}/tracking-codes/${observed.code.id}"
+    },
+    {
+      "action": "assert",
+      "target": "css=.content",
+      "test": "text",
+      "contains": "${data.trackingCode}"
+    },
+    {
+      "action": "download",
+      "target": "css=a[href*=\"/tracking-codes/${observed.code.id}/download\"]",
+      "as": "order"
+    },
+    {
+      "action": "compare",
+      "actual": "${captured.order.text}",
+      "contains": "FICTIONAL LIVE TEST"
+    },
+    {
+      "use": "storeops.receive-tracked-bulk"
+    },
+    {
+      "action": "waitInspect",
+      "check": "ui.tracking",
+      "args": {
+        "initiativeId": "${captured.initiativeId}",
+        "code": "${data.trackingCode}"
+      },
+      "path": "received",
+      "equals": 6,
+      "as": "delivered"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.delivered.value}",
+      "equals": 600
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.delivered.offices.0}",
+      "equals": "${fixtures.office.name}"
+    },
+    {
+      "action": "actor",
+      "name": "head"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives/${captured.initiativeId}/report"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-programme-report]",
+      "test": "visible"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-report-source]",
+      "test": "text",
+      "contains": "${data.purpose}"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-report-source]",
+      "test": "text",
+      "contains": "${observed.receipt.number}"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives/${captured.initiativeId}/manage"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=#manage-detail-${observed.code.id} form[action$=\"/archive\"] button"
+    },
+    {
+      "action": "inspect",
+      "check": "ui.tracking",
+      "args": {
+        "initiativeId": "${captured.initiativeId}",
+        "code": "${data.trackingCode}"
+      },
+      "as": "archived"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.archived.status}",
+      "equals": "ARCHIVED"
+    }
+  ],
+  "cleanup": {
+    "policy": "retained-with-report",
+    "description": "Programme, assigned team, archived task, private fictional order, posted receipt and delivery/audit remain as test evidence.",
+    "steps": []
+  },
+  "description": "Entire programme-to-delivery journey uses browser screens and role handoffs, without a database connection."
+}

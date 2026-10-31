@@ -46,6 +46,8 @@ class CategoryAdoptionController extends Controller
             $adoptionService->useCategory($request->category_id, $scope['type'], $scope['id']);
 
             return response()->json(['success' => true]);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface|\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            throw $e;
         } catch (Exception $e) {
             return response()->json(['success' => false, 'message' => app(ActionFailure::class)->message($e)], 500);
         }
@@ -60,6 +62,8 @@ class CategoryAdoptionController extends Controller
             $adoptionService->stopUsingCategory($request->category_id, $scope['type'], $scope['id']);
 
             return response()->json(['success' => true]);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface|\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            throw $e;
         } catch (Exception $e) {
             return response()->json(['success' => false, 'message' => app(ActionFailure::class)->message($e)], 422);
         }
@@ -71,8 +75,9 @@ class CategoryAdoptionController extends Controller
             'unspsc_code' => 'required|string',
             'category_type' => 'required|string|in:asset,consumable,accessory,license,component',
             'custom_name' => 'nullable|string|max:255',
-            'governance_type' => 'nullable|string|in:global,company,location',
+            'governance_type' => 'nullable|string|in:national,global,company,office,location',
             'target_company_id' => 'nullable|integer',
+            'target_location_id' => 'nullable|integer',
         ]);
 
         $user = auth()->user();
@@ -92,7 +97,11 @@ class CategoryAdoptionController extends Controller
                     if (empty($targetScopeId)) {
                         throw new Exception(__('classification::texts.ctrl_exception_select_target_company'));
                     }
-                } elseif ($governanceType === 'global') {
+                } elseif (in_array($governanceType, ['office', 'location'], true)) {
+                    $targetScopeType = 'location';
+                    $targetScopeId = (int) $request->input('target_location_id');
+                    abort_unless($targetScopeId, 422);
+                } elseif (in_array($governanceType, ['global', 'national'], true)) {
                     $targetScopeId = null;
                 }
             }
@@ -108,6 +117,8 @@ class CategoryAdoptionController extends Controller
             );
 
             return response()->json(['success' => true]);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface|\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            throw $e;
         } catch (Exception $e) {
             return response()->json(['success' => false, 'message' => app(ActionFailure::class)->message($e)], 500);
         }

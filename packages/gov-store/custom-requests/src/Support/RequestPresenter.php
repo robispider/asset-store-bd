@@ -284,6 +284,16 @@ class RequestPresenter
     /** Requested approvers by group, for a group in the draft split preview. */
     public function routeSentence(string $policy, int $office, int $requester): string
     {
+        $submission = app(ApprovalRouting::class)->submission($office, $policy, $requester);
+        if ($submission['authority']) {
+            if ($submission['status'] === 'approved') {
+                return $this->t('group_authority_auto');
+            }
+            $final = $this->roleHolders($office, 'final_approver', [$requester])[0] ?? null;
+
+            return $final ? $this->t('group_authority_final', ['name' => $this->name($final)])
+                : $this->t('group_authority_final_unassigned');
+        }
         if ($policy === 'AUTO_APPROVE') {
             return $this->t('group_auto');
         }
@@ -308,8 +318,15 @@ class RequestPresenter
     /** Who reads "Why is it needed?": the first approver of the first group that needs one, if the office has one. */
     public function firstReader(array $policies, int $office, int $requester): ?string
     {
-        if (! array_diff($policies, ['AUTO_APPROVE'])) {
+        $pending = collect($policies)->map(fn ($policy) => app(ApprovalRouting::class)->submission($office, $policy, $requester))
+            ->filter(fn ($plan) => $plan['status'] !== 'approved');
+        if ($pending->isEmpty()) {
             return null;
+        }
+        if ($pending->every(fn ($plan) => $plan['status'] === 'pending_final')) {
+            $final = $this->roleHolders($office, 'final_approver', [$requester])[0] ?? null;
+
+            return $final ? $this->name($final) : null;
         }
         $first = $this->roleHolders($office, 'primary_approver', [$requester])[0]
             ?? $this->roleHolders($office, 'final_approver', [$requester])[0] ?? null;
@@ -328,6 +345,7 @@ class RequestPresenter
             'removed' => $this->t('changed_removed', ['item' => $item]),
             'qty' => $this->t('changed_qty', ['item' => $item, 'qty' => $change['qty'], 'before' => $change['before']]),
             'rule' => $this->t('changed_rule', ['item' => $item, 'rule' => $this->ruleWords((string) $change['policy'])]),
+            'authority' => $this->t('changed_authority', ['item' => $item]),
             'gone' => $this->t('changed_gone', ['item' => $item]),
             default => $this->t('changed_short', ['item' => $item, 'qty' => $change['qty']]),
         };
@@ -346,7 +364,12 @@ class RequestPresenter
             return $request->resolved_policy === 'PRIMARY_AND_FINAL' ? [$this->t('reason_unknown')] : [];
         }
 
-        return $reasons->map(fn ($reason) => $this->reasonSentence($reason))->filter()->unique()->values()->all();
+        $sentences = $reasons->map(fn ($reason) => $this->reasonSentence($reason));
+        if ($request->resolved_reason['submission']['authority'] ?? null) {
+            $sentences->push($this->t($request->primarySatisfiedOnSubmission() ? 'reason_authority_final' : 'reason_authority_auto'));
+        }
+
+        return $sentences->filter()->unique()->values()->all();
     }
 
     public function reasonSentence(array $reason): ?string
@@ -490,7 +513,7 @@ class RequestPresenter
         $action = match ($event->event_type) {
             'submitted' => $request->approval_status === 'pending_primary' && $request->assigned_approver_id
                 ? $this->t('history_submitted_to', ['approver' => $this->name($request->assigned_approver_id)]) : $this->t('history_submitted'),
-            'auto_approved' => $this->t('history_auto_approved'),
+            'auto_approved' => $this->t(($d['submission']['authority'] ?? null) ? 'history_authority_auto' : 'history_auto_approved'),
             'pending_final' => $this->t('history_pending_final'),
             'approved' => $this->decisionReduced($decisions, $request) ? $this->t('history_approved_fewer') : $this->t('history_approved'),
             'partially_approved' => $this->t('history_partially_approved', [

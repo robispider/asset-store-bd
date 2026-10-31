@@ -22,9 +22,14 @@ class ExperimentManager
 
         return $this->lock->run(function () use ($actor, $profile, $seed, $label) {
             $this->idle();
-            $run = ExperimentRun::create(['label' => $label ?: 'Bangladesh government experiment '.now()->format('Y-m-d H:i:s'),
+            app(ScenarioManifest::class)->preflight();
+            $alias = app(ScenarioManifest::class)->alias();
+            $run = ExperimentRun::create(['label' => $label ?: ucfirst($profile).' sample · '.$alias,
                 'profile' => $profile, 'seed' => $seed, 'initiated_by' => $actor->id, 'anchor_date' => now(),
-                'password' => BangladeshPeople::PASSWORD, 'status' => 'pending', 'report' => ['scenario_version' => 'bd-government-v1', 'account_format' => 'english-name-number-v1', 'record_prefix' => 'EXP-'.Str::random(16), 'profile_counts' => config('govstore-experiments.profiles.'.$profile)]]);
+                'password' => BangladeshPeople::PASSWORD, 'status' => 'pending', 'report' => ['scenario_version' => ScenarioManifest::VERSION,
+                    'display_id' => $alias, 'module_versions' => array_fill_keys(ScenarioManifest::MODULES, 2),
+                    'request_recipe_targets' => app(ScenarioManifest::class)->requestTargets(),
+                    'account_format' => 'english-name-number-v1', 'record_prefix' => 'EXP-'.Str::random(16), 'profile_counts' => config('govstore-experiments.profiles.'.$profile)]]);
             $this->audit($run, $actor, 'populate');
 
             // Dispatch after releasing the admission lock (sync queues acquire the worker lock).

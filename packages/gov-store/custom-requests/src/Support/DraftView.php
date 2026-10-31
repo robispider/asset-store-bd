@@ -42,7 +42,7 @@ class DraftView
         $rules = [];
         foreach ($groups as $group) {
             foreach ($group['lines'] as $line) {
-                $rules[$line->id] = [$group['policy'], $group['reasons'][$line->id] ?? null];
+                $rules[$line->id] = [$group['policy'], $group['reasons'][$line->id] ?? null, $group['submission']];
             }
         }
         $inventory = app(RequestInventory::class);
@@ -52,23 +52,26 @@ class DraftView
             } catch (HttpExceptionInterface|ModelNotFoundException) {
                 $free = null; // No longer in this office's catalogue: shown, and refused on send.
             }
-            [$policy, $reason] = $rules[$line->id] ?? [null, null];
+            [$policy, $reason, $submission] = $rules[$line->id] ?? [null, null, null];
 
             return (object) [
                 'id' => (int) $line->id, 'type' => $line->requested_type, 'item_id' => (int) $line->requested_id,
                 'key' => $line->requested_type.':'.$line->requested_id, 'qty' => (int) $line->requested_qty,
                 'name' => $this->presenter->itemName($line->requested_type, (int) $line->requested_id),
                 'type_label' => $this->presenter->typeLabel($line->requested_type),
-                'free' => $free, 'policy' => $policy, 'reason' => $reason, 'short' => $free !== null && (int) $line->requested_qty > $free,
+                'free' => $free, 'policy' => $policy, 'reason' => $reason, 'submission' => $submission,
+                'short' => $free !== null && (int) $line->requested_qty > $free,
             ];
         });
         // The same lines BasketService::snapshot() rebuilds when the draft is sent.
         $snapshot = $lines->sortBy([['type', 'asc'], ['item_id', 'asc']])->map(fn ($line) => [
             'item' => $line->key, 'qty' => $line->qty, 'policy' => $line->policy ?? 'UNAVAILABLE', 'short' => $line->qty > ($line->free ?? 0),
+            'submission' => $line->submission,
         ])->values()->all();
         $policies = array_keys($groups);
 
-        return ['basket' => $basket, 'lines' => $lines, 'groups' => $groups, 'needsReason' => (bool) array_diff($policies, ['AUTO_APPROVE']),
+        return ['basket' => $basket, 'lines' => $lines, 'groups' => $groups,
+            'needsReason' => collect($groups)->contains(fn ($group) => $group['submission']['status'] !== 'approved'),
             'reader' => $this->presenter->firstReader($policies, $office, $requester), 'snapshot' => $snapshot,
             'office' => $office, 'officeName' => $officeName, 'requester' => $requester, 'count' => $lines->count()];
     }

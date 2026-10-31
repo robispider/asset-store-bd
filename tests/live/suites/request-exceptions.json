@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "request-exceptions",
+  "title": "Request exceptions through real multi-role UI actions",
+  "journeys": [
+    "requests.interface-reject",
+    "requests.interface-reduce",
+    "requests.interface-withdraw",
+    "requests.interface-partial",
+    "requests.partial-issue-close-remainder",
+    "requests.bulk-return-intent-and-receipt-draft",
+    "requests.repeat-withdrawn-request",
+    "requests.request-time-consistency",
+    "requests.automatic-approval-to-acknowledgement"
+  ]
+}

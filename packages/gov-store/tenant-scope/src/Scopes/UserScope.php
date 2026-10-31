@@ -37,6 +37,22 @@ class UserScope implements Scope
                     $query->whereRaw('1 = 0'); // Block all external users if no bounds exist
                 }
 
+                if ($context->locationId && \Illuminate\Support\Facades\Schema::hasTable('gov_office_memberships')) {
+                    $hasExpiry = app(\GovStore\TenantScope\Services\SchemaKnowledge::class)
+                        ->hasColumn(new \GovStore\OfficeMembership\Models\OfficeMembership, 'valid_until');
+                    $query->orWhere(function ($members) use ($context, $table, $hasExpiry) {
+                        $members->where($table.'.activated', true)->where($table.'.company_id', $context->companyId)
+                            ->whereExists(function ($sub) use ($context, $table, $hasExpiry) {
+                                $sub->selectRaw('1')->from('gov_office_memberships as membership')
+                                    ->whereColumn('membership.user_id', $table.'.id')
+                                    ->where('membership.location_id', $context->locationId)->where('membership.status', 'active');
+                                if ($hasExpiry) {
+                                    $sub->where(fn ($q) => $q->whereNull('membership.valid_until')->orWhereDate('membership.valid_until', '>=', today()));
+                                }
+                            });
+                    });
+                }
+
                 // =========================================================================
                 // THE BULLETPROOF IDENTITY BYPASS:
                 // Regardless of location mapping, a user MUST always be able to retrieve 

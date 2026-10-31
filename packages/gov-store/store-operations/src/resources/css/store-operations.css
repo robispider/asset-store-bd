@@ -397,7 +397,7 @@
 .storeops-inline-22{font-weight: bold !important; }
 .storeops-inline-23{ background: var(--gs-color-surface-sunken) !important; border-top: 1px solid var(--gs-color-border) !important; padding: 15px 25px !important; }
 .storeops-inline-24{font-size: 12px !important; margin-top: 20px !important; }
-.storeops-inline-25{display:none !important; padding: 15px !important; border-radius: 4px !important; font-size:13px !important; }
+.storeops-inline-25{display:none; padding: 15px !important; border-radius: 4px !important; font-size:13px !important; }
 .storeops-inline-26{font-size: 14px !important; margin-bottom: 0 !important; }
 .storeops-inline-27{font-size: 14px !important; margin-bottom: 8px !important; }
 .storeops-inline-28{margin-top:0 !important; font-weight: bold !important; color: var(--gs-color-text) !important; text-transform: uppercase !important; }

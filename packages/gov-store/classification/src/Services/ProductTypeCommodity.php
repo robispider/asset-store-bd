@@ -16,6 +16,9 @@ class ProductTypeCommodity
     public function assign(int $categoryId, string $code): void
     {
         DB::transaction(function () use ($categoryId, $code) {
+            $existing = DB::table('gov_catalog_snipe_mappings')->where('code', $code)->lockForUpdate()->first();
+            abort_if($existing && (int) $existing->category_id !== $categoryId
+                && request()->attributes->get('gov_national_reviewed') !== 'catalog.master.manage', 409);
             DB::table('gov_catalog_snipe_mappings')->where('category_id', $categoryId)->lockForUpdate()->get(['id']);
             // One commodity per type: drop every other code this type carried (reviewed under D-06). A Finance
             // default that no longer fits shows as needs_review (ProductTypeFinanceDefault::resolve()).

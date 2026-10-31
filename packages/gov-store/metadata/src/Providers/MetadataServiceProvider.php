@@ -83,7 +83,6 @@ class MetadataServiceProvider extends ServiceProvider
                 'label'      => 'govmeta::metadata.nav_health',
                 'icon'       => 'fas fa-heartbeat',
                 'route'      => 'gov.meta.health',
-                'permission' => 'admin',
                 'order'      => 10,
             ]);
         }

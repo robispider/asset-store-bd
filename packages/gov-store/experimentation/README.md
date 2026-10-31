@@ -2,6 +2,70 @@
 
 Super administrator controls for fictional Bangladesh government data. This package adds populate, resume, dataset wipe, and separately enabled installation reset to the existing application. It does not modify the other GovStore packages.
 
+## Current scenario: v2 (24 October 2026)
+
+New populations use `bd-government-v2`. Meaningful names come first, followed by a
+short dataset marker, such as `A4 Paper · D6-03`. The full ownership UUID stays
+internal. Old ready datasets display a historical-version notice and remain
+unchanged; resume does not silently upgrade their completed checkpoints.
+
+Every operational office opens its ledger before posting, with nonzero bulk stock
+and an existing serialized desktop. Required named scenarios execute real package
+actions: primary/two-stage/automatic approval, rejection, quantity reduction,
+threshold escalation, partial/final serialized and bulk issue, requester receipt
+acknowledgement, withdrawal, closing the remainder, bulk return receipts,
+substitution, mixed-policy submissions, adjustments, paired transfers and draft
+takeover. Verification checks quantities, reservations, actors, history, running
+balances, native stock and linked documents.
+
+Additional scenarios include explicit office levels/types/hierarchy, current
+tracking activation and private supporting/order PDFs, typed company/office tag
+configuration, preferences and scoped themes, ministry-owned fictional committee
+types/bindings, draft/active/suspended/dissolved committees with internal/external
+members and private fictional orders, completed/declined/cancelled handovers,
+onboarding decisions and access reviews. Committee hash history and access/replay
+evidence are retained through cleanup. National illustrative templates remain
+inactive. The receipt inspection consumer is not implemented by this package.
+
+Current schema and the versioned BBS geography dataset are prerequisites. Unknown
+GovStore tables require an explicit lifecycle adapter before a new population.
+Finance masters, tag/document/request/committee counters, shared setup and retained
+audit records are preserved. File ownership has a signed private manifest so
+evidence from rolled-back units can also be cleaned safely.
+
+The configured document/request quantities are base targets: real workflow actions
+add issue, return, transfer and adjustment documents and split submissions. Quick
+includes 42 additional named request outcomes. Government and Large retain the
+same recipes at larger inventory/office volumes. The component opening remains
+one plus the receipt of 100; consumables/accessories open with ten plus their
+receipts, before subsequent actions.
+
+Read-only revalidation (does not rewrite the run, ownership or old verification):
+
+```text
+php artisan govstore:experiment audit --actor=ADMIN_ID --run=RUN_UUID
+```
+
+Managed tags have a separate explicit, permanent rehearsal:
+
+```text
+php artisan govstore:experiment rehearse-tags --actor=ADMIN_ID --run=RUN_UUID
+```
+
+This requires a current ready dataset, existing nonproduction rehearsal and all
+tagging gates, and an existing reviewed active compatible Finance item. It never
+enables installation gates or activates national Finance codes. It posts one Govt.
+Tag and one standard tag through normal receipt posting, then disables further
+issuance for that office. Repeating it returns the same result. Issued tags and
+their counters are permanent; the package's existing dataset-wipe block remains.
+Ordinary populations leave issuance disabled and can be wiped normally.
+
+Laptop receipt CPU fields and model-level serialized issue ledger integration
+remain limitations of the current consuming packages; the seed does not bypass
+their validation or invent stock movements. Starter catalogue jobs also depend
+on the installation's configured template library; durable failures remain visible
+for its normal setup/retry process.
+
 ## Setup
 
 Requires the current installed GovStore schema and MySQL/MariaDB. Root namespace/provider registration is included; no third-party dependency is added.
@@ -40,7 +104,7 @@ php -d xdebug.mode=off artisan govstore:experiment-worker --once
 php -d xdebug.mode=off artisan govstore:experiment-worker --stop-when-empty
 ```
 
-The command handles only the feature queue, uses its own failure table/log, a process-local array cache, 512 MB memory and a one-hour job timeout. The configured dedicated database queue retries reservations after 3,900 seconds. Run one such worker as a local background process or use your normal process supervisor. Restart it after changing feature code. The local UI verification worker PID is recorded in ignored `storage/logs/govstore-experiment-worker.pid`; its output/error logs are alongside it. Stop that process after checking that the recorded PID still belongs to this PHP worker.
+The command handles only the feature queue, uses its own failure table/log, a process-local array cache, a configurable memory budget (default 2 GB for Large datasets) and a one-hour job timeout. `GOVSTORE_EXPERIMENT_WORKER_MEMORY` accepts 512–4096 MB. The configured dedicated database queue retries reservations after 3,900 seconds. Run one such worker as a local background process or use your normal process supervisor. Restart it after changing feature code. The local UI verification worker PID is recorded in ignored `storage/logs/govstore-experiment-worker.pid`; its output/error logs are alongside it. Stop that process after checking that the recorded PID still belongs to this PHP worker.
 
 ### Why a UI click does not start the worker
 
@@ -67,13 +131,13 @@ Open `/gov-store/admin/experiments` as an active native superuser. The navigatio
 
 Government creates 48 offices, 480 people and 2,400 assets. Its 44 operational offices each have twelve consumable types, eight accessory types and four component types with substantial stock, plus ICT equipment and furniture. Four incomplete offices demonstrate readiness configuration. Supporting stock documents, requests, baskets, maintenance and tracking records are included.
 
-Each operational office's ledger opens automatically after products are created and before receipts or issues are posted. The opening document records the fictional storekeeper as creator, drafter and poster. It reconciles native on-hand stock against existing ledger movements without increasing native quantities again: new component fixtures begin with one, while other unreceived stock begins at zero. Opening records belong to the dataset and are included in its verified wipe; document number sequences survive cleanup.
+Each operational office's ledger opens automatically after products are created and before receipts or issues are posted. The opening document records the fictional storekeeper as creator, drafter and poster. It reconciles native on-hand stock against existing ledger movements without increasing native quantities again. In v2, components begin with one, consumables/accessories with ten, and each operational office has one pre-existing desktop. Opening records belong to the dataset and are included in its verified wipe; document number sequences survive cleanup.
 
 Every fictional account uses password **`1234567890`**. Login names are the lowercase English full name plus a number, for example `shamimanasrin1658`. The native user ID supplies the suffix; a collision advances the number without changing another account. Bengali display names remain available for human checking. Download the current CSV after updating older datasets; previous downloads contain obsolete logins.
 
 The existing super administrator **Global Overview** currently shows zero office stock: tenant initialization marks the context active/global without an office, while `MinistryLocationScope` requires an office and does not honor the global flag. Licenses lack an office column, so they remain visible; the dashboard counts license seats. This existing package issue is unchanged. Use a downloaded **storekeeper** account to inspect its office's `/hardware`, `/consumables`, `/accessories` and `/components` inventory.
 
-Components are stocked and visible in the catalog, but excluded from prefilled request baskets because the installed requestable factory has no component adapter. Laptop models are included for metadata exploration; laptop receipt, bulk request fulfillment and committee workflows are excluded. See the detailed plan for the remaining current package limitations.
+Components are stocked but excluded from request baskets because the current request workflow has no component adapter. Laptop models are included for metadata exploration; laptop receipt remains excluded. Bulk fulfillment and committee registry scenarios are included in v2. The older sections of the original implementation plan are dated evidence.
 
 ## Recovery
 
@@ -115,8 +179,8 @@ The `accounts` action applies the current fictional username/password format to 
 Prepare a unique separate database from the installed schema. This copies schema and shared geography/metadata definitions only, preserves the application's database, and writes a temporary test marker.
 
 ```powershell
-php -d xdebug.mode=off packages/gov-store/experimentation/tests/prepare-database.php
-php -d xdebug.mode=off -d memory_limit=512M vendor/phpunit/phpunit/phpunit packages/gov-store/experimentation/tests/ExperimentTest.php
+php -d xdebug.mode=off -d memory_limit=1G packages/gov-store/experimentation/tests/prepare-database.php
+php -d xdebug.mode=off -d memory_limit=2G vendor/phpunit/phpunit/phpunit packages/gov-store/experimentation/tests/ExperimentTest.php
 ```
 
 The test boot guard accepts only the exact database in the marker with the `govstore_experiment_test_YYYYMMDDHHMMSS` pattern. It avoids root refresh migrations and destructive seeders. Full reset and encrypted backup tests run in that separate database. Remove only the explicitly created test database and marker after testing; do not clean other databases by wildcard.

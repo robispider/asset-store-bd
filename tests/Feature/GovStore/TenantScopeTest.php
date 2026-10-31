@@ -250,6 +250,20 @@ class TenantScopeTest extends TestCase
         $this->assertSame(20, DB::table('consumables')->sum('qty'));
     }
 
+    public function test_mass_updates_that_change_no_visible_row_are_not_boundary_violations(): void
+    {
+        // Snipe-IT's user editor re-homes a user's checked-out assets on every save, even when there are none.
+        $this->assertSame(0, $this->stock()->where('id', 999)->update(['location_id' => 30]));
+        $this->assertSame(0, $this->stock()->whereKey(1)->update(['location_id' => 10, 'company_id' => 20]));
+        try {
+            $this->stock()->whereKey(1)->update(['location_id' => 30]);
+            $this->fail('A real ownership change was accepted.');
+        } catch (TenantBoundaryException $e) {
+            $this->assertSame(403, $e->getCode());
+        }
+        $this->assertSame(10, DB::table('consumables')->where('id', 1)->value('location_id'));
+    }
+
     public function test_bulk_or_predicates_cannot_escape_office_boundary_even_when_force_deleting(): void
     {
         $context = app(TenantContext::class);
@@ -311,6 +325,7 @@ class TenantScopeTest extends TestCase
 
     public function test_native_admin_does_not_gain_company_scope_and_company_role_union_is_injected_once(): void
     {
+        DB::table('gov_office_memberships')->insert(['user_id' => 1, 'location_id' => 10, 'status' => 'active']);
         $actor = $this->actor(false, true);
         $this->initialize();
         $this->assertFalse(app(TenantContext::class)->isGlobal);
@@ -337,6 +352,7 @@ class TenantScopeTest extends TestCase
 
     private function assignIctJurisdiction(): void
     {
+        DB::table('gov_office_memberships')->updateOrInsert(['user_id' => 1, 'location_id' => 10], ['status' => 'active']);
         DB::table('gov_geo_areas')->insert([['GeoAreaId' => 1, 'hid' => '01.'], ['GeoAreaId' => 2, 'hid' => '01.02.'], ['GeoAreaId' => 3, 'hid' => '09.']]);
         DB::table('gov_location_profiles')->insert([['location_id' => 10, 'geo_area_id' => 1], ['location_id' => 30, 'geo_area_id' => 2], ['location_id' => 31, 'geo_area_id' => 3]]);
         DB::table('gov_ict_jurisdictions')->insert(['user_id' => 1, 'geo_area_id' => 1]);
@@ -478,6 +494,7 @@ class TenantScopeTest extends TestCase
 
     public function test_schema_introspection_is_cached_but_context_and_grants_are_fresh(): void
     {
+        DB::table('gov_office_memberships')->insert(['user_id' => 1, 'location_id' => 10, 'status' => 'active']);
         DB::enableQueryLog();
         $this->stock()->count();
         $cold = count(DB::getQueryLog());

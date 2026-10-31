@@ -1,6 +1,23 @@
 <?php
 
 return [
+    'record_names_v2' => ['gov_committees' => 'Committees', 'gov_store_ledger_openings' => 'Office opening balances',
+        'gov_tracking_documents' => 'Programme supporting documents', 'gov_tracking_deliveries' => 'Recorded deliveries',
+        'gov_document_notices' => 'Document notices', 'gov_metadata_values' => 'Package settings', 'gs_theme_preferences' => 'Appearance preferences'],
+    'stale_dataset' => 'This dataset uses an older scenario version. Its saved checks are historical. Create a new dataset for current workflows; existing records are preserved.',
+    'check_workflow_actions' => 'Submission, approval, issue, acknowledgement, withdrawal, closure and return scenarios',
+    'check_reservations' => 'Approved quantities, issued quantities and remaining reservations agree',
+    'check_ledger_chains' => 'Every office stock movement preserves its running balance',
+    'check_committee' => 'Committee lifecycle, membership and ledger integrity',
+    'check_typed_metadata' => 'Company code lists and office metadata',
+    'check_tracking_provenance' => 'Exact activation and receipt movement provenance',
+    'check_appearance' => 'Fictional account appearance preferences',
+    'check_geo_sources' => 'Map source offices, quantities and geographic placement',
+    'check_document_actions' => 'Adjustment, paired transfer and draft takeover attribution',
+    'check_organization_actions' => 'Role handovers, access reviews and onboarding decisions',
+    'check_managed_tags' => 'Govt. Tag and standard tag issued through gated rehearsal',
+    'limit_tag_rehearsal' => 'Tagging settings are populated with issuance disabled. Managed tag issuance needs an explicitly enabled nonproduction rehearsal and all package gates; issued tags permanently block dataset wipe.',
+    'limit_serial_ledger' => 'Serialized issues use the current native checkout and unit history. Model-level ledger quantities are not a replacement for serial availability.',
     'check_ledger_openings' => 'Posted opening balances for operational offices',
     'office_inventory_help' => 'To view office assets and stock, sign in with a storekeeper account from this dataset. The current Global Overview can show zero office inventory even when stock is populated; its license count represents seats.',
     'recover' => 'Release pending or stopped operation', 'recover_help' => 'If the worker has stopped, release this operation before resuming or wiping. A running worker keeps this action locked.', 'cleanup' => 'Retry supporting file cleanup',

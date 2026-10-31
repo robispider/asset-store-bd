@@ -74,13 +74,17 @@ class OfficeStarterCatalog
     {
         $names = config('starter_templates.office_types.'.$type, []);
         if (! $names) {
-            throw new RuntimeException('Starter collection configuration is missing.');
+            throw new StarterNotConfigured('Starter collection configuration is missing.');
         }
         $codes = [];
         foreach ($names as $name) {
             $collections = DB::table('gov_catalog_collections')->where('name', $name)->where('is_active', true)->pluck('id');
+            if ($collections->isEmpty()) {
+                // The national library has not built this collection yet; "Try again" works once it exists.
+                throw new StarterNotConfigured('Starter collection is not set up: '.$name);
+            }
             if ($collections->count() !== 1) {
-                throw new RuntimeException('Starter collection is missing or ambiguous.');
+                throw new RuntimeException('Starter collection is ambiguous.');
             }
             $entries = DB::table('gov_catalog_collection_nodes')->where('collection_id', $collections->first())->pluck('code');
             if ($entries->isEmpty()) {
@@ -159,6 +163,16 @@ class OfficeStarterCatalog
 
     public function failure(?int $runId, Throwable $exception): void
     {
+        if ($exception instanceof StarterNotConfigured) {
+            Log::info('Office starter catalog not set up', ['run_id' => $runId, 'reason' => $exception->getMessage()]);
+            if ($runId) {
+                DB::table('gov_office_starter_runs')->where('id', $runId)->where('status', '!=', 'completed')->update([
+                    'status' => 'not_configured', 'failure_reference' => null, 'updated_at' => now(),
+                ]);
+            }
+
+            return;
+        }
         $reference = (string) Str::uuid();
         Log::error('Office starter catalog failed', ['reference_id' => $reference, 'run_id' => $runId, 'exception' => $exception]);
         if ($runId) {

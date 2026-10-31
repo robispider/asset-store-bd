@@ -1,0 +1,243 @@
+{
+  "schemaVersion": 1,
+  "id": "storeops.direct-bulk-issue",
+  "title": "Storekeeper posts a direct goods issue and reopens its stock-card movement",
+  "evidenceLevel": "function",
+  "features": [
+    "storeops.grn",
+    "user-story.us-10",
+    "user-story.us-18"
+  ],
+  "tags": [
+    "functional",
+    "write",
+    "interface-only"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "accessMode": "any",
+    "timeoutMs": 120000
+  },
+  "fixtures": {
+    "office": {
+      "requirements": {
+        "operational": true,
+        "ledgerOpen": true
+      }
+    },
+    "actors": {
+      "storekeeper": {
+        "role": "storekeeper",
+        "capabilities": {
+          "allOf": [
+            "storeops.documents.draft",
+            "storeops.documents.post",
+            "requests.fulfill"
+          ]
+        }
+      },
+      "employee": {
+        "capabilities": {
+          "allOf": [
+            "requests.submit"
+          ],
+          "noneOf": [
+            "requests.approve"
+          ]
+        },
+        "emptyBasket": true
+      }
+    },
+    "records": {
+      "item": {
+        "kind": "consumable",
+        "minimumAvailable": 10,
+        "policy": "PRIMARY_ONLY",
+        "requestQuantity": 2
+      }
+    }
+  },
+  "data": {
+    "qty": 2,
+    "receiptQty": 1,
+    "purpose": {
+      "generate": "markedText",
+      "prefix": "LIVE-E2E",
+      "length": 6
+    },
+    "serial": {
+      "generate": "markedText",
+      "prefix": "LIVE-SN",
+      "length": 8
+    },
+    "receiptDate": {
+      "generate": "date",
+      "offsetDays": 0
+    }
+  },
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "storekeeper"
+      }
+    },
+    {
+      "action": "inspect",
+      "check": "ui.stockCard",
+      "args": {
+        "type": "consumable",
+        "id": "${fixtures.item.id}"
+      },
+      "as": "startStock"
+    },
+    {
+      "action": "goto",
+      "route": "storeops.hub",
+      "query": {
+        "start": "issue"
+      }
+    },
+    {
+      "action": "wait",
+      "target": "storeops.hubStartDialog",
+      "state": "visible"
+    },
+    {
+      "action": "check",
+      "target": "css=#storeops-start-issue"
+    },
+    {
+      "action": "submitForm",
+      "target": "storeops.hubStartSubmit"
+    },
+    {
+      "action": "capture",
+      "url": true,
+      "pattern": "/documents/issue/([0-9a-f-]{36})",
+      "as": "docId"
+    },
+    {
+      "action": "ledger",
+      "kind": "gov_document",
+      "id": "${captured.docId}",
+      "effect": "Direct goods issue created through normal forms; posted record retained",
+      "cleanup": "retained"
+    },
+    {
+      "action": "select",
+      "target": "css=select[name=\"issued_to_user_id\"]",
+      "value": "${actors.employee.id}"
+    },
+    {
+      "action": "select2",
+      "target": "storeops.row0Item",
+      "search": "${fixtures.item.name}",
+      "option": "${fixtures.item.name}"
+    },
+    {
+      "action": "fill",
+      "target": "storeops.row0Qty",
+      "value": "${data.receiptQty}"
+    },
+    {
+      "action": "fill",
+      "target": "storeops.row0Cost",
+      "value": "100"
+    },
+    {
+      "action": "click",
+      "target": "storeops.saveDraft",
+      "waitForResponse": "/draft"
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "wait",
+      "target": "storeops.row0Qty",
+      "state": "visible"
+    },
+    {
+      "action": "assert",
+      "target": "storeops.row0Qty",
+      "test": "value",
+      "equals": "${data.receiptQty}"
+    },
+    {
+      "action": "click",
+      "target": "storeops.saveDraft",
+      "waitForResponse": "/draft",
+      "note": "Recalculate the persisted draft checklist after reload, as required by the current workspace"
+    },
+    {
+      "action": "wait",
+      "target": "css=#triggerPostBtn:not([disabled])",
+      "state": "attached"
+    },
+    {
+      "action": "click",
+      "target": "storeops.post"
+    },
+    {
+      "action": "wait",
+      "target": "storeops.postingModal",
+      "state": "visible"
+    },
+    {
+      "action": "assert",
+      "target": "storeops.previewQty",
+      "test": "number",
+      "equals": "${data.receiptQty}"
+    },
+    {
+      "action": "submitForm",
+      "target": "storeops.confirmPost",
+      "rejectFlashErrors": true
+    },
+    {
+      "action": "wait",
+      "target": "storeops.postedBox",
+      "state": "visible"
+    },
+    {
+      "action": "inspect",
+      "check": "ui.document",
+      "args": {
+        "id": "${captured.docId}",
+        "type": "issue"
+      },
+      "as": "receipt"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.receipt.posted}",
+      "equals": true
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.receipt.quantity}",
+      "equals": "${data.receiptQty}"
+    },
+    {
+      "action": "inspect",
+      "check": "ui.stockCard",
+      "args": {
+        "type": "consumable",
+        "id": "${fixtures.item.id}"
+      },
+      "as": "afterReceipt"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.startStock.closing}",
+      "equals": "${data.receiptQty}",
+      "deltaFrom": "${observed.afterReceipt.closing}"
+    }
+  ],
+  "cleanup": {
+    "policy": "retained-with-report",
+    "description": "Posted direct issue, checkout and audit retained.",
+    "steps": []
+  }
+}

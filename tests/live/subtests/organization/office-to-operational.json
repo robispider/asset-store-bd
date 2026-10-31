@@ -1,0 +1,458 @@
+{
+  "schemaVersion": 1,
+  "id": "organization.office-to-operational",
+  "title": "ICT officer provisions; bootstrap administrator admits the first admin; office admin enrols staff and assigns duties; employee opens the operational office",
+  "evidenceLevel": "connected",
+  "features": [
+    "organization.add-office",
+    "user-story.us-02"
+  ],
+  "tags": [
+    "functional",
+    "write",
+    "interface-only"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "accessMode": "any",
+    "timeoutMs": 600000
+  },
+  "fixtures": {
+    "actors": {
+      "ictOfficer": {
+        "role": "ict_officer",
+        "activeMembership": false,
+        "capabilities": {
+          "allOf": [
+            "organization.office.manage"
+          ],
+          "noneOf": [
+            "organization.national.manage"
+          ]
+        }
+      },
+      "newAdmin": {
+        "capabilities": {
+          "allOf": [
+            "requests.submit"
+          ],
+          "noneOf": [
+            "membership.manage",
+            "requests.approve",
+            "requests.fulfill"
+          ]
+        }
+      },
+      "storekeeper": {
+        "role": "storekeeper",
+        "capabilities": {
+          "allOf": [
+            "storeops.documents.draft"
+          ]
+        }
+      },
+      "approver": {
+        "role": "primary_approver",
+        "capabilities": {
+          "allOf": [
+            "requests.approve.primary"
+          ]
+        }
+      },
+      "employee": {
+        "capabilities": {
+          "allOf": [
+            "requests.submit"
+          ],
+          "noneOf": [
+            "membership.manage",
+            "requests.approve",
+            "requests.fulfill"
+          ]
+        }
+      },
+      "bootstrap": {
+        "role": "superuser",
+        "allowSuperuser": true,
+        "activeMembership": false
+      }
+    }
+  },
+  "data": {
+    "officeName": {
+      "generate": "markedText",
+      "prefix": "LIVE-OFFICE",
+      "length": 7
+    }
+  },
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "ictOfficer"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/organization/create"
+    },
+    {
+      "action": "fill",
+      "target": "organization.findInput",
+      "value": "${data.officeName}"
+    },
+    {
+      "action": "submitForm",
+      "target": "organization.findSubmit"
+    },
+    {
+      "action": "assert",
+      "target": "css=.govorg-result",
+      "test": "count",
+      "equals": 0
+    },
+    {
+      "action": "capture",
+      "target": "css=#govorg-step-location .govorg-step__hint",
+      "pattern": "(?:নির্ধারিত এলাকা |areas inside )(.+?)(?:-এর|,)",
+      "as": "jurisdiction"
+    },
+    {
+      "action": "select2",
+      "target": "css=#geo_area_id",
+      "search": "${captured.jurisdiction}",
+      "selection": "first",
+      "as": "geoChoice"
+    },
+    {
+      "action": "capture",
+      "target": "css=#geo_area_id option:checked",
+      "as": "geoLabel"
+    },
+    {
+      "action": "select",
+      "target": "css=#company_id",
+      "value": "${fixtures.office.company_id}"
+    },
+    {
+      "action": "capture",
+      "target": "css=#company_id option:checked",
+      "as": "companyLabel"
+    },
+    {
+      "action": "submitForm",
+      "target": "organization.createSubmit"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/organization",
+      "query": {
+        "search": "${data.officeName}"
+      }
+    },
+    {
+      "action": "assert",
+      "target": "css=a.govorg-office:has-text(\"${data.officeName}\")",
+      "test": "count",
+      "equals": 1
+    },
+    {
+      "action": "capture",
+      "target": "css=a.govorg-office:has-text(\"${data.officeName}\")",
+      "attribute": "href",
+      "pattern": "/organization/(\\d+)/hub",
+      "as": "officeId"
+    },
+    {
+      "action": "ledger",
+      "kind": "provisioned_office",
+      "id": "${captured.officeId}",
+      "effect": "Marked fictional office created through the ICT jurisdiction UI; profile and audit retained",
+      "cleanup": "retained"
+    },
+    {
+      "action": "click",
+      "target": "css=a.govorg-office:has-text(\"${data.officeName}\")"
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "assert",
+      "target": "organization.pageTitle",
+      "test": "text",
+      "equals": "${data.officeName}"
+    },
+    {
+      "action": "assert",
+      "target": "css=.govorg",
+      "test": "text",
+      "contains": "${captured.geoLabel}"
+    },
+    {
+      "action": "assert",
+      "target": "css=.govorg",
+      "test": "text",
+      "contains": "${captured.companyLabel}"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-status=\"office_provisioned\"]",
+      "test": "visible"
+    },
+    {
+      "action": "assert",
+      "target": "css=#govorg-staff",
+      "test": "visible"
+    },
+    {
+      "action": "assert",
+      "target": "css=.gs-readiness",
+      "test": "visible"
+    },
+    {
+      "use": "membership.personal-code",
+      "with": {
+        "actor": "newAdmin",
+        "as": "firstAdminCode"
+      }
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "bootstrap"
+      }
+    },
+    {
+      "action": "switchOffice",
+      "officeName": "${data.officeName}"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/access"
+    },
+    {
+      "action": "capture",
+      "target": "css=.tenant-scope-theme",
+      "attribute": "data-access-office",
+      "as": "workingOffice"
+    },
+    {
+      "action": "compare",
+      "actual": "${captured.workingOffice}",
+      "equals": "${captured.officeId}"
+    },
+    {
+      "use": "membership.add-personal-code",
+      "with": {
+        "admin": "bootstrap",
+        "person": "newAdmin",
+        "code": "firstAdminCode"
+      }
+    },
+    {
+      "action": "actor",
+      "name": "ictOfficer"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/organization/${captured.officeId}/hub"
+    },
+    {
+      "action": "select",
+      "target": "css=#office_admin_id",
+      "value": "${actors.newAdmin.id}"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form:has(#office_admin_id) button[type=\"submit\"]"
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "assert",
+      "target": "css=#office_admin_id",
+      "test": "value",
+      "equals": "${actors.newAdmin.id}"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "newAdmin"
+      }
+    },
+    {
+      "action": "switchOffice",
+      "officeName": "${data.officeName}"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/access"
+    },
+    {
+      "action": "capture",
+      "target": "css=.tenant-scope-theme",
+      "attribute": "data-access-office",
+      "as": "workingOffice"
+    },
+    {
+      "action": "compare",
+      "actual": "${captured.workingOffice}",
+      "equals": "${captured.officeId}"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-access-ability=\"membership.manage\"]",
+      "test": "count",
+      "equals": 1
+    },
+    {
+      "use": "membership.personal-code",
+      "with": {
+        "actor": "storekeeper",
+        "as": "keeperCode"
+      }
+    },
+    {
+      "use": "membership.add-personal-code",
+      "with": {
+        "admin": "newAdmin",
+        "person": "storekeeper",
+        "code": "keeperCode"
+      }
+    },
+    {
+      "use": "membership.personal-code",
+      "with": {
+        "actor": "approver",
+        "as": "approverCode"
+      }
+    },
+    {
+      "use": "membership.add-personal-code",
+      "with": {
+        "admin": "newAdmin",
+        "person": "approver",
+        "code": "approverCode"
+      }
+    },
+    {
+      "use": "membership.personal-code",
+      "with": {
+        "actor": "employee",
+        "as": "employeeCode"
+      }
+    },
+    {
+      "use": "membership.add-personal-code",
+      "with": {
+        "admin": "newAdmin",
+        "person": "employee",
+        "code": "employeeCode"
+      }
+    },
+    {
+      "action": "actor",
+      "name": "newAdmin"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/office"
+    },
+    {
+      "action": "select",
+      "target": "css=#primary_approver_id",
+      "value": "${actors.approver.id}"
+    },
+    {
+      "action": "select",
+      "target": "css=#storekeeper_id",
+      "value": "${actors.storekeeper.id}"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form:has(#primary_approver_id) button[type=\"submit\"]"
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-status=\"office_operational\"]",
+      "test": "visible"
+    },
+    {
+      "action": "assert",
+      "target": "css=#primary_approver_id",
+      "test": "value",
+      "equals": "${actors.approver.id}"
+    },
+    {
+      "action": "assert",
+      "target": "css=#storekeeper_id",
+      "test": "value",
+      "equals": "${actors.storekeeper.id}"
+    },
+    {
+      "action": "actor",
+      "name": "employee"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/my-memberships"
+    },
+    {
+      "action": "assert",
+      "target": "css=.govmem-office:has-text(\"${data.officeName}\")",
+      "test": "visible"
+    },
+    {
+      "action": "switchOffice",
+      "officeName": "${data.officeName}"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/access"
+    },
+    {
+      "action": "capture",
+      "target": "css=.tenant-scope-theme",
+      "attribute": "data-access-office",
+      "as": "workingOffice"
+    },
+    {
+      "action": "compare",
+      "actual": "${captured.workingOffice}",
+      "equals": "${captured.officeId}"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-requests/catalog"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-cr-catalog]",
+      "test": "visible"
+    },
+    {
+      "action": "assert",
+      "target": "css=.cr-context",
+      "test": "text",
+      "contains": "${data.officeName}"
+    },
+    {
+      "action": "ledger",
+      "kind": "operational_office",
+      "id": "${captured.officeId}",
+      "effect": "Same marked office admitted four fictional people, appointed admin/approver/storekeeper and became usable for ordinary requester",
+      "cleanup": "retained"
+    }
+  ],
+  "cleanup": {
+    "policy": "retained-with-report",
+    "description": "New office, additional memberships, office-specific duties and audit are retained as test data. Personal codes are consumed by UI admission; no existing home membership or duty is changed.",
+    "steps": []
+  },
+  "description": "Real UI handoffs on the same newly created fictional office. The bootstrap superuser is used only for the explicitly authorized first-member administration; each ordinary role is separately authenticated."
+}

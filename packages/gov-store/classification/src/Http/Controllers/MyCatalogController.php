@@ -2,6 +2,7 @@
 
 namespace GovStore\Classification\Http\Controllers;
 
+use App\Models\Location;
 use GovStore\Classification\Services\CategoryAdoptionService;
 use GovStore\Classification\Services\MyCatalogService;
 use GovStore\TenantScope\Contexts\TenantContext;
@@ -32,8 +33,9 @@ class MyCatalogController extends Controller
 
     private function checkAccess(TenantContext $tenantContext): string
     {
-        return app(GovAccess::class)
-            ->permitsRequest(auth()->user(), 'catalog.office.adopt') ? 'admin' : 'employee';
+        abort_unless(app(GovAccess::class)->decide(auth()->user(), 'catalog.office.adopt')->allowed, 403);
+
+        return 'admin';
     }
 
     public function index(Request $request, TenantContext $tenantContext)
@@ -43,25 +45,38 @@ class MyCatalogController extends Controller
         $companyId = $tenantContext->companyId ?? 0;
         $locationId = $tenantContext->locationId ?? 0;
 
-        $activeTab = $request->input('tab', 'active');
+        $activeTab = in_array($request->input('tab'), ['active', 'cleanup', 'archived'], true) ? $request->input('tab') : 'active';
+        $filters = [
+            'q' => trim((string) $request->input('q', '')),
+            'type' => in_array($request->input('type'), MyCatalogService::TYPES, true) ? $request->input('type') : null,
+        ];
 
-        // Fetch Grid Data
-        $categories = $this->service->getLocalGrid($companyId, $locationId, $activeTab, 50);
+        $metrics = $this->service->getLocalOverview($companyId, $locationId);
 
-        if ($activeTab === 'active' && $categories->total() === 0 && $request->input('page', 1) == 1) {
+        if ($metrics['total_active'] === 0 && $metrics['archived_count'] === 0) {
             return view('gov-classification::discover.quickstart');
         }
 
-        // Fetch Summary Metrics (Run lightweight counts to power the dashboard cards)
-        $metrics = [
-            'total_active' => $this->service->getLocalGrid($companyId, $locationId, 'active', 1)->total(),
-            'needs_cleanup' => $this->service->getLocalGrid($companyId, $locationId, 'cleanup', 1)->total(),
-            'archived' => $this->service->getLocalGrid($companyId, $locationId, 'archived', 1)->total(),
-        ];
+        $categories = $this->service->getLocalGrid($companyId, $locationId, $activeTab, 50, $filters);
+        $families = MyCatalogService::families($categories);
+
+        // Type chips count the current tab after the search, before the type filter.
+        $tabRows = match ($activeTab) {
+            'cleanup' => $metrics['active']->where('total_usage_count', 0),
+            'archived' => $metrics['archived'],
+            default => $metrics['active'],
+        };
+        if ($filters['q'] !== '') {
+            $tabRows = $tabRows->filter(fn ($c) => mb_stripos($c->name, $filters['q']) !== false);
+        }
+        $typeCounts = $tabRows->countBy('category_type')->only(MyCatalogService::TYPES)->all();
 
         $isReadOnly = ($accessMode === 'employee');
+        $canMap = app(GovAccess::class)->permitsRequest(auth()->user(), 'catalog.master.manage');
+        $office = $locationId > 0 ? Location::withoutGlobalScopes()->whereKey($locationId)->value('name') : null;
+        $office = $office ? MyCatalogService::label($office)['family'] : null;
 
-        return view('gov-classification::my-catalog.index', compact('categories', 'isReadOnly', 'activeTab', 'metrics'));
+        return view('gov-classification::my-catalog.index', compact('categories', 'families', 'isReadOnly', 'canMap', 'activeTab', 'metrics', 'filters', 'typeCounts', 'office'));
     }
 
     public function show($id, TenantContext $tenantContext)
@@ -96,6 +111,8 @@ class MyCatalogController extends Controller
             $adoptionService->archiveCategory($request->category_id, $scope['type'], $scope['id']);
 
             return response()->json(['success' => true]);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface|\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            throw $e;
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => app(ActionFailure::class)->message($e)], 500);
         }
@@ -115,6 +132,8 @@ class MyCatalogController extends Controller
             $adoptionService->restoreCategory($request->category_id, $scope['type'], $scope['id']);
 
             return response()->json(['success' => true]);
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface|\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            throw $e;
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => app(ActionFailure::class)->message($e)], 500);
         }

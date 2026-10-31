@@ -1,0 +1,354 @@
+{
+  "schemaVersion": 1,
+  "id": "requests.interface-reject",
+  "title": "Approver rejects; requester reopens the decision and reason",
+  "evidenceLevel": "connected",
+  "features": [
+    "storeops.grn",
+    "requests.submit-approve-fulfill"
+  ],
+  "tags": [
+    "functional",
+    "multi-actor",
+    "write",
+    "interface-only"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "language": "en-US",
+    "timeoutMs": 300000,
+    "accessMode": "any"
+  },
+  "fixtures": {
+    "office": {
+      "requirements": {
+        "operational": true,
+        "ledgerOpen": true
+      }
+    },
+    "actors": {
+      "storekeeper": {
+        "role": "storekeeper",
+        "capabilities": {
+          "allOf": [
+            "storeops.documents.draft",
+            "storeops.documents.post",
+            "requests.fulfill"
+          ]
+        }
+      },
+      "employee": {
+        "capabilities": {
+          "allOf": [
+            "requests.submit"
+          ],
+          "noneOf": [
+            "requests.approve"
+          ]
+        },
+        "emptyBasket": true
+      },
+      "approver": {
+        "role": "primary_approver",
+        "capabilities": {
+          "allOf": [
+            "requests.approve.primary"
+          ]
+        }
+      }
+    },
+    "records": {
+      "item": {
+        "kind": "consumable",
+        "minimumAvailable": 10,
+        "policy": "PRIMARY_ONLY",
+        "requestQuantity": 2
+      }
+    }
+  },
+  "data": {
+    "qty": 2,
+    "receiptQty": 6,
+    "purpose": {
+      "generate": "markedText",
+      "prefix": "LIVE-E2E",
+      "length": 6
+    },
+    "serial": {
+      "generate": "markedText",
+      "prefix": "LIVE-SN",
+      "length": 8
+    },
+    "receiptDate": {
+      "generate": "date",
+      "offsetDays": 0
+    }
+  },
+  "preconditions": [],
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "employee"
+      }
+    },
+    {
+      "action": "goto",
+      "route": "gov.requests.catalog",
+      "query": {
+        "q": "${fixtures.item.name}"
+      }
+    },
+    {
+      "action": "click",
+      "target": "catalog.itemAdd",
+      "waitForResponse": "basket/add"
+    },
+    {
+      "action": "fill",
+      "target": "catalog.itemQty",
+      "value": "${data.qty}"
+    },
+    {
+      "action": "waitInspect",
+      "check": "ui.basket",
+      "args": {
+        "name": "${fixtures.item.name}"
+      },
+      "path": "quantity",
+      "equals": "${data.qty}",
+      "timeoutMs": 15000
+    },
+    {
+      "action": "ledger",
+      "kind": "task_basket_line",
+      "id": "${actors.employee.id}:${fixtures.item.id}",
+      "effect": "Run-owned basket line; empty basket verified during fixture resolution",
+      "cleanup": "retained"
+    },
+    {
+      "action": "goto",
+      "route": "gov.requests.basket"
+    },
+    {
+      "action": "assert",
+      "target": "requests.basketLines",
+      "test": "count",
+      "equals": 1
+    },
+    {
+      "action": "assert",
+      "target": "requests.basketQty",
+      "test": "value",
+      "equals": "${data.qty}"
+    },
+    {
+      "action": "click",
+      "target": "requests.basketToDetails"
+    },
+    {
+      "action": "fill",
+      "target": "requests.basketPurpose",
+      "value": "${data.purpose}"
+    },
+    {
+      "action": "fill",
+      "target": "requests.basketJustification",
+      "value": "Automated live journey justification for ${data.purpose}"
+    },
+    {
+      "action": "click",
+      "target": "requests.basketContinue"
+    },
+    {
+      "action": "assert",
+      "target": "requests.basketSubmit",
+      "test": "visible"
+    },
+    {
+      "action": "check",
+      "target": "requests.basketDeclare"
+    },
+    {
+      "action": "submitForm",
+      "target": "requests.basketSubmit"
+    },
+    {
+      "action": "assert",
+      "test": "url",
+      "contains": "/gov-requests/sent/"
+    },
+    {
+      "action": "capture",
+      "target": "requests.sentNumberFirst",
+      "as": "requestNumber"
+    },
+    {
+      "action": "capture",
+      "target": "requests.sentNumberFirst",
+      "attribute": "href",
+      "pattern": "/my-requests/(\\d+)",
+      "as": "requestId"
+    },
+    {
+      "action": "ledger",
+      "kind": "custom_service_request",
+      "id": "${captured.requestNumber}",
+      "effect": "Request created by the complete receipt, approval, fulfillment and acknowledgement journey",
+      "cleanup": "retained"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "approver"
+      }
+    },
+    {
+      "action": "goto",
+      "route": "gov.requests.admin.index",
+      "query": {
+        "q": "${captured.requestNumber}"
+      }
+    },
+    {
+      "action": "click",
+      "target": "requests.approverRowOpen"
+    },
+    {
+      "action": "wait",
+      "target": "requests.decisionAsAsked",
+      "state": "visible"
+    },
+    {
+      "action": "click",
+      "target": "css=label.cr-choice--decline"
+    },
+    {
+      "action": "fill",
+      "target": "css=textarea[name$=\"[notes]\"]",
+      "value": "${data.purpose}"
+    },
+    {
+      "action": "click",
+      "target": "requests.decisionSubmit"
+    },
+    {
+      "action": "actor",
+      "name": "employee"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-requests/my-requests/${captured.requestId}"
+    },
+    {
+      "action": "waitInspect",
+      "check": "ui.request",
+      "args": {
+        "view": "my-requests",
+        "id": "${captured.requestId}"
+      },
+      "path": "status",
+      "equals": "request_rejected",
+      "as": "rejected"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.rejected.number}",
+      "equals": "${captured.requestNumber}"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.rejected.lines.0.requested}",
+      "equals": 2
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.rejected.lines.0.approved}",
+      "equals": 0
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-cr-request]",
+      "test": "text",
+      "contains": "${data.purpose}"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "storekeeper"
+      }
+    },
+    {
+      "action": "goto",
+      "route": "gov.requests.fulfillment.index",
+      "query": {
+        "q": "${captured.requestNumber}"
+      }
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-cr-to-issue]",
+      "test": "visible"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-request-number=\"${captured.requestNumber}\"]",
+      "test": "count",
+      "equals": 0
+    }
+  ],
+  "cleanup": {
+    "policy": "retained-with-report",
+    "description": "Request, posted documents and audit retained; only the exact run-owned basket line is removed through the UI. Successful native check-in returns its fictional asset to stock.",
+    "steps": [
+      {
+        "use": "auth.login",
+        "with": {
+          "actor": "employee"
+        }
+      },
+      {
+        "action": "inspect",
+        "check": "ui.basket",
+        "args": {
+          "name": "${fixtures.item.name}"
+        },
+        "as": "cleanupBasket"
+      },
+      {
+        "action": "goto",
+        "route": "gov.requests.basket",
+        "when": {
+          "actual": "${observed.cleanupBasket.quantity}",
+          "notEquals": 0
+        }
+      },
+      {
+        "action": "click",
+        "target": "requests.basketRemove",
+        "when": {
+          "actual": "${observed.cleanupBasket.quantity}",
+          "notEquals": 0
+        },
+        "waitForResponse": "basket/remove"
+      },
+      {
+        "action": "waitInspect",
+        "check": "ui.basket",
+        "args": {
+          "name": "${fixtures.item.name}"
+        },
+        "path": "quantity",
+        "equals": 0
+      },
+      {
+        "action": "ledger",
+        "kind": "task_basket_line",
+        "id": "${actors.employee.id}:${fixtures.item.id}",
+        "effect": "Temporary basket line consumed or removed; zero quantity verified",
+        "cleanup": "removed"
+      }
+    ]
+  },
+  "description": "Uses only rendered UI and separate role sessions; starts with visible existing fictional stock. Receipt creation is covered by the separate core workflow."
+}

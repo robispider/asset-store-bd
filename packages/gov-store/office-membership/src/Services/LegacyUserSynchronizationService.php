@@ -3,9 +3,7 @@
 namespace GovStore\OfficeMembership\Services;
 
 use App\Models\User;
-use GovStore\OfficeMembership\Models\OfficeMembership;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Schema;
 
 class LegacyUserSynchronizationService
 {
@@ -17,103 +15,25 @@ class LegacyUserSynchronizationService
     }
 
     /**
-     * Safely grants a home membership when a new user is created in Snipe-IT.
+     * Membership approval belongs to onboarding/join, never native account creation.
      */
     public function handleNewUser(User $user): void
     {
-        // When onboarding is installed, its authorized workflow owns first membership.
-        // Do not pre-approve a supplied native office before the queue reviews it.
-        if (Schema::hasTable('gov_user_onboardings')) {
-            return;
-        }
-        if (! $user->location_id) {
-            return;
-        }
-
-        OfficeMembership::create([
-            'user_id' => $user->id,
-            'location_id' => $user->location_id,
-            'is_home_office' => true,
-            'status' => 'active',
-            'approved_by_user_id' => auth()->id() ?? 1,
-            'approved_at' => now(),
-            'approval_note' => __('office_membership::member.sync_auto_onboarding_note'),
-        ]);
+        // Native fields describe an account; only reviewed onboarding/join creates membership.
     }
 
-    /**
-     * Safely evaluates if a native location change can be processed as a transfer.
-     */
+    /** Native edits cannot approve, revive, release or transfer a membership. */
     public function handleUpdatedUser(User $user): void
     {
-        $newLocationId = $user->location_id;
-        $oldLocationId = $user->getOriginal('location_id');
-
-        // No change made, ignore.
-        if ($newLocationId == $oldLocationId) {
+        $original = $user->getOriginal('location_id');
+        if ($user->location_id == $original) {
             return;
         }
-
-        // Check if the user is bound to an active home office
-        $oldMembership = OfficeMembership::where('user_id', $user->id)
-            ->where('location_id', $oldLocationId)
-            ->where('is_home_office', true)
-            ->first();
-
-        // =========================================================================
-        // SCENARIO A: Admin is trying to wipe the location to NULL natively
-        // =========================================================================
-        if (! $newLocationId) {
-            if ($oldMembership && $oldMembership->status !== 'released') {
-                // FORCE REVERT: Block unauthorized removal
-                $user->location_id = $oldLocationId;
-                $user->saveQuietly();
-
-                Log::warning("Native User location removal blocked for {$user->username}. Location ID {$oldLocationId} preserved.");
-
-                // Fallback translation string if key doesn't exist
-                session()->flash('error', __('office_membership::member.sync_removal_blocked_flash') ?: 'Update Reverted: You cannot remove a user\'s location natively. Use the Staff Management module to process a formal release.');
-
-                return;
-            }
-
-            return; // Allowed if they genuinely had no active membership anyway
+        $user->location_id = $original;
+        $user->saveQuietly();
+        Log::warning('Native office change refused; use the membership workflow.', ['user_id' => $user->id, 'actor_id' => auth()->id()]);
+        if (app()->bound('session')) {
+            session()->flash('error', __('office_membership::member.sync_transfer_reverted_flash'));
         }
-
-        // =========================================================================
-        // SCENARIO B: Admin is trying to change the location natively (Transfer)
-        // =========================================================================
-        if ($oldMembership) {
-            $clearanceResults = $this->clearanceEngine->runChecks($user, $oldLocationId);
-
-            if (! $this->clearanceEngine->isCleared($clearanceResults)) {
-                // FORCE REVERT: User holds assets or roles.
-                $user->location_id = $oldLocationId;
-                $user->saveQuietly();
-
-                Log::warning(__('office_membership::member.sync_transfer_blocked_warning', ['username' => $user->username, 'locationId' => $oldLocationId]));
-                session()->flash('error', __('office_membership::member.sync_transfer_reverted_flash'));
-
-                return;
-            }
-
-            // User is clear. Release the old membership.
-            $oldMembership->update([
-                'status' => 'released',
-                'is_home_office' => false,
-            ]);
-        }
-
-        // Grant the new Home Office membership
-        OfficeMembership::updateOrCreate(
-            ['user_id' => $user->id, 'location_id' => $newLocationId],
-            [
-                'status' => 'active',
-                'is_home_office' => true,
-                'approved_by_user_id' => auth()->id() ?? 1,
-                'approved_at' => now(),
-                'approval_note' => __('office_membership::member.sync_native_transfer_note'),
-            ]
-        );
     }
 }

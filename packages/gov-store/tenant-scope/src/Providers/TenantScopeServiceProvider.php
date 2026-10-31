@@ -37,6 +37,7 @@ class TenantScopeServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/execution.php', 'govstore-execution');
         $this->mergeConfigFrom(__DIR__.'/../config/navigation.php', 'govstore-navigation');
         $this->app->singleton(\GovStore\TenantScope\Services\SchemaKnowledge::class);
+        $this->app->scoped(\GovStore\TenantScope\Services\ReferenceCreation::class);
         $this->app->singleton(\GovStore\TenantScope\Services\TenantWorkerLifecycle::class);
         // Register the Central Navigation Registry as a shared singleton across all packages
         $this->app->singleton(MenuRegistry::class, function () {

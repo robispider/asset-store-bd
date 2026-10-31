@@ -1,0 +1,115 @@
+collection_key,code,section,title_en,title_bn,category_type,unit,aliases_en,aliases_bn
+bd-common-office,56101703,furniture,Desks,অফিস ডেস্ক,asset,piece,Office table;Computer table,অফিস টেবিল;কম্পিউটার টেবিল
+bd-common-office,56101720,furniture,Office or work chair,অফিস চেয়ার,asset,piece,Staff chair;Executive chair,কর্মকর্তার চেয়ার
+bd-common-office,56101504,furniture,Chairs,সাধারণ চেয়ার,asset,piece,Visitor chair,ভিজিটর চেয়ার
+bd-common-office,56101542,furniture,Folding chairs,ভাঁজ করা চেয়ার,asset,piece,Folding chair,
+bd-common-office,56101530,furniture,Storage cabinets,স্টোরেজ ক্যাবিনেট,asset,piece,Steel almirah;Almari,স্টিল আলমারি;আলমিরা
+bd-common-office,56101702,furniture,Filing cabinets or accessories,ফাইলিং ক্যাবিনেট,asset,piece,File cabinet,ফাইল ক্যাবিনেট
+bd-common-office,56101507,furniture,Bookcases,বইয়ের তাক,asset,piece,Book shelf,বুকশেলফ
+bd-common-office,56101519,furniture,Tables,সাধারণ টেবিল,asset,piece,Utility table,
+bd-common-office,56101706,furniture,Conferencing tables,সভাকক্ষের টেবিল,asset,piece,Meeting table,কনফারেন্স টেবিল
+bd-common-office,56101719,furniture,Side table,সাইড টেবিল,asset,piece,Side table,
+bd-common-office,56101721,furniture,Office/reception sofa or couch,অফিস সোফা,asset,piece,Reception sofa,
+bd-common-office,56101520,furniture,Lockers,লকার,asset,piece,Staff locker,
+bd-common-office,14111507,stationery,Printer or copier paper,প্রিন্টার ও ফটোকপি কাগজ,consumable,sheet,A4 paper;Legal paper,এ ফোর কাগজ;লিগ্যাল কাগজ
+bd-common-office,14111511,stationery,Writing paper,লেখার কাগজ,consumable,sheet,Writing paper,
+bd-common-office,14111514,stationery,Paper pads or notebooks,নোটবুক ও প্যাড,consumable,piece,Notebook;Writing pad,খাতা;নোটপ্যাড
+bd-common-office,14111530,stationery,Self adhesive note paper,আঠাযুক্ত নোট কাগজ,consumable,piece,Sticky notes,স্টিকি নোট
+bd-common-office,14111531,stationery,Log books or pads,রেজিস্টার খাতা,consumable,piece,Office register;Log book,রেজিস্টার
+bd-common-office,14111802,stationery,Receipts or receipt books,রসিদ বই,consumable,piece,Receipt book,
+bd-common-office,14111808,stationery,Accounting forms or accounting books,হিসাবের খাতা,consumable,piece,Ledger book,লেজার খাতা
+bd-common-office,14111812,stationery,Inventory forms or inventory books,মজুত হিসাবের খাতা,consumable,piece,Stock register,স্টক রেজিস্টার
+bd-common-office,14111813,stationery,Correspondence forms or correspondence books,পত্রযোগাযোগের রেজিস্টার,consumable,piece,Dispatch register;Inward register,ডাক রেজিস্টার
+bd-common-office,14111831,stationery,Visitor or guest book,অতিথি নিবন্ধন খাতা,consumable,piece,Visitor book,ভিজিটর রেজিস্টার
+bd-common-office,44121506,stationery,Standard envelopes,সাধারণ খাম,consumable,piece,Office envelope,খাম
+bd-common-office,44121507,stationery,Catalog or clasp envelopes,বড় ফাইল খাম,consumable,piece,Clasp envelope,
+bd-common-office,44121704,stationery,Ball point pens,বলপয়েন্ট কলম,consumable,piece,Ballpen,কলম
+bd-common-office,44121706,stationery,Wooden pencils,কাঠের পেন্সিল,consumable,piece,Pencil,পেনসিল
+bd-common-office,44121708,stationery,Markers,মার্কার কলম,consumable,piece,Whiteboard marker;Permanent marker,মার্কার
+bd-common-office,44121716,stationery,Highlighters,হাইলাইটার,consumable,piece,Highlighter pen,
+bd-common-office,44121801,stationery,Correction film or tape,সংশোধনী টেপ,consumable,piece,Correction tape,
+bd-common-office,44121802,stationery,Correction fluid,সংশোধনী তরল,consumable,piece,Correction fluid,ফ্লুইড
+bd-common-office,44121804,stationery,Erasers,রাবার,consumable,piece,Eraser,ইরেজার
+bd-common-office,44121905,stationery,Ink or stamp pads,স্ট্যাম্প প্যাড,consumable,piece,Stamp pad,সিল প্যাড
+bd-common-office,44122011,stationery,Folders,ফাইল ফোল্ডার,consumable,piece,Office file,ফাইল কভার
+bd-common-office,44122003,stationery,Binders,বাইন্ডার,consumable,piece,Binder,
+bd-common-office,44122010,stationery,Dividers,ফাইল ডিভাইডার,consumable,piece,Index divider,
+bd-common-office,44122035,stationery,Lever arch file,লিভার আর্চ ফাইল,consumable,piece,Lever arch file,
+bd-common-office,44122036,stationery,Box file,বক্স ফাইল,consumable,piece,Box file,
+bd-common-office,44122037,stationery,Ring binder,রিং বাইন্ডার,consumable,piece,Ring file,
+bd-common-office,44122101,stationery,Rubber bands,রাবার ব্যান্ড,consumable,piece,Rubber band,
+bd-common-office,44122104,stationery,Paper clips,পেপার ক্লিপ,consumable,piece,Paper clip,কাগজের ক্লিপ
+bd-common-office,44122105,stationery,Binder or bulldog clips,বাইন্ডার ক্লিপ,consumable,piece,Bulldog clip,বুলডগ ক্লিপ
+bd-common-office,44122106,stationery,Pins or tacks,পিন,consumable,piece,Drawing pin;Board pin,বোর্ড পিন
+bd-common-office,44122107,stationery,Staples,স্ট্যাপল পিন,consumable,piece,Staple pins,স্ট্যাপলার পিন
+bd-common-office,31201512,stationery,Transparent tape,স্বচ্ছ আঠালো টেপ,consumable,roll,Clear tape;Cello tape,স্কচ টেপ
+bd-common-office,31201517,stationery,Packaging tape,প্যাকিং টেপ,consumable,roll,Packing tape,কার্টন টেপ
+bd-common-office,44121604,stationery,Stamps,অফিস সিল,accessory,piece,Rubber stamp,রাবার স্ট্যাম্প
+bd-common-office,44121605,stationery,Tape dispensers,টেপ ডিসপেনসার,accessory,piece,Tape dispenser,
+bd-common-office,44121611,stationery,Paper or eyelet punches,কাগজের পাঞ্চ মেশিন,accessory,piece,Paper punch,পাঞ্চ
+bd-common-office,44121613,stationery,Staple removers,স্ট্যাপল খোলার যন্ত্র,accessory,piece,Staple remover,
+bd-common-office,44121615,stationery,Staplers,স্ট্যাপলার,accessory,piece,Stapler,
+bd-common-office,44121618,stationery,Scissors,কাঁচি,accessory,piece,Scissors,
+bd-common-office,44121619,stationery,Manual pencil sharpener,পেন্সিল শার্পনার,accessory,piece,Pencil sharpener,কাটার
+bd-common-office,44121625,stationery,Paper weights,পেপারওয়েট,accessory,piece,Paper weight,
+bd-common-office,44121637,stationery,Office ruler,অফিস স্কেল,accessory,piece,Ruler,রুলার
+bd-common-office,44122012,stationery,Clipboards,ক্লিপবোর্ড,accessory,piece,Clipboard,
+bd-common-office,43211507,ict,Desktop computer,ডেস্কটপ কম্পিউটার,asset,piece,Desktop PC,ডেস্কটপ
+bd-common-office,43211503,ict,Notebook computer,ল্যাপটপ কম্পিউটার,asset,piece,Laptop,নোটবুক কম্পিউটার
+bd-common-office,43211902,ict,Liquid crystal display LCD panels or monitors,কম্পিউটার মনিটর,asset,piece,LCD monitor,মনিটর
+bd-common-office,39121011,ict,Uninterruptible power supply UPS,ইউপিএস,asset,piece,UPS,নিরবচ্ছিন্ন বিদ্যুৎ সরবরাহ
+bd-common-office,43211706,ict,Keyboards,কিবোর্ড,accessory,piece,Keyboard,কীবোর্ড
+bd-common-office,43211708,ict,Computer mouse,কম্পিউটার মাউস,accessory,piece,Mouse,মাউস
+bd-common-office,43211802,ict,Mouse pads,মাউস প্যাড,accessory,piece,Mouse pad,
+bd-common-office,43211607,ict,Computer speakers,কম্পিউটার স্পিকার,accessory,piece,PC speakers,
+bd-common-office,43211609,ict,Universal serial bus hubs or connectors,ইউএসবি হাব,accessory,piece,USB hub,
+bd-common-office,43211619,ict,Notebook computer carrying case,ল্যাপটপ ব্যাগ,accessory,piece,Laptop bag,
+bd-common-office,43202010,ict,Pen or flash drive,পেন ড্রাইভ,accessory,piece,USB flash drive,ইউএসবি ড্রাইভ
+bd-common-office,43201803,ict,Hard disk drives,হার্ড ডিস্ক ড্রাইভ,component,piece,Hard disk;HDD,হার্ডডিস্ক
+bd-common-office,43201830,ict,Solid state drive SSD,এসএসডি ড্রাইভ,component,piece,SSD,সলিড স্টেট ড্রাইভ
+bd-common-office,43212105,printing,Laser printers,লেজার প্রিন্টার,asset,piece,Laser printer,
+bd-common-office,43212104,printing,Inkjet printers,ইঙ্কজেট প্রিন্টার,asset,piece,Inkjet printer,
+bd-common-office,43212110,printing,Multi function printers,মাল্টিফাংশন প্রিন্টার,asset,piece,All in one printer,
+bd-common-office,44101501,printing,Photocopiers,ফটোকপি মেশিন,asset,piece,Photocopier,ফটোকপিয়ার
+bd-common-office,43211711,printing,Scanners,স্ক্যানার,asset,piece,Document scanner,
+bd-common-office,44101602,printing,Paper punching or binding machines,কাগজ বাঁধাই মেশিন,asset,piece,Paper binding machine,বাইন্ডিং মেশিন
+bd-common-office,44101603,printing,Paper shredding machines or accessories,কাগজ ধ্বংস করার মেশিন,asset,piece,Paper shredder,শ্রেডার
+bd-common-office,44101809,printing,Desktop calculator,ডেস্ক ক্যালকুলেটর,accessory,piece,Desktop calculator,ক্যালকুলেটর
+bd-common-office,44103103,printing,Printer or facsimile toner,প্রিন্টারের টোনার,consumable,piece,Printer toner,টোনার
+bd-common-office,44103105,printing,Ink cartridges,ইঙ্ক কার্টিজ,consumable,piece,Ink cartridge,কালির কার্টিজ
+bd-common-office,44103127,printing,Photocopier toner,ফটোকপিয়ারের টোনার,consumable,piece,Copier toner,
+bd-common-office,40101609,electrical,Ceiling fan,সিলিং ফ্যান,asset,piece,Ceiling fan,
+bd-common-office,40101604,electrical,Fans,ফ্যান,asset,piece,Table fan;Pedestal fan,টেবিল ফ্যান;স্ট্যান্ড ফ্যান
+bd-common-office,39121009,electrical,Electrical or power regulators,ভোল্টেজ নিয়ন্ত্রক,asset,piece,Voltage stabilizer,স্ট্যাবিলাইজার
+bd-common-office,39121031,electrical,Power supply outlet strip,মাল্টিপ্লাগ বোর্ড,accessory,piece,Power strip;Multiplug,মাল্টিপ্লাগ
+bd-common-office,26121536,electrical,Extension cord,এক্সটেনশন কেবল,accessory,piece,Extension lead,এক্সটেনশন তার
+bd-common-office,39101628,electrical,Light emitting diode LED lamp,এলইডি বাতি,consumable,piece,LED bulb,এলইডি বাল্ব
+bd-common-office,26111702,electrical,Alkaline batteries,অ্যালকালাইন ব্যাটারি,consumable,piece,AA battery;AAA battery,ছোট ব্যাটারি
+bd-common-office,47131604,cleaning,Brooms,ঝাড়ু,consumable,piece,Broom,
+bd-common-office,47131618,cleaning,Wet mops,মেঝে মোছার মপ,consumable,piece,Wet mop,মপ
+bd-common-office,47131608,cleaning,Toilet brush and toilet brush holder,টয়লেট ব্রাশ,consumable,piece,Toilet brush,
+bd-common-office,47131502,cleaning,Cleaning cloths or wipes,পরিষ্কারের কাপড়,consumable,piece,Cleaning cloth,মোছার কাপড়
+bd-common-office,47131801,cleaning,Floor cleaners,মেঝে পরিষ্কারের তরল,consumable,piece,Floor cleaner,
+bd-common-office,47131805,cleaning,General purpose cleaners,সাধারণ পরিষ্কারক,consumable,piece,General cleaner,পরিষ্কারক
+bd-common-office,47131829,cleaning,Toilet cleaners,টয়লেট পরিষ্কারক,consumable,piece,Toilet cleaner,
+bd-common-office,47131824,cleaning,Glass or window cleaners,কাচ পরিষ্কারক,consumable,piece,Glass cleaner,
+bd-common-office,47131803,cleaning,Household disinfectants,জীবাণুনাশক,consumable,piece,Disinfectant,
+bd-common-office,47131810,cleaning,Dishwashing products,বাসন ধোয়ার পরিষ্কারক,consumable,piece,Dishwashing liquid,
+bd-common-office,47121701,cleaning,Trash bags,ময়লার ব্যাগ,consumable,piece,Bin liner;Trash bag,গারবেজ ব্যাগ
+bd-common-office,14111701,cleaning,Facial tissues,ফেসিয়াল টিস্যু,consumable,piece,Tissue box,টিস্যু
+bd-common-office,14111704,cleaning,Toilet tissue,টয়লেট টিস্যু,consumable,roll,Toilet roll,
+bd-common-office,14111703,cleaning,Paper towels,পেপার টাওয়েল,consumable,piece,Paper towel,
+bd-common-office,53131626,cleaning,Hand sanitizer,হ্যান্ড স্যানিটাইজার,consumable,piece,Hand sanitizer,
+bd-common-office,53131608,cleaning,Soaps,সাবান,consumable,piece,Hand soap;Liquid soap,হাত ধোয়ার সাবান;তরল সাবান
+bd-common-office,47121702,cleaning,Waste containers or rigid liners,ময়লার বিন,accessory,piece,Dustbin,ডাস্টবিন
+bd-common-office,24112205,cleaning,Non metallic pails,প্লাস্টিকের বালতি,accessory,piece,Plastic bucket,বালতি
+bd-common-office,47131601,cleaning,Dust brushes or pans,ডাস্টপ্যান ও ব্রাশ,accessory,piece,Dustpan,
+bd-common-office,44111905,general,Dry erase boards or accessories,হোয়াইটবোর্ড,asset,piece,Whiteboard,সাদা বোর্ড
+bd-common-office,44111907,general,Bulletin boards or accessories,নোটিশ বোর্ড,asset,piece,Notice board,বুলেটিন বোর্ড
+bd-common-office,54111601,general,Wall clocks,দেয়াল ঘড়ি,asset,piece,Wall clock,
+bd-common-office,45111609,general,Multimedia projectors,মাল্টিমিডিয়া প্রজেক্টর,asset,piece,Multimedia projector,প্রজেক্টর
+bd-common-office,45111603,general,Projection screens or displays,প্রজেকশন স্ক্রিন,asset,piece,Projector screen,
+bd-common-office,52161520,general,Microphones,মাইক্রোফোন,asset,piece,Microphone,মাইক
+bd-common-office,48101711,general,Bottled water dispensers or accessories,পানির ডিসপেনসার,asset,piece,Water dispenser,
+bd-common-office,52141523,general,Domestic electrical kettles,বৈদ্যুতিক কেটলি,asset,piece,Electric kettle,
+bd-common-office,44111912,general,Whiteboard eraser,হোয়াইটবোর্ড মোছার ডাস্টার,accessory,piece,Whiteboard eraser,ডাস্টার

@@ -98,8 +98,10 @@ Route::group([
 ], function () {
 
     // User Operational Workspace (My Organization Catalog)
-    Route::get('/', [MyCatalogController::class, 'index'])->middleware('gov.can:catalog.view')->name('gov.catalog.my_catalog.index');
-    Route::get('/{id}', [MyCatalogController::class, 'show'])->middleware('gov.can:catalog.view')->name('gov.catalog.my_catalog.show');
+    Route::get('/references/create', [\GovStore\Classification\Http\Controllers\ReferenceProvisioningController::class, 'create'])->middleware('gov.can:catalog.office.adopt')->name('gov.catalog.references.create');
+    Route::post('/references', [\GovStore\Classification\Http\Controllers\ReferenceProvisioningController::class, 'store'])->middleware('gov.can:catalog.office.adopt')->name('gov.catalog.references.store');
+    Route::get('/', [MyCatalogController::class, 'index'])->middleware('gov.can:catalog.office.adopt')->name('gov.catalog.my_catalog.index');
+    Route::get('/{id}', [MyCatalogController::class, 'show'])->whereNumber('id')->middleware('gov.can:catalog.office.adopt')->name('gov.catalog.my_catalog.show');
     Route::post('/archive', [MyCatalogController::class, 'archive'])->middleware('gov.can:catalog.office.adopt')->name('gov.catalog.my_catalog.archive');
     Route::post('/restore', [MyCatalogController::class, 'restore'])->middleware('gov.can:catalog.office.adopt')->name('gov.catalog.my_catalog.restore');
 

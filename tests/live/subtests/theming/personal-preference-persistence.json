@@ -1,0 +1,176 @@
+{
+  "schemaVersion": 1,
+  "id": "theming.personal-preference-persistence",
+  "title": "Employee saves a different theme and dark mode, reopens it, then restores the original preference",
+  "evidenceLevel": "function",
+  "features": [
+    "user-story.us-30"
+  ],
+  "tags": [
+    "functional",
+    "write",
+    "interface-only"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "accessMode": "any",
+    "timeoutMs": 90000
+  },
+  "fixtures": {
+    "actors": {
+      "employee": {
+        "capabilities": {
+          "allOf": [
+            "requests.submit"
+          ],
+          "noneOf": [
+            "requests.approve"
+          ]
+        }
+      }
+    }
+  },
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "employee"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov/appearance"
+    },
+    {
+      "action": "capture",
+      "as": "originalTheme",
+      "target": "css=input[name=\"theme\"]:checked",
+      "attribute": "value"
+    },
+    {
+      "action": "capture",
+      "as": "originalMode",
+      "target": "css=input[name=\"mode\"]:checked",
+      "attribute": "value"
+    },
+    {
+      "action": "capture",
+      "as": "originalReset",
+      "target": "css=input[name=\"reset\"]:checked",
+      "count": true
+    },
+    {
+      "action": "capture",
+      "as": "nextTheme",
+      "target": "css=input[name=\"theme\"]:not(:checked) >> nth=0",
+      "attribute": "value"
+    },
+    {
+      "action": "check",
+      "target": "css=input[name=\"theme\"][value=\"${captured.nextTheme}\"]"
+    },
+    {
+      "action": "uncheck",
+      "target": "css=input[name=\"reset\"]"
+    },
+    {
+      "action": "click",
+      "target": "css=label:has(input[name=\"mode\"][value=\"dark\"])"
+    },
+    {
+      "action": "ledger",
+      "kind": "personal_preference",
+      "id": "${actors.employee.id}",
+      "effect": "Temporary personal theme and mode; restore captured original values",
+      "cleanup": "retained"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form[data-gs-theme-picker] button[type=\"submit\"]"
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "assert",
+      "target": "css=input[name=\"theme\"][value=\"${captured.nextTheme}\"]",
+      "test": "checked"
+    },
+    {
+      "action": "assert",
+      "target": "css=input[name=\"mode\"][value=\"dark\"]",
+      "test": "checked"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-requests/catalog"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-cr-catalog]",
+      "test": "visible"
+    },
+    {
+      "action": "goto",
+      "url": "/gov/appearance"
+    },
+    {
+      "action": "assert",
+      "target": "css=input[name=\"theme\"][value=\"${captured.nextTheme}\"]",
+      "test": "checked"
+    }
+  ],
+  "cleanup": {
+    "policy": "supported-actions",
+    "description": "Restore exact captured personal theme/mode and inheritance choice through the same settings form.",
+    "steps": [
+      {
+        "action": "goto",
+        "url": "/gov/appearance"
+      },
+      {
+        "action": "check",
+        "target": "css=input[name=\"theme\"][value=\"${captured.originalTheme}\"]"
+      },
+      {
+        "action": "click",
+        "target": "css=label:has(input[name=\"mode\"][value=\"${captured.originalMode}\"])"
+      },
+      {
+        "action": "check",
+        "target": "css=input[name=\"reset\"]",
+        "when": {
+          "actual": "${captured.originalReset}",
+          "equals": 1
+        }
+      },
+      {
+        "action": "uncheck",
+        "target": "css=input[name=\"reset\"]",
+        "when": {
+          "actual": "${captured.originalReset}",
+          "equals": 0
+        }
+      },
+      {
+        "action": "submitForm",
+        "target": "css=form[data-gs-theme-picker] button[type=\"submit\"]"
+      },
+      {
+        "action": "reload"
+      },
+      {
+        "action": "assert",
+        "target": "css=input[name=\"mode\"][value=\"${captured.originalMode}\"]",
+        "test": "checked"
+      },
+      {
+        "action": "ledger",
+        "kind": "personal_preference",
+        "id": "${actors.employee.id}",
+        "cleanup": "removed",
+        "effect": "Original personal preference restored and reopened"
+      }
+    ]
+  }
+}

@@ -1,0 +1,434 @@
+{
+  "schemaVersion": 1,
+  "id": "requests.partial-issue-close-remainder",
+  "title": "Approve two units, issue one, close the unneeded remainder and show the reason and exact issued quantity to the requester",
+  "evidenceLevel": "connected",
+  "features": [
+    "storeops.grn",
+    "requests.submit-approve-fulfill"
+  ],
+  "tags": [
+    "functional",
+    "multi-actor",
+    "write",
+    "interface-only"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "language": "en-US",
+    "timeoutMs": 300000,
+    "accessMode": "any"
+  },
+  "fixtures": {
+    "office": {
+      "requirements": {
+        "operational": true,
+        "ledgerOpen": true
+      }
+    },
+    "actors": {
+      "storekeeper": {
+        "role": "storekeeper",
+        "capabilities": {
+          "allOf": [
+            "storeops.documents.draft",
+            "storeops.documents.post",
+            "requests.fulfill"
+          ]
+        }
+      },
+      "employee": {
+        "capabilities": {
+          "allOf": [
+            "requests.submit"
+          ],
+          "noneOf": [
+            "requests.approve"
+          ]
+        },
+        "emptyBasket": true
+      },
+      "approver": {
+        "role": "primary_approver",
+        "capabilities": {
+          "allOf": [
+            "requests.approve.primary"
+          ]
+        }
+      }
+    },
+    "records": {
+      "item": {
+        "kind": "consumable",
+        "minimumAvailable": 10,
+        "policy": "PRIMARY_ONLY",
+        "requestQuantity": 2
+      }
+    }
+  },
+  "data": {
+    "qty": 2,
+    "receiptQty": 6,
+    "purpose": {
+      "generate": "markedText",
+      "prefix": "LIVE-E2E",
+      "length": 6
+    },
+    "serial": {
+      "generate": "markedText",
+      "prefix": "LIVE-SN",
+      "length": 8
+    },
+    "receiptDate": {
+      "generate": "date",
+      "offsetDays": 0
+    }
+  },
+  "preconditions": [],
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "employee"
+      }
+    },
+    {
+      "action": "goto",
+      "route": "gov.requests.catalog",
+      "query": {
+        "q": "${fixtures.item.name}"
+      }
+    },
+    {
+      "action": "click",
+      "target": "catalog.itemAdd",
+      "waitForResponse": "basket/add"
+    },
+    {
+      "action": "fill",
+      "target": "catalog.itemQty",
+      "value": "${data.qty}"
+    },
+    {
+      "action": "waitInspect",
+      "check": "ui.basket",
+      "args": {
+        "name": "${fixtures.item.name}"
+      },
+      "path": "quantity",
+      "equals": "${data.qty}",
+      "timeoutMs": 15000
+    },
+    {
+      "action": "ledger",
+      "kind": "task_basket_line",
+      "id": "${actors.employee.id}:${fixtures.item.id}",
+      "effect": "Run-owned basket line; empty basket verified during fixture resolution",
+      "cleanup": "retained"
+    },
+    {
+      "action": "goto",
+      "route": "gov.requests.basket"
+    },
+    {
+      "action": "assert",
+      "target": "requests.basketLines",
+      "test": "count",
+      "equals": 1
+    },
+    {
+      "action": "assert",
+      "target": "requests.basketQty",
+      "test": "value",
+      "equals": "${data.qty}"
+    },
+    {
+      "action": "click",
+      "target": "requests.basketToDetails"
+    },
+    {
+      "action": "fill",
+      "target": "requests.basketPurpose",
+      "value": "${data.purpose}"
+    },
+    {
+      "action": "fill",
+      "target": "requests.basketJustification",
+      "value": "Automated live journey justification for ${data.purpose}"
+    },
+    {
+      "action": "click",
+      "target": "requests.basketContinue"
+    },
+    {
+      "action": "assert",
+      "target": "requests.basketSubmit",
+      "test": "visible"
+    },
+    {
+      "action": "check",
+      "target": "requests.basketDeclare"
+    },
+    {
+      "action": "submitForm",
+      "target": "requests.basketSubmit"
+    },
+    {
+      "action": "assert",
+      "test": "url",
+      "contains": "/gov-requests/sent/"
+    },
+    {
+      "action": "capture",
+      "target": "requests.sentNumberFirst",
+      "as": "requestNumber"
+    },
+    {
+      "action": "capture",
+      "target": "requests.sentNumberFirst",
+      "attribute": "href",
+      "pattern": "/my-requests/(\\d+)",
+      "as": "requestId"
+    },
+    {
+      "action": "ledger",
+      "kind": "custom_service_request",
+      "id": "${captured.requestNumber}",
+      "effect": "Request created by the complete receipt, approval, fulfillment and acknowledgement journey",
+      "cleanup": "retained"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "approver"
+      }
+    },
+    {
+      "action": "goto",
+      "route": "gov.requests.admin.index",
+      "query": {
+        "q": "${captured.requestNumber}"
+      }
+    },
+    {
+      "action": "click",
+      "target": "requests.approverRowOpen"
+    },
+    {
+      "action": "wait",
+      "target": "requests.decisionAsAsked",
+      "state": "visible"
+    },
+    {
+      "action": "click",
+      "target": "requests.decisionSubmit"
+    },
+    {
+      "action": "waitInspect",
+      "check": "ui.request",
+      "args": {
+        "view": "admin",
+        "id": "${captured.requestId}"
+      },
+      "path": "status",
+      "equals": "request_approved",
+      "as": "primary"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.primary.number}",
+      "equals": "${captured.requestNumber}"
+    },
+    {
+      "action": "waitInspect",
+      "check": "ui.request",
+      "args": {
+        "view": "admin",
+        "id": "${captured.requestId}"
+      },
+      "path": "status",
+      "equals": "request_approved",
+      "as": "approved"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.approved.number}",
+      "equals": "${captured.requestNumber}"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.approved.lines.0.approved}",
+      "equals": "${data.qty}"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "storekeeper"
+      }
+    },
+    {
+      "action": "goto",
+      "route": "gov.requests.fulfillment.index",
+      "query": {
+        "q": "${captured.requestNumber}"
+      }
+    },
+    {
+      "action": "click",
+      "target": "requests.fulfillmentRowOpen"
+    },
+    {
+      "action": "wait",
+      "target": "requests.issueSubmit",
+      "state": "visible"
+    },
+    {
+      "action": "fill",
+      "target": "requests.issueQuantity",
+      "value": "1"
+    },
+    {
+      "action": "submitForm",
+      "target": "requests.issueSubmit"
+    },
+    {
+      "action": "waitInspect",
+      "check": "ui.request",
+      "args": {
+        "view": "fulfillment-register",
+        "id": "${captured.requestId}"
+      },
+      "path": "status",
+      "equals": "request_partly_issued",
+      "as": "partial"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.partial.lines.0.issued}",
+      "equals": 1
+    },
+    {
+      "action": "goto",
+      "url": "/gov-requests/fulfillment/${captured.requestId}"
+    },
+    {
+      "action": "click",
+      "target": "css=#close-rest summary"
+    },
+    {
+      "action": "check",
+      "target": "css=#close-rest input[name=reason_code][value=not_needed]"
+    },
+    {
+      "action": "fill",
+      "target": "css=#close-rest textarea[name=reason]",
+      "value": "${data.purpose} - requester needs only the single handed-over unit"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=#close-rest button[type=submit]",
+      "rejectFlashErrors": true
+    },
+    {
+      "action": "waitInspect",
+      "check": "ui.request",
+      "args": {
+        "view": "fulfillment-register",
+        "id": "${captured.requestId}"
+      },
+      "path": "status",
+      "equals": "request_closed_short",
+      "as": "closed"
+    },
+    {
+      "action": "compare",
+      "actual": "${observed.closed.lines.0.issued}",
+      "equals": 1
+    },
+    {
+      "action": "actor",
+      "name": "employee"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-requests/my-requests/${captured.requestId}"
+    },
+    {
+      "action": "assert",
+      "target": "css=[data-cr-request][data-status-key=request_closed_short]",
+      "test": "visible"
+    },
+    {
+      "action": "assert",
+      "target": "css=#history",
+      "test": "text",
+      "contains": "${data.purpose}"
+    },
+    {
+      "action": "assert",
+      "target": "requests.requestLineIssued",
+      "test": "number",
+      "equals": 1
+    },
+    {
+      "action": "assert",
+      "target": "requests.acknowledge",
+      "test": "count",
+      "equals": 0
+    }
+  ],
+  "cleanup": {
+    "policy": "retained-with-report",
+    "description": "Request, posted documents and audit retained; only the exact run-owned basket line is removed through the UI. Successful native check-in returns its fictional asset to stock.",
+    "steps": [
+      {
+        "use": "auth.login",
+        "with": {
+          "actor": "employee"
+        }
+      },
+      {
+        "action": "inspect",
+        "check": "ui.basket",
+        "args": {
+          "name": "${fixtures.item.name}"
+        },
+        "as": "cleanupBasket"
+      },
+      {
+        "action": "goto",
+        "route": "gov.requests.basket",
+        "when": {
+          "actual": "${observed.cleanupBasket.quantity}",
+          "notEquals": 0
+        }
+      },
+      {
+        "action": "click",
+        "target": "requests.basketRemove",
+        "when": {
+          "actual": "${observed.cleanupBasket.quantity}",
+          "notEquals": 0
+        },
+        "waitForResponse": "basket/remove"
+      },
+      {
+        "action": "waitInspect",
+        "check": "ui.basket",
+        "args": {
+          "name": "${fixtures.item.name}"
+        },
+        "path": "quantity",
+        "equals": 0
+      },
+      {
+        "action": "ledger",
+        "kind": "task_basket_line",
+        "id": "${actors.employee.id}:${fixtures.item.id}",
+        "effect": "Temporary basket line consumed or removed; zero quantity verified",
+        "cleanup": "removed"
+      }
+    ]
+  },
+  "description": "Completes a short-closure branch on the same marked request after one real partial handover."
+}

@@ -26,9 +26,28 @@ class TenantBoundaryService
             return; 
         }
 
+        // Custody follows the approved member; inventory ownership stays with the issuing office.
+        if ($model instanceof \App\Models\Asset && $action === 'update'
+            && $model->assigned_type === \App\Models\User::class && $model->assigned_to
+            && $model->isDirty(['assigned_to', 'assigned_type', 'location_id'])) {
+            app(OfficeRecipient::class)->find((int) $model->assigned_to);
+            $model->location_id = $context->locationId;
+        }
+
         // 1. Enforce Primary Ownership Verification (Core Scoping)
         $policy = $this->resolvePolicy($model);
+        if ($action === 'create' && ($policy instanceof CategoryBoundaryPolicy || $model instanceof \App\Models\Location)) {
+            if (! app(ReferenceCreation::class)->permits($model)) {
+                throw new TenantBoundaryException(__('tenantops::ops.exception_ownership', ['model' => class_basename($model)]), 'GOVSTORE_PROVISIONING_REQUIRED', 403);
+            }
+
+            return;
+        }
         if ($context->isGlobal && ! ($policy instanceof AssetBoundaryPolicy)) {
+            if ($policy instanceof CategoryBoundaryPolicy
+                && request()->attributes->get('gov_national_reviewed') !== 'catalog.master.manage') {
+                throw new TenantBoundaryException(__('tenantops::ops.exception_ownership', ['model' => class_basename($model)]), 'NATIONAL_REVIEW_REQUIRED', 403);
+            }
             return; // National reference administration retains its narrower guards.
         }
         if ($policy) {
@@ -82,15 +101,15 @@ class TenantBoundaryService
             );
         }
 
-        if ($action === 'update' && $asset->isDirty(['assigned_to', 'status_id', 'location_id'])) {
+        if ($action === 'update' && $asset->isDirty(['assigned_to', 'assigned_type', 'status_id', 'location_id'])) {
             
             $user = auth()->user();
             if (!$user) {
-                return;
+                throw new TenantBoundaryException(__('tenantops::ops.exception_checkout_violation'), 'ROLE_VIOLATION', 403);
             }
 
-            $roles = app(MembershipContextResolver::class)->responsibilityRoles((int) $user->id, $context->locationId);
-            $canCheckout = collect($roles)->contains(fn ($role) => ResponsibilityRegistry::can($role, 'checkout_assets'));
+            $roles = app(GovAccess::class)->roles($user);
+            $canCheckout = $user->isSuperUser() || collect($roles)->contains(fn ($role) => ResponsibilityRegistry::can($role, 'checkout_assets'));
 
             if (!$canCheckout) {
                 $this->logViolation($asset, 'checkout');
@@ -145,6 +164,9 @@ class TenantBoundaryService
      */
     private function resolvePolicy(Model $model)
     {
+        if ($model instanceof \App\Models\Location) {
+            return app(\GovStore\TenantScope\Policies\OfficeLocationBoundaryPolicy::class);
+        }
         $className = get_class($model);
 
         // =========================================================================

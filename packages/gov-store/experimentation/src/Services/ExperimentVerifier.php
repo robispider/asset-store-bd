@@ -19,8 +19,11 @@ class ExperimentVerifier
 {
     public function __construct(private RecordRegistry $records, private ExperimentWiper $wiper) {}
 
-    public function preflight(): void
+    public function preflight(?ExperimentRun $run = null): void
     {
+        if ($run && ScenarioManifest::current($run)) {
+            app(ScenarioManifest::class)->preflight();
+        }
         foreach (['gov_geo_areas', 'gov_office_memberships', 'gov_office_responsibilities', 'gov_location_profiles', 'gov_catalog_nodes',
             'gov_model_metadata_states', 'gov_metadata_field_mappings', 'gov_profile_assignments', 'gov_documents',
             'gov_store_ledger_openings', 'gov_store_document_sequences', 'custom_service_requests', 'gov_tracking_codes'] as $table) {
@@ -30,32 +33,49 @@ class ExperimentVerifier
         }
     }
 
-    public function verify(ExperimentRun $run, User $actor): array
+    public function verify(ExperimentRun $run, User $actor, bool $captureOwnership = true): array
     {
         // Capture package query-builder inserts by their strictly owned domain relationships.
         $preview = $this->wiper->preview($run, 'dataset', $actor);
-        foreach ($preview['records'] as $table => $keys) {
-            foreach (array_keys($keys) as $key) {
-                $row = $this->records->queryKey($table, $key)->first();
-                if ($row) {
-                    $this->records->record($run, $table, $row);
+        if ($captureOwnership) {
+            $registered = [];
+            foreach (DB::table('gov_experiment_records')->where('run_id', $run->id)->get(['table_name', 'record_key']) as $record) {
+                $registered[$record->table_name][$record->record_key] = true;
+            }
+            foreach ($preview['records'] as $table => $keys) {
+                foreach (array_keys($keys) as $key) {
+                    if (! isset($registered[$table][$key])) {
+                        $row = $this->records->queryKey($table, $key)->first();
+                        if ($row) {
+                            $this->records->record($run, $table, $row);
+                        }
+                    }
                 }
             }
+            unset($registered);
         }
         $counts = $this->records->counts($run);
         $size = $run->report['profile_counts'] ?? config('govstore-experiments.profiles.'.$run->profile);
+        $size['assets'] += $run->report['tag_rehearsal']['issued_assets'] ?? 0;
+        if (ScenarioManifest::current($run)) {
+            $targets = $run->report['request_recipe_targets'] ?? app(ScenarioManifest::class)->requestTargets();
+            $size['requests'] += count($targets['asset_model']) + count($targets['consumable']) + count($targets['accessory']) + $targets['mixed_policy_requests'];
+        }
         $expectedReady = $size['offices'] - ($run->profile === 'quick' ? 0 : 4);
         // Older resumed datasets retain their immutable component receipts and existing extra documents.
         $retainedDocuments = collect($run->report['units'] ?? [])->filter(fn ($id, $key) => $id
             && (str_starts_with($key, 'opening-components-') || str_starts_with($key, 'extra-document-')))->count();
         $size['documents'] = max($size['documents'], $expectedReady * 3 + $retainedDocuments);
-        $checks = ['counts' => true, 'ownership' => ! $preview['blockers'], 'home_offices' => true, 'office_roles' => true,
+        $ownershipBlockers = array_filter($preview['blockers'], fn ($blocker) => ! (isset($run->report['tag_rehearsal'])
+            && $blocker === 'gov_asset_registrations: issued asset tags are permanent'));
+        $checks = ['counts' => true, 'ownership' => ! $ownershipBlockers, 'home_offices' => true, 'office_roles' => true,
             'geography' => true, 'requests' => true, 'stock' => true, 'ledger_openings' => true,
             'tracking' => true, 'catalog' => true, 'boundaries' => true];
         foreach (['locations' => 'offices', 'users' => 'users', 'assets' => 'assets', 'consumables' => 'consumables', 'accessories' => 'accessories',
             'components' => 'components', 'models' => 'models', 'categories' => 'categories', 'licenses' => 'licenses', 'gov_documents' => 'documents',
             'custom_service_requests' => 'requests', 'draft_baskets' => 'baskets', 'gov_initiatives' => 'initiatives', 'gov_tracking_codes' => 'codes', 'maintenances' => 'maintenance'] as $table => $key) {
-            if (($counts[$table] ?? 0) !== $size[$key]) {
+            $derived = ScenarioManifest::current($run) && in_array($table, ['gov_documents', 'custom_service_requests', 'consumables'], true);
+            if ($derived ? ($counts[$table] ?? 0) < $size[$key] : ($counts[$table] ?? 0) !== $size[$key]) {
                 $checks['counts'] = false;
             }
         }
@@ -136,7 +156,9 @@ class ExperimentVerifier
             foreach (DB::table($table)->whereIn('id', $this->records->ids($run, $table))->get() as $item) {
                 $movements = DB::table('gov_inventory_movements')->where('stockable_type', ['consumables' => 'consumable', 'accessories' => 'accessory', 'components' => 'component'][$table])->where('stockable_id', $item->id)->get();
                 $balance = $movements->where('movement_type', 'IN')->sum('quantity') - $movements->where('movement_type', 'OUT')->sum('quantity');
-                if ($balance < 0 || (int) $item->qty !== (int) $balance || ! isset($offices[$item->location_id]) || (int) $item->company_id !== (int) $offices[$item->location_id]->company_id) {
+                $class = ['consumables' => Consumable::class, 'accessories' => Accessory::class, 'components' => Component::class][$table];
+                $native = $class::withoutGlobalScopes()->find($item->id);
+                if ($balance < 0 || ! $native || (int) $native->numRemaining() !== (int) $balance || ! isset($offices[$item->location_id]) || (int) $item->company_id !== (int) $offices[$item->location_id]->company_id) {
                     $checks['stock'] = false;
                 }
             }
@@ -155,7 +177,13 @@ class ExperimentVerifier
             }
         }
 
+        if (ScenarioManifest::current($run)) {
+            $checks = array_merge($checks, app(WorkflowVerifier::class)->verify($run, $actor));
+        }
+
         return ['passed' => ! in_array(false, $checks, true), 'checks' => $checks, 'counts' => $counts,
-            'limitations' => ['limit_current_packages', 'limit_laptop', 'limit_bulk_fulfillment', 'limit_metadata', 'limit_native_audit', 'limit_committee']];
+            'version' => ScenarioManifest::VERSION, 'verified_at' => now()->toIso8601String(), 'stale' => ! ScenarioManifest::current($run),
+            'wipe_blockers' => $preview['blockers'],
+            'limitations' => ['limit_current_packages', 'limit_laptop', 'limit_metadata', 'limit_tag_rehearsal', 'limit_serial_ledger']];
     }
 }

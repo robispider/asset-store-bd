@@ -1,0 +1,197 @@
+{
+  "schemaVersion": 1,
+  "id": "organization.interface-add-office-validation",
+  "title": "ICT officer searches for a marked office, submits without an area, and verifies the refusal and no matching office through UI",
+  "features": [
+    "organization.add-office"
+  ],
+  "tags": [
+    "seeded",
+    "validation",
+    "organization"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "language": "en-US",
+    "timeoutMs": 90000,
+    "accessMode": "any"
+  },
+  "fixtures": {
+    "office": {
+      "requirements": {}
+    },
+    "actors": {
+      "ictOfficer": {
+        "role": "ict_officer",
+        "activeMembership": false,
+        "capabilities": {
+          "allOf": [
+            "organization.office.manage"
+          ],
+          "noneOf": [
+            "organization.national.manage"
+          ]
+        }
+      }
+    }
+  },
+  "data": {
+    "officeName": {
+      "generate": "markedText",
+      "prefix": "LIVE-OFFICE",
+      "length": 6
+    }
+  },
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "ictOfficer"
+      }
+    },
+    {
+      "action": "capture",
+      "target": "css=html",
+      "attribute": "lang",
+      "as": "originalLanguage"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=#gov-nav-language button[value=\"en-US\"]"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/organization/create"
+    },
+    {
+      "action": "assert",
+      "target": "organization.pageTitle",
+      "test": "text",
+      "equals": "Add an office"
+    },
+    {
+      "action": "fill",
+      "target": "organization.findInput",
+      "value": "${data.officeName}"
+    },
+    {
+      "action": "submitForm",
+      "target": "organization.findSubmit"
+    },
+    {
+      "action": "wait",
+      "target": "organization.findNone",
+      "state": "visible"
+    },
+    {
+      "action": "assert",
+      "test": "url",
+      "contains": "find="
+    },
+    {
+      "action": "assert",
+      "target": "organization.findNone",
+      "test": "text",
+      "contains": "No existing location matches",
+      "note": "Step 1 says nothing matches before offering to create"
+    },
+    {
+      "action": "assert",
+      "target": "organization.officeName",
+      "test": "value",
+      "equals": "${data.officeName}",
+      "note": "The searched name carries into the form"
+    },
+    {
+      "action": "assert",
+      "target": "organization.officeTypeDefault",
+      "test": "checked",
+      "note": "Office type defaults to an administrative office"
+    },
+    {
+      "action": "submitForm",
+      "target": "organization.createSubmit",
+      "note": "Area left empty on purpose; the form is novalidate so the server must refuse it"
+    },
+    {
+      "action": "wait",
+      "target": "organization.errorSummary",
+      "state": "visible"
+    },
+    {
+      "action": "assert",
+      "test": "url",
+      "contains": "/gov-store/admin/organization/create"
+    },
+    {
+      "action": "assert",
+      "target": "organization.errorSummary",
+      "test": "text",
+      "contains": "Please fix the highlighted fields before saving."
+    },
+    {
+      "action": "assert",
+      "target": "organization.errorSummaryArea",
+      "test": "count",
+      "equals": 1,
+      "note": "The summary links to the field that needs fixing"
+    },
+    {
+      "action": "assert",
+      "target": "organization.errorSummaryName",
+      "test": "count",
+      "equals": 0,
+      "note": "The name was valid, so it is not listed"
+    },
+    {
+      "action": "assert",
+      "target": "organization.areaFieldError",
+      "test": "visible",
+      "note": "The message also shows under the area field"
+    },
+    {
+      "action": "assert",
+      "target": "organization.officeName",
+      "test": "value",
+      "equals": "${data.officeName}",
+      "note": "A failed save keeps what was typed"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/organization/create"
+    },
+    {
+      "action": "fill",
+      "target": "organization.findInput",
+      "value": "${data.officeName}"
+    },
+    {
+      "action": "submitForm",
+      "target": "organization.findSubmit"
+    },
+    {
+      "action": "assert",
+      "target": "css=.govorg-result",
+      "test": "count",
+      "equals": 0
+    },
+    {
+      "action": "assert",
+      "target": "organization.findNone",
+      "test": "text",
+      "contains": "No existing location matches"
+    }
+  ],
+  "cleanup": {
+    "policy": "supported-actions",
+    "description": "Restore the ICT officer original language through the normal language control; invalid office submission creates no intended business record.",
+    "steps": [
+      {
+        "action": "submitForm",
+        "target": "css=#gov-nav-language button[value=\"${captured.originalLanguage}\"]"
+      }
+    ]
+  },
+  "evidenceLevel": "function",
+  "description": "No database access. Search results and retained form values verify the invalid creation attempt; original language is restored."
+}

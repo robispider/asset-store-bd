@@ -25,7 +25,7 @@ class NationalChangeReview
             $request->validate(['change_reason' => 'required|string|min:5|max:1000', 'confirmation' => 'required|in:CHANGE']);
             $token = $request->input('review_token');
             $review = $request->session()->get('gov_national_reviews.'.$token);
-            abort_unless($review && $review['user'] === $request->user()->id && $review['target'] === $request->path()
+            abort_unless($review && ($review['ability'] ?? $ability) === $ability && $review['user'] === $request->user()->id && $review['target'] === $request->path()
                 && $review['method'] === $request->method() && $review['expires'] > time(), 422, __('tenantops::access.validate_first'));
             $reason = $request->input('change_reason');
             $request->replace($review['input'] + ['change_reason' => $reason, 'confirmation' => 'CHANGE']);
@@ -34,6 +34,8 @@ class NationalChangeReview
             $consumed = DB::table('gov_access_review_uses')->insertOrIgnore(['token_hash' => hash('sha256', $token), 'created_at' => now()]);
             abort_unless($consumed, 409);
             $request->session()->forget('gov_national_reviews.'.$token);
+            $request->attributes->set('gov_national_reviewed', $ability);
+            $request->attributes->set('gov_review_hash', hash('sha256', $token));
             // The review page was the response to the original POST, so this confirmation's referer is the POST-only
             // action URL; restore the page the change started from so the controller's back() lands there.
             if (! empty($review['back'])) {
@@ -48,7 +50,7 @@ class NationalChangeReview
         $origin = (string) $request->headers->get('referer');
         $back = $origin !== '' && parse_url($origin, PHP_URL_HOST) === $request->getHost()
             && trim((string) parse_url($origin, PHP_URL_PATH), '/') !== trim($request->path(), '/') ? $origin : null;
-        $review = ['input' => $input, 'before' => $before, 'user' => $request->user()->id, 'target' => $request->path(), 'method' => $request->method(),
+        $review = ['ability' => $ability, 'input' => $input, 'before' => $before, 'user' => $request->user()->id, 'target' => $request->path(), 'method' => $request->method(),
             'expires' => time() + 1800, 'fingerprint' => $this->fingerprint($request), 'back' => $back];
         $reviews = $request->session()->get('gov_national_reviews', []);
         $reviews = array_filter($reviews, fn ($entry) => $entry['expires'] > time());
@@ -73,9 +75,9 @@ class NationalChangeReview
         $review = $request->session()->get('gov_national_reviews.'.$token);
         abort_unless($review && $review['user'] === $request->user()->id && $review['expires'] > time(), 404);
         $route = app('router')->getRoutes()->match(Request::create(url($review['target']), $review['method']));
-        $ability = '';
+        $ability = $review['ability'] ?? '';
         foreach ($route->gatherMiddleware() as $middleware) {
-            if (str_starts_with($middleware, 'gov.can:')) {
+            if (! $ability && str_starts_with($middleware, 'gov.can:')) {
                 $ability = substr($middleware, 8);
             }
         }
@@ -94,6 +96,40 @@ class NationalChangeReview
 
     private function currentConfiguration(Request $request): array
     {
+        if ($request->routeIs('categories.update', 'categories.destroy', 'models.update', 'models.destroy',
+            'suppliers.update', 'suppliers.destroy', 'manufacturers.update', 'manufacturers.destroy')) {
+            $target = app(ReferenceRequestTarget::class)->resolve($request);
+            return ['reference' => $target->getAttributes(), 'owner' => app(ReferenceOwnershipService::class)->owner($target)];
+        }
+        if ($request->routeIs('gov.meta.converge.trigger')) {
+            return app(\GovStore\Metadata\Services\MetadataMaintenancePlan::class)->snapshot();
+        }
+        if ($request->routeIs('gov.scope.ownership.update')) {
+            return (array) DB::table('gov_reference_owners')->where('reference_type', $request->input('reference_type'))
+                ->where('reference_id', $request->input('reference_id'))->first();
+        }
+        if ($request->routeIs('gs-theme.assignments.update')) {
+            return DB::table('gs_theme_assignments')->where('scope_type', 'organization')->orderBy('id')->get()->map(fn ($row) => (array) $row)->all();
+        }
+        if ($request->routeIs('gov.catalog.product-types.finance')) {
+            $id = (int) $request->route('id');
+            return ['governance' => (array) DB::table('gov_category_governance')->where('category_id', $id)->first(),
+                'value' => (array) DB::table('gov_metadata_values')->where('subject_type', 'category')->where('subject_id', $id)
+                    ->where('namespace', \GovStore\Classification\Services\ProductTypeFinanceDefault::NAMESPACE)->first()];
+        }
+        if ($request->routeIs('gov.catalog.adoption.provision')) {
+            $node = DB::table('gov_catalog_nodes')->where('code', $request->input('unspsc_code'))->first();
+            return ['mapping' => (array) DB::table('gov_catalog_snipe_mappings')->where('code', $request->input('unspsc_code'))->first(),
+                'node' => (array) $node,
+                'category' => DB::table('categories')->where('name', $request->input('custom_name') ?: $node?->title_en)->get()->map(fn ($row) => (array) $row)->all()];
+        }
+        if ($request->routeIs('gov.catalog.bulk.execute')) {
+            $codes = array_column((array) $request->input('items', []), 'code');
+            $nodes = DB::table('gov_catalog_nodes')->whereIn('code', $codes)->orderBy('code')->get();
+            return ['nodes' => $nodes->map(fn ($row) => (array) $row)->all(),
+                'mappings' => DB::table('gov_catalog_snipe_mappings')->whereIn('code', $codes)->orderBy('code')->get()->map(fn ($row) => (array) $row)->all(),
+                'categories' => DB::table('categories')->whereIn('name', $nodes->pluck('title_en'))->orderBy('id')->get()->map(fn ($row) => (array) $row)->all()];
+        }
         if ($request->routeIs('gov.tracking.funding-types.*')) {
             $target = $request->route('funding_type') ?? $request->route('fundingType');
             $id = $target instanceof Model ? $target->getKey() : $target;
@@ -170,7 +206,9 @@ class NationalChangeReview
                 ->where('target_id', $request->input('target_id', $request->input('category_id')))->get()->toArray();
         }
         if ($request->routeIs('gov.catalog.mapping.save')) {
-            return (array) DB::table('gov_catalog_snipe_mappings')->where('code', $request->input('code'))->first();
+            return ['code_mapping' => (array) DB::table('gov_catalog_snipe_mappings')->where('code', $request->input('code'))->first(),
+                'target_mappings' => DB::table('gov_catalog_snipe_mappings')->where('category_id', $request->input('category_id'))
+                    ->orderBy('code')->get()->map(fn ($row) => (array) $row)->all()];
         }
         if ($request->routeIs('gov.catalog.finance.*')) {
             // Bind the review to the Finance rows it changes (or, for a new item, the whole group).

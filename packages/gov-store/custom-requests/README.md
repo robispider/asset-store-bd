@@ -2,10 +2,12 @@
 
 Office-scoped request catalog, basket, independent approvals, stock reservations and fulfillment for GovStore. See the [implementation and verification record](../../../docs/verification/custom-requests-refactor.md) and [local live testing guide](../../../docs/testing/local-live-testing.md).
 
+The [27 October requester-authority policy change](../../../docs/verification/requester-authority-approval-2026-10-27.md) supersedes the historical prohibition on requester-role automatic approval for new product request submissions.
+
 ## Workflow boundaries
 
 - `RequestWorkflow` defines supported types, policies and separate approval/fulfillment states. New requests always take their office from `TenantContext`; delivery is an optional destination.
-- Services authorize and lock authoritative rows inside mutations. Self-approval and the same person's two-stage decision are always denied. Stage abilities use GovAccess and retain its office shadow/enforce rollout semantics.
+- Services authorize and lock authoritative rows inside mutations. On submission, a current primary approver automatically satisfies a one-stage rule; a current final approver satisfies either approval rule. A primary approver's two-stage request goes directly to an independent final approver. Eligibility requires an activated same-company account, active office membership and a current responsibility or unexpired cover grant; superuser/native-admin status alone does not qualify. Product rules and thresholds remain recorded unchanged, alongside versioned submission-authority evidence. Automatic processing records no invented human decision. Manual self-approval and the same person's two human decisions remain denied, including in shadow mode. Stage abilities use GovAccess and retain its office shadow/enforce rollout semantics.
 - Approval reserves stock. MySQL mutations use current locking reads for reservations and serials, including after waiting on another transaction. Bulk issuance changes stock only through store-operations; adapters write history without checkout pivots. Serial issuance uses native checkout and records Goods Issue lines.
 - Request events and durable notices commit together. `gov-requests:maintain` runs hourly through the application's scheduler, expires baskets and escalates pending stages after three weekdays. Mail is disabled by default; enable `govstore-requests.mail_enabled` only after configuring the mail transport. Delivery retries can send duplicates.
 - Owner returns create an intent; authorized receipt drafting creates a linked DRAFT document. Physical receipt, evidence, metadata and posting remain in the existing document workspace. Current return scope is all issued bulk lines once; native check-in handles serialized assets.

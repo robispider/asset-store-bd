@@ -4,7 +4,36 @@ For agents (and developers) who add tests. Operators: see the [user guide](live-
 
 You normally write **JSON only**. The runner (`scripts/live-tests/`) executes it with a real browser and no language-model calls. Code changes are needed only for a brand-new action, widget adapter or observation (section 9).
 
+## Functional acceptance scope
+
+Follow [GovStore functional live acceptance](govstore-functional-live-acceptance.md).
+Use the [full implementation plan](../plans/govstore-full-functional-live-testing-plan-2026-10-25.md)
+for milestone order, harness changes, package coverage and story traceability.
+Cover all user-facing GovStore functions and full stories, then native Snipe-IT
+only where those workflows require it. Inventory actions from current routes,
+controllers and screens as well as `user_stories.md`; one JSON per story is not
+a coverage measure. A page-entry pass, an expected denial, or inspecting a seeded
+terminal state cannot establish successful completion of the story's actions.
+Keep the same created object through role handoffs, check each actor's queues
+and visible outcome, and independently verify persisted effects. Declare every
+supported alternative, blocked prerequisite and unimplemented business branch.
+
 ## 1. Workflow
+
+For the 25 October full acceptance exercise, live runs are **interface-only**.
+Configured targets ignore optional database connection settings. Actor discovery
+uses the protected account download and My access; record discovery uses the
+visible catalogue. `inspect`/`waitInspect` reopen normal screens using the current
+actor's session and identify their evidence as `browser-interface`. Legacy
+`observe`/`waitObserve` cases remain blocked until explicitly converted; never
+substitute UI values while continuing to call them database observations.
+
+New connected suites are `core-workflows`, `tracking-workflows`,
+`request-exceptions` and `interface-functions`. Their existence is not a claim
+that all cases pass or that all package functions have been implemented. Consult
+the execution record and full coverage report for actual results. Each new run
+keeps a private snapshot of its JSON/flows/contracts, and one writing run at a
+time may own a target. Keep credentials and screenshots in private storage.
 
 1. Read the feature's current code (routes, controller, view, policy). Do not rely on old reports. Decide what is **expected** from the business rule, not from what the page currently shows.
 2. Check what exists: `npm run test:live -- list`, `coverage`, `tests/live/feature-catalog.json`.

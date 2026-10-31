@@ -1,4 +1,4 @@
-﻿@php
+@php
     $user = auth()->user();
     $isSuperAdmin = $tenantContext->isGlobal;
     $isCompanyAdmin = $tenantContext->isCompanyAdmin;
@@ -6,7 +6,7 @@
     // Check if the current user is an Admin or SuperUser
     $canManageCollections = $user && ($user->isSuperUser() || $user->hasAccess('admin'));
 
-    $isGlobal = ($governance && $governance->governance_type === 'global');
+    $isGlobal = ($governance && in_array($governance->governance_type, ['global', 'national'], true));
     $scopeNoun = ($activeScopeType === 'company') ? 'organization' : 'office location';
 @endphp
 

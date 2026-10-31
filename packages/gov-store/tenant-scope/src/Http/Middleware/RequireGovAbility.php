@@ -45,6 +45,24 @@ class RequireGovAbility
 
     private function process($request, Closure $next, string $ability)
     {
+        // A national target selects national authorization and review even on a shared form.
+        if ($ability === 'catalog.reference.manage') {
+            $target = app(\GovStore\TenantScope\Services\ReferenceRequestTarget::class)->resolve($request);
+            if (app(\GovStore\TenantScope\Services\ReferenceOwnershipService::class)->getOwnershipState($target) === 'GLOBAL') {
+                $ability = 'catalog.master.manage';
+            } else {
+                abort_unless(app(\GovStore\TenantScope\Policies\CategoryBoundaryPolicy::class)
+                    ->canMutate($target, app(\GovStore\TenantScope\Contexts\TenantContext::class)), 403);
+            }
+        }
+        if ($ability === 'catalog.finance.default'
+            && app(\GovStore\Classification\Services\ProductTypeFinanceDefault::class)->scope('category', (int) $request->route('id'))[0] === 'national') {
+            $ability = 'catalog.master.manage';
+        }
+        if ($ability === 'catalog.office.adopt' && $request->routeIs('gov.catalog.adoption.provision', 'gov.catalog.references.store', 'gov.catalog.bulk.execute')
+            && app(\GovStore\TenantScope\Contexts\TenantContext::class)->isGlobal) {
+            $ability = 'catalog.master.manage';
+        }
         $decision = $this->access->decide($request->user(), $ability);
         if (! $decision->allowed) {
             $enforce = $this->access->enforces($ability) || $decision->reason === 'unknown_ability';

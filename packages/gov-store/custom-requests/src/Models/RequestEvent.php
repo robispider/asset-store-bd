@@ -15,8 +15,9 @@ class RequestEvent extends Model
 
     protected $table = 'custom_service_request_events';
 
-    // Disable default timestamps because we use immutable created_at only
-    public $timestamps = false;
+    // Immutable created_at only. PHP stamps it (not the column's DB default), so history times use
+    // the same clock and zone as submitted_at and the other request times.
+    const UPDATED_AT = null;
 
     protected $fillable = [
         'request_id',

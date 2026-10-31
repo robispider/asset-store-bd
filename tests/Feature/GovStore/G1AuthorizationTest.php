@@ -73,6 +73,8 @@ class G1AuthorizationTest extends TestCase
             $table->string('first_name')->nullable();
             $table->string('last_name')->nullable();
             $table->integer('location_id')->nullable();
+            $table->integer('company_id')->default(20);
+            $table->boolean('activated')->default(true);
             $table->timestamp('deleted_at')->nullable();
         });
         (require base_path('packages/gov-store/tenant-scope/src/database/migrations/2026_10_04_000001_create_gov_access_tables.php'))->up();
@@ -184,6 +186,42 @@ class G1AuthorizationTest extends TestCase
             $checked++;
         }
         $this->assertGreaterThanOrEqual(22, $checked);
+    }
+
+    public function test_default_configuration_blocks_employee_actions_without_an_environment_override(): void
+    {
+        $environment = \Illuminate\Support\Env::getRepository();
+        $original = $environment->get('GOVSTORE_ACCESS_MODE');
+        try {
+            $environment->clear('GOVSTORE_ACCESS_MODE');
+            config(['govstore-access' => require config_path('govstore-access.php')]);
+
+            $this->assertSame('enforce', config('govstore-access.mode'));
+            $user = $this->actor();
+            $request = Request::create('/gov-store/operations/hub');
+            $request->headers->set('Accept', 'application/json');
+            $request->setUserResolver(fn () => $user);
+            app()->instance('request', $request);
+
+            foreach (['catalog.office.adopt', 'storeops.documents.view', 'storeops.documents.post'] as $ability) {
+                $this->assertFalse(app(GovAccess::class)->permitsRequest($user, $ability));
+                $response = app(RequireGovAbility::class)->handle($request, function () {
+                    $this->fail('An employee reached a protected action under the default configuration.');
+                }, $ability);
+                $this->assertSame(403, $response->getStatusCode(), $ability);
+                $this->assertNotEmpty($response->getData(true)['reference_id']);
+            }
+            $this->assertSame(3, DB::table('gov_access_events')->where('outcome', 'denied')->count());
+            $this->assertSame(0, DB::table('gov_access_events')->where('outcome', 'shadow')->count());
+
+            $storekeeper = $this->actor('storekeeper');
+            $this->assertTrue(app(GovAccess::class)->permitsRequest($storekeeper, 'storeops.documents.post'));
+        } finally {
+            $environment->clear('GOVSTORE_ACCESS_MODE');
+            if ($original !== null) {
+                $environment->set('GOVSTORE_ACCESS_MODE', $original);
+            }
+        }
     }
 
     public function test_shadow_never_blocks_office_abilities_but_always_enforces_national_and_unknown_ones(): void
@@ -335,6 +373,7 @@ class G1AuthorizationTest extends TestCase
         });
         DB::table('locations')->insert(['id' => 10, 'company_id' => 20]);
         $user = $this->actor();
+        DB::table('gov_office_memberships')->insert(['user_id' => 1, 'location_id' => 10, 'status' => 'active', 'is_home_office' => true]);
         $user->location_id = 10;
         $user->company_id = 20;
         $context = app(TenantContext::class);
@@ -342,10 +381,10 @@ class G1AuthorizationTest extends TestCase
         $context->isCompanyAdmin = true;
         $context->configs = ['stale' => true];
         $resolver = Mockery::mock(AssignmentResolver::class);
-        $resolver->shouldReceive('resolveActiveRole')->with(1, 10)->once()->andReturn('employee');
+        $resolver->shouldReceive('resolveRoles')->with(1, 10, 20)->once()->andReturn(['employee']);
         $capabilities = Mockery::mock(CapabilityProfileResolver::class);
         $permissions = new EffectivePermissionSet([]);
-        $capabilities->shouldReceive('resolveSchema')->with('employee')->once()->andReturn($permissions);
+        $capabilities->shouldReceive('resolveSchema')->with(['employee'])->once()->andReturn($permissions);
         $adapter = Mockery::mock(SnipePermissionAdapter::class);
         $adapter->shouldReceive('adaptAndInject')->with($user, $permissions)->once();
         $middleware = new InitializeTenantContext($resolver, $capabilities, $adapter);
@@ -395,6 +434,10 @@ class G1AuthorizationTest extends TestCase
 
     public function test_access_approval_grants_cover_without_logout_and_cannot_be_replayed(): void
     {
+        Schema::create('locations', function (Blueprint $table) {
+            $table->increments('id'); $table->integer('company_id'); $table->timestamp('deleted_at')->nullable();
+        });
+        DB::table('locations')->insert(['id' => 10, 'company_id' => 20]);
         Schema::create('gov_office_memberships', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id');
@@ -407,8 +450,10 @@ class G1AuthorizationTest extends TestCase
             $table->integer('performed_by');
             $table->string('event_type');
             $table->text('details');
+            $table->timestamp('created_at')->useCurrent();
         });
         DB::table('users')->insert(['id' => 1, 'location_id' => 10]);
+        DB::table('gov_office_memberships')->insert(['user_id' => 1, 'location_id' => 10, 'status' => 'active']);
         $employee = $this->actor();
         $access = app(GovAccess::class);
         $this->assertFalse($access->decide($employee, 'storeops.documents.post')->allowed);

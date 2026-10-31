@@ -6,35 +6,43 @@ use App\Models\Location;
 use App\Models\User;
 use GovStore\TenantScope\Contexts\TenantContext;
 use GovStore\TenantScope\Services\CapabilityProfileResolver;
+use GovStore\TenantScope\Services\GovAccess;
+use GovStore\TenantScope\Services\TenantExecution;
 use Illuminate\Support\Facades\Auth;
 
 class ActorContext
 {
     public function run(User $actor, ?Location $office, callable $callback, string $role = 'employee'): mixed
     {
-        $previousActor = Auth::user();
-        $previousContext = app(TenantContext::class);
-        $context = new TenantContext;
-        $context->isActive = $office !== null;
-        $context->isGlobal = $office === null && $actor->isSuperUser();
-        $context->locationId = $office?->id;
-        $context->companyId = $office?->company_id;
-        $context->allowedLocationIds = $office ? [$office->id] : null;
-        $context->allowedCompanyIds = $office ? [$office->company_id] : null;
-        $context->isHomeOffice = true;
-        $context->effectivePermissions = app(CapabilityProfileResolver::class)->resolveSchema($role);
-        app()->instance(TenantContext::class, $context);
-        Auth::setUser($actor);
-        try {
-            // Resolve domain services after binding this operation's tenant context.
-            return $callback();
-        } finally {
-            app()->instance(TenantContext::class, $previousContext);
-            if ($previousActor) {
-                Auth::setUser($previousActor);
-            } else {
-                Auth::forgetUser();
-            }
+        $execution = app(TenantExecution::class);
+        if (! $office) {
+            app(ExperimentAccess::class)->authorize($actor);
+
+            return $execution->globalMaintenance(function () use ($actor, $callback) {
+                Auth::setUser($actor);
+                app(TenantContext::class)->isGlobal = true;
+
+                return $callback();
+            });
         }
+        $ability = match ($role) {
+            'storekeeper' => 'storeops.documents.post',
+            'primary_approver' => 'requests.approve.primary',
+            'final_approver' => 'requests.approve.final',
+            'office_admin' => 'organization.office.manage',
+            default => 'requests.submit',
+        };
+
+        return $execution->run(['actor_id' => $actor->id, 'scope_type' => 'location',
+            'scope_id' => $office->id, 'ability' => $ability], function () use ($actor, $office, $callback) {
+                $context = app(TenantContext::class);
+                $roles = app(GovAccess::class)->roles(Auth::user());
+                $resolved = collect(['storekeeper', 'primary_approver', 'final_approver', 'office_admin'])
+                    ->first(fn ($candidate) => in_array($candidate, $roles, true));
+                $context->isHomeOffice = (int) $actor->location_id === (int) $office->id;
+                $context->effectivePermissions = app(CapabilityProfileResolver::class)->resolveSchema($resolved);
+
+                return $callback();
+            });
     }
 }

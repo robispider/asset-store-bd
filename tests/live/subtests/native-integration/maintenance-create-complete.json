@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 1,
+  "id": "native-integration.maintenance-create-complete",
+  "title": "Storekeeper records maintenance on a fictional office asset, completes it, and reopens the asset maintenance history",
+  "evidenceLevel": "function",
+  "features": [
+    "user-story.us-19"
+  ],
+  "tags": [
+    "functional",
+    "multi-actor",
+    "write",
+    "connected"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "language": "en-US",
+    "timeoutMs": 240000,
+    "accessMode": "any"
+  },
+  "fixtures": {
+    "actors": {
+      "storekeeper": {
+        "role": "storekeeper",
+        "capabilities": {
+          "allOf": [
+            "storeops.documents.draft",
+            "storeops.documents.post",
+            "requests.fulfill"
+          ]
+        }
+      }
+    },
+    "records": {
+      "item": {
+        "kind": "assetModel",
+        "categoryContains": "Desktop Computers",
+        "policy": "PRIMARY_AND_FINAL",
+        "requestQuantity": 1
+      }
+    }
+  },
+  "data": {
+    "maintenanceName": {
+      "generate": "markedText",
+      "prefix": "LIVE-MAINT",
+      "length": 7
+    },
+    "purpose": {
+      "generate": "markedText",
+      "prefix": "LIVE-E2E",
+      "length": 6
+    },
+    "receiptDate": {
+      "generate": "date",
+      "offsetDays": 0
+    }
+  },
+  "preconditions": [],
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "storekeeper"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/operations/kardex/assetmodel/${fixtures.item.id}"
+    },
+    {
+      "action": "capture",
+      "target": "css=#units tr a[href*=\"/hardware/\"] >> nth=0",
+      "attribute": "href",
+      "pattern": "/hardware/(\\d+)",
+      "as": "assetId"
+    },
+    {
+      "action": "capture",
+      "target": "css=#units tr a[href*=\"/hardware/\"] >> nth=0",
+      "as": "assetTag"
+    },
+    {
+      "action": "goto",
+      "url": "/maintenances/create"
+    },
+    {
+      "action": "fill",
+      "target": "css=input[name=name]",
+      "value": "${data.maintenanceName}"
+    },
+    {
+      "action": "select2",
+      "target": "css=select[name=\"selected_assets[]\"]",
+      "search": "${captured.assetTag}",
+      "option": "${captured.assetTag}"
+    },
+    {
+      "action": "select2",
+      "target": "css=#maintenance_type_id",
+      "selection": "first",
+      "as": "maintenanceType",
+      "search": ""
+    },
+    {
+      "action": "click",
+      "target": "css=input[name=start_date]"
+    },
+    {
+      "action": "click",
+      "target": "css=.datepicker-days:visible tfoot .today:visible"
+    },
+    {
+      "action": "assert",
+      "target": "css=input[name=start_date]",
+      "test": "value",
+      "equals": "${data.receiptDate}"
+    },
+    {
+      "action": "fill",
+      "target": "css=textarea[name=notes]",
+      "value": "${data.purpose} - fictional UI maintenance exercise"
+    },
+    {
+      "action": "fill",
+      "target": "css=input[name=cost]",
+      "value": "0"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form[action$=\"/maintenances\"] button[type=submit]",
+      "rejectFlashErrors": true
+    },
+    {
+      "action": "ledger",
+      "kind": "native_maintenance_creation",
+      "id": "${data.maintenanceName}",
+      "effect": "Native maintenance form submitted successfully; exact identifier and completion require subsequent UI readback",
+      "cleanup": "retained"
+    },
+    {
+      "action": "goto",
+      "url": "/maintenances"
+    },
+    {
+      "action": "fill",
+      "target": "css=.fixed-table-toolbar .search input",
+      "value": "${data.maintenanceName}"
+    },
+    {
+      "action": "keyboard",
+      "key": "Enter"
+    },
+    {
+      "action": "wait",
+      "target": "css=#ListingTable tbody tr:has-text(\"${data.maintenanceName}\")"
+    },
+    {
+      "action": "capture",
+      "target": "css=#ListingTable tbody tr:has-text(\"${data.maintenanceName}\") a[href$=\"/edit\"]",
+      "attribute": "href",
+      "pattern": "/maintenances/(\\d+)/edit",
+      "as": "maintenanceId"
+    },
+    {
+      "action": "click",
+      "target": "css=.fixed-columns-right a[href$=\"/maintenances/${captured.maintenanceId}/edit\"]",
+      "waitForNavigation": true
+    },
+    {
+      "action": "assert",
+      "target": "css=input[name=name]",
+      "test": "value",
+      "equals": "${data.maintenanceName}"
+    },
+    {
+      "action": "goto",
+      "url": "/maintenances/${captured.maintenanceId}"
+    },
+    {
+      "action": "capture",
+      "url": true,
+      "as": "maintenanceUrl"
+    },
+    {
+      "action": "assert",
+      "target": "css=.content",
+      "test": "text",
+      "contains": "${captured.assetTag}"
+    },
+    {
+      "action": "ledger",
+      "kind": "native_maintenance",
+      "id": "${captured.maintenanceId}",
+      "effect": "Marked maintenance on the exact scoped fictional asset; completion is verified by subsequent UI readback",
+      "cleanup": "retained"
+    },
+    {
+      "action": "click",
+      "target": "css=button[data-target=\"#completeMaintenanceModal\"]"
+    },
+    {
+      "action": "fill",
+      "target": "css=#completionNote",
+      "value": "${data.purpose} - completed fictional staging exercise"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=#completeMaintenanceModal button[type=submit]",
+      "rejectFlashErrors": true
+    },
+    {
+      "action": "goto",
+      "url": "${captured.maintenanceUrl}"
+    },
+    {
+      "action": "assert",
+      "target": "css=.content",
+      "test": "text",
+      "contains": "${captured.assetTag}"
+    },
+    {
+      "action": "assert",
+      "target": "css=button[data-target=\"#completeMaintenanceModal\"]",
+      "test": "count",
+      "equals": 0
+    },
+    {
+      "action": "assert",
+      "target": "css=.content span.disabled[title]",
+      "test": "text",
+      "matches": "[Cc]omplete|সম্পন্ন"
+    },
+    {
+      "action": "goto",
+      "url": "/hardware/${captured.assetId}"
+    },
+    {
+      "action": "click",
+      "target": "css=a[href=\"#maintenances\"]"
+    },
+    {
+      "action": "wait",
+      "target": "css=#maintenancesListingTable tbody tr:has-text(\"${data.maintenanceName}\")"
+    },
+    {
+      "action": "assert",
+      "target": "css=#maintenancesListingTable tbody tr:has-text(\"${data.maintenanceName}\")",
+      "test": "text",
+      "contains": "${captured.assetTag}"
+    }
+  ],
+  "cleanup": {
+    "policy": "retained-with-report",
+    "description": "New marked maintenance and audit retained. Existing asset custody and status are not changed by this case.",
+    "steps": []
+  },
+  "description": "Discovers the exact existing fictional asset from its scoped GovStore stock card, then performs native maintenance creation, readback, completion and linked history. Custody request/return is verified by its separate connected case."
+}

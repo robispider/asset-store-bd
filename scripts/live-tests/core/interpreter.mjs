@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { inspectInterface } from '../bridge/interface-inspections.mjs';
 
 /**
  * GovStore Live Testing - Step Interpreter
@@ -51,6 +52,31 @@ export class StepInterpreter {
     }
 
     switch (step.action) {
+      case 'openPopup': {
+        this.browserActions.locators.vars = varContext;
+        const target = String(varContext.interpolate(step.target));
+        const [popup] = await Promise.all([page.waitForEvent('popup'), this.browserActions.locators.resolve(page, target).click()]);
+        await popup.waitForLoadState('load');
+        if (new URL(popup.url()).origin !== new URL(baseUrl).origin) throw new Error('Unsupported: popup left the selected target');
+        session.current = popup;
+        return { action: 'openPopup', path: new URL(popup.url()).pathname, actor: session.actor };
+      }
+      case 'inspect':
+      case 'waitInspect': {
+        const args = varContext.interpolateDeep(step.args || {});
+        const deadline = Date.now() + (step.timeoutMs || 15000);
+        let data;
+        do {
+          data = await inspectInterface(page, step.check, args, baseUrl);
+          const actual = step.path?.split('.').reduce((o, k) => o?.[k], data);
+          if (step.action === 'inspect' || String(actual) === String(varContext.interpolate(step.equals))) {
+            if (step.as) varContext.setObserved(step.as, data);
+            return { action: step.action, check: step.check, channel: 'browser-interface', result: data };
+          }
+          await page.waitForTimeout(step.intervalMs || 500);
+        } while (Date.now() < deadline);
+        throw new Error(`Assertion failed: interface ${step.check}.${step.path} did not become the expected value; last ${JSON.stringify(data)}`);
+      }
       case 'observe': {
         const args = varContext.interpolateDeep(step.args || {});
         const data = await this.phpBridge.observe(step.check, args);
@@ -60,6 +86,10 @@ export class StepInterpreter {
 
       case 'actor': {
         const name = String(varContext.interpolate(step.name));
+        if (step.fresh && session.pages.has(name)) {
+          await session.pages.get(name).context().close();
+          session.pages.delete(name);
+        }
         if (!session.pages.has(name)) {
           if (!this.options.newPage) throw new Error(`Unsupported: no session factory to open actor '${name}'`);
           session.pages.set(name, await this.options.newPage(name));
@@ -77,7 +107,13 @@ export class StepInterpreter {
           effect: step.effect || null,
           cleanup: step.cleanup || 'retained'
         });
-        this.options.ledger?.push({ ...entry, recordedAt: new Date().toISOString() });
+        const previous = this.options.ledger?.find(e => e.kind === entry.kind && String(e.id) === String(entry.id));
+        if (previous && entry.cleanup === 'removed') {
+          previous.cleanup = 'removed';
+          previous.cleanupVerifiedAt = new Date().toISOString();
+        } else {
+          this.options.ledger?.push({ ...entry, recordedAt: new Date().toISOString() });
+        }
         return { action: 'ledger', ...entry };
       }
 
@@ -106,15 +142,26 @@ export class StepInterpreter {
         if (!PROBE_PREFIXES.some(p => route === p || route.startsWith(`${p}/`))) {
           throw new Error(`Unsupported: probe path '${route}' is outside the allowlist`);
         }
-        const response = await page.context().request.get(new URL(route, baseUrl).toString(), { maxRedirects: 0 });
-        const status = response.status();
+        let status;
+        if (this.options.interfaceOnly) {
+          const screen = await page.context().newPage();
+          try {
+            const response = await screen.goto(new URL(route, baseUrl).toString(), { waitUntil: 'load' });
+            let request = response.request();
+            while (request.redirectedFrom()) request = request.redirectedFrom();
+            status = (await request.response()).status();
+          } finally { await screen.close(); }
+        } else {
+          const response = await page.context().request.get(new URL(route, baseUrl).toString(), { maxRedirects: 0 });
+          status = response.status();
+        }
         if (step.as) varContext.setCaptured(step.as, status);
         const mode = this.options.accessMode;
         const expected = [].concat(step.expectStatusByMode?.[mode] ?? step.expectStatus ?? []);
         if (expected.length && !expected.includes(status)) {
           throw new Error(`Assertion failed: probe ${route} returned ${status}, expected one of ${expected.join(',')} (access mode: ${mode})`);
         }
-        return { action: 'probe', channel: 'http', path: route, status };
+        return { action: 'probe', channel: this.options.interfaceOnly ? 'browser-navigation' : 'http', path: route, status };
       }
 
       default:
@@ -126,8 +173,10 @@ export class StepInterpreter {
     const journeyId = journeyCase.journeyId || journeyCase.caseId;
     const caseId = journeyCase.caseId || journeyId;
     const startTime = Date.now();
+    const deadline = startTime + (journeyCase.execution?.timeoutMs || 60000);
     const session = { current: page, pages: new Map([['default', page]]), actor: 'default' };
     let executed = 0;
+    let skippedSteps = 0;
     let failure = null;
 
     this.eventLogger.log('test_started', { journeyId, caseId, title: journeyCase.title });
@@ -135,20 +184,25 @@ export class StepInterpreter {
     try {
       for (const step of journeyCase.steps) {
         executed++;
+        if (Date.now() > deadline) throw new Error('Timeout: journey execution deadline exceeded before the next action');
         this.eventLogger.log('step_started', { journeyId, caseId, stepIndex: executed, action: step.action, flow: step._flow, actor: session.actor });
         const result = await this.runStep(session, step, varContext, baseUrl);
-        this.eventLogger.log('step_finished', { journeyId, caseId, stepIndex: executed, status: 'passed', result });
+        if (Date.now() > deadline) throw new Error('Timeout: journey execution deadline exceeded during the action');
+        if (result?.skipped) skippedSteps++;
+        this.eventLogger.log('step_finished', { journeyId, caseId, stepIndex: executed, status: result?.skipped ? 'skipped' : 'passed', result });
       }
     } catch (err) {
       const step = journeyCase.steps[executed - 1];
       failure = { error: err.message, failedStepIndex: executed, failedStep: step, failureClass: classifyFailure(err.message) };
+      if (session.current.__liveNavigation) failure.navigation = session.current.__liveNavigation;
       this.eventLogger.log('step_failed', { journeyId, caseId, stepIndex: executed, error: err.message, failureClass: failure.failureClass, step });
 
-      if (this.options.artifactsDir && !SENSITIVE_FLOWS.has(step?._flow)) {
+      if (this.options.artifactsDir && !step?._sensitive && !step?.sensitive && !SENSITIVE_FLOWS.has(step?._flow)) {
         try {
           fs.mkdirSync(this.options.artifactsDir, { recursive: true });
           const file = `${caseId.replace(/[^a-z0-9._-]/gi, '_')}-step${executed}.png`;
-          await session.current.screenshot({ path: path.join(this.options.artifactsDir, file), fullPage: true });
+          await session.current.screenshot({ path: path.join(this.options.artifactsDir, file), fullPage: true,
+            mask: [session.current.locator('.phpdebugbar, .govmem-code, .govmem-code-input, input[type="password"], input[name="verification_code"], input[name="invitation_code"]')] });
           failure.screenshot = file;
         } catch { /* evidence is best-effort */ }
       }
@@ -176,6 +230,7 @@ export class StepInterpreter {
       caseId,
       durationMs,
       stepsExecuted: executed,
+      skippedSteps,
       cleanup,
       variables: { captured: varContext.captured, observed: varContext.observed }
     };

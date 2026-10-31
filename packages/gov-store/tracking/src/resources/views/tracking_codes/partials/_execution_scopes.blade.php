@@ -23,11 +23,13 @@
         {{-- task-form.js toggles this group; the inline display is its initial state. --}}
         <div id="geo-select-group" class="gs-tracking-indent" @if($geoVal !== 'GeoArea') style="display: none;" @endif>
             <label class="gs-sr-only" for="geo_area_id">{{ __('govtracking::general.task.select_region') }}</label>
-            <select name="geo_area_id" id="geo_area_id" class="form-control select2 gs-tracking-half">
+            {{-- task-form.js searches areas over gov.geo.search; only the chosen area is rendered here. --}}
+            <select name="geo_area_id" id="geo_area_id" class="form-control gs-tracking-half"
+                    @if(Route::has('gov.geo.search')) data-geo-search="{{ route('gov.geo.search') }}" @endif>
                 <option value="">{{ __('govtracking::general.task.select_region') }}</option>
                 @if(isset($geoAreas))
                     @foreach($geoAreas as $area)
-                        <option value="{{ $area->GeoAreaId }}" {{ (isset($activeGeo) && $activeGeo->target_id == $area->GeoAreaId) ? 'selected' : '' }}>{{ ($bnAreas ? ($area->bn_name ?? null) : null) ?: $area->en_name }} ({{ $area->geo_type }})</option>
+                        <option value="{{ $area->GeoAreaId }}" selected>{{ ($bnAreas ? ($area->bn_name ?? null) : null) ?: $area->en_name }} ({{ $area->geo_type }})</option>
                     @endforeach
                 @endif
             </select>

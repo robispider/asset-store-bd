@@ -8,16 +8,21 @@ use App\Models\Component;
 use App\Models\Location;
 use App\Models\Setting;
 use App\Models\User;
+use GovStore\Classification\Services\FinanceCatalog;
 use GovStore\CustomRequests\Factories\RequestableFactory;
 use GovStore\CustomRequests\Models\DraftBasket;
 use GovStore\CustomRequests\Services\CatalogService;
 use GovStore\Experimentation\Services\ActorContext;
 use GovStore\Experimentation\Services\BangladeshPeople;
 use GovStore\Experimentation\Services\BangladeshScenario;
-use GovStore\Experimentation\Services\ExperimentManager;
+use GovStore\Experimentation\Services\ExperimentFiles;
 use GovStore\Experimentation\Services\ExperimentLedgerOpening;
+use GovStore\Experimentation\Services\ExperimentManager;
+use GovStore\Experimentation\Services\ExperimentTagRehearsal;
+use GovStore\Experimentation\Services\ExperimentVerifier;
 use GovStore\Experimentation\Services\ExperimentWiper;
 use GovStore\Experimentation\Services\RecordRegistry;
+use GovStore\Experimentation\Services\ScenarioManifest;
 use GovStore\OfficeMembership\Models\OfficeMembership;
 use GovStore\OfficeMembership\Models\OfficeResponsibility;
 use GovStore\StoreOperations\Enums\DocumentState;
@@ -35,6 +40,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use Symfony\Component\Process\Process;
 
 class ExperimentTest extends TestCase
 {
@@ -61,8 +69,11 @@ class ExperimentTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        Company::flushCompanyIdsCache();
+        Setting::$_cache = null;
         config(['govstore-experiments.enabled' => true, 'govstore-experiments.database_reset_enabled' => true, 'govstore-experiments.connection' => 'sync', 'app.debug' => false]);
         config(['logging.default' => 'experiment_test', 'logging.channels.experiment_test' => ['driver' => 'single', 'path' => storage_path('framework/experiment-test.log')]]);
+        Storage::fake('committee_private');
         if (! Schema::hasTable('gov_experiment_runs')) {
             (require dirname(__DIR__).'/src/database/migrations/2026_10_04_000001_create_gov_experiment_tables.php')->up();
         }
@@ -77,6 +88,9 @@ class ExperimentTest extends TestCase
         $this->assertSame($names->name(3, 2026), $names->name(3, 2026));
         $this->assertMatchesRegularExpression('/[\x{0980}-\x{09FF}]/u', $names->name(3)['display_name']);
         $this->assertSame('mdkamrulislam123', $names->username(['first_name' => 'Md. Kamrul', 'last_name' => 'Islam'], 123));
+        $manifest = app(ScenarioManifest::class);
+        $this->assertSame('A4 Paper · D7-03', $manifest->name('D7 A4 Paper 3', 'D7'));
+        $this->assertSame('A4 Paper Model · D7-02', $manifest->name('A4 Paper · D7-03 Model 2', 'D7'));
     }
 
     public function test_only_real_superusers_can_manage_and_production_is_blocked(): void
@@ -92,6 +106,22 @@ class ExperimentTest extends TestCase
         $this->actingAs($root)->get(route('gov.experiments.index'))->assertForbidden();
     }
 
+    public function test_unknown_package_schema_blocks_admission_before_creating_a_run(): void
+    {
+        $root = $this->root();
+        $before = DB::table('gov_experiment_runs')->count();
+        Schema::create('gov_unclassified_seed_fixture', fn ($table) => $table->id());
+        try {
+            app(ExperimentManager::class)->populate($root, 'quick');
+            $this->fail('A package table with no lifecycle adapter was ignored.');
+        } catch (\RuntimeException $error) {
+            $this->assertStringContainsString('ownership or preservation', $error->getMessage());
+            $this->assertSame($before, DB::table('gov_experiment_runs')->count());
+        } finally {
+            Schema::drop('gov_unclassified_seed_fixture');
+        }
+    }
+
     public function test_populate_quick_verify_rerun_preview_and_wipe_preserve_unrelated_data(): void
     {
         Storage::fake('local');
@@ -103,6 +133,10 @@ class ExperimentTest extends TestCase
         $manager->dispatch($run, $root);
         $run->refresh();
         $this->assertSame('ready', $run->status, $run->error ?? json_encode($run->report['verification'] ?? []));
+        $this->assertSame(ScenarioManifest::VERSION, $run->report['scenario_version']);
+        foreach (['workflow_actions', 'reservations', 'ledger_chains', 'committee', 'typed_metadata', 'tracking_provenance', 'appearance'] as $check) {
+            $this->assertTrue($run->report['verification']['checks'][$check], $check);
+        }
         $this->assertSame('1234567890', $run->password);
         $this->assertSame(64, count(app(RecordRegistry::class)->ids($run, 'users')));
         $this->assertSame(120, count(app(RecordRegistry::class)->ids($run, 'assets')));
@@ -121,14 +155,21 @@ class ExperimentTest extends TestCase
             $this->assertTrue(DB::table('gov_office_responsibilities')->where('location_id', $opening->location_id)
                 ->where('user_id', $opening->opened_by)->where('role_slug', 'storekeeper')->exists());
             $movements = DB::table('gov_inventory_movements')->where('document_id', $document->id)->get();
-            $this->assertCount(4, $movements);
+            $this->assertCount(25, $movements);
+            $this->assertSame(['accessory' => 8, 'assetmodel' => 1, 'component' => 4, 'consumable' => 12], $movements->countBy('stockable_type')->sortKeys()->all());
             foreach ($movements as $movement) {
-                $this->assertSame('component', $movement->stockable_type);
-                $this->assertEquals(1, $movement->quantity);
-                $this->assertEquals(1, $movement->balance_after);
-                $this->assertEquals(101, DB::table('components')->where('id', $movement->stockable_id)->value('qty'));
+                $quantity = in_array($movement->stockable_type, ['component', 'assetmodel'], true) ? 1 : 10;
+                $this->assertEquals($quantity, $movement->quantity);
+                $this->assertEquals($quantity, $movement->balance_after);
+                if ($movement->stockable_type === 'component') {
+                    $this->assertEquals(101, DB::table('components')->where('id', $movement->stockable_id)->value('qty'));
+                }
             }
         }
+        foreach (User::withoutGlobalScopes()->whereIn('id', app(RecordRegistry::class)->ids($run, 'users'))->get() as $person) {
+            $this->assertTrue(Hash::check($run->password, $person->password));
+        }
+        $this->assertFalse(DB::table('consumables')->whereIn('id', app(RecordRegistry::class)->ids($run, 'consumables'))->where('name', 'like', 'EXP-%')->exists());
         $employee = User::withoutGlobalScopes()->whereIn('id', app(RecordRegistry::class)->ids($run, 'users'))->whereNotNull('location_id')->firstOrFail();
         $this->assertSame(app(BangladeshPeople::class)->username($employee->getAttributes(), $employee->id), $employee->username);
         $this->assertTrue(Hash::check($run->password, $employee->password));
@@ -157,6 +198,17 @@ class ExperimentTest extends TestCase
             }
         }
         $before = app(RecordRegistry::class)->counts($run);
+        $audit = app(ExperimentVerifier::class)->verify($run, $root, false);
+        $this->assertTrue($audit['passed'], json_encode($audit['checks']));
+        $this->assertSame($before, app(RecordRegistry::class)->counts($run), 'Read-only audit changed ownership');
+        $returnId = $run->report['units']['v2-request-consumable-return']['document_id'];
+        DB::table('gov_documents')->where('id', $returnId)->update(['status' => 'DRAFT']);
+        $this->assertFalse(app(ExperimentVerifier::class)->verify($run, $root, false)['checks']['workflow_actions'], 'A return without posted receipt was accepted');
+        DB::table('gov_documents')->where('id', $returnId)->update(['status' => 'POSTED']);
+        $files = app(ExperimentFiles::class)->owned($run);
+        $this->assertNotEmpty($files);
+        $committeeHistory = DB::table('gov_committee_ledger')->count();
+        $accessHistory = DB::table('gov_access_requests')->count();
         $sequences = DB::table('gov_store_document_sequences')->orderBy('prefix')->get()->toArray();
         app(BangladeshScenario::class)->populate($run, $root, $run->password);
         $this->assertSame($before, app(RecordRegistry::class)->counts($run));
@@ -173,8 +225,126 @@ class ExperimentTest extends TestCase
         $this->assertEquals($sequences, DB::table('gov_store_document_sequences')->orderBy('prefix')->get()->toArray());
         $this->assertTrue(DB::table('companies')->where('id', $outside->id)->exists());
         $this->assertTrue(DB::table('users')->where('id', $root->id)->exists());
+        $this->assertSame($committeeHistory, DB::table('gov_committee_ledger')->count(), 'Committee audit history was removed');
+        $this->assertSame($accessHistory, DB::table('gov_access_requests')->count(), 'Access decision history was removed');
         $this->assertSame(8, DB::table('gov_geo_areas')->where('GeoLevel', 1)->count());
         $this->assertSame([], Storage::disk('local')->allFiles('gov-experiments/'.$run->id.'/documents'));
+        foreach ($files as $file) {
+            $this->assertFalse(Storage::disk($file['disk'])->exists($file['path']), 'Owned private evidence survived wipe');
+        }
+    }
+
+    public static function currentProfiles(): array
+    {
+        return [['government'], ['large']];
+    }
+
+    #[DataProvider('currentProfiles')]
+    #[Group('experiment-volume')]
+    public function test_current_profile_actions_and_openings_reconcile_without_touching_other_runs(string $profile): void
+    {
+        Storage::fake('local');
+        $root = $this->root();
+        $manager = app(ExperimentManager::class);
+        $run = $manager->populate($root, $profile);
+        $manager->dispatch($run, $root);
+        $this->assertSame('ready', $run->refresh()->status, $run->error ?? json_encode($run->report['verification'] ?? []));
+        $this->assertTrue($run->report['verification']['checks']['workflow_actions']);
+        $this->assertTrue($run->report['verification']['checks']['ledger_chains']);
+        $this->assertTrue($run->report['verification']['checks']['tracking_provenance']);
+        $this->assertTrue($run->report['verification']['checks']['geo_sources']);
+        $this->assertSame(config('govstore-experiments.profiles.'.$profile.'.offices') - 4,
+            DB::table('gov_store_ledger_openings')->whereIn('location_id', app(RecordRegistry::class)->ids($run, 'locations'))->count());
+        $preview = app(ExperimentWiper::class)->preview($run, 'dataset', $root);
+        $this->assertEmpty($preview['blockers'], json_encode($preview['blockers']));
+        $manager->requestWipe($run, $root, 'dataset', $run->label, $preview['fingerprint']);
+        $this->assertSame('wiped', $run->refresh()->status);
+    }
+
+    public function test_tag_rehearsal_requires_gates_issues_both_formats_once_and_preserves_permanent_evidence(): void
+    {
+        $this->withTagDatabase(fn () => $this->verifyTagRehearsal());
+    }
+
+    private function withTagDatabase(callable $callback): void
+    {
+        $original = DB::connection()->getDatabaseName();
+        if ($original !== trim(file_get_contents(base_path('storage/framework/experiment-test-database.txt')))
+            || ! preg_match('/^govstore_experiment_test_[0-9]{14}$/', $original)) {
+            throw new \RuntimeException('Tag tests require the guarded isolated schema.');
+        }
+        $pdo = DB::connection()->getPdo();
+        $target = 'govstore_experiment_test_'.date('YmdHis');
+        $this->assertNotSame($original, $target);
+        $tables = $pdo->query('SHOW TABLES')->fetchAll(\PDO::FETCH_COLUMN);
+        $ddl = [];
+        foreach ($tables as $table) {
+            $ddl[] = $pdo->query('SHOW CREATE TABLE `'.$table.'`')->fetch(\PDO::FETCH_NUM)[1];
+        }
+        $pdo->exec('CREATE DATABASE `'.$target.'` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
+        $connection = DB::getDefaultConnection();
+        try {
+            $pdo->exec('USE `'.$target.'`');
+            $pdo->exec('SET FOREIGN_KEY_CHECKS=0');
+            foreach ($ddl as $statement) {
+                $pdo->exec($statement);
+            }
+            foreach (['gov_geo_areas', 'custom_fields', 'gov_metadata_field_mappings'] as $table) {
+                $pdo->exec('INSERT INTO `'.$target.'`.`'.$table.'` SELECT * FROM `'.$original.'`.`'.$table.'`');
+            }
+            $pdo->exec('SET FOREIGN_KEY_CHECKS=1');
+            config(['database.connections.'.$connection.'.database' => $target]);
+            DB::purge($connection);
+            if (DB::connection()->getDatabaseName() !== $target) {
+                throw new \RuntimeException('Refusing tag rehearsal outside its separate schema.');
+            }
+            Setting::$_cache = null;
+            Company::flushCompanyIdsCache();
+            Setting::factory()->create(['site_name' => 'Isolated tag rehearsal', 'locale' => 'en-US', 'full_multiple_companies_support' => 1]);
+            $callback();
+        } finally {
+            $pdo->exec('SET FOREIGN_KEY_CHECKS=1');
+            $pdo->exec('USE `'.$original.'`');
+            config(['database.connections.'.$connection.'.database' => $original]);
+            DB::purge($connection);
+            Setting::$_cache = null;
+            Company::flushCompanyIdsCache();
+            // Exact schema created by this method; never the source or the suite's shared clone.
+            $pdo->exec('DROP DATABASE `'.$target.'`');
+        }
+    }
+
+    private function verifyTagRehearsal(): void
+    {
+        Storage::fake('local');
+        $root = $this->root();
+        $manager = app(ExperimentManager::class);
+        $run = $manager->populate($root, 'quick');
+        $manager->dispatch($run, $root);
+        $service = app(ExperimentTagRehearsal::class);
+        try {
+            $service->run($run, $root);
+            $this->fail('Issuance bypassed the installation gates.');
+        } catch (\RuntimeException $error) {
+            $this->assertStringContainsString('gates', $error->getMessage());
+        }
+        config(['asset-tagging.rehearsal' => true, 'asset-tagging.single_issuer' => true]);
+        Setting::firstOrFail()->forceFill(['auto_increment_assets' => 1, 'auto_increment_prefix' => 'TEST-', 'next_auto_tag_base' => 1])->save();
+        Setting::$_cache = null;
+        $finance = app(FinanceCatalog::class);
+        $item = $finance->create(['group_code' => '98', 'subgroup_code' => '01', 'group_name' => 'Fictional isolated tests',
+            'subgroup_name' => 'Sample', 'item_name' => 'Fictional desktop'], $root->id);
+        $finance->activate([$item->gov_code], 'Fictional test authority in isolated schema', $root->id);
+        $result = $service->run($run, $root);
+        $this->assertSame(2, $result['issued_assets']);
+        $beforeRepeat = app(RecordRegistry::class)->counts($run);
+        $this->assertEquals($result, $service->run($run, $root));
+        $this->assertSame($beforeRepeat, app(RecordRegistry::class)->counts($run));
+        $audit = app(ExperimentVerifier::class)->verify($run->fresh(), $root);
+        $this->assertTrue($audit['passed'], json_encode($audit['checks']));
+        $this->assertTrue($audit['checks']['managed_tags']);
+        $preview = app(ExperimentWiper::class)->preview($run, 'dataset', $root);
+        $this->assertContains('gov_asset_registrations: issued asset tags are permanent', $preview['blockers']);
     }
 
     private function root(): User
@@ -323,6 +493,10 @@ class ExperimentTest extends TestCase
         $manager = app(ExperimentManager::class);
         $run = $manager->populate($root, 'quick');
         $blockedOpening = \Mockery::mock(ExperimentLedgerOpening::class);
+        // Resume a genuinely older scenario, without silently upgrading its completed units.
+        $legacyReport = $run->report;
+        $legacyReport['scenario_version'] = 'bd-government-v1';
+        $run->update(['report' => $legacyReport]);
         $blockedOpening->shouldReceive('open')->once()->andThrow(new \RuntimeException('Simulated stock interruption'));
         app()->instance(ExperimentLedgerOpening::class, $blockedOpening);
         try {
@@ -401,6 +575,56 @@ class ExperimentTest extends TestCase
         }
 
         return [$run, $office, $keeper];
+    }
+
+    public function test_seed_execution_rechecks_real_roles_and_restores_shared_context_after_failure(): void
+    {
+        [$run, $office, $keeper] = $this->openingFixture();
+        $context = app(TenantContext::class);
+        $before = clone $context;
+        $previous = Auth::user();
+        try {
+            app(ActorContext::class)->run($keeper, $office, function () {
+                throw new \RuntimeException('Fictional action failed');
+            }, 'storekeeper');
+        } catch (\RuntimeException $error) {
+            $this->assertSame('Fictional action failed', $error->getMessage());
+        }
+        $this->assertSame($context, app(TenantContext::class));
+        $this->assertEquals($before, $context);
+        $this->assertSame($previous, Auth::user());
+        OfficeResponsibility::where('location_id', $office->id)->where('user_id', $keeper->id)->delete();
+        $called = false;
+        try {
+            app(ActorContext::class)->run($keeper, $office, function () use (&$called) {
+                $called = true;
+            }, 'storekeeper');
+            $this->fail('A supplied role string granted posting authority.');
+        } catch (AuthorizationException $error) {
+            $this->assertFalse($called);
+        }
+        $this->assertEquals($before, $context);
+    }
+
+    public function test_private_file_manifest_refuses_tampering_without_deleting_evidence(): void
+    {
+        Storage::fake('local');
+        [$run] = $this->openingFixture();
+        $path = 'tracking-documents/999/fictional.pdf';
+        Storage::disk('local')->put($path, 'Fictional supporting evidence');
+        $files = app(ExperimentFiles::class);
+        $files->track($run, 'local', $path);
+        $manifest = 'gov-experiments/'.$run->id.'/artifacts.json';
+        $data = json_decode(Storage::disk('local')->get($manifest), true);
+        $data['files'][0]['path'] = 'tracking-documents/998/unrelated.pdf';
+        Storage::disk('local')->put($manifest, json_encode($data));
+        try {
+            $files->owned($run);
+            $this->fail('Changed private ownership evidence was trusted.');
+        } catch (\RuntimeException $error) {
+            $this->assertStringContainsString('verification', $error->getMessage());
+        }
+        $this->assertTrue(Storage::disk('local')->exists($path));
     }
 
     public function test_zero_opening_is_idempotent_and_preserves_shared_context_and_actor(): void
@@ -500,7 +724,7 @@ class ExperimentTest extends TestCase
         $password = 'Isolated-Target-Bridge-Canary';
         $keeper->forceFill(['password' => Hash::make($password)])->saveQuietly();
         $call = function (string $action, array $input = []) use ($target): array {
-            $process = new \Symfony\Component\Process\Process([PHP_BINARY, '-d', 'xdebug.mode=off',
+            $process = new Process([PHP_BINARY, '-d', 'xdebug.mode=off',
                 base_path('scripts/live-tests/bridge/live-test-adapter.php'), $action, '--stdin']);
             $process->setInput(json_encode([...$input, '_target' => $target]));
             $process->run();

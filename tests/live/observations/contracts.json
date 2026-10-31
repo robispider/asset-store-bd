@@ -16,7 +16,8 @@
         "quantity",
         "available",
         "businessFingerprint"
-      ]
+      ],
+      "implemented": true
     },
     "office.context": {
       "description": "Read-only projection of office operational status, company, and administrative assignments",
@@ -30,7 +31,8 @@
         "operational",
         "office_admin_id",
         "storekeeper_id"
-      ]
+      ],
+      "implemented": true
     },
     "actor.assignments": {
       "description": "Read-only projection of user memberships, responsibilities, and effective role slugs",
@@ -44,7 +46,8 @@
         "office_ids",
         "roles",
         "is_superadmin"
-      ]
+      ],
+      "implemented": true
     },
     "document.state": {
       "description": "Read-only projection of a GovStore stock or transfer document",
@@ -60,7 +63,8 @@
         "source_office_id",
         "target_office_id",
         "lines_count"
-      ]
+      ],
+      "implemented": false
     },
     "request.progress": {
       "description": "Counts of a user's submitted requests by pipeline bucket, plus draft basket line count",
@@ -74,7 +78,8 @@
         "rejected",
         "total",
         "draftItems"
-      ]
+      ],
+      "implemented": true
     },
     "request.queues": {
       "description": "Counts behind the navbar inbox and sidebar queue badges for one user in one office: requests awaiting primary or final approval (not their own) and approved requests awaiting fulfilment",
@@ -88,7 +93,8 @@
         "pendingPrimary",
         "pendingFinal",
         "awaitingFulfilment"
-      ]
+      ],
+      "implemented": true
     },
     "audit.outcome": {
       "description": "Read-only projection of recent audit log entries for a record",
@@ -102,7 +108,8 @@
         "user_id",
         "target_id",
         "created_at"
-      ]
+      ],
+      "implemented": false
     },
     "mutation.effects": {
       "description": "Diagnostic check comparing baseline to current counts for isolated verification",
@@ -112,7 +119,8 @@
       "outputFields": [
         "retained_records_count",
         "untracked_records_count"
-      ]
+      ],
+      "implemented": false
     },
     "request.state": {
       "description": "Persisted state of one request by request number, including first line quantities and deciders",
@@ -131,7 +139,8 @@
         "decided_by",
         "lines_count",
         "first_line"
-      ]
+      ],
+      "implemented": true
     },
     "basket.line": {
       "description": "Quantity of one catalog item in a user's draft basket",
@@ -143,7 +152,8 @@
       "outputFields": [
         "user_id",
         "quantity"
-      ]
+      ],
+      "implemented": true
     },
     "committee.visibility": {
       "description": "Read-only count of committees visible to a non-company-admin office user (company and office or office-scope boundary), a search term and a committee outside that boundary",
@@ -158,7 +168,8 @@
         "searchMatches",
         "foreignId",
         "foreignNumber"
-      ]
+      ],
+      "implemented": true
     },
     "committee.record": {
       "description": "A visible office committee selected for independent detail, history and print checks",
@@ -174,7 +185,8 @@
         "seatCount",
         "orderCount",
         "historyCount"
-      ]
+      ],
+      "implemented": true
     },
     "committee.catalog": {
       "description": "Read-only count of committee types visible to a company (national plus the company's own)",
@@ -185,7 +197,8 @@
         "visibleTypes",
         "activeTypes",
         "firstCode"
-      ]
+      ],
+      "implemented": true
     },
     "committee.mine": {
       "description": "Read-only count of a user's committee tenures, and those current today (Asia/Dhaka)",
@@ -196,7 +209,8 @@
         "user_id",
         "tenures",
         "current"
-      ]
+      ],
+      "implemented": true
     },
     "organization.registry": {
       "description": "Office registry scope and status-tab counts for one user (super user: every location; area ICT officer: profiled offices inside their area), a live sample office with staff, and an office outside the area",
@@ -218,7 +232,8 @@
         "sampleOfficeName",
         "sampleSearchRows",
         "foreignOfficeId"
-      ]
+      ],
+      "implemented": true
     },
     "organization.office": {
       "description": "One office's lifecycle status and readiness restated from the business rule (eligible staff, administrator, approver, storekeeper), next setup step, administrator, activity count and another office for boundary checks",
@@ -244,7 +259,8 @@
         "activityRows",
         "geoVerified",
         "foreignOfficeId"
-      ]
+      ],
+      "implemented": true
     },
     "organization.national": {
       "description": "Counts behind the Administrators tabs (area ICT officers, ministry administrators) and the government directory",
@@ -254,7 +270,8 @@
         "ministryAdmins",
         "directoryRecords",
         "directoryPreviewRows"
-      ]
+      ],
+      "implemented": true
     },
     "organization.location": {
       "description": "Number of locations with exactly this name (proves a rejected form created nothing)",
@@ -264,7 +281,8 @@
       "outputFields": [
         "name",
         "count"
-      ]
+      ],
+      "implemented": true
     },
     "membership.person": {
       "description": "My offices restated for one person from the membership rules: current and past offices, status and home counts, roles (with or without a pending outgoing handover), handovers waiting for them, notices, personal code and colleagues at the home office",
@@ -293,7 +311,8 @@
         "colleagues",
         "leavingColleagues",
         "foreignMembershipId"
-      ]
+      ],
+      "implemented": true
     },
     "membership.staff": {
       "description": "The Staff page's tab counts for one office (staff, waiting, leaving, arriving from elsewhere in the ministry, past 12 months), the banner, first-page rows and additional staff",
@@ -317,7 +336,8 @@
         "waitBanner",
         "additionalStaff",
         "codeLive"
-      ]
+      ],
+      "implemented": true
     },
     "membership.handover": {
       "description": "The latest handover of one role at one office from one person, whether that person still holds the role, and the reason recorded with its notice",
@@ -334,7 +354,8 @@
         "fromHolds",
         "holders",
         "noticeReason"
-      ]
+      ],
+      "implemented": true
     },
     "membership.code": {
       "description": "How many offices use an office code, normalised as people may type it (proves a code check names no office)",
@@ -344,14 +365,16 @@
       "outputFields": [
         "code",
         "offices"
-      ]
+      ],
+      "implemented": true
     },
     "membership.overrides": {
       "description": "Number of emergency changes in the change history",
       "parameters": {},
       "outputFields": [
         "count"
-      ]
+      ],
+      "implemented": true
     },
     "request.list": {
       "description": "One requester's requests in one office with the derived request status (request_* status-map key) and the My requests tab counts (In progress, Needs you, Finished)",
@@ -366,7 +389,8 @@
         "tabs",
         "byStatus",
         "statuses"
-      ]
+      ],
+      "implemented": true
     },
     "asset-tags.readiness": {
       "description": "Asset-tagging gates G1-G6 restated from the business rules for one office (native sequence, bridge, legacy tags, office codes, single issuer, real-or-rehearsal office), the office facts, company code lists and enablement with revisions, other offices' location codes and the asset-tags access-event count",
@@ -399,7 +423,8 @@
         "enablementRevision",
         "takenLocations",
         "accessEvents"
-      ]
+      ],
+      "implemented": true
     },
     "asset-tags.document": {
       "description": "One store document by id: status, receiving source, challan / PO dates, lines and every tag issued for it (format, Finance Code, unit, finance source, standard reason, division and location codes, acquisition date, asset purchase date and office)",
@@ -439,7 +464,8 @@
         "modelStandardReasons",
         "modelPurchaseDates",
         "modelOffices"
-      ]
+      ],
+      "implemented": true
     },
     "asset-tags.tag": {
       "description": "Where one tag lives: registration, asset, office and company, and how many assets carry it",
@@ -455,7 +481,8 @@
         "location_id",
         "company_id",
         "assetsWithTag"
-      ]
+      ],
+      "implemented": true
     },
     "asset-tags.finance": {
       "description": "One Finance item: status, UNSPSC link, last editor, and how many items are active",
@@ -470,7 +497,8 @@
         "unspsc_code",
         "updated_by",
         "activeCount"
-      ]
+      ],
+      "implemented": true
     },
     "asset-tags.default": {
       "description": "A product type's stored Finance Code default, its revision, owner scope and whether the type is national",
@@ -483,7 +511,8 @@
         "revision",
         "scope",
         "national"
-      ]
+      ],
+      "implemented": true
     },
     "rules.effective": {
       "description": "Who decides one capability (default issue_govt_tags) for one office and asset model, restated from published assignments layer by layer (GLOBAL, COMPANY, LOCATION, CATEGORY, MODEL; built-in DEFAULT underneath)",
@@ -501,7 +530,8 @@
         "decider",
         "policy",
         "on"
-      ]
+      ],
+      "implemented": true
     },
     "rules.policy": {
       "description": "One product-rules policy by exact name: status, version, lineage, behaviors and active assignments",
@@ -517,7 +547,8 @@
         "capabilities",
         "assignments",
         "activeAssignments"
-      ]
+      ],
+      "implemented": true
     },
     "storeops.documents": {
       "description": "Store documents of one type created by one user in one office, posted documents of that type in the office, and the total number of asset registrations",
@@ -530,7 +561,8 @@
         "count",
         "posted",
         "registrations"
-      ]
+      ],
+      "implemented": true
     }
   }
 }

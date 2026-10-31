@@ -1,0 +1,238 @@
+{
+  "schemaVersion": 1,
+  "id": "tracking.programme-team-setup",
+  "title": "Company administrator creates a programme and team; its appointed head opens the active programme workspace",
+  "evidenceLevel": "connected",
+  "features": [
+    "tracking"
+  ],
+  "tags": [
+    "functional",
+    "connected",
+    "multi-actor",
+    "write"
+  ],
+  "execution": {
+    "capability": "write-fixtures",
+    "language": "en-US",
+    "timeoutMs": 300000
+  },
+  "fixtures": {
+    "office": {
+      "requirements": {
+        "operational": true,
+        "ledgerOpen": true
+      }
+    },
+    "actors": {
+      "companyAdmin": {
+        "role": "company_admin",
+        "activeMembership": false
+      },
+      "head": {
+        "capabilities": {
+          "allOf": [
+            "requests.submit"
+          ],
+          "noneOf": [
+            "requests.approve"
+          ]
+        }
+      },
+      "officer": {
+        "capabilities": {
+          "allOf": [
+            "requests.submit"
+          ],
+          "noneOf": [
+            "requests.approve"
+          ]
+        }
+      },
+      "storekeeper": {
+        "role": "storekeeper",
+        "capabilities": {
+          "allOf": [
+            "storeops.documents.draft",
+            "storeops.documents.post"
+          ]
+        }
+      }
+    },
+    "records": {
+      "item": {
+        "kind": "consumable",
+        "minimumAvailable": 10
+      }
+    }
+  },
+  "data": {
+    "purpose": {
+      "generate": "markedText",
+      "prefix": "LIVE-PROG",
+      "length": 6
+    },
+    "trackingCode": {
+      "generate": "markedText",
+      "prefix": "LIVE-TASK",
+      "length": 6
+    },
+    "receiptDate": {
+      "generate": "date",
+      "offsetDays": 0
+    },
+    "receiptQty": 6
+  },
+  "preconditions": [],
+  "steps": [
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "companyAdmin"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives"
+    },
+    {
+      "action": "click",
+      "target": "css=a[href$=\"/tracking/initiatives/create\"]"
+    },
+    {
+      "action": "fill",
+      "target": "css=#initiative_title",
+      "value": "${data.purpose}"
+    },
+    {
+      "action": "fill",
+      "target": "css=#initiative_purpose",
+      "value": "Fictional programme for a complete live delivery journey"
+    },
+    {
+      "action": "select",
+      "target": "css=#owner_company_id",
+      "value": "${fixtures.office.company_id}"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form[action$=\"/tracking/initiatives\"] button[type=\"submit\"]"
+    },
+    {
+      "action": "capture",
+      "url": true,
+      "pattern": "/initiatives/([0-9]+)",
+      "as": "initiativeId"
+    },
+    {
+      "action": "ledger",
+      "kind": "tracking_programme",
+      "id": "${captured.initiativeId}",
+      "effect": "Programme and task retained with receipt delivery evidence",
+      "cleanup": "retained"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives/${captured.initiativeId}/operation-unit"
+    },
+    {
+      "action": "select2",
+      "target": "css=#staff-head",
+      "search": "${actors.head.username}",
+      "option": "${actors.head.username}"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form:has(#staff-head) button[type=\"submit\"]"
+    },
+    {
+      "action": "select2",
+      "target": "css=#staff-officer",
+      "search": "${actors.officer.username}",
+      "option": "${actors.officer.username}"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form:has(#staff-officer) button[type=\"submit\"]"
+    },
+    {
+      "action": "reload"
+    },
+    {
+      "action": "assert",
+      "target": "css=.content",
+      "test": "text",
+      "contains": "${actors.head.username}"
+    },
+    {
+      "action": "assert",
+      "target": "css=.content",
+      "test": "text",
+      "contains": "${actors.officer.username}"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives/${captured.initiativeId}/edit"
+    },
+    {
+      "action": "select",
+      "target": "css=select[name=\"status\"]",
+      "value": "Active"
+    },
+    {
+      "action": "submitForm",
+      "target": "css=form[action$=\"/initiatives/${captured.initiativeId}\"] button[type=\"submit\"]"
+    },
+    {
+      "use": "auth.login",
+      "with": {
+        "actor": "head"
+      }
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives?q=${data.purpose}"
+    },
+    {
+      "action": "assert",
+      "target": "css=.content",
+      "test": "text",
+      "contains": "${data.purpose}"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives/${captured.initiativeId}/manage"
+    },
+    {
+      "action": "assert",
+      "target": "css=a[href$=\"/tracking-codes/create\"] >> nth=0",
+      "test": "visible"
+    },
+    {
+      "action": "actor",
+      "name": "companyAdmin"
+    },
+    {
+      "action": "goto",
+      "url": "/gov-store/admin/tracking/initiatives/${captured.initiativeId}/operation-unit"
+    },
+    {
+      "action": "assert",
+      "target": "css=.content",
+      "test": "text",
+      "contains": "${actors.head.username}"
+    },
+    {
+      "action": "assert",
+      "target": "css=.content",
+      "test": "text",
+      "contains": "${actors.officer.username}"
+    }
+  ],
+  "cleanup": {
+    "policy": "retained-with-report",
+    "description": "Marked programme and its team retained as scope-specific audit evidence; no tracking task or delivery is claimed.",
+    "steps": []
+  },
+  "description": "Connected programme administration and role assignment through UI. Task creation, delivery and archive are covered separately."
+}

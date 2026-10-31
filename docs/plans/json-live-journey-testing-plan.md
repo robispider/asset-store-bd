@@ -4,6 +4,14 @@ Date: 6 October 2026 (Asia/Dhaka)
 Status: implementation plan; the runner and JSON capabilities below are proposed.  
 Initial target: the authorized local application at `http://snipeit.local/`.
 
+Update, 25 October 2026: the runner now exists. This document remains the original
+design record. For the current implementation scope, staging prerequisites and
+full GovStore functional acceptance, use the
+[full implementation plan](govstore-full-functional-live-testing-plan-2026-10-25.md)
+and [acceptance contract](../testing/govstore-functional-live-acceptance.md).
+The original minimum runner acceptance below does not establish completion of all
+user functions or business stories.
+
 ## 1. Outcome and scope
 
 Build one reusable runner that reads a collection of JSON files under `tests/live/subtests/`, operates a real browser against the running application, and records trustworthy results. Agents normally add or edit JSON journeys rather than writing a browser program for every feature. Execution, waiting, input generation, observations and reporting require no language-model calls.

@@ -36,6 +36,11 @@ trait CheckInOutTrait
      */
     protected function updateAssetLocation($asset, $target): Asset
     {
+        if ($target instanceof User && app(\GovStore\TenantScope\Contexts\TenantContext::class)->isActive) {
+            app(\GovStore\TenantScope\Services\OfficeRecipient::class)->find((int) $target->id);
+
+            return $asset;
+        }
         switch (request('checkout_to_type')) {
             case 'location':
                 $asset->location_id = $target->id;
