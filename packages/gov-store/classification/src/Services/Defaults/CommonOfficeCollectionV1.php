@@ -9,7 +9,7 @@ use RuntimeException;
 class CommonOfficeCollectionV1
 {
     public const KEY = 'bd-common-office';
-    public const MANIFEST_SHA256 = 'd840ca2fc4cef21ad66d30046fe2655bf3d9d2b31169467d7dd17c99bcad3692';
+    public const MANIFEST_SHA256 = '85b311531d1c744d24764731c87689d9f18129d723e65e7ee76f56ae46229249';
     protected const VERSION = 1;
     protected const SECTIONS = ['furniture', 'stationery', 'ict', 'printing', 'electrical', 'cleaning', 'general'];
     protected const UNITS = ['piece', 'sheet', 'roll'];
